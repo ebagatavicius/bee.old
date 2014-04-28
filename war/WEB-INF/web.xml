@@ -35,10 +35,10 @@
   <data-source>
     <name>BeeDS</name>
     <class-name>org.postgresql.ds.PGSimpleDataSource</class-name>
-    <server-name>192.168.0.210</server-name>
+    <server-name>127.0.0.1</server-name>
     <port-number>5432</port-number>
-    <database-name>postgres</database-name>
+    <database-name>serpantinas_b_novo</database-name>
     <user>postgres</user>
-    <password>admin</password>
+    <password>postgres</password>
   </data-source>
 </web-app>
