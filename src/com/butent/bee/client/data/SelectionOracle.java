@@ -299,6 +299,10 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
     return viewOrder;
   }
 
+  public boolean isCachingEnabled() {
+    return !Relation.Caching.NONE.equals(caching);
+  }
+
   @Override
   public void onCellUpdate(CellUpdateEvent event) {
     if (isEventRelevant(event) && event.applyTo(getViewData())) {
@@ -363,7 +367,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
     rowCountChangeHandlers.clear();
     dataReceivedHandlers.clear();
   }
-
+  
   public void requestSuggestions(Request request, Callback callback) {
     Assert.notNull(request);
     Assert.notNull(callback);
@@ -380,7 +384,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
     setLastRequest(request);
     processRequest(request, callback);
   }
-  
+
   public void setAdditionalFilter(Filter additionalFilter) {
     if (Objects.equal(additionalFilter, this.additionalFilter)) {
       return;
@@ -481,10 +485,6 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
             checkPendingRequest();
           }
         });
-  }
-
-  private boolean isCachingEnabled() {
-    return !Relation.Caching.NONE.equals(caching);
   }
 
   private boolean isDataInitialized() {

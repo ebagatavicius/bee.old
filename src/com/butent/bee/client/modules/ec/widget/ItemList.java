@@ -45,8 +45,8 @@ public class ItemList extends Flow implements KeyDownHandler {
   private static final String STYLE_PRIMARY = "ItemList";
   private static final String STYLE_WAREHOUSE = "warehouse";
 
-  private static final String STYLE_HEADER_ROW = EcStyles.name(STYLE_PRIMARY, "headerRow");
-  private static final String STYLE_ITEM_ROW = EcStyles.name(STYLE_PRIMARY, "itemRow");
+  private static final String STYLE_HEADER_ROW = EcStyles.name(STYLE_PRIMARY, "header");
+  private static final String STYLE_ITEM_ROW = EcStyles.name(STYLE_PRIMARY, "item");
 
   private static final String STYLE_PICTURE = EcStyles.name(STYLE_PRIMARY, "picture");
   private static final String STYLE_INFO = EcStyles.name(STYLE_PRIMARY, "info");
@@ -58,8 +58,15 @@ public class ItemList extends Flow implements KeyDownHandler {
   private static final String STYLE_HAS_STOCK = EcStyles.name(STYLE_PRIMARY, "hasStock");
   private static final String STYLE_UNIT = EcStyles.name(STYLE_PRIMARY, "unit");
   private static final String STYLE_QUANTITY = EcStyles.name(STYLE_PRIMARY, "quantity");
-  private static final String STYLE_LIST_PRICE = EcStyles.name(STYLE_PRIMARY, "listPrice");
+  private static final String STYLE_LIST_PRICE = EcStyles.name(STYLE_PRIMARY, "list-price");
   private static final String STYLE_PRICE = EcStyles.name(STYLE_PRIMARY, "price");
+
+  private static final String STYLE_CLIENT_AND_FEATURED_PRICE_PANEL = EcStyles.name(STYLE_PRIMARY,
+      "client-and-fetured-price-panel");
+  private static final String STYLE_CLIENT_PRICE_PREFIX = EcStyles.name(STYLE_PRIMARY,
+      "client-price-");
+  private static final String STYLE_FEATURED_PRICE_PREFIX = EcStyles.name(STYLE_PRIMARY,
+      "featured-price-");
 
   private static final String STYLE_ITEM_NAME = EcStyles.name(STYLE_PRIMARY, "name");
   private static final String STYLE_ITEM_CODE = EcStyles.name(STYLE_PRIMARY, "code");
@@ -77,13 +84,43 @@ public class ItemList extends Flow implements KeyDownHandler {
   private static final String STYLE_LABEL = "-label";
 
   private static final int PAGE_SIZE = 50;
-  
+
+  private static Widget renderClientAndFeaturedPrice(int clientPrice, int featuredPrice) {
+    Flow panel = new Flow(STYLE_CLIENT_AND_FEATURED_PRICE_PANEL);
+    
+    Flow clientPanel = new Flow(STYLE_CLIENT_PRICE_PREFIX + "panel");
+
+    InlineLabel clientValue = new InlineLabel(EcUtils.formatCents(clientPrice));
+    clientValue.addStyleName(STYLE_CLIENT_PRICE_PREFIX + "value");
+    clientPanel.add(clientValue);
+
+    InlineLabel clientCurrency = new InlineLabel(EcConstants.CURRENCY);
+    clientCurrency.addStyleName(STYLE_CLIENT_PRICE_PREFIX + "currency");
+    clientPanel.add(clientCurrency);
+    
+    panel.add(clientPanel);
+
+    Flow featuredPanel = new Flow(STYLE_FEATURED_PRICE_PREFIX + "panel");
+    
+    InlineLabel featuredValue = new InlineLabel(EcUtils.formatCents(featuredPrice));
+    featuredValue.addStyleName(STYLE_FEATURED_PRICE_PREFIX + "value");
+    featuredPanel.add(featuredValue);
+    
+    InlineLabel featuredCurrency = new InlineLabel(EcConstants.CURRENCY);
+    featuredCurrency.addStyleName(STYLE_FEATURED_PRICE_PREFIX + "currency");
+    featuredPanel.add(featuredCurrency);
+    
+    panel.add(featuredPanel);
+
+    return panel;
+  }
+
   private static Widget renderCriteria(List<ArticleCriteria> criteria) {
     Flow panel = new Flow(STYLE_CRITERIA_PANEL);
-    
+
     for (ArticleCriteria criterion : criteria) {
       Flow entry = new Flow(STYLE_CRITERIA_ENTRY);
-      
+
       InlineLabel nameLabel = new InlineLabel(criterion.getName());
       nameLabel.addStyleName(STYLE_CRITERIA_NAME);
       entry.add(nameLabel);
@@ -91,10 +128,10 @@ public class ItemList extends Flow implements KeyDownHandler {
       InlineLabel valueLabel = new InlineLabel(criterion.getValue());
       valueLabel.addStyleName(STYLE_CRITERIA_VALUE);
       entry.add(valueLabel);
-      
+
       panel.add(entry);
     }
-    
+
     return panel;
   }
 
@@ -194,7 +231,7 @@ public class ItemList extends Flow implements KeyDownHandler {
       descriptionWidget.setHtml(description);
       panel.add(descriptionWidget);
     }
-    
+
     if (!item.getCriteria().isEmpty()) {
       Widget criteriaWidget = renderCriteria(item.getCriteria());
       if (criteriaWidget != null) {
@@ -408,12 +445,12 @@ public class ItemList extends Flow implements KeyDownHandler {
 
       Label listPriceLabel = new Label(Localized.getConstants().ecListPrice());
       listPriceLabel.addStyleName(STYLE_LIST_PRICE + STYLE_LABEL);
-      EcStyles.markListPrice(listPriceLabel);
+      EcStyles.markListPrice(listPriceLabel.getElement());
       table.setWidget(row, col++, listPriceLabel);
 
       Label priceLabel = new Label(Localized.getConstants().ecClientPrice());
       priceLabel.addStyleName(STYLE_PRICE + STYLE_LABEL);
-      EcStyles.markPrice(priceLabel);
+      EcStyles.markPrice(priceLabel.getElement());
 
       table.setWidget(row, col++, priceLabel);
 
@@ -430,6 +467,8 @@ public class ItemList extends Flow implements KeyDownHandler {
         }
 
         ItemPicture pictureWidget = new ItemPicture(item.getCaption());
+        pictureWidget.setFeaturedOrNovelty(item);
+
         renderItem(row++, item, pictureWidget);
 
         pictureWidgets.put(item.getArticleId(), pictureWidget);
@@ -514,18 +553,25 @@ public class ItemList extends Flow implements KeyDownHandler {
     }
 
     int listPrice = item.getListPrice();
+    int clientPrice = item.getClientPrice();
     int price = item.getPrice();
 
-    if (listPrice > 0 && listPrice >= price) {
+    if (listPrice > 0 && listPrice >= clientPrice) {
       Widget listPriceWidget = renderPrice(listPrice, STYLE_LIST_PRICE);
-      EcStyles.markListPrice(listPriceWidget);
+      EcStyles.markListPrice(listPriceWidget.getElement());
       table.setWidgetAndStyle(row, col, listPriceWidget, STYLE_LIST_PRICE);
     }
     col++;
 
     if (price > 0) {
-      Widget priceWidget = renderPrice(price, STYLE_PRICE);
-      EcStyles.markPrice(priceWidget);
+      Widget priceWidget;
+      if (clientPrice > price) {
+        priceWidget = renderClientAndFeaturedPrice(clientPrice, price);
+      } else {
+        priceWidget = renderPrice(price, STYLE_PRICE);
+      }
+
+      EcStyles.markPrice(priceWidget.getElement());
       table.setWidgetAndStyle(row, col, priceWidget, STYLE_PRICE);
     }
     col++;
@@ -549,7 +595,9 @@ public class ItemList extends Flow implements KeyDownHandler {
 
       for (int i = pageStart; i < pageStart + pageSize; i++) {
         EcItem item = data.get(i);
+
         ItemPicture pictureWidget = new ItemPicture(item.getCaption());
+        pictureWidget.setFeaturedOrNovelty(item);
 
         renderItem(i + 1, item, pictureWidget);
 

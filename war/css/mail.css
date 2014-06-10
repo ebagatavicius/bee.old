@@ -5,6 +5,10 @@
 
 .bee-mail-WaitingForContent {
   margin-top: 10px;
+  font-size: 20px;
+  text-align: center;
+  animation: rotate 1s linear infinite;
+  -webkit-animation: rotate 1s linear infinite;
 }
 
 .bee-mail-EmptySelection {
@@ -45,17 +49,18 @@
   resize: none;
 }
 
-.bee-mail-AttachmentImage {
+.bee-mail-AttachmentImage, .bee-mail-AttachmentCount {
+  color: gray;
   position: absolute;
   top: 20px;
+}
+
+.bee-mail-AttachmentImage {
   right: 0;
 }
 
 .bee-mail-AttachmentCount {
-  position: absolute;
-  top: 20px;
   right: 15px;
-  color: gray;
 }
 
 .bee-mail-HeaderDate {
@@ -172,7 +177,6 @@
 .bee-mail-FolderAction {
   margin: 0 3px 0 3px;
   visibility: hidden;
-  cursor: pointer;
 }
 
 .bee-mail-FolderRow tr:hover .bee-mail-FolderAction {

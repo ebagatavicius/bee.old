@@ -5,6 +5,7 @@ import com.google.common.collect.Range;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateRange;
@@ -61,9 +62,9 @@ class Driver extends Filterable implements HasDateRange, HasItemName  {
     this.id = driverId;
     this.itemName = BeeUtils.joinWords(firstName, lastName);
 
-    this.range = ChartHelper.getActivity(startDate, endDate);
+    this.range = TimeBoardHelper.getActivity(startDate, endDate);
 
-    this.title = ChartHelper.buildTitle(startDateLabel, TimeUtils.renderCompact(startDate),
+    this.title = TimeBoardHelper.buildTitle(startDateLabel, TimeUtils.renderCompact(startDate),
         endDateLabel, TimeUtils.renderCompact(endDate),
         experienceLabel, TimeUtils.renderCompact(experience), notesLabel, notes);
   }

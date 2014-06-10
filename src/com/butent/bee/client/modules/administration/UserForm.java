@@ -15,7 +15,6 @@ import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.rights.RegulatedWidget;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Objects;
@@ -26,7 +25,7 @@ class UserForm extends AbstractFormInterceptor implements ClickHandler {
     getHeaderView().clearCommandPanel();
 
     if (DataUtils.isNewRow(row) || Objects.equals(BeeKeeper.getUser().getUserId(), row.getId())
-        || BeeKeeper.getUser().isWidgetVisible(RegulatedWidget.PASSWORD)) {
+        || BeeKeeper.getUser().isAdministrator()) {
       getHeaderView().addCommandItem(new Button(Localized.getConstants().changePassword(), this));
     }
   }

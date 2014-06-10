@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form>
+<Form xmlns="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  
+  name="NewServiceDefect" viewName="ServiceDefects" caption="=svcNewDefect"
+  width="650" height="250"
+  >
+  
+  <xi:include href="widgets/DefectBody.widget.xml" />
+</Form>

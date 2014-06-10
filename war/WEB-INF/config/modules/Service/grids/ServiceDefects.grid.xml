@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+
+  name="ServiceDefects" viewName="ServiceDefects"
+  flexGrow="1" disabledActions="add" caption="=svcDefects"
+  >
+  <g:columns>
+    <RelColumn name="ServiceObject" editEnabled="true" editPopup="true" />
+  </g:columns>
+
+  <xi:include href="columns/ServiceDefect.columns.xml" />
+</g:Grid>

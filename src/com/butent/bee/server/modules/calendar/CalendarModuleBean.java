@@ -412,7 +412,8 @@ public class CalendarModuleBean implements BeeModule {
               COL_APPOINTMENT_LOCATION, ALS_COMPANY_NAME, COL_VEHICLE_NUMBER), query),
           Filter.anyItemContains(COL_STATUS, AppointmentStatus.class, query));
 
-      List<BeeRow> appointments = getAppointments(filter, new Order(COL_START_DATE_TIME, false));
+      List<BeeRow> appointments = getAppointments(filter,
+          new Order(COL_START_DATE_TIME, false), true);
       if (!BeeUtils.isEmpty(appointments)) {
         for (BeeRow row : appointments) {
           results.add(new SearchResult(VIEW_APPOINTMENTS, row));
@@ -753,7 +754,7 @@ public class CalendarModuleBean implements BeeModule {
     }
   }
 
-  private List<BeeRow> getAppointments(Filter filter, Order order) {
+  private List<BeeRow> getAppointments(Filter filter, Order order, boolean checkVisibility) {
     List<BeeRow> result = Lists.newArrayList();
 
     Long userId = usr.getCurrentUserId();
@@ -761,14 +762,23 @@ public class CalendarModuleBean implements BeeModule {
       return result;
     }
 
-    Filter visible = Filter.or().add(
-        Filter.equals(COL_CREATOR, userId),
-        Filter.in(sys.getIdName(TBL_APPOINTMENTS), VIEW_APPOINTMENT_OWNERS, COL_APPOINTMENT,
-            Filter.equals(COL_APPOINTMENT_OWNER, userId)),
-        Filter.isNull(COL_VISIBILITY),
-        Filter.isEqual(COL_VISIBILITY, IntegerValue.of(CalendarVisibility.PUBLIC)));
+    Filter queryFilter;
 
-    BeeRowSet appointments = qs.getViewData(VIEW_APPOINTMENTS, Filter.and(filter, visible), order);
+    if (checkVisibility) {
+      Filter visible = Filter.or().add(
+          Filter.equals(COL_CREATOR, userId),
+          Filter.in(sys.getIdName(TBL_APPOINTMENTS), VIEW_APPOINTMENT_OWNERS, COL_APPOINTMENT,
+              Filter.equals(COL_APPOINTMENT_OWNER, userId)),
+          Filter.isNull(COL_VISIBILITY),
+          Filter.isEqual(COL_VISIBILITY, IntegerValue.of(CalendarVisibility.PUBLIC)));
+
+      queryFilter = Filter.and(filter, visible);
+
+    } else {
+      queryFilter = filter;
+    }
+
+    BeeRowSet appointments = qs.getViewData(VIEW_APPOINTMENTS, queryFilter, order);
     if (!DataUtils.isEmpty(appointments)) {
       result.addAll(appointments.getRows());
     }
@@ -1063,7 +1073,7 @@ public class CalendarModuleBean implements BeeModule {
 
     long millis = System.currentTimeMillis();
 
-    List<BeeRow> appointments = getAppointments(appFilter, null);
+    List<BeeRow> appointments = getAppointments(appFilter, null, false);
     long appDuration = System.currentTimeMillis() - millis;
 
     List<CalendarTask> tasks = getCalendarTasks(calendarId, startTime, endTime);
@@ -1400,7 +1410,16 @@ public class CalendarModuleBean implements BeeModule {
   }
 
   private BeeRowSet getUserCalAttendees(long ucId, long userId, long calendarId, boolean isNew) {
-    Filter filter = Filter.equals(COL_USER_CALENDAR, ucId);
+    BeeRowSet attendees = qs.getViewData(VIEW_ATTENDEES);
+    if (DataUtils.isEmpty(attendees)) {
+      logger.warning("attendees not available, user", userId);
+      return null;
+    }
+    
+    List<Long> attIds = attendees.getRowIds();
+
+    Filter filter = Filter.and(Filter.equals(COL_USER_CALENDAR, ucId), 
+        Filter.any(COL_ATTENDEE, attIds));
 
     if (!isNew) {
       BeeRowSet ucAttendees = qs.getViewData(VIEW_USER_CAL_ATTENDEES, filter);
@@ -1410,8 +1429,8 @@ public class CalendarModuleBean implements BeeModule {
     }
 
     BeeRowSet calendarAttendees = getCalendarAttendees(userId, calendarId);
-    if (calendarAttendees.isEmpty()) {
-      logger.warning("calendar attendees not found, calendar id:", calendarId);
+    if (DataUtils.isEmpty(calendarAttendees)) {
+      logger.warning("calendar attendees not available, calendar", calendarId, "user", userId);
       return null;
     }
 

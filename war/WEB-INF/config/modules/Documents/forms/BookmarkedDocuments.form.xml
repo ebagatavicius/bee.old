@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE Form [
+    <!ENTITY lblRight "vertical-align: top; text-align: right; margin: 3px 4px 3px 4px;" >
+    <!ENTITY inpLeft "text-align: left; margin: 3px 7px 3px 4px;" >
+  ]>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  name="BookmarkedDocuments" caption="=documentCategory"
+  disabledActions="save"
+  >
+  <FlowPanel class="flexBox-vertical">
+    <Table style="width:100%;">
+      <row>
+        <Label style="&lblRight;" text="=name" />
+        <InputText style="&inpLeft;" source="Name" readOnly="true" />
+        <Label style="&lblRight;" text="=documentParentCategory" /> 
+        <InputText style="&inpLeft;" source="ParentName" readOnly="true" />
+        <Label style="&lblRight;" text="=documentCount" /> 
+        <InputInteger style="&inpLeft;" source="DocumentCount" readOnly="true" />
+      </row>
+    </Table>
+    <ChildGrid class="bee-documents-childWiget" style="margin-top: 40px;" name="Documents" relColumn="Category" caption="=documents" />
+  </FlowPanel>
+</f:Form>  

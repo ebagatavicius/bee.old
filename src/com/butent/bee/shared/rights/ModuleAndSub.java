@@ -27,7 +27,7 @@ public final class ModuleAndSub implements Comparable<ModuleAndSub> {
     Module module = null;
     SubModule subModule = null;
 
-    List<String> parts = Lists.newArrayList(RightsUtils.SPLITTER.split(input));
+    List<String> parts = Lists.newArrayList(RightsUtils.NAME_SPLITTER.split(input));
 
     if (parts.size() > 0) {
       String moduleName = parts.get(0);
@@ -92,7 +92,7 @@ public final class ModuleAndSub implements Comparable<ModuleAndSub> {
     if (subModule == null) {
       return module.getName();
     } else {
-      return RightsUtils.JOINER.join(module.getName(), subModule.getName());
+      return RightsUtils.NAME_JOINER.join(module.getName(), subModule.getName());
     }
   }
 

@@ -1,43 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
   
   name="RecurringTasks" viewName="RecurringTasks" caption="=crmRecurringTasks"
-  currentUserFilter="Owner" editShowId="true" enabledActions="copy"
+  currentUserFilter="Owner" enabledActions="copy"
   >
   <g:columns>
-    <IdColumn name="Id" caption="=captionId" />
-
-    <DataColumn name="Priority" />
-    <DataColumn name="Summary" visible="true" />
-    <DataColumn name="Description" visible="false" />
-
-    <RelColumn name="Company" />
-    <RelColumn name="Contact" renderColumns="ContactFirstName ContactLastName"
-      sortBy="ContactLastName ContactFirstName" visible="false" />
-
+    <IdColumn name="Id" />
     <RelColumn name="Owner" renderColumns="OwnerFirstName OwnerLastName"
       sortBy="OwnerLastName OwnerFirstName" visible="false" />
-
-    <DataColumn name="ScheduleFrom" />
-    <DataColumn name="ScheduleUntil" />
-
-    <DataColumn name="ScheduleDays" />
-
-    <DataColumn name="WorkdayTransition" visible="false" />
-
-    <DataColumn name="DayOfMonth" />
-    <DataColumn name="Month" />
-    <DataColumn name="DayOfWeek" />
-    <DataColumn name="Year" visible="false" />
-
-    <DataColumn name="StartAt" visible="false" />
-    <DataColumn name="DurationDays" visible="false" />
-    <DataColumn name="DurationTime" visible="false" />
-    
-    <RelColumn name="Reminder" />
-    <DataColumn name="RemindBefore" visible="false" />
-    <DataColumn name="RemindAt" visible="false" />
-
-    <DataColumn name="CopyByMail" visible="false" />
   </g:columns>
+
+  <xi:include href="columns/RecurringTask.columns.xml" />
 </g:Grid>

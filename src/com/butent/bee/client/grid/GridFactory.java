@@ -1,8 +1,6 @@
 package com.butent.bee.client.grid;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import com.butent.bee.client.BeeKeeper;
@@ -74,8 +72,10 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -139,8 +139,8 @@ public final class GridFactory {
 
   private static final BeeLogger logger = LogUtils.getLogger(GridFactory.class);
 
-  private static final Map<String, GridDescription> descriptionCache = Maps.newHashMap();
-  private static final Map<String, GridInterceptor> gridInterceptors = Maps.newHashMap();
+  private static final Map<String, GridDescription> descriptionCache = new HashMap<>();
+  private static final Map<String, GridInterceptor> gridInterceptors = new HashMap<>();
 
   private static final Multimap<String, String> hiddenColumns = HashMultimap.create();
 
@@ -305,13 +305,7 @@ public final class GridFactory {
   public static GridInterceptor getGridInterceptor(String gridName) {
     Assert.notEmpty(gridName);
     GridInterceptor interceptor = gridInterceptors.get(BeeUtils.normalize(gridName));
-    if (interceptor != null) {
-      GridInterceptor instance = interceptor.getInstance();
-      if (instance != null) {
-        return instance;
-      }
-    }
-    return interceptor;
+    return getInterceptorInstance(interceptor);
   }
 
   public static GridOptions getGridOptions(Map<String, String> attributes) {
@@ -349,7 +343,7 @@ public final class GridFactory {
   public static Filter getInitialQueryFilter(Filter immutableFilter,
       Map<String, Filter> initialParentFilters, Filter initialUserFilter) {
 
-    List<Filter> filters = Lists.newArrayList();
+    List<Filter> filters = new ArrayList<>();
     if (immutableFilter != null) {
       filters.add(immutableFilter);
     }
@@ -380,13 +374,9 @@ public final class GridFactory {
     }
   }
 
-  public static String getSupplierKey(String gridName, GridInterceptor gridInterceptor) {
-    String key = (gridInterceptor == null) ? null : gridInterceptor.getSupplierKey();
-    if (BeeUtils.isEmpty(key)) {
-      Assert.notEmpty(gridName);
-      key = "grid_" + BeeUtils.normalize(gridName);
-    }
-    return key;
+  public static String getSupplierKey(String gridName) {
+    Assert.notEmpty(gridName);
+    return WidgetFactory.SupplierKind.GRID.getKey(gridName);
   }
 
   public static void hideColumn(String gridName, String columnName) {
@@ -413,27 +403,14 @@ public final class GridFactory {
     openGrid(gridName, gridInterceptor, gridOptions, PresenterCallback.SHOW_IN_ACTIVE_PANEL);
   }
 
-  public static void openGrid(final String gridName, final GridInterceptor gridInterceptor,
-      final GridOptions gridOptions, PresenterCallback presenterCallback) {
+  public static void openGrid(String gridName, GridInterceptor gridInterceptor,
+      GridOptions gridOptions, PresenterCallback presenterCallback) {
 
-    final String supplierKey = getSupplierKey(gridName, gridInterceptor);
-    final Collection<UiOption> uiOptions = EnumSet.of(UiOption.ROOT);
+    String supplierKey = getSupplierKey(gridName);
+    Collection<UiOption> uiOptions = EnumSet.of(UiOption.ROOT);
 
     if (!WidgetFactory.hasSupplier(supplierKey)) {
-      WidgetSupplier supplier = new WidgetSupplier() {
-        @Override
-        public void create(final Callback<IdentifiableWidget> callback) {
-          createGrid(gridName, supplierKey, gridInterceptor, uiOptions, gridOptions,
-              new PresenterCallback() {
-                @Override
-                public void onCreate(Presenter presenter) {
-                  callback.onSuccess(presenter.getWidget());
-                }
-              });
-        }
-      };
-
-      WidgetFactory.registerSupplier(supplierKey, supplier);
+      registerGridSupplier(supplierKey, gridName, gridInterceptor, uiOptions, gridOptions);
     }
 
     createGrid(gridName, supplierKey, gridInterceptor, uiOptions, gridOptions, presenterCallback);
@@ -448,6 +425,48 @@ public final class GridFactory {
     gridInterceptors.put(BeeUtils.normalize(gridName), interceptor);
   }
 
+  public static WidgetSupplier registerGridSupplier(String key, String gridName,
+      GridInterceptor interceptor) {
+    return registerGridSupplier(key, gridName, interceptor, EnumSet.of(UiOption.ROOT), null);
+  }
+  
+  private static GridInterceptor getInterceptorInstance(GridInterceptor interceptor) {
+    if (interceptor == null) {
+      return null;
+    } else {
+      GridInterceptor instance = interceptor.getInstance();
+      if (instance == null) {
+        return interceptor;
+      } else {
+        return instance;
+      }
+    }
+  }
+
+  public static WidgetSupplier registerGridSupplier(final String key, final String gridName,
+      final GridInterceptor interceptor, final Collection<UiOption> uiOptions,
+      final GridOptions gridOptions) {
+
+    Assert.notEmpty(key);
+    Assert.notEmpty(gridName);
+
+    WidgetSupplier supplier = new WidgetSupplier() {
+      @Override
+      public void create(final Callback<IdentifiableWidget> callback) {
+        createGrid(gridName, key, getInterceptorInstance(interceptor), uiOptions, gridOptions,
+            new PresenterCallback() {
+          @Override
+          public void onCreate(Presenter presenter) {
+            callback.onSuccess(presenter.getWidget());
+          }
+        });
+      }
+    };
+
+    WidgetFactory.registerSupplier(key, supplier);
+    return supplier;
+  }
+
   public static void showGridInfo(String name) {
     if (descriptionCache.isEmpty()) {
       logger.warning("grid description cache is empty");
@@ -458,7 +477,7 @@ public final class GridFactory {
       if (isGridDescriptionCached(name)) {
         GridDescription gridDescription = descriptionCache.get(gridDescriptionKey(name));
         if (gridDescription != null) {
-          Global.showGrid(BeeUtils.joinWords("Grid", name),
+          Global.showTable(BeeUtils.joinWords("Grid", name),
               new ExtendedPropertiesData(gridDescription.getExtendedInfo(), true));
           return;
         } else {
@@ -469,7 +488,7 @@ public final class GridFactory {
       }
     }
 
-    List<Property> info = Lists.newArrayList();
+    List<Property> info = new ArrayList<>();
     for (Map.Entry<String, GridDescription> entry : descriptionCache.entrySet()) {
       GridDescription gridDescription = entry.getValue();
       String cc = (gridDescription == null) ? BeeConst.STRING_MINUS
@@ -477,7 +496,7 @@ public final class GridFactory {
       info.add(new Property(entry.getKey(), cc));
     }
 
-    Global.showGrid("Grids", new PropertiesData(info, "Grid Name", "Column Count"));
+    Global.showTable("Grids", new PropertiesData(info, "Grid Name", "Column Count"));
   }
 
   public static CellGrid simpleGrid(String caption, IsTable<?, ?> table, int containerWidth) {
@@ -510,7 +529,7 @@ public final class GridFactory {
 
     grid.setReadOnly(true);
 
-    grid.estimateHeaderWidths(true);
+    grid.estimateHeaderWidths();
     grid.estimateColumnWidths(table.getRows(), 0, Math.min(r, 50));
 
     grid.setDefaultFlexibility(new Flexibility(1, -1, true));
@@ -564,7 +583,7 @@ public final class GridFactory {
       cachingPolicy = CachingPolicy.NONE;
     } else {
       providerType = BeeUtils.nvl(gridDescription.getDataProvider(), ProviderType.DEFAULT);
-      cachingPolicy = BeeUtils.isFalse(gridDescription.getCacheData()) 
+      cachingPolicy = BeeUtils.isFalse(gridDescription.getCacheData())
           ? CachingPolicy.NONE : CachingPolicy.FULL;
     }
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   xmlns:ui="http://www.butent.com/ui"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="ServiceInvoices" viewName="ServiceInvoices" filter="Kind 1"
   editShowId="true" flexGrow="1"
@@ -9,23 +10,9 @@
   >
   <g:columns>
     <SelectionColumn name="Select" width="20" />
-    <IdColumn name="ID" label="=trdInvoiceId" />
-    <DataColumn name="Date" visible="true" />
-    <DataColumn name="InvoicePrefix" />
-    <DataColumn name="InvoiceNo" />
-    <DataColumn name="CustomerName" label="=trdCustomer" visible="true" />
-    <DataColumn name="PayerName" label="=trdPayer" visible="false" />
-    <DataColumn name="Amount" />
-    <DataColumn name="CurrencyName" />
-    <DataColumn name="Term" />
-    
-    <DataColumn name="PaymentTime" />
-    <DataColumn name="Paid" />
-
-    <DataColumn name="Debt" format="0.00" />
-
-    <DataColumn name="Exported" />
   </g:columns>
+
+  <xi:include href="columns/ServiceInvoice.columns.xml" />
 
   <g:rowStyle>
     <ui:inline>="color:red"</ui:inline>

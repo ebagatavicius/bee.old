@@ -21,6 +21,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -74,12 +75,12 @@ public abstract class Filter implements BeeSerializable, RowFilter {
     if (values.isEmpty()) {
       return null;
     }
+    List<Value> vals = new ArrayList<>();
 
-    CompoundFilter filter = or();
     for (Long value : values) {
-      filter.add(equals(column, value));
+      vals.add(new LongValue(value));
     }
-    return filter;
+    return new ColumnValueFilter(column, vals);
   }
 
   public static Filter anyContains(Collection<String> columns, String value) {

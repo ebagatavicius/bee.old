@@ -36,13 +36,26 @@
           targetRelColumn="User" sourceRelColumn="Role"
           style="width: 400px;" required="true" />
       </row>
-    </Table>
-    
+    </Table>  
+
     <br/>
-    <CheckBox source="MailAssignedTasks" text="=crmMailAssignedTasks" style="margin-left: 10px;" />
-      
-    <br/>
-    <ChildGrid class="flexible" name="UserFeeds" relColumn="User" />
-      
+    <TabbedPages class="flexible">
+      <page>
+        <text>=feeds</text>
+        <ChildGrid class="flexible" name="UserFeeds" relColumn="User" />
+      </page>
+      <page module="Mail">
+        <text>=mailNotify</text>
+        <FlowPanel class="flexBox-vertical">
+          <br />
+          <CheckBox source="MailAssignedTasks" text="=crmMailAssignedTasks" style="margin-left: 10px;" />
+          <br/>
+          <CheckBox source="MailNewAnnouncements" text="=discussMailNewAnnouncements" module="Discussions" style="margin-left: 10px;" />
+          <br/>
+          <CheckBox source="MailNewDiscussions" text="=discussMailNewDiscussions" module="Discussions" style="margin-left: 10px;" />
+          <br/>
+        </FlowPanel>
+      </page>
+    </TabbedPages>     
   </FlowPanel>
 </f:Form>  

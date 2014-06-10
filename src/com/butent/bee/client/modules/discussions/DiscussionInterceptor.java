@@ -518,7 +518,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
           return;
         }
 
-        RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_DISCUSSIONS, data);
+        // RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_DISCUSSIONS, data);
 
         Widget fileWidget = form.getWidgetByName(PROP_FILES);
         if (fileWidget instanceof FileGroup) {
@@ -1230,6 +1230,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
             && DiscussionStatus.in(status, DiscussionStatus.ACTIVE, DiscussionStatus.INACTIVE)
             && (isAdmin(adminLogin) || allowDelOwnComments);
       case CREATE:
+      case CREATE_MAIL:
         return false;
       case DEACTIVATE:
         return false;

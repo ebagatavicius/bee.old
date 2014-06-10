@@ -12,6 +12,8 @@ public interface IsColumn extends HasCustomProperties, HasPrecision, HasScale {
 
   IsColumn copy();
 
+  String getEnumKey();
+  
   String getId();
 
   String getLabel();
@@ -23,6 +25,8 @@ public interface IsColumn extends HasCustomProperties, HasPrecision, HasScale {
   boolean isCharacter();
 
   boolean isText();
+  
+  void setEnumKey(String enumKey);
   
   void setId(String id);
 

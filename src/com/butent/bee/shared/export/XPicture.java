@@ -18,6 +18,10 @@ public final class XPicture implements BeeSerializable {
 
   private static BeeLogger logger = LogUtils.getLogger(XPicture.class);
   
+  public enum Layout {
+    RESIZE, REPAEAT
+  }
+  
   public enum Type {
     DIB("dib"),
     EMF("emf"),

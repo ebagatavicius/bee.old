@@ -17,6 +17,7 @@ import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.InputText;
 import com.butent.bee.client.widget.ListBox;
 import com.butent.bee.shared.Assert;
@@ -49,6 +50,11 @@ public class ImportPropertiesGrid extends AbstractGridInterceptor {
     return false;
   }
 
+  @Override
+  public GridInterceptor getInstance() {
+    return new ImportPropertiesGrid(form);
+  }
+  
   @Override
   public AbstractCellRenderer getRenderer(final String columnName,
       List<? extends IsColumn> dataColumns, ColumnDescription columnDescription,

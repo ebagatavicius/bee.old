@@ -16,16 +16,37 @@ import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InlineLabel;
 import com.butent.bee.shared.font.FontAwesome;
+import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.logging.BeeLogger;
+import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.ec.EcItem;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.NameUtils;
 
 public class ItemPicture extends Flow {
 
+  private static final BeeLogger logger = LogUtils.getLogger(ItemPicture.class);
+  
   private static final String STYLE_PREFIX = EcStyles.name("ItemPicture-");
+
+  private static final String STYLE_CONTAINER = STYLE_PREFIX + "container";
+  private static final String STYLE_HAS_PICTURE = STYLE_PREFIX + "has-picture";
+  private static final String STYLE_WRAPPER = STYLE_PREFIX + "wrapper";
+
+  private static final String STYLE_MORE = STYLE_PREFIX + "more";
+  private static final String STYLE_MORE_PLAY = STYLE_PREFIX + "more_play";
+  private static final String STYLE_MORE_COUNT = STYLE_PREFIX + "more-count";
+
+  private static final String STYLE_SLIDES = STYLE_PREFIX + "slides";
+  private static final String STYLE_OPEN = STYLE_PREFIX + "open";
+  
+  private static final String STYLE_FEATURED = STYLE_PREFIX + "featured";
+  private static final String STYLE_NOVELTY = STYLE_PREFIX + "novelty";
   
   private final String itemCaption;
 
   public ItemPicture(String itemCaption) {
-    super(STYLE_PREFIX + "container");
+    super(STYLE_CONTAINER);
     this.itemCaption = itemCaption;
   }
 
@@ -37,27 +58,43 @@ public class ItemPicture extends Flow {
   public String getItemCaption() {
     return itemCaption;
   }
+  
+  public void setFeaturedOrNovelty(EcItem item) {
+    if (item != null) {
+      if (item.isFeatured()) {
+        CustomDiv banner = new CustomDiv(STYLE_FEATURED);
+        banner.setText(Localized.getConstants().ecFeaturedBanner());
+        add(banner);
+        
+      } else if (item.isNovelty()) {
+        CustomDiv banner = new CustomDiv(STYLE_NOVELTY);
+        banner.setText(Localized.getConstants().ecNoveltyBanner());
+        add(banner);
+      }
+    }
+  }
 
   public void setPictures(final ImmutableList<String> pictures) {
     if (!BeeUtils.isEmpty(pictures)) {
-      if (!isEmpty()) {
-        clear();
+      if (getElement().hasClassName(STYLE_HAS_PICTURE)) {
+        logger.warning(NameUtils.getName(this), "already contains picture");
+        return;
       }
-      addStyleName(STYLE_PREFIX + "notEmpty");
+      addStyleName(STYLE_HAS_PICTURE);
 
-      CustomDiv wrapper = new CustomDiv(STYLE_PREFIX + "wrapper");
+      CustomDiv wrapper = new CustomDiv(STYLE_WRAPPER);
       StyleUtils.setBackgroundImage(wrapper, pictures.get(0));
       add(wrapper);
 
       if (pictures.size() > 1) {
-        Flow more = new Flow(STYLE_PREFIX + "more");
+        Flow more = new Flow(STYLE_MORE);
         
         FaLabel play = new FaLabel(FontAwesome.PLAY, true);
-        play.addStyleName(STYLE_PREFIX + "more-play");
+        play.addStyleName(STYLE_MORE_PLAY);
         more.add(play);
         
         InlineLabel count = new InlineLabel(BeeUtils.toString(pictures.size() - 1));
-        count.addStyleName(STYLE_PREFIX + "more-count");
+        count.addStyleName(STYLE_MORE_COUNT);
         more.add(count);
 
         more.addClickHandler(new ClickHandler() {
@@ -68,7 +105,7 @@ public class ItemPicture extends Flow {
             SlideDeck.create(pictures, new Callback<SlideDeck>() {
               @Override
               public void onSuccess(SlideDeck result) {
-                DialogBox dialog = DialogBox.create(getItemCaption(), STYLE_PREFIX + "slides");
+                DialogBox dialog = DialogBox.create(getItemCaption(), STYLE_SLIDES);
                 StyleUtils.setWidth(dialog.getHeader(), result.getWidth());
 
                 dialog.setWidget(result);
@@ -90,7 +127,7 @@ public class ItemPicture extends Flow {
         @Override
         public void onClick(ClickEvent event) {
           Image image = new Image(pictures.get(0));
-          image.addStyleName(STYLE_PREFIX + "-open");
+          image.addStyleName(STYLE_OPEN);
 
           Global.showModalWidget(image, getElement());
         }

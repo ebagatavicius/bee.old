@@ -15,6 +15,7 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -81,12 +82,10 @@ public class DialogBox extends Popup implements Printable {
 
   public void addAction(Action action, Widget widget) {
     if (widget != null) {
-      widget.addStyleName(STYLE_ACTION);
       if (action != null && BeeUtils.isEmpty(widget.getTitle())) {
         widget.setTitle(action.getCaption());
       }
-
-      header.add(widget);
+      insertAction(BeeConst.UNDEF, widget);
     }
   }
 
@@ -116,6 +115,18 @@ public class DialogBox extends Popup implements Printable {
   @Override
   public Element getPrintElement() {
     return container.getElement();
+  }
+
+  public void insertAction(int beforeIndex, Widget widget) {
+    if (widget != null) {
+      widget.addStyleName(STYLE_ACTION);
+
+      if (beforeIndex >= 0 && beforeIndex < header.getWidgetCount()) {
+        header.insert(widget, beforeIndex);
+      } else {
+        header.add(widget);
+      }
+    }
   }
 
   @Override

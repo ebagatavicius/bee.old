@@ -16,6 +16,7 @@ import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import com.butent.bee.server.Config;
 import com.butent.bee.server.DataSourceBean;
 import com.butent.bee.server.InitializationBean;
+import com.butent.bee.server.data.BeeTable;
 import com.butent.bee.server.data.BeeTable.BeeField;
 import com.butent.bee.server.data.BeeTable.BeeRelation;
 import com.butent.bee.server.data.BeeView;
@@ -32,6 +33,7 @@ import com.butent.bee.server.modules.ModuleHolderBean;
 import com.butent.bee.server.modules.ec.TecDocBean;
 import com.butent.bee.server.modules.mail.MailModuleBean;
 import com.butent.bee.server.news.NewsBean;
+import com.butent.bee.server.sql.IsExpression;
 import com.butent.bee.server.sql.SqlDelete;
 import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
@@ -47,6 +49,7 @@ import com.butent.bee.shared.Resource;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
+import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.RowChildren;
@@ -62,10 +65,11 @@ import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsObjectType;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsState;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.mail.MailConstants;
+import com.butent.bee.shared.rights.RightsObjectType;
+import com.butent.bee.shared.rights.RightsState;
+import com.butent.bee.shared.rights.RightsUtils;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.DecoratorConstants;
@@ -78,6 +82,7 @@ import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
+import com.butent.bee.shared.utils.Wildcards;
 import com.butent.bee.shared.utils.XmlHelper;
 
 import org.w3c.dom.Document;
@@ -88,9 +93,12 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.ejb.EJB;
@@ -241,6 +249,9 @@ public class UiServiceBean {
           BeeUtils.toLongOrNull(reqInfo.getParameter(COL_ROLE)),
           Codec.deserializeMap(reqInfo.getParameter(COL_OBJECT)));
 
+    } else if (BeeUtils.same(svc, Service.SET_ROW_RIGHTS)) {
+      response = setRowRights(reqInfo);
+      
     } else if (BeeUtils.same(svc, Service.IMPORT_CSV_COMPANIES)) {
       response = importCSVCompanies(reqInfo);
     } else {
@@ -261,7 +272,7 @@ public class UiServiceBean {
     SimpleRowSet data = qs.getData(query);
 
     if (!DataUtils.isEmpty(data)) {
-      List<String> result = Lists.newArrayList();
+      List<String> result = new ArrayList<>();
 
       ListMultimap<String, String> map = ArrayListMultimap.create();
       for (SimpleRow row : data) {
@@ -345,6 +356,10 @@ public class UiServiceBean {
     return qs.getViewData(VIEW_REPORT_SETTINGS, usr.getCurrentUserFilter(COL_RS_USER));
   }
 
+  public BeeRowSet getWorkspaces() {
+    return qs.getViewData(VIEW_WORKSPACES, usr.getCurrentUserFilter(COL_USER));
+  }
+  
   private void buildDbList(String rootTable, Set<String> tables, boolean initial) {
     boolean recurse = BeeUtils.isSuffix(rootTable, '*');
     String root = BeeUtils.normalize(BeeUtils.removeSuffix(rootTable, '*'));
@@ -372,15 +387,15 @@ public class UiServiceBean {
 
   private ResponseObject buildDbSchema(Iterable<String> roots) {
     XmlSqlDesigner designer = new XmlSqlDesigner();
-    designer.types = Lists.newArrayList();
-    designer.tables = Lists.newArrayList();
+    designer.types = new ArrayList<>();
+    designer.tables = new ArrayList<>();
 
     for (int i = 0; i < 2; i++) {
       boolean extMode = i > 0;
       DataTypeGroup typeGroup = new DataTypeGroup();
       typeGroup.label = BeeUtils.joinWords("SQL", extMode ? "extended" : "", "types");
       typeGroup.color = extMode ? "rgb(0,255,0)" : "rgb(255,255,255)";
-      typeGroup.types = Lists.newArrayList();
+      typeGroup.types = new ArrayList<>();
 
       for (SqlDataType type : SqlDataType.values()) {
         String typeName = type.name();
@@ -402,7 +417,7 @@ public class UiServiceBean {
 
     designer.types.add(typeGroup);
 
-    Set<String> tables = Sets.newHashSet();
+    Set<String> tables = new HashSet<>();
     Iterable<String> r;
 
     if (roots == null || !roots.iterator().hasNext()) {
@@ -417,13 +432,10 @@ public class UiServiceBean {
       XmlTable xmlTable = sys.getXmlTable(sys.getTable(tableName).getModule(), tableName);
 
       if (xmlTable != null) {
-        Collection<XmlField> fields = Lists.newArrayList();
+        Collection<XmlField> fields = new ArrayList<>();
 
         if (!BeeUtils.isEmpty(xmlTable.fields)) {
           fields.addAll(xmlTable.fields);
-        }
-        if (!BeeUtils.isEmpty(xmlTable.extFields)) {
-          fields.addAll(xmlTable.extFields);
         }
         for (XmlField xmlField : fields) {
           if (xmlField instanceof XmlRelation) {
@@ -548,7 +560,7 @@ public class UiServiceBean {
     } else if (rowCount <= 0 || rowCount > 100000) {
       response = ResponseObject.error("Invalid row count:", rowCount);
     } else {
-      Set<String> cache = Sets.newHashSet();
+      Set<String> cache = new HashSet<>();
       response = deb.generateData(tableName, rowCount, refCount, childCount, cache);
     }
     return response;
@@ -561,7 +573,7 @@ public class UiServiceBean {
     }
 
     List<String> viewNames = NameUtils.toList(viewList);
-    List<BeeRowSet> result = Lists.newArrayList();
+    List<BeeRowSet> result = new ArrayList<>();
 
     for (String viewName : viewNames) {
       BeeRowSet rs = qs.getViewData(viewName);
@@ -637,7 +649,7 @@ public class UiServiceBean {
 
   private ResponseObject getTableInfo(RequestInfo reqInfo) {
     String tableName = reqInfo.getParameter(0);
-    List<ExtendedProperty> info = Lists.newArrayList();
+    List<ExtendedProperty> info = new ArrayList<>();
 
     if (sys.isTable(tableName)) {
       info.addAll(sys.getTableInfo(tableName));
@@ -725,6 +737,8 @@ public class UiServiceBean {
     String getSize = reqInfo.getParameter(Service.VAR_VIEW_SIZE);
     String rowId = reqInfo.getParameter(Service.VAR_VIEW_ROW_ID);
 
+    String rights = reqInfo.getParameter(Service.VAR_RIGHTS);
+
     Filter filter = null;
     if (!BeeUtils.isEmpty(rowId)) {
       filter = Filter.compareId(BeeUtils.toLong(rowId));
@@ -748,12 +762,17 @@ public class UiServiceBean {
       res.setTableProperty(Service.VAR_VIEW_SIZE,
           BeeUtils.toString(Math.max(cnt, res.getNumberOfRows())));
     }
+
+    if (!BeeUtils.isEmpty(rights) && !DataUtils.isEmpty(res)) {
+      getViewRights(res, rights);
+    }
+
     return ResponseObject.response(res);
   }
 
   private ResponseObject getViewInfo(RequestInfo reqInfo) {
     String viewName = reqInfo.getParameter(0);
-    List<ExtendedProperty> info = Lists.newArrayList();
+    List<ExtendedProperty> info = new ArrayList<>();
 
     if (!BeeUtils.isEmpty(viewName)) {
       if (sys.isView(viewName)) {
@@ -767,6 +786,70 @@ public class UiServiceBean {
       }
     }
     return ResponseObject.collection(info, ExtendedProperty.class);
+  }
+
+  private void getViewRights(BeeRowSet rowSet, String queryStates) {
+    BeeView view = sys.getView(rowSet.getViewName());
+    String tableName = view.getSourceName();
+    String idName = view.getSourceIdName();
+
+    BeeTable table = sys.getTable(tableName);
+
+    Set<RightsState> states = table.getStates();
+    if (!BeeUtils.isEmpty(queryStates) && !Wildcards.isDefaultAny(queryStates)) {
+      states.retainAll(EnumUtils.parseIndexSet(RightsState.class, queryStates));
+    }
+
+    if (states.isEmpty()) {
+      logger.warning(tableName, queryStates, "states not defined");
+      return;
+    }
+
+    Set<RightsState> existingStates = new HashSet<>();
+
+    List<Long> roles = new ArrayList<>();
+    roles.add(0L);
+    roles.addAll(usr.getRoles());
+
+    SqlSelect query = new SqlSelect()
+        .addFields(tableName, idName)
+        .addFrom(tableName)
+        .setWhere(SqlUtils.inList(tableName, idName, rowSet.getRowIds()));
+
+    for (RightsState state : states) {
+      String stateAlias = table.joinState(query, tableName, state);
+
+      if (!BeeUtils.isEmpty(stateAlias)) {
+        for (Long role : roles) {
+          IsExpression xpr = SqlUtils.sqlIf(table.checkState(stateAlias, state, role),
+              true, false);
+          query.addExpr(xpr, RightsUtils.getAlias(state, role));
+        }
+
+        existingStates.add(state);
+      }
+    }
+
+    SimpleRowSet rs = existingStates.isEmpty() ? null : qs.getData(query);
+    boolean value;
+
+    for (BeeRow row : rowSet) {
+      String rowKey = BeeUtils.toString(row.getId());
+
+      for (RightsState state : states) {
+        for (Long role : roles) {
+          String alias = RightsUtils.getAlias(state, role);
+
+          if (existingStates.contains(state)) {
+            value = BeeUtils.toBoolean(rs.getValueByKey(idName, rowKey, alias));
+          } else {
+            value = state.isChecked();
+          }
+          
+          row.setProperty(alias, Codec.pack(value));
+        }
+      }
+    }
   }
 
   private ResponseObject getViewSize(RequestInfo reqInfo) {
@@ -1018,7 +1101,7 @@ public class UiServiceBean {
 
     } else if (BeeUtils.startsSame(cmd, "check")) {
       String err = null;
-      List<String> tbls = Lists.newArrayList();
+      List<String> tbls = new ArrayList<>();
       int idx = -1;
 
       for (String w : NameUtils.NAME_SPLITTER.split(cmd)) {
@@ -1047,24 +1130,6 @@ public class UiServiceBean {
       } else {
         response.addError(err);
       }
-    } else if (BeeUtils.startsSame(cmd, "setState")) {
-      String[] arr = cmd.split(" ", 5);
-      RightsState state = EnumUtils.getEnumByName(RightsState.class, arr[1]);
-      String tbl = arr[2];
-      long id = BeeUtils.toLong(arr[3]);
-      long[] bits = null;
-
-      if (arr.length > 4) {
-        String[] rArr = arr[4].split(" ");
-        bits = new long[rArr.length];
-
-        for (int i = 0; i < rArr.length; i++) {
-          bits[i] = BeeUtils.toLong(rArr[i]);
-        }
-      }
-      deb.setState(tbl, state, id, bits);
-      response.addInfo("Toggle OK");
-
     } else if (BeeUtils.startsSame(cmd, "schema")) {
       String schema = cmd.substring("schema".length()).trim();
 
@@ -1096,6 +1161,42 @@ public class UiServiceBean {
       response.addError("Rebuild what?");
     }
     return response;
+  }
+  
+  private ResponseObject setRowRights(RequestInfo reqInfo) {
+    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
+    if (BeeUtils.isEmpty(viewName)) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(), Service.VAR_VIEW_NAME);
+    }
+    
+    if (!sys.isView(viewName)) {
+      return ResponseObject.error(reqInfo.getService(), viewName, "not a view");
+    }
+    
+    Long id = BeeUtils.toLongOrNull(reqInfo.getParameter(Service.VAR_ID));
+    if (!DataUtils.isId(id)) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(), Service.VAR_ID);
+    }
+    
+    Long role = BeeUtils.toLongOrNull(reqInfo.getParameter(COL_ROLE));
+    if (!DataUtils.isId(role) && !Objects.equals(role, 0L)) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(), COL_ROLE);
+    }
+    
+    RightsState state = EnumUtils.getEnumByIndex(RightsState.class,
+        reqInfo.getParameter(COL_STATE));
+    if (state == null) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(), COL_STATE);
+    }
+
+    boolean value = Codec.unpack(reqInfo.getParameter(Service.VAR_VALUE));
+    
+    BeeView view = sys.getView(viewName);
+    String tblName = view.getSourceName();
+    
+    deb.setState(tblName, state, id, role, value);
+    
+    return ResponseObject.emptyResponse();
   }
 
   private ResponseObject switchDsn(String dsn) {
@@ -1134,13 +1235,13 @@ public class UiServiceBean {
       return ResponseObject.error("Columns does not match values");
     }
     BeeRowSet rs = qs.getViewData(viewName, Filter.restore(where), null, Lists.newArrayList(cols));
-    List<BeeColumn> columns = Lists.newArrayList();
+    List<BeeColumn> columns = new ArrayList<>();
 
     for (String col : cols) {
       columns.add(rs.getColumn(col));
     }
     for (int i = 0; i < rs.getNumberOfRows(); i++) {
-      List<String> oldValues = Lists.newArrayList();
+      List<String> oldValues = new ArrayList<>();
 
       for (String col : cols) {
         oldValues.add(rs.getString(i, col));
@@ -1229,7 +1330,7 @@ public class UiServiceBean {
       return ResponseObject.parameterNotFound(Service.VAR_CHILDREN);
     }
 
-    Collection<RowChildren> children = Lists.newArrayList();
+    Collection<RowChildren> children = new ArrayList<>();
 
     String[] arr = Codec.beeDeserializeCollection(serialized);
     if (!ArrayUtils.isEmpty(arr)) {

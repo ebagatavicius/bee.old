@@ -202,6 +202,13 @@ public class DispatcherBean {
           case USERS:
             data.put(component.key(), userService.getAllUserData());
             break;
+            
+          case WORKSPACES:
+            BeeRowSet workspaces = uiService.getWorkspaces();
+            if (!DataUtils.isEmpty(workspaces)) {
+              data.put(component.key(), workspaces);
+            }
+            break;
         }
 
         logger.debug(reqInfo.getService(), component, TimeUtils.elapsedMillis(millis));

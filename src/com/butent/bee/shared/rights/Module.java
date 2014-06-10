@@ -36,7 +36,7 @@ public enum Module implements HasLocalizedCaption {
   TASKS {
     @Override
     public String getCaption(LocalizableConstants constants) {
-      return constants.tasks();
+      return constants.crmTasks();
     }
   },
   DISCUSSIONS {

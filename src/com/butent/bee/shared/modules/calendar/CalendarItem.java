@@ -90,21 +90,27 @@ public abstract class CalendarItem implements Comparable<CalendarItem> {
   
   public abstract String getTitleTemplate();
   
+  public abstract boolean isEditable(Long userId);
+  
   public abstract boolean isMovable(Long userId);
   
   public boolean isMultiDay() {
     return TimeUtils.isMore(getEndTime(), TimeUtils.startOfDay(getStartTime(), 1));
   }
-  
+
   public boolean isPartial() {
     return getPartStart() != null;
   }
+  
+  public abstract boolean isRemovable(Long userId);
 
   public abstract boolean isResizable(Long userId);
-  
+
   public boolean isValid() {
     return getStartTime() != null && getEndTime() != null && getStartMillis() < getEndMillis();
   }
+
+  public abstract boolean isVisible(Long userId);
   
   public boolean isWhole() {
     return getPartStart() == null;

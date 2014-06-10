@@ -2,9 +2,8 @@
 <View xmlns="http://www.butent.com/view"
       xmlns:x="http://www.butent.com/expression"
 
-  name="ServiceInvoices" source="Sales"
-  caption="=svcInvoices"
-  editForm="ServiceInvoice"
+  name="ServiceInvoices" source="Sales" caption="=svcInvoices"
+  editForm="ServiceInvoice" rowCaption="Date InvoicePrefix InvoiceNo CustomerName"
   >
   <Columns>
     <SimpleColumn name="Date" />

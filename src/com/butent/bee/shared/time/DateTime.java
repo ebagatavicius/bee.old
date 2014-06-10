@@ -574,6 +574,7 @@ public class DateTime extends AbstractDate implements Comparable<DateTime> {
     return sb.toString();
   }
 
+  @Override
   public String toTimeStamp() {
     return TimeUtils.yearToString(getUtcYear()) + TimeUtils.monthToString(getUtcMonth())
         + TimeUtils.dayOfMonthToString(getUtcDom()) + TimeUtils.padTwo(getUtcHour())

@@ -46,7 +46,7 @@ public class NewRowPresenter extends AbstractPresenter implements ParentRowCreat
     formHeader.asWidget().addStyleName(STYLE_HEADER);
 
     formHeader.create(caption, false, false, null, null, EnumSet.of(Action.SAVE, Action.CLOSE),
-        EnumSet.of(Action.PRINT), Action.NO_ACTIONS);
+        Action.NO_ACTIONS, Action.NO_ACTIONS);
     formHeader.addCaptionStyle(STYLE_CAPTION);
 
     return formHeader;

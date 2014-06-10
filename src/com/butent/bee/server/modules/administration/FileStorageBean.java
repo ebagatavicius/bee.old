@@ -61,7 +61,6 @@ public class FileStorageBean {
   @EJB
   SystemBean sys;
 
-  private final Object lock = new Object();
   private File repositoryDir;
 
   public boolean deletePhoto(String fileName) {
@@ -228,74 +227,72 @@ public class FileStorageBean {
     }
     Long id = null;
 
-    synchronized (lock) {
-      String hash = Codec.toHex(md.digest());
-      String idName = sys.getIdName(TBL_FILES);
+    String hash = Codec.toHex(md.digest());
+    String idName = sys.getIdName(TBL_FILES);
 
-      SimpleRow data = qs.getRow(new SqlSelect()
-          .addFields(TBL_FILES, COL_FILE_REPO, idName)
-          .addFrom(TBL_FILES)
-          .setWhere(SqlUtils.equals(TBL_FILES, COL_FILE_HASH, hash)));
+    SimpleRow data = qs.getRow(new SqlSelect()
+        .addFields(TBL_FILES, COL_FILE_REPO, idName)
+        .addFrom(TBL_FILES)
+        .setWhere(SqlUtils.equals(TBL_FILES, COL_FILE_HASH, hash)));
 
-      boolean exists = data != null;
+    boolean exists = data != null;
 
-      if (exists) {
-        id = data.getLong(idName);
-        exists = BeeUtils.isEmpty(data.getValue(COL_FILE_REPO));
+    if (exists) {
+      id = data.getLong(idName);
+      exists = BeeUtils.isEmpty(data.getValue(COL_FILE_REPO));
 
-        if (!exists) {
-          exists = new File(data.getValue(COL_FILE_REPO)).exists();
-        }
-      }
       if (!exists) {
-        String repo = null;
+        exists = new File(data.getValue(COL_FILE_REPO)).exists();
+      }
+    }
+    if (!exists) {
+      String repo = null;
 
-        if (storeAsFile) {
-          File target = new File(tmp.getParentFile(), hash);
-          repo = target.getPath();
+      if (storeAsFile) {
+        File target = new File(tmp.getParentFile(), hash);
+        repo = target.getPath();
 
-          if (target.exists()) {
-            logger.warning("File already existed:", repo);
-            target.delete();
-          }
-          if (!tmp.renameTo(target)) {
-            throw new BeeRuntimeException(BeeUtils.joinWords("Error renaming file:",
-                tmp.getPath(), "to:", repo));
-          }
+        if (target.exists()) {
+          logger.warning("File already existed:", repo);
+          target.delete();
         }
-        if (DataUtils.isId(id)) {
-          qs.updateData(new SqlUpdate(TBL_FILES)
-              .addConstant(COL_FILE_REPO, repo)
-              .setWhere(SqlUtils.equals(TBL_FILES, idName, id)));
-        } else {
-          id = qs.insertData(new SqlInsert(TBL_FILES)
-              .addConstant(COL_FILE_HASH, hash)
-              .addConstant(COL_FILE_REPO, repo)
-              .addConstant(COL_FILE_NAME, name)
-              .addConstant(COL_FILE_SIZE, size)
-              .addConstant(COL_FILE_TYPE, mimeType));
-        }
-        if (!storeAsFile) {
-          buffer = new byte[0x100000];
-          in = new FileInputStream(tmp);
-
-          try {
-            while ((bytesRead = in.read(buffer)) > 0) {
-              long recId = qs.insertData(new SqlInsert(TBL_FILE_PARTS)
-                  .addConstant(COL_FILE, id));
-
-              qs.updateBlob(TBL_FILE_PARTS, recId, COL_FILE_PART, new ByteArrayInputStream(buffer));
-            }
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          } finally {
-            in.close();
-          }
+        if (!tmp.renameTo(target)) {
+          throw new BeeRuntimeException(BeeUtils.joinWords("Error renaming file:",
+              tmp.getPath(), "to:", repo));
         }
       }
-      if (tmp.exists()) {
-        tmp.delete();
+      if (DataUtils.isId(id)) {
+        qs.updateData(new SqlUpdate(TBL_FILES)
+            .addConstant(COL_FILE_REPO, repo)
+            .setWhere(SqlUtils.equals(TBL_FILES, idName, id)));
+      } else {
+        id = qs.insertData(new SqlInsert(TBL_FILES)
+            .addConstant(COL_FILE_HASH, hash)
+            .addConstant(COL_FILE_REPO, repo)
+            .addConstant(COL_FILE_NAME, name)
+            .addConstant(COL_FILE_SIZE, size)
+            .addConstant(COL_FILE_TYPE, mimeType));
       }
+      if (!storeAsFile) {
+        buffer = new byte[0x100000];
+        in = new FileInputStream(tmp);
+
+        try {
+          while ((bytesRead = in.read(buffer)) > 0) {
+            long recId = qs.insertData(new SqlInsert(TBL_FILE_PARTS)
+                .addConstant(COL_FILE, id));
+
+            qs.updateBlob(TBL_FILE_PARTS, recId, COL_FILE_PART, new ByteArrayInputStream(buffer));
+          }
+        } catch (SQLException e) {
+          throw new RuntimeException(e);
+        } finally {
+          in.close();
+        }
+      }
+    }
+    if (tmp.exists()) {
+      tmp.delete();
     }
     return id;
   }

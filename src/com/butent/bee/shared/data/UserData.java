@@ -11,11 +11,11 @@ import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsObjectType;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsState;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.RegulatedWidget;
+import com.butent.bee.shared.rights.RightsObjectType;
+import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.rights.RightsUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -429,8 +429,8 @@ public class UserData implements BeeSerializable, HasInfo {
       checked = true;
       Collection<String> objects = rights.get(state, type);
 
-      for (String part : RightsUtils.SPLITTER.split(object)) {
-        obj = RightsUtils.JOINER.join(obj, part);
+      for (String part : RightsUtils.NAME_SPLITTER.split(object)) {
+        obj = RightsUtils.NAME_JOINER.join(obj, part);
 
         if (objects.contains(obj) == state.isChecked()) {
           checked = false;

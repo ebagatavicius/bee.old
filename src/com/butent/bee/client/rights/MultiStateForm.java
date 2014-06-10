@@ -30,8 +30,8 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsState;
 import com.butent.bee.shared.rights.ModuleAndSub;
+import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -509,9 +509,6 @@ abstract class MultiStateForm extends RightsForm {
   }
 
   private Widget createStateToggle(RightsState state) {
-    Toggle toggle = createToggle(FontAwesome.SQUARE_O, FontAwesome.CHECK_SQUARE_O,
-        STYLE_STATE_TOGGLE);
-
     Set<String> names = getLeaves().keySet();
     boolean checked = true;
 
@@ -522,9 +519,8 @@ abstract class MultiStateForm extends RightsForm {
       }
     }
 
-    if (checked) {
-      toggle.setChecked(true);
-    }
+    Toggle toggle = new Toggle(FontAwesome.SQUARE_O, FontAwesome.CHECK_SQUARE_O,
+        STYLE_STATE_TOGGLE, checked);
 
     DomUtils.setDataProperty(toggle.getElement(), DATA_KEY_STATE, state.ordinal());
     setDataType(toggle, DATA_TYPE_STATE_TOGGLE);

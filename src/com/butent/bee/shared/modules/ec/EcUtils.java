@@ -30,7 +30,7 @@ public final class EcUtils {
       return BeeConst.STRING_MINUS + formatCents(-cents);
     }
   }
-  
+
   public static String formatPerson(String firstName, String lastName, String company) {
     return BeeUtils.joinItems(BeeUtils.joinWords(firstName, lastName), company);
   }
@@ -52,7 +52,7 @@ public final class EcUtils {
       return yearFrom.toString();
     }
   }
-  
+
   public static String imageUrl(String name) {
     return Paths.buildPath(Paths.IMAGE_DIR, IMAGE_DIR, name);
   }
@@ -73,6 +73,10 @@ public final class EcUtils {
     } else {
       return year <= yearFrom;
     }
+  }
+
+  public static String normalizeCode(String code) {
+    return code.replaceAll("[^A-Za-z0-9]", BeeConst.STRING_EMPTY).toUpperCase();
   }
 
   public static Integer normalizeYear(Integer year) {
@@ -112,7 +116,7 @@ public final class EcUtils {
 
     return Range.closed(yearFrom, Math.max(yearFrom, yearTo));
   }
-  
+
   private EcUtils() {
   }
 }

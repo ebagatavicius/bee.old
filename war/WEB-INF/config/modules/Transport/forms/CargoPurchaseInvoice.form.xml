@@ -56,7 +56,7 @@
 
     <TabbedPages class="flexible">
       <page>
-        <text>=trProductsServices</text>
+        <text>=productsServices</text>
         <ChildGrid name="PurchaseItems" relColumn="Purchase" />
       </page>
       <page>

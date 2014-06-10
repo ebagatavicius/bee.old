@@ -375,6 +375,9 @@
   cursor: pointer;
 }
 
+.bee-Form-disabled .bee-cal-ColorBar-panel {
+  display: none;
+}
 .bee-cal-ColorBar-item {
   margin-right: 8px;
 }

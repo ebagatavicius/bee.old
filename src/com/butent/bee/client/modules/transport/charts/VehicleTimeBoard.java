@@ -26,6 +26,8 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.modules.transport.charts.Filterable.FilterType;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.timeboard.TimeBoardHelper;
+import com.butent.bee.client.timeboard.TimeBoardRowLayout;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.widget.Label;
@@ -142,14 +144,14 @@ abstract class VehicleTimeBoard extends ChartBase {
 
   protected void addInfoWidget(HasWidgets panel, IdentifiableWidget widget,
       int firstRow, int lastRow) {
-    Rectangle rectangle = ChartHelper.getRectangle(getNumberWidth(), getInfoWidth(),
+    Rectangle rectangle = TimeBoardHelper.getRectangle(getNumberWidth(), getInfoWidth(),
         firstRow, lastRow, getRowHeight());
 
     Edges margins = new Edges();
-    margins.setRight(ChartHelper.DEFAULT_MOVER_WIDTH);
-    margins.setBottom(ChartHelper.ROW_SEPARATOR_HEIGHT);
+    margins.setRight(TimeBoardHelper.DEFAULT_MOVER_WIDTH);
+    margins.setBottom(TimeBoardHelper.ROW_SEPARATOR_HEIGHT);
 
-    ChartHelper.apply(widget.asWidget(), rectangle, margins);
+    TimeBoardHelper.apply(widget.asWidget(), rectangle, margins);
 
     panel.add(widget.asWidget());
 
@@ -434,7 +436,7 @@ abstract class VehicleTimeBoard extends ChartBase {
       }
     }
 
-    setSeparateCargo(ChartHelper.getBoolean(getSettings(), getSeparateCargoColumnName()));
+    setSeparateCargo(TimeBoardHelper.getBoolean(getSettings(), getSeparateCargoColumnName()));
   }
 
   protected boolean isInfoColumnVisible() {
@@ -464,12 +466,12 @@ abstract class VehicleTimeBoard extends ChartBase {
 
   @Override
   protected void prepareChart(Size canvasSize) {
-    setNumberWidth(ChartHelper.getPixels(getSettings(), getNumberWidthColumnName(), 80,
-        ChartHelper.DEFAULT_MOVER_WIDTH + 1, canvasSize.getWidth() / 3));
+    setNumberWidth(TimeBoardHelper.getPixels(getSettings(), getNumberWidthColumnName(), 80,
+        TimeBoardHelper.DEFAULT_MOVER_WIDTH + 1, canvasSize.getWidth() / 3));
 
     if (isInfoColumnVisible()) {
-      setInfoWidth(ChartHelper.getPixels(getSettings(), getInfoWidthColumnName(), 120,
-          ChartHelper.DEFAULT_MOVER_WIDTH + 1, canvasSize.getWidth() / 3));
+      setInfoWidth(TimeBoardHelper.getPixels(getSettings(), getInfoWidthColumnName(), 120,
+          TimeBoardHelper.DEFAULT_MOVER_WIDTH + 1, canvasSize.getWidth() / 3));
     } else {
       setInfoWidth(0);
     }
@@ -477,10 +479,10 @@ abstract class VehicleTimeBoard extends ChartBase {
     setChartLeft(getNumberWidth() + getInfoWidth());
     setChartWidth(canvasSize.getWidth() - getChartLeft() - getChartRight());
 
-    setDayColumnWidth(ChartHelper.getPixels(getSettings(), getDayWidthColumnName(), 20,
+    setDayColumnWidth(TimeBoardHelper.getPixels(getSettings(), getDayWidthColumnName(), 20,
         1, getChartWidth()));
 
-    boolean sc = ChartHelper.getBoolean(getSettings(), getSeparateCargoColumnName());
+    boolean sc = TimeBoardHelper.getBoolean(getSettings(), getSeparateCargoColumnName());
     if (separateCargo() != sc) {
       setSeparateCargo(sc);
       updateMaxRange();
@@ -628,9 +630,9 @@ abstract class VehicleTimeBoard extends ChartBase {
   protected void renderContent(ComplexPanel panel) {
     renderContentInit();
 
-    List<ChartRowLayout> vehicleLayout = doLayout();
+    List<TimeBoardRowLayout> vehicleLayout = doLayout();
 
-    int rc = ChartRowLayout.countRows(vehicleLayout, 1);
+    int rc = TimeBoardRowLayout.countRows(vehicleLayout, 1);
     initContent(panel, rc);
 
     if (vehicleLayout.isEmpty()) {
@@ -639,17 +641,17 @@ abstract class VehicleTimeBoard extends ChartBase {
 
     int calendarWidth = getCalendarWidth();
 
-    Double opacity = ChartHelper.getOpacity(getSettings(), getItemOpacityColumnName());
+    Double opacity = TimeBoardHelper.getOpacity(getSettings(), getItemOpacityColumnName());
 
     Edges margins = new Edges();
-    margins.setBottom(ChartHelper.ROW_SEPARATOR_HEIGHT);
+    margins.setBottom(TimeBoardHelper.ROW_SEPARATOR_HEIGHT);
 
     Widget offWidget;
     Widget itemWidget;
     Widget overlapWidget;
 
     int rowIndex = 0;
-    for (ChartRowLayout layout : vehicleLayout) {
+    for (TimeBoardRowLayout layout : vehicleLayout) {
 
       int vehicleIndex = layout.getDataIndex();
 
@@ -659,7 +661,7 @@ abstract class VehicleTimeBoard extends ChartBase {
       int top = rowIndex * getRowHeight();
 
       if (rowIndex > 0) {
-        ChartHelper.addRowSeparator(panel, STYLE_VEHICLE_ROW_SEPARATOR, top, 0,
+        TimeBoardHelper.addRowSeparator(panel, STYLE_VEHICLE_ROW_SEPARATOR, top, 0,
             getChartLeft() + calendarWidth);
       }
 
@@ -689,7 +691,7 @@ abstract class VehicleTimeBoard extends ChartBase {
         }
 
         Rectangle rectangle = getRectangle(item.getRange(), rowIndex, lastRow);
-        ChartHelper.apply(offWidget, rectangle, margins);
+        TimeBoardHelper.apply(offWidget, rectangle, margins);
 
         panel.add(offWidget);
       }
@@ -707,7 +709,7 @@ abstract class VehicleTimeBoard extends ChartBase {
 
           if (itemWidget != null) {
             Rectangle rectangle = getRectangle(item.getRange(), rowIndex + i);
-            ChartHelper.apply(itemWidget, rectangle, margins);
+            TimeBoardHelper.apply(itemWidget, rectangle, margins);
             
             styleItemWidget(item, itemWidget);
             if (opacity != null) {
@@ -724,7 +726,7 @@ abstract class VehicleTimeBoard extends ChartBase {
               overlapWidget = new CustomDiv(STYLE_OVERLAP);
 
               Rectangle rectangle = getRectangle(over, rowIndex + i);
-              ChartHelper.apply(overlapWidget, rectangle, margins);
+              TimeBoardHelper.apply(overlapWidget, rectangle, margins);
 
               panel.add(overlapWidget);
             }
@@ -747,7 +749,7 @@ abstract class VehicleTimeBoard extends ChartBase {
     vehicleIndexesByRow.clear();
   }
 
-  protected void renderInfoCell(ChartRowLayout layout, Vehicle vehicle, ComplexPanel panel,
+  protected void renderInfoCell(TimeBoardRowLayout layout, Vehicle vehicle, ComplexPanel panel,
       int firstRow, int lastRow) {
     IdentifiableWidget infoWidget = createInfoWidget(vehicle, layout.hasOverlap());
     addInfoWidget(panel, infoWidget, firstRow, lastRow);
@@ -755,8 +757,8 @@ abstract class VehicleTimeBoard extends ChartBase {
 
   @Override
   protected void renderMovers(ComplexPanel panel, int height) {
-    Mover numberMover = ChartHelper.createHorizontalMover();
-    StyleUtils.setLeft(numberMover, getNumberWidth() - ChartHelper.DEFAULT_MOVER_WIDTH);
+    Mover numberMover = TimeBoardHelper.createHorizontalMover();
+    StyleUtils.setLeft(numberMover, getNumberWidth() - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
     StyleUtils.setHeight(numberMover, height);
 
     numberMover.addMoveHandler(new MoveEvent.Handler() {
@@ -769,8 +771,8 @@ abstract class VehicleTimeBoard extends ChartBase {
     panel.add(numberMover);
 
     if (isInfoColumnVisible()) {
-      Mover infoMover = ChartHelper.createHorizontalMover();
-      StyleUtils.setLeft(infoMover, getChartLeft() - ChartHelper.DEFAULT_MOVER_WIDTH);
+      Mover infoMover = TimeBoardHelper.createHorizontalMover();
+      StyleUtils.setLeft(infoMover, getChartLeft() - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
       StyleUtils.setHeight(infoMover, height);
 
       infoMover.addMoveHandler(new MoveEvent.Handler() {
@@ -786,7 +788,7 @@ abstract class VehicleTimeBoard extends ChartBase {
 
   protected void renderRowSeparators(ComplexPanel panel, int firstRow, int lastRow) {
     for (int rowIndex = firstRow; rowIndex < lastRow; rowIndex++) {
-      ChartHelper.addRowSeparator(panel, (rowIndex + 1) * getRowHeight(), getChartLeft(),
+      TimeBoardHelper.addRowSeparator(panel, (rowIndex + 1) * getRowHeight(), getChartLeft(),
           getCalendarWidth());
     }
   }
@@ -801,14 +803,14 @@ abstract class VehicleTimeBoard extends ChartBase {
   private void addNumberWidget(HasWidgets panel, IdentifiableWidget widget,
       int firstRow, int lastRow) {
 
-    Rectangle rectangle = ChartHelper.getRectangle(0, getNumberWidth(), firstRow, lastRow,
+    Rectangle rectangle = TimeBoardHelper.getRectangle(0, getNumberWidth(), firstRow, lastRow,
         getRowHeight());
 
     Edges margins = new Edges();
-    margins.setRight(ChartHelper.DEFAULT_MOVER_WIDTH);
-    margins.setBottom(ChartHelper.ROW_SEPARATOR_HEIGHT);
+    margins.setRight(TimeBoardHelper.DEFAULT_MOVER_WIDTH);
+    margins.setBottom(TimeBoardHelper.ROW_SEPARATOR_HEIGHT);
 
-    ChartHelper.apply(widget.asWidget(), rectangle, margins);
+    TimeBoardHelper.apply(widget.asWidget(), rectangle, margins);
 
     panel.add(widget.asWidget());
 
@@ -895,7 +897,7 @@ abstract class VehicleTimeBoard extends ChartBase {
     }
 
     Range<JustDate> tripRange =
-        ChartHelper.normalizedIntersection(trip.getRange(), getVisibleRange());
+        TimeBoardHelper.normalizedIntersection(trip.getRange(), getVisibleRange());
     if (tripRange == null) {
       return panel;
     }
@@ -906,16 +908,16 @@ abstract class VehicleTimeBoard extends ChartBase {
     return panel;
   }
 
-  private List<ChartRowLayout> doLayout() {
-    List<ChartRowLayout> result = Lists.newArrayList();
+  private List<TimeBoardRowLayout> doLayout() {
+    List<TimeBoardRowLayout> result = Lists.newArrayList();
     Range<JustDate> range = getVisibleRange();
 
     for (int vehicleIndex = 0; vehicleIndex < vehicles.size(); vehicleIndex++) {
       Vehicle vehicle = vehicles.get(vehicleIndex);
 
-      if (isItemVisible(vehicle) && ChartHelper.isActive(vehicle, range)) {
+      if (isItemVisible(vehicle) && TimeBoardHelper.isActive(vehicle, range)) {
         Long vehicleId = vehicle.getId();
-        ChartRowLayout layout = new ChartRowLayout(vehicleIndex);
+        TimeBoardRowLayout layout = new TimeBoardRowLayout(vehicleIndex);
 
         Collection<Trip> vehicleTrips = getTripsForLayout(vehicleId,
             separateCargo() ? null : range);
@@ -925,7 +927,7 @@ abstract class VehicleTimeBoard extends ChartBase {
             List<Freight> tripFreights = getFreightsForLayout(trip.getTripId(), range);
             if (!tripFreights.isEmpty()) {
               layout.addItems(getGroupIdForFreightLayout(trip), tripFreights, range,
-                  ChartRowLayout.FREIGHT_BLENDER);
+                  Freight.getBlender());
             }
 
           } else {
@@ -937,9 +939,10 @@ abstract class VehicleTimeBoard extends ChartBase {
           continue;
         }
 
-        layout.addInactivity(ChartHelper.getInactivity(vehicle, range), range);
+        layout.addInactivity(TimeBoardHelper.getInactivity(vehicle, range), range);
         if (services.containsKey(vehicleId)) {
-          layout.addInactivity(ChartHelper.getActiveItems(services.get(vehicleId), range), range);
+          layout.addInactivity(TimeBoardHelper.getActiveItems(services.get(vehicleId), range),
+              range);
         }
 
         result.add(layout);
@@ -955,7 +958,7 @@ abstract class VehicleTimeBoard extends ChartBase {
     }
 
     for (Freight freight : freights.get(tripId)) {
-      if (isItemVisible(freight) && ChartHelper.hasRangeAndIsActive(freight, range)) {
+      if (isItemVisible(freight) && TimeBoardHelper.hasRangeAndIsActive(freight, range)) {
         result.add(freight);
       }
     }
@@ -970,7 +973,7 @@ abstract class VehicleTimeBoard extends ChartBase {
     }
 
     for (Trip trip : trips.get(vehicleId)) {
-      if (isItemVisible(trip) && ChartHelper.hasRangeAndIsActive(trip, range)) {
+      if (isItemVisible(trip) && TimeBoardHelper.hasRangeAndIsActive(trip, range)) {
         result.add(trip);
       }
     }
@@ -992,13 +995,14 @@ abstract class VehicleTimeBoard extends ChartBase {
     int newLeft = BeeUtils.clamp(oldLeft + delta, getNumberWidth() + 1, maxLeft);
 
     if (newLeft != oldLeft || event.isFinished()) {
-      int infoPx = newLeft - getNumberWidth() + ChartHelper.DEFAULT_MOVER_WIDTH;
+      int infoPx = newLeft - getNumberWidth() + TimeBoardHelper.DEFAULT_MOVER_WIDTH;
 
       if (newLeft != oldLeft) {
         StyleUtils.setLeft(resizer, newLeft);
 
         for (String id : infoPanels) {
-          StyleUtils.setWidth(DomUtils.getElement(id), infoPx - ChartHelper.DEFAULT_MOVER_WIDTH);
+          StyleUtils.setWidth(DomUtils.getElement(id),
+              infoPx - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
         }
       }
 
@@ -1017,7 +1021,7 @@ abstract class VehicleTimeBoard extends ChartBase {
 
     int maxLeft;
     if (isInfoColumnVisible()) {
-      maxLeft = getChartLeft() - ChartHelper.DEFAULT_MOVER_WIDTH * 2 - 1;
+      maxLeft = getChartLeft() - TimeBoardHelper.DEFAULT_MOVER_WIDTH * 2 - 1;
     } else {
       maxLeft = getLastResizableColumnMaxLeft(0);
     }
@@ -1025,14 +1029,15 @@ abstract class VehicleTimeBoard extends ChartBase {
     int newLeft = BeeUtils.clamp(oldLeft + delta, 1, maxLeft);
 
     if (newLeft != oldLeft || event.isFinished()) {
-      int numberPx = newLeft + ChartHelper.DEFAULT_MOVER_WIDTH;
+      int numberPx = newLeft + TimeBoardHelper.DEFAULT_MOVER_WIDTH;
       int infoPx = isInfoColumnVisible() ? getChartLeft() - numberPx : BeeConst.UNDEF;
 
       if (newLeft != oldLeft) {
         StyleUtils.setLeft(resizer, newLeft);
 
         for (String id : numberPanels) {
-          StyleUtils.setWidth(DomUtils.getElement(id), numberPx - ChartHelper.DEFAULT_MOVER_WIDTH);
+          StyleUtils.setWidth(DomUtils.getElement(id),
+              numberPx - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
         }
 
         if (isInfoColumnVisible()) {
@@ -1040,7 +1045,7 @@ abstract class VehicleTimeBoard extends ChartBase {
             Element element = Document.get().getElementById(id);
             if (element != null) {
               StyleUtils.setLeft(element, numberPx);
-              StyleUtils.setWidth(element, infoPx - ChartHelper.DEFAULT_MOVER_WIDTH);
+              StyleUtils.setWidth(element, infoPx - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
             }
           }
         }

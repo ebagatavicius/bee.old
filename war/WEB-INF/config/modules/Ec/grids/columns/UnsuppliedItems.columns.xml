@@ -6,8 +6,8 @@
   <RelColumn name="Order" renderColumns="Order" horizontalAlignment="right"
     readOnly="true" editEnabled="true" maxWidth="100" />
 
-  <RelColumn name="ArticleName" label="=ecItemName" caching="none" newRowEnabled="false"
-    renderColumns="ArticleName" searchableColumns="ArticleName ArticleNr"
+  <RelColumn name="ArticleName" label="=ecItemName" caching="none" instant="false" 
+    newRowEnabled="false" renderColumns="ArticleName" searchableColumns="ArticleName ArticleNr"
     choiceColumns="ArticleName BrandName ArticleNr" editEnabled="true" visible="true" />
   <DataColumn name="BrandName" />
   <DataColumn name="ArticleNr" visible="true">

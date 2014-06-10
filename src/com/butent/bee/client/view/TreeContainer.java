@@ -9,6 +9,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.data.Data;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.logical.CatchEvent;
 import com.butent.bee.client.event.logical.CatchEvent.CatchHandler;
@@ -21,10 +22,16 @@ import com.butent.bee.client.tree.TreeItem;
 import com.butent.bee.client.utils.Command;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class TreeContainer extends Flow implements TreeView, SelectionHandler<TreeItem>,
@@ -50,6 +57,7 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
 
   private Presenter viewPresenter;
   private boolean enabled = true;
+  private List<String> favorite = Lists.newArrayList();
   private final Tree tree;
   private final Map<Long, TreeItem> items = Maps.newHashMap();
 
@@ -57,6 +65,10 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
   private final boolean hasActions;
 
   public TreeContainer(String caption, boolean hideActions, String viewName) {
+    this(caption, hideActions, viewName, BeeConst.STRING_EMPTY);
+  }
+
+  public TreeContainer(String caption, boolean hideActions, String viewName, String favorite) {
     super();
     addStyleName(STYLE_NAME);
 
@@ -68,6 +80,7 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
       hdr.addStyleName(STYLE_NAME + "-actions");
 
       boolean editable = BeeKeeper.getUser().canEditData(viewName);
+      boolean bookmarked = !BeeUtils.isEmpty(favorite);
 
       Image img;
 
@@ -82,6 +95,16 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
         img = new Image(Global.getImages().silverDelete(), new ActionListener(Action.DELETE));
         img.addStyleName(STYLE_NAME + "-delete");
         img.setTitle(Action.DELETE.getCaption());
+        hdr.add(img);
+      }
+
+      if (bookmarked) {
+        setFavorite(NameUtils.toList(favorite));
+        
+        img =
+            new Image(Global.getImages().silverBookmarkAdd(), new ActionListener(Action.BOOKMARK));
+        img.addStyleName(STYLE_NAME + "-bookmark");
+        img.setTitle(Action.BOOKMARK.getCaption());
         hdr.add(img);
       }
 
@@ -170,6 +193,11 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
   }
 
   @Override
+  public List<String> getFavorite() {
+    return favorite;
+  }
+
+  @Override
   public IsRow getParentItem(IsRow item) {
     Assert.notNull(item);
     Assert.contains(items, item.getId());
@@ -180,6 +208,43 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
       return (IsRow) treeItem.getParentItem().getUserObject();
     }
     return null;
+  }
+
+  @Override
+  public List<IsRow> getPath(Long id) {
+    Assert.notNull(id);
+
+    List<IsRow> path = new ArrayList<>();
+
+    TreeItem item = items.get(id);
+
+    while (item != null && item.getUserObject() instanceof IsRow) {
+      path.add((IsRow) item.getUserObject());
+      item = item.getParentItem();
+    }
+
+    if (path.size() > 1) {
+      Collections.reverse(path);
+    }
+    return path;
+  }
+
+  @Override
+  public List<String> getPathLabels(Long id, String colName) {
+    Assert.notNull(id);
+    Assert.notEmpty(colName);
+
+    List<String> labels = new ArrayList<>();
+
+    List<IsRow> path = getPath(id);
+    int index = Data.getColumnIndex(getViewName(), colName);
+
+    if (!BeeUtils.isEmpty(path) && !BeeConst.isUndef(index)) {
+      for (IsRow row : path) {
+        labels.add(row.getString(index));
+      }
+    }
+    return labels;
   }
 
   @Override
@@ -303,6 +368,10 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
     }
   }
 
+  private void setFavorite(List<String> favorite) {
+    BeeUtils.overwrite(this.favorite, favorite);
+  }
+  
   private Tree getTree() {
     return tree;
   }
@@ -312,5 +381,10 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
       removeFromCache(item.getChild(i));
     }
     items.remove(((IsRow) item.getUserObject()).getId());
+  }
+
+  @Override
+  public String getViewName() {
+    return (getTreePresenter() == null) ? null : getTreePresenter().getViewName();
   }
 }

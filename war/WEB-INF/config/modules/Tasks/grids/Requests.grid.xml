@@ -14,7 +14,7 @@
   </g:north>
 
   <g:columns>
-    <IdColumn name="ID" caption="=captionId" width="50" />
+    <IdColumn name="ID" width="50" />
     <DataColumn name="Date" caption="=date" width="100" visible="true" />
     <DataColumn name="Finished" caption="=crmRequestFinish" width="100" format="DATE_TIME_SHORT" />
     <RelColumn name="Customer" caption="=client" minWidth="100" visible="true" />

@@ -129,7 +129,7 @@ public class EcClientDiscounts {
     return result;
   }
 
-  private static double getPrice(double listPrice, List<Discount> discounts) {
+  private static double getClientPrice(double listPrice, List<Discount> discounts) {
     Double bestPrice = null;
     Integer minDepth = null;
 
@@ -256,16 +256,16 @@ public class EcClientDiscounts {
     }
 
     if (!discounts.isEmpty()) {
-      ecItem.setPrice(getPrice(ecItem.getRealListPrice(), discounts));
+      ecItem.setClientPrice(getClientPrice(ecItem.getRealListPrice(), discounts));
 
     } else if (defPercent != null) {
-      ecItem.setPrice(BeeUtils.minusPercent(ecItem.getRealListPrice(), defPercent));
+      ecItem.setClientPrice(BeeUtils.minusPercent(ecItem.getRealListPrice(), defPercent));
 
     } else {
-      ecItem.setPrice(ecItem.getListPrice());
+      ecItem.setClientPrice(ecItem.getListPrice());
     }
   }
-
+  
   public boolean hasCategories() {
     return !categoryDiscounts.isEmpty() || !brandAndCategoryDiscounts.isEmpty();
   }

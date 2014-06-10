@@ -210,7 +210,7 @@ public class MetaDataBean {
         continue;
       }
 
-      result.addRow(row.copy());
+      result.addRow(DataUtils.cloneRow(row));
     }
 
     return result;

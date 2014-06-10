@@ -3,9 +3,9 @@
 
 name="Documents" label="=documents" order="50" module="Documents"
 >
-  <Item name="DocumentList" label="=documents" service="grid" parameters="Documents" />
+  <Item name="DocumentList" label="=documentTree" service="grid" parameters="Documents" />
 
-  <Item name="DocumentCategories" label="=documentTree" service="form" parameters="DocumentTree"
+  <Item name="DocumentCategories" label="=documentCategories" service="form" parameters="DocumentTree"
     separator="true" data="DocumentTree" />
 
   <Item name="Templates" label="=documentTemplates" service="grid" parameters="DocumentTemplates"

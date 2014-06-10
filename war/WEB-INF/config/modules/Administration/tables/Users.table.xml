@@ -4,7 +4,7 @@
   name="Users" idName="UserID"
   >
   <Fields>
-    <String name="Login" precision="100" notNull="true" unique="true" label="=userLogin"/>
+    <String name="Login" precision="100" notNull="true" label="=userLogin"/>
     <String name="Password" precision="64" label="=password" audit="false" />
 
     <Relation name="CompanyPerson" relation="CompanyPersons" notNull="true" unique="true"
@@ -17,7 +17,16 @@
     <DateTime name="BlockBefore" label="=blockBefore" />
 
     <Boolean name="MailAssignedTasks" label="=crmMailAssignedTasks" />
+    <Boolean name="MailNewDiscussions" label="=discussMailNewDiscussions" />
+    <Boolean name="MailNewAnnouncements" label="=discussMailNewAnnouncements" />    
       
     <Text name="Properties" label="=userProperties" />
   </Fields>
+  <Indexes>
+    <Index unique="true">
+      <PostgreSql>LOWER("Login")</PostgreSql>
+      <MsSql>LOWER([Login])</MsSql>
+      <Oracle>LOWER("Login")</Oracle>
+    </Index>
+  </Indexes>
 </Table>

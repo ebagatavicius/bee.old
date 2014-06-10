@@ -2,9 +2,15 @@ package com.butent.bee.shared.modules.discussions;
 
 public interface LocalizableDiscussionsConstants {
 
+  String announcement();
+
   String announcements();
 
+  String adTopic();
+
   String birthdaysParties();
+
+  String discussion();
 
   String discussions();
 
@@ -28,6 +34,8 @@ public interface LocalizableDiscussionsConstants {
 
   String discussAll();
 
+  String discussOwner();
+
   String discussClosed();
 
   String discussCloseQuestion();
@@ -35,6 +43,8 @@ public interface LocalizableDiscussionsConstants {
   String discussComment();
 
   String discussCreatedNewDiscussion();
+
+  String discussDescription();
 
   String discussEnterComment();
 
@@ -66,11 +76,17 @@ public interface LocalizableDiscussionsConstants {
 
   String discussObserved();
 
+  String discussMailNewAnnouncementSubject();
+
+  String discussMailNewDiscussionSubject();
+
   String discussMarks();
 
   String discussMarked();
 
   String discussMarkStats();
+
+  String discussMembers();
 
   String discussNotCreated();
 

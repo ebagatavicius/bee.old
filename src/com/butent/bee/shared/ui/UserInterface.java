@@ -6,6 +6,7 @@ import com.butent.bee.shared.html.builder.elements.Meta;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.calendar.CalendarConstants;
 import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
+import com.butent.bee.shared.modules.documents.DocumentConstants;
 import com.butent.bee.shared.modules.ec.EcConstants;
 import com.butent.bee.shared.modules.mail.MailConstants;
 import com.butent.bee.shared.modules.service.ServiceConstants;
@@ -46,7 +47,8 @@ public enum UserInterface implements HasCaption {
       return Lists.newArrayList(MAIN_STYLE_SHEET, CalendarConstants.STYLE_SHEET,
           AdministrationConstants.STYLE_SHEET, TaskConstants.STYLE_SHEET, EcConstants.STYLE_SHEET,
           MailConstants.STYLE_SHEET, TradeConstants.STYLE_SHEET, TransportConstants.STYLE_SHEET,
-          DiscussionsConstants.STYLE_SHEET, ServiceConstants.STYLE_SHEET);
+          DiscussionsConstants.STYLE_SHEET, ServiceConstants.STYLE_SHEET,
+          DocumentConstants.STYLE_SHEET);
     }
 
     @Override
@@ -207,7 +209,8 @@ public enum UserInterface implements HasCaption {
     MENU(false),
     NEWS(false),
     REPORTS(false),
-    USERS(true);
+    USERS(true),
+    WORKSPACES(false);
 
     private final boolean required;
 

@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="Tasks" source="Tasks" caption="=tasks"
+  name="Tasks" source="Tasks" caption="=crmTasks"
   newRowForm="NewTask" editForm="Task" rowCaption="Summary" 
   >
   <Columns>
     <SimpleColumn name="Summary" />
     <SimpleColumn name="Description" />
+
     <SimpleColumn name="Priority" />
+
+    <SimpleColumn name="Type" />
+    <SimpleJoin name="Type" joinType="LEFT">
+      <SimpleColumn name="Name" alias="TypeName" />
+      <SimpleColumn name="Background" alias="TypeBackground" />
+      <SimpleColumn name="Foreground" alias="TypeForeground" />
+    </SimpleJoin>
 
     <SimpleColumn name="Created" />
     <SimpleColumn name="StartTime" />

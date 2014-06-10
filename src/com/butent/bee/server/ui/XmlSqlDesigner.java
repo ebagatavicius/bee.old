@@ -201,36 +201,33 @@ public class XmlSqlDesigner {
                 xmlTable.isProtected()));
         table.keys = Lists.newArrayList(new DataKey(KeyType.PRIMARY, xmlTable.idName));
 
-        for (int i = 0; i < 2; i++) {
-          boolean extMode = i > 0;
-          Collection<XmlField> fields = extMode ? xmlTable.extFields : xmlTable.fields;
+        Collection<XmlField> fields = xmlTable.fields;
 
-          if (!BeeUtils.isEmpty(fields)) {
-            for (XmlField xmlField : fields) {
-              String type = xmlField.type + (extMode ? EXT : "");
+        if (!BeeUtils.isEmpty(fields)) {
+          for (XmlField xmlField : fields) {
+            String type = xmlField.type;
 
-              if (BeeUtils.isPositive(xmlField.precision)) {
-                type = type + "(" + xmlField.precision;
+            if (BeeUtils.isPositive(xmlField.precision)) {
+              type = type + "(" + xmlField.precision;
 
-                if (BeeUtils.isPositive(xmlField.scale)) {
-                  type = type + "," + xmlField.scale;
-                }
-                type = type + ")";
+              if (BeeUtils.isPositive(xmlField.scale)) {
+                type = type + "," + xmlField.scale;
               }
-              DataField field =
-                  new DataField(xmlField.name, type, xmlField.notNull, xmlField.translatable,
-                      xmlField.isProtected());
+              type = type + ")";
+            }
+            DataField field =
+                new DataField(xmlField.name, type, xmlField.notNull, xmlField.translatable,
+                    xmlField.isProtected());
 
-              if (xmlField instanceof XmlRelation) {
-                field.relation = new DataRelation();
-                field.relation.table = ((XmlRelation) xmlField).relation;
-                field.relation.field = ((XmlRelation) xmlField).relationField;
-              }
-              table.fields.add(field);
+            if (xmlField instanceof XmlRelation) {
+              field.relation = new DataRelation();
+              field.relation.table = ((XmlRelation) xmlField).relation;
+              field.relation.field = ((XmlRelation) xmlField).relationField;
+            }
+            table.fields.add(field);
 
-              if (xmlField.unique) {
-                table.keys.add(new DataKey(KeyType.UNIQUE, xmlField.name));
-              }
+            if (xmlField.unique) {
+              table.keys.add(new DataKey(KeyType.UNIQUE, xmlField.name));
             }
           }
         }

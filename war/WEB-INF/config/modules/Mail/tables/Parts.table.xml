@@ -6,7 +6,6 @@
   >
   <Fields>
     <Relation name="Message" relation="Messages" notNull="true" cascade="DELETE" label="=mailMessage" />
-    <String name="ContentType" precision="100" />
     <Text name="Content" />
     <Text name="HtmlContent" />
   </Fields>

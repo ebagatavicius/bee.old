@@ -8,7 +8,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui" 
   
-  name="&form;" caption="=trInvoice" disabledActions="save"
+  name="&form;" caption="=trdInvoice" disabledActions="save"
   width="70" widthUnit="%" height="90" heightUnit="%"
   >
   <FlowPanel style="padding: 10px; background-color: white;">

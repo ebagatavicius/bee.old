@@ -7,8 +7,7 @@
   idChunk="100"
   >
   <Fields>
-    <Relation name="Article" relation="TcdArticles" notNull="true" cascade="DELETE"
-      label="=ecItem" />
+    <Relation name="Article" relation="TcdArticles" notNull="true" cascade="DELETE" label="=ecItem" />
     <String name="SearchNr" precision="50" notNull="true" />
     <String name="CodeNr" precision="50" />
     <Relation name="Brand" relation="TcdBrands" label="=ecItemBrand" />

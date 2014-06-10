@@ -1,5 +1,7 @@
 package com.butent.bee.shared.modules.ec;
 
+import com.google.common.primitives.Longs;
+
 import static com.butent.bee.shared.modules.ec.EcConstants.*;
 
 import com.butent.bee.shared.Assert;
@@ -8,6 +10,8 @@ import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+
+import java.util.Objects;
 
 public class EcCarType implements BeeSerializable {
 
@@ -153,6 +157,17 @@ public class EcCarType implements BeeSerializable {
     }
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    } else if (obj instanceof EcCarType) {
+      return Objects.equals(getTypeId(), ((EcCarType) obj).getTypeId());
+    } else {
+      return false;
+    }
+  }
+
   public String getAxle() {
     return axle;
   }
@@ -176,7 +191,7 @@ public class EcCarType implements BeeSerializable {
   public String getFuel() {
     return fuel;
   }
-  
+
   public String getInfo() {
     return BeeUtils.joinItems(getManufacturer(), getModelName(), getTypeName(),
         EcUtils.formatProduced(getProducedFrom(), getProducedTo()), getPower());
@@ -228,6 +243,11 @@ public class EcCarType implements BeeSerializable {
 
   public String getTypeName() {
     return typeName;
+  }
+
+  @Override
+  public int hashCode() {
+    return Longs.hashCode(getTypeId());
   }
 
   public boolean isProduced(int year) {

@@ -8,8 +8,11 @@ import com.google.gwt.core.client.JsDate;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.data.HasRowValue;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.value.TextValue;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -25,7 +28,7 @@ import java.util.Set;
  * Implements management of an old and new values for cells in user interface.
  */
 
-public final class Evaluator extends Calculation {
+public final class Evaluator extends Calculation implements HasRowValue {
 
   /**
    * Manages default values for such parameters as rowId, rowVersion or CellValue.
@@ -285,7 +288,6 @@ public final class Evaluator extends Calculation {
   public static native JavaScriptObject createFuncInterpreter(String fnc) /*-{
     return new Function("row", "rowId", "rowVersion", "rowIndex", "colName", "colIndex", "cell", fnc);
   }-*/;
-
   // CHECKSTYLE:ON
 
   private Parameters parameters;
@@ -302,6 +304,12 @@ public final class Evaluator extends Calculation {
     } else {
       this.interpeter = null;
     }
+  }
+
+  @Override
+  public boolean dependsOnSource(String source) {
+    return BeeUtils.containsSame(getExpression(), source)
+        || BeeUtils.containsSame(getFunction(), source);
   }
 
   public String evaluate() {
@@ -324,6 +332,16 @@ public final class Evaluator extends Calculation {
       s = null;
     }
     return s;
+  }
+
+  @Override
+  public Value getRowValue(IsRow row) {
+    if (row == null) {
+      return null;
+    } else {
+      update(row);
+      return TextValue.of(evaluate());
+    }
   }
 
   public boolean hasInterpreter() {

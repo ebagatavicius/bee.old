@@ -305,6 +305,12 @@ public class JustDate extends AbstractDate implements Comparable<JustDate> {
     return TimeUtils.dateToString(this);
   }
 
+  @Override
+  public String toTimeStamp() {
+    return TimeUtils.yearToString(getYear()) + TimeUtils.monthToString(getMonth())
+        + TimeUtils.dayOfMonthToString(getDom());
+  }
+  
   private void computeFields() {
     fields = Grego.dayToFields(days);
   }

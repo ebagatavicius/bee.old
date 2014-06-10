@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY tbl "border-collapse: collapse; margin-top: 2ex; margin-left: 1em;">
+  <!ENTITY cell "padding: 3px 1em;">
+  <!ENTITY lbl "text-align: right; max-width: 180px;">
+  <!ENTITY spin "width: 50px;">
+  <!ENTITY color "width: 120px;">
+  <!ENTITY slider_inp "width: 100px;">
+  <!ENTITY cb_inp "margin: 0;">
+]>
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
+ 
+  name="ServiceCalendarSettings" viewName="ServiceSettings" caption="=settings"
+  width="760" height="400"
+  >
+
+  <FlowPanel style="background-color: WhiteSmoke;" class="flexBox-horizontal">
+    <Table style="&tbl;" cellStyle="&cell;">
+      <row>
+        <Label for="CalendarTaskTypes" style="&lbl;" />
+        <MultiSelector source="CalendarTaskTypes" viewName="TaskTypes"
+          renderColumns="Name" newRowEnabled="false" style="width: 200px;" />
+      </row>
+
+      <row>
+        <Label for="CalendarCompanyKind" style="&lbl;" />
+        <Radio source="CalendarCompanyKind" vertical="false" />
+      </row>
+
+      <row>
+        <Label for="CalendarPixelsPerCompany" style="&lbl;" />
+        <InputSpinner source="CalendarPixelsPerCompany" minValue="4" maxValue="300" style="&spin;" />
+      </row>
+      <row>
+        <Label for="CalendarPixelsPerInfo" style="&lbl;" />
+        <InputSpinner source="CalendarPixelsPerInfo" minValue="4" maxValue="300" style="&spin;" />
+      </row>
+    
+      <row>
+        <Label for="CalendarSeparateObjects" style="&lbl;" />
+        <CheckBox source="CalendarSeparateObjects" style="&cb_inp;"/>
+      </row>
+    
+      <row>
+        <Label for="CalendarPixelsPerDay" style="&lbl;" />
+        <InputSpinner source="CalendarPixelsPerDay" minValue="1" maxValue="100" style="&spin;" />
+      </row>
+      <row>
+        <Label for="CalendarPixelsPerRow" style="&lbl;" />
+        <InputSpinner source="CalendarPixelsPerRow" minValue="2" maxValue="1000" style="&spin;" />
+      </row>
+
+      <row>
+        <Label for="CalendarHeaderHeight" style="&lbl;" />
+        <InputSpinner source="CalendarHeaderHeight" minValue="1" maxValue="100" style="&spin;" />
+      </row>
+      <row>
+        <Label for="CalendarFooterHeight" style="&lbl;" />
+        <InputSpinner source="CalendarFooterHeight" minValue="3" maxValue="1000" style="&spin;" />
+      </row>
+    
+      <row>
+        <Label for="CalendarItemOpacity" style="&lbl;" />
+        <InputRange source="CalendarItemOpacity" minValue="0" maxValue="100" step="5"
+          style="&slider_inp;" />
+      </row>
+      <row>
+        <Label for="CalendarStripOpacity" style="&lbl;" />
+        <InputRange source="CalendarStripOpacity" minValue="0" maxValue="100" step="5"
+          style="&slider_inp;" />
+      </row>
+    </Table>
+    
+    <Table style="&tbl;" cellStyle="&cell;">
+      <row>
+        <text />
+        <Label text="=color" />
+      </row>
+      <row>
+        <Label for="CalendarDatesColor" style="&lbl;" />
+        <ColorEditor source="CalendarDatesColor" style="&color;" />
+      </row>
+      <row>
+        <Label for="CalendarTaskColor" style="&lbl;" />
+        <ColorEditor source="CalendarTaskColor" style="&color;" />
+      </row>
+      <row>
+        <Label for="CalendarRTColor" style="&lbl;" />
+        <ColorEditor source="CalendarRTColor" style="&color;" />
+      </row>
+    
+      <row>
+        <Label for="CalendarTaskColor0" style="&lbl;" />
+        <ColorEditor source="CalendarTaskColor0" style="&color;" />
+      </row>
+      <row>
+        <Label for="CalendarTaskColor1" style="&lbl;" />
+        <ColorEditor source="CalendarTaskColor1" style="&color;" />
+      </row>
+      <row>
+        <Label for="CalendarTaskColor2" style="&lbl;" />
+        <ColorEditor source="CalendarTaskColor2" style="&color;" />
+      </row>
+      <row>
+        <Label for="CalendarTaskColor3" style="&lbl;" />
+        <ColorEditor source="CalendarTaskColor3" style="&color;" />
+      </row>
+      <row>
+        <Label for="CalendarTaskColor4" style="&lbl;" />
+        <ColorEditor source="CalendarTaskColor4" style="&color;" />
+      </row>
+      <row>
+        <Label for="CalendarTaskColor5" style="&lbl;" />
+        <ColorEditor source="CalendarTaskColor5" style="&color;" />
+      </row>
+      <row>
+        <Label for="CalendarTaskColor6" style="&lbl;" />
+        <ColorEditor source="CalendarTaskColor6" style="&color;" />
+      </row>
+    </Table>
+  </FlowPanel>
+</f:Form>

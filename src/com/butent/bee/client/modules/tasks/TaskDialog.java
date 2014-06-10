@@ -131,8 +131,7 @@ class TaskDialog extends DialogBox {
 
     result.put(COL_DURATION, addTime(Localized.getConstants().crmSpentTime()));
     result.put(COL_DURATION_TYPE, addSelector(Localized.getConstants().crmDurationType(),
-        VIEW_DURATION_TYPES,
-        Lists.newArrayList(COL_NAME), false, null));
+        VIEW_DURATION_TYPES, Lists.newArrayList(COL_DURATION_TYPE_NAME), false, null));
     result.put(COL_DURATION_DATE, addDateTime(Localized.getConstants().crmTaskFinishDate(),
         false, TimeUtils.nowMinutes()));
 

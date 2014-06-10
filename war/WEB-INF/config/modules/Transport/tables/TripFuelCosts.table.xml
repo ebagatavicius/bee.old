@@ -20,7 +20,7 @@
     <Relation name="Supplier" relation="Companies" label="=trSupplier" />
     <Relation name="Country" relation="Countries" label="=country"/>
     <String name="Note" precision="50" label="=note" />
-    <Relation name="Item" relation="Items" label="=trAccountItem" />
+    <Relation name="Item" relation="Items" label="=trAccountingItem" />
     <String name="ExternalID" precision="40" label="=externalId" />
   </Fields>
   <Indexes>

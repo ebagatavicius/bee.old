@@ -8,15 +8,17 @@
   >
   <Fields>
     <String name="ArticleNr" precision="50" notNull="true" label="=ecItemCode" />
+    <String name="ArticleName" precision="50" label="=ecItemName" />
+    <Text name="Description" label="=ecItemDescription" />
+
     <Relation name="Brand" relation="TcdBrands" notNull="true" label="=ecItemBrand" />
     <Enum name="Supplier" key="EcSupplier" notNull="true" label="=ecItemSupplier" />
     <String name="SupplierID" precision="50" notNull="true" label="=ecItemSupplierCode" />
   </Fields>
   <Constraints>
-    <Unique fields="Supplier SupplierID" />
+    <Unique fields="SupplierID Supplier" />
   </Constraints>
   <Indexes>
     <Index fields="Supplier" />
-    <Index fields="SupplierID" />
   </Indexes>
 </Table>

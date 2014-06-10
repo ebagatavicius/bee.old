@@ -3,7 +3,6 @@ package com.butent.bee.shared.data;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import com.butent.bee.shared.data.Defaults.DefaultExpression;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -154,66 +153,21 @@ public class XmlTable {
     public String key;
   }
 
-  /**
-   * Handles table key information storage in XML structure.
-   */
-  @XmlRootElement(name = "Index", namespace = DataUtils.TABLE_NAMESPACE)
-  public static class XmlIndex {
-    @XmlAttribute
-    public boolean unique;
-    @XmlAttribute
-    public List<String> fields;
-
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (getClass() != obj.getClass()) {
-        return false;
-      }
-      XmlIndex other = (XmlIndex) obj;
-
-      if (fields == null) {
-        if (other.fields != null) {
-          return false;
-        }
-      } else if (!fields.equals(other.fields)) {
-        return false;
-      }
-      if (unique != other.unique) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((fields == null) ? 0 : fields.hashCode());
-      result = prime * result + (unique ? 1231 : 1237);
-      return result;
-    }
-  }
-
-  @XmlSeeAlso({XmlCheck.class, XmlUnique.class, XmlReference.class})
-  public abstract static class XmlConstraint {
-  }
-
-  @XmlRootElement(name = "Check", namespace = DataUtils.TABLE_NAMESPACE)
-  public static class XmlCheck extends XmlConstraint {
-    @XmlElement(name = "Generic", namespace = DataUtils.TABLE_NAMESPACE)
-    public String generic;
+  public static abstract class XmlSqlEngine {
     @XmlElement(name = "PostgreSql", namespace = DataUtils.TABLE_NAMESPACE)
     public String postgreSql;
     @XmlElement(name = "MsSql", namespace = DataUtils.TABLE_NAMESPACE)
     public String msSql;
     @XmlElement(name = "Oracle", namespace = DataUtils.TABLE_NAMESPACE)
     public String oracle;
+  }
+
+  @XmlSeeAlso({XmlCheck.class, XmlUnique.class, XmlReference.class})
+  public static abstract class XmlConstraint extends XmlSqlEngine {
+  }
+
+  @XmlRootElement(name = "Check", namespace = DataUtils.TABLE_NAMESPACE)
+  public static class XmlCheck extends XmlConstraint {
   }
 
   @XmlRootElement(name = "Unique", namespace = DataUtils.TABLE_NAMESPACE)
@@ -234,20 +188,22 @@ public class XmlTable {
     public String cascade;
   }
 
+  @XmlRootElement(name = "Index", namespace = DataUtils.TABLE_NAMESPACE)
+  public static class XmlIndex extends XmlSqlEngine {
+    @XmlAttribute
+    public List<String> fields;
+    @XmlAttribute
+    public boolean unique;
+  }
+
   @XmlRootElement(name = "Trigger", namespace = DataUtils.TABLE_NAMESPACE)
-  public static class XmlTrigger {
+  public static class XmlTrigger extends XmlSqlEngine {
     @XmlAttribute
     public String timing;
     @XmlAttribute
     public List<String> events;
     @XmlAttribute
     public String scope;
-    @XmlElement(name = "PostgreSql", namespace = DataUtils.TABLE_NAMESPACE)
-    public String postgreSql;
-    @XmlElement(name = "MsSql", namespace = DataUtils.TABLE_NAMESPACE)
-    public String msSql;
-    @XmlElement(name = "Oracle", namespace = DataUtils.TABLE_NAMESPACE)
-    public String oracle;
   }
 
   @XmlAttribute
@@ -261,10 +217,6 @@ public class XmlTable {
   @XmlAttribute
   public boolean audit;
   @XmlAttribute
-  public boolean recordsVisible;
-  @XmlAttribute
-  public boolean recordsEditable;
-  @XmlAttribute
   public int x;
   @XmlAttribute
   public int y;
@@ -272,10 +224,6 @@ public class XmlTable {
   @XmlElementWrapper(name = "Fields", namespace = DataUtils.TABLE_NAMESPACE)
   @XmlElementRef
   public List<XmlField> fields;
-
-  @XmlElementWrapper(name = "Extensions", namespace = DataUtils.TABLE_NAMESPACE)
-  @XmlElementRef
-  public List<XmlField> extFields;
 
   @XmlElementWrapper(name = "Indexes", namespace = DataUtils.TABLE_NAMESPACE)
   @XmlElementRef
@@ -318,31 +266,6 @@ public class XmlTable {
           }
         }
       }
-      if (!BeeUtils.isEmpty(otherTable.extFields)) {
-        for (XmlField field : otherTable.extFields) {
-          if (!isProtected(field)) {
-            if (diff.extFields == null) {
-              diff.extFields = Lists.newArrayList(field);
-
-            } else if (diff.findField(field) == null) {
-              diff.extFields.add(field);
-            }
-            upd = true;
-          }
-        }
-      }
-      if (!BeeUtils.isEmpty(otherTable.indexes)) {
-        for (XmlIndex key : otherTable.indexes) {
-          if (indexes == null || !indexes.contains(key)) {
-            if (diff.indexes == null) {
-              diff.indexes = Sets.newHashSet(key);
-            } else {
-              diff.indexes.add(key);
-            }
-            upd = true;
-          }
-        }
-      }
       if (!upd) {
         diff = null;
       }
@@ -379,32 +302,12 @@ public class XmlTable {
           fields.add(field);
         }
       }
-      if (!BeeUtils.isEmpty(diff.extFields)) {
-        if (extFields == null) {
-          extFields = Lists.newArrayList();
-        }
-        for (XmlField field : diff.extFields) {
-          removeField(field);
-          extFields.add(field);
-        }
-      }
-      if (!BeeUtils.isEmpty(diff.indexes)) {
-        if (indexes == null) {
-          indexes = Sets.newHashSet();
-        }
-        indexes.addAll(diff.indexes);
-      }
     }
   }
 
   public XmlTable protect() {
     if (!BeeUtils.isEmpty(fields)) {
       for (XmlField field : fields) {
-        field.safe = true;
-      }
-    }
-    if (!BeeUtils.isEmpty(extFields)) {
-      for (XmlField field : extFields) {
         field.safe = true;
       }
     }
@@ -420,22 +323,12 @@ public class XmlTable {
         }
       }
     }
-    if (!BeeUtils.isEmpty(extFields)) {
-      for (XmlField fld : extFields) {
-        if (Objects.equal(field, fld)) {
-          return fld;
-        }
-      }
-    }
     return null;
   }
 
   private void removeField(XmlField field) {
     if (!BeeUtils.isEmpty(fields)) {
       fields.remove(field);
-    }
-    if (!BeeUtils.isEmpty(extFields)) {
-      extFields.remove(field);
     }
   }
 }

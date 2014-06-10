@@ -67,7 +67,7 @@ final class DiscussStarFilterSupplier extends AbstractFilterSupplier {
     Flow container = new Flow();
     container.addStyleName(getStylePrefix() + "container");
 
-    Button star = new Button(Localized.getConstants().taskFilterStarred());
+    Button star = new Button(Localized.getConstants().crmTaskFilterStarred());
     star.addStyleName(getStylePrefix() + "starred");
 
     star.addClickHandler(new ClickHandler() {
@@ -81,7 +81,7 @@ final class DiscussStarFilterSupplier extends AbstractFilterSupplier {
 
     container.add(star);
 
-    Button all = new Button(Localized.getConstants().taskFilterAll());
+    Button all = new Button(Localized.getConstants().crmTaskFilterAll());
     all.addStyleName(getStylePrefix() + "all");
 
     all.addClickHandler(new ClickHandler() {

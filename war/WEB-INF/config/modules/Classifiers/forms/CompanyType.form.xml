@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Form [
-<!ENTITY lbl1 "width: 145px; text-align: right; padding-right: 9px;">
+  <!ENTITY lbl1 "width: 145px; text-align: right; padding-right: 9px;">
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   
-  name="CompanyType" viewName="CompanyTypes" caption="=clientStatus" height="130"  width="360"
-  >
-  <FlowPanel class="flexBox-vertical" style="padding: 15px 1em 45px 1em;">
-		<Table style="border-spacing: 5px;">
-			<row>
-				<Label text="=companyStatusName" class="bee-required" horizontalAlignment="right" style="&lbl1;"/>
-				<InputText source="Name"/>
-			</row>
-			<row>
-				<Label text="=description" horizontalAlignment="right" style="&lbl1;"/>
-				<InputArea source="Description" style="width: 155px;"/>
-			</row>
-				</Table>
-	</FlowPanel>
+  name="CompanyType" viewName="CompanyTypes" caption="=clientStatus"
+  height="150" width="400">
+
+  <FlowPanel style="padding: 15px 1em;">
+    <Table style="border-spacing: 5px;">
+      <row>
+        <Label text="=companyStatusName" class="bee-required" horizontalAlignment="right"
+          style="&lbl1;" />
+        <InputText source="Name" />
+      </row>
+      <row>
+        <Label text="=description" horizontalAlignment="right" style="&lbl1;" />
+        <InputArea source="Description" style="width: 155px;" />
+      </row>
+    </Table>
+  </FlowPanel>
 </f:Form>

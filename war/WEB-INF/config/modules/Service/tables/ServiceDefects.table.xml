@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="ServiceDefects"
+  idName="ServiceDefectID"
+  >
+  <Fields>
+    <Relation name="ServiceObject" notNull="true" relation="ServiceObjects" cascade="DELETE"
+      label="=svcObject" />
+
+    <DateTime name="Date" notNull="true" defExpr="CURRENT_TIME" label="=date" />
+    <String name="Number" precision="30" notNull="true" unique="true" label="=number"
+      defExpr="NEXT_NUMBER" />
+
+    <Relation name="Supplier" relation="Companies" label="=svcDefectSupplier" />
+    <Relation name="Customer" relation="Companies" label="=customer" />
+
+    <Relation name="Currency" relation="Currencies" notNull="true" defExpr="MAIN_CURRENCY"
+      label="=currency" />
+
+    <Relation name="Manager" relation="Users" label="=manager" defExpr="CURRENT_USER" />
+
+    <Text name="TypeOfWork" label="=svcTypeOfWork" />
+    <Text name="Notes" label="=notes" />
+  </Fields>
+</Table>

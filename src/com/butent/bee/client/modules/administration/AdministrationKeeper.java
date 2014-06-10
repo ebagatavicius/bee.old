@@ -52,6 +52,7 @@ public final class AdministrationKeeper {
 
     FormFactory.registerFormInterceptor(FORM_USER, new UserForm());
     FormFactory.registerFormInterceptor(FORM_DEPARTMENT, new DepartmentForm());
+    FormFactory.registerFormInterceptor(FORM_NEW_ROLE, new NewRoleForm());
 
     GridFactory.registerGridInterceptor(NewsConstants.GRID_USER_FEEDS, new UserFeedsInterceptor());
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+
+  name="ServiceDefectItems" viewName="ServiceDefectItems"
+  caption="=productsServices" newRowCaption="=newItem"
+  flexGrow="1"
+  >
+  <g:columns>
+    <RelColumn name="Item" renderColumns="ItemName">
+      <footer text="=totalOf" horizontalAlignment="right" />
+    </RelColumn>  
+    <DataColumn name="Article" />
+
+    <DataColumn name="Quantity">
+      <footer aggregate="sum" />
+    </DataColumn>
+    <DataColumn name="UnitName" flexGrow="0" />
+    <DataColumn name="Price" />
+
+    <DataColumn name="VatPlus" width="20" sortable="false" horizontalAlignment="center"
+      caption="+" visible="false">
+      <render><ui:expression>row.VatPlus ? '+' : ''</ui:expression></render>
+    </DataColumn>
+    <DataColumn name="Vat" visible="false" />
+    <DataColumn name="VatPercent" width="20" sortable="false" horizontalAlignment="center"
+      caption="%" visible="false">
+      <render><ui:expression>row.VatPercent ? '%' : ''</ui:expression></render>
+    </DataColumn>
+
+    <CalcColumn name="Total" type="decimal" caption="=amount" format="0.00">
+      <style>
+        <bodyStyle><ui:font>bold</ui:font></bodyStyle>
+      </style>
+      <renderer type="total" />
+      <footer aggregate="sum" />
+    </CalcColumn>
+
+    <DataColumn name="Note" visible="false" />
+  </g:columns>
+</g:Grid>

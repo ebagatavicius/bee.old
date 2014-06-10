@@ -36,9 +36,11 @@ import com.butent.bee.shared.i18n.LocalizableMessages;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsObjectType;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsState;
+import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
+import com.butent.bee.shared.rights.RegulatedWidget;
+import com.butent.bee.shared.rights.RightsObjectType;
+import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.UserInterface;
@@ -487,6 +489,10 @@ public class UserServiceBean {
     return userCache.get(userId);
   }
 
+  public long[] getUserRoles() {
+    return getUserRoles(getCurrentUserId());
+  }
+
   public long[] getUserRoles(Long userId) {
     UserInfo userInfo = getUserInfo(userId);
 
@@ -576,7 +582,6 @@ public class UserServiceBean {
         }
       }
     }
-    initUsers();
   }
 
   @Lock(LockType.WRITE)
@@ -650,14 +655,36 @@ public class UserServiceBean {
     }
   }
 
+  public boolean isAdministrator() {
+    return isModuleVisible(ModuleAndSub.of(Module.ADMINISTRATION));
+  }
+
   public Boolean isBlocked(String user) {
     UserInfo userInfo = getUserInfo(getUserId(user));
     return (userInfo == null) ? null : userInfo.isBlocked(System.currentTimeMillis());
   }
 
-  public boolean isColumnVisible(String viewName, String column) {
+  public boolean isColumnVisible(BeeView view, String column) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().isColumnVisible(viewName, column);
+
+    if (info == null) {
+      return false;
+
+    } else if (view == null || BeeUtils.isEmpty(column)) {
+      return true;
+
+    } else if (!info.getUserData().isColumnVisible(view.getName(), column)) {
+      return false;
+
+    } else {
+      String root = view.getRootField(column);
+
+      if (!BeeUtils.isEmpty(root) && !BeeUtils.same(column, root)) {
+        return info.getUserData().isColumnVisible(view.getName(), root);
+      } else {
+        return true;
+      }
+    }
   }
 
   public boolean isDataVisible(String object) {
@@ -690,6 +717,11 @@ public class UserServiceBean {
 
   public boolean isUserTable(String tblName) {
     return BeeUtils.inList(tblName, TBL_USERS, TBL_COMPANY_PERSONS, TBL_PERSONS);
+  }
+
+  public boolean isWidgetVisible(RegulatedWidget widget) {
+    UserInfo info = getCurrentUserInfo();
+    return (info == null) ? false : info.getUserData().isWidgetVisible(widget);
   }
 
   @Lock(LockType.WRITE)

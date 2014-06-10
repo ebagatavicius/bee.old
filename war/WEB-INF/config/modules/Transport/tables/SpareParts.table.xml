@@ -7,7 +7,7 @@
   >
   <Fields>
     <Relation name="Type" notNull="true" relation="SparePartTypes" label="=type"/>
-    <String name="Number" precision="20" unique="true" notNull="true" label="number" />
+    <String name="Number" precision="20" unique="true" notNull="true" label="=number" />
     <String name="Description" precision="50" label="=description"/>
     <Integer name="Run" label="=trVehicleRun" />
     <Date name="Obtained" label="=trObtained" />

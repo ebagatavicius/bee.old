@@ -9,6 +9,7 @@ import com.butent.bee.server.http.HttpConst;
 import com.butent.bee.server.http.HttpUtils;
 import com.butent.bee.server.i18n.Localizations;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.communication.CommUtils;
 import com.butent.bee.shared.html.builder.Document;
 import com.butent.bee.shared.html.builder.Node;
 import com.butent.bee.shared.html.builder.elements.Div;
@@ -102,7 +103,7 @@ public class LoginServlet extends HttpServlet {
 
     long time = file.lastModified();
     if (time > 0) {
-      requestPath += "?v=" + new DateTime(time).toTimeStamp();
+      requestPath = CommUtils.addTimeStamp(requestPath, new DateTime(time));
     }
     return requestPath;
   }

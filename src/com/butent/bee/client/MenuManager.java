@@ -1,7 +1,5 @@
 package com.butent.bee.client;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.menu.MenuBar;
@@ -27,6 +25,7 @@ import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -87,7 +86,7 @@ public class MenuManager {
       ((Tree) rw).addItem(it);
     }
   }
-  
+
   private static void noService(Menu item) {
     logger.warning("service not available for menu item", item.getParent(), item.getName());
   }
@@ -140,9 +139,9 @@ public class MenuManager {
     }
   }
 
-  private final List<Menu> roots = Lists.newArrayList();
+  private final List<Menu> roots = new ArrayList<>();
 
-  private final List<String> layouts = Lists.newArrayList();
+  private final List<String> layouts = new ArrayList<>();
 
   public MenuManager() {
     super();
@@ -164,6 +163,35 @@ public class MenuManager {
     }
     return ok;
   }
+  
+  public boolean executeItem(String name) {
+    if (BeeUtils.isEmpty(name)) {
+      return false;
+    }
+    
+    MenuItem item = null;
+    
+    for (Menu menu : roots) {
+      item = findItem(menu, name);
+      if (item != null) {
+        break;
+      }
+    }
+    
+    if (item == null) {
+      logger.warning("menu item", name, "not found");
+      return false;
+
+    } else if (item.getService() == null) {
+      noService(item);
+      return false;
+      
+    } else {
+      MenuCommand command = new MenuCommand(item.getService(), item.getParameters());
+      command.execute();
+      return true;
+    }
+  }
 
   public List<String> getLayouts() {
     return layouts;
@@ -177,10 +205,14 @@ public class MenuManager {
     return roots;
   }
 
+  public boolean isEmpty() {
+    return roots.isEmpty();
+  }
+
   public boolean loadMenu() {
     ParameterList params = BeeKeeper.getRpc().createParameters(Service.GET_MENU);
     params.addQueryItem(Service.VAR_RIGHTS, 1);
-    
+
     BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
@@ -200,21 +232,21 @@ public class MenuManager {
       for (String s : arr) {
         roots.add(Menu.restore(s));
       }
-      
+
       int size = 0;
       for (Menu menu : roots) {
         size += menu.getSize();
       }
-      
+
       logger.info("menu", size);
-      
+
       drawMenu();
     }
   }
 
   public void showMenuInfo() {
     if (roots.isEmpty()) {
-      Global.showInfo(Lists.newArrayList("menu empty"));
+      Global.showInfo("menu empty");
       return;
     }
     Tree tree = new Tree();
@@ -225,6 +257,28 @@ public class MenuManager {
       tree.addItem(item);
     }
     BeeKeeper.getScreen().updateActivePanel(tree);
+  }
+
+  private static MenuItem findItem(Menu menu, String name) {
+    if (menu instanceof MenuItem) {
+      if (BeeUtils.same(menu.getName(), name)) {
+        return (MenuItem) menu;
+      } else {
+        return null;
+      }
+
+    } else if (menu instanceof MenuEntry) {
+      for (Menu child : ((MenuEntry) menu).getItems()) {
+        MenuItem item = findItem(child, name);
+        if (item != null) {
+          return item;
+        }
+      }
+      return null;
+
+    } else {
+      return null;
+    }
   }
 
   private void collectMenuInfo(TreeItem treeItem, Menu menu) {

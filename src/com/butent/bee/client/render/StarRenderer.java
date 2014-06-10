@@ -1,12 +1,9 @@
 package com.butent.bee.client.render;
 
-import com.google.gwt.resources.client.ImageResource;
-
 import com.butent.bee.client.images.star.Stars;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.export.XCell;
-import com.butent.bee.shared.export.XPicture;
 import com.butent.bee.shared.export.XSheet;
 
 public class StarRenderer extends AbstractCellRenderer {
@@ -21,18 +18,12 @@ public class StarRenderer extends AbstractCellRenderer {
     if (index == null || sheet == null) {
       return null;
     }
-
-    ImageResource resource = Stars.get(index);
-    if (resource == null) {
+    
+    Integer ref = Stars.export(index, sheet);
+    if (ref == null) {
       return null;
     }
 
-    XPicture picture = XPicture.create(resource.getSafeUri().asString());
-    if (picture == null) {
-      return null;
-    }
-
-    int ref = sheet.registerPicture(picture);
     return XCell.forPicture(cellIndex, ref);
   }
 

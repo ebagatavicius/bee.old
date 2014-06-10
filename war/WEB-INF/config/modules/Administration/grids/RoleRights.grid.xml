@@ -2,8 +2,8 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   xmlns:ui="http://www.butent.com/ui"
   
-  name="RoleRights" viewName="Rights" caption="=roleRights"
-  flexGrow="1" flexShrink="1"
+  name="RoleRights" viewName="Rights"
+  flexGrow="1" readOnly="true"
   >
   <g:columns>
     <DataColumn name="ObjectType" caption="=objectType" readOnly="true" visible="true" />

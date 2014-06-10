@@ -2,18 +2,23 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
   name="EcCatalog" viewName="TcdArticles" caption="=ecCatalog"
-  editShowId="true"
+  editShowId="true" disabledActions="export"
   >
   <g:columns>
-    <IdColumn name="Id" caption="=captionId" width="60" />
+    <IdColumn name="Id" width="60" />
     <DataColumn name="ArticleName" visible="true" />
     <DataColumn name="ArticleNr" visible="true" />
     <DataColumn name="BrandName" />
+
     <DataColumn name="UnitName" />
     <DataColumn name="Weight" />
+
     <DataColumn name="Visible" />
+
     <DataColumn name="Novelty" />
     <DataColumn name="Featured" />
+    <DataColumn name="FeaturedPrice" />
+    <DataColumn name="FeaturedPercent" />
 
     <DataColumn name="Description" visible="false" />
 

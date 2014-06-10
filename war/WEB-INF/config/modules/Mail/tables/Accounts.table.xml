@@ -5,10 +5,11 @@
   idName="AccountID"
   >
   <Fields>
-    <Relation name="User" relation="Users" cascade="DELETE" label="=user" />
+    <Relation name="User" relation="Users" cascade="DELETE" label="=user" defExpr="CURRENT_USER" />
     <String name="Description" precision="50" notNull="true" label="=mailName" />
     <Boolean name="Main" label="=mailDefault" />
     <Relation name="Address" relation="Emails" notNull="true" unique="true" label="=mailAddress" />
+    <Relation name="Signature" relation="Signatures" label="=mailSignature" />
 
     <String name="StoreType" precision="5" notNull="true" defValue="IMAP" label="=mailServerType"/>
     <String name="StoreServer" precision="50" label="=mailServerAddress" />

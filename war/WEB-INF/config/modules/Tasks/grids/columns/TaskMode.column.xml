@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <CalcColumn name="Mode" type="string" cellType="html" horizontalAlignment="center" width="20"
+    caption="-" label="=crmTaskColumnMode" exportWidthFactor="0.3" />
+</g:columns>

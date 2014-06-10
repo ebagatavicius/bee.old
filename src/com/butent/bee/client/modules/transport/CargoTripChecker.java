@@ -12,6 +12,7 @@ import com.butent.bee.client.dialog.ConfirmationCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.view.RowInfo;
@@ -73,5 +74,10 @@ public class CargoTripChecker extends AbstractGridInterceptor {
       }
     });
     return DeleteMode.CANCEL;
+  }
+  
+  @Override
+  public GridInterceptor getInstance() {
+    return new CargoTripChecker();
   }
 }

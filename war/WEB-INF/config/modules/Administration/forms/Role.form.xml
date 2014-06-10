@@ -3,7 +3,7 @@
   xmlns:f="http://www.butent.com/form"
   
   name="Role" viewName="Roles" caption="=role"
-  width="500" height="300"
+  width="600" height="400"
   >
   <FlowPanel class="flexBox-vertical">
     <HorizontalPanel style="border-spacing: 10px;">
@@ -12,7 +12,16 @@
     </HorizontalPanel>
 
     <br/>
-    <ChildGrid class="flexible" name="RoleUsers" relColumn="Role" />
-      
+    
+    <TabbedPages class="flexible">
+      <page data="RoleUsers">
+        <text>=roleUsers</text>
+        <ChildGrid name="RoleUsers" relColumn="Role" />
+      </page>
+      <page data="Rights">
+        <text>=roleRights</text>
+        <ChildGrid gridName="RoleRights" relColumn="Role" />
+      </page>
+    </TabbedPages>
   </FlowPanel>
 </f:Form>  

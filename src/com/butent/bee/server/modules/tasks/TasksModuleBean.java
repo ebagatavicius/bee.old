@@ -68,7 +68,6 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.administration.AdministrationConstants.ReminderMethod;
-import com.butent.bee.shared.modules.mail.MailConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskEvent;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.modules.tasks.TaskUtils;
@@ -147,7 +146,7 @@ public class TasksModuleBean implements BeeModule {
       result.addAll(taskDurationsSr);
 
       List<SearchResult> taskTemplatesSr = qs.getSearchResults(VIEW_TASK_TEMPLATES,
-          Filter.anyContains(Sets.newHashSet(COL_NAME, COL_SUMMARY, COL_DESCRIPTION,
+          Filter.anyContains(Sets.newHashSet(COL_TASK_TEMPLATE_NAME, COL_SUMMARY, COL_DESCRIPTION,
               ALS_COMPANY_NAME, ALS_CONTACT_FIRST_NAME, ALS_CONTACT_LAST_NAME),
               query));
       result.addAll(taskTemplatesSr);
@@ -232,17 +231,33 @@ public class TasksModuleBean implements BeeModule {
         if (event.isBefore()) {
           return;
         }
-        if (BeeUtils.same(event.getTargetName(), VIEW_RT_FILES)) {
+
+        if (event.isTarget(VIEW_RT_FILES)) {
           ExtensionIcons.setIcons(event.getRowset(), ALS_FILE_NAME, PROP_ICON);
 
-        } else if (BeeUtils.same(event.getTargetName(), VIEW_TASKS)) {
+        } else if (event.isTarget(VIEW_TASKS) || event.isTarget(VIEW_RELATED_TASKS)) {
           BeeRowSet rowSet = event.getRowset();
 
           if (!rowSet.isEmpty()) {
             Set<Long> taskIds = Sets.newHashSet();
+            Long id;
+
             if (rowSet.getNumberOfRows() < 100) {
               for (BeeRow row : rowSet.getRows()) {
-                taskIds.add(row.getId());
+                switch (event.getTargetName()) {
+                  case VIEW_TASKS:
+                    id = row.getId();
+                    break;
+                  case VIEW_RELATED_TASKS:
+                    id = row.getLong(rowSet.getColumnIndex(COL_TASK));
+                    break;
+                  default:
+                    id = null;
+                }
+
+                if (DataUtils.isId(id)) {
+                  taskIds.add(id);
+                }
               }
             }
 
@@ -265,18 +280,18 @@ public class TasksModuleBean implements BeeModule {
 
             for (SimpleRow tuRow : tuData) {
               long taskId = tuRow.getLong(taskIndex);
-              BeeRow row = rowSet.getRowById(taskId);
-              if (row == null) {
-                continue;
-              }
+              BeeRow row = event.isTarget(VIEW_RELATED_TASKS)
+                  ? rowSet.findRow(Filter.equals(COL_TASK, taskId)) : rowSet.getRowById(taskId);
 
-              row.setProperty(PROP_USER, BeeConst.STRING_PLUS);
+              if (row != null) {
+                row.setProperty(PROP_USER, BeeConst.STRING_PLUS);
 
-              if (tuRow.getValue(accessIndex) != null) {
-                row.setProperty(PROP_LAST_ACCESS, tuRow.getValue(accessIndex));
-              }
-              if (tuRow.getValue(starIndex) != null) {
-                row.setProperty(PROP_STAR, tuRow.getValue(starIndex));
+                if (tuRow.getValue(accessIndex) != null) {
+                  row.setProperty(PROP_LAST_ACCESS, tuRow.getValue(accessIndex));
+                }
+                if (tuRow.getValue(starIndex) != null) {
+                  row.setProperty(PROP_STAR, tuRow.getValue(starIndex));
+                }
               }
             }
 
@@ -294,17 +309,21 @@ public class TasksModuleBean implements BeeModule {
             int publishIndex = teData.getColumnIndex(COL_PUBLISH_TIME);
 
             for (SimpleRow teRow : teData) {
-              long taskId = teRow.getLong(taskIndex);
-              BeeRow row = rowSet.getRowById(taskId);
-
               if (teRow.getValue(publishIndex) != null) {
-                row.setProperty(PROP_LAST_PUBLISH, teRow.getValue(publishIndex));
+                long taskId = teRow.getLong(taskIndex);
+                BeeRow row = event.isTarget(VIEW_RELATED_TASKS)
+                    ? rowSet.findRow(Filter.equals(COL_TASK, taskId)) : rowSet.getRowById(taskId);
+
+                if (row != null) {
+                  row.setProperty(PROP_LAST_PUBLISH, teRow.getValue(publishIndex));
+                }
               }
             }
           }
         }
       }
     });
+
     TaskUsageQueryProvider usageQueryProvider = new TaskUsageQueryProvider();
 
     news.registerUsageQueryProvider(Feed.TASKS_ALL, usageQueryProvider);
@@ -801,7 +820,7 @@ public class TasksModuleBean implements BeeModule {
 
         if (!response.hasErrors() && response.hasResponse(String.class)) {
           Set<Long> createdTasks = DataUtils.parseIdSet(response.getResponseAsString());
-          Long senderEmailId = getSenderEmailId("create task:");
+          Long senderEmailId = mail.getSenderEmailId("create task:");
 
           if (senderEmailId != null) {
             boolean pref = BeeConst.isTrue(taskRow.getProperty(PROP_MAIL));
@@ -852,7 +871,7 @@ public class TasksModuleBean implements BeeModule {
 
         if (!response.hasErrors() && event == TaskEvent.FORWARD
             && !Objects.equals(currentUser, DataUtils.getLong(taskData, taskRow, COL_EXECUTOR))) {
-          Long senderEmailId = getSenderEmailId("forward task:");
+          Long senderEmailId = mail.getSenderEmailId("forward task:");
 
           if (senderEmailId != null) {
             ResponseObject mailResponse = mailNewTask(senderEmailId, taskId, true, false);
@@ -994,18 +1013,14 @@ public class TasksModuleBean implements BeeModule {
 
     SqlSelect companiesListQuery =
         new SqlSelect()
-            .addFields(TBL_COMPANIES,
-                sys.getIdName(TBL_COMPANIES))
-            .addFields(TBL_COMPANIES, COL_NAME)
-            .addField(TBL_COMPANY_TYPES, COL_NAME,
-                ALS_COMPANY_TYPE)
+            .addFields(TBL_COMPANIES, sys.getIdName(TBL_COMPANIES))
+            .addFields(TBL_COMPANIES, COL_COMPANY_NAME)
+            .addField(TBL_COMPANY_TYPES, COL_COMPANY_TYPE_NAME, ALS_COMPANY_TYPE)
             .addFrom(TBL_COMPANIES)
-            .addFromLeft(
-                TBL_COMPANY_TYPES,
-                sys.joinTables(TBL_COMPANY_TYPES,
-                    TBL_COMPANIES, COL_COMPANY_TYPE))
+            .addFromLeft(TBL_COMPANY_TYPES,
+                sys.joinTables(TBL_COMPANY_TYPES, TBL_COMPANIES, COL_COMPANY_TYPE))
             .setWhere(SqlUtils.sqlTrue())
-            .addOrder(TBL_COMPANIES, COL_NAME);
+            .addOrder(TBL_COMPANIES, COL_COMPANY_NAME);
 
     if (reqInfo.hasParameter(VAR_TASK_COMPANY)) {
       companiesListQuery.setWhere(SqlUtils.and(companiesListQuery.getWhere(), SqlUtils.inList(
@@ -1018,7 +1033,7 @@ public class TasksModuleBean implements BeeModule {
     }
 
     SimpleRowSet companiesListSet = qs.getData(companiesListQuery);
-    SimpleRowSet result = new SimpleRowSet(new String[] {COL_NAME, COL_DURATION});
+    SimpleRowSet result = new SimpleRowSet(new String[] {COL_COMPANY_NAME, COL_DURATION});
     long totalTimeMls = 0;
 
     result.addRow(new String[] {constants.client(), constants.crmSpentTime()});
@@ -1028,7 +1043,7 @@ public class TasksModuleBean implements BeeModule {
 
     for (int i = 0; i < companiesListSet.getNumberOfRows(); i++) {
       String compFullName =
-          companiesListSet.getValue(i, COL_NAME)
+          companiesListSet.getValue(i, COL_COMPANY_NAME)
               + (!BeeUtils.isEmpty(companiesListSet.getValue(i, ALS_COMPANY_TYPE))
                   ? ", " + companiesListSet.getValue(i, ALS_COMPANY_TYPE) : "");
       String dTime = "0:00";
@@ -1258,27 +1273,6 @@ public class TasksModuleBean implements BeeModule {
     }
   }
 
-  private Long getSenderEmailId(String logLabel) {
-    Long account = prm.getRelation(MailConstants.PRM_DEFAULT_ACCOUNT);
-    if (!DataUtils.isId(account)) {
-      logger.info(logLabel, "sender account not specified",
-          BeeUtils.bracket(MailConstants.PRM_DEFAULT_ACCOUNT));
-      return null;
-    }
-
-    Long emailId = qs.getLong(new SqlSelect()
-        .addFields(MailConstants.TBL_ACCOUNTS, MailConstants.COL_ADDRESS)
-        .addFrom(MailConstants.TBL_ACCOUNTS)
-        .setWhere(sys.idEquals(MailConstants.TBL_ACCOUNTS, account)));
-
-    if (!DataUtils.isId(emailId)) {
-      logger.severe(logLabel, "email id not available for account", account);
-      return null;
-    } else {
-      return emailId;
-    }
-  }
-
   private Set<JustDate> getSpawnedDates(long rtId, DateRange range) {
     Set<JustDate> dates = Sets.newHashSet();
 
@@ -1389,9 +1383,9 @@ public class TasksModuleBean implements BeeModule {
     LocalizableConstants constants = usr.getLocalizableConstants();
     SqlSelect durationTypes = new SqlSelect()
         .addFrom(TBL_DURATION_TYPES)
-        .addFields(TBL_DURATION_TYPES, COL_NAME)
+        .addFields(TBL_DURATION_TYPES, COL_DURATION_TYPE_NAME)
         .setWhere(SqlUtils.sqlTrue())
-        .addOrder(TBL_DURATION_TYPES, COL_NAME);
+        .addOrder(TBL_DURATION_TYPES, COL_DURATION_TYPE_NAME);
 
     boolean hideTimeZeros = false;
 
@@ -1406,7 +1400,7 @@ public class TasksModuleBean implements BeeModule {
     }
 
     SimpleRowSet dTypesList = qs.getData(durationTypes);
-    SimpleRowSet result = new SimpleRowSet(new String[] {COL_NAME, COL_DURATION});
+    SimpleRowSet result = new SimpleRowSet(new String[] {COL_DURATION_TYPE_NAME, COL_DURATION});
 
     result.addRow(new String[] {constants.crmDurationType(), constants.crmSpentTime()});
     Assert.notNull(dTypesList);
@@ -1414,7 +1408,7 @@ public class TasksModuleBean implements BeeModule {
     long totalTimeMls = 0;
 
     for (int i = 0; i < dTypesList.getNumberOfRows(); i++) {
-      String dType = dTypesList.getValue(i, dTypesList.getColumnIndex(COL_NAME));
+      String dType = dTypesList.getValue(i, dTypesList.getColumnIndex(COL_DURATION_TYPE_NAME));
       String dTime = "0:00";
 
       SqlSelect dTypeTime = new SqlSelect()
@@ -1429,9 +1423,9 @@ public class TasksModuleBean implements BeeModule {
               sys.joinTables(TBL_COMPANIES, TBL_TASKS, COL_COMPANY))
           .addFromLeft(TBL_USERS,
               sys.joinTables(TBL_USERS, TBL_TASK_EVENTS, COL_PUBLISHER))
-          .addFields(TBL_DURATION_TYPES, COL_NAME)
+          .addFields(TBL_DURATION_TYPES, COL_DURATION_TYPE_NAME)
           .addFields(TBL_EVENT_DURATIONS, COL_DURATION)
-          .setWhere(SqlUtils.equals(TBL_DURATION_TYPES, COL_NAME, dType));
+          .setWhere(SqlUtils.equals(TBL_DURATION_TYPES, COL_DURATION_TYPE_NAME, dType));
 
       if (reqInfo.hasParameter(VAR_TASK_DURATION_DATE_FROM)) {
         if (!BeeUtils.isEmpty(reqInfo.getParameter(VAR_TASK_DURATION_DATE_FROM))) {
@@ -1552,7 +1546,7 @@ public class TasksModuleBean implements BeeModule {
     }
 
     SimpleRowSet usersListSet = qs.getData(userListQuery);
-    SimpleRowSet result = new SimpleRowSet(new String[] {COL_NAME, COL_DURATION});
+    SimpleRowSet result = new SimpleRowSet(new String[] {COL_USER, COL_DURATION});
     long totalTimeMls = 0;
 
     result.addRow(new String[] {
@@ -1706,7 +1700,7 @@ public class TasksModuleBean implements BeeModule {
       return;
     }
 
-    Long senderEmailId = getSenderEmailId("scheduled tasks:");
+    Long senderEmailId = mail.getSenderEmailId("scheduled tasks:");
     if (senderEmailId == null) {
       return;
     }
@@ -2015,7 +2009,7 @@ public class TasksModuleBean implements BeeModule {
     int count = 0;
     String label = "task reminders:";
 
-    Long senderEmailId = getSenderEmailId(label);
+    Long senderEmailId = mail.getSenderEmailId(label);
     if (!DataUtils.isId(senderEmailId)) {
       return count;
     }
@@ -2148,6 +2142,12 @@ public class TasksModuleBean implements BeeModule {
       values.add(description.trim());
     }
 
+    Long type = DataUtils.getLong(rtColumns, rtRow, COL_TASK_TYPE);
+    if (DataUtils.isId(type)) {
+      columns.add(DataUtils.getColumn(COL_TASK_TYPE, taskColumns));
+      values.add(type.toString());
+    }
+    
     columns.add(DataUtils.getColumn(COL_PRIORITY, taskColumns));
     values.add(DataUtils.getString(rtColumns, rtRow, COL_PRIORITY));
 

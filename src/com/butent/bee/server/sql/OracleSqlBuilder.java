@@ -107,6 +107,10 @@ class OracleSqlBuilder extends SqlBuilder {
       case BITAND:
         return "BITAND(" + params.get("expression") + ", " + params.get("value") + ")";
 
+      case BITOR:
+        return params.get("expression") + " + " + params.get("value") + " - "
+            + sqlFunction(SqlFunction.BITAND, params);
+
       default:
         return super.sqlFunction(function, params);
     }

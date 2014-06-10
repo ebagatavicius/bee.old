@@ -7,7 +7,7 @@
   flexGrow="1"
   >
   <g:columns>
-    <IdColumn name="ID" caption="ID" />
+    <IdColumn name="ID" />
     <DataColumn name="Date" />
     <DataColumn name="ForwarderName" caption="=carrier" />
     <DataColumn name="ExpeditionType" caption="=trExpeditionType" />

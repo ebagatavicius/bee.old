@@ -8,7 +8,7 @@
   <Fields>
     <Relation name="Vehicle" notNull="true" relation="Vehicles" cascade="DELETE" label="=trVehicle" />
     <Date name="Date" label="=date" />
-    <Relation name="Item" notNull="true" relation="Items" label="=trProductService" />
+    <Relation name="Item" notNull="true" relation="Items" label="=productService" />
     <Double name="Quantity" notNull="true" label="=quantity"/>
     <Numeric name="Price" precision="15" scale="5" label="=price" />
     <Relation name="Currency" relation="Currencies" label="=currency" />

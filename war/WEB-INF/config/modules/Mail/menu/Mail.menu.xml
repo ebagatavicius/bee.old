@@ -5,6 +5,7 @@ name="Mail" label="=mail" order="80" module="Mail"
 >
   <Item name="Mail" label="=mails" service="open_mail" />
   <Item name="Accounts" label="=mailAccounts" service="grid" parameters="Accounts" />
+  <Item name="Signatures" label="=mailSignatures" service="grid" parameters="Signatures" />
 
   <Item name="Proxy" label="=mailReloadMailProxy" service="restart_proxy" separator="true"
    module="Mail.Administration" />

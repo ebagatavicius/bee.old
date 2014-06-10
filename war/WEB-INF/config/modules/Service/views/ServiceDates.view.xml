@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="ServiceDates" source="ServiceDates"
+  caption="=svcDates" newRowCaption="=svcNewDate"
+  >
+  <Columns>
+    <SimpleColumn name="ServiceObject" />
+
+    <SimpleColumn name="DateFrom" />
+    <SimpleColumn name="DateUntil" />
+    
+    <SimpleColumn name="Color" />
+    <SimpleColumn name="Note" />
+  </Columns>
+  <Order>
+    <OrderBy column="DateFrom" />
+  </Order>
+</View>
+ 

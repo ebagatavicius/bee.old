@@ -21,7 +21,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="NewTask" viewName="Tasks" caption="=crmNewTask" width="700" height="625">
+  name="NewTask" viewName="Tasks" caption="=crmNewTask" width="700" height="640">
 
   <FlowPanel style="padding: 10px 2px 2px 10px;">
   
@@ -30,52 +30,58 @@
       <col index="2" cellStyle="&col3;" />
 
       <row>
-        <Label text="=taskTemplate" data="TaskTemplates" />
+        <Label text="=crmTaskTemplate" data="TaskTemplates" />
         <DataSelector viewName="TaskTemplates" choiceColumns="Name" property="Template"
           newRowEnabled="false" style="&inp2;" data="TaskTemplates" />
-        <Label for="Priority" text="=priority" />
+      </row>
+
+      <row>
+        <Label for="Type" />
+        <DataSelector source="Type" renderColumns="TypeName" newRowEnabled="false" style="&inp2;"
+          disablable="true" />
+        <Label for="Priority" />
         <Radio source="Priority" />
       </row>
 
       <row>
-        <Label text="=startingDate" class="bee-required" />
+        <Label for="StartTime" />
         <FlowPanel>
           <InputDate name="Start_Date" style="&dateStyle;" required="true" />
           <InputTimeOfDay name="Start_Time" step="&timeStep;" style="&timeStyle;" />
         </FlowPanel>
-        <Label for="ExpectedDuration" text="=crmTaskExpectedDuration" />
-        <InputTime source="ExpectedDuration" step="&timeStep;" style="width: 50px;" />
+        <Label for="ExpectedDuration" />
+        <InputTime name="ExpectedDuration" source="ExpectedDuration" step="&timeStep;" style="width: 50px;" />
       </row>
 
       <row>
-        <Label text="=endingDate" />
+        <Label name="EndDateLabel" text="=endingDate" class="bee-required" />
         <FlowPanel>
           <InputDate name="End_Date" style="&dateStyle;" />
           <InputTimeOfDay name="End_Time" step="&timeStep;" style="&timeStyle;" />
         </FlowPanel>
-        <Label for="Company" text="=company" />
+        <Label for="Company" />
         <DataSelector source="Company" editPopup="true" newRowEnabled="false"
           style="width: 200px;" />
       </row>
 
       <row>
-        <Label for="Reminder" text="=taskReminder" />
+        <Label for="Reminder" />
         <DataSelector source="Reminder" renderColumns="ReminderName" newRowEnabled="false"
           style="&inp2;" />
-        <Label for="Contact" text="=personContact" />
+        <Label for="Contact" />
         <DataSelector source="Contact" editPopup="true" newRowEnabled="false" style="width: 200px;"
           renderColumns="ContactFirstName ContactLastName"
           choiceColumns="FirstName LastName CompanyName" options="Company" />
       </row>
 
       <row>
-        <Label for="ReminderTime" text="=crmReminderDate" />
+        <Label for="ReminderTime" />
         <FlowPanel for="ReminderTime">
           <InputDate name="Reminder_Date" style="&dateStyle;" />
           <InputTimeOfDay name="Reminder_Time" step="&timeStep;" style="&timeStyle;" />
         </FlowPanel>
         <cell colSpan="2" horizontalAlignment="left" style="padding-left: 2em;" module="Mail">
-          <CheckBox name="Mail" text="=crmMailTask" />
+          <CheckBox name="Mail" text="=mailNotify" />
         </cell>
       </row>
     </Table>
@@ -85,19 +91,19 @@
       <col index="0" cellStyle="&col1;" />
       
       <row>
-        <Label text="=taskTheme" class="bee-required" />
+        <Label for="Summary" />
         <InputText source="Summary" style="&inp2x;" autocomplete="true" visible="true" />
       </row>
 
       <row for="Description">
-        <Label text="=description" />
+        <Label for="Description" />
         <InputArea source="Description" style="&inp2x; height: 60px;" />
       </row>
     </Table>
 
     &separator;
-    <FlowPanel style="margin-top: 4px;" class="flexBox-horizontal-top" data="TaskFiles">
-      <Label text="=files" style="width: 128px;" />
+    <FlowPanel class="flexBox-horizontal-top" data="TaskFiles">
+      <Label text="=files" style="&col1; margin-top: 4px;" />
       <FileCollector name="Files" editableColumns="name">
         <face resource="attachment" />
       </FileCollector>
@@ -108,7 +114,7 @@
       <col index="0" cellStyle="&col1;" />
 
       <row>
-        <Label text="=crmTaskExecutors" />
+        <Label name="ExecutorsLabel" class="bee-required" text="=crmTaskExecutors" />
         <MultiSelector viewName="Users" property="Executors" renderColumns="FirstName LastName"
           editPopup="true" newRowEnabled="false" editSource="CompanyPerson" style="&inp2x;"
           label="=crmTaskExecutors" />
@@ -116,7 +122,7 @@
 
       <row data="UserGroupSettings">
         <Label text="=crmTaskExecutorGroups" />
-        <MultiSelector viewName="UserGroupSettings" property="ExecutorGroups" renderColumns="Name"
+        <MultiSelector name="UserGroupSettings" viewName="UserGroupSettings" property="ExecutorGroups" renderColumns="Name"
           editPopup="true" newRowEnabled="false" style="&inp2y;" label="=crmTaskExecutorGroups"
           filter="Owner {u} or Visibility 1" />
       </row>
@@ -173,8 +179,15 @@
           renderColumns="Subject" newRowEnabled="false" editPopup="true" style="&inp2x;" />
       </row>
 
+      <row data="Relations" for="ServiceObject" module="Service">
+        <Label text="=svcObjects" />
+        <MultiSelector viewName="ServiceObjects" property="ServiceObjects"
+          renderColumns="Address" choiceColumns="Address CustomerName"
+          newRowEnabled="false" editPopup="true" style="&inp2x;" />
+      </row>
+
       <row data="Relations" for="Relation">
-        <Label text="=tasks" />
+        <Label text="=crmTasks" />
         <MultiSelector viewName="Tasks" property="Tasks" 
           renderColumns="Summary ExecutorFirstName ExecutorLastName"
           choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"

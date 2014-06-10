@@ -2,6 +2,8 @@ package com.butent.bee.shared.io;
 
 import com.google.common.collect.Lists;
 
+import com.butent.bee.shared.communication.CommUtils;
+import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Arrays;
@@ -83,6 +85,14 @@ public final class Paths {
       return null;
     } else {
       return normalizePath(CSS_DIR, fileName, CSS_EXT);
+    }
+  }
+
+  public static String getStyleSheetUrl(String fileName, HasDateValue version) {
+    if (version == null) {
+      return getStyleSheetPath(fileName);
+    } else {
+      return CommUtils.addTimeStamp(getStyleSheetPath(fileName), version);
     }
   }
   

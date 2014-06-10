@@ -13,7 +13,8 @@ import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.modules.transport.TransportHandler;
-import com.butent.bee.client.modules.transport.charts.ChartRowLayout.GroupLayout;
+import com.butent.bee.client.timeboard.TimeBoardHelper;
+import com.butent.bee.client.timeboard.TimeBoardRowLayout;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Size;
@@ -210,7 +211,7 @@ final class ShippingSchedule extends VehicleTimeBoard {
 
   @Override
   protected void prepareChart(Size canvasSize) {
-    setSeparateTrips(ChartHelper.getBoolean(getSettings(), COL_SS_SEPARATE_TRIPS));
+    setSeparateTrips(TimeBoardHelper.getBoolean(getSettings(), COL_SS_SEPARATE_TRIPS));
     super.prepareChart(canvasSize);
   }
 
@@ -221,10 +222,10 @@ final class ShippingSchedule extends VehicleTimeBoard {
   }
 
   @Override
-  protected void renderInfoCell(ChartRowLayout layout, Vehicle vehicle, ComplexPanel panel,
+  protected void renderInfoCell(TimeBoardRowLayout layout, Vehicle vehicle, ComplexPanel panel,
       int firstRow, int lastRow) {
 
-    for (GroupLayout group : layout.getGroups()) {
+    for (TimeBoardRowLayout.GroupLayout group : layout.getGroups()) {
       Trip trip = findTripById(group.getGroupId());
 
       if (trip != null) {
@@ -244,9 +245,9 @@ final class ShippingSchedule extends VehicleTimeBoard {
       Long currentTrip = tripsByRow.get(rowIndex);
 
       if (Objects.equal(lastTrip, currentTrip)) {
-        ChartHelper.addRowSeparator(panel, top, getChartLeft(), getCalendarWidth());
+        TimeBoardHelper.addRowSeparator(panel, top, getChartLeft(), getCalendarWidth());
       } else {
-        ChartHelper.addRowSeparator(panel, STYLE_TRIP_GROUP_ROW_SEPARATOR, top,
+        TimeBoardHelper.addRowSeparator(panel, STYLE_TRIP_GROUP_ROW_SEPARATOR, top,
             getNumberWidth(), getInfoWidth() + getCalendarWidth());
         lastTrip = currentTrip;
       }

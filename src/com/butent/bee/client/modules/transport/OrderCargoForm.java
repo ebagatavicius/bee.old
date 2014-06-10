@@ -24,6 +24,7 @@ import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.InputBoolean;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
@@ -69,6 +70,11 @@ class OrderCargoForm extends AbstractFormInterceptor {
               COL_TRADE_VAT_PLUS, COL_TRADE_VAT, COL_TRADE_VAT_PERC)) {
             refresh(Data.getLong(viewName, getActiveRow(), COL_CURRENCY));
           }
+        }
+        
+        @Override
+        public GridInterceptor getInstance() {
+          return null;
         }
       });
     } else if (widget instanceof InputBoolean

@@ -13,7 +13,8 @@ name="Ec" label="=ecMenu" order="100" module="Ec"
     separator="true"  />
   <Item name="EcCostChanges" label="=ecCostChanges" service="grid" parameters="EcCostChanges" />
 
-  <Item name="EcOrphans" label="=ecOrphans" service="grid" parameters="TcdOrphans" separator="true" />
+  <Item name="EcOrphans" label="=ecOrphans" service="ensure_categories_and_open_grid"
+    parameters="TcdOrphans" separator="true" />
 
   <Item name="UnsuppliedItems" label="=ecUnsuppliedItems" service="ensure_categories_and_open_grid"
     parameters="UnsuppliedItems" separator="true" />

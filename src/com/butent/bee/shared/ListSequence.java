@@ -33,12 +33,6 @@ public class ListSequence<T> extends AbstractSequence<T> {
     values.clear();
   }
 
-  @Override
-  public ListSequence<T> copy() {
-    List<T> list = Lists.newArrayList(getList());
-    return new ListSequence<T>(list);
-  }
-
   /**
    * Returns the value of the list by {@code index}. The value {@code index} are between 0 and
    * {@code length() - 1}

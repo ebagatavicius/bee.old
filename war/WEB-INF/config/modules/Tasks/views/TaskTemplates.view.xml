@@ -2,7 +2,7 @@
 <View xmlns="http://www.butent.com/view"
 
   name="TaskTemplates" source="TaskTemplates"
-  caption="=crmTaskTemplate" newRowCaption="=crmNewTaskTemplate"
+  caption="=crmTaskTemplates" newRowCaption="=crmNewTaskTemplate"
   newRowForm="TaskTemplate"
   >
   <Columns>
@@ -10,6 +10,13 @@
     <SimpleColumn name="Summary" />
     <SimpleColumn name="Description" />
     <SimpleColumn name="Priority" />
+
+    <SimpleColumn name="Type" />
+    <SimpleJoin name="Type" joinType="LEFT">
+      <SimpleColumn name="Name" alias="TypeName" />
+      <SimpleColumn name="Background" alias="TypeBackground" />
+      <SimpleColumn name="Foreground" alias="TypeForeground" />
+    </SimpleJoin>
 
     <SimpleColumn name="ExpectedDuration" />
 

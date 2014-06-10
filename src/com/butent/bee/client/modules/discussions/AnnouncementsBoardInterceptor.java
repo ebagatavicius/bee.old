@@ -20,6 +20,7 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.render.PhotoRenderer;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -141,14 +142,14 @@ class AnnouncementsBoardInterceptor extends AbstractFormInterceptor implements
       @Override
       public void onResponse(ResponseObject response) {
         Assert.notNull(response);
-
+        adsTable.clear();
         if (response.isEmpty()) {
-          BeeKeeper.getScreen().notifyInfo(Localized.getConstants().noData());
+          renderWelcomeSection(adsTable);
           return;
         }
 
         if (!response.hasResponse(SimpleRowSet.class)) {
-          BeeKeeper.getScreen().notifyInfo(Localized.getConstants().noData());
+          renderWelcomeSection(adsTable);
           return;
         }
 
@@ -283,6 +284,58 @@ class AnnouncementsBoardInterceptor extends AbstractFormInterceptor implements
     renderBirthdaysList(startRow, contentRow, finishRow, adsTable);
   }
 
+  protected static void renderWelcomeSection(HtmlTable adsTable) {
+
+    int row = adsTable.getRowCount();
+    adsTable.setHtml(row, 0, Localized.getConstants().welcome());
+    adsTable.getCellFormatter().setColSpan(row, 0, 2);
+    adsTable.getRow(row).addClassName(STYLE_PREFIX + ALS_TOPIC_NAME);
+
+
+    row++;
+    adsTable.setHtml(row, 0, BeeConst.STRING_EMPTY,
+        STYLE_PREFIX + COL_CREATED);
+
+    adsTable.setHtml(row, 1, BeeConst.STRING_EMPTY,
+        STYLE_PREFIX + COL_SUBJECT);
+
+    row++;
+    Image img = new Image("images/logo.png");
+    StyleUtils.setMaxHeight(img, 90);
+    adsTable.setWidget(row, 0, img, STYLE_PREFIX + COL_OWNER);
+
+    adsTable.setHtml(row, 1, Localized.getConstants().welcomeMessage(), STYLE_PREFIX
+        + COL_DESCRIPTION);
+
+    row++;
+
+    ScheduledCommand command = new ScheduledCommand() {
+
+        @Override
+        public void execute() {
+        // RowEditor.openRow(VIEW_DISCUSSIONS, rowId, false, null);
+        FormFactory.openForm(FORM_NEW_DISCUSSION, new CreateDiscussionInterceptor());
+        }
+      };
+
+    String btnCaption = BeeUtils.joinWords(
+        new FaLabel(FontAwesome.SQUARE_O).toString(),
+        new FaLabel(FontAwesome.SQUARE_O).toString(),
+        new FaLabel(FontAwesome.SQUARE_O).toString());
+
+    Button moreButton = new Button(btnCaption, command);
+    moreButton.setTitle(Localized.getConstants().more());
+    moreButton.addStyleName(STYLE_PREFIX + STYLE_ACTION + COL_DISCUSSION);
+    adsTable.setText(row, 0, BeeConst.STRING_EMPTY);
+    // adsTable.setWidget(row, 1, moreButton);
+    adsTable.setHtml(row, 1, BeeConst.STRING_EMPTY);
+
+    adsTable.getRow(row).addClassName(STYLE_PREFIX + STYLE_ACTION);
+
+    row++;
+
+  }
+
   private static void renderBirthdaysList(final int startRow, final int contentRow,
       final int finishRow, final HtmlTable adsTable) {
     ParameterList params = DiscussionsKeeper.createArgs(SVC_GET_BIRTHDAYS);
@@ -293,6 +346,7 @@ class AnnouncementsBoardInterceptor extends AbstractFormInterceptor implements
       public void onResponse(ResponseObject response) {
         if (response.isEmpty()) {
           adsTable.setHtml(contentRow, 0, Localized.getConstants().noData());
+          return;
         }
 
         if (!response.hasResponse(SimpleRowSet.class)) {

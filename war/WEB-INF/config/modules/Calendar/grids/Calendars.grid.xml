@@ -2,7 +2,8 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
   name="Calendars" viewName="Calendars" caption="=calendars" newRowCaption="=calNewCalendar"
-  newRowForm="Calendar" editForm="Calendar" favorite="Name" flexGrow="1" flexShrink="1"
+  newRowForm="Calendar" editForm="Calendar" favorite="Name" flexGrow="1"
+  filter="!(Owner) or Owner {u} or !(Visibility) or Visibility 0"
   >
   <g:columns>
     <DataColumn name="Name" visible="true" />

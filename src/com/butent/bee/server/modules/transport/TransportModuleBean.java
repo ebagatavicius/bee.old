@@ -52,19 +52,24 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.SearchResult;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.Order;
+import com.butent.bee.shared.exceptions.BeeException;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
+import com.butent.bee.shared.modules.transport.TransportConstants;
 import com.butent.bee.shared.modules.transport.TransportConstants.AssessmentStatus;
 import com.butent.bee.shared.modules.transport.TransportConstants.OrderStatus;
 import com.butent.bee.shared.modules.transport.TransportConstants.VehicleType;
 import com.butent.bee.shared.news.Feed;
+import com.butent.bee.shared.news.Headline;
+import com.butent.bee.shared.news.HeadlineProducer;
 import com.butent.bee.shared.news.NewsConstants;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.time.DateTime;
@@ -74,6 +79,7 @@ import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
 import com.butent.webservice.ButentWS;
 import com.butent.webservice.WSDocument;
@@ -570,6 +576,41 @@ public class TransportModuleBean implements BeeModule {
       }
     });
 
+    HeadlineProducer assessmentsHeadlineProducer = new HeadlineProducer() {
+
+      @Override
+      public Headline produce(Feed feed, long userId, BeeRowSet rowSet, IsRow row, boolean isNew) {
+        String caption = "";
+        String pid = DataUtils.getString(rowSet, row, COL_ASSESSMENT);
+
+        if (!BeeUtils.isEmpty(pid)) {
+          caption = BeeUtils.joinWords(caption, usr.getLocalizableConstants().captionPid()
+              + BeeConst.STRING_COLON, pid);
+        }
+
+        String id = BeeUtils.toString(row.getId());
+
+        caption = BeeUtils.joinWords(caption, usr.getLocalizableConstants().captionId()
+            + BeeConst.STRING_COLON, id);
+
+        AssessmentStatus status =
+            EnumUtils.getEnumByIndex(AssessmentStatus.class,
+                DataUtils.getInteger(rowSet, row, COL_STATUS));
+
+        if (status != null) {
+          caption = BeeUtils.joinWords(caption, status.getCaption(
+              usr.getLocalizableConstants(userId)));
+        }
+
+        String notes = DataUtils.getString(rowSet, row, ALS_ORDER_NOTES);
+        String customer = DataUtils.getString(rowSet, row, TransportConstants.ALS_CUSTOMER_NAME);
+
+        caption = BeeUtils.joinWords(caption, notes, customer);
+
+        return Headline.create(row.getId(), caption, isNew);
+      }
+    };
+
     news.registerUsageQueryProvider(Feed.ORDER_CARGO, new ExtendedUsageQueryProvider() {
       @Override
       protected List<IsCondition> getConditions(long userId) {
@@ -595,6 +636,19 @@ public class TransportModuleBean implements BeeModule {
             return NewsHelper.buildJoin(TBL_ORDERS, news.joinUsage(TBL_ORDERS));
           }
         });
+
+    news.registerUsageQueryProvider(Feed.TRIPS, new ExtendedUsageQueryProvider() {
+
+      @Override
+      protected List<Pair<String, IsCondition>> getJoins() {
+        return NewsHelper.buildJoin(TBL_TRIPS, news.joinUsage(TBL_TRIPS));
+      }
+
+      @Override
+      protected List<IsCondition> getConditions(long userId) {
+        return NewsHelper.buildConditions(SqlUtils.isNull(TBL_TRIPS, COL_EXPEDITION));
+      }
+    });
 
     news.registerUsageQueryProvider(Feed.CARGO_REQUESTS_MY, new ExtendedUsageQueryProvider() {
       @Override
@@ -622,95 +676,25 @@ public class TransportModuleBean implements BeeModule {
       }
     });
 
-    news.registerUsageQueryProvider(Feed.ASSESSMENT_REQUESTS_ALL, new ExtendedUsageQueryProvider() {
+    news.registerHeadlineProducer(Feed.ASSESSMENT_REQUESTS_ALL, assessmentsHeadlineProducer);
 
-      @Override
-      protected List<IsCondition> getConditions(long userId) {
-        return NewsHelper.buildConditions(
-            SqlUtils.equals(TBL_ORDERS, COL_STATUS, OrderStatus.REQUEST.ordinal()));
-      }
+    news.registerUsageQueryProvider(Feed.ASSESSMENT_REQUESTS_ALL,
+        new AssesmentRequestsUsageQueryProvider(false));
 
-      @Override
-      protected List<Pair<String, IsCondition>> getJoins() {
-        List<Pair<String, IsCondition>> joins = Lists.newArrayList();
-        joins.addAll(NewsHelper.buildJoin(TBL_ASSESSMENTS, news.joinUsage(TBL_ASSESSMENTS)));
-        joins.addAll(NewsHelper.buildJoin(TBL_ORDER_CARGO,
-            sys.joinTables(TBL_ORDER_CARGO, TBL_ASSESSMENTS, COL_CARGO)));
-        joins.addAll(NewsHelper.buildJoin(TBL_ORDERS,
-            sys.joinTables(TBL_ORDERS, TBL_ORDER_CARGO, COL_ORDER)));
+    news.registerHeadlineProducer(Feed.ASSESSMENT_REQUESTS_MY, assessmentsHeadlineProducer);
 
-        return joins;
-      }
+    news.registerUsageQueryProvider(Feed.ASSESSMENT_REQUESTS_MY,
+        new AssesmentRequestsUsageQueryProvider(true));
 
-    });
+    news.registerHeadlineProducer(Feed.ASSESSMENT_ORDERS_ALL, assessmentsHeadlineProducer);
 
-    news.registerUsageQueryProvider(Feed.ASSESSMENT_REQUESTS_MY, new ExtendedUsageQueryProvider() {
+    news.registerUsageQueryProvider(Feed.ASSESSMENT_ORDERS_ALL,
+        new AssesmentRequestsUsageQueryProvider(false, true));
 
-      @Override
-      protected List<IsCondition> getConditions(long userId) {
-        return NewsHelper.buildConditions(SqlUtils.and(SqlUtils.equals(TBL_ORDERS,
-            COL_ORDER_MANAGER,
-            userId), SqlUtils.equals(TBL_ORDERS, COL_STATUS, OrderStatus.REQUEST.ordinal())));
-      }
+    news.registerHeadlineProducer(Feed.ASSESSMENT_ORDERS_MY, assessmentsHeadlineProducer);
 
-      @Override
-      protected List<Pair<String, IsCondition>> getJoins() {
-        List<Pair<String, IsCondition>> joins = Lists.newArrayList();
-        joins.addAll(NewsHelper.buildJoin(TBL_ASSESSMENTS, news.joinUsage(TBL_ASSESSMENTS)));
-        joins.addAll(NewsHelper.buildJoin(TBL_ORDER_CARGO,
-            sys.joinTables(TBL_ORDER_CARGO, TBL_ASSESSMENTS, COL_CARGO)));
-        joins.addAll(NewsHelper.buildJoin(TBL_ORDERS,
-            sys.joinTables(TBL_ORDERS, TBL_ORDER_CARGO, COL_ORDER)));
-
-        return joins;
-      }
-
-    });
-
-    news.registerUsageQueryProvider(Feed.ASSESSMENT_ORDERS_ALL, new ExtendedUsageQueryProvider() {
-
-      @Override
-      protected List<IsCondition> getConditions(long userId) {
-        return NewsHelper.buildConditions(
-            SqlUtils.notEqual(TBL_ORDERS, COL_STATUS, OrderStatus.REQUEST.ordinal()));
-      }
-
-      @Override
-      protected List<Pair<String, IsCondition>> getJoins() {
-        List<Pair<String, IsCondition>> joins = Lists.newArrayList();
-        joins.addAll(NewsHelper.buildJoin(TBL_ASSESSMENTS, news.joinUsage(TBL_ASSESSMENTS)));
-        joins.addAll(NewsHelper.buildJoin(TBL_ORDER_CARGO,
-            sys.joinTables(TBL_ORDER_CARGO, TBL_ASSESSMENTS, COL_CARGO)));
-        joins.addAll(NewsHelper.buildJoin(TBL_ORDERS,
-            sys.joinTables(TBL_ORDERS, TBL_ORDER_CARGO, COL_ORDER)));
-
-        return joins;
-      }
-
-    });
-
-    news.registerUsageQueryProvider(Feed.ASSESSMENT_ORDERS_MY, new ExtendedUsageQueryProvider() {
-
-      @Override
-      protected List<IsCondition> getConditions(long userId) {
-        return NewsHelper.buildConditions(SqlUtils.and(SqlUtils.equals(TBL_ORDERS,
-            COL_ORDER_MANAGER,
-            userId), SqlUtils.notEqual(TBL_ORDERS, COL_STATUS, OrderStatus.REQUEST.ordinal())));
-      }
-
-      @Override
-      protected List<Pair<String, IsCondition>> getJoins() {
-        List<Pair<String, IsCondition>> joins = Lists.newArrayList();
-        joins.addAll(NewsHelper.buildJoin(TBL_ASSESSMENTS, news.joinUsage(TBL_ASSESSMENTS)));
-        joins.addAll(NewsHelper.buildJoin(TBL_ORDER_CARGO,
-            sys.joinTables(TBL_ORDER_CARGO, TBL_ASSESSMENTS, COL_CARGO)));
-        joins.addAll(NewsHelper.buildJoin(TBL_ORDERS,
-            sys.joinTables(TBL_ORDERS, TBL_ORDER_CARGO, COL_ORDER)));
-
-        return joins;
-      }
-
-    });
+    news.registerUsageQueryProvider(Feed.ASSESSMENT_ORDERS_MY,
+        new AssesmentRequestsUsageQueryProvider(true, true));
 
     news.registerUsageQueryProvider(Feed.CARGO_SALES, new ExtendedUsageQueryProvider() {
       @Override
@@ -2746,19 +2730,17 @@ public class TransportModuleBean implements BeeModule {
       }
       ids.append("'").append(row.getValue(COL_SALE)).append("'");
     }
+    String remoteNamespace = prm.getText(PRM_ERP_NAMESPACE);
     String remoteAddress = prm.getText(PRM_ERP_ADDRESS);
     String remoteLogin = prm.getText(PRM_ERP_LOGIN);
     String remotePassword = prm.getText(PRM_ERP_PASSWORD);
 
-    ResponseObject response = ButentWS.getSQLData(remoteAddress, remoteLogin, remotePassword,
-        "SELECT extern_id AS id, apm_data AS data, apm_suma AS suma"
-            + " FROM apyvarta WHERE extern_id IN(" + ids.toString() + ")",
-        new String[] {"id", "data", "suma"});
-
-    if (response.hasErrors()) {
-      logger.severe((Object[]) response.getErrors());
-    } else {
-      SimpleRowSet payments = (SimpleRowSet) response.getResponse();
+    try {
+      SimpleRowSet payments = ButentWS.connect(remoteNamespace, remoteAddress, remoteLogin,
+          remotePassword)
+          .getSQLData("SELECT extern_id AS id, apm_data AS data, apm_suma AS suma"
+              + " FROM apyvarta WHERE extern_id IN(" + ids.toString() + ")",
+              new String[] {"id", "data", "suma"});
 
       for (SimpleRow payment : payments) {
         if (!Objects.equal(payment.getDouble("suma"),
@@ -2772,6 +2754,8 @@ public class TransportModuleBean implements BeeModule {
               .setWhere(sys.idEquals(TBL_SALES, payment.getLong("id"))));
         }
       }
+    } catch (BeeException e) {
+      logger.error(e);
     }
   }
 
@@ -2891,6 +2875,7 @@ public class TransportModuleBean implements BeeModule {
     } else {
       return ResponseObject.error("View source not supported:", trade);
     }
+    String remoteNamespace = prm.getText(PRM_ERP_NAMESPACE);
     String remoteAddress = prm.getText(PRM_ERP_ADDRESS);
     String remoteLogin = prm.getText(PRM_ERP_LOGIN);
     String remotePassword = prm.getText(PRM_ERP_PASSWORD);
@@ -2916,16 +2901,18 @@ public class TransportModuleBean implements BeeModule {
               .addFromLeft(TBL_COUNTRIES, sys.joinTables(TBL_COUNTRIES, TBL_CONTACTS, COL_COUNTRY))
               .setWhere(sys.idEquals(TBL_COMPANIES, id)));
 
-          ResponseObject resp = ButentWS.importClient(remoteAddress, remoteLogin, remotePassword,
-              data.getValue(COL_COMPANY_NAME), data.getValue(COL_COMPANY_CODE),
-              data.getValue(COL_COMPANY_VAT_CODE), data.getValue(COL_ADDRESS),
-              data.getValue(COL_POST_INDEX), data.getValue(COL_CITY), data.getValue(COL_COUNTRY));
+          try {
+            String company = ButentWS.connect(remoteNamespace, remoteAddress, remoteLogin,
+                remotePassword)
+                .importClient(data.getValue(COL_COMPANY_NAME), data.getValue(COL_COMPANY_CODE),
+                    data.getValue(COL_COMPANY_VAT_CODE), data.getValue(COL_ADDRESS),
+                    data.getValue(COL_POST_INDEX), data.getValue(COL_CITY),
+                    data.getValue(COL_COUNTRY));
 
-          if (resp.hasErrors()) {
-            response.addErrorsFrom(resp);
-            break;
-          } else {
-            companies.put(id, resp.getResponseAsString());
+            companies.put(id, company);
+
+          } catch (BeeException e) {
+            response.addError(e);
           }
         }
       }
@@ -2984,10 +2971,11 @@ public class TransportModuleBean implements BeeModule {
       if (response.hasErrors()) {
         break;
       }
-      ResponseObject resp = ButentWS.importDoc(remoteAddress, remoteLogin, remotePassword, doc);
-
-      if (resp.hasErrors()) {
-        response.addErrorsFrom(resp);
+      try {
+        ButentWS.connect(remoteNamespace, remoteAddress, remoteLogin, remotePassword)
+            .importDoc(doc);
+      } catch (BeeException e) {
+        response.addError(e);
         break;
       }
       qs.updateData(new SqlUpdate(trade)

@@ -10,10 +10,19 @@ import com.butent.bee.shared.utils.BeeUtils;
 public enum Direction {
   NORTH, EAST, SOUTH, WEST, CENTER;
 
+  public static Direction parse(String input) {
+    for (Direction direction : Direction.values()) {
+      if (BeeUtils.inListSame(input, direction.brief(), direction.name())) {
+        return direction;
+      }
+    }
+    return null;
+  }
+
   public String brief() {
     return name().substring(0, 1);
   }
-  
+
   public Orientation getOrientation() {
     if (isHorizontal()) {
       return Orientation.HORIZONTAL;
@@ -23,11 +32,11 @@ public enum Direction {
       return null;
     }
   }
-  
+
   public String getStyleSuffix() {
     return BeeUtils.proper(name());
   }
-  
+
   public boolean isCenter() {
     return this == CENTER;
   }
@@ -35,7 +44,7 @@ public enum Direction {
   public boolean isHorizontal() {
     return this == EAST || this == WEST;
   }
-  
+
   public boolean isVertical() {
     return this == NORTH || this == SOUTH;
   }

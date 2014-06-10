@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="Signatures" source="Signatures"
+  caption="=mailSignatures"
+  newRowForm="Signature" newRowCaption="=mailNewSignature"
+  editForm="Signature"
+  >
+  <Columns>
+    <SimpleColumn name="User" />
+    <SimpleColumn name="Description" />
+    <SimpleColumn name="Content" />
+  </Columns>
+  <Order>
+    <OrderBy column="Description" />
+  </Order>
+</View>
+ 

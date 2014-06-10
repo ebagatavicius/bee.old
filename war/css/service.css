@@ -1,23 +1,120 @@
-.bee-svc-invoice-builder-wrapper {
+.bee-svc-invoice-builder-wrapper,
+.bee-svc-defect-builder-wrapper {
   margin: 1ex 1em;
   max-height: 400px;
   overflow: auto;
 }
-.bee-svc-invoice-builder-table {
+.bee-svc-invoice-builder-table,
+.bee-svc-defect-builder-table {
   border-collapse: collapse;
 }
-.bee-svc-invoice-builder-table td {
+.bee-svc-invoice-builder-table td,
+.bee-svc-defect-builder-table td {
   padding: 3px 1em;
   border: 1px solid #ccc;
 }
 
 .bee-svc-invoice-builder-quantity,
 .bee-svc-invoice-builder-price,
-.bee-svc-invoice-builder-amount {
+.bee-svc-invoice-builder-amount,
+.bee-svc-defect-builder-quantity,
+.bee-svc-defect-builder-price,
+.bee-svc-defect-builder-amount {
   text-align: right;
 }
 
-.bee-svc-invoice-builder-commands {
+.bee-svc-invoice-builder-commands,
+.bee-svc-defect-builder-commands {
   margin: 1ex 1em;
+  text-align: right;
+}
+
+.bee-svc-calendar-cuastomer-panel {
+  position: absolute;
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  align-items: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  overflow: hidden;
+}
+.bee-svc-calendar-info-panel {
+  position: absolute;
+  overflow: auto;
+}
+.bee-svc-calendar-company-label:hover,
+.bee-svc-calendar-info-label:hover {
+  text-decoration: underline;
+  color: #00e;
+  cursor: pointer;
+}
+
+.bee-svc-calendar-task-panel,
+.bee-svc-calendar-rt-panel,
+.bee-svc-calendar-date-panel {
+  position: absolute;
+  cursor: pointer;
+}
+
+.bee-svc-calendar-company-row-sep,
+.bee-svc-calendar-info-row-sep {
+  position: absolute;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.bee-svc-calendar-task-starred {
+  background-repeat: space;
+}
+
+.bee-svc-build-command[disabled] {
+  visibility: hidden;
+}
+.bee-svc-build-invoice-disabled .bee-grid-ObjectInvoices .bee-Action-add,
+.bee-svc-build-defect-disabled .bee-grid-ObjectDefects .bee-Action-add {
+  visibility: hidden;
+}
+
+.bee-form-PrintServiceDefect .bee-co-companyInfo-name .bee-co-companyInfo-item {
+  font-weight: normal;
+}
+
+.bee-svc-print-defect-items-table {
+  border-collapse: collapse;
+}
+.bee-svc-print-defect-items-header,
+.bee-svc-print-defect-items-body,
+.bee-svc-print-defect-items-footer {
+  border: 1px solid #aaa;
+  padding-left: 8px;
+  padding-right: 8px;
+}  
+.bee-svc-print-defect-items-header {
+  text-align: center;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.bee-svc-print-defect-items-body {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.bee-svc-print-defect-items-body.bee-svc-print-defect-item-ordinal,
+.bee-svc-print-defect-items-body.bee-svc-print-defect-item-unit {
+  text-align: center;
+}
+.bee-svc-print-defect-items-body.bee-svc-print-defect-item-quantity,
+.bee-svc-print-defect-items-body.bee-svc-print-defect-item-price {
+  text-align: right;
+}
+.bee-svc-print-defect-items-footer {
+  font-weight: bold;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.bee-svc-print-defect-items-total-value {
   text-align: right;
 }

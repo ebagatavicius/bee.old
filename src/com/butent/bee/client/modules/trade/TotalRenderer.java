@@ -8,8 +8,11 @@ import com.butent.bee.client.render.ProvidesGridColumnRenderer;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.HasRowValue;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.value.DecimalValue;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.export.XCell;
 import com.butent.bee.shared.export.XFont;
@@ -22,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TotalRenderer extends AbstractCellRenderer {
+public class TotalRenderer extends AbstractCellRenderer implements HasRowValue {
 
   public static class Provider implements ProvidesGridColumnRenderer {
     @Override
@@ -57,9 +60,23 @@ public class TotalRenderer extends AbstractCellRenderer {
   }
 
   @Override
+  public boolean dependsOnSource(String source) {
+    return !BeeUtils.isEmpty(source) && data.containsKey(source); 
+  }
+
+  @Override
   public XCell export(IsRow row, int cellIndex, Integer styleRef, XSheet sheet) {
     Double total = getTotal(row);
     return (total == null) ? null : new XCell(cellIndex, total, styleRef);
+  }
+
+  @Override
+  public Value getRowValue(IsRow row) {
+    if (row == null) {
+      return null;
+    } else {
+      return DecimalValue.of(getTotal(row));
+    }
   }
 
   public Double getTotal(IsRow row) {

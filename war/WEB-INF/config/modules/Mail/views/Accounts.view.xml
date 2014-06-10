@@ -14,6 +14,11 @@
       <SimpleColumn name="Label" />
     </SimpleJoin>
 
+    <SimpleColumn name="Signature" />
+    <SimpleJoin name="Signature" joinType="LEFT">
+      <SimpleColumn name="Description" alias="SignatureDescription" />
+    </SimpleJoin>
+
     <SimpleColumn name="StoreType" />
     <SimpleColumn name="StoreServer" />
     <SimpleColumn name="StorePort" />

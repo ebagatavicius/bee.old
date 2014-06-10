@@ -5,7 +5,7 @@
   newRowForm="Appointment" editForm="Appointment" order="AppointmentID desc"
   >
   <g:columns>
-    <IdColumn name="Id" caption="=captionId" visible="false" />
+    <IdColumn name="Id" visible="false" />
 
     <DataColumn name="TypeName" label="=calAppointmentType" />
     <DataColumn name="Summary" visible="true" maxWidth="200" />

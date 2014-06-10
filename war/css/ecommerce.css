@@ -88,3 +88,37 @@
   margin-right: auto;
   display: block;
 }
+
+.bee-ec-add-article-cars-view {
+  width: 85vw;
+  height: 85vh;
+}
+
+.bee-ec-add-article-cars-view .bee-ec-searchByCar-type-panel {
+  max-height: calc(70% - 45px);
+}
+.bee-ec-add-article-cars-selection-panel {
+  position: absolute;
+  left: 1em;
+  right: 1em;
+  bottom: 1ex;
+  max-height: calc(30% - 20px);
+  background-color: white;
+  border: 1px solid #ccc;
+  overflow: auto;
+}
+
+.bee-ec-add-article-cars-selection-table {
+  border-collapse: collapse;
+  margin: 1ex 1em;
+}
+.bee-ec-add-article-cars-selection-table td {
+  padding: 3px 4px;
+}
+.bee-ec-add-article-cars-selection-table tr:hover {
+  background-color: #dfd;
+}
+.bee-ec-add-article-cars-selection-remove:hover {
+  color: white;
+  background-color: red;
+}

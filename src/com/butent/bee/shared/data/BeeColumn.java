@@ -54,8 +54,6 @@ public class BeeColumn extends TableColumn implements BeeSerializable, HasExtend
   private int level;
   private Pair<DefaultExpression, Object> defaults;
   
-  private String enumKey;
-
   public BeeColumn() {
     super(ValueType.TEXT);
   }
@@ -150,10 +148,6 @@ public class BeeColumn extends TableColumn implements BeeSerializable, HasExtend
 
   public Pair<DefaultExpression, Object> getDefaults() {
     return defaults;
-  }
-
-  public String getEnumKey() {
-    return enumKey;
   }
 
   @Override
@@ -268,10 +262,6 @@ public class BeeColumn extends TableColumn implements BeeSerializable, HasExtend
 
   public void setEditable(boolean editable) {
     this.editable = editable;
-  }
-
-  public void setEnumKey(String enumKey) {
-    this.enumKey = enumKey;
   }
 
   public void setLevel(int level) {

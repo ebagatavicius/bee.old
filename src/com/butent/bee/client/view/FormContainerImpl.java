@@ -37,6 +37,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Handles such visible components of forms as header and footer.
@@ -93,12 +94,18 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
     setInitialRowCount(rowCount);
 
     setHasSearch(hasData());
+    
+    Set<Action> enabledActions = formDescription.getEnabledActions();
+    Set<Action> disabledActions = formDescription.getDisabledActions();
+    
+    if (!disabledActions.contains(Action.PRINT)) {
+      enabledActions.add(Action.PRINT);
+    }
 
     HeaderView header = new HeaderImpl();
     header.create(formDescription.getCaption(), hasData(), formDescription.isReadOnly(),
         formDescription.getViewName(), EnumSet.of(UiOption.ROOT),
-        formDescription.getEnabledActions(), formDescription.getDisabledActions(),
-        Action.NO_ACTIONS);
+        enabledActions, disabledActions, Action.NO_ACTIONS);
 
     FormView content = new FormImpl(formDescription.getName());
     content.create(formDescription, null, dataColumns, true, interceptor);
@@ -248,8 +255,7 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
 
   @Override
   public String getSupplierKey() {
-    return FormFactory
-        .getSupplierKey(getContent().getFormName(), getContent().getFormInterceptor());
+    return FormFactory.getSupplierKey(getContent().getFormName());
   }
 
   @Override

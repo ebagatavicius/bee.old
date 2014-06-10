@@ -4,13 +4,14 @@ import com.google.common.collect.Sets;
 
 import com.butent.bee.shared.data.DataNameProvider;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsState;
 import com.butent.bee.shared.modules.calendar.CalendarConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
 import com.butent.bee.shared.modules.ec.EcConstants;
+import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.transport.TransportConstants;
+import com.butent.bee.shared.rights.RightsState;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -81,8 +82,12 @@ public enum MenuService {
       Sets.newHashSet(TransportConstants.VIEW_VEHICLES, TransportConstants.VIEW_TRIPS)),
 
   @XmlEnumValue("assessments_grid")
-  ASSESSMENTS_GRID(RightsState.VIEW, TransportConstants.TBL_ASSESSMENTS);
+  ASSESSMENTS_GRID(RightsState.VIEW, TransportConstants.TBL_ASSESSMENTS),
 
+  @XmlEnumValue("service_calendar")
+  SERVICE_CALENDAR(RightsState.VIEW,
+      Sets.newHashSet(ServiceConstants.VIEW_SERVICE_OBJECTS, TaskConstants.VIEW_TASKS));
+  
   private final Set<RightsState> dataRightsStates;
   private DataNameProvider dataNameProvider;
 

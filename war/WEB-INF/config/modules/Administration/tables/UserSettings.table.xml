@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+  
+  name="UserSettings"
+  idName="UserSettingID"
+  >
+  <Fields>
+    <Relation name="User" relation="Users" notNull="true" unique="true" cascade="DELETE"
+      label="=user" />
+
+    <Boolean name="OpenInNewTab" label="=openInNewTab" />
+
+    <Boolean name="WorkspaceContinue" label="=workspaceContinue" />
+    <Text name="LastWorkspace" />
+
+    <Text name="Style" label="=style" />
+  </Fields>
+</Table>

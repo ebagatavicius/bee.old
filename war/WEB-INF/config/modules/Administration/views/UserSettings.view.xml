@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="UserSettings" source="UserSettings" module="Administration"
+  caption="=userSettings"
+  >
+  <Columns>
+    <SimpleColumn name="User" />
+    <SimpleColumn name="OpenInNewTab" />
+    <SimpleColumn name="WorkspaceContinue" />
+    <SimpleColumn name="LastWorkspace" />
+    <SimpleColumn name="Style" />
+  </Columns>
+</View>
+ 

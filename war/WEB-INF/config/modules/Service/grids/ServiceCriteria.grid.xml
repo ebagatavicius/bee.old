@@ -5,9 +5,9 @@
   >
   <g:columns>
     <AutoColumn name="Criterion" viewName="ServiceDistinctCriteria" viewColumn="Criterion"
-      visible="true" />
+      visible="true" flexGrow="1" />
     <AutoColumn name="Value" viewName="ServiceDistinctCritValues" viewColumn="Value"
-      visible="true" />
+      visible="true" flexGrow="1" />
     <DataColumn name="Ordinal" visible="false" />
   </g:columns>
 </g:Grid>

@@ -26,8 +26,8 @@ public class LocalProvider extends CachedProvider {
   }
 
   @Override
-  public void refresh(boolean updateActiveRow) {
+  public void refresh(boolean preserveActiveRow) {
     getDisplay().setRowCount(getTable().getNumberOfRows(), true);
-    updateDisplay(updateActiveRow);
+    updateDisplay(preserveActiveRow);
   }
 }

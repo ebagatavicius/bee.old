@@ -1,7 +1,6 @@
 package com.butent.bee.client;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.google.gwt.i18n.client.Dictionary;
 
 import com.butent.bee.shared.Assert;
@@ -10,6 +9,7 @@ import com.butent.bee.shared.logging.LogLevel;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -19,6 +19,9 @@ import java.util.MissingResourceException;
  */
 
 public final class Settings {
+  
+  private static final Splitter VALUE_SPLITTER = 
+      Splitter.on(BeeConst.CHAR_COMMA).omitEmptyStrings().trimResults(); 
 
   private static Dictionary settings;
   private static boolean initialized;
@@ -32,7 +35,7 @@ public final class Settings {
   }
   
   public static List<Property> getInfo() {
-    List<Property> info = Lists.newArrayList();
+    List<Property> info = new ArrayList<>();
     if (checkSettings()) {
       for (String key : settings.keySet()) {
         info.add(new Property(key, settings.get(key)));
@@ -60,6 +63,10 @@ public final class Settings {
 
   public static String getLogoTitle() {
     return getProperty("logoTitle");
+  }
+
+  public static List<String> getOnStartup() {
+    return getList("onStartup");
   }
   
   public static String getProperty(String name) {
@@ -110,12 +117,7 @@ public final class Settings {
   }
 
   public static List<String> getScripts() {
-    String value = getProperty("scripts");
-    if (BeeUtils.isEmpty(value)) {
-      return Collections.emptyList();
-    } else {
-      return Splitter.on(BeeConst.CHAR_COMMA).omitEmptyStrings().trimResults().splitToList(value);
-    }
+    return getList("scripts");
   }
   
   public static long getStartMillis() {
@@ -123,12 +125,7 @@ public final class Settings {
   }
   
   public static List<String> getStyleSheets() {
-    String value = getProperty("styleSheets");
-    if (BeeUtils.isEmpty(value)) {
-      return Collections.emptyList();
-    } else {
-      return Splitter.on(BeeConst.CHAR_COMMA).omitEmptyStrings().trimResults().splitToList(value);
-    }
+    return getList("styleSheets");
   }
 
   public static String getVersion() {
@@ -153,6 +150,15 @@ public final class Settings {
       initialized = true;
     }
     return settings != null;
+  }
+
+  private static List<String> getList(String name) {
+    String value = getProperty(name);
+    if (BeeUtils.isEmpty(value)) {
+      return Collections.emptyList();
+    } else {
+      return VALUE_SPLITTER.splitToList(value);
+    }
   }
   
   private static String getQuietly(String name) {

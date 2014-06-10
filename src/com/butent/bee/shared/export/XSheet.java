@@ -233,6 +233,19 @@ public class XSheet implements BeeSerializable {
       }
     }
   }
+  
+  public XRow ensureRow(int index) {
+    for (XRow row : rows) {
+      if (row.getIndex() == index) {
+        return row;
+      }
+    }
+    
+    XRow row = new XRow(index);
+    add(row);
+
+    return row;
+  }
 
   public List<Integer> getAutoSize() {
     return autoSize;

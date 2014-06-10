@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="ServiceSettings" source="ServiceSettings" caption="=userSettings"
+  >
+  <Columns>
+    <SimpleColumn name="User" />
+
+    <SimpleColumn name="CalendarCompanyKind" />
+
+    <SimpleColumn name="CalendarPixelsPerCompany" />
+    <SimpleColumn name="CalendarPixelsPerInfo" />
+
+    <SimpleColumn name="CalendarSeparateObjects" />
+
+    <SimpleColumn name="CalendarPixelsPerDay" />
+    <SimpleColumn name="CalendarPixelsPerRow" />
+
+    <SimpleColumn name="CalendarHeaderHeight" />
+    <SimpleColumn name="CalendarFooterHeight" />
+
+    <SimpleColumn name="CalendarItemOpacity" />
+    <SimpleColumn name="CalendarStripOpacity" />
+
+    <SimpleColumn name="CalendarDatesColor" />
+    <SimpleColumn name="CalendarTaskColor" />
+    <SimpleColumn name="CalendarRTColor" />
+
+    <SimpleColumn name="CalendarTaskColor0" />
+    <SimpleColumn name="CalendarTaskColor1" />
+    <SimpleColumn name="CalendarTaskColor2" />
+    <SimpleColumn name="CalendarTaskColor3" />
+    <SimpleColumn name="CalendarTaskColor4" />
+    <SimpleColumn name="CalendarTaskColor5" />
+    <SimpleColumn name="CalendarTaskColor6" />
+
+    <SimpleColumn name="CalendarTaskTypes" />
+  </Columns>
+</View>

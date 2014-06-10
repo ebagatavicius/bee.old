@@ -6,7 +6,10 @@
   >
   <Columns>
     <SimpleColumn name="ArticleNr" />
+    <SimpleColumn name="ArticleName" />
+    <SimpleColumn name="Description" />
 
+    <SimpleColumn name="Brand" />
     <SimpleJoin name="Brand" joinType="INNER">
       <SimpleColumn name="BrandName" />
     </SimpleJoin>

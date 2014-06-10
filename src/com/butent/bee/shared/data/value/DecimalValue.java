@@ -17,6 +17,14 @@ public class DecimalValue extends Value {
   public static DecimalValue getNullValue() {
     return NULL_VALUE;
   }
+  
+  public static DecimalValue of(Double value) {
+    if (value == null) {
+      return NULL_VALUE;
+    } else {
+      return new DecimalValue(BigDecimal.valueOf(value));
+    }
+  }
 
   private final BigDecimal value;
 

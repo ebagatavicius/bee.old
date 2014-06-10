@@ -41,11 +41,11 @@ public class RowVersionColumn extends AbstractColumn<DateTime> implements HasDat
   }
 
   @Override
-  public String getString(CellContext context, IsRow row) {
-    if (row == null) {
+  public String getString(CellContext context) {
+    if (context.getRow() == null) {
       return null;
     }
-    return BeeUtils.toString(row.getVersion());
+    return BeeUtils.toString(context.getRow().getVersion());
   }
 
   @Override

@@ -8,7 +8,7 @@
   filter="Status"
   >
   <g:columns>
-    <IdColumn name="ID" caption="=captionId" width="40" />
+    <IdColumn name="ID" width="40" />
     <DataColumn name="Assessment" width="40" />
     <DataColumn name="Date" width="110" />
     <RelColumn name="Manager" />

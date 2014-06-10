@@ -3,6 +3,8 @@ package com.butent.bee.client;
 import com.butent.bee.shared.HasInfo;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.RegulatedWidget;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -109,8 +111,29 @@ public class UserInfo implements HasInfo {
     return id != null && id.equals(getUserId());
   }
 
-  public boolean isColumnVisible(String viewName, String column) {
-    return isLoggedIn() && userData.isColumnVisible(viewName, column);
+  public boolean isAdministrator() {
+    return isModuleVisible(ModuleAndSub.of(Module.ADMINISTRATION));
+  }
+
+  public boolean isColumnVisible(DataInfo dataInfo, String column) {
+    if (!isLoggedIn()) {
+      return false;
+    
+    } else if (dataInfo == null || BeeUtils.isEmpty(column)) {
+      return true;
+
+    } else if (!userData.isColumnVisible(dataInfo.getViewName(), column)) {
+      return false;
+      
+    } else {
+      String root = dataInfo.getRootField(column);
+      
+      if (!BeeUtils.isEmpty(root) && !BeeUtils.same(column, root)) {
+        return userData.isColumnVisible(dataInfo.getViewName(), root);
+      } else {
+        return true;
+      }
+    }
   }
 
   public boolean isDataVisible(String object) {

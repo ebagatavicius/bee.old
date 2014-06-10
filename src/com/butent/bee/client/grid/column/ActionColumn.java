@@ -35,8 +35,8 @@ public class ActionColumn extends AbstractColumn<String> implements HasCellRende
   }
 
   @Override
-  public String getString(CellContext context, IsRow row) {
-    return getValue(row);
+  public String getString(CellContext context) {
+    return getValue(context.getRow());
   }
 
   @Override
@@ -61,12 +61,11 @@ public class ActionColumn extends AbstractColumn<String> implements HasCellRende
   }
 
   @Override
-  public void render(CellContext context, IsRow rowValue, SafeHtmlBuilder sb) {
-    String value = getString(context, rowValue);
-    if (BeeUtils.isEmpty(value)) {
-      return;
+  public void render(CellContext context, SafeHtmlBuilder sb) {
+    String value = getString(context);
+    if (!BeeUtils.isEmpty(value)) {
+      getCell().render(context, value, sb);
     }
-    getCell().render(context, getValue(rowValue), sb);
   }
 
   @Override

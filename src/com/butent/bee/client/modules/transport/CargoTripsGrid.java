@@ -7,6 +7,7 @@ import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.CompoundFilter;
 import com.butent.bee.shared.data.filter.Filter;
@@ -36,6 +37,11 @@ class CargoTripsGrid extends AbstractGridInterceptor {
     return false;
   }
 
+  @Override
+  public GridInterceptor getInstance() {
+    return new CargoTripsGrid();
+  }
+  
   @Override
   public String getRowCaption(IsRow row, boolean edit) {
     return Localized.getConstants().trCargoActualPlaces();

@@ -14,7 +14,7 @@
       <SimpleColumn name="AttachmentCount" />
       <SimpleColumn name="Sender" />
 
-      <SimpleJoin name="Sender" joinType="INNER">
+      <SimpleJoin name="Sender" joinType="LEFT">
         <SimpleColumn name="Label" alias="SenderLabel" />
         <SimpleColumn name="Email" alias="SenderEmail" />
       </SimpleJoin>

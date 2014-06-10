@@ -52,6 +52,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.io.Paths;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.menu.MenuHandler;
@@ -68,6 +69,7 @@ import com.butent.bee.shared.modules.ec.EcItem;
 import com.butent.bee.shared.modules.ec.EcItemInfo;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.ui.UserInterface;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
@@ -100,6 +102,8 @@ public final class EcKeeper {
   private static boolean priceVisible = true;
 
   private static boolean stockLimited = true;
+
+  private static boolean clientStyleSheetInjected;
 
   public static void addPictureCellHandlers(AbstractCell<?> cell, String primaryStyle) {
     Assert.notNull(cell);
@@ -168,7 +172,7 @@ public final class EcKeeper {
       response.notify(BeeKeeper.getScreen());
     }
   }
-
+  
   public static void doGlobalSearch(String query, final IdentifiableWidget inputWidget) {
     if (!checkSearchQuery(query)) {
       return;
@@ -295,6 +299,10 @@ public final class EcKeeper {
 
   public static String getPrimaryStockLabel() {
     return data.getPrimaryStockLabel();
+  }
+
+  public static int getQuantityInCart(long articleId) {
+    return cartList.getQuantity(articleId);
   }
 
   public static List<EcItem> getResponseItems(ResponseObject response) {
@@ -479,6 +487,8 @@ public final class EcKeeper {
     GridFactory.registerGridInterceptor(GRID_ARTICLE_GRAPHICS, new ArticleGraphicsHandler());
     GridFactory.registerGridInterceptor("EcBanners", new BannerGridInterceptor());
     GridFactory.registerGridInterceptor(GRID_ARTICLE_CODES, new ArticleCodesGridInterceptor());
+    GridFactory.registerGridInterceptor(GRID_ARTICLE_CARS, new ArticleCarsGridInterceptor());
+    GridFactory.registerGridInterceptor(TBL_TCD_ORPHANS, new EcOrphansGrid());
 
     FormFactory.registerFormInterceptor("EcRegistration", new EcRegistrationForm());
     FormFactory.registerFormInterceptor("EcOrder", new EcOrderForm());
@@ -716,6 +726,18 @@ public final class EcKeeper {
 
       activeCommand = commandWidget;
       activeCommand.activate();
+    }
+  }
+
+  static void ensureClientStyleSheet() {
+    if (!clientStyleSheetInjected) {
+      clientStyleSheetInjected = true;
+     
+      UserInterface ui = BeeKeeper.getScreen().getUserInterface();
+      if (!ui.getStyleSheets().contains(CLIENT_STYLE_SHEET)) {
+        DomUtils.injectStyleSheet(Paths.getStyleSheetUrl(CLIENT_STYLE_SHEET,
+            TimeUtils.nowMinutes()));
+      }
     }
   }
 

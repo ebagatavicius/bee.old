@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="ServiceDefectItems" source="ServiceDefectItems" caption="=svcDefectItems"
+  >
+  <Columns>
+    <SimpleColumn name="Defect" />
+
+    <SimpleColumn name="Item" />
+    <SimpleJoin joinType="INNER" name="Item">
+      <SimpleColumn name="Name" alias="ItemName" />
+      
+      <SimpleJoin joinType="INNER" name="Unit">
+        <SimpleColumn name="Name" alias="UnitName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Article" />
+
+    <SimpleColumn name="Quantity" />
+    <SimpleColumn name="Price" />
+
+    <SimpleColumn name="VatPlus" />
+    <SimpleColumn name="Vat" />
+    <SimpleColumn name="VatPercent" />
+
+    <SimpleColumn name="Note" />
+  </Columns>
+</View>

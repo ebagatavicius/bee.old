@@ -8,7 +8,15 @@
   <Columns>
     <SimpleColumn name="Summary" />
     <SimpleColumn name="Description" />
+
     <SimpleColumn name="Priority" />
+
+    <SimpleColumn name="Type" />
+    <SimpleJoin name="Type" joinType="LEFT">
+      <SimpleColumn name="Name" alias="TypeName" />
+      <SimpleColumn name="Background" alias="TypeBackground" />
+      <SimpleColumn name="Foreground" alias="TypeForeground" />
+    </SimpleJoin>
 
     <SimpleColumn name="Owner" />
     <SimpleJoin name="Owner" joinType="LEFT">

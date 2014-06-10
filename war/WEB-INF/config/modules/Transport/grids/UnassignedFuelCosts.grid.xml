@@ -30,6 +30,6 @@
     <RelColumn name="Supplier" caption="=trSupplier" />
     <RelColumn name="Country" caption="=country" />
     <DataColumn name="Note" caption="=note" />
-    <RelColumn name="Item" caption="=trAccountItem" />
+    <RelColumn name="Item" caption="=trAccountingItem" />
   </g:columns>
 </g:Grid>

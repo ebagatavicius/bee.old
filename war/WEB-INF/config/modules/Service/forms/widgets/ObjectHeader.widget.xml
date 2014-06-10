@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Table [
+  <!ENTITY clbl "text-align: right; padding-left: 1em; padding-right: 1em;">
+  <!ENTITY inp "width: 200px;">
+]>
 <Table xmlns="http://www.butent.com/widget" 
-    style="border-collapse: collapse;" cellStyle="padding-top: 5px;">
+    style="border-collapse: collapse;" cellStyle="padding-top: 8px;">
 
-  <col index="0" cellStyle="text-align: right; padding-left: 1em; padding-right: 1em;" />
+  <col index="0" cellStyle="&clbl;" />
+  <col index="2" cellStyle="&clbl;" />
 
   <row>
-    <Label text="=category" class="bee-required" for="Category" />
+    <Label for="Category" />
     <DataSelector source="Category" renderColumns="CategoryName" choiceColumns="ParentName Name"
-      style="width: 200px;" />
+      style="&inp;" />
+    <Label for="Address" />
+    <InputText source="Address" style="&inp;" />
   </row>
 
   <row>
-    <Label text="=address" class="bee-required" for="Address" />
-    <InputText source="Address" style="width: 400px;" />
-  </row>
-
-  <row>
-    <Label text="=customer" for="Customer" />
-    <DataSelector source="Customer" renderColumns="CustomerName" style="width: 200px;" />
+    <Label for="Customer" />
+    <DataSelector source="Customer" renderColumns="CustomerName" style="&inp;" />
+    <Label for="Contractor" />
+    <DataSelector source="Contractor" style="&inp;" />
   </row>
 </Table>

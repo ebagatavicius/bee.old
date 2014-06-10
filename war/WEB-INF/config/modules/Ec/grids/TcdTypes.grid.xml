@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
-  name="TcdTypes" viewName="TcdTypes" caption="=tcdTypes"
+  name="TcdTypes" viewName="TcdTypes" caption="=tcdTypes" disabledActions="export"
   >
   <g:columns>
     <DataColumn name="ManufacturerName" visible="true" autoFit="true" />
@@ -18,10 +18,10 @@
     <DataColumn name="Cylinders" visible="false" />
     <DataColumn name="MaxWeight" visible="false" />
 
-    <DataColumn name="Engine" visible="false" />
-    <DataColumn name="Fuel" visible="false" />
-    <DataColumn name="Body" visible="false" />
-    <DataColumn name="Axle" visible="false" />
+    <DataColumn name="Engine" visible="false" caption="=ecCarEngine"/>
+    <DataColumn name="Fuel" visible="false" caption="=vehicleFuel"/>
+    <DataColumn name="Body" visible="false" caption="=vehicleBodyType"/>
+    <DataColumn name="Axle" visible="false" caption="=vehicleChassis"/>
 
     <DataColumn name="Visible" />
   </g:columns>

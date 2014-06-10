@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="ServiceSettings"
+  idName="ServiceSettingID"
+  >
+  <Fields>
+    <Relation name="User" notNull="true" relation="Users" cascade="DELETE" unique="true" />
+
+    <Enum name="CalendarCompanyKind" key="ServiceCompanyKind" label="=company" />
+
+    <Integer name="CalendarPixelsPerCompany" label="=svcCalendarPixelsPerCompany" />
+    <Integer name="CalendarPixelsPerInfo" label="=svcCalendarPixelsPerInfo" />
+
+    <Boolean name="CalendarSeparateObjects" label="=svcCalendarSeparateObjects" />
+
+    <Integer name="CalendarPixelsPerDay" label="=timeboardPixelsPerDay" />
+    <Integer name="CalendarPixelsPerRow" label="=timeboardPixelsPerRow" />
+
+    <Integer name="CalendarHeaderHeight" label="=timeboardHeaderHeight" />
+    <Integer name="CalendarFooterHeight" label="=timeboardFooterHeight" />
+
+    <Integer name="CalendarItemOpacity" label="=timeboardItemOpacity" />
+    <Integer name="CalendarStripOpacity" label="=timeboardStripOpacity" />
+
+    <String name="CalendarDatesColor" precision="100" label="=svcDates" />
+    <String name="CalendarTaskColor" precision="100" label="=crmTasks" />
+    <String name="CalendarRTColor" precision="100" label="=crmRecurringTasks" />
+
+    <String name="CalendarTaskColor0" precision="100" label="=crmTaskStatusNotVisited" />
+    <String name="CalendarTaskColor1" precision="100" label="=crmTaskStatusActive" />
+    <String name="CalendarTaskColor2" precision="100" label="=crmTaskStatusScheduled" />
+    <String name="CalendarTaskColor3" precision="100" label="=crmTaskStatusSuspended" />
+    <String name="CalendarTaskColor4" precision="100" label="=crmTaskStatusCompleted" />
+    <String name="CalendarTaskColor5" precision="100" label="=crmTaskStatusApproved" />
+    <String name="CalendarTaskColor6" precision="100" label="=crmTaskStatusCanceled" />
+    
+    <Text name="CalendarTaskTypes" label="=crmTaskTypes" />
+  </Fields>
+</Table>

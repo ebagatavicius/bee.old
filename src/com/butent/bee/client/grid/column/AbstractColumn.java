@@ -71,7 +71,7 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
 
     } else {
       SafeHtmlBuilder sb = new SafeHtmlBuilder();
-      render(context, context.getRow(), sb);
+      render(context, sb);
 
       String html = sb.toSafeHtml().asString();
 
@@ -120,7 +120,7 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
     return sortBy;
   }
 
-  public abstract String getString(CellContext context, IsRow row);
+  public abstract String getString(CellContext context);
 
   public abstract String getStyleSuffix();
 
@@ -169,8 +169,8 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
     return cell.onBrowserEvent(context, elem, getValue(row), event);
   }
 
-  public void render(CellContext context, IsRow row, SafeHtmlBuilder sb) {
-    cell.render(context, getValue(row), sb);
+  public void render(CellContext context, SafeHtmlBuilder sb) {
+    cell.render(context, getValue(context.getRow()), sb);
   }
 
   public void setInstantKarma(boolean instantKarma) {

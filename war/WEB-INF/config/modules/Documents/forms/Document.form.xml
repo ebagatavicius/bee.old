@@ -51,7 +51,7 @@
 
         <FlowPanel class="flexBox-horizontal" style="&row;"
             data="Relations" for="Task" module="Tasks">
-          <Label text="=tasks" style="&chlabel;" />
+          <Label text="=crmTasks" style="&chlabel;" />
           <ChildSelector class="flexible" viewName="Tasks" childTable="Relations" 
             targetRelColumn="Document" sourceRelColumn="Task" renderColumns="Summary"
             choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime" />
@@ -117,15 +117,15 @@
       </FlowPanel>
     </page>
 
-    <page>
+    <page module="Documents.Templates">
       <text>=content</text>
       <xi:include href="widgets/Content.widget.xml" />
     </page>
-    <page>
+    <page module="Documents.Templates">
       <text>=criteria</text>
       <xi:include href="widgets/Criteria.widget.xml" />
     </page>
-    <page>
+    <page module="Documents.Templates">
       <text>=documentItems</text>
       <ChildGrid name="DocumentItems" relColumn="Document" />
     </page>

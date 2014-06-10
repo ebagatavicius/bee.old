@@ -45,6 +45,8 @@
     <DataColumn name="TogglePrice" visible="false" />
     <DataColumn name="ToggleStockLimit" visible="false" />
 
+    <DataColumn name="CarTypeHistorySize" visible="false" />
+
     <DataColumn name="Notes" visible="false" />
   </g:columns>
 </g:Grid>

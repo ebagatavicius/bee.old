@@ -19,6 +19,9 @@
     <DateTime name="Novelty" label="=ecNoveltyUntil" />
     <DateTime name="Featured" label="=ecFeaturedUntil" />
     
+    <Numeric name="FeaturedPrice" precision="10" scale="2" label="=ecFeaturedPrice" />
+    <Numeric name="FeaturedPercent" precision="7" scale="3" label="=ecFeaturedPercent" />
+    
     <Long name="TecDocID" unique="true" />
   </Fields>
   <Indexes>

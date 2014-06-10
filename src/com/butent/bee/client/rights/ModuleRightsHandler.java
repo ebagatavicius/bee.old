@@ -4,10 +4,10 @@ import com.google.common.collect.Lists;
 
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.Consumer;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsObjectType;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsState;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
+import com.butent.bee.shared.rights.RightsObjectType;
+import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.utils.BeeUtils;
 

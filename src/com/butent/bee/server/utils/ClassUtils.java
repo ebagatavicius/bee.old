@@ -3,6 +3,9 @@ package com.butent.bee.server.utils;
 import com.google.common.primitives.Primitives;
 
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.logging.BeeLogger;
+import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.PropertyUtils;
 
@@ -13,6 +16,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +29,9 @@ import java.util.Map;
  */
 
 public final class ClassUtils {
+
+  private static BeeLogger logger = LogUtils.getLogger(ClassUtils.class);
+  
   @SuppressWarnings("unchecked")
   public static <T extends Annotation> T findAnnotation(Annotation[] arr, Class<T> search) {
     for (Annotation ann : arr) {
@@ -47,8 +56,9 @@ public final class ClassUtils {
     Assert.notNull(cls);
 
     List<ExtendedProperty> lst = new ArrayList<>();
-
+    
     PropertyUtils.addProperties(lst, false,
+        "Location", getLocation(cls),
         "Package", transformPackage(cls.getPackage()),
         "Name", cls.getName(),
         "Simple Name", cls.getSimpleName(),
@@ -56,8 +66,8 @@ public final class ClassUtils {
         "Component Type", transformClass(cls.getComponentType()),
         "Declaring Class", transformClass(cls.getDeclaringClass()),
         "Enclosing Class", transformClass(cls.getEnclosingClass()),
-        "Enclosing Constructor", transformConstructor(cls.getEnclosingConstructor()),
-        "Enclosing Method", transformMethod(cls.getEnclosingMethod()),
+        "Enclosing Constructor", transformConstructor(getEnclosingConstructor(cls)),
+        "Enclosing Method", transformMethod(getEnclosingMethod(cls)),
         "Superclass", transformClass(cls.getSuperclass()),
         "Generic Superclass", cls.getGenericSuperclass());
 
@@ -65,19 +75,17 @@ public final class ClassUtils {
         "Modifiers", cls.getModifiers(), Modifier.toString(cls.getModifiers()));
 
     PropertyUtils.addProperties(lst, false,
-        "Is Annotation", cls.isAnnotation(),
-        "Is Anonymous Class", cls.isAnonymousClass(),
-        "Is Array", cls.isArray(),
-        "Is Enum", cls.isEnum(),
-        "Is Interface", cls.isInterface(),
-        "Is Local Class", cls.isLocalClass(),
-        "Is Member Class", cls.isMemberClass(),
-        "Is Primitive", cls.isPrimitive(),
-        "Is Synthetic", cls.isSynthetic(),
+        "Is Annotation", transformBoolean(cls.isAnnotation()),
+        "Is Anonymous Class", transformBoolean(cls.isAnonymousClass()),
+        "Is Array", transformBoolean(cls.isArray()),
+        "Is Enum", transformBoolean(cls.isEnum()),
+        "Is Interface", transformBoolean(cls.isInterface()),
+        "Is Local Class", transformBoolean(cls.isLocalClass()),
+        "Is Member Class", transformBoolean(cls.isMemberClass()),
+        "Is Primitive", transformBoolean(cls.isPrimitive()),
+        "Is Synthetic", transformBoolean(cls.isSynthetic()),
         "Class Loader", cls.getClassLoader(),
-        "Desired Assertion Status", cls.desiredAssertionStatus(),
-        "Hash Code", cls.hashCode(),
-        "To String", cls.toString());
+        "Desired Assertion Status", transformBoolean(cls.desiredAssertionStatus()));
 
     Annotation[] annArr = getDeclaredAnnotations(cls);
     if (annArr != null) {
@@ -189,7 +197,16 @@ public final class ClassUtils {
 
   public static Constructor<?>[] getConstructors(Class<?> cls) {
     Assert.notNull(cls);
-    return cls.getConstructors();
+
+    Constructor<?>[] constructors;
+    try {
+      constructors = cls.getConstructors();
+    } catch (NoClassDefFoundError err) {
+      logger.warning(err);
+      constructors = null;
+    }
+
+    return constructors;
   }
 
   public static Annotation[] getDeclaredAnnotations(Class<?> cls) {
@@ -204,17 +221,72 @@ public final class ClassUtils {
 
   public static Constructor<?>[] getDeclaredConstructors(Class<?> cls) {
     Assert.notNull(cls);
-    return cls.getDeclaredConstructors();
+
+    Constructor<?>[] constructors;
+    try {
+      constructors = cls.getDeclaredConstructors();
+    } catch (NoClassDefFoundError err) {
+      logger.warning(err);
+      constructors = null;
+    }
+
+    return constructors;
   }
 
   public static Field[] getDeclaredFields(Class<?> cls) {
     Assert.notNull(cls);
-    return cls.getDeclaredFields();
+    
+    Field[] fields;
+    try {
+      fields = cls.getDeclaredFields();
+    } catch (NoClassDefFoundError err) {
+      logger.warning(err);
+      fields = null;
+    }
+
+    return fields;
   }
 
   public static Method[] getDeclaredMethods(Class<?> cls) {
     Assert.notNull(cls);
-    return cls.getDeclaredMethods();
+    
+    Method[] methods;
+    try {
+      methods = cls.getDeclaredMethods();
+    } catch (NoClassDefFoundError err) {
+      logger.warning(err);
+      methods = null;
+    } 
+
+    return methods;
+  }
+
+  public static Constructor<?> getEnclosingConstructor(Class<?> cls) {
+    Assert.notNull(cls);
+
+    Constructor<?> constructor;
+    try {
+      constructor = cls.getEnclosingConstructor();
+    } catch (NoClassDefFoundError | Exception err) {
+      logger.warning(err);
+      constructor = null;
+    }
+
+    return constructor;
+  }
+  
+  public static Method getEnclosingMethod(Class<?> cls) {
+    Assert.notNull(cls);
+    
+    Method method;
+    try {
+      method = cls.getEnclosingMethod();
+    } catch (NoClassDefFoundError | Exception err) {
+      logger.warning(err);
+      method = null;
+    } 
+    
+    return method;
   }
 
   public static <T> T[] getEnumConstants(Class<T> cls) {
@@ -224,7 +296,16 @@ public final class ClassUtils {
 
   public static Field[] getFields(Class<?> cls) {
     Assert.notNull(cls);
-    return cls.getFields();
+    Field[] fields;
+
+    try {
+      fields = cls.getFields();
+    } catch (NoClassDefFoundError err) {
+      logger.warning(err);
+      fields = null;
+    }
+
+    return fields;
   }
 
   public static Type[] getGenericInterfaces(Class<?> cls) {
@@ -237,9 +318,28 @@ public final class ClassUtils {
     return cls.getInterfaces();
   }
 
+  public static String getLocation(Class<?> cls) {
+    Assert.notNull(cls);
+    
+    ProtectionDomain protectionDomain = cls.getProtectionDomain();
+    CodeSource codeSource = (protectionDomain == null) ? null : protectionDomain.getCodeSource();
+    URL location = (codeSource == null) ? null : codeSource.getLocation();
+    
+    return (location == null) ? null : location.toString();
+    
+  }
   public static Method[] getMethods(Class<?> cls) {
     Assert.notNull(cls);
-    return cls.getMethods();
+
+    Method[] methods;
+    try {
+      methods = cls.getMethods();
+    } catch (NoClassDefFoundError err) {
+      logger.warning(err);
+      methods = null;
+    } 
+    
+    return methods;
   }
 
   public static Object[] getSigners(Class<?> cls) {
@@ -359,6 +459,10 @@ public final class ClassUtils {
     } else {
       return ann.toString();
     }
+  }
+
+  public static String transformBoolean(boolean b) {
+    return b ? BeeConst.STRING_TRUE : null;
   }
 
   private static String transformClass(Class<?> cls) {

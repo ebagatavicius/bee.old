@@ -4,7 +4,7 @@ import com.butent.bee.client.modules.administration.AdministrationKeeper;
 import com.butent.bee.client.modules.calendar.CalendarKeeper;
 import com.butent.bee.client.modules.classifiers.ClassifierKeeper;
 import com.butent.bee.client.modules.discussions.DiscussionsKeeper;
-import com.butent.bee.client.modules.documents.DocumentHandler;
+import com.butent.bee.client.modules.documents.DocumentsHandler;
 import com.butent.bee.client.modules.ec.EcKeeper;
 import com.butent.bee.client.modules.mail.MailKeeper;
 import com.butent.bee.client.modules.service.ServiceKeeper;
@@ -25,7 +25,7 @@ public final class ModuleManager {
     TransportHandler.register();
 
     TasksKeeper.register();
-    DocumentHandler.register();
+    DocumentsHandler.register();
 
     CalendarKeeper.register();
     MailKeeper.register();

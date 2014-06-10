@@ -42,4 +42,6 @@ public interface HasDateValue extends BeeSerializable, HasYearMonth {
   void setDom(int dom);
 
   boolean supportsTimezoneOffset();
+  
+  String toTimeStamp();
 }

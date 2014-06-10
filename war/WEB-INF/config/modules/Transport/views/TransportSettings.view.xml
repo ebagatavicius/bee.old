@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="TransportSettings"
-  source="TransportSettings"
+  name="TransportSettings" source="TransportSettings" caption="=userSettings"
   >
   <Columns>
     <SimpleColumn name="User" />

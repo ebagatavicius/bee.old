@@ -77,8 +77,11 @@ public final class Endpoint {
   public static void cancelProgress(String progressId) {
     Assert.notEmpty(progressId);
 
+    ProgressMessage pm = ProgressMessage.cancel(progressId);
+
+    handleProgress(pm);
     removeProgress(progressId);
-    send(ProgressMessage.cancel(progressId));
+    send(pm);
   }
 
   public static void close() {

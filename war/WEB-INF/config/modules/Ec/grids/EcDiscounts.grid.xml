@@ -14,7 +14,7 @@
 
     <RelColumn name="Brand" renderColumns="BrandName" width="100" />
 
-    <RelColumn name="Article" caption="=ecItem" minWidth="150" caching="none"
+    <RelColumn name="Article" caption="=ecItem" minWidth="150" caching="none" instant="false"
         searchableColumns="ArticleName ArticleNr"
         choiceColumns="ArticleName BrandName ArticleNr" newRowEnabled="false">
       <renderToken source="ArticleName" />

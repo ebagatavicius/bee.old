@@ -128,6 +128,7 @@ import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.data.BeeColumn;
+import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.CustomProperties;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.value.ValueType;
@@ -411,6 +412,8 @@ public enum FormWidget {
 
   private static final String ATTR_UP_FACE = "upFace";
   private static final String ATTR_DOWN_FACE = "downFace";
+
+  private static final String ATTR_CHILD = "child";
 
   private static final String TAG_CSS = "css";
   private static final String TAG_HANDLER = "handler";
@@ -1218,7 +1221,8 @@ public enum FormWidget {
       case GRID_PANEL:
         String gName = BeeUtils.notEmpty(attributes.get(UiConstants.ATTR_GRID_NAME), name);
         if (!BeeUtils.isEmpty(gName)) {
-          widget = new GridPanel(gName, GridFactory.getGridOptions(attributes));
+          widget = new GridPanel(gName, GridFactory.getGridOptions(attributes),
+              BeeConst.isTrue(attributes.get(ATTR_CHILD)));
         }
         break;
 
@@ -1444,7 +1448,19 @@ public enum FormWidget {
       case MULTI_SELECTOR:
         relation = createRelation(null, attributes, children, Relation.RenderMode.SOURCE);
         if (relation != null) {
-          widget = new MultiSelector(relation, true, attributes.get(UiConstants.ATTR_PROPERTY));
+          String property = attributes.get(UiConstants.ATTR_PROPERTY);
+
+          CellSource cellSource = null;
+          if (!BeeUtils.isEmpty(property)) {
+            cellSource = CellSource.forProperty(property, ValueType.TEXT);
+          } else if (column != null) {
+            int columnIndex = DataUtils.getColumnIndex(column.getId(), columns);
+            if (!BeeConst.isUndef(columnIndex)) {
+            cellSource = CellSource.forColumn(column, columnIndex);
+            }
+          }
+
+          widget = new MultiSelector(relation, true, cellSource);
         }
         break;
 
@@ -1639,8 +1655,9 @@ public enum FormWidget {
 
       case DATA_TREE:
         String treeViewName = attributes.get(UiConstants.ATTR_VIEW_NAME);
+        String treeFavoriteName = attributes.get(UiConstants.ATTR_FAVORITE);
         widget = new TreeContainer(attributes.get(UiConstants.ATTR_CAPTION),
-            BeeUtils.toBoolean(attributes.get("hideActions")), treeViewName);
+            BeeUtils.toBoolean(attributes.get("hideActions")), treeViewName, treeFavoriteName);
 
         ((TreeView) widget).setViewPresenter(new TreePresenter((TreeView) widget,
             treeViewName, attributes.get("parentColumn"),

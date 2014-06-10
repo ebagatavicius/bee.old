@@ -127,7 +127,7 @@ public final class Images {
     @Source("error.png")
     ImageResource error();
 
-    @Source("excel.gif")
+    @Source("silver/excel_17x18.png")
     ImageResource excel();
 
     @Source("feed.png")
@@ -229,8 +229,14 @@ public final class Images {
     @Source("silver/bar_chart_24x24.png")
     ImageResource silverBarChart();
 
+    @Source("silver/bookmark_24x24.png")
+    ImageResource silverBookmark();
+
     @Source("silver/bookmark_add_21x19.png")
     ImageResource silverBookmarkAdd();
+
+    @Source("silver/calendar_24x24.png")
+    ImageResource silverCalendar();
 
     @Source("silver/chat_icon_16x21.gif")
     ImageResource silverChatIcon();
@@ -238,8 +244,14 @@ public final class Images {
     @Source("silver/close_17x18.png")
     ImageResource silverClose();
 
+    @Source("silver/comments_24x24.png")
+    ImageResource silverComments();
+
     @Source("silver/configure_17x18.png")
     ImageResource silverConfigure();
+
+    @Source("silver/configure_24x24.png")
+    ImageResource silverConfigure24();
 
     @Source("silver/delete_17x18.png")
     ImageResource silverDelete();
@@ -256,6 +268,9 @@ public final class Images {
     @Source("silver/edit_17x18.png")
     ImageResource silverEdit();
 
+    @Source("silver/feed_24x24.png")
+    ImageResource silverFeed();
+
     @Source("silver/filter_17x14.png")
     ImageResource silverFilter();
 
@@ -267,6 +282,9 @@ public final class Images {
 
     @Source("silver/mail_17x18.png")
     ImageResource silverMail();
+
+    @Source("silver/mail_24x24.png")
+    ImageResource silverMail24();
 
     @Source("silver/minus_button_17x18.png")
     ImageResource silverMinus();
@@ -289,6 +307,9 @@ public final class Images {
     @Source("silver/save_17x18.png")
     ImageResource silverSave();
 
+    @Source("silver/save_24x24.png")
+    ImageResource silverSave24();
+
     @Source("silver/smile_24x24.png")
     ImageResource silverSmile();
 
@@ -300,6 +321,9 @@ public final class Images {
 
     @Source("silver/truck_17x18.png")
     ImageResource silverTruck();
+
+    @Source("silver/user_24x24.png")
+    ImageResource silverUser();
 
     @Source("slider.gif")
     ImageResource slider();
@@ -318,6 +342,9 @@ public final class Images {
 
     @Source("warning.png")
     ImageResource warning();
+
+    @Source("workspace.png")
+    ImageResource workspace();
 
     @Source("yellow.gif")
     ImageResource yellow();
@@ -482,6 +509,8 @@ public final class Images {
     map.put(key("user"), resources.user());
 
     map.put(key("warning"), resources.warning());
+
+    map.put(key("workspace"), resources.workspace());
 
     map.put(key("yellow"), resources.yellow());
     map.put(key("yellowSmall"), resources.yellowSmall());

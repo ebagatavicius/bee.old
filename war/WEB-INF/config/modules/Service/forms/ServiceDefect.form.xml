@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  
+  name="ServiceDefect" viewName="ServiceDefects" caption="=svcDefect" showRowId="true"
+  width="650" height="70" heightUnit="%"
+  >
+  <f:properties reports="PrintServiceDefect" />
+  
+  <FlowPanel class="flexBox-vertical">
+    <xi:include href="widgets/DefectBody.widget.xml" />
+
+    <br/>
+    <ChildGrid name="ServiceDefectItems" relColumn="Defect" class="flexible" />
+  </FlowPanel>
+</f:Form>

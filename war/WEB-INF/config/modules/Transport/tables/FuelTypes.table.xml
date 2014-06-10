@@ -7,6 +7,6 @@
   >
   <Fields>
     <String name="Name" precision="30" notNull="true" unique="true" label="=trFuelTypesName" />
-    <Relation name="Item" relation="Items" label="=trAccountItem" />
+    <Relation name="Item" relation="Items" label="=trAccountingItem" />
   </Fields>
 </Table>

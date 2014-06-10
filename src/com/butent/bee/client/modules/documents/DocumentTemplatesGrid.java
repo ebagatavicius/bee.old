@@ -29,6 +29,8 @@ import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.List;
+
 public class DocumentTemplatesGrid extends AbstractGridInterceptor implements
     SelectionHandler<IsRow> {
 
@@ -39,7 +41,7 @@ public class DocumentTemplatesGrid extends AbstractGridInterceptor implements
   public void afterCreateWidget(String name, IdentifiableWidget widget,
       WidgetDescriptionCallback callback) {
 
-    if (widget instanceof TreeView && BeeUtils.same(name, TBL_DOCUMENT_CATEGORIES)) {
+    if (widget instanceof TreeView) {
       categoryTree = (TreeView) widget;
       categoryTree.addSelectionHandler(this);
     }
@@ -53,22 +55,22 @@ public class DocumentTemplatesGrid extends AbstractGridInterceptor implements
       final IsRow row = grid.getActiveRow();
 
       if (row != null) {
-        Global.inputString(loc.newDocumentTemplate(), loc.templateName(),
+        Global.inputString(loc.newDocumentTemplate(), loc.documentTemplateName(),
             new StringCallback() {
               @Override
               public void onSuccess(final String value) {
-                DocumentHandler.copyDocumentData(row.getLong(grid.getDataIndex(COL_DOCUMENT_DATA)),
+                DocumentsHandler.copyDocumentData(row.getLong(grid.getDataIndex(COL_DOCUMENT_DATA)),
                     new IdCallback() {
                       @Override
                       public void onSuccess(Long dataId) {
-                        Queries.insert(TBL_DOCUMENT_TEMPLATES,
-                            Data.getColumns(TBL_DOCUMENT_TEMPLATES,
+                        Queries.insert(VIEW_DOCUMENT_TEMPLATES,
+                            Data.getColumns(VIEW_DOCUMENT_TEMPLATES,
                                 Lists.newArrayList(COL_DOCUMENT_CATEGORY,
                                     COL_DOCUMENT_TEMPLATE_NAME, COL_DOCUMENT_DATA)),
                             Lists.newArrayList(
                                 row.getString(grid.getDataIndex(COL_DOCUMENT_CATEGORY)), value,
                                 DataUtils.isId(dataId) ? BeeUtils.toString(dataId) : null),
-                            null, new RowInsertCallback(TBL_DOCUMENT_TEMPLATES, grid.getId()) {
+                            null, new RowInsertCallback(VIEW_DOCUMENT_TEMPLATES, grid.getId()) {
                               @Override
                               public void onSuccess(BeeRow result) {
                                 super.onSuccess(result);
@@ -96,6 +98,15 @@ public class DocumentTemplatesGrid extends AbstractGridInterceptor implements
   }
 
   @Override
+  public List<String> getParentLabels() {
+    if (categoryTree == null || categoryTree.getSelectedItem() == null) {
+      return super.getParentLabels();
+    } else {
+      return categoryTree.getPathLabels(categoryTree.getSelectedItem().getId(), ALS_CATEGORY_NAME);
+    }
+  }
+  
+  @Override
   public void onSelection(SelectionEvent<IsRow> event) {
     if (event != null) {
       Long category = (event.getSelectedItem() == null) ? null : event.getSelectedItem().getId();
@@ -114,7 +125,7 @@ public class DocumentTemplatesGrid extends AbstractGridInterceptor implements
   @Override
   public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
     int categoryIdx = gridView.getDataIndex(COL_DOCUMENT_CATEGORY);
-    int nameIdx = gridView.getDataIndex(COL_DOCUMENT_CATEGORY_NAME);
+    int nameIdx = gridView.getDataIndex(ALS_CATEGORY_NAME);
 
     if (oldRow != null) {
       newRow.setValue(categoryIdx, oldRow.getString(categoryIdx));
@@ -126,7 +137,7 @@ public class DocumentTemplatesGrid extends AbstractGridInterceptor implements
       if (category != null) {
         newRow.setValue(categoryIdx, category.getId());
         newRow.setValue(nameIdx,
-            category.getString(DataUtils.getColumnIndex(COL_DOCUMENT_CATEGORY_NAME,
+            category.getString(DataUtils.getColumnIndex(ALS_CATEGORY_NAME,
                 categoryTree.getTreePresenter().getDataColumns())));
       }
     }

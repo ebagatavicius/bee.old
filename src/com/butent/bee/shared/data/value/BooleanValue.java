@@ -14,24 +14,24 @@ import java.math.BigDecimal;
  * {@link com.butent.bee.shared.data.value.BooleanValue#getInstance(Boolean)} 
  * and are comparable. 
  */
-public class BooleanValue extends Value {
+public final class BooleanValue extends Value {
 
   public static final String S_TRUE = "t";
   public static final String S_FALSE = "f";
   
   public static final BooleanValue TRUE = new BooleanValue(true);
   public static final BooleanValue FALSE = new BooleanValue(false);
-  private static final BooleanValue NULL_VALUE = new BooleanValue(null);
+  public static final BooleanValue NULL = new BooleanValue(null);
 
   public static BooleanValue getInstance(Boolean value) {
     if (value == null) {
-      return NULL_VALUE;
+      return NULL;
     }
     return value ? TRUE : FALSE;
   }
 
   public static BooleanValue getNullValue() {
-    return NULL_VALUE;
+    return NULL;
   }
 
   public static String pack(Boolean value) {
@@ -53,7 +53,7 @@ public class BooleanValue extends Value {
 
   private final Boolean value;
 
-  public BooleanValue(Boolean value) {
+  private BooleanValue(Boolean value) {
     this.value = value;
   }
 
@@ -154,7 +154,7 @@ public class BooleanValue extends Value {
   
   @Override
   public boolean isNull() {
-    return this == NULL_VALUE || getBoolean() == null;
+    return this == NULL || getBoolean() == null;
   }
 
   @Override

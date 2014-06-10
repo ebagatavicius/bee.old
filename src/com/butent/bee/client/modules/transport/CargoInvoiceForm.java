@@ -24,7 +24,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 public class CargoInvoiceForm extends CargoPurchaseInvoiceForm implements ClickHandler {
 
-  private final Button confirmAction = new Button(Localized.getConstants().trInvoice(), this);
+  private final Button confirmAction = new Button(Localized.getConstants().trdInvoice(), this);
 
   @Override
   public void beforeRefresh(FormView form, IsRow row) {
@@ -35,7 +35,7 @@ public class CargoInvoiceForm extends CargoPurchaseInvoiceForm implements ClickH
     header.clearCommandPanel();
 
     header.setCaption(proforma ? Localized.getConstants().trProformaInvoice()
-        : Localized.getConstants().trInvoice());
+        : Localized.getConstants().trdInvoice());
 
     if (proforma && form.isEnabled()) {
       header.addCommandItem(confirmAction);

@@ -24,25 +24,31 @@
   <FlowPanel class="flexBox-horizontal bee-crm-taskEdit-form">
     <FlowPanel style="margin-left: 5px;">
       <FlowPanel style="&section;">
-        <Label text="=crmTaskStatus" style="&lbl1;" />
-        <ListBox source="Status" style="&inp2;" readOnly="true" visible="true" />
-        <Label for="Priority" text="=crmTaskPriority" style="&inline; margin-left: 16px;" />
+        <Label for="Type" style="&lbl1;" />
+        <DataSelector source="Type" renderColumns="TypeName" newRowEnabled="false" style="&inp2;"
+          disablable="true" />
+        <Label for="Priority" style="&inline; margin-left: 16px;" />
         <Radio source="Priority" style="&inline; font-size: 12px; margin-left: 8px;"
           disablable="true" />
       </FlowPanel>
 
       <FlowPanel style="&section;">
-        <Label for="Owner" text="=crmTaskManager" style="&lbl1;" />
+        <Label for="Status" style="&lbl1;" />
+        <ListBox source="Status" style="&inp2;" readOnly="true" visible="true" />
+      </FlowPanel>
+
+      <FlowPanel style="&section;">
+        <Label for="Owner" style="&lbl1;" />
         <DataSelector source="Owner" editSource="OwnerPerson" style="&inp2;" readOnly="true" />
-        <Label for="Company" text="=company" style="&lbl3;" module="Classifiers.Contacts" />
+        <Label for="Company" style="&lbl3;" module="Classifiers.Contacts" />
         <DataSelector source="Company" newRowEnabled="false" style="&inp4;" disablable="true"
           module="Classifiers.Contacts" />
       </FlowPanel>
 
       <FlowPanel style="&section;">
-        <Label for="Executor" text="=crmTaskExecutor" style="&lbl1;" />
+        <Label for="Executor" style="&lbl1;" />
         <DataSelector source="Executor" editSource="ExecutorPerson" style="&inp2;" readOnly="true" />
-        <Label for="Contact" text="=personContact" style="&lbl3;" module="Classifiers.Contacts" />
+        <Label for="Contact" style="&lbl3;" module="Classifiers.Contacts" />
         <DataSelector source="Contact" newRowEnabled="false" style="&inp4;" disablable="true"
           renderColumns="ContactFirstName ContactLastName"
           choiceColumns="FirstName LastName CompanyName" options="Company"
@@ -51,24 +57,24 @@
 
       &separator;
       <FlowPanel style="&section;">
-        <Label for="Created" text="=crmTaskCreated" style="&lbl1;" />
+        <Label for="Created" style="&lbl1;" />
         <InputDateTime source="Created" style="&inp2;" readOnly="true" />
-        <Label for="ExpectedDuration" text="=crmTaskExpectedDuration" style="&lbl3;" />
+        <Label for="ExpectedDuration" style="&lbl3;" />
         <InputTime source="ExpectedDuration" step="30" style="&inline; width: 60px;" 
           disablable="true" />
       </FlowPanel>
 
       <FlowPanel style="&section;">
-        <Label text="=crmStartDate" style="&lbl1;" />
+        <Label for="StartTime" style="&lbl1;" />
         <InputDateTime source="StartTime" style="&inp2;" readOnly="true" visible="true" />
-        <Label for="Completed" text="=crmTaskCompleteDate" style="&lbl3;" />
+        <Label for="Completed" style="&lbl3;" />
         <InputDateTime source="Completed" step="30" style="&inp4;" readOnly="true" />
       </FlowPanel>
 
       <FlowPanel style="&section;">
-        <Label for="FinishTime" text="=crmFinishDate" style="&lbl1;" />
+        <Label for="FinishTime" style="&lbl1;" />
         <InputDateTime source="FinishTime" style="&inp2;" readOnly="true" />
-        <Label for="Approved" text="=crmTaskConfirmDate" style="&lbl3;" />
+        <Label for="Approved" style="&lbl3;" />
         <InputDateTime source="Approved" style="&inp4;" readOnly="true" />
       </FlowPanel>
 
@@ -77,9 +83,9 @@
       </FlowPanel>
 
       <FlowPanel style="&section;">
-        <Label for="ReminderTime" text="=crmReminderDate" style="&lbl1;" />
+        <Label for="ReminderTime" style="&lbl1;" />
         <InputDateTime source="ReminderTime" style="&inp2;" disablable="true" />
-        <Label for="Reminder" text="=crmReminder" style="&lbl3;" />
+        <Label for="Reminder" style="&lbl3;" />
         <DataSelector source="Reminder" renderColumns="ReminderName" newRowEnabled="false"
           style="&inp4;" disablable="true" />
       </FlowPanel>
@@ -90,12 +96,12 @@
 
       &separator;
       <FlowPanel style="&section;">
-        <Label text="=crmTaskSubject" class="bee-required" style="&lbl1;" />
+        <Label for="Summary" style="&lbl1;" />
         <InputText source="Summary" style="&inp2x;" readOnly="true" visible="true" />
       </FlowPanel>
 
       <FlowPanel style="&section;" for="Description">
-        <Label text="=crmTaskDescription" style="&top1;" />
+        <Label for="Description" style="&top1;" />
         <InputArea source="Description" style="width: 424px; height: 60px;" readOnly="true" />
       </FlowPanel>
 
@@ -141,8 +147,15 @@
           renderColumns="Subject" newRowEnabled="false" style="&inp2x;" disablable="true" />
       </FlowPanel>
 
+      <FlowPanel style="&section;" data="Relations" for="ServiceObject" module="Service">
+        <Label text="=svcObjects" style="&top1;" />
+        <MultiSelector viewName="ServiceObjects" property="ServiceObjects"
+          renderColumns="Address" choiceColumns="Address CustomerName"
+          newRowEnabled="false" style="&inp2x;" disablable="true" />
+      </FlowPanel>
+
       <FlowPanel style="&section;" data="Relations" for="Relation">
-        <Label text="=tasks" style="&top1;" />
+        <Label text="=crmTasks" style="&top1;" />
         <MultiSelector viewName="Tasks" property="Tasks" 
           renderColumns="Summary ExecutorFirstName ExecutorLastName"
           choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"

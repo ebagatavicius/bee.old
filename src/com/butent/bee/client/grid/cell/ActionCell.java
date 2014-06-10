@@ -7,15 +7,13 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Event;
 
-import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.grid.CellContext;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.EventState;
 import com.butent.bee.shared.HasOptions;
-import com.butent.bee.shared.Service;
 import com.butent.bee.shared.data.HasViewName;
-import com.butent.bee.shared.data.event.RowActionEvent;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
@@ -99,8 +97,7 @@ public class ActionCell extends AbstractCell<String> implements HasOptions, HasV
     EventState state = super.onBrowserEvent(context, parent, value, event);
 
     if (state.proceed() && EventUtils.isClick(event)) {
-      BeeKeeper.getBus().fireEvent(new RowActionEvent(getViewName(), context.getRow(),
-          Service.CELL_ACTION, getOptions()));
+      RowActionEvent.fireCellClick(getViewName(), context.getRow(), getOptions());
       state = EventState.CONSUMED;
     }
 

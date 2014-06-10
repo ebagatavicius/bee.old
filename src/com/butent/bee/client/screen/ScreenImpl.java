@@ -248,7 +248,10 @@ public class ScreenImpl implements Screen {
   @Override
   public void onLoad() {
     Global.getSearch().focus();
-    
+
+    if (!Global.getSpaces().isEmpty() && !containsDomainEntry(Domain.WORKSPACES, null)) {
+      addDomainEntry(Domain.WORKSPACES, Global.getSpaces().getPanel(), null, null);
+    }
     if (!Global.getReportSettings().isEmpty() && !containsDomainEntry(Domain.REPORTS, null)) {
       addDomainEntry(Domain.REPORTS, Global.getReportSettings().getPanel(), null, null);
     }
@@ -288,17 +291,20 @@ public class ScreenImpl implements Screen {
   }
 
   @Override
+  public void restore(String input, boolean append) {
+    if (getWorkspace() != null) {
+      getWorkspace().restore(input, append);
+    }
+  }
+
+  @Override
   public void showInfo() {
     getWorkspace().showInfo();
   }
 
   @Override
-  public void showWidget(IdentifiableWidget widget, boolean newPlace) {
-    if (newPlace) {
-      getWorkspace().openInNewPlace(widget);
-    } else {
-      getWorkspace().updateActivePanel(widget);
-    }
+  public void showInNewPlace(IdentifiableWidget widget) {
+    getWorkspace().openInNewPlace(widget);
   }
 
   @Override
@@ -325,7 +331,7 @@ public class ScreenImpl implements Screen {
 
   @Override
   public void updateActivePanel(IdentifiableWidget widget) {
-    showWidget(widget, false);
+    getWorkspace().updateActivePanel(widget);
   }
 
   @Override

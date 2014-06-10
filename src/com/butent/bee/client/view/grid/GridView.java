@@ -40,7 +40,7 @@ public interface GridView extends DataView, HasAddStartHandlers, HasAddEndHandle
     RowInsertEvent.Handler, RowUpdateEvent.Handler, EditStartEvent.Handler {
 
   public enum SelectedRows {
-    ALL, EDITABLE
+    ALL, EDITABLE, REMOVABLE
   }
 
   boolean addColumn(ColumnDescription columnDescription, String dynGroup, int beforeIndex);

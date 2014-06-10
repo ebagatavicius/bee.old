@@ -252,6 +252,7 @@
       <xs:enumeration value="undo" />
       <xs:enumeration value="user" />
       <xs:enumeration value="warning" />
+      <xs:enumeration value="workspace" />
       <xs:enumeration value="yellow" />
       <xs:enumeration value="yellowSmall" />
 
@@ -342,6 +343,7 @@
       <xs:enumeration value="print" />
       <xs:enumeration value="refresh" />
       <xs:enumeration value="remove_filter" />
+      <xs:enumeration value="rights" />
       <xs:enumeration value="save" />
     </xs:restriction>
   </xs:simpleType>
@@ -445,6 +447,8 @@
     <xs:attribute name="selectorClass" type="xs:normalizedString" />
     <xs:attribute name="itemType" type="menuItemType" />
     <xs:attribute name="visibleLines" type="xs:positiveInteger" />
+    <xs:attribute name="minQueryLength" type="xs:positiveInteger" />
+    <xs:attribute name="instant" type="xs:boolean" />
     <xs:attribute name="newRowForm" type="type:nameType" />
     <xs:attribute name="newRowColumns" type="type:nameList" />
     <xs:attribute name="newRowCaption" type="xs:string" />
@@ -567,6 +571,8 @@
       <xs:enumeration value="outdent" />
       <xs:enumeration value="indent" />
       <xs:enumeration value="video_camera" />
+      <xs:enumeration value="photo" />
+      <xs:enumeration value="image" />
       <xs:enumeration value="picture_o" />
       <xs:enumeration value="pencil" />
       <xs:enumeration value="map_marker" />
@@ -694,6 +700,8 @@
       <xs:enumeration value="save" />
       <xs:enumeration value="floppy_o" />
       <xs:enumeration value="square" />
+      <xs:enumeration value="navicon" />
+      <xs:enumeration value="reorder" />
       <xs:enumeration value="bars" />
       <xs:enumeration value="list_ul" />
       <xs:enumeration value="list_ol" />
@@ -715,9 +723,9 @@
       <xs:enumeration value="unsorted" />
       <xs:enumeration value="sort" />
       <xs:enumeration value="sort_down" />
-      <xs:enumeration value="sort_asc" />
-      <xs:enumeration value="sort_up" />
       <xs:enumeration value="sort_desc" />
+      <xs:enumeration value="sort_up" />
+      <xs:enumeration value="sort_asc" />
       <xs:enumeration value="envelope" />
       <xs:enumeration value="linkedin" />
       <xs:enumeration value="rotate_left" />
@@ -914,6 +922,96 @@
       <xs:enumeration value="turkish_lira" />
       <xs:enumeration value="try" />
       <xs:enumeration value="plus_square_o" />
+      <xs:enumeration value="space_shuttle" />
+      <xs:enumeration value="slack" />
+      <xs:enumeration value="envelope_square" />
+      <xs:enumeration value="wordpress" />
+      <xs:enumeration value="openid" />
+      <xs:enumeration value="institution" />
+      <xs:enumeration value="bank" />
+      <xs:enumeration value="university" />
+      <xs:enumeration value="mortar_board" />
+      <xs:enumeration value="graduation_cap" />
+      <xs:enumeration value="yahoo" />
+      <xs:enumeration value="google" />
+      <xs:enumeration value="reddit" />
+      <xs:enumeration value="reddit_square" />
+      <xs:enumeration value="stumbleupon_circle" />
+      <xs:enumeration value="stumbleupon" />
+      <xs:enumeration value="delicious" />
+      <xs:enumeration value="digg" />
+      <xs:enumeration value="pied_piper_square" />
+      <xs:enumeration value="pied_piper" />
+      <xs:enumeration value="pied_piper_alt" />
+      <xs:enumeration value="drupal" />
+      <xs:enumeration value="joomla" />
+      <xs:enumeration value="language" />
+      <xs:enumeration value="fax" />
+      <xs:enumeration value="building" />
+      <xs:enumeration value="child" />
+      <xs:enumeration value="paw" />
+      <xs:enumeration value="spoon" />
+      <xs:enumeration value="cube" />
+      <xs:enumeration value="cubes" />
+      <xs:enumeration value="behance" />
+      <xs:enumeration value="behance_square" />
+      <xs:enumeration value="steam" />
+      <xs:enumeration value="steam_square" />
+      <xs:enumeration value="recycle" />
+      <xs:enumeration value="automobile" />
+      <xs:enumeration value="car" />
+      <xs:enumeration value="cab" />
+      <xs:enumeration value="taxi" />
+      <xs:enumeration value="tree" />
+      <xs:enumeration value="spotify" />
+      <xs:enumeration value="deviantart" />
+      <xs:enumeration value="soundcloud" />
+      <xs:enumeration value="database" />
+      <xs:enumeration value="file_pdf_o" />
+      <xs:enumeration value="file_word_o" />
+      <xs:enumeration value="file_excel_o" />
+      <xs:enumeration value="file_powerpoint_o" />
+      <xs:enumeration value="file_photo_o" />
+      <xs:enumeration value="file_picture_o" />
+      <xs:enumeration value="file_image_o" />
+      <xs:enumeration value="file_zip_o" />
+      <xs:enumeration value="file_archive_o" />
+      <xs:enumeration value="file_sound_o" />
+      <xs:enumeration value="file_audio_o" />
+      <xs:enumeration value="file_movie_o" />
+      <xs:enumeration value="file_video_o" />
+      <xs:enumeration value="file_code_o" />
+      <xs:enumeration value="vine" />
+      <xs:enumeration value="codepen" />
+      <xs:enumeration value="jsfiddle" />
+      <xs:enumeration value="life_bouy" />
+      <xs:enumeration value="life_saver" />
+      <xs:enumeration value="support" />
+      <xs:enumeration value="life_ring" />
+      <xs:enumeration value="circle_o_notch" />
+      <xs:enumeration value="ra" />
+      <xs:enumeration value="rebel" />
+      <xs:enumeration value="ge" />
+      <xs:enumeration value="empire" />
+      <xs:enumeration value="git_square" />
+      <xs:enumeration value="git" />
+      <xs:enumeration value="hacker_news" />
+      <xs:enumeration value="tencent_weibo" />
+      <xs:enumeration value="qq" />
+      <xs:enumeration value="wechat" />
+      <xs:enumeration value="weixin" />
+      <xs:enumeration value="send" />
+      <xs:enumeration value="paper_plane" />
+      <xs:enumeration value="send_o" />
+      <xs:enumeration value="paper_plane_o" />
+      <xs:enumeration value="history" />
+      <xs:enumeration value="circle_thin" />
+      <xs:enumeration value="header" />
+      <xs:enumeration value="paragraph" />
+      <xs:enumeration value="sliders" />
+      <xs:enumeration value="share_alt" />
+      <xs:enumeration value="share_alt_square" />
+      <xs:enumeration value="bomb" />
     </xs:restriction>
   </xs:simpleType>
   

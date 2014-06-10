@@ -132,8 +132,8 @@ public class EcScreen extends ScreenImpl {
   }
 
   @Override
-  public void showWidget(IdentifiableWidget widget, boolean newPlace) {
-    getScreenPanel().updateCenter(widget);
+  public void showInNewPlace(IdentifiableWidget widget) {
+    updateActivePanel(widget);
   }
 
   @Override

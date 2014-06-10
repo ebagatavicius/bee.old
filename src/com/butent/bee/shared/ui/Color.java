@@ -11,6 +11,8 @@ import com.butent.bee.shared.css.Colors;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,56 @@ public class Color implements BeeSerializable {
 
   static {
     initNames();
+  }
+  
+  public static String blend(String c1, String c2) {
+    if (BeeUtils.isEmpty(c1)) {
+      return c2;
+    } else if (BeeUtils.isEmpty(c2) || c1.equals(c2)) {
+      return c1;
+    } else {
+      return blend(Lists.newArrayList(c1, c2));
+    }
+  }
+
+  public static String blend(Collection<String> input) {
+    if (BeeUtils.isEmpty(input)) {
+      return null;
+    }
+
+    List<int[]> colors = new ArrayList<>();
+    for (String s : input) {
+      byte[] rgb = getRgb(s);
+      
+      if (rgb != null) {
+        int[] color = new int[3];
+
+        for (int i = 0; i < color.length; i++) {
+          color[i] = rgb[i] & 0xff;
+        }
+        colors.add(color);
+      }
+    }
+    
+    if (colors.isEmpty()) {
+      return null;
+    }
+    
+    int[] result = new int[3];
+    
+    for (int[] color : colors) {
+      for (int i = 0; i < result.length; i++) {
+        result[i] += color[i];
+      }
+    }
+    
+    if (colors.size() > 1) {
+      for (int i = 0; i < result.length; i++) {
+        result[i] = BeeUtils.round(result[i] / (double) colors.size());
+      }
+    }
+    
+    return normalize(result[0], result[1], result[2]);
   }
 
   public static Map<String, String> getNames() {

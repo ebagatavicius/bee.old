@@ -44,8 +44,8 @@ public class SelectionColumn extends AbstractColumn<Boolean> {
   }
 
   @Override
-  public String getString(CellContext context, IsRow row) {
-    Boolean value = getValue(row);
+  public String getString(CellContext context) {
+    Boolean value = getValue(context.getRow());
     return (value == null) ? null : BeeUtils.toString(value);
   }
 

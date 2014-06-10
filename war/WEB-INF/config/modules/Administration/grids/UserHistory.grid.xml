@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui" xmlns:w="http://www.butent.com/widget"
+
+  name="UserHistory" viewName="UserHistory" caption="=loginHistory" readOnly="true"
+  disabledActions="audit">
+  <g:columns>
+    <DataColumn name="Login" caption="=userLogin" visible="true" />
+
+    <RelColumn name="CompanyPerson" renderColumns="FirstName LastName"
+      caption="=personFullName" visible="true" />
+
+    <DataColumn name="LoggedIn" visible="true" format="yyyy-MM-dd HH:mm:ss" />
+    <DataColumn name="LoggedOut" visible="true" format="yyyy-MM-dd HH:mm:ss" />
+    <CalcColumn name="SessionTime" visible="true" type="string"
+      autoFit="true" caption="=loginSessionTime">
+      <render>
+        <ui:function>
+          var diff = 0,            
+            seconds = 0,
+            minutes = 0,
+            hours = 0,
+            days = 0,
+            text = '';
+                    
+          if (row.LoggedIn == null) {
+            return null;
+          }
+        
+          if (row.LoggedOut == null) {
+            return null;
+          }
+          
+          diff = row.LoggedOut - row.LoggedIn;
+          seconds = parseInt(diff / 1000 % 60, 10);
+          minutes = parseInt(diff / 1000 / 60 % 60, 10);
+          hours = parseInt(diff / 1000 / 60 / 60 % 24, 10);
+          days = parseInt(diff / 1000 / 60 / 60 / 24, 10);
+          text = days + ' ' + $wnd.Bee_maybeTranslate('=dayShort') + ' '
+          + (hours > 9 ? hours : ('0' + hours)) + ':'
+          + (minutes > 9 ? minutes : ('0' + minutes)) + ':'
+          + (seconds > 9 ? seconds : ('0' + seconds))
+          return text;
+        </ui:function>
+      </render>
+    </CalcColumn>
+    <DataColumn name="Host" />
+    <DataColumn name="Agent" visible="false" />
+  </g:columns>
+</g:Grid>

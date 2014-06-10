@@ -3,17 +3,23 @@
   xmlns:ui="http://www.butent.com/ui"
   xmlns:w="http://www.butent.com/widget"
   
-  name="Documents" viewName="Documents" caption="=documents"
+  name="Documents" viewName="Documents" caption="=documentTree"
   newRowForm="NewDocument" editForm="Document" parent="Tree" favorite="Name"
   flexGrow="1" order="DocumentID desc"
   >
   
   <g:west size="200" splitterSize="2">
-    <w:DataTree name="Tree" caption="=documentCategories" viewName="DocumentTree"
-      parentColumn="Parent" hideActions="true">
+    <w:DataTree class="bee-documents-parentWiget" name="Tree" caption="=documentCategories"
+    viewName="DocumentTree" parentColumn="Parent" hideActions="false" favorite="Name">
       <w:calc>
         <ui:expression>row.Name + (row.DocumentCount != 0 ? ' [' + row.DocumentCount + ']' : '')</ui:expression>
       </w:calc>
+      <w:form name="EditCategory">
+          <w:FlowPanel>
+            <w:Label for="Name" />
+            <w:InputText source="Name" />
+          </w:FlowPanel>
+      </w:form>
     </w:DataTree>
   </g:west>
   
@@ -27,7 +33,7 @@
     <DataColumn name="PlaceName" />
     <DataColumn name="StatusName" />
 
-    <IdColumn name="Id" caption="=captionId" visible="false" />
+    <IdColumn name="Id" visible="false" />
     <DataColumn name="RegistrationNumber" visible="false" />
     <DataColumn name="Received" visible="false" />
     <DataColumn name="Sent" visible="false" />

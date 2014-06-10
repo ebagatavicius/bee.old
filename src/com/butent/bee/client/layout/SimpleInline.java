@@ -128,7 +128,7 @@ public class SimpleInline extends Panel implements HasOneWidget, IdentifiableWid
     widget = w;
 
     if (w != null) {
-      DOM.appendChild(getElement(), widget.getElement());
+      getElement().appendChild(widget.getElement());
       adopt(w);
     }
   }

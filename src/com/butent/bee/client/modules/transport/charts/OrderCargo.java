@@ -9,6 +9,8 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowInsertCallback;
+import com.butent.bee.client.timeboard.HasColorSource;
+import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
@@ -57,12 +59,12 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
             row.getLong(unloadingColumnAlias(COL_PLACE_CITY)),
             row.getValue(unloadingColumnAlias(COL_PLACE_NUMBER)));
 
-    if (!ChartHelper.isNormalized(orderCargo.getRange()) && orderCargo.getOrderDate() != null) {
+    if (!TimeBoardHelper.isNormalized(orderCargo.getRange()) && orderCargo.getOrderDate() != null) {
       JustDate start = BeeUtils.nvl(orderCargo.getLoadingDate(),
           orderCargo.getUnloadingDate(), orderCargo.getOrderDate().getDate());
       JustDate end = BeeUtils.nvl(orderCargo.getUnloadingDate(), start);
 
-      orderCargo.setRange(ChartHelper.getActivity(start, end));
+      orderCargo.setRange(TimeBoardHelper.getActivity(start, end));
     }
 
     return orderCargo;
@@ -137,7 +139,7 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
 
     this.orderName = BeeUtils.joinWords(TimeUtils.renderCompact(this.orderDate), this.orderNo);
 
-    this.range = ChartHelper.getActivity(loadingDate, unloadingDate);
+    this.range = TimeBoardHelper.getActivity(loadingDate, unloadingDate);
   }
 
   @Override
@@ -221,7 +223,7 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
     JustDate lower = BeeUtils.nvl(loadingDate, BeeUtils.getLowerEndpoint(defaultRange));
     JustDate upper = BeeUtils.nvl(unloadingDate, BeeUtils.getUpperEndpoint(defaultRange));
 
-    setRange(ChartHelper.getActivity(lower, upper));
+    setRange(TimeBoardHelper.getActivity(lower, upper));
   }
 
   void assignToTrip(Long tripId, boolean fire) {
@@ -284,12 +286,12 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
   }
 
   String getOrderTitle() {
-    return ChartHelper.buildTitle(orderDateLabel, TimeUtils.renderCompact(getOrderDate()),
+    return TimeBoardHelper.buildTitle(orderDateLabel, TimeUtils.renderCompact(getOrderDate()),
         orderStatusLabel, (getOrderStatus() == null) ? null : getOrderStatus().getCaption());
   }
 
   String getTitle() {
-    return ChartHelper.buildTitle(/* cargoLabel, cargoDescription, */
+    return TimeBoardHelper.buildTitle(/* cargoLabel, cargoDescription, */
         Localized.getConstants().cargoLoading(), Places.getLoadingInfo(this),
         Localized.getConstants().cargoUnloading(), Places.getUnloadingInfo(this),
         Localized.getConstants().trOrder(), orderNo,

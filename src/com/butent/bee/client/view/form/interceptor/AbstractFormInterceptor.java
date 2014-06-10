@@ -151,9 +151,6 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   }
 
   @Override
-  public abstract FormInterceptor getInstance();
-
-  @Override
   public Integer getIntegerValue(String source) {
     return (getFormView() == null) ? null : getFormView().getIntegerValue(source);
   }
@@ -179,11 +176,6 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   }
 
   @Override
-  public String getSupplierKey() {
-    return null;
-  }
-
-  @Override
   public String getViewName() {
     return (getFormView() == null) ? null : getFormView().getViewName();
   }
@@ -193,6 +185,11 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
     return true;
   }
 
+  @Override
+  public boolean isRowEditable(IsRow row) {
+    return row != null && row.isEditable();
+  }
+  
   @Override
   public void notifyRequired(String message) {
     if (getFormView() != null) {

@@ -195,6 +195,7 @@ public final class EcConstants {
   public static final String SVC_GET_CAR_TYPES = "getCarTypes";
 
   public static final String SVC_GET_ITEMS_BY_CAR_TYPE = "getItemsByCarType";
+  public static final String SVC_GET_CAR_TYPE_HISTORY = "getCarTypeHistory";
 
   public static final String SVC_GET_ITEM_BRANDS = "getItemBrands";
   public static final String SVC_GET_ITEMS_BY_BRAND = "getItemsByBrand";
@@ -236,6 +237,10 @@ public final class EcConstants {
   public static final String SVC_UPLOAD_BANNERS = "uploadBanners";
 
   public static final String SVC_CREATE_CLIENT = "createClient";
+  public static final String SVC_CREATE_ITEM = "createItem";
+  public static final String SVC_ADOPT_ORPHANS = "adoptOrphans";
+
+  public static final String SVC_ADD_ARTICLE_CAR_TYPES = "addArticleCarTypes";
 
   public static final String VAR_PREFIX = Service.RPC_VAR_PREFIX + "ec_";
 
@@ -346,6 +351,7 @@ public final class EcConstants {
   public static final String COL_CLIENT_TOGGLE_LIST_PRICE = "ToggleListPrice";
   public static final String COL_CLIENT_TOGGLE_PRICE = "TogglePrice";
   public static final String COL_CLIENT_TOGGLE_STOCK_LIMIT = "ToggleStockLimit";
+  public static final String COL_CLIENT_CAR_TYPE_HISTORY_SIZE = "CarTypeHistorySize";
   public static final String COL_CLIENT_NOTES = "Notes";
 
   public static final String COL_CONFIG_ID = "ConfigurationID";
@@ -470,6 +476,8 @@ public final class EcConstants {
   public static final String COL_TCD_ARTICLE_VISIBLE = "Visible";
   public static final String COL_TCD_ARTICLE_NOVELTY = "Novelty";
   public static final String COL_TCD_ARTICLE_FEATURED = "Featured";
+  public static final String COL_TCD_ARTICLE_FEATURED_PRICE = "FeaturedPrice";
+  public static final String COL_TCD_ARTICLE_FEATURED_PERCENT = "FeaturedPercent";
 
   public static final String COL_TCD_SUPPLIER = "Supplier";
   public static final String COL_TCD_SUPPLIER_ID = "SupplierID";
@@ -532,12 +540,15 @@ public final class EcConstants {
   public static final String COL_CW_WAREHOUSE = "Warehouse";
 
   public static final String PRM_BUTENT_INTERVAL = "ButentIntervalInMinutes";
-  public static final String PRM_MOTONET_INTERVAL = "MotoprofilIntervalInMinutes";
+  public static final String PRM_MOTONET_HOURS = "MotoprofilRefreshHours";
+  public static final String PRM_PROMO_FEATURED = "PromoFeatured";
+  public static final String PRM_PROMO_NOVELTY = "PromoNovelty";
 
   public static final String GRID_DISCOUNTS = "EcDiscounts";
   public static final String GRID_ARTICLE_CATEGORIES = "TcdArticleCategories";
   public static final String GRID_ARTICLE_CODES = "TcdArticleCodes";
   public static final String GRID_ARTICLE_GRAPHICS = "TcdArticleGraphics";
+  public static final String GRID_ARTICLE_CARS = "TcdTypeArticles";
   public static final String GRID_GROUP_CATEGORIES = "EcGroupCategories";
 
   public static final String FORM_CATEGORIES = "TcdCategories";
@@ -554,6 +565,7 @@ public final class EcConstants {
   public static final String DATA_ATTRIBUTE_STOCK = "stock";
 
   public static final int MIN_SEARCH_QUERY_LENGTH = 3;
+  public static final int DEFAULT_CAR_TYPE_HISTORY_SIZE = 10;
 
   public static final String PICTURE_PREFIX = "data:image/";
 

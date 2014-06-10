@@ -3,18 +3,25 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   
-  name="DocumentTree" caption="=documentTree">
-
-  <DataTree caption="=documentCategories" viewName="DocumentTree" parentColumn="Parent"
-    orderColumn="Order">
-    <calc>
-      <ui:expression>row.Name</ui:expression>
-    </calc>
-    <form name="EditCategory">
-      <FlowPanel>
-        <Label text="=documentCategory" class="bee-required" />
-        <InputText source="Name" />
-      </FlowPanel>
-    </form>
-  </DataTree>
+  name="DocumentTree" caption="=documentCategories"
+  >
+  <SplitPanel>
+    <west size="300" splitterSize="2">
+      <DataTree name="Tree" caption="=documentCategories" viewName="DocumentTree"
+        parentColumn="Parent" orderColumn="Order">
+        <calc>
+          <ui:expression>row.Name</ui:expression>
+        </calc>
+        <form name="EditCategory">
+          <FlowPanel>
+            <Label for="Name" />
+            <InputText source="Name" />
+          </FlowPanel>
+        </form>
+      </DataTree>
+    </west>
+    <center>
+      <FlowPanel name="Rights" />
+    </center>
+  </SplitPanel>
 </f:Form>  

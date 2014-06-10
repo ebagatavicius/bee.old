@@ -12,6 +12,4 @@ public interface WidgetInterceptor {
   boolean beforeCreateWidget(String name, Element description);
   
   IdentifiableWidget createCustomWidget(String name, Element description);
-  
-  String getSupplierKey();
 }

@@ -17,6 +17,7 @@ import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.List;
@@ -58,7 +59,8 @@ public class PrintInvoiceInterceptor extends AbstractFormInterceptor {
     }
     for (Widget total : totals) {
       TradeUtils.getTotalInWords(form.getDoubleValue(COL_TRADE_AMOUNT),
-          form.getStringValue("CurrencyName"), form.getStringValue("MinorName"), total);
+          form.getStringValue(AdministrationConstants.ALS_CURRENCY_NAME),
+          form.getStringValue("MinorName"), total);
     }
   }
 

@@ -31,6 +31,7 @@ public abstract class AbstractRow implements IsRow {
   private long id;
   private long version;
   private boolean editable = true;
+  private boolean removable = true;
 
   private Map<Integer, String> shadow;
   private CustomProperties properties;
@@ -139,7 +140,7 @@ public abstract class AbstractRow implements IsRow {
 
     switch (type) {
       case BOOLEAN:
-        return new BooleanValue(getBoolean(index));
+        return BooleanValue.getInstance(getBoolean(index));
       case DATE:
         return new DateValue(getDate(index));
       case DATE_TIME:
@@ -182,6 +183,11 @@ public abstract class AbstractRow implements IsRow {
   }
 
   @Override
+  public boolean isRemovable() {
+    return removable;
+  }
+
+  @Override
   public void preliminaryUpdate(int col, String value) {
     String oldValue = getString(col);
 
@@ -216,6 +222,11 @@ public abstract class AbstractRow implements IsRow {
   @Override
   public void setId(long id) {
     this.id = id;
+  }
+
+  @Override
+  public void setRemovable(boolean removable) {
+    this.removable = removable;
   }
 
   @Override

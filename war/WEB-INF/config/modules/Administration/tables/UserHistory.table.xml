@@ -7,9 +7,9 @@
   >
   <Fields>
     <Relation name="User" notNull="true" relation="Users" cascade="DELETE" label="=user" />
-    <DateTime name="LoggedIn" notNull="true" />
+    <DateTime name="LoggedIn" notNull="true" label="=loggedIn" />
     <Text name="Host" label="=remoteHost" />
     <Text name="Agent" label="=userAgent" />
-    <DateTime name="LoggedOut" />
+    <DateTime name="LoggedOut" label="=loggedOut"  />
   </Fields>
 </Table>

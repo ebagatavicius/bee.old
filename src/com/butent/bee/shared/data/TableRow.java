@@ -30,17 +30,6 @@ public class TableRow extends AbstractRow {
   }
 
   @Override
-  public IsRow copy() {
-    TableRow result = new TableRow(getId());
-    result.setVersion(getVersion());
-    for (IsCell cell : getCells()) {
-      result.addCell(cell.copy());
-    }
-    copyProperties(result);
-    return result;
-  }
-
-  @Override
   public IsCell getCell(int index) {
     return cells.get(index);
   }

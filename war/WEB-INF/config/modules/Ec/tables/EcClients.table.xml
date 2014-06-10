@@ -31,6 +31,8 @@
     <Boolean name="TogglePrice" label="=ecTogglePrice" />
     <Boolean name="ToggleStockLimit" label="=ecToggleStockLimit" />
 
+    <Integer name="CarTypeHistorySize" label="=ecCarTypeHistorySize" />
+
     <Text name="Notes" label="=notes" />
   </Fields>
 </Table>

@@ -5,7 +5,7 @@
   idName="DocumentTreeID"
   >
   <Fields>
-    <String name="Name" precision="100" notNull="true" />
+    <String name="Name" precision="100" notNull="true"  label="=documentCategory" />
     <Relation name="Parent" relation="DocumentTree" />
     <Integer name="Order" />
   </Fields>

@@ -27,8 +27,9 @@ public class TableColumn implements HasInfo, IsColumn {
   private CustomProperties properties;
   
   private int precision = BeeConst.UNDEF;
-
   private int scale = BeeConst.UNDEF;
+
+  private String enumKey;
 
   public TableColumn(ValueType type) {
     this(type, null, null);
@@ -59,6 +60,11 @@ public class TableColumn implements HasInfo, IsColumn {
     return result;
   }
 
+  @Override
+  public String getEnumKey() {
+    return enumKey;
+  }
+  
   @Override
   public String getId() {
     return id;
@@ -121,6 +127,11 @@ public class TableColumn implements HasInfo, IsColumn {
   @Override
   public boolean isText() {
     return ValueType.TEXT.equals(getType()) && getPrecision() <= 0;
+  }
+
+  @Override
+  public void setEnumKey(String enumKey) {
+    this.enumKey = enumKey;
   }
   
   @Override

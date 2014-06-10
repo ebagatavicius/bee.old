@@ -75,99 +75,102 @@
 
     <FlowPanel name="DiscussMarkTypes"
       class="flexBox-horizontal bee-discuss-markTypes-container" />
-
-    <Disclosure xmlns="http://www.butent.com/widget"
-      xmlns:xi="http://www.w3.org/2001/XInclude" open="false">
-      <Label text="=discussDetailInfo" style="text-transform: uppercase;" />
-
-      <FlowPanel class="flexBox-vertical" style="&discussDataPanel;">
+      
+      <Disclosure xmlns="http://www.butent.com/widget"
+        xmlns:xi="http://www.w3.org/2001/XInclude" open="true">
+        <Label text="=discussDescription" style="text-transform: uppercase;" />
+        
         <FlowPanel>
-          <Label text="=discussOwner" style="&ownerLbl;" />
-          <DataSelector source="Owner" editSource="OwnerPerson"
-            style="&ownerInp;" readOnly="true" />
-          <CheckBox name="Accessibility" source="Accessibility"
-            text="=discussPublic" disablable="false" />
+            <Label class="bee-InputArea" name="Description" style="&descriptionInp; width:80%; min-width: 640px; min-height: 390px" />
         </FlowPanel>
-        <FlowPanel>
-          <Label name="membersLabel" text="=discussMembers" style="&membersLbl;" />
-          <MultiSelector viewName="Users" property="Members"
-            renderColumns="FirstName LastName" editSource="CompanyPerson"
-            style="&membersInp;" label="=discussMembers" disablable="false" />
+                
+      </Disclosure>
+      
+      <Disclosure xmlns="http://www.butent.com/widget"
+        xmlns:xi="http://www.w3.org/2001/XInclude" open="false">
+        <Label text="=discussRelatedInformation" style="text-transform: uppercase;" />
+  
+        <FlowPanel class="flexBox-vertical" style="&discussDataPanel;">
+          <FlowPanel>
+            <Label text="=discussOwner" style="&ownerLbl;" />
+            <DataSelector source="Owner" editSource="OwnerPerson"
+              style="&ownerInp;" readOnly="true" />
+            <CheckBox name="Accessibility" source="Accessibility"
+              text="=discussPublic" disablable="false" />
+          </FlowPanel>
+          <FlowPanel>
+            <Label name="membersLabel" text="=discussMembers" style="&membersLbl;" />
+            <MultiSelector viewName="Users" property="Members"
+              renderColumns="FirstName LastName" editSource="CompanyPerson"
+              style="&membersInp;" label="=discussMembers" disablable="false" />
+          </FlowPanel>
+  
+          <FlowPanel>
+            <Label text="=companies" style="&relCompaniesLbl;" />
+            <MultiSelector viewName="Companies" property="Companies"
+              renderColumns="Name" style="&relCompaniesInp;" />
+          </FlowPanel>
+  
+          <FlowPanel>
+            <Label text="=persons" style="&relPersonsLbl;" />
+            <MultiSelector viewName="Persons" property="Persons"
+              renderColumns="FirstName LastName" style="&relPersonsInp;" />
+          </FlowPanel>
+  
+          <FlowPanel>
+            <Label text="=calAppointments" style="&relAppoitmentsLbl;" />
+            <MultiSelector viewName="Appointments" property="Appointments"
+              renderColumns="Summary" choiceColumns="Summary StartDateTime EndDateTime"
+              newRowEnabled="false" style="&relAppoitmentsInp;" />
+          </FlowPanel>
+  
+          <FlowPanel>
+            <Label text="=crmTasks" style="&relTasksLbl;" />
+            <MultiSelector viewName="Tasks" property="Tasks"
+              renderColumns="Summary ExecutorFirstName ExecutorLastName"
+              choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
+              newRowEnabled="false" style="&relTasksInp;" />
+          </FlowPanel>
+  
+          <FlowPanel>
+            <Label text="=documents" style="&relDocumentsLbl;" />
+            <MultiSelector viewName="Documents" property="Documents"
+              renderColumns="Name DocumentDate Number" choiceColumns="Name DocumentDate Number"
+              newRowEnabled="false" style="&relDocumentsInp;" />
+          </FlowPanel>
+    
+          <FileGroup name="Files" />
+           &separator;
+          <FlowPanel class="flexBox-horizontal">
+            <Label text="=announcement" style="&header;" />
+          </FlowPanel>
+  
+          <FlowPanel class="flexBox-horizontal">
+            <Label text="=adTopic" style="&lbl1; min-width:150px;" />
+            <DataSelector name="Topic" source="Topic" style="&inp2x; width: 250px"
+              choiceColumns="Name" filter="Visible" disablable="false"/>
+          </FlowPanel>
+  
+          <FlowPanel class="flexBox-horizontal">
+            <Label name="DisplayInBoard" text="=displayInBoard" style="&lbl1; min-width:150px;" />
+            <Label text="=dateFromShort"
+              style="text-transform: lowercase; margin-right:4px" />
+            <InputDateTime source="VisibleFrom"
+              style="&inp2x; width: 100px; margin-right:8px" disablable="false" />
+            <Label text="=dateToShort"
+              style="text-transform: lowercase; margin-right:4px" />
+            <InputDateTime source="VisibleTo" style="&inp2x; width: 100px" disablable="false" />
+          </FlowPanel>
+  
+          <FlowPanel class="flexBox-horizontal">
+            <CheckBox name="Important" source="Important" text="=important"
+              style="&top1; min-width:70px; padding-right:18px;" disablable="false"/>
+            <CheckBox name="PermitComment"
+              text="=prohibitComment" style="&top1; min-width: 135px; padding-right:18px;" 
+              disablable="false" />
+          </FlowPanel>
         </FlowPanel>
-
-        <FlowPanel>
-          <Label text="=companies" style="&relCompaniesLbl;" />
-          <MultiSelector viewName="Companies" property="Companies"
-            renderColumns="Name" style="&relCompaniesInp;" />
-        </FlowPanel>
-
-        <FlowPanel>
-          <Label text="=persons" style="&relPersonsLbl;" />
-          <MultiSelector viewName="Persons" property="Persons"
-            renderColumns="FirstName LastName" style="&relPersonsInp;" />
-        </FlowPanel>
-
-        <FlowPanel>
-          <Label text="=calAppointments" style="&relAppoitmentsLbl;" />
-          <MultiSelector viewName="Appointments" property="Appointments"
-            renderColumns="Summary" choiceColumns="Summary StartDateTime EndDateTime"
-            newRowEnabled="false" style="&relAppoitmentsInp;" />
-        </FlowPanel>
-
-        <FlowPanel>
-          <Label text="=tasks" style="&relTasksLbl;" />
-          <MultiSelector viewName="Tasks" property="Tasks"
-            renderColumns="Summary 
-        ExecutorFirstName ExecutorLastName"
-            choiceColumns="Summary ExecutorFirstName 
-        ExecutorLastName StartTime FinishTime"
-            newRowEnabled="false" style="&relTasksInp;" />
-        </FlowPanel>
-
-        <FlowPanel>
-          <Label text="=documents" style="&relDocumentsLbl;" />
-          <MultiSelector viewName="Documents" property="Documents"
-            renderColumns="Name DocumentDate Number" choiceColumns="Name DocumentDate Number"
-            newRowEnabled="false" style="&relDocumentsInp;" />
-        </FlowPanel>
-
-        <FlowPanel>
-          <Label text="=discussDescription" style="&descriptionLbl;" />
-          <Label class="bee-InputArea" name="Description" style="&descriptionInp; " />
-        </FlowPanel>
-
-        <FileGroup name="Files" />
-         &separator;
-        <FlowPanel class="flexBox-horizontal">
-          <Label text="=announcement" style="&header;" />
-        </FlowPanel>
-
-        <FlowPanel class="flexBox-horizontal">
-          <Label text="=adTopic" style="&lbl1; min-width:150px;" />
-          <DataSelector name="Topic" source="Topic" style="&inp2x; width: 250px"
-            choiceColumns="Name" filter="Visible" disablable="false"/>
-        </FlowPanel>
-
-        <FlowPanel class="flexBox-horizontal">
-          <Label name="DisplayInBoard" text="=displayInBoard" style="&lbl1; min-width:150px;" />
-          <Label text="=dateFromShort"
-            style="text-transform: lowercase; margin-right:4px" />
-          <InputDateTime source="VisibleFrom"
-            style="&inp2x; width: 100px; margin-right:8px" disablable="false" />
-          <Label text="=dateToShort"
-            style="text-transform: lowercase; margin-right:4px" />
-          <InputDateTime source="VisibleTo" style="&inp2x; width: 100px" disablable="false" />
-        </FlowPanel>
-
-        <FlowPanel class="flexBox-horizontal">
-          <CheckBox name="Important" source="Important" text="=important"
-            style="&top1; min-width:70px; padding-right:18px;" disablable="false"/>
-          <CheckBox name="PermitComment"
-            text="=prohibitComment" style="&top1; min-width: 135px; padding-right:18px;" 
-            disablable="false" />
-        </FlowPanel>
-      </FlowPanel>
-    </Disclosure>
+      </Disclosure>
 
     <FlowPanel name="DiscussionsComments" class="flexible bee-discuss-comment-container"
       style="&commentsPanel;" />

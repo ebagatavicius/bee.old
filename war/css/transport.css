@@ -1,204 +1,3 @@
-.bee-tr-chart-Canvas {
-  position: absolute;
-  top: 30px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-.bee-tr-chart-Header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-
-.bee-tr-chart-ScrollArea {
-  position: absolute;
-  left: 0;
-  right: 0;
-  overflow: auto;
-}
-
-.bee-tr-chart-Content {
-  position: relative;
-}
-
-.bee-tr-chart-Footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-.bee-tr-chart-HeaderSplitter,
-.bee-tr-chart-FooterSplitter {
-  right: 0;
-}
-
-.bee-tr-chart-row-sep {
-  position: absolute;
-  height: 1px;
-  background-color: #ddd;
-}
-
-.bee-tr-chart-Selector-panel {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-}
-.bee-tr-chart-Selector-strip {
-  position: absolute;
-}
-
-.bee-tr-chart-Selector-startSlider-label,
-.bee-tr-chart-Selector-endSlider-label {
-  position: absolute;
-  padding: 2px;
-  margin-bottom: 2px;
-  background-color: WhiteSmoke;
-  color: #222;
-  border: 1px solid #ccc;
-}
-
-.bee-tr-chart-Selector-startSlider,
-.bee-tr-chart-Selector-endSlider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background-image: linear-gradient(to right, #888, #ccc, #888);
-  cursor: col-resize;
-}
-
-.bee-tr-chart-Selector-mover {
-  position: absolute;
-  top: 0; 
-  bottom: 0;
-  cursor: move;
-  background-color: rgba(0, 0, 255, 0.1);
-}
-
-.bee-tr-chart-daySeparator,
-.bee-tr-chart-monthSeparator,
-.bee-tr-chart-rightSeparator {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-}
-.bee-tr-chart-daySeparator {
-  background-color: #ddd;
-}
-.bee-tr-chart-monthSeparator {
-  background-color: #888;
-}
-.bee-tr-chart-rightSeparator {
-  background-color: #888;
-}
-
-.bee-tr-chart-dayLabel,
-.bee-tr-chart-dayNarrow,
-.bee-tr-chart-dayPicture {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-}
-.bee-tr-chart-dayLabel {
-  text-align: center;
-}
-
-.bee-tr-chart-dayNarrow > * {
-  position: absolute;
-  left: 0;
-  font-size: 12px;
-  line-height: 12px;
-}
-.bee-tr-chart-dayNarrow-tens {
-  top: 0;
-}
-.bee-tr-chart-dayNarrow-ones {
-  bottom: 0;
-}
-
-.bee-tr-chart-dayPicture {
-  display: flex;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  justify-content: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  align-items: flex-end;
-  -webkit-align-items: flex-end;
-  -ms-flex-align: end;
-  align-content: flex-end;
-  -webkit-align-content: flex-end;
-  -ms-flex-line-pack: end;
-  flex-wrap: wrap;
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
-}
-.bee-tr-chart-dayPicture-tens {
-  background-color: #888;
-}
-.bee-tr-chart-dayPicture-ones {
-  background-color: #ccc;
-}
-
-.bee-tr-chart-visibleRange-panel,
-.bee-tr-chart-maxRange-panel {
-  position: absolute;
-  left: 0;
-  top: 0;
-  overflow: hidden;
-  display: flex;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  justify-content: space-around;
-  -webkit-justify-content: space-around;
-  -ms-flex-pack: justify;
-}
-
-.bee-tr-chart-visibleRange-start:hover,
-.bee-tr-chart-visibleRange-end:hover {
-  text-decoration: underline;
-  color: #00e;
-  cursor: pointer;
-}
-
-.bee-tr-chart-dayBackground {
-  position: absolute;
-  top: 0;
-}
-
-.bee-tr-chart-past {
-  background-color: #e8e8e8;
-}
-.bee-tr-chart-today {
-  background-color: #f1f1f1;
-}
-.bee-tr-chart-weekend {
-  background-color: #f8f8f8;
-}
-
-.bee-tr-chart-horizontalMover {
-  position: absolute;
-  top: 0;
-  width: 1px;
-  background-color: #ccc;
-  border-left: 1px solid #888;
-  border-right: 1px solid #888;
-  cursor: col-resize;
-}
-.bee-tr-chart-verticalMover {
-  position: absolute;
-  left: 0;
-  height: 1px;
-  background-color: #ccc;
-  border-top: 1px solid #888;
-  border-bottom: 1px solid #888;
-  cursor: row-resize;
-}
-
 .bee-tr-fx-Customer-panel,
 .bee-tr-fx-Order-panel,
 .bee-tr-dtb-Driver-panel,
@@ -260,7 +59,7 @@
 }
 
 .bee-tr-dtb-Trip-panel,
-.bee-tr-dtb-View .bee-tr-chart-Selector-strip {
+.bee-tr-dtb-View .bee-timeboard-selector-strip {
   background-color: palegreen;
 }
 
@@ -337,19 +136,6 @@
   cursor: pointer;
 }
 
-.bee-tr-chart-item-start {
-  border-top-left-radius: 6px 50%;
-  border-bottom-left-radius: 6px 50%;
-}
-.bee-tr-chart-item-end {
-  border-top-right-radius: 6px 50%;
-  border-bottom-right-radius: 6px 50%;
-}
-
-.bee-tr-chart-item-hasHandling {
-  background-image: repeating-linear-gradient(90deg, rgba(211,211,211,1) 10px, rgba(211,211,211,0) 20px);
-}
-
 .bee-tr-dtb-Trip-void,
 .bee-tr-vtb-Trip-void {
   position: absolute;
@@ -404,22 +190,6 @@
   text-align: right;
   font-weight: bold;
   padding-right: 3px;
-}
-
-.bee-tr-chart-filterLabel {
-  color: #00a;
-  padding-right: 10px;
-  max-width: 400px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.bee-tr-chart-actionRemoveFilter {
-  font-size: 17px;
-}
-.bee-tr-chart-actionRemoveFilter:hover {
-  color: red;
-  cursor: pointer;
 }
 
 .bee-tr-chart-filter-data-wrapper {

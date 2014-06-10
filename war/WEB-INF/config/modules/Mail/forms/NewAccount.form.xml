@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Form [
-<!ENTITY lbl1 "width: 115px; text-align: right; padding-right: 9px;">
-]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   
-  name="NewAccount" viewName="Accounts" caption="=mailNewAccount" width="670" height="335"
+  name="NewAccount" viewName="Accounts" caption="=mailNewAccount" width="650" height="300"
   >
   <FlowPanel>
-    <FlowPanel class="flexBox-vertical-center" style="padding: 15px 1em 15px 1em;">
-      <Table style="border-spacing:5px">
+    <FlowPanel class="flexBox-vertical-center">
+      <Table>
         <row>
-          <Label for="Description" horizontalAlignment="right" style="&lbl1;"/>
+          <Label for="Description" horizontalAlignment="right" />
           <InputText source="Description" style="width:200px" />
-
-          <cell rowSpan="2" verticalAlignment="middle">
-            <CheckBox source="Main" text="=mailDefault" />
-          </cell>
         </row>
         <row>
-          <Label for="Address" horizontalAlignment="right" style="&lbl1;"/>
+          <Label for="Address" horizontalAlignment="right" />
           <DataSelector source="Address" style="width:200px" renderColumns="Label Email">
             <renderer type="mail" />
           </DataSelector>
+          <CheckBox source="Main" text="=mailDefault" />
+        </row>
+        <row>
+          <Label for="Signature" horizontalAlignment="right" />
+          <DataSelector source="Signature" choiceColumns="Description Content" style="width:200px"
+            currentUserFilter="User" />
         </row>
       </Table>
     </FlowPanel>
@@ -42,34 +41,34 @@
             </cell>
           </row>
           <row>
-            <Label for="StoreType" horizontalAlignment="right" style="&lbl1;"/>
+            <Label for="StoreType" horizontalAlignment="right" />
             <ListBox source="StoreType">
               <item>POP3</item>
               <item>IMAP</item>
             </ListBox>
           </row>
           <row>
-            <Label for="StoreServer" horizontalAlignment="right" style="&lbl1;"/>
+            <Label for="StoreServer" horizontalAlignment="right" />
             <InputText source="StoreServer" />
-			<Label for="TransportServer" horizontalAlignment="right" style="&lbl1;"/>
+			<Label for="TransportServer" horizontalAlignment="right" />
             <InputText source="TransportServer" />
           </row>
           <row>
-            <Label for="StorePort" horizontalAlignment="right" style="&lbl1;"/>
+            <Label for="StorePort" horizontalAlignment="right" />
             <FlowPanel>
               <InputInteger source="StorePort" style="width:50px;" />
               <Button text="=mailServerProperties" name="StoreProperties" for="StoreProperties" style="float:right" />
             </FlowPanel>
-			 <Label for="TransportPort" horizontalAlignment="right" style="&lbl1;"/>
+			 <Label for="TransportPort" horizontalAlignment="right" />
             <FlowPanel>
               <InputInteger source="TransportPort" style="width:50px;" />
               <Button text="=mailServerProperties" name="TransportProperties" for="TransportProperties" style="float:right" />
             </FlowPanel>
           </row>
           <row>
-            <Label for="StoreLogin" horizontalAlignment="right" style="&lbl1;"/>
+            <Label for="StoreLogin" horizontalAlignment="right" />
             <InputText source="StoreLogin" />
-			<Label for="TransportLogin" horizontalAlignment="right" style="&lbl1;"/>
+			<Label for="TransportLogin" horizontalAlignment="right" />
             <InputText source="TransportLogin" />
           </row>
           <row>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY lbl "margin-right: 1em;">
+  <!ENTITY bold "font-weight: bold;">
+]>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:ui="http://www.butent.com/ui"
+
+  name="PrintServiceDefect" viewName="ServiceDefects" caption="=svcDefect" disabledActions="save"
+  width="70" widthUnit="%" height="90" heightUnit="%">
+
+  <FlowPanel style="padding: 2ex 3em; background-color: white;">
+    <FlowPanel class="flexBox-horizontal-top">
+      <Image url="images/logo.png" />
+      <Label text="=svcDefectSupplier" style="&lbl; &bold;" class="flexible"
+        horizontalAlignment="right" />
+      <div name="Supplier" />
+    </FlowPanel>
+    
+    <br/>
+    <br/>
+    <HorizontalPanel verticalAlignment="top">
+      <Label for="TypeOfWork" style="&bold; &lbl;" />
+      <TextLabel source="TypeOfWork" style="white-space: pre-wrap;" />
+    </HorizontalPanel>
+
+    <br/>
+    <DateTimeLabel source="Date" format="DATE_LONG" horizontalAlignment="center" />
+
+    <br/>
+    <HorizontalPanel style="margin: 0 auto;">
+      <Label text="=svcDefectPrintNumberLabel" style="&bold;" />
+      <TextLabel source="Number" />
+    </HorizontalPanel>
+    
+    <br/>
+    <Table name="ServiceDefectItems" class="bee-svc-print-defect-items-table" />
+    
+    <br/>
+    <TextLabel source="Notes" style="white-space: pre-wrap;" />
+
+    <br/>
+    <FlowPanel class="flexBox-horizontal-space-between">
+      <FlowPanel>
+        <Label text="=customer" style="&bold;" />
+        <div name="Customer" />
+      </FlowPanel>
+
+      <FlowPanel>
+        <TextLabel source="ManagerPositionName" style="&bold;" />
+        <HorizontalPanel style="border-collapse: collapse;">
+          <TextLabel source="ManagerFirstName" style="margin-right: 3px;" />
+          <TextLabel source="ManagerLastName" />
+        </HorizontalPanel>
+      </FlowPanel>
+    </FlowPanel>
+  </FlowPanel>
+</f:Form>

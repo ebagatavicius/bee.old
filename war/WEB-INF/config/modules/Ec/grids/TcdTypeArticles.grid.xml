@@ -3,13 +3,10 @@
   
   name="TcdTypeArticles" viewName="TcdTypeArticles"
   filter="ManufacturerVisible and ModelVisible and TypeVisible"
+  newRowColumns="-"
   >
   <g:columns>
-    <RelColumn name="Type" caption="=tcdManufacturer" renderColumns="ManufacturerName"
-      choiceColumns="ManufacturerName ModelName TypeName ProducedFrom ProducedTo KwFrom"
-      searchableColumns="ManufacturerName ModelName"
-      caching="none" visible="true" autoFit="true" />
-
+    <DataColumn name="ManufacturerName" visible="true" autoFit="true" />
     <DataColumn name="ModelName" visible="true" autoFit="true" />
     <DataColumn name="TypeName" visible="true" autoFit="true" />
 

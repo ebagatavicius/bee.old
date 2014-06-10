@@ -8,7 +8,7 @@ public final class HtmlUtils {
 
   public static String cleanHtml(String dirtyHtml) {
     if (dirtyHtml != null) {
-      return Jsoup.clean(dirtyHtml, Whitelist.relaxed());
+      return Jsoup.clean(dirtyHtml, "http:", Whitelist.relaxed().preserveRelativeLinks(true));
     }
     return dirtyHtml;
   }

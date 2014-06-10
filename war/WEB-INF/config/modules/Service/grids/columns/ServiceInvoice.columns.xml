@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <IdColumn name="ID" label="=trdInvoiceId" />
+  <DataColumn name="Date" visible="true" />
+
+  <DataColumn name="InvoicePrefix" />
+  <DataColumn name="InvoiceNo" />
+
+  <DataColumn name="CustomerName" label="=trdCustomer" visible="true" />
+  <DataColumn name="PayerName" label="=trdPayer" visible="false" />
+
+  <DataColumn name="Amount" />
+  <DataColumn name="CurrencyName" />
+
+  <DataColumn name="Term" />
+  <DataColumn name="PaymentTime" />
+
+  <DataColumn name="Paid" />
+  <DataColumn name="Debt" format="0.00" />
+
+  <DataColumn name="Exported" />
+</g:columns>

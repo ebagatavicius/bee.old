@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  
+  name="RelatedTasks" viewName="RelatedTasks"
+  enabledActions="copy" maxColumnWidth="160"
+  >
+
+  <xi:include href="columns/TaskMode.column.xml" />
+  <xi:include href="columns/TaskStar.column.xml" />
+
+  <g:columns>
+    <DataColumn name="Task" label="=captionId" />
+  </g:columns>
+
+  <xi:include href="columns/Task.columns.xml" />
+</g:Grid>

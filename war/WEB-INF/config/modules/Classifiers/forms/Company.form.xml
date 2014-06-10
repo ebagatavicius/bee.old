@@ -39,7 +39,7 @@
         <DataSelector source="CompanyPriority" style="&inp1;" />
         <Label text="=companyRelation" style="&lbl1;" data="CompRelTypeStore" />
         <ChildSelector viewName="CompanyRelationTypes" childTable="CompRelTypeStore"
-          targetRelColumn="Company" sourceRelColumn="RelationType" newRowEnabled="false"
+          targetRelColumn="Company" sourceRelColumn="RelationType" newRowEnabled="true"
           label="=companyRelationType" style="&inp1;" data="CompRelTypeStore" />
         <Label text="=status" style="&lbl1;" for="CompanyRelationTypeState" />
         <DataSelector source="CompanyRelationTypeState" style="&inp1;" />

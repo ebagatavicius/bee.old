@@ -8,6 +8,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 import com.butent.bee.client.utils.Evaluator;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.ValueType;
@@ -199,7 +200,7 @@ public final class ConditionalStyle {
 
       if (entry.getEvaluator().hasInterpreter()) {
         String z = entry.getEvaluator().evaluate();
-        if (!BeeUtils.toBoolean(z)) {
+        if (BeeUtils.isEmpty(z) || BeeConst.STRING_FALSE.equalsIgnoreCase(z)) {
           continue;
         }
       }

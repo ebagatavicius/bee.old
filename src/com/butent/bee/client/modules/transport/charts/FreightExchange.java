@@ -27,6 +27,7 @@ import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.modules.transport.TransportHandler;
 import com.butent.bee.client.modules.transport.charts.Filterable.FilterType;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.Mover;
@@ -266,15 +267,15 @@ final class FreightExchange extends ChartBase {
 
   @Override
   protected void prepareChart(Size canvasSize) {
-    setCustomerWidth(ChartHelper.getPixels(getSettings(), COL_FX_PIXELS_PER_CUSTOMER, 100,
-        ChartHelper.DEFAULT_MOVER_WIDTH + 1, canvasSize.getWidth() / 3));
-    setOrderWidth(ChartHelper.getPixels(getSettings(), COL_FX_PIXELS_PER_ORDER, 60,
-        ChartHelper.DEFAULT_MOVER_WIDTH + 1, canvasSize.getWidth() / 3));
+    setCustomerWidth(TimeBoardHelper.getPixels(getSettings(), COL_FX_PIXELS_PER_CUSTOMER, 100,
+        TimeBoardHelper.DEFAULT_MOVER_WIDTH + 1, canvasSize.getWidth() / 3));
+    setOrderWidth(TimeBoardHelper.getPixels(getSettings(), COL_FX_PIXELS_PER_ORDER, 60,
+        TimeBoardHelper.DEFAULT_MOVER_WIDTH + 1, canvasSize.getWidth() / 3));
 
     setChartLeft(getCustomerWidth() + getOrderWidth());
     setChartWidth(canvasSize.getWidth() - getChartLeft() - getChartRight());
 
-    setDayColumnWidth(ChartHelper.getPixels(getSettings(), COL_FX_PIXELS_PER_DAY, 20,
+    setDayColumnWidth(TimeBoardHelper.getPixels(getSettings(), COL_FX_PIXELS_PER_DAY, 20,
         1, getChartWidth()));
   }
 
@@ -374,10 +375,10 @@ final class FreightExchange extends ChartBase {
     int customerStartRow = 0;
     int orderStartRow = 0;
 
-    Double itemOpacity = ChartHelper.getOpacity(getSettings(), COL_FX_ITEM_OPACITY);
+    Double itemOpacity = TimeBoardHelper.getOpacity(getSettings(), COL_FX_ITEM_OPACITY);
 
     Edges margins = new Edges();
-    margins.setBottom(ChartHelper.ROW_SEPARATOR_HEIGHT);
+    margins.setBottom(TimeBoardHelper.ROW_SEPARATOR_HEIGHT);
 
     for (int row = 0; row < layoutRows.size(); row++) {
       List<OrderCargo> rowItems = layoutRows.get(row);
@@ -418,13 +419,13 @@ final class FreightExchange extends ChartBase {
         }
 
         if (customerChanged) {
-          ChartHelper.addRowSeparator(panel, STYLE_CUSTOMER_ROW_SEPARATOR, top, 0,
+          TimeBoardHelper.addRowSeparator(panel, STYLE_CUSTOMER_ROW_SEPARATOR, top, 0,
               getCustomerWidth() + getOrderWidth() + calendarWidth);
         } else if (orderChanged) {
-          ChartHelper.addRowSeparator(panel, STYLE_ORDER_ROW_SEPARATOR, top, getCustomerWidth(),
+          TimeBoardHelper.addRowSeparator(panel, STYLE_ORDER_ROW_SEPARATOR, top, getCustomerWidth(),
               getOrderWidth() + calendarWidth);
         } else {
-          ChartHelper.addRowSeparator(panel, top, getChartLeft(), calendarWidth);
+          TimeBoardHelper.addRowSeparator(panel, top, getChartLeft(), calendarWidth);
         }
       }
 
@@ -432,7 +433,7 @@ final class FreightExchange extends ChartBase {
         Widget itemWidget = createItemWidget(item);
 
         Rectangle rectangle = getRectangle(item.getRange(), row);
-        ChartHelper.apply(itemWidget, rectangle, margins);
+        TimeBoardHelper.apply(itemWidget, rectangle, margins);
         
         styleItemWidget(item, itemWidget);
         if (itemOpacity != null) {
@@ -455,8 +456,8 @@ final class FreightExchange extends ChartBase {
 
   @Override
   protected void renderMovers(ComplexPanel panel, int height) {
-    Mover customerMover = ChartHelper.createHorizontalMover();
-    StyleUtils.setLeft(customerMover, getCustomerWidth() - ChartHelper.DEFAULT_MOVER_WIDTH);
+    Mover customerMover = TimeBoardHelper.createHorizontalMover();
+    StyleUtils.setLeft(customerMover, getCustomerWidth() - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
     StyleUtils.setHeight(customerMover, height);
 
     customerMover.addMoveHandler(new MoveEvent.Handler() {
@@ -468,8 +469,8 @@ final class FreightExchange extends ChartBase {
 
     panel.add(customerMover);
 
-    Mover orderMover = ChartHelper.createHorizontalMover();
-    StyleUtils.setLeft(orderMover, getChartLeft() - ChartHelper.DEFAULT_MOVER_WIDTH);
+    Mover orderMover = TimeBoardHelper.createHorizontalMover();
+    StyleUtils.setLeft(orderMover, getChartLeft() - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
     StyleUtils.setHeight(orderMover, height);
 
     orderMover.addMoveHandler(new MoveEvent.Handler() {
@@ -490,14 +491,14 @@ final class FreightExchange extends ChartBase {
   private void addCustomerWidget(HasWidgets panel, IdentifiableWidget widget, Long customerId,
       int firstRow, int lastRow) {
 
-    Rectangle rectangle = ChartHelper.getRectangle(0, getCustomerWidth(), firstRow, lastRow,
+    Rectangle rectangle = TimeBoardHelper.getRectangle(0, getCustomerWidth(), firstRow, lastRow,
         getRowHeight());
 
     Edges margins = new Edges();
-    margins.setRight(ChartHelper.DEFAULT_MOVER_WIDTH);
-    margins.setBottom(ChartHelper.ROW_SEPARATOR_HEIGHT);
+    margins.setRight(TimeBoardHelper.DEFAULT_MOVER_WIDTH);
+    margins.setBottom(TimeBoardHelper.ROW_SEPARATOR_HEIGHT);
 
-    ChartHelper.apply(widget.asWidget(), rectangle, margins);
+    TimeBoardHelper.apply(widget.asWidget(), rectangle, margins);
     panel.add(widget.asWidget());
 
     customerPanels.add(widget.getId());
@@ -509,14 +510,14 @@ final class FreightExchange extends ChartBase {
   private void addOrderWidget(HasWidgets panel, IdentifiableWidget widget, Long orderId,
       int firstRow, int lastRow) {
 
-    Rectangle rectangle = ChartHelper.getRectangle(getCustomerWidth(), getOrderWidth(),
+    Rectangle rectangle = TimeBoardHelper.getRectangle(getCustomerWidth(), getOrderWidth(),
         firstRow, lastRow, getRowHeight());
 
     Edges margins = new Edges();
-    margins.setRight(ChartHelper.DEFAULT_MOVER_WIDTH);
-    margins.setBottom(ChartHelper.ROW_SEPARATOR_HEIGHT);
+    margins.setRight(TimeBoardHelper.DEFAULT_MOVER_WIDTH);
+    margins.setBottom(TimeBoardHelper.ROW_SEPARATOR_HEIGHT);
 
-    ChartHelper.apply(widget.asWidget(), rectangle, margins);
+    TimeBoardHelper.apply(widget.asWidget(), rectangle, margins);
     panel.add(widget.asWidget());
 
     orderPanels.add(widget.getId());
@@ -622,10 +623,10 @@ final class FreightExchange extends ChartBase {
     int oldLeft = StyleUtils.getLeft(resizer);
 
     int newLeft = BeeUtils.clamp(oldLeft + delta, 1,
-        getChartLeft() - ChartHelper.DEFAULT_MOVER_WIDTH * 2 - 1);
+        getChartLeft() - TimeBoardHelper.DEFAULT_MOVER_WIDTH * 2 - 1);
 
     if (newLeft != oldLeft || event.isFinished()) {
-      int customerPx = newLeft + ChartHelper.DEFAULT_MOVER_WIDTH;
+      int customerPx = newLeft + TimeBoardHelper.DEFAULT_MOVER_WIDTH;
       int orderPx = getChartLeft() - customerPx;
 
       if (newLeft != oldLeft) {
@@ -633,14 +634,14 @@ final class FreightExchange extends ChartBase {
 
         for (String id : customerPanels) {
           StyleUtils.setWidth(DomUtils.getElement(id),
-              customerPx - ChartHelper.DEFAULT_MOVER_WIDTH);
+              customerPx - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
         }
 
         for (String id : orderPanels) {
           Element element = Document.get().getElementById(id);
           if (element != null) {
             StyleUtils.setLeft(element, customerPx);
-            StyleUtils.setWidth(element, orderPx - ChartHelper.DEFAULT_MOVER_WIDTH);
+            StyleUtils.setWidth(element, orderPx - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
           }
         }
       }
@@ -664,13 +665,14 @@ final class FreightExchange extends ChartBase {
     int newLeft = BeeUtils.clamp(oldLeft + delta, getCustomerWidth() + 1, maxLeft);
 
     if (newLeft != oldLeft || event.isFinished()) {
-      int orderPx = newLeft - getCustomerWidth() + ChartHelper.DEFAULT_MOVER_WIDTH;
+      int orderPx = newLeft - getCustomerWidth() + TimeBoardHelper.DEFAULT_MOVER_WIDTH;
 
       if (newLeft != oldLeft) {
         StyleUtils.setLeft(resizer, newLeft);
 
         for (String id : orderPanels) {
-          StyleUtils.setWidth(DomUtils.getElement(id), orderPx - ChartHelper.DEFAULT_MOVER_WIDTH);
+          StyleUtils.setWidth(DomUtils.getElement(id),
+              orderPx - TimeBoardHelper.DEFAULT_MOVER_WIDTH);
         }
       }
 

@@ -2,6 +2,10 @@ package com.butent.bee.client.modules.tasks;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -12,18 +16,24 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.FileCollector;
+import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.utils.NewFileInfo;
+import com.butent.bee.client.validation.CellValidateEvent;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
+import com.butent.bee.client.view.edit.EditChangeHandler;
+import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.InputDate;
 import com.butent.bee.client.widget.InputTime;
+import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.State;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -53,6 +63,10 @@ class TaskBuilder extends AbstractFormInterceptor {
   private static final String NAME_START_TIME = "Start_Time";
   private static final String NAME_END_DATE = "End_Date";
   private static final String NAME_END_TIME = "End_Time";
+  private static final String NAME_EXPECTED_DURATION = "ExpectedDuration";
+  private static final String NAME_USER_GROUP_SETTINGS = "UserGroupSettings";
+  private static final String NAME_EXECUTORS_LABEL = "ExecutorsLabel";
+  private static final String NAME_END_DATE_LABEL = "EndDateLabel";
 
   private static final String NAME_REMINDER_DATE = "Reminder_Date";
   private static final String NAME_REMINDER_TIME = "Reminder_Time";
@@ -60,9 +74,47 @@ class TaskBuilder extends AbstractFormInterceptor {
   private static final String NAME_FILES = "Files";
   
   private HasCheckedness mailToggle;
+  private InputTime expectedDurationInput;
+  private Label endDateInputLabel;
+  private Label executorsLabel;
 
   TaskBuilder() {
     super();
+  }
+
+  @Override
+  public void afterCreateEditableWidget(final EditableWidget editableWidget,
+      IdentifiableWidget widget) {
+
+    if (BeeUtils.inList(editableWidget.getWidgetName(), NAME_EXPECTED_DURATION,
+        NAME_USER_GROUP_SETTINGS)) {
+
+      editableWidget.addCellValidationHandler(new CellValidateEvent.Handler() {
+        @Override
+        public Boolean validateCell(CellValidateEvent event) {
+          if (event.isCellValidation() && event.isPreValidation()
+              && BeeUtils.isEmpty(event.getNewValue())) {
+
+            if (BeeUtils.same(editableWidget.getWidgetName(), NAME_EXPECTED_DURATION)) {
+              endDateInputLabel.removeStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+            } else if (BeeUtils.same(editableWidget.getWidgetName(), NAME_USER_GROUP_SETTINGS)) {
+              executorsLabel.removeStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+            }
+
+          } else if (event.isCellValidation() && event.isPreValidation()
+              && !BeeUtils.isEmpty(event.getNewValue())) {
+            if (BeeUtils.same(editableWidget.getWidgetName(), NAME_EXPECTED_DURATION)) {
+              endDateInputLabel.addStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+            } else if (BeeUtils.same(editableWidget.getWidgetName(), NAME_USER_GROUP_SETTINGS)) {
+              executorsLabel.addStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+            }
+          }
+          return true;
+        }
+      });
+    }
+
+    super.afterCreateEditableWidget(editableWidget, widget);
   }
 
   @Override
@@ -77,6 +129,59 @@ class TaskBuilder extends AbstractFormInterceptor {
       startDate.setDate(new JustDate());
     } else if (BeeUtils.same(name, PROP_MAIL) && (widget instanceof HasCheckedness)) {
       mailToggle = (HasCheckedness) widget;
+    } else if (BeeUtils.same(name, NAME_END_DATE_LABEL) && (widget instanceof Label)) {
+      endDateInputLabel = (Label) widget;
+    } else if (BeeUtils.same(name, NAME_EXPECTED_DURATION) && (widget instanceof InputTime)) {
+      expectedDurationInput = (InputTime) widget;
+
+      expectedDurationInput.addValueChangeHandler(new ValueChangeHandler<String>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+          if (!BeeUtils.isEmpty(expectedDurationInput.getText()) && endDateInputLabel != null) {
+            endDateInputLabel.addStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+          } else if (BeeUtils.isEmpty(event.getValue()) && endDateInputLabel != null) {
+            endDateInputLabel.removeStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+          }
+        }
+      });
+    } else if (BeeUtils.same(NAME_EXECUTORS_LABEL, name) && (widget instanceof Label)) {
+      executorsLabel = (Label) widget;
+    } else if (BeeUtils.same(NAME_USER_GROUP_SETTINGS, name) && (widget instanceof MultiSelector)) {
+      final MultiSelector userGroups = (MultiSelector) widget;
+
+      userGroups.addEditChangeHandler(new EditChangeHandler() {
+
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+          if (!BeeUtils.isEmpty(event.getValue()) && executorsLabel != null) {
+            executorsLabel.addStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+          } else if (BeeUtils.isEmpty(event.getValue()) && endDateInputLabel != null) {
+            executorsLabel.removeStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+          }
+        }
+
+        @Override
+        public void onKeyDown(KeyDownEvent event) {
+          if (!BeeUtils.isEmpty(userGroups.getDisplayValue()) && executorsLabel != null) {
+            executorsLabel.addStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+          } else if (BeeUtils.isEmpty(userGroups.getDisplayValue()) && endDateInputLabel != null) {
+            executorsLabel.removeStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+          }
+        }
+      });
+
+      userGroups.addKeyDownHandler(new KeyDownHandler() {
+
+        @Override
+        public void onKeyDown(KeyDownEvent event) {
+          if (!BeeUtils.isEmpty(userGroups.getDisplayValue()) && executorsLabel != null) {
+            executorsLabel.addStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+          } else if (BeeUtils.isEmpty(userGroups.getDisplayValue()) && endDateInputLabel != null) {
+            executorsLabel.removeStyleName(StyleUtils.NAME_HAS_DEFAULTS);
+          }
+
+        }
+      });
     }
   }
 

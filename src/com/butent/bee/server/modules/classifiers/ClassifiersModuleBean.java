@@ -125,7 +125,7 @@ public class ClassifiersModuleBean implements BeeModule {
 
     if (BeeUtils.same(svc, SVC_COMPANY_INFO)) {
       response = getCompanyInfo(BeeUtils.toLongOrNull(reqInfo.getParameter(COL_COMPANY)),
-          reqInfo.getParameter("locale"));
+          reqInfo.getParameter(VAR_LOCALE));
 
     } else if (BeeUtils.same(svc, SVC_CREATE_COMPANY)) {
       response = createCompany(reqInfo);
@@ -403,8 +403,8 @@ public class ClassifiersModuleBean implements BeeModule {
               dtField = CalendarConstants.COL_START_DATE_TIME;
               break;
 
-            case ServiceConstants.VIEW_OBJECTS:
-              sourceField = ServiceConstants.COL_OBJECT_CUSTOMER;
+            case ServiceConstants.VIEW_SERVICE_OBJECTS:
+              sourceField = ServiceConstants.COL_SERVICE_CUSTOMER;
               dtField = relView.getSourceVersionName();
               break;
 

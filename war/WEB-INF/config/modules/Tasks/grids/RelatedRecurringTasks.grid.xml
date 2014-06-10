@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  
+  name="RelatedRecurringTasks" viewName="RelatedRecurringTasks"
+  enabledActions="copy"
+  >
+ 
+  <g:columns>
+    <DataColumn name="RecurringTask" label="=captionId" />
+    <RelColumn name="Owner" renderColumns="OwnerFirstName OwnerLastName"
+      sortBy="OwnerLastName OwnerFirstName" />
+  </g:columns>
+ 
+  <xi:include href="columns/RecurringTask.columns.xml" />
+</g:Grid>

@@ -23,6 +23,8 @@ import com.butent.bee.client.dialog.ConfirmationCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.event.DndHelper;
 import com.butent.bee.client.event.DndTarget;
+import com.butent.bee.client.timeboard.HasColorSource;
+import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BiConsumer;
@@ -116,7 +118,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
       Set<JustDate> eventDates, Collection<? extends OrderCargo> cargos) {
 
     List<Range<JustDate>> result = Lists.newArrayList();
-    int tripDays = ChartHelper.getSize(range);
+    int tripDays = TimeBoardHelper.getSize(range);
 
     Set<JustDate> usedDates = Sets.newHashSet();
 
@@ -129,13 +131,14 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
 
     if (!BeeUtils.isEmpty(cargos)) {
       for (OrderCargo cargo : cargos) {
-        if (ChartHelper.isActive(cargo, range)) {
-          Range<JustDate> cargoRange = ChartHelper.normalizedIntersection(cargo.getRange(), range);
+        if (TimeBoardHelper.isActive(cargo, range)) {
+          Range<JustDate> cargoRange = TimeBoardHelper.normalizedIntersection(cargo.getRange(),
+              range);
           if (cargoRange == null) {
             continue;
           }
 
-          int cargoDays = ChartHelper.getSize(cargoRange);
+          int cargoDays = TimeBoardHelper.getSize(cargoRange);
           if (cargoDays >= tripDays) {
             return result;
           }
@@ -245,9 +248,9 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
 
     this.drivers = drivers;
 
-    String rangeLabel = ChartHelper.getRangeLabel(this.range);
+    String rangeLabel = TimeBoardHelper.getRangeLabel(this.range);
 
-    this.title = ChartHelper.buildTitle(
+    this.title = TimeBoardHelper.buildTitle(
         Localized.getConstants().tripDuration(), rangeLabel,
         Localized.getConstants().status(), (this.status == null) ? null : this.status.getCaption(),
         tripNoLabel, this.tripNo,
@@ -391,7 +394,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
 
     final String viewName = VIEW_TRIP_DRIVERS;
 
-    String driverTitle = ChartHelper.join(Data.getColumnLabel(viewName, COL_DRIVER),
+    String driverTitle = TimeBoardHelper.join(Data.getColumnLabel(viewName, COL_DRIVER),
         driver.getItemName());
 
     Global.confirm(Localized.getConstants().assignDriverToTripCaption(), Icon.QUESTION,

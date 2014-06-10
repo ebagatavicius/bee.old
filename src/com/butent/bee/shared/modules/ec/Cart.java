@@ -102,6 +102,11 @@ public class Cart implements BeeSerializable {
     return items;
   }
 
+  public int getQuantity(long articleId) {
+    CartItem item = getItem(articleId);
+    return (item == null) ? 0 : item.getQuantity();
+  }
+
   public boolean isEmpty() {
     return items.isEmpty();
   }

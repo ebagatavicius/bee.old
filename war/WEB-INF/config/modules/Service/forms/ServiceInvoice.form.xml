@@ -6,7 +6,7 @@
   xmlns:f="http://www.butent.com/form"
   
   name="ServiceInvoice" viewName="ServiceInvoices"
-  caption="=trInvoice"
+  caption="=trdInvoice" showRowId="true"
   width="800" height="600"
   >
   <f:properties reports="PrintServiceInvoice, PrintServiceProforma" />
@@ -56,7 +56,7 @@
 
     <TabbedPages class="flexible">
       <page>
-        <text>=trProductsServices</text>
+        <text>=productsServices</text>
         <ChildGrid name="SaleItems" relColumn="Sale" />
       </page>
 

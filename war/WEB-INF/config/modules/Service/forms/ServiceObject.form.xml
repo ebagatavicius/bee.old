@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -19,15 +20,36 @@
         <text>=svcMaintenance</text>
         <ChildGrid name="Maintenance" relColumn="ServiceObject" />
       </page>
-
       <page>
+        <text>=svcInvoices</text>
+        <GridPanel name="ObjectInvoices" parent="{form}" child="true" />
+      </page>
+      <page>
+        <text>=svcDefects</text>
+        <ChildGrid name="ObjectDefects" relColumn="ServiceObject" />
+      </page>
+
+      <page module="Documents">
         <text>=documents</text>
         <ChildGrid name="RelatedDocuments" relColumn="ServiceObject" />
       </page>
-
       <page>
         <text>=files</text>
         <ChildGrid name="ServiceFiles" relColumn="ServiceObject" />
+      </page>
+
+      <page module="Tasks">
+        <text>=crmTasks</text>
+        <ChildGrid name="RelatedTasks" relColumn="ServiceObject" />
+      </page>
+      <page module="Tasks">
+        <text>=crmRecurringTasks</text>
+        <ChildGrid name="RelatedRecurringTasks" relColumn="ServiceObject" />
+      </page>
+
+      <page>
+        <text>=svcDates</text>
+        <ChildGrid name="ServiceDates" relColumn="ServiceObject" />
       </page>
     </TabbedPages>
   </FlowPanel>

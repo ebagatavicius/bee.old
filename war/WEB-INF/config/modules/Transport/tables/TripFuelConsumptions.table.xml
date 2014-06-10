@@ -11,6 +11,6 @@
     <Relation name="Country" relation="Countries" label="=country" />
     <String name="Note" precision="100" label="=note" />
     <Double name="Quantity" notNull="true" label="=quantity" />
-    <Relation name="Item" relation="Items" label="=trProductService" />
+    <Relation name="Item" relation="Items" label="=productService" />
   </Fields>
 </Table>

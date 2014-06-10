@@ -42,6 +42,11 @@ public final class SelectorEvent extends GwtEvent<SelectorEvent.Handler> impleme
     fireEvent(selector, event);
     return event;
   }
+
+  public static void fireRowCreated(DataSelector selector, BeeRow row) {
+    SelectorEvent event = new SelectorEvent(State.CREATED, row);
+    fireEvent(selector, event);
+  }
   
   public static Type<Handler> getType() {
     return TYPE;
@@ -75,6 +80,10 @@ public final class SelectorEvent extends GwtEvent<SelectorEvent.Handler> impleme
 
   private SelectorEvent(State state) {
     this(state, null, null);
+  }
+
+  private SelectorEvent(State state, BeeRow newRow) {
+    this(state, newRow, null);
   }
 
   private SelectorEvent(State state, BeeRow newRow, String newRowFormName) {
@@ -169,6 +178,10 @@ public final class SelectorEvent extends GwtEvent<SelectorEvent.Handler> impleme
   
   public boolean isOpened() {
     return State.OPEN.equals(getState());
+  }
+
+  public boolean isRowCreated() {
+    return State.CREATED.equals(getState());
   }
 
   public boolean isUnloading() {

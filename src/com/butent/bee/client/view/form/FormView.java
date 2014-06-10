@@ -97,8 +97,10 @@ public interface FormView extends DataView, HasDataTable, ActiveWidgetChangeEven
 
   boolean isInteractive();
 
-  boolean isRowEditable(boolean warn);
+  boolean isRowEditable(IsRow rowValue, boolean warn);
 
+  boolean isRowEnabled(IsRow rowValue);
+  
   void observeData();
 
   boolean observesData();

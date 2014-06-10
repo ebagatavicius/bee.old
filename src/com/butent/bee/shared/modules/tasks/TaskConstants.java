@@ -191,8 +191,10 @@ public final class TaskConstants {
   public static final String TBL_TASK_USERS = "TaskUsers";
   public static final String TBL_TASK_EVENTS = "TaskEvents";
   public static final String TBL_TASK_FILES = "TaskFiles";
-  public static final String TBL_DURATION_TYPES = "DurationTypes";
 
+  public static final String TBL_TASK_TYPES = "TaskTypes";
+
+  public static final String TBL_DURATION_TYPES = "DurationTypes";
   public static final String TBL_EVENT_DURATIONS = "EventDurations";
 
   public static final String TBL_RECURRING_TASKS = "RecurringTasks";
@@ -205,11 +207,13 @@ public final class TaskConstants {
   public static final String TBL_RT_OBSERVER_GROUPS = "RTObserverGroups";
 
   public static final String VIEW_TASKS = "Tasks";
-  public static final String VIEW_TASK_TEMPLATES = "TaskTemplates";
   public static final String VIEW_TASK_FILES = "TaskFiles";
   public static final String VIEW_TASK_USERS = "TaskUsers";
   public static final String VIEW_TASK_EVENTS = "TaskEvents";
   public static final String VIEW_TASK_DURATIONS = "TaskDurations";
+
+  public static final String VIEW_TASK_TEMPLATES = "TaskTemplates";
+  public static final String VIEW_TASK_TYPES = "TaskTypes";
 
   public static final String VIEW_DURATION_TYPES = "DurationTypes";
 
@@ -218,10 +222,14 @@ public final class TaskConstants {
   public static final String VIEW_RT_FILES = "RTFiles";
 
   public static final String VIEW_REQUEST_FILES = "RequestFiles";
+
+  public static final String VIEW_RELATED_TASKS = "RelatedTasks";
+  public static final String VIEW_RELATED_RECURRING_TASKS = "RelatedRecurringTasks";
   
   public static final String COL_START_TIME = "StartTime";
   public static final String COL_FINISH_TIME = "FinishTime";
 
+  public static final String COL_TASK_TYPE = "Type";
   public static final String COL_PRIORITY = "Priority";
 
   public static final String COL_OWNER = "Owner";
@@ -231,7 +239,9 @@ public final class TaskConstants {
 
   public static final String COL_TASK = "Task";
 
-  public static final String COL_NAME = "Name";
+  public static final String COL_TASK_TEMPLATE_NAME = "Name";
+  public static final String COL_TASK_TYPE_NAME = "Name";
+  
   public static final String COL_SUMMARY = "Summary";
   public static final String COL_DESCRIPTION = "Description";
   public static final String COL_CAPTION = "Caption";
@@ -260,6 +270,8 @@ public final class TaskConstants {
   public static final String COL_DURATION_DATE = "DurationDate";
   public static final String COL_DURATION_TYPE = "DurationType";
   public static final String COL_DURATION = "Duration";
+
+  public static final String COL_DURATION_TYPE_NAME = "Name";
 
   public static final String COL_EVENT = "Event";
   public static final String COL_EVENT_NOTE = "EventNote";
@@ -327,6 +339,12 @@ public final class TaskConstants {
   public static final String ALS_PERSON_LAST_NAME = "PersonLastName";
   public static final String ALS_PERSON_COMPANY_NAME = "PersonCompanyName";
 
+  public static final String ALS_TASK_TYPE_NAME = "TypeName";
+  public static final String ALS_TASK_TYPE_BACKGROUND = "TypeBackground";
+  public static final String ALS_TASK_TYPE_FOREGROUND = "TypeForeground";
+
+  public static final String ALS_LAST_SPAWN = "LastSpawn";
+  
   public static final String PROP_EXECUTORS = "Executors";
   public static final String PROP_EXECUTOR_GROUPS = "ExecutorGroups";
   public static final String PROP_OBSERVERS = "Observers";
@@ -337,6 +355,7 @@ public final class TaskConstants {
   public static final String PROP_DOCUMENTS = "Documents";
   public static final String PROP_APPOINTMENTS = "Appointments";
   public static final String PROP_DISCUSSIONS = "Discussions";
+  public static final String PROP_SERVICE_OBJECTS = "ServiceObjects";
   public static final String PROP_TASKS = "Tasks";
 
   public static final String PROP_FILES = "Files";
@@ -359,8 +378,14 @@ public final class TaskConstants {
   public static final String GRID_RECURRING_TASKS = "RecurringTasks";
   public static final String GRID_RT_FILES = "RTFiles";
 
+  public static final String GRID_RELATED_TASKS = "RelatedTasks";
+  public static final String GRID_RELATED_RECURRING_TASKS = "RelatedRecurringTasks";
+
   public static final String GRID_REQUESTS = "Requests";
 
+  public static final String GRID_TASK_TYPES = "TaskTypes";
+  public static final String GRID_TASK_TEMPLATES = "TaskTemplates";
+  
   public static final String FORM_NEW_TASK = "NewTask";
   public static final String FORM_TASK = "Task";
 

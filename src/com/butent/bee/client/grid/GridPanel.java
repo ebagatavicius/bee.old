@@ -12,16 +12,19 @@ import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasFosterParent;
 import com.butent.bee.client.ui.UiOption;
+import com.butent.bee.client.view.HasGridView;
+import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.EnumSet;
 
 public class GridPanel extends Simple implements HasEnabled, HasFosterParent,
-    ParentRowEvent.Handler {
+    ParentRowEvent.Handler, HasGridView {
 
   private final String gridName;
   private GridFactory.GridOptions gridOptions;
+  private final boolean child;
 
   private Presenter presenter;
   private GridInterceptor gridInterceptor;
@@ -29,16 +32,29 @@ public class GridPanel extends Simple implements HasEnabled, HasFosterParent,
   private String parentId;
   private HandlerRegistration parentRowReg;
 
-  public GridPanel(String gridName, GridFactory.GridOptions gridOptions) {
+  public GridPanel(String gridName, GridFactory.GridOptions gridOptions, boolean child) {
     super();
+
     this.gridName = gridName;
     this.gridOptions = gridOptions;
+    this.child = child;
+
+    this.gridInterceptor = GridFactory.getGridInterceptor(gridName);
 
     addStyleName("bee-GridPanel");
   }
 
   public GridFactory.GridOptions getGridOptions() {
     return gridOptions;
+  }
+
+  @Override
+  public GridView getGridView() {
+    if (getPresenter() instanceof HasGridView) {
+      return ((HasGridView) getPresenter()).getGridView();
+    } else {
+      return null;
+    }
   }
 
   @Override
@@ -104,28 +120,25 @@ public class GridPanel extends Simple implements HasEnabled, HasFosterParent,
   @Override
   protected void onLoad() {
     super.onLoad();
-    if (getPresenter() != null) {
-      return;
-    }
+    register();
 
-    GridInterceptor gic = getGridInterceptor();
-    if (gic == null) {
-      gic = GridFactory.getGridInterceptor(getGridName());
-    }
+    if (getPresenter() == null) {
+      GridInterceptor gic = getGridInterceptor();
 
-    GridFactory.createGrid(getGridName(), GridFactory.getSupplierKey(getGridName(), gic), gic,
-        EnumSet.of(UiOption.EMBEDDED), getGridOptions(),
-        new PresenterCallback() {
-          @Override
-          public void onCreate(Presenter gp) {
-            if (gp != null) {
-              setPresenter(gp);
-              setWidget(gp.getWidget());
-              gp.setEventSource(getId());
-              register();
+      UiOption uiOption = child ? UiOption.CHILD : UiOption.EMBEDDED;
+
+      GridFactory.createGrid(getGridName(), GridFactory.getSupplierKey(getGridName()), gic,
+          EnumSet.of(uiOption), getGridOptions(), new PresenterCallback() {
+            @Override
+            public void onCreate(Presenter gp) {
+              if (gp != null) {
+                setPresenter(gp);
+                setWidget(gp.getWidget());
+                gp.setEventSource(getId());
+              }
             }
-          }
-        });
+          });
+    }
   }
 
   private GridInterceptor getGridInterceptor() {

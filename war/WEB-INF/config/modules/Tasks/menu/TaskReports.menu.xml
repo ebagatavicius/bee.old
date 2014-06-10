@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="TaskReports" label="=taskReports" order="20" parent="Tasks" data="TaskDurations"
+name="TaskReports" label="=crmTaskReports" order="20" parent="Tasks" data="TaskDurations"
 >
   <Item name="TaskDurations" label="=crmTaskDurations" service="grid" parameters="TaskDurations" />
   <Item name="TypeHoursReport" label="=hoursByTypes" service="task_reports" parameters="typehours" />

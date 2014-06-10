@@ -1,14 +1,11 @@
 package com.butent.bee.client.modules.mail;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 
@@ -21,8 +18,11 @@ import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.FileCollector;
 import com.butent.bee.client.composite.MultiSelector;
+import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.data.Queries.RowSetCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.DecisionCallback;
+import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.dialog.DialogConstants;
 import com.butent.bee.client.dialog.InputBoxes;
 import com.butent.bee.client.dialog.InputCallback;
@@ -40,19 +40,28 @@ import com.butent.bee.client.view.form.CloseCallback;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
+import com.butent.bee.client.widget.FaLabel;
+import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.ListBox;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BiConsumer;
+import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
-import com.butent.bee.shared.data.SimpleRowSet;
-import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
+import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.font.FontAwesome;
+import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.mail.AccountInfo;
 import com.butent.bee.shared.modules.mail.MailConstants.AddressType;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public final class NewMailMessage extends AbstractFormInterceptor
@@ -101,45 +110,29 @@ public final class NewMailMessage extends AbstractFormInterceptor
     }
   }
 
+  private static final String SIGNATURE_SEPARATOR = "<br><br><br>";
+
   public static void create(final Set<Long> to, final Set<Long> cc, final Set<Long> bcc,
-      final String subject, final String content, final Map<Long, NewFileInfo> attach) {
+      final String subject, final String content, final Map<Long, NewFileInfo> attach,
+      final Long draftId) {
 
-    ParameterList params = MailKeeper.createArgs(SVC_GET_ACCOUNTS);
-    params.addDataItem(COL_USER, BeeKeeper.getUser().getUserId());
-
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+    MailKeeper.getAccounts(new BiConsumer<List<AccountInfo>, AccountInfo>() {
       @Override
-      public void onResponse(ResponseObject response) {
-        response.notify(BeeKeeper.getScreen());
-
-        if (response.hasErrors()) {
-          return;
-        }
-        Assert.isTrue(response.hasResponse(SimpleRowSet.class));
-        SimpleRowSet rs = SimpleRowSet.restore((String) response.getResponse());
-        List<AccountInfo> availableAccounts = Lists.newArrayList();
-        Long defaultAccount = null;
-
-        for (SimpleRow row : rs) {
-          if (defaultAccount == null || BeeUtils.unbox(row.getBoolean(COL_ACCOUNT_DEFAULT))) {
-            defaultAccount = row.getLong(COL_ADDRESS);
-          }
-          availableAccounts.add(new AccountInfo(row));
-        }
-        if (BeeUtils.isEmpty(availableAccounts)) {
+      public void accept(List<AccountInfo> availableAccounts, AccountInfo defaultAccount) {
+        if (!BeeUtils.isEmpty(availableAccounts)) {
+          create(availableAccounts, defaultAccount, to, cc, bcc, subject, content, attach, draftId);
+        } else {
           BeeKeeper.getScreen().notifyWarning("No accounts found");
-          return;
         }
-        create(defaultAccount, availableAccounts, to, cc, bcc, subject, content, attach, null);
       }
     });
   }
 
-  public static NewMailMessage create(Long defaultAccount, List<AccountInfo> availableAccounts,
-      Set<Long> to, Set<Long> cc, Set<Long> bcc, String subject, String content,
-      Map<Long, NewFileInfo> attach, Long draftId) {
+  public static NewMailMessage create(List<AccountInfo> availableAccounts,
+      AccountInfo defaultAccount, Set<Long> to, Set<Long> cc, Set<Long> bcc, String subject,
+      String content, Map<Long, NewFileInfo> attach, Long draftId) {
 
-    final NewMailMessage newMessage = new NewMailMessage(defaultAccount, availableAccounts,
+    final NewMailMessage newMessage = new NewMailMessage(availableAccounts, defaultAccount,
         to, cc, bcc, subject, content, attach, draftId);
 
     FormFactory.createFormView(FORM_NEW_MAIL_MESSAGE, null, null, false, newMessage,
@@ -149,17 +142,21 @@ public final class NewMailMessage extends AbstractFormInterceptor
             if (formView != null) {
               formView.start(null);
 
-              Global.inputWidget(formView.getCaption(), formView,
+              DialogBox dialog = Global.inputWidget(formView.getCaption(), formView,
                   newMessage.new DialogCallback(), RowFactory.DIALOG_STYLE);
+
+              newMessage.initHeader(dialog);
             }
           }
         });
     return newMessage;
   }
 
-  private Long account;
-  private final List<AccountInfo> accounts;
+  private AccountInfo account;
+  private final List<AccountInfo> accounts = new ArrayList<>();
+  private final Map<Long, String> signatures = new HashMap<>();
   private final Long draftId;
+  private final Div signature = new Div().id(BeeUtils.randomString(5));
 
   private final Map<String, String> recipients = Maps.newHashMap();
   private final String subject;
@@ -169,18 +166,19 @@ public final class NewMailMessage extends AbstractFormInterceptor
   private final Map<String, MultiSelector> recipientWidgets = Maps.newHashMap();
   private Editor subjectWidget;
   private Editor contentWidget;
+  private final ListBox signaturesWidget = new ListBox();
   private final Map<String, Long> attachments = Maps.newLinkedHashMap();
 
-  private ScheduledCommand scheduled;
+  private Consumer<Boolean> scheduled;
 
-  private NewMailMessage(Long defaultAccount, List<AccountInfo> availableAccounts,
+  private NewMailMessage(List<AccountInfo> availableAccounts, AccountInfo defaultAccount,
       Set<Long> to, Set<Long> cc, Set<Long> bcc, String subject, String content,
       Map<Long, NewFileInfo> attach, Long draftId) {
 
     Assert.notNull(defaultAccount);
 
     this.account = defaultAccount;
-    this.accounts = availableAccounts;
+    this.accounts.addAll(availableAccounts);
     this.draftId = draftId;
 
     this.subject = subject;
@@ -195,14 +193,16 @@ public final class NewMailMessage extends AbstractFormInterceptor
       attachments.put(defaultAttachments.get(id).getName(), id);
     }
     if (!DataUtils.isId(draftId)) {
+      Long addressId = defaultAccount.getAddressId();
+
       if (to != null) {
-        to.remove(defaultAccount);
+        to.remove(addressId);
       }
       if (cc != null) {
-        cc.remove(defaultAccount);
+        cc.remove(addressId);
       }
       if (bcc != null) {
-        bcc.remove(defaultAccount);
+        bcc.remove(addressId);
       }
     }
     recipients.put(AddressType.TO.name(), DataUtils.buildIdList(to));
@@ -214,28 +214,7 @@ public final class NewMailMessage extends AbstractFormInterceptor
   public void afterCreateWidget(String name, IdentifiableWidget widget,
       WidgetDescriptionCallback callback) {
 
-    if (widget instanceof ListBox && BeeUtils.same(name, TBL_ACCOUNTS)) {
-      if (BeeUtils.isEmpty(accounts)) {
-        widget.asWidget().setVisible(false);
-      } else {
-        final ListBox accountsWidget = (ListBox) widget;
-
-        for (AccountInfo accountInfo : accounts) {
-          accountsWidget.addItem(accountInfo.getDescription());
-
-          if (Objects.equal(account, accountInfo.getAddressId())) {
-            accountsWidget.setSelectedIndex(accountsWidget.getItemCount() - 1);
-          }
-        }
-        accountsWidget.setEnabled(accountsWidget.getItemCount() > 1);
-        accountsWidget.addChangeHandler(new ChangeHandler() {
-          @Override
-          public void onChange(ChangeEvent event) {
-            account = accounts.get(accountsWidget.getSelectedIndex()).getAddressId();
-          }
-        });
-      }
-    } else if (widget instanceof MultiSelector) {
+    if (widget instanceof MultiSelector) {
       MultiSelector w = (MultiSelector) widget;
 
       for (AddressType type : AddressType.values()) {
@@ -252,9 +231,6 @@ public final class NewMailMessage extends AbstractFormInterceptor
     } else if (widget instanceof Editor && BeeUtils.same(name, COL_MESSAGE)) {
       contentWidget = (Editor) widget;
       contentWidget.setValue(content);
-
-    } else if (widget instanceof HasClickHandlers && BeeUtils.same(name, "Send")) {
-      ((HasClickHandlers) widget).addClickHandler(this);
 
     } else if (widget instanceof FileCollector && BeeUtils.same(name, TBL_ATTACHMENTS)) {
       if (!BeeUtils.isEmpty(defaultAttachments)) {
@@ -309,8 +285,30 @@ public final class NewMailMessage extends AbstractFormInterceptor
     }
   }
 
-  public void setScheduled(ScheduledCommand scheduled) {
+  public void setScheduled(Consumer<Boolean> scheduled) {
     this.scheduled = scheduled;
+  }
+
+  private void applySignature(Long signatureId) {
+    if (DataUtils.isId(signatureId)) {
+      signaturesWidget.setValue(BeeUtils.toString(signatureId));
+
+      String oldSignature = signature.toString();
+      signature.clearChildren();
+      String newSignature = signature.text(signatures.get(signatureId)).toString();
+
+      String currentContent = contentWidget.getValue();
+
+      if (currentContent.contains(oldSignature)) {
+        currentContent = currentContent.replace(oldSignature, newSignature);
+      } else {
+        currentContent += SIGNATURE_SEPARATOR + newSignature;
+      }
+      contentWidget.setValue(currentContent);
+
+    } else {
+      signaturesWidget.setValue(null);
+    }
   }
 
   private boolean hasChanges() {
@@ -325,7 +323,8 @@ public final class NewMailMessage extends AbstractFormInterceptor
     if (subjectWidget == null || !BeeUtils.same(subject, subjectWidget.getValue())) {
       return true;
     }
-    if (contentWidget == null || !BeeUtils.same(content, contentWidget.getValue())) {
+    if (contentWidget == null || !BeeUtils.same(content,
+        contentWidget.getValue().replace(SIGNATURE_SEPARATOR + signature.toString(), ""))) {
       return true;
     }
     if (!BeeUtils.same(DataUtils.buildIdList(defaultAttachments.keySet()),
@@ -335,12 +334,67 @@ public final class NewMailMessage extends AbstractFormInterceptor
     return false;
   }
 
-  private void save(boolean saveMode) {
+  private void initHeader(DialogBox dialog) {
+    FaLabel send = new FaLabel(FontAwesome.PAPER_PLANE);
+    send.addClickHandler(this);
+
+    dialog.insertAction(1, send);
+
+    Queries.getRowSet(TBL_SIGNATURES, null,
+        Filter.equals(COL_USER, BeeKeeper.getUser().getUserId()), new RowSetCallback() {
+          @Override
+          public void onSuccess(BeeRowSet result) {
+            for (int i = 0; i < result.getNumberOfRows(); i++) {
+              Long signatureId = result.getRow(i).getId();
+
+              signatures.put(signatureId, result.getString(i, COL_SIGNATURE_CONTENT));
+              signaturesWidget.addItem(result.getString(i, COL_SIGNATURE_NAME),
+                  BeeUtils.toString(signatureId));
+            }
+            signaturesWidget.setEnabled(signaturesWidget.getItemCount() > 1);
+            signaturesWidget.addChangeHandler(new ChangeHandler() {
+              @Override
+              public void onChange(ChangeEvent event) {
+                applySignature(BeeUtils.toLongOrNull(signaturesWidget.getValue()));
+              }
+            });
+            applySignature(account.getSignatureId());
+          }
+        });
+    dialog.insertAction(1, signaturesWidget);
+    dialog.getHeader().insert(new Label(Localized.getConstants().mailSignature() + ":"), 1);
+
+    final ListBox accountsWidget = new ListBox();
+
+    for (int i = 0; i < accounts.size(); i++) {
+      AccountInfo accountInfo = accounts.get(i);
+      accountsWidget.addItem(accountInfo.getDescription());
+
+      if (Objects.equals(accountInfo, account)) {
+        accountsWidget.setSelectedIndex(i);
+      }
+    }
+    accountsWidget.setEnabled(accountsWidget.getItemCount() > 1);
+    accountsWidget.addChangeHandler(new ChangeHandler() {
+      @Override
+      public void onChange(ChangeEvent event) {
+        AccountInfo selectedAccount = accounts.get(accountsWidget.getSelectedIndex());
+
+        if (!Objects.equals(selectedAccount, account)) {
+          account = selectedAccount;
+          applySignature(account.getSignatureId());
+        }
+      }
+    });
+    dialog.insertAction(1, accountsWidget);
+  }
+
+  private void save(final boolean saveMode) {
     if (saveMode && !hasChanges()) {
       return;
     }
     ParameterList params = MailKeeper.createArgs(SVC_SEND_MAIL);
-    params.addDataItem(COL_SENDER, account);
+    params.addDataItem(COL_SENDER, account.getAddressId());
 
     for (String type : recipientWidgets.keySet()) {
       String recipient = recipientWidgets.get(type).getValue();
@@ -367,7 +421,7 @@ public final class NewMailMessage extends AbstractFormInterceptor
         response.notify(BeeKeeper.getScreen());
 
         if (scheduled != null) {
-          scheduled.execute();
+          scheduled.accept(saveMode);
         }
       }
     });

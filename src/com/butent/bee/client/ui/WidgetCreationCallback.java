@@ -14,6 +14,8 @@ import java.util.Map;
 public class WidgetCreationCallback implements FormFactory.WidgetDescriptionCallback {
 
   private static final BeeLogger logger = LogUtils.getLogger(WidgetCreationCallback.class);
+
+  private static final String PARENT_IS_FORM = "{form}";
   
   private final Map<String, String> namedWidgets = Maps.newHashMap();
   private final Map<String, String> potentialChildren = Maps.newHashMap();
@@ -49,11 +51,17 @@ public class WidgetCreationCallback implements FormFactory.WidgetDescriptionCall
       }
 
       if (child instanceof HasFosterParent) {
-        String parentId =
-            BeeUtils.isEmpty(entry.getValue()) ? defaultId : namedWidgets.get(entry.getValue());
+        String parentName = entry.getValue();
+
+        String parentId;
+        if (BeeUtils.isEmpty(parentName) || PARENT_IS_FORM.equalsIgnoreCase(parentName)) {
+          parentId = defaultId;
+        } else {
+          parentId = namedWidgets.get(parentName);
+        }
+
         if (BeeUtils.isEmpty(parentId)) {
-          logger.severe("child id:", entry.getKey(), "parent name:", entry.getValue(),
-              "not found");
+          logger.severe("child id:", entry.getKey(), "parent name:", parentName, "not found");
         } else {
           ((HasFosterParent) child).setParentId(parentId);
         }

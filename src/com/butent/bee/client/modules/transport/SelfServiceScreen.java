@@ -62,7 +62,7 @@ public class SelfServiceScreen extends ScreenImpl {
       }
 
       activeViews.put(viewKey, presenter.getWidget().getId());
-      showWidget(presenter.getWidget(), true);
+      showInNewPlace(presenter.getWidget());
     }
   }
 
@@ -215,8 +215,7 @@ public class SelfServiceScreen extends ScreenImpl {
 
   private void openGrid(String gridName, boolean intercept, GridOptions gridOptions) {
     GridInterceptor gridInterceptor = intercept ? GridFactory.getGridInterceptor(gridName) : null;
-    ActivationCallback callback = new ActivationCallback(GridFactory.getSupplierKey(gridName,
-        gridInterceptor));
+    ActivationCallback callback = new ActivationCallback(GridFactory.getSupplierKey(gridName));
 
     GridFactory.openGrid(gridName, gridInterceptor, gridOptions, callback);
   }

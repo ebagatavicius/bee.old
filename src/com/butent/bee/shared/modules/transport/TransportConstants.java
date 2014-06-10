@@ -537,6 +537,7 @@ public final class TransportConstants {
   public static final String COL_COSTS_EXTERNAL_ID = "ExternalID";
 
   public static final String COL_ORDER = "Order";
+  public static final String COL_ORDER_ID = "OrderID";
   public static final String COL_ORDER_NO = "OrderNo";
   public static final String COL_ORDER_DATE = "Date";
   public static final String COL_ORDER_MANAGER = "Manager";

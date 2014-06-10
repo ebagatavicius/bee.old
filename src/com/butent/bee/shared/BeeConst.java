@@ -155,6 +155,8 @@ public final class BeeConst {
 
   public static final int MAX_SCALE = 20;
 
+  public static final long LONG_UNDEF = -1L;
+  
   public static final double DOUBLE_UNDEF = -1.0d;
   public static final double DOUBLE_ZERO = 0.0d;
   public static final double DOUBLE_ONE = 1.0d;
@@ -267,7 +269,7 @@ public final class BeeConst {
   }
 
   public static boolean isUndef(long x) {
-    return x == UNDEF;
+    return x == LONG_UNDEF;
   }
   
   /**

@@ -134,6 +134,10 @@ public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
     return source.getName();
   }
 
+  public String getValue() {
+    return value;
+  }
+
   public long getVersion() {
     return version;
   }
@@ -145,6 +149,10 @@ public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
 
   public boolean hasColumn() {
     return source.hasColumn();
+  }
+
+  public boolean hasSource(String name) {
+    return BeeUtils.same(name, getSourceName());
   }
 
   @Override

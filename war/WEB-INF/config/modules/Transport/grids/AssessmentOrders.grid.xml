@@ -8,7 +8,7 @@
   >
   <g:columns>
     <SelectionColumn name="Select" width="20" />
-    <IdColumn name="ID" caption="ID" width="40" />
+    <IdColumn name="ID" width="40" />
     <DataColumn name="Assessment" width="40" />
     <DataColumn name="Date" width="110" readOnly="true" />
     <RelColumn name="Manager" />

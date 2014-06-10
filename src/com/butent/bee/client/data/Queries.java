@@ -153,8 +153,12 @@ public final class Queries {
     deleteRow(viewName, rowId, version, null);
   }
 
+  public static void deleteRow(String viewName, long rowId, IntCallback callback) {
+    deleteRow(viewName, rowId, BeeConst.LONG_UNDEF, callback);
+  }
+
   public static void deleteRow(String viewName, long rowId, long version, IntCallback callback) {
-    deleteRows(viewName, Lists.newArrayList(new RowInfo(rowId, version, true)), callback);
+    deleteRows(viewName, Lists.newArrayList(new RowInfo(rowId, version, true, true)), callback);
   }
 
   public static void deleteRows(String viewName, Collection<RowInfo> rows) {
@@ -351,10 +355,6 @@ public final class Queries {
         });
   }
 
-  public static void getRowCount(String viewName, final IntCallback callback) {
-    getRowCount(viewName, null, callback);
-  }
-
   public static int getRowSet(String viewName, List<String> columns, Filter filter, Order order,
       CachingPolicy cachingPolicy, RowSetCallback callback) {
     return getRowSet(viewName, columns, filter, order, BeeConst.UNDEF, BeeConst.UNDEF,
@@ -363,7 +363,8 @@ public final class Queries {
 
   public static int getRowSet(final String viewName, List<String> columns, final Filter filter,
       final Order order, final int offset, final int limit, final CachingPolicy cachingPolicy,
-      Collection<Property> options, final RowSetCallback callback) {
+      final Collection<Property> options, final RowSetCallback callback) {
+
     Assert.notEmpty(viewName);
     Assert.notNull(callback);
 
@@ -417,13 +418,28 @@ public final class Queries {
 
               callback.onSuccess(rs);
 
-              if (cachingPolicy != null && cachingPolicy.doWrite()
-                  && BeeUtils.isEmpty(columnNames)) {
+              if (cachingPolicy != null && cachingPolicy.doWrite() 
+                  && BeeUtils.isEmpty(columnNames) && isCacheable(options)) {
                 Global.getCache().add(Data.getDataInfo(viewName), rs, filter, order, offset, limit);
               }
             }
           }
         });
+  }
+  
+  private static boolean isCacheable(Collection<Property> options) {
+    if (BeeUtils.isEmpty(options)) {
+      return true;
+
+    } else {
+      for (Property property : options) {
+        if (property != null && Service.VAR_RIGHTS.equals(property.getName())) {
+          return false;
+        }
+      }
+      
+      return true;
+    }
   }
 
   public static int getRowSet(String viewName, List<String> columns, Filter filter, Order order,

@@ -5,6 +5,7 @@ import com.google.common.collect.Range;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.HasDateRange;
@@ -50,7 +51,7 @@ class CargoHandling implements HasDateRange, HasShipmentInfo {
 
     this.notes = row.getValue(COL_CARGO_HANDLING_NOTES);
 
-    this.range = ChartHelper.getActivity(this.loadingDate, this.unloadingDate);
+    this.range = TimeBoardHelper.getActivity(this.loadingDate, this.unloadingDate);
   }
 
   @Override
@@ -119,7 +120,7 @@ class CargoHandling implements HasDateRange, HasShipmentInfo {
   }
 
   String getTitle(String loadInfo, String unloadInfo) {
-    return ChartHelper.buildTitle(Localized.getConstants().intermediateLoading(), loadInfo,
+    return TimeBoardHelper.buildTitle(Localized.getConstants().intermediateLoading(), loadInfo,
         Localized.getConstants().intermediateUnloading(), unloadInfo,
         notesLabel, notes);
   }

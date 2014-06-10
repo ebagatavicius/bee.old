@@ -10,48 +10,58 @@
   <FlowPanel class="flexBox-vertical">
     <FlowPanel style="margin-top: 2ex; margin-bottom: 2ex;">
       <FlowPanel class="flexBox-horizontal">
-        <Label text="=ecItemName" class="bee-required" style="&lbl;" />
-        <InputText source="ArticleName" style="width: 430px;" autocomplete="true" />
+        <Label for="ArticleName" style="&lbl;" />
+        <InputText source="ArticleName" style="width: 430px;" autocomplete="true"
+          visible="true" />
 
         <CheckBox text="=ecItemVisible" source="Visible" style="margin-left: 50px;" />
       </FlowPanel>
       &separator;
 
       <FlowPanel class="flexBox-horizontal">
-        <Label text="=ecItemCode" class="bee-required" style="&lbl;" />
-        <InputText source="ArticleNr" style="&inp;" />
+        <Label for="ArticleNr" style="&lbl;" />
+        <InputText source="ArticleNr" style="&inp;" visible="true" />
 
-        <Label text="=ecItemBrand" class="bee-required" style="&lbl;" />
-        <DataSelector source="Brand" style="&inp;" />
+        <Label for="Brand" style="&lbl;" />
+        <DataSelector source="Brand" style="&inp;" visible="true" />
       </FlowPanel>
       &separator;
 
       <FlowPanel class="flexBox-horizontal">
-        <Label text="=ecItemUnit" style="&lbl;" />
+        <Label for="Unit" style="&lbl;" />
         <DataSelector source="Unit" style="width: 80px; margin-right: 120px;" />
 
-        <Label text="=ecItemWeight" style="&lbl;" />
+        <Label for="Weight" style="&lbl;" />
         <InputDouble source="Weight" style="width: 80px;" />
       </FlowPanel>
       &separator;
 
       <FlowPanel class="flexBox-horizontal">
-        <Label text="=ecNoveltyUntil" style="&lbl;" />
+        <Label for="Novelty" style="&lbl;" />
         <InputDateTime source="Novelty" style="width: 120px; margin-right: 80px;" />
 
-        <Label text="=ecFeaturedUntil" style="&lbl;" />
+        <Label for="Featured" style="&lbl;" />
         <InputDateTime source="Featured" style="width: 120px;" />
       </FlowPanel>
       &separator;
 
+      <FlowPanel class="flexBox-horizontal">
+        <Label for="FeaturedPrice" style="&lbl;" />
+        <InputDecimal source="FeaturedPrice" style="width: 80px; margin-right: 120px;" />
+
+        <Label for="FeaturedPercent" style="&lbl;" />
+        <InputDecimal source="FeaturedPercent" style="width: 80px;" />
+      </FlowPanel>
+      &separator;
+
       <FlowPanel class="flexBox-horizontal-top">
-        <Label text="=ecItemDescription" style="&lbl;" />
+        <Label for="Description" style="&lbl;" />
         <InputArea source="Description" style="width: 540px; height: 60px;" />
       </FlowPanel>
     </FlowPanel>
 
     <TabbedPages class="flexible">
-      <page>
+      <page data="TcdArticleSuppliers">
         <text>=ecItemDetailsSuppliers</text>
         <FlowPanel class="flexBox-horizontal">
           <ChildGrid name="TcdArticleSuppliers" relColumn="Article" class="flexible"

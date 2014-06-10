@@ -1,43 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Form [
-<!ENTITY lbl1 "width: 160px; text-align: right; padding-right: 9px;">
+  <!ENTITY clbl "text-align: right;">
+  <!ENTITY inp "width: 200px;">
 ]>
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
-  name="TaskTemplates" viewName="TaskTemplates" caption="=crmNewTaskTemplate"
-  height="215" width="720">
-  <FlowPanel class="flexBox-vertical" style="padding: 15px 1em 45px 1em;">
-    <Table style="border-spacing: 5px;">
-      <row>
-        <Label text="=caption" class="bee-required"
-          horizontalAlignment="right" style="&lbl1;" />
-        <InputText source="Name" />
-        <Label text="=crmTaskPriority" horizontalAlignment="right"
-          style="&lbl1;" />
-        <ListBox source="Priority" style="width: 150px" />
-      </row>
-      <row>
-        <Label text="=crmTaskSubject" horizontalAlignment="right"
-          style="&lbl1;" />
-        <InputText source="Summary" />
-        <Label text="=crmTaskExpectedDuration"
-          horizontalAlignment="right" style="&lbl1;" />
-        <InputTime source="ExpectedDuration" />
-      </row>
-      <row>
-        <Label text="=personContact" horizontalAlignment="right"
-          style="&lbl1;" />
-        <DataSelector source="Contact" />
-        <Label text="=company" horizontalAlignment="right" style="&lbl1;" />
-        <DataSelector source="Company" />
-      </row>
-      <row>
-        <Label text="=taskReminder" horizontalAlignment="right"
-          style="&lbl1;" />
-        <DataSelector source="Reminder" />
-        <Label text="=description" horizontalAlignment="right"
-          style="&lbl1;" />
-        <InputArea source="Description" style="width: 150px" />
-      </row>
-    </Table>
-  </FlowPanel>
+  
+  name="TaskTemplates" viewName="TaskTemplates" caption="=crmTaskTemplate"
+  width="720" height="240"
+  >
+  
+  <Table style="border-collapse: collapse; margin-top: 1ex;" 
+      cellStyle="padding: 5px 1em; vertical-align: top;">
+    <col index="0" cellStyle="&clbl;" />
+    <col index="2" cellStyle="&clbl;" />
+
+    <row>
+      <Label for="Name" />
+      <InputText source="Name" style="&inp;" />
+    </row>
+
+    <row>
+      <Label for="Type" />
+      <DataSelector source="Type" renderColumns="TypeName" style="&inp;" newRowEnabled="false" />
+      <Label for="Priority" />
+      <Radio source="Priority" />
+    </row>
+
+    <row>
+      <Label for="Summary" />
+      <InputText source="Summary" style="&inp;" />
+      <Label for="ExpectedDuration" />
+      <InputTime source="ExpectedDuration" style="width: 80px;"/>
+    </row>
+
+    <row>
+      <Label for="Company" />
+      <DataSelector source="Company" style="&inp;" newRowEnabled="false" />
+      <Label for="Contact" />
+      <DataSelector source="Contact" style="&inp;" newRowEnabled="false" />
+    </row>
+
+    <row>
+      <Label for="Reminder" />
+      <DataSelector source="Reminder" style="&inp;" newRowEnabled="false" />
+      <Label for="Description" />
+      <InputArea source="Description" style="&inp;" />
+    </row>
+  </Table>
 </f:Form>

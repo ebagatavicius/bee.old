@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="UserHistory" caption="=loginHistory" source="UserHistory" module="Administration"
+  readOnly="true"
+  >
+  <Columns>
+    <SimpleJoin name="User" joinType="LEFT">
+      <SimpleColumn name="Login" />
+      
+      <SimpleColumn name="CompanyPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleColumn name="Person" />
+        
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" />
+          <SimpleColumn name="LastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+    
+    <SimpleColumn name="LoggedIn" />
+    <SimpleColumn name="LoggedOut" />
+    <SimpleColumn name="Host"/>
+    <SimpleColumn name="Agent"/>
+  </Columns>
+  <Order>
+    <OrderBy column="LoggedIn" descending="true"/>
+    <OrderBy column="Login" />
+  </Order>
+</View>
+ 

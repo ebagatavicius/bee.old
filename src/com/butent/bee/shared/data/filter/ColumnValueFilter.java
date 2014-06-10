@@ -1,12 +1,17 @@
 package com.butent.bee.shared.data.filter;
 
+import com.google.common.collect.Lists;
+
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -23,12 +28,17 @@ public class ColumnValueFilter extends ComparisonFilter {
         operator.isStringOperator() && !ValueType.isString(value.getType())
             ? Operator.EQ
             : operator,
-        value);
+        Lists.newArrayList(value));
   }
 
+  protected ColumnValueFilter(String column, List<Value> values) {
+    super(column, Operator.IN, values);
+  }
+
+  @SuppressWarnings("unchecked")
   @Override
-  public Value getValue() {
-    return (Value) super.getValue();
+  public List<Value> getValue() {
+    return (List<Value>) super.getValue();
   }
 
   @Override
@@ -40,21 +50,40 @@ public class ColumnValueFilter extends ComparisonFilter {
   public boolean isMatch(List<? extends IsColumn> columns, IsRow row) {
     int columnIndex = getColumnIndex(getColumn(), columns);
     Value columnValue = row.getValue(columnIndex, columns.get(columnIndex).getType());
-    return isOperatorMatch(columnValue, getValue());
+    boolean ok = false;
+
+    for (Value value : getValue()) {
+      ok = isOperatorMatch(columnValue, value);
+
+      if (EnumSet.of(Operator.IN, Operator.EQ).contains(getOperator()) == ok) {
+        break;
+      }
+    }
+    return ok;
   }
 
   @Override
   public String toString() {
-    String value = getValue().getString();
+    List<String> values = new ArrayList<>();
 
-    if (ValueType.isString(getValue().getType())) {
-      value = "\"" + value + "\"";
+    for (Value val : getValue()) {
+      String value = val.getString();
+
+      if (ValueType.isString(val.getType())) {
+        value = "\"" + value + "\"";
+      }
+      values.add(value);
     }
-    return BeeUtils.join(BeeConst.STRING_EMPTY, getColumn(), getOperator().toTextString(), value);
+    return BeeUtils.join(BeeConst.STRING_EMPTY, getColumn(), getOperator().toTextString(), values);
   }
 
   @Override
-  protected Value restoreValue(String s) {
-    return Value.restore(s);
+  protected List<Value> restoreValue(String s) {
+    List<Value> values = new ArrayList<>();
+
+    for (String value : Codec.beeDeserializeCollection(s)) {
+      values.add(Value.restore(value));
+    }
+    return values;
   }
 }

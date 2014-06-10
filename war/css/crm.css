@@ -212,13 +212,7 @@
 }
 
 .bee-crm-rt-actionSchedule {
-  font-size: 17px;
-  padding-right: 3px;
-  color: #888;
-  cursor: pointer;
-}
-.bee-crm-rt-actionSchedule:hover {
-  color: black;
+  font-size: 18px !important;
 }
 
 .bee-crm-rt-cron-values {
@@ -247,12 +241,6 @@
   outline-offset: -1px;
 }
 
-.bee-crm-rt-cron-label {
-  min-width: 120px;
-}
-.bee-crm-rt-cron-input {
-  width: 400px;
-}
 .bee-crm-rt-cron-error {
   padding-left: 3px;
   color: transparent;
@@ -393,4 +381,8 @@
 .bee-crm-rt-offspring-delete:hover {
   background-color: red;
   color: white;
+}
+
+.bee-crm-task-alien {
+  background-image: url(../images/checkered_background.png) !important;
 }

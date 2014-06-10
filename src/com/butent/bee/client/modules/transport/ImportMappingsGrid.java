@@ -20,6 +20,7 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.InputText;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -101,6 +102,11 @@ public class ImportMappingsGrid extends AbstractGridInterceptor {
     return Data.createRowSet(TBL_IMPORT_MAPPINGS);
   }
 
+  @Override
+  public GridInterceptor getInstance() {
+    return new ImportMappingsGrid(form);
+  }
+  
   @Override
   public void onParentRow(ParentRowEvent event) {
     this.parentId = event == null ? null : event.getRowId();

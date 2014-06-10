@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Table [
+  <!ENTITY lbl "text-align: right; padding-left: 1em; padding-right: 1em;">
+  <!ENTITY sel "width: 200px;">
+  <!ENTITY area "width: 200px; height: 50px;">
+]>
+<Table xmlns="http://www.butent.com/widget" 
+  style="border-collapse: collapse;" cellStyle="padding-top: 1ex; padding-bottom: 1ex;">
+  
+  <col index="0" cellStyle="vertical-align: top;" />
+  <col index="2" cellStyle="vertical-align: top;" />
+
+  <row>
+    <Label for="Date" style="&lbl;" />
+    <InputDateTime source="Date" style="width: 120px;" visible="true" />
+
+    <Label for="Number" style="&lbl;" />
+    <InputText source="Number" style="width: 120px;" />
+  </row>
+
+  <row>
+    <Label for="Supplier" style="&lbl;" />
+    <DataSelector source="Supplier" style="&sel;" />
+    <Label for="Customer" style="&lbl;" />
+    <DataSelector source="Customer" style="&sel;" visible="true" />
+  </row>
+
+  <row>
+    <Label for="Manager" style="&lbl;" />
+    <DataSelector source="Manager" style="&sel;" editEnabled="false" newRowEnabled="false" />
+
+    <Label for="Currency" style="&lbl;" />
+    <DataSelector source="Currency" style="width: 60px;" editEnabled="false"
+      newRowEnabled="false" visible="true" />
+  </row>
+
+  <row>
+    <Label for="TypeOfWork" style="&lbl;" />
+    <InputArea source="TypeOfWork" style="&area;" />
+    <Label for="Notes" style="&lbl;" />
+    <InputArea source="Notes" style="&area;" />
+  </row>
+</Table>

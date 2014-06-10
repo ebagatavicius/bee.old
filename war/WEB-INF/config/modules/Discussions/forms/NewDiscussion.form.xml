@@ -42,6 +42,7 @@
     
     <FlowPanel style="&section;" class="flexBox-horizontal">
       <CheckBox name="Accessibility" source="Accessibility" text="=discussPublic" style="&top1; min-width:70px; padding-right:18px;" />
+      <CheckBox name="Mail" text="=mailNotify" />
     </FlowPanel>
     
     <FlowPanel style="&section;" class="flexBox-horizontal">
@@ -75,7 +76,7 @@
     </FlowPanel>
 
     <FlowPanel style="&section;" class="flexBox-horizontal">
-      <Label text="=tasks" style="&top1;min-width:80px; padding-right:18px;" />
+      <Label text="=crmTasks" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector viewName="Tasks" property="Tasks" 
         renderColumns="Summary ExecutorFirstName ExecutorLastName"
         choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"

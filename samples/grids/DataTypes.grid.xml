@@ -16,7 +16,7 @@
   <g:body maxHeight="100" />
 
   <g:columns>
-    <IdColumn name="Id" caption="ID" horizontalAlignment="left">
+    <IdColumn name="Id" horizontalAlignment="left">
       <style>
         <headerStyle>
           <ui:class>bee-Button</ui:class>

@@ -355,6 +355,8 @@
       <xs:enumeration value="RecurringTasks" />
       <xs:enumeration value="RejectionReasons" />
       <xs:enumeration value="RelatedDocuments" />
+      <xs:enumeration value="RelatedRecurringTasks" />
+      <xs:enumeration value="RelatedTasks" />
       <xs:enumeration value="Relations" />
       <xs:enumeration value="RelationTypeStates" />
       <xs:enumeration value="ReminderTypes" />
@@ -373,6 +375,9 @@
       <xs:enumeration value="Sales" />
       <xs:enumeration value="ServiceCriteria" />
       <xs:enumeration value="ServiceCritGroups" />
+      <xs:enumeration value="ServiceDates" />
+      <xs:enumeration value="ServiceDefects" />
+      <xs:enumeration value="ServiceDefectItems" />
       <xs:enumeration value="ServiceDistinctCriteria" />
       <xs:enumeration value="ServiceDistinctCritGroups" />
       <xs:enumeration value="ServiceDistinctCritValues" />
@@ -381,10 +386,12 @@
       <xs:enumeration value="ServiceObjectCriteria" />
       <xs:enumeration value="ServiceObjects" />
       <xs:enumeration value="Services" />
+      <xs:enumeration value="ServiceSettings" />
       <xs:enumeration value="ServiceTree" />
       <xs:enumeration value="ServiceTypes" />
       <xs:enumeration value="ShipmentRequests" />
       <xs:enumeration value="ShippingTerms" />
+      <xs:enumeration value="Signatures" />
       <xs:enumeration value="SpareParts" />
       <xs:enumeration value="SparePartTypes" />
       <xs:enumeration value="SparePartUsage" />
@@ -393,6 +400,7 @@
       <xs:enumeration value="TaskFiles" />
       <xs:enumeration value="Tasks" />
       <xs:enumeration value="TaskTemplates" />
+      <xs:enumeration value="TaskTypes" />
       <xs:enumeration value="TaskUsers" />
       <xs:enumeration value="TcdArticleCategories" />
       <xs:enumeration value="TcdArticleCodes" />
@@ -433,9 +441,11 @@
       <xs:enumeration value="UserGroupMembers" />
       <xs:enumeration value="UserGroups" />
       <xs:enumeration value="UserGroupSettings" />
+      <xs:enumeration value="UserHistory" />
       <xs:enumeration value="UserParameters" />
       <xs:enumeration value="UserRoles" />
       <xs:enumeration value="Users" />
+      <xs:enumeration value="UserSettings" />
       <xs:enumeration value="VehicleModels" />
       <xs:enumeration value="VehiclePartUsage" />
       <xs:enumeration value="Vehicles" />
@@ -444,6 +454,7 @@
       <xs:enumeration value="VehicleTracking" />
       <xs:enumeration value="WaitingCargo" />
       <xs:enumeration value="Warehouses" />
+      <xs:enumeration value="Workspaces" />
 
 <!-- samples -->
       <xs:enumeration value="DataTypes" />

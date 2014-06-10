@@ -85,13 +85,13 @@ public class Bee implements EntryPoint {
 
     LayoutEngine layoutEngine = LayoutEngine.detect();
     if (layoutEngine != null && layoutEngine.hasStyleSheet()) {
-      DomUtils.injectExternalStyle(layoutEngine.getStyleSheet());
+      DomUtils.injectStyleSheet(layoutEngine.getStyleSheet());
     }
 
     List<String> extStyleSheets = Settings.getStyleSheets();
     if (!BeeUtils.isEmpty(extStyleSheets)) {
       for (String styleSheet : extStyleSheets) {
-        DomUtils.injectExternalStyle(styleSheet);
+        DomUtils.injectStyleSheet(styleSheet);
       }
     }
 
@@ -182,13 +182,17 @@ public class Bee implements EntryPoint {
           case NEWS:
             Global.getNewsAggregator().loadSubscriptions(serialized);
             break;
-            
+
           case REPORTS:
             Global.getReportSettings().load(serialized);
             break;
 
           case USERS:
             Global.getUsers().loadUserData(serialized);
+            break;
+
+          case WORKSPACES:
+            Global.getSpaces().load(serialized);
             break;
         }
       }
@@ -203,6 +207,22 @@ public class Bee implements EntryPoint {
     Historian.start();
 
     Endpoint.open(BeeKeeper.getUser().getUserId());
+
+    List<String> onStartup = Global.getSpaces().getStartup();
+
+    if (BeeUtils.isEmpty(onStartup)) {
+      onStartup = Settings.getOnStartup();
+      if (!BeeUtils.isEmpty(onStartup) && !BeeKeeper.getMenu().isEmpty()) {
+        for (String item : onStartup) {
+          BeeKeeper.getMenu().executeItem(item);
+        }
+      }
+
+    } else {
+      for (int i = 0; i < onStartup.size(); i++) {
+        BeeKeeper.getScreen().restore(onStartup.get(i), i > 0);
+      }
+    }
 
     BeeKeeper.getBus().registerExitHandler("Don't leave me this way");
   }

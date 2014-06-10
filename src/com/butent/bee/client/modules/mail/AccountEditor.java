@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.mail.MailConstants.*;
 
-import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Queries;
@@ -19,7 +18,6 @@ import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.WidgetInitializer;
-import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.BeeConst;
@@ -122,10 +120,5 @@ public class AccountEditor extends AbstractFormInterceptor implements SelectorEv
       event.getSelector().setAdditionalFilter(Filter.equals(COL_ACCOUNT, getActiveRowId()));
       event.getSelector().getOracle().setExclusions(exclusions);
     }
-  }
-
-  @Override
-  public void onStartNewRow(FormView form, IsRow oldRow, IsRow newRow) {
-    newRow.setValue(form.getDataIndex(COL_USER), BeeKeeper.getUser().getUserId());
   }
 }

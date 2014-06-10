@@ -40,13 +40,22 @@ public final class SqlUtils {
     return CompoundCondition.and(conditions);
   }
 
-  public static <T> IsExpression bitAnd(IsExpression expr, T value) {
+  public static IsExpression bitAnd(IsExpression expr, Object value) {
     return new FunctionExpression(SqlFunction.BITAND,
         ImmutableMap.of("expression", expr, "value", value));
   }
 
-  public static <T> IsExpression bitAnd(String source, String field, T value) {
+  public static IsExpression bitAnd(String source, String field, Object value) {
     return bitAnd(field(source, field), value);
+  }
+
+  public static IsExpression bitOr(IsExpression expr, Object value) {
+    return new FunctionExpression(SqlFunction.BITOR,
+        ImmutableMap.of("expression", expr, "value", value));
+  }
+
+  public static IsExpression bitOr(String source, String field, Object value) {
+    return bitOr(field(source, field), value);
   }
 
   public static IsExpression cast(IsExpression expr, SqlDataType type, int precision, int scale) {
@@ -112,6 +121,13 @@ public final class SqlUtils {
     params.put("isUnique", isUnique);
 
     return new SqlCommand(SqlKeyword.CREATE_INDEX, params);
+  }
+
+  public static IsQuery createIndex(String table, String name, String expression,
+      boolean isUnique) {
+
+    return new SqlCommand(SqlKeyword.CREATE_INDEX, ImmutableMap.of("table", name(table),
+        "name", name(name), "expression", expression, "isUnique", isUnique));
   }
 
   public static IsQuery createPrimaryKey(String table, String name, List<String> fields) {
@@ -328,7 +344,7 @@ public final class SqlUtils {
   public static IsCondition in(String src, String fld, String dst, String dFld) {
     return in(src, fld, dst, dFld, null);
   }
-  
+
   public static IsCondition in(String src, String fld, String dst, String dFld,
       IsCondition clause) {
     SqlSelect query = new SqlSelect()

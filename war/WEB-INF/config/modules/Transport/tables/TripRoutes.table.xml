@@ -18,6 +18,6 @@
     <Enum name="Season" key="FuelSeason" notNull="true" defValue="0" label="=trSeason" />
     <Numeric name="Temperature" precision="3" scale="0" label="=trTemperatureShort" />
     <Double name="Consumption" label="=trFuelConsumptions" />
-    <Relation name="Item" relation="Items" label="=trProductService" />
+    <Relation name="Item" relation="Items" label="=productService" />
   </Fields>
 </Table>

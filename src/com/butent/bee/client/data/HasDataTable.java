@@ -32,6 +32,8 @@ public interface HasDataTable extends HasSortHandlers, HandlesDeleteEvents, Hand
 
   int getRowCount();
   
+  void preserveActiveRow(List<? extends IsRow> rows);
+
   void refresh();
   
   boolean removeRowById(long rowId);
@@ -46,6 +48,4 @@ public interface HasDataTable extends HasSortHandlers, HandlesDeleteEvents, Hand
   void setRowCount(int count, boolean fireScopeChange);
   
   void setRowData(List<? extends IsRow> rows, boolean refresh);
-  
-  void updateActiveRow(List<? extends IsRow> rows);
 }

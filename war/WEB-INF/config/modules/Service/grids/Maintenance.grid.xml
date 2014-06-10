@@ -42,7 +42,10 @@
     <RelColumn name="Master" renderColumns="MasterFirstName MasterLastName"
       choiceColumns="FirstName LastName CompanyName" />
 
-    <RelColumn name="Invoice" readOnly="true" editEnabled="true" editViewName="ServiceInvoices" />
+    <RelColumn name="Invoice" readOnly="true" editEnabled="true" editViewName="ServiceInvoices"
+      editPopup="true" />
+    <RelColumn name="Defect" readOnly="true" editEnabled="true" editViewName="ServiceDefects"
+      editPopup="true" />
 
     <DataColumn name="Description" />
     <DataColumn name="Notes" visible="false" />

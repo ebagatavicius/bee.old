@@ -175,13 +175,6 @@ public abstract class CellVector extends ComplexPanel implements IdentifiableWid
     return table;
   }
 
-  protected Element getWidgetTd(Widget w) {
-    if (w.getParent() != this) {
-      return null;
-    }
-    return DOM.getParent(w.getElement());
-  }
-
   protected void setCellHorizontalAlignment(Element td, TextAlign align) {
     if (align != null) {
       StyleUtils.setTextAlign(td, align);
@@ -200,5 +193,13 @@ public abstract class CellVector extends ComplexPanel implements IdentifiableWid
 
   private String getDefaultCellStyles() {
     return defaultCellStyles;
+  }
+
+  private Element getWidgetTd(Widget w) {
+    if (w.getParent() == this) {
+      return w.getElement().getParentElement();
+    } else {
+      return null;
+    }
   }
 }

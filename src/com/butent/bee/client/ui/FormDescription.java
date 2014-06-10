@@ -63,20 +63,12 @@ public class FormDescription implements HasViewName {
 
   public Set<Action> getDisabledActions() {
     String actions = getFormElement().getAttribute(ATTR_DISABLED_ACTIONS);
-    if (BeeUtils.isEmpty(actions)) {
-      return null;
-    } else {
-      return Action.parse(actions);
-    }
+    return Action.parse(actions);
   }
   
   public Set<Action> getEnabledActions() {
     String actions = getFormElement().getAttribute(ATTR_ENABLED_ACTIONS);
-    if (BeeUtils.isEmpty(actions)) {
-      return null;
-    } else {
-      return Action.parse(actions);
-    }
+    return Action.parse(actions);
   }
 
   public String getName() {

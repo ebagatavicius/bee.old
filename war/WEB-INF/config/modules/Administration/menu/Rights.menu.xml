@@ -3,7 +3,7 @@
 
 name="Rights" label="=rights" order="3" parent="Administration" separator="true"
 >
-  <Item name="Roles" label="=roles" service="form" parameters="Roles" />
+  <Item name="Roles" label="=roles" service="grid" parameters="Roles" />
 
   <Item name="Modules" label="=modules" service="form" parameters="ModuleRights"
     separator="true" />
@@ -13,6 +13,4 @@ name="Rights" label="=rights" order="3" parent="Administration" separator="true"
   <Item name="Fields" label="=fields" service="form" parameters="FieldRights" />
 
   <Item name="Widgets" label="=widgets" service="form" parameters="WidgetRights" />
-
-  <Item name="Objects" label="=objects" service="form" parameters="Objects" separator="true" />
 </Entry>

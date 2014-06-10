@@ -6,10 +6,10 @@
   name="DocumentTemplate" caption="=documentTemplate"
   >
   <FlowPanel class="flexBox-vertical">
-    <HorizontalPanel style="margin-bottom:10px">
-      <Label text="=documentCategory" class="bee-required" horizontalAlignment="right" />
+    <HorizontalPanel style="margin-bottom: 10px;">
+      <Label for="Category" horizontalAlignment="right" />
       <DataSelector source="Category" />
-      <Label text="=templateName" class="bee-required" horizontalAlignment="right" />
+      <Label for="Name" horizontalAlignment="right" />
       <InputText source="Name" />
     </HorizontalPanel>
     

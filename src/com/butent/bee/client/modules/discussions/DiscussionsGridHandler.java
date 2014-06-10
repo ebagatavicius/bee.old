@@ -12,6 +12,7 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.edit.EditorAssistant;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.view.search.AbstractFilterSupplier;
 import com.butent.bee.client.widget.FaLabel;
 
@@ -87,6 +88,11 @@ class DiscussionsGridHandler extends AbstractGridInterceptor {
     }
   }
 
+  @Override
+  public GridInterceptor getInstance() {
+    return new DiscussionsGridHandler(type);
+  }
+  
   @Override
   public boolean initDescription(GridDescription gridDescription) {
     gridDescription.setFilter(type.getFilter(new LongValue(userId)));

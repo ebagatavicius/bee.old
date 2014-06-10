@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="Workspaces"
+  idName="WorkspaceID"
+  >
+  <Fields>
+    <Relation name="User" notNull="true" relation="Users" cascade="DELETE" defExpr="CURRENT_USER" />
+    <Integer name="Ordinal" />
+    <String name="Label" precision="100" notNull="true" />
+    <Boolean name="Startup" />
+    <Text name="Workspace" notNull="true" />
+  </Fields>
+</Table>

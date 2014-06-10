@@ -123,13 +123,13 @@ public class Mobile extends ScreenImpl {
   }
 
   @Override
-  public void showWidget(IdentifiableWidget widget, boolean newPlace) {
-    getScreenPanel().updateCenter(widget);
+  public void showInNewPlace(IdentifiableWidget widget) {
+    updateActivePanel(widget);
   }
 
   @Override
   public void updateActivePanel(IdentifiableWidget widget) {
-    showWidget(widget, false);
+    getScreenPanel().updateCenter(widget);
   }
 
   protected int addLogToggle(LayoutPanel panel) {

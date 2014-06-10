@@ -44,6 +44,7 @@
     </SimpleJoin>
 
     <SimpleColumn name="Invoice" />
+    <SimpleColumn name="Defect" />
 
     <SimpleColumn name="Description" />
     <SimpleColumn name="Notes" />

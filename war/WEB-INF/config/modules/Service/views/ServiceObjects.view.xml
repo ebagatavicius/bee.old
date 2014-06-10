@@ -19,5 +19,10 @@
       <SimpleColumn name="Name" alias="CustomerName" />
       <SimpleColumn name="CreditDays" />
     </SimpleJoin>
+
+    <SimpleColumn name="Contractor" />
+    <SimpleJoin joinType="LEFT" name="Contractor">
+      <SimpleColumn name="Name" alias="ContractorName" />
+    </SimpleJoin>
   </Columns>
 </View>

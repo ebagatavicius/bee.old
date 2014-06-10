@@ -14,6 +14,8 @@ public interface LocalizableMessages extends Messages, LocalizableTaskMessages,
 
   String allValuesIdentical(String label, String value, String count);
 
+  String createdRows(int count);
+
   String dataNotAvailable(String key);
 
   String deletedRows(int count);
@@ -35,7 +37,7 @@ public interface LocalizableMessages extends Messages, LocalizableTaskMessages,
   String not(String value);
 
   String recordIsInUse(String place);
-  
+
   String removeQuestion(String item);
 
   String rowsRetrieved(int cnt);

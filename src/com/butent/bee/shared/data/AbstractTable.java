@@ -190,7 +190,7 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
       properties.remove(key);
     }
   }
-  
+
   @Override
   public void clearValue(int rowIndex, int colIndex) {
     IsCell cell = getCell(rowIndex, colIndex);
@@ -375,26 +375,15 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
   }
 
   @Override
-  public int[] getFilteredRows(RowFilter... filters) {
-    Assert.notNull(filters);
-    Assert.parameterCount(filters.length, 1);
-    List<Integer> match = Lists.newArrayList();
-    boolean ok;
+  public R findRow(RowFilter filter) {
+    Assert.notNull(filter);
 
-    for (int i = 0; i < getNumberOfRows(); i++) {
-      R row = getRow(i);
-      ok = true;
-      for (RowFilter filter : filters) {
-        if (!filter.isMatch(getColumns(), row)) {
-          ok = false;
-          break;
-        }
-      }
-      if (ok) {
-        match.add(i);
+    for (R row : this) {
+      if (filter.isMatch(getColumns(), row)) {
+        return row;
       }
     }
-    return Ints.toArray(match);
+    return null;
   }
 
   @Override
@@ -445,7 +434,7 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
     }
     return result;
   }
-  
+
   @Override
   public int getRowIndex(long rowId) {
     for (int i = 0; i < getNumberOfRows(); i++) {

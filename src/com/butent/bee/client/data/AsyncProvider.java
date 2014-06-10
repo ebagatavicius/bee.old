@@ -45,16 +45,16 @@ public class AsyncProvider extends Provider {
     private final Range<Integer> queryRange;
 
     private Range<Integer> displayRange;
-    private boolean updateActiveRow;
+    private boolean preserveActiveRow;
 
     private Integer rpcId;
     private long startTime;
 
     private QueryCallback(Range<Integer> queryRange, Range<Integer> displayRange,
-        boolean updateActiveRow) {
+        boolean preserveActiveRow) {
       this.queryRange = queryRange;
       this.displayRange = displayRange;
-      this.updateActiveRow = updateActiveRow;
+      this.preserveActiveRow = preserveActiveRow;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class AsyncProvider extends Provider {
             getPageStart(), getPageSize());
         return;
       }
-      updateDisplay(rowSet, getQueryOffset(), updateActiveRow());
+      updateDisplay(rowSet, getQueryOffset(), preserveActiveRow());
     }
 
     private int getDisplayLimit() {
@@ -118,12 +118,12 @@ public class AsyncProvider extends Provider {
       this.startTime = startTime;
     }
 
-    private void setUpdateActiveRow(boolean updateActiveRow) {
-      this.updateActiveRow = updateActiveRow;
+    private void setPreserveActiveRow(boolean preserveActiveRow) {
+      this.preserveActiveRow = preserveActiveRow;
     }
 
-    private boolean updateActiveRow() {
-      return updateActiveRow;
+    private boolean preserveActiveRow() {
+      return preserveActiveRow;
     }
   }
 
@@ -152,7 +152,7 @@ public class AsyncProvider extends Provider {
     @Override
     public void run() {
       int rpcId = Queries.getRowSet(getViewName(), null, queryFilter, queryOrder,
-          queryOffset, queryLimit, caching, callback);
+          queryOffset, queryLimit, caching, getQueryOptions(), callback);
 
       if (!Queries.isResponseFromCache(rpcId)) {
         callback.setStartTime(System.currentTimeMillis());
@@ -297,7 +297,8 @@ public class AsyncProvider extends Provider {
           setLastRepeatTime(now);
 
           if (step == getRepeatStep()) {
-            if (!isPrefetchPending() && duration <= AsyncProvider.maxRepeatMillis) {
+            if (!isPrefetchPending() && duration <= AsyncProvider.maxRepeatMillis
+                && getRightsStates().isEmpty()) {
               prefetch(step, (int) duration);
             }
           } else {
@@ -377,7 +378,7 @@ public class AsyncProvider extends Provider {
   }
 
   @Override
-  public void refresh(final boolean updateActiveRow) {
+  public void refresh(final boolean preserveActiveRow) {
     resetRequests();
     Global.getCache().remove(getViewName());
 
@@ -385,12 +386,12 @@ public class AsyncProvider extends Provider {
       Queries.getRowCount(getViewName(), getFilter(), new Queries.IntCallback() {
         @Override
         public void onSuccess(Integer result) {
-          onRowCount(result, updateActiveRow);
+          onRowCount(result, preserveActiveRow);
         }
       });
 
     } else {
-      onRequest(updateActiveRow);
+      onRequest(preserveActiveRow);
     }
   }
 
@@ -424,7 +425,7 @@ public class AsyncProvider extends Provider {
   }
 
   @Override
-  protected void onRequest(boolean updateActiveRow) {
+  protected void onRequest(boolean preserveActiveRow) {
     int offset = getPageStart();
     int limit = getPageSize();
 
@@ -440,7 +441,7 @@ public class AsyncProvider extends Provider {
       for (Map.Entry<Integer, QueryCallback> entry : pendingRequests.entrySet()) {
         if (entry.getValue().getQueryRange().encloses(displayRange)) {
           entry.getValue().setDisplayRange(displayRange);
-          entry.getValue().setUpdateActiveRow(updateActiveRow);
+          entry.getValue().setPreserveActiveRow(preserveActiveRow);
 
           if (pendingRequests.size() > 1) {
             requestId = entry.getKey();
@@ -469,11 +470,11 @@ public class AsyncProvider extends Provider {
     Order ord = getOrder();
 
     CachingPolicy caching = getCachingPolicy();
-    if (caching != null && caching.doRead()) {
+    if (caching != null && caching.doRead() && getRightsStates().isEmpty()) {
       BeeRowSet rowSet = Global.getCache().getRowSet(getViewName(), flt, ord, offset, limit);
       if (rowSet != null) {
         requestScheduler.cancel();
-        updateDisplay(rowSet, offset, updateActiveRow);
+        updateDisplay(rowSet, offset, preserveActiveRow);
         return;
       }
       caching = CachingPolicy.disableRead(getCachingPolicy());
@@ -494,7 +495,7 @@ public class AsyncProvider extends Provider {
     }
 
     Range<Integer> queryRange = createRange(queryOffset, queryLimit);
-    QueryCallback callback = new QueryCallback(queryRange, displayRange, updateActiveRow);
+    QueryCallback callback = new QueryCallback(queryRange, displayRange, preserveActiveRow);
 
     requestScheduler.scheduleQuery(flt, ord, queryOffset, queryLimit, caching, callback);
   }
@@ -564,10 +565,10 @@ public class AsyncProvider extends Provider {
     }
   }
 
-  private void onRowCount(Integer rowCount, boolean updateActiveRow) {
+  private void onRowCount(Integer rowCount, boolean preserveActiveRow) {
     if (BeeUtils.isPositive(rowCount)) {
       getDisplay().setRowCount(rowCount, true);
-      onRequest(updateActiveRow);
+      onRequest(preserveActiveRow);
     } else {
       getDisplay().setRowCount(0, true);
       getDisplay().setRowData(null, true);
@@ -678,7 +679,7 @@ public class AsyncProvider extends Provider {
     this.rpcMillis = rpcMillis;
   }
 
-  private void updateDisplay(BeeRowSet data, int queryOffset, boolean updateActiveRow) {
+  private void updateDisplay(BeeRowSet data, int queryOffset, boolean preserveActiveRow) {
     int rowCount = data.getNumberOfRows();
 
     int displayOffset = getPageStart();
@@ -711,8 +712,8 @@ public class AsyncProvider extends Provider {
     if (!hasPaging()) {
       getDisplay().setRowCount(rowCount, true);
     }
-    if (updateActiveRow) {
-      getDisplay().updateActiveRow(rows);
+    if (preserveActiveRow) {
+      getDisplay().preserveActiveRow(rows);
     }
     getDisplay().setRowData(rows, true);
   }

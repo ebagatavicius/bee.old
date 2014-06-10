@@ -20,6 +20,8 @@ public interface LocalizableTradeConstants {
 
   String trdDebt();
   
+  String trdInvoice();
+
   String trdNewInvoice();
 
   String trdOverdue();

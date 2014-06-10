@@ -24,10 +24,13 @@
   </g:west>
   
   <g:columns>
-    <IdColumn name="Id" caption="=captionId" />
+    <IdColumn name="Id" />
     <DataColumn name="CategoryName" visible="false" />
     <DataColumn name="Address" visible="true" />
+
     <RelColumn name="Customer" renderColumns="CustomerName" visible="true" />
+    <RelColumn name="Contractor" />
+
     <PropColumn name="Criterion" type="string" dynamic="true" />
   </g:columns>
 </g:Grid>

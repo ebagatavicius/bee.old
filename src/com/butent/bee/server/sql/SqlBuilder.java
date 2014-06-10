@@ -450,6 +450,9 @@ public abstract class SqlBuilder {
       case BITAND:
         return "(" + params.get("expression") + " & " + params.get("value") + ")";
 
+      case BITOR:
+        return "(" + params.get("expression") + " | " + params.get("value") + ")";
+
       case IF:
         return BeeUtils.joinWords(
             "CASE WHEN", params.get("condition"),
@@ -597,7 +600,8 @@ public abstract class SqlBuilder {
             "CREATE", isEmpty(params.get("isUnique")) ? "" : "UNIQUE",
             "INDEX", params.get("name"),
             "ON", params.get("table"),
-            BeeUtils.parenthesize(params.get("fields")));
+            BeeUtils.parenthesize(BeeUtils.notEmpty((String) params.get("expression"),
+                (String) params.get("fields"))));
 
       case ADD_CONSTRAINT:
         return BeeUtils.joinWords(

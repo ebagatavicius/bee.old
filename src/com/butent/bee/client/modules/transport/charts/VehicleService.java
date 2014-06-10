@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.layout.Flow;
+import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.time.HasDateRange;
@@ -48,7 +49,7 @@ class VehicleService implements HasDateRange {
     Flow panel = new Flow();
     panel.addStyleName(containerStyle);
 
-    panel.setTitle(BeeUtils.buildLines(ChartHelper.getRangeLabel(getRange()), getName(),
+    panel.setTitle(BeeUtils.buildLines(TimeBoardHelper.getRangeLabel(getRange()), getName(),
         getNotes()));
 
     panel.addClickHandler(new ClickHandler() {

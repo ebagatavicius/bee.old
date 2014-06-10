@@ -12,7 +12,6 @@ public final class Service {
   public static final String PROPERTY_MODULES = "Modules";
 
   public static final String RPC_SERVICE_PREFIX = "rpc_";
-  public static final String UI_SERVICE_PREFIX = "ui_";
   public static final String COMPOSITE_SERVICE_PREFIX = "comp_";
   public static final String UPLOAD_SERVICE_PREFIX = "upl_";
   public static final String EXPORT_SERVICE_PREFIX = "exp_";
@@ -43,10 +42,6 @@ public final class Service {
   public static final String GET_MENU = RPC_SERVICE_PREFIX + "get_menu";
 
   public static final String WHERE_AM_I = RPC_SERVICE_PREFIX + "where_am_i";
-
-  public static final String OPEN_FAVORITE = UI_SERVICE_PREFIX + "open_favorite";
-  public static final String EDIT_ROW = UI_SERVICE_PREFIX + "edit_row";
-  public static final String CELL_ACTION = UI_SERVICE_PREFIX + "cell_action";
 
   public static final String DATA_SERVICE_PREFIX = RPC_SERVICE_PREFIX + "data_";
 
@@ -94,6 +89,8 @@ public final class Service {
   public static final String GET_ROLE_RIGHTS = DATA_SERVICE_PREFIX + "get_role_rights";
   public static final String SET_STATE_RIGHTS = DATA_SERVICE_PREFIX + "set_state_rights";
   public static final String SET_ROLE_RIGHTS = DATA_SERVICE_PREFIX + "set_role_rights";
+
+  public static final String SET_ROW_RIGHTS = DATA_SERVICE_PREFIX + "set_row_rights";
 
   public static final String UPLOAD_FILE = UPLOAD_SERVICE_PREFIX + "file";
   public static final String UPLOAD_TEMP_FILE = UPLOAD_SERVICE_PREFIX + "temp_file";

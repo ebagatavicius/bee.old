@@ -81,21 +81,8 @@ public class HeaderCell extends AbstractCell<String> implements HasCaption {
 
       if (EventUtils.isTargetId(event.getEventTarget(), sortInfoId)) {
         context.getGrid().updateOrder(col, event);
-
-      } else if (parent != null && EventUtils.hasModifierKey(event)) {
-        int headerWidth = context.getGrid().estimateHeaderWidth(col, false);
-
-        Element sortElement = DomUtils.getChildById(parent, sortInfoId);
-        if (sortElement != null) {
-          headerWidth += Math.max(sortElement.getOffsetWidth(), SORT_INFO_WIDTH);
-        }
-
-        if (headerWidth > context.getGrid().getColumnWidth(col)) {
-          context.getGrid().resizeColumn(col, headerWidth);
-        }
-
       } else {
-        context.getGrid().autoFitColumn(col);
+        context.getGrid().autoFitColumn(col, !EventUtils.hasModifierKey(event));
       }
 
       state = EventState.CONSUMED;

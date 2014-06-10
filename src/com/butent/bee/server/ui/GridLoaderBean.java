@@ -155,7 +155,7 @@ public class GridLoaderBean {
 
   private static final String ATTR_EXPORTABLE = "exportable";
   private static final String ATTR_EXPORT_WIDTH_FACTOR = "exportWidthFactor";
-  
+
   private static GridComponentDescription getComponent(Element parent, String tagName) {
     Assert.notNull(parent);
     Assert.notEmpty(tagName);
@@ -423,7 +423,7 @@ public class GridLoaderBean {
           dst.setExportable(BeeUtils.toBooleanOrNull(value));
         } else if (BeeUtils.same(key, ATTR_EXPORT_WIDTH_FACTOR)) {
           dst.setExportWidthFactor(BeeUtils.toDoubleOrNull(value));
-          
+
         } else if (Flexibility.isAttributeRelevant(key)) {
           hasFlexibility = true;
         }
@@ -579,7 +579,7 @@ public class GridLoaderBean {
       } else if (grid.hasColumn(colName)) {
         logger.warning("grid", gridName, "column", i, colTag, "duplicate column name:", colName);
 
-      } else if (isColumnVisible(viewName, colType, colName, columnElement)) {
+      } else if (isColumnVisible(view, colType, colName, columnElement)) {
         ColumnDescription column = new ColumnDescription(colType, colName);
         xmlToColumn(columnElement, column);
 
@@ -665,14 +665,15 @@ public class GridLoaderBean {
         }
         ok = true;
         break;
+
+      case RIGHTS:
+        break;
     }
 
     return ok;
   }
 
-  private boolean isColumnVisible(String viewName, ColType colType, String colName,
-      Element element) {
-
+  private boolean isColumnVisible(BeeView view, ColType colType, String colName, Element element) {
     if (element.hasAttribute(UiConstants.ATTR_VISIBLE)
         && BeeConst.isTrue(element.getAttribute(UiConstants.ATTR_VISIBLE))) {
       return true;
@@ -683,7 +684,7 @@ public class GridLoaderBean {
       return false;
     }
 
-    if (!BeeUtils.isEmpty(viewName)) {
+    if (view != null) {
       String source = element.getAttribute(UiConstants.ATTR_SOURCE);
 
       if (BeeUtils.isEmpty(source)) {
@@ -699,7 +700,7 @@ public class GridLoaderBean {
         }
       }
 
-      if (!BeeUtils.isEmpty(source) && !usr.isColumnVisible(viewName, source)) {
+      if (!BeeUtils.isEmpty(source) && !usr.isColumnVisible(view, source)) {
         return false;
       }
     }

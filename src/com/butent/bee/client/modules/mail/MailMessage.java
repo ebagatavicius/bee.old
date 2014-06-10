@@ -33,18 +33,23 @@ import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.DateTimeLabel;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.InlineLabel;
 import com.butent.bee.client.widget.Link;
+import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
+import com.butent.bee.shared.font.FontAwesome;
+import com.butent.bee.shared.i18n.LocalizableConstants;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.mail.AccountInfo;
 import com.butent.bee.shared.modules.mail.MailConstants.AddressType;
+import com.butent.bee.shared.modules.mail.MailConstants.SystemFolder;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -78,14 +83,15 @@ public class MailMessage extends AbstractFormInterceptor {
   private static final int ADDR_EMAIL = 1;
   private static final int ADDR_LABEL = 2;
 
-  private Long account;
-  private List<AccountInfo> accounts;
+  private final MailPanel mailPanel;
   private Long sender;
+  private Long draftId;
   private final Multimap<String, String[]> recipients = HashMultimap.create();
   private final List<String[]> attachments = Lists.newArrayList();
   private final Map<String, Widget> widgets = Maps.newHashMap();
 
-  public MailMessage() {
+  public MailMessage(MailPanel mailPanel) {
+    this.mailPanel = mailPanel;
     widgets.put(WAITING, null);
     widgets.put(CONTAINER, null);
     widgets.put(RECIPIENTS, null);
@@ -258,13 +264,9 @@ public class MailMessage extends AbstractFormInterceptor {
       }
     }
     sender = null;
+    draftId = null;
     recipients.clear();
     attachments.clear();
-  }
-
-  public void setAccountInfo(Long defaultAccount, List<AccountInfo> availableAccounts) {
-    this.account = defaultAccount;
-    this.accounts = availableAccounts;
   }
 
   void requery(Long placeId, boolean showBcc) {
@@ -295,6 +297,7 @@ public class MailMessage extends AbstractFormInterceptor {
         }
         SimpleRow row = packet.get(TBL_MESSAGES).getRow(0);
         sender = row.getLong(COL_SENDER);
+        draftId = row.getLong(SystemFolder.Drafts.name());
         String lbl = row.getValue(ClassifierConstants.COL_EMAIL_LABEL);
         String mail = row.getValue(ClassifierConstants.COL_EMAIL_ADDRESS);
 
@@ -332,14 +335,21 @@ public class MailMessage extends AbstractFormInterceptor {
           size += BeeUtils.toLong(info[ATTA_SIZE]);
         }
         if (cnt > 0) {
+          HtmlTable table = new HtmlTable();
+          int c = 0;
 
-          txt = BeeUtils.joinWords(cnt,
-              "prielip" + ((cnt % 10 == 0 || BeeUtils.betweenInclusive(cnt % 100, 11, 19))
-                  ? "ų" : (cnt % 10 == 1 ? "as" : "ai")),
-              BeeUtils.parenthesize(FileUtils.sizeToText(size)));
+          if (cnt > 1) {
+            table.setText(0, c++, BeeUtils.toString(cnt));
+          }
+          table.setWidget(0, c++, new FaLabel(FontAwesome.PAPERCLIP));
+          table.setText(0, c, BeeUtils.parenthesize(FileUtils.sizeToText(size)));
+
+          Widget widget = widgets.get(ATTACHMENTS);
+
+          if (widget != null) {
+            widget.getElement().setInnerHTML(table.getElement().getString());
+          }
         }
-        setWidgetText(ATTACHMENTS, txt);
-
         String content = null;
         Element sep = Document.get().createHRElement();
         sep.setClassName("bee-mail-PartSeparator");
@@ -391,12 +401,16 @@ public class MailMessage extends AbstractFormInterceptor {
         String subject = getSubject();
         String content = null;
         Map<Long, NewFileInfo> attach = null;
+        Long draft = null;
+
+        LocalizableConstants loc = Localized.getConstants();
 
         switch (mode) {
           case REPLY:
           case REPLY_ALL:
-            to = Sets.newHashSet(sender);
-
+            if (DataUtils.isId(sender)) {
+              to = Sets.newHashSet(sender);
+            }
             if (mode == NewMailMode.REPLY_ALL) {
               cc = getTo();
               cc.addAll(getCc());
@@ -406,42 +420,57 @@ public class MailMessage extends AbstractFormInterceptor {
             bq.setAttribute("style",
                 "border-left:1px solid #039; margin:0; padding:10px; color:#039;");
             bq.setInnerHTML(getContent());
-            content = BeeUtils.join("<br>", "<br>",
-                getDate()
-                    + ", "
-                    + SafeHtmlUtils.htmlEscape(getSender() + " "
-                        + Localized.getConstants().mailTextWrote().toLowerCase() + ":"),
+            content = BeeUtils.join("<br>", "<br>", getDate() + ", "
+                + SafeHtmlUtils.htmlEscape(getSender() + " "
+                    + loc.mailTextWrote().toLowerCase() + ":"),
                 bq.getString());
 
-            if (!BeeUtils.isPrefix(subject, Localized.getConstants().mailReplayPrefix())) {
-              subject = BeeUtils.joinWords(Localized.getConstants().mailReplayPrefix(), subject);
+            if (!BeeUtils.isPrefix(subject, loc.mailReplayPrefix())) {
+              subject = BeeUtils.joinWords(loc.mailReplayPrefix(), subject);
             }
             break;
 
           case FORWARD:
-            content =
-                BeeUtils.join("<br>", "<br>", "---------- "
-                    + Localized.getConstants().mailForwardedMessage() + " ----------",
-                    Localized.getConstants().mailFrom() + ": "
-                        + SafeHtmlUtils.htmlEscape(getSender()),
-                    Localized.getConstants().date() + ": " + getDate(),
-                    Localized.getConstants().mailSubject() + ": "
-                        + SafeHtmlUtils.htmlEscape(getSubject()),
-                    Localized.getConstants().mailTo() + ": "
-                        + SafeHtmlUtils.htmlEscape(getRecipients()),
-                    "<br>" + getContent());
+            if (DataUtils.isId(draftId)) {
+              draft = draftId;
+              to = getTo();
+              cc = getCc();
+              bcc = getBcc();
+              subject = getSubject();
+              content = getContent();
+            } else {
+              content = BeeUtils.join("<br>", "<br>", "---------- "
+                  + loc.mailForwardedMessage() + " ----------",
+                  loc.mailFrom() + ": " + SafeHtmlUtils.htmlEscape(getSender()),
+                  loc.date() + ": " + getDate(),
+                  loc.mailSubject() + ": " + SafeHtmlUtils.htmlEscape(getSubject()),
+                  loc.mailTo() + ": " + SafeHtmlUtils.htmlEscape(getRecipients()),
+                  "<br>" + getContent());
 
-            attach = getAttachments();
-
-            if (!BeeUtils.isPrefix(subject, Localized.getConstants().mailForwardedPrefix())) {
-              subject = BeeUtils.joinWords(Localized.getConstants().mailForwardedPrefix(), subject);
+              if (!BeeUtils.isPrefix(subject, loc.mailForwardedPrefix())) {
+                subject = BeeUtils.joinWords(loc.mailForwardedPrefix(), subject);
+              }
             }
+            attach = getAttachments();
             break;
         }
-        if (DataUtils.isId(account)) {
-          NewMailMessage.create(account, accounts, to, cc, bcc, subject, content, attach, null);
+        if (mailPanel != null) {
+          final AccountInfo account = mailPanel.getCurrentAccount();
+
+          NewMailMessage newMessage = NewMailMessage.create(mailPanel.getAccounts(), account,
+              to, cc, bcc, subject, content, attach, draft);
+
+          newMessage.setScheduled(new Consumer<Boolean>() {
+            @Override
+            public void accept(Boolean save) {
+              if (BeeUtils.isFalse(save)) {
+                mailPanel.checkFolder(account.getSystemFolder(SystemFolder.Sent));
+              }
+              mailPanel.checkFolder(account.getSystemFolder(SystemFolder.Drafts));
+            }
+          });
         } else {
-          NewMailMessage.create(to, cc, bcc, subject, content, attach);
+          NewMailMessage.create(to, cc, bcc, subject, content, attach, draft);
         }
       }
     });

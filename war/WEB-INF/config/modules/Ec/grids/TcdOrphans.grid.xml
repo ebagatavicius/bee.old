@@ -10,5 +10,16 @@
     <DataColumn name="BrandName" />
     <DataColumn name="ArticleNr" />
     <DataColumn name="SupplierId" />
+
+    <DataColumn name="ArticleName" />
+    <DataColumn name="Description" visible="false" />
+
+    <CalcColumn name="Chain" type="string" caption="&#xf0c1;" width="20" exportable="false">
+      <style>
+        <headerStyle><ui:class>bee-fa-label</ui:class></headerStyle>
+        <bodyStyle><ui:class>bee-fa-label</ui:class></bodyStyle>
+      </style>
+      <render><ui:expression>'\uf0c1'</ui:expression></render>
+    </CalcColumn>
   </g:columns>
 </g:Grid>

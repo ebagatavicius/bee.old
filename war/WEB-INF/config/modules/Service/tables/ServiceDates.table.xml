@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Table xmlns="http://www.butent.com/table"
+  
+  name="ServiceDates"
+  idName="ServiceDateID"
+  >
+  <Fields>
+    <Relation name="ServiceObject" notNull="true" relation="ServiceObjects" cascade="DELETE"
+      label="=svcObject" />
+      
+    <DateTime name="DateFrom" notNull="true" label="=dateFrom" />
+    <DateTime name="DateUntil" label="=dateTo" />
+    
+    <String name="Color" precision="100" label="=color" />
+    <String name="Note" precision="100" label="=note" />
+  </Fields>
+</Table>

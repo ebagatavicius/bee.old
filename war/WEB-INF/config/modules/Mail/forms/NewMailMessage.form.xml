@@ -8,7 +8,6 @@
   >
   <FlowPanel class="flexBox-vertical"
     style="margin:5px; position:relative; width:760px; height:460px;">
-    <ListBox name="Accounts" style="margin-bottom:5px;" />
 
     <FlowPanel class="bee-mail-Envelope">
       <MultiSelector name="To" viewName="Emails" renderColumns="Label Email"
@@ -37,8 +36,6 @@
           </Table>
         </FlowPanel>
       </Disclosure>
-
-      <Image name="Send" resource="plane" style="float:right;" />
 
       <InputText name="Subject" placeholder="=mailSubject" style="width:600px; display:block;" />
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+
+  name="ServiceDates" viewName="ServiceDates"
+  >
+  <g:columns>
+    <DataColumn name="DateFrom" width="120" visible="true" />
+    <DataColumn name="DateUntil" width="120" visible="true" />
+
+    <DataColumn name="Color" width="100" visible="true">
+      <dynStyle>
+        <ui:inline>background-color: [row.Color];</ui:inline>
+        <ui:expression>row.Color</ui:expression>
+      </dynStyle>
+
+      <editor type="color" />
+    </DataColumn>
+    
+    <DataColumn name="Note" minWidth="100" flexGrow="1" />
+  </g:columns>
+</g:Grid>

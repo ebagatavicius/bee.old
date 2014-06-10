@@ -488,6 +488,20 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
     return tables;
   }
 
+  public String getRelation(String colName) {
+    ViewColumn viewColumn = getViewColumn(colName);
+
+    if (viewColumn == null) {
+      return null;
+    } else if (!BeeUtils.isEmpty(viewColumn.getRelation())) {
+      return viewColumn.getRelation();
+    } else if (!BeeUtils.isEmpty(viewColumn.getParent())) {
+      return getRelation(viewColumn.getParent());
+    } else {
+      return null;
+    }
+  }
+
   public String getRelationField(String relation) {
     if (BeeUtils.isEmpty(relation)) {
       return null;
@@ -504,17 +518,16 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
     return (fields.size() == 1) ? BeeUtils.peek(fields) : null;
   }
 
-  public String getRelationView(String colName) {
+  public String getRootField(String colName) {
     ViewColumn viewColumn = getViewColumn(colName);
-
     if (viewColumn == null) {
       return null;
-    } else if (!BeeUtils.isEmpty(viewColumn.getRelation())) {
-      return viewColumn.getRelation();
-    } else if (!BeeUtils.isEmpty(viewColumn.getParent())) {
-      return getRelationView(viewColumn.getParent());
+    }
+    
+    if (!BeeUtils.isEmpty(viewColumn.getParent()) && viewColumn.getLevel() > 0) {
+      return getRootField(viewColumn.getParent());
     } else {
-      return null;
+      return viewColumn.getField();
     }
   }
 

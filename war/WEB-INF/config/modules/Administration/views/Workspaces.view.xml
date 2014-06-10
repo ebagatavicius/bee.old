@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="Workspaces" source="Workspaces" module="Administration"
+  caption="=workspaces"
+  >
+  <Columns>
+    <SimpleColumn name="User" />
+    <SimpleColumn name="Ordinal" />
+    <SimpleColumn name="Label" />
+    <SimpleColumn name="Startup" />
+    <SimpleColumn name="Workspace" />
+  </Columns>
+  
+  <Order>
+    <OrderBy column="User" />
+    <OrderBy column="Ordinal" />
+  </Order>
+</View>
+ 

@@ -71,6 +71,20 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
 
   String actionUpdate();
 
+  String actionWorkspaceBookmarkAll();
+  
+  String actionWorkspaceBookmarkTab();
+  
+  String actionWorkspaceCloseAll();
+  
+  String actionWorkspaceCloseOther();
+  
+  String actionWorkspaceCloseRight();
+  
+  String actionWorkspaceCloseTab();
+
+  String actionWorkspaceCloseTile();
+  
   String actionWorkspaceEnlargeDown();
 
   String actionWorkspaceEnlargeToLeft();
@@ -104,6 +118,8 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
   String amount();
 
   String article();
+  
+  String autoFit();
 
   String bookmarkName();
 
@@ -112,6 +128,8 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
   String cancel();
 
   String captionId();
+
+  String captionPid();
 
   String changedValues();
 
@@ -136,8 +154,6 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
   String clients();
 
   String clientStatus();
-
-  String closeTab();
 
   String code();
 
@@ -407,6 +423,8 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
 
   String loginUserName();
 
+  String mailNotify();
+
   String mainEmail();
 
   String manager();
@@ -416,6 +434,8 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
   String margin();
 
   String maxValue();
+  
+  String menu();
 
   String message();
 
@@ -551,6 +571,12 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
 
   String responsiblePersons();
 
+  String rights();
+
+  String rightsAll();
+  
+  String rightsDefault();
+
   String rightStateCreate();
 
   String rightStateDelete();
@@ -580,6 +606,8 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
   String roomUpdateTime();
 
   String roomUsers();
+  
+  String rowIsNotRemovable();
 
   String rowIsReadOnly();
 
@@ -630,6 +658,8 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
   String summer();
 
   String supplier();
+
+  String systemAllUsers();
 
   String tabControl();
 
@@ -695,6 +725,10 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
 
   String weight();
 
+  String welcome();
+
+  String welcomeMessage();
+
   String width();
 
   String winter();
@@ -706,6 +740,10 @@ public interface LocalizableConstants extends Constants, LocalizableCalendarCons
   String workdayTransitionNearest();
 
   String workdayTransitionNone();
+  
+  String workspaces();
+
+  String workspaceStartup();
 
   String year();
 

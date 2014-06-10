@@ -25,7 +25,7 @@ public class Storage {
   private final Map<String, String> items = new LinkedHashMap<>();
   private final boolean localStorage;
 
-  public Storage() {
+  Storage() {
     this.localStorage = Features.supportsLocalStorage();
   }
 

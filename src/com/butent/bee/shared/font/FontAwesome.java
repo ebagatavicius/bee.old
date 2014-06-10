@@ -66,6 +66,8 @@ public enum FontAwesome {
   OUTDENT('\uf03b'),
   INDENT('\uf03c'),
   VIDEO_CAMERA('\uf03d'),
+  PHOTO('\uf03e'),
+  IMAGE('\uf03e'), 
   PICTURE_O('\uf03e'),
   PENCIL('\uf040'),
   MAP_MARKER('\uf041'),
@@ -193,6 +195,8 @@ public enum FontAwesome {
   SAVE('\uf0c7'),
   FLOPPY_O('\uf0c7'),
   SQUARE('\uf0c8'),
+  NAVICON('\uf0c9'),
+  REORDER('\uf0c9'), 
   BARS('\uf0c9'),
   LIST_UL('\uf0ca'),
   LIST_OL('\uf0cb'),
@@ -214,9 +218,9 @@ public enum FontAwesome {
   UNSORTED('\uf0dc'),
   SORT('\uf0dc'),
   SORT_DOWN('\uf0dd'),
-  SORT_ASC('\uf0dd'),
+  SORT_DESC('\uf0dd'),
   SORT_UP('\uf0de'),
-  SORT_DESC('\uf0de'),
+  SORT_ASC('\uf0de'),
   ENVELOPE('\uf0e0'),
   LINKEDIN('\uf0e1'),
   ROTATE_LEFT('\uf0e2'),
@@ -412,29 +416,119 @@ public enum FontAwesome {
   VIMEO_SQUARE('\uf194'),
   TURKISH_LIRA('\uf195'),
   TRY('\uf195'),
-  PLUS_SQUARE_O('\uf196');
+  PLUS_SQUARE_O('\uf196'),
+  SPACE_SHUTTLE('\uf197'),
+  SLACK('\uf198'),
+  ENVELOPE_SQUARE('\uf199'),
+  WORDPRESS('\uf19a'),
+  OPENID('\uf19b'),
+  INSTITUTION('\uf19c'),
+  BANK('\uf19c'),
+  UNIVERSITY('\uf19c'),
+  MORTAR_BOARD('\uf19d'),
+  GRADUATION_CAP('\uf19d'),
+  YAHOO('\uf19e'),
+  GOOGLE('\uf1a0'),
+  REDDIT('\uf1a1'),
+  REDDIT_SQUARE('\uf1a2'),
+  STUMBLEUPON_CIRCLE('\uf1a3'),
+  STUMBLEUPON('\uf1a4'),
+  DELICIOUS('\uf1a5'),
+  DIGG('\uf1a6'),
+  PIED_PIPER_SQUARE('\uf1a7'),
+  PIED_PIPER('\uf1a7'),
+  PIED_PIPER_ALT('\uf1a8'),
+  DRUPAL('\uf1a9'),
+  JOOMLA('\uf1aa'),
+  LANGUAGE('\uf1ab'),
+  FAX('\uf1ac'),
+  BUILDING('\uf1ad'),
+  CHILD('\uf1ae'),
+  PAW('\uf1b0'),
+  SPOON('\uf1b1'),
+  CUBE('\uf1b2'),
+  CUBES('\uf1b3'),
+  BEHANCE('\uf1b4'),
+  BEHANCE_SQUARE('\uf1b5'),
+  STEAM('\uf1b6'),
+  STEAM_SQUARE('\uf1b7'),
+  RECYCLE('\uf1b8'),
+  AUTOMOBILE('\uf1b9'),
+  CAR('\uf1b9'),
+  CAB('\uf1ba'),
+  TAXI('\uf1ba'),
+  TREE('\uf1bb'),
+  SPOTIFY('\uf1bc'),
+  DEVIANTART('\uf1bd'),
+  SOUNDCLOUD('\uf1be'),
+  DATABASE('\uf1c0'),
+  FILE_PDF_O('\uf1c1'),
+  FILE_WORD_O('\uf1c2'),
+  FILE_EXCEL_O('\uf1c3'),
+  FILE_POWERPOINT_O('\uf1c4'),
+  FILE_PHOTO_O('\uf1c5'),
+  FILE_PICTURE_O('\uf1c5'),
+  FILE_IMAGE_O('\uf1c5'),
+  FILE_ZIP_O('\uf1c6'),
+  FILE_ARCHIVE_O('\uf1c6'),
+  FILE_SOUND_O('\uf1c7'),
+  FILE_AUDIO_O('\uf1c7'),
+  FILE_MOVIE_O('\uf1c8'),
+  FILE_VIDEO_O('\uf1c8'),
+  FILE_CODE_O('\uf1c9'),
+  VINE('\uf1ca'),
+  CODEPEN('\uf1cb'),
+  JSFIDDLE('\uf1cc'),
+  LIFE_BOUY('\uf1cd'),
+  LIFE_SAVER('\uf1cd'),
+  SUPPORT('\uf1cd'),
+  LIFE_RING('\uf1cd'),
+  CIRCLE_O_NOTCH('\uf1ce'),
+  RA('\uf1d0'),
+  REBEL('\uf1d0'),
+  GE('\uf1d1'),
+  EMPIRE('\uf1d1'),
+  GIT_SQUARE('\uf1d2'),
+  GIT('\uf1d3'),
+  HACKER_NEWS('\uf1d4'),
+  TENCENT_WEIBO('\uf1d5'),
+  QQ('\uf1d6'),
+  WECHAT('\uf1d7'),
+  WEIXIN('\uf1d7'),
+  SEND('\uf1d8'),
+  PAPER_PLANE('\uf1d8'),
+  SEND_O('\uf1d9'),
+  PAPER_PLANE_O('\uf1d9'),
+  HISTORY('\uf1da'),
+  CIRCLE_THIN('\uf1db'),
+  HEADER('\uf1dc'),
+  PARAGRAPH('\uf1dd'),
+  SLIDERS('\uf1de'),
+  SHARE_ALT('\uf1e0'),
+  SHARE_ALT_SQUARE('\uf1e1'),
+  BOMB('\uf1e2');
 
   public static final String FAMILY = "FontAwesome";
-  
+
   public static FontAwesome parse(String input) {
     if (BeeUtils.isEmpty(input)) {
       return null;
     }
-    
+
     String normalized = input.trim().toUpperCase();
     for (FontAwesome fa : values()) {
       if (fa.name().equals(normalized)) {
         return fa;
       }
     }
-    
+
     normalized = NameUtils.normalizeEnumName(input);
     for (FontAwesome fa : values()) {
       if (NameUtils.normalizeEnumName(fa.name()).equals(normalized)) {
         return fa;
       }
     }
-    
+
     if (BeeUtils.isHexString(input.trim())) {
       normalized = input.trim().toLowerCase();
       for (FontAwesome fa : values()) {
@@ -443,7 +537,7 @@ public enum FontAwesome {
         }
       }
     }
-    
+
     return null;
   }
 

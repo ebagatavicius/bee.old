@@ -10,6 +10,7 @@ import com.butent.bee.shared.utils.Property;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.regex.PatternSyntaxException;
  */
 
 public final class JvmUtils {
+
   private static BeeLogger logger = LogUtils.getLogger(JvmUtils.class);
 
   private static Throwable cvfFailure;
@@ -32,9 +34,6 @@ public final class JvmUtils {
   private static final Map<String, Class<?>> PRIMITIVES;
 
   private static final String CLASS_NAME_SEPARATOR = ".";
-  private static final String[] FIND_CLASS_DEFAULT_PACKAGES = {
-      "java.lang", "java.util", "java.io", "java.sql", "java.util.logging",
-      "javax.servlet.http", "javax.servlet", "javax.ejb", "java", "javax"};
 
   static {
     PRIMITIVES = new HashMap<>(9);
@@ -69,7 +68,7 @@ public final class JvmUtils {
     CLASSES_VECTOR_FIELD = fld;
   }
 
-  public static Set<Class<?>> findClass(String name, String... packageNames) {
+  public static Set<Class<?>> findClass(String name, Collection<String> packageNames) {
     Assert.notEmpty(name);
     String nm = name.trim();
 
@@ -113,7 +112,7 @@ public final class JvmUtils {
       exact = forName(nm);
     }
 
-    if (exact == null && packageNames != null && packageNames.length > 0) {
+    if (exact == null && !BeeUtils.isEmpty(packageNames)) {
       String s;
       if (nm.startsWith(CLASS_NAME_SEPARATOR)) {
         s = nm;
@@ -142,10 +141,6 @@ public final class JvmUtils {
       found.add(exact);
     }
     return found;
-  }
-
-  public static Set<Class<?>> findClassWithDefaultPackages(String name) {
-    return findClass(name, FIND_CLASS_DEFAULT_PACKAGES);
   }
 
   public static Throwable getCvfFailure() {
@@ -202,16 +197,16 @@ public final class JvmUtils {
     return lst;
   }
 
-  private static void addClassLoaders(Set<ClassLoader> lst, ClassLoader loader) {
-    if (lst == null || loader == null) {
+  private static void addClassLoaders(Set<ClassLoader> classLoaders, ClassLoader loader) {
+    if (classLoaders == null || loader == null) {
       return;
     }
 
     for (ClassLoader cl = loader; cl != null; cl = cl.getParent()) {
-      if (lst.contains(cl)) {
+      if (classLoaders.contains(cl)) {
         break;
       }
-      lst.add(cl);
+      classLoaders.add(cl);
     }
   }
 
@@ -227,11 +222,11 @@ public final class JvmUtils {
   }
 
   private static Set<Class<?>> getAllLoadedClasses() {
-    Set<Class<?>> lst = new HashSet<>();
+    Set<Class<?>> result = new HashSet<>();
 
     Set<ClassLoader> loaders = getClassLoaders();
     if (BeeUtils.isEmpty(loaders)) {
-      return lst;
+      return result;
     }
 
     Class<?>[] classes;
@@ -247,10 +242,10 @@ public final class JvmUtils {
       }
 
       for (Class<?> cls : classes) {
-        lst.add(cls);
+        result.add(cls);
       }
     }
-    return lst;
+    return result;
   }
 
   private static Class<?>[] getClasses(ClassLoader loader) {
@@ -280,13 +275,13 @@ public final class JvmUtils {
   }
 
   private static Set<ClassLoader> getClassLoaders() {
-    Set<ClassLoader> lst = new HashSet<>();
+    Set<ClassLoader> classLoaders = new HashSet<>();
 
-    addClassLoaders(lst, int.class.getClassLoader());
-    addClassLoaders(lst, ClassLoader.getSystemClassLoader());
-    addClassLoaders(lst, Thread.currentThread().getContextClassLoader());
+    addClassLoaders(classLoaders, int.class.getClassLoader());
+    addClassLoaders(classLoaders, ClassLoader.getSystemClassLoader());
+    addClassLoaders(classLoaders, Thread.currentThread().getContextClassLoader());
 
-    return lst;
+    return classLoaders;
   }
 
   private JvmUtils() {

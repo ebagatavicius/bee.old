@@ -12,8 +12,6 @@ public interface Sequence<T> extends HasLength, Iterable<T> {
 
   void clear();
   
-  Sequence<T> copy();
-
   T get(int index);
 
   Pair<T[], Integer> getArray(T[] a);

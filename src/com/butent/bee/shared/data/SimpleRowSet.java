@@ -101,6 +101,10 @@ public class SimpleRowSet implements Iterable<SimpleRow>, BeeSerializable {
       return getRowSet().getValue(rowIndex, colIndex);
     }
 
+    public String[] getValues() {
+      return getRowSet().getValues(rowIndex);
+    }
+
     public String getValue(String colName) {
       return getRowSet().getValue(rowIndex, colName);
     }
@@ -179,7 +183,7 @@ public class SimpleRowSet implements Iterable<SimpleRow>, BeeSerializable {
 
   private SimpleRowSet() {
   }
-  
+
   public SimpleRow addEmptyRow() {
     String[] values = new String[getNumberOfColumns()];
     addRow(values);
@@ -190,11 +194,11 @@ public class SimpleRowSet implements Iterable<SimpleRow>, BeeSerializable {
     Assert.lengthEquals(row, getNumberOfColumns());
     rows.add(row);
   }
-  
+
   public void append(SimpleRowSet other) {
     if (other != null && other.getNumberOfRows() > 0) {
       Assert.isTrue(getNumberOfColumns() == other.getNumberOfColumns());
-      
+
       for (int i = 0; i < other.getNumberOfRows(); i++) {
         rows.add(ArrayUtils.copyOf(other.rows.get(i)));
       }
@@ -461,7 +465,7 @@ public class SimpleRowSet implements Iterable<SimpleRow>, BeeSerializable {
   public String getValueByKey(String keyName, String keyValue, String colName) {
     return getValue(getKeyIndex(keyName, keyValue), getColumnIndex(colName));
   }
-  
+
   public String[] getValues(int index) {
     if (BeeUtils.isIndex(rows, index)) {
       return rows.get(index);

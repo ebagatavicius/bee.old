@@ -1,6 +1,6 @@
 package com.butent.bee.client.modules.mail;
 
-import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
@@ -17,8 +17,12 @@ import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.screen.Domain;
 import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.shared.BiConsumer;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.SimpleRowSet;
+import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
@@ -30,6 +34,8 @@ import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public final class MailKeeper {
@@ -66,7 +72,7 @@ public final class MailKeeper {
     Global.getNewsAggregator().registerAccessHandler(TBL_PLACES, new HeadlineAccessor() {
       @Override
       public boolean read(final Long id) {
-        FormFactory.openForm(FORM_MAIL_MESSAGE, new MailMessage() {
+        FormFactory.openForm(FORM_MAIL_MESSAGE, new MailMessage(null) {
           @Override
           public void onShow(Presenter presenter) {
             requery(id, false);
@@ -87,21 +93,25 @@ public final class MailKeeper {
     });
   }
 
-  public static void refreshActivePanel(boolean refreshMessages) {
-    final MailPanel panel = activePanel;
+  public static void refreshActivePanel(boolean refreshFolders, final Long folderId) {
+    if (activePanel != null) {
+      ScheduledCommand refreshMessages = null;
 
-    if (panel != null) {
-      if (refreshMessages) {
-        panel.initFolders(new ScheduledCommand() {
+      if (DataUtils.isId(folderId)) {
+        refreshMessages = new ScheduledCommand() {
           @Override
           public void execute() {
-            if (panel == activePanel) {
-              panel.refreshMessages();
+            if (activePanel != null && Objects.equals(activePanel.getCurrentFolderId(), folderId)) {
+              activePanel.refreshMessages();
             }
           }
-        });
-      } else {
-        panel.initFolders();
+        };
+      }
+      if (refreshFolders) {
+        activePanel.requeryFolders(refreshMessages);
+
+      } else if (refreshMessages != null) {
+        refreshMessages.execute();
       }
     }
   }
@@ -123,7 +133,7 @@ public final class MailKeeper {
   }
 
   static void clickFolder(Long folderId) {
-    activePanel.refresh(folderId);
+    activePanel.refreshFolder(folderId);
   }
 
   static void copyMessage(final Long folderFrom, final Long folderTo, String[] places,
@@ -148,7 +158,7 @@ public final class MailKeeper {
                   .mailCopiedMessagesToFolder((String) response.getResponse()),
               BeeUtils.bracket(panel.getCurrentAccount().findFolder(folderTo).getName()));
 
-          if (Objects.equal(folderFrom, panel.getCurrentFolderId())) {
+          if (move && Objects.equals(folderFrom, panel.getCurrentFolderId())) {
             panel.refreshMessages();
           }
           panel.checkFolder(folderTo);
@@ -190,7 +200,7 @@ public final class MailKeeper {
             response.notify(panel.getFormView());
 
             if (!response.hasErrors()) {
-              panel.initFolders();
+              panel.requeryFolders();
             }
           }
         });
@@ -210,8 +220,37 @@ public final class MailKeeper {
         response.notify(panel.getFormView());
 
         if (!response.hasErrors()) {
-          panel.initFolders();
+          panel.requeryFolders();
         }
+      }
+    });
+  }
+
+  static void getAccounts(final BiConsumer<List<AccountInfo>, AccountInfo> consumer) {
+    ParameterList params = createArgs(SVC_GET_ACCOUNTS);
+    params.addDataItem(COL_USER, BeeKeeper.getUser().getUserId());
+
+    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        response.notify(BeeKeeper.getScreen());
+
+        if (response.hasErrors()) {
+          return;
+        }
+        SimpleRowSet rs = SimpleRowSet.restore(response.getResponseAsString());
+        List<AccountInfo> availableAccounts = Lists.newArrayList();
+        AccountInfo defaultAccount = null;
+
+        for (SimpleRow row : rs) {
+          AccountInfo account = new AccountInfo(row);
+
+          if (defaultAccount == null || BeeUtils.unbox(row.getBoolean(COL_ACCOUNT_DEFAULT))) {
+            defaultAccount = account;
+          }
+          availableAccounts.add(account);
+        }
+        consumer.accept(availableAccounts, defaultAccount);
       }
     });
   }
@@ -237,11 +276,11 @@ public final class MailKeeper {
         response.notify(panel.getFormView());
 
         if (!response.hasErrors()) {
-          panel.initFolders(new ScheduledCommand() {
+          panel.requeryFolders(new ScheduledCommand() {
             @Override
             public void execute() {
-              if (Objects.equal(folderId, panel.getCurrentFolderId())) {
-                panel.refresh(account.getInboxId());
+              if (Objects.equals(folderId, panel.getCurrentFolderId())) {
+                panel.refreshFolder(account.getInboxId());
               }
             }
           });
@@ -287,7 +326,7 @@ public final class MailKeeper {
         response.notify(panel.getFormView());
 
         if (!response.hasErrors()) {
-          panel.initFolders(new ScheduledCommand() {
+          panel.requeryFolders(new ScheduledCommand() {
             @Override
             public void execute() {
               panel.checkFolder(folderId);

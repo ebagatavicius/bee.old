@@ -42,7 +42,7 @@ class InvoiceCreator extends Image implements ClickHandler {
       @Override
       public void onSuccess(Integer result) {
         if (BeeUtils.isPositive(result)) {
-          GridPanel grid = new GridPanel(VIEW_CARGO_SALES, GridOptions.forFilter(flt));
+          GridPanel grid = new GridPanel(VIEW_CARGO_SALES, GridOptions.forFilter(flt), false);
 
           StyleUtils.setSize(grid, 800, 600);
 

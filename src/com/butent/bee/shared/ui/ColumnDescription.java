@@ -35,7 +35,8 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     VERSION("VerColumn", true),
     SELECTION("SelectionColumn", true),
     ACTION("ActionColumn", true),
-    PROPERTY("PropColumn", true);
+    PROPERTY("PropColumn", true),
+    RIGHTS(null, true);
 
     public static ColType getColType(String tagName) {
       if (!BeeUtils.isEmpty(tagName)) {

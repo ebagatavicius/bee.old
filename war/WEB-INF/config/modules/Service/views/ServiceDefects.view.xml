@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="ServiceDefects" source="ServiceDefects" caption="=svcDefects"
+  editForm="ServiceDefect" rowCaption="Date Number CustomerName Address"
+  >
+  <Columns>
+    <SimpleColumn name="Date" />
+    <SimpleColumn name="Number" />
+
+    <SimpleColumn name="ServiceObject" />
+    <SimpleJoin joinType="LEFT" name="ServiceObject">
+      <SimpleColumn name="Address" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Supplier" />
+    <SimpleJoin joinType="LEFT" name="Supplier">
+      <SimpleColumn name="Name" alias="SupplierName" />
+    </SimpleJoin>
+    
+    <SimpleColumn name="Customer" />
+    <SimpleJoin joinType="LEFT" name="Customer">
+      <SimpleColumn name="Name" alias="CustomerName" />
+    </SimpleJoin>
+    
+    <SimpleColumn name="Manager" />
+    <SimpleJoin name="Manager" joinType="LEFT">
+      <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" alias="ManagerFirstName" />
+          <SimpleColumn name="LastName" alias="ManagerLastName" />
+        </SimpleJoin>
+        <SimpleJoin name="Position" joinType="LEFT">
+          <SimpleColumn name="Name" alias="ManagerPositionName"/>
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Currency" />
+    <SimpleJoin joinType="LEFT" name="Currency">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="TypeOfWork" />
+    <SimpleColumn name="Notes" />
+  </Columns>
+  <Order>
+    <OrderBy column="Date" descending="true" />
+  </Order>
+</View>

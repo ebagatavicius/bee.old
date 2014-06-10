@@ -254,6 +254,22 @@ public class ExportServlet extends LoginServlet {
       return color;
     }
   }
+  
+  private static Picture createPicture(CreationHelper creationHelper, Drawing drawing,
+      int pictureIndex, int rowIndex, int colIndex) {
+
+    ClientAnchor anchor = creationHelper.createClientAnchor();
+    anchor.setRow1(rowIndex);
+    anchor.setCol1(colIndex);
+    anchor.setRow2(rowIndex);
+    anchor.setCol2(colIndex);
+    anchor.setAnchorType(ClientAnchor.MOVE_DONT_RESIZE);
+
+    Picture picture = drawing.createPicture(anchor, pictureIndex);
+    picture.resize();
+    
+    return picture;
+  }
 
   private static Workbook createWorkbook(XWorkbook inputBook) {
     XSSFWorkbook wb = new XSSFWorkbook();
@@ -410,23 +426,39 @@ public class ExportServlet extends LoginServlet {
               if (drawing == null) {
                 drawing = sheet.createDrawingPatriarch();
               }
+              
+              int pr = inputRow.getIndex();
+              int pc = inputCell.getIndex();
+              
+              Picture picture = createPicture(creationHelper, drawing, pictureIndex, pr, pc);
 
-              ClientAnchor anchor = creationHelper.createClientAnchor();
-              anchor.setRow1(inputRow.getIndex());
-              anchor.setCol1(inputCell.getIndex());
-              anchor.setRow2(inputRow.getIndex());
-              anchor.setCol2(inputCell.getIndex());
-              anchor.setAnchorType(ClientAnchor.MOVE_DONT_RESIZE);
+              if (inputCell.getPictureLayout() != null) {
+                switch (inputCell.getPictureLayout()) {
+                  case REPAEAT:
+                    if (inputCell.getRowSpan() > 1 || inputCell.getColSpan() > 1) {
+                      int rowSpan = Math.max(inputCell.getRowSpan(), 1);
+                      int colSpan = Math.max(inputCell.getColSpan(), 1);
+                      
+                      for (int pi = 0; pi < rowSpan; pi++) {
+                        for (int pj = 0; pj < colSpan; pj++) {
+                          if (pi > 0 || pj > 0) {
+                            createPicture(creationHelper, drawing, pictureIndex, pr + pi, pc + pj);
+                          }
+                        }
+                      }
+                    }
+                    break;
 
-              Picture picture = drawing.createPicture(anchor, pictureIndex);
-              picture.resize();
-
-              ClientAnchor preferred = picture.getPreferredSize();
-              int scale = Math.max(preferred.getRow2() - preferred.getRow1(),
-                  preferred.getCol2() - preferred.getCol1());
-
-              if (scale > 0) {
-                picture.resize(1d / (scale + 0.5));
+                  case RESIZE:
+                    ClientAnchor preferred = picture.getPreferredSize();
+                    int scale = Math.max(preferred.getRow2() - preferred.getRow1(),
+                        preferred.getCol2() - preferred.getCol1());
+                    
+                    if (scale > 0) {
+                      picture.resize(1d / (scale + 0.5));
+                    }
+                    break;
+                }
               }
             }
           }

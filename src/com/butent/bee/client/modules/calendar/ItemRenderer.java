@@ -4,7 +4,9 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
+import com.butent.bee.shared.modules.calendar.CalendarConstants.CalendarVisibility;
 import com.butent.bee.shared.modules.calendar.CalendarHelper;
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 import com.butent.bee.shared.time.TimeUtils;
@@ -35,47 +37,57 @@ class ItemRenderer {
 
     CalendarItem item = itemWidget.getItem();
 
-    Map<String, String> substitutes = getSubstitutes(calendarId, item, false);
-    String separator = multi ? MULTI_HTML_SEPARATOR : SIMPLE_HTML_SEPARATOR;
+    if (item.isVisible(BeeKeeper.getUser().getUserId())) {
+      Map<String, String> substitutes = getSubstitutes(calendarId, item, false);
+      String separator = multi ? MULTI_HTML_SEPARATOR : SIMPLE_HTML_SEPARATOR;
 
-    String template = BeeUtils.notEmpty(headerTemplate, multi ? item.getMultiHeaderTemplate()
-        : item.isPartial() ? item.getPartialHeaderTemplate() : item.getSimpleHeaderTemplate());
-    String header = parseTemplate(template, substitutes, separator);
-    itemWidget.setHeaderHtml(header);
+      String template = BeeUtils.notEmpty(headerTemplate, multi ? item.getMultiHeaderTemplate()
+          : item.isPartial() ? item.getPartialHeaderTemplate() : item.getSimpleHeaderTemplate());
+      String header = parseTemplate(template, substitutes, separator);
+      itemWidget.setHeaderHtml(header);
 
-    template = BeeUtils.notEmpty(bodyTemplate, multi ? item.getMultiBodyTemplate() 
-        : item.isPartial() ? item.getPartialBodyTemplate() : item.getSimpleBodyTemplate());
-    String body = parseTemplate(template, substitutes, separator);
-    if (BeeUtils.allEmpty(header, body) || !multi && BeeUtils.isEmpty(body)) {
-      body = renderEmpty(item);
+      template = BeeUtils.notEmpty(bodyTemplate, multi ? item.getMultiBodyTemplate()
+          : item.isPartial() ? item.getPartialBodyTemplate() : item.getSimpleBodyTemplate());
+      String body = parseTemplate(template, substitutes, separator);
+      if (BeeUtils.allEmpty(header, body) || !multi && BeeUtils.isEmpty(body)) {
+        body = renderEmpty(item);
+      }
+      itemWidget.setBodyHtml(body);
+
+      template = BeeUtils.notEmpty(titleTemplate, item.getTitleTemplate());
+      String title = parseTemplate(template, getSubstitutes(calendarId, item, true),
+          TEXT_LINE_SEPARATOR);
+      itemWidget.setTitleText(title);
+
+    } else {
+      itemWidget.setBodyHtml(renderPrivate());
     }
-    itemWidget.setBodyHtml(body);
-
-    template = BeeUtils.notEmpty(titleTemplate, item.getTitleTemplate());
-    String title = parseTemplate(template, getSubstitutes(calendarId, item, true),
-        TEXT_LINE_SEPARATOR);
-    itemWidget.setTitleText(title);
   }
 
   void renderCompact(long calendarId, CalendarItem item, String compactTemplate,
       Widget htmlWidget, String titleTemplate, Widget titleWidget) {
 
-    Map<String, String> substitutes = getSubstitutes(calendarId, item, false);
+    if (item.isVisible(BeeKeeper.getUser().getUserId())) {
+      Map<String, String> substitutes = getSubstitutes(calendarId, item, false);
 
-    String template = BeeUtils.notEmpty(compactTemplate, item.getCompactTemplate());
-    String html = parseTemplate(template, substitutes, COMPACT_HTML_SEPARATOR);
-    if (BeeUtils.isEmpty(html)) {
-      html = renderEmpty(item);
-    }
-    if (!BeeUtils.isEmpty(html) && htmlWidget != null) {
-      htmlWidget.getElement().setInnerHTML(BeeUtils.trim(html));
-    }
+      String template = BeeUtils.notEmpty(compactTemplate, item.getCompactTemplate());
+      String html = parseTemplate(template, substitutes, COMPACT_HTML_SEPARATOR);
+      if (BeeUtils.isEmpty(html)) {
+        html = renderEmpty(item);
+      }
+      if (!BeeUtils.isEmpty(html) && htmlWidget != null) {
+        htmlWidget.getElement().setInnerHTML(BeeUtils.trim(html));
+      }
 
-    template = BeeUtils.notEmpty(titleTemplate, item.getTitleTemplate());
-    String title = parseTemplate(template, getSubstitutes(calendarId, item, true),
-        TEXT_LINE_SEPARATOR);
-    if (!BeeUtils.isEmpty(title) && titleWidget != null) {
-      titleWidget.setTitle(BeeUtils.trim(title));
+      template = BeeUtils.notEmpty(titleTemplate, item.getTitleTemplate());
+      String title = parseTemplate(template, getSubstitutes(calendarId, item, true),
+          TEXT_LINE_SEPARATOR);
+      if (!BeeUtils.isEmpty(title) && titleWidget != null) {
+        titleWidget.setTitle(BeeUtils.trim(title));
+      }
+
+    } else if (htmlWidget != null) {
+      htmlWidget.getElement().setInnerHTML(renderPrivate());
     }
   }
 
@@ -139,5 +151,9 @@ class ItemRenderer {
 
   private static String renderEmpty(CalendarItem item) {
     return TimeUtils.renderPeriod(item.getStartTime(), item.getEndTime(), true);
+  }
+
+  private static String renderPrivate() {
+    return CalendarVisibility.PRIVATE.getCaption();
   }
 }

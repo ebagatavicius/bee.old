@@ -13,7 +13,6 @@ import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.ui.GridDescription;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface GridContainerView extends View, HasAllDragAndDropHandlers, HasGridView, Printable,
     HandlesHistory, HasWidgetSupplier {
@@ -23,8 +22,6 @@ public interface GridContainerView extends View, HasAllDragAndDropHandlers, HasG
   void create(GridDescription gridDescription, GridView gridView, int rowCount, Filter userFilter,
       GridInterceptor gridInterceptor, Collection<UiOption> uiOptions,
       GridFactory.GridOptions gridOptions);
-
-  List<String> getFavorite();
 
   FooterView getFooter();
   

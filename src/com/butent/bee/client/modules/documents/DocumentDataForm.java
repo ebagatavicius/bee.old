@@ -50,6 +50,7 @@ import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
+import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Label;
@@ -68,7 +69,6 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.CompoundFilter;
 import com.butent.bee.shared.data.filter.Filter;
-import com.butent.bee.shared.data.value.LongValue;
 import com.butent.bee.shared.data.value.TextValue;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.i18n.LocalizableConstants;
@@ -361,6 +361,11 @@ public class DocumentDataForm extends AbstractFormInterceptor
       ensureDataId(null, callback);
       return true;
     }
+
+    @Override
+    public GridInterceptor getInstance() {
+      return null;
+    }
   };
 
   @Override
@@ -376,11 +381,11 @@ public class DocumentDataForm extends AbstractFormInterceptor
     } else if (widget instanceof ChildGrid) {
       ChildGrid grid = (ChildGrid) widget;
 
-      if (BeeUtils.same(name, TBL_CRITERIA_GROUPS)) {
+      if (BeeUtils.same(name, VIEW_CRITERIA_GROUPS)) {
         groupsGrid = grid;
         grid.setGridInterceptor(childInterceptor);
 
-      } else if (BeeUtils.same(name, TBL_CRITERIA)) {
+      } else if (BeeUtils.same(name, VIEW_CRITERIA)) {
         criteriaGrid = grid;
         grid.setGridInterceptor(childInterceptor);
       }
@@ -439,6 +444,9 @@ public class DocumentDataForm extends AbstractFormInterceptor
 
   @Override
   public void onClick(ClickEvent event) {
+    if (!getActiveRow().isEditable()) {
+      return;
+    }
     LocalizableConstants loc = Localized.getConstants();
 
     Global.inputCollection(loc.mainCriteria(), loc.name(), true,
@@ -476,7 +484,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
     if (save(null)) {
       warnings.add(loc.mainCriteria());
     }
-    if (tinyEditor.isDirty()) {
+    if (tinyEditor.isDirty() && newRow.isEditable()) {
       warnings.add(loc.content());
     }
     if (!BeeUtils.isEmpty(warnings)) {
@@ -530,9 +538,9 @@ public class DocumentDataForm extends AbstractFormInterceptor
     super.onUnload(form);
   }
 
-  protected void parseContent(final String content, long dataId, final Consumer<String> consumer) {
+  protected void parseContent(final String content, Long dataId, final Consumer<String> consumer) {
     Queries.getRowSet(VIEW_DATA_CRITERIA, null,
-        Filter.isEqual(COL_DOCUMENT_DATA, new LongValue(dataId)), new RowSetCallback() {
+        Filter.equals(COL_DOCUMENT_DATA, dataId), new RowSetCallback() {
           @Override
           public void onSuccess(BeeRowSet result) {
             Multimap<String, Pair<String, String>> data = LinkedListMultimap.create();
@@ -545,7 +553,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
                   row.getString(valIdx)));
             }
             final List<String> groupBlocks = Lists.newArrayList(Splitter
-                .on("<!--{" + TBL_CRITERIA_GROUPS + "}-->").split(content));
+                .on("<!--{" + VIEW_CRITERIA_GROUPS + "}-->").split(content));
 
             StringBuilder sb = new StringBuilder();
 
@@ -553,7 +561,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
               String groupBlock = groupBlocks.get(i);
 
               if (i % 2 > 0 && i < groupBlocks.size() - 1) {
-                List<String> criteriaBlocks = Splitter.on("<!--{" + TBL_CRITERIA + "}-->")
+                List<String> criteriaBlocks = Splitter.on("<!--{" + VIEW_CRITERIA + "}-->")
                     .splitToList(groupBlock);
 
                 for (String group : data.keySet()) {
@@ -612,7 +620,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
     if (DataUtils.isId(dataId)) {
       callback.onSuccess(dataId);
     } else {
-      Queries.insert(TBL_DOCUMENT_DATA, Data.getColumns(TBL_DOCUMENT_DATA,
+      Queries.insert(VIEW_DOCUMENT_DATA, Data.getColumns(VIEW_DOCUMENT_DATA,
           Lists.newArrayList(COL_DOCUMENT_CONTENT)), Lists.newArrayList((String) null), null,
           new RowCallback() {
             @Override
@@ -621,6 +629,8 @@ public class DocumentDataForm extends AbstractFormInterceptor
               newRow.setValue(idx, id);
 
               RowUpdateEvent.fire(BeeKeeper.getBus(), form.getViewName(), newRow);
+              form.refreshChildWidgets(newRow);
+
               callback.onSuccess(id);
 
               Queries.update(form.getViewName(), newRow.getId(), COL_DOCUMENT_DATA,
@@ -686,7 +696,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
     }
   }
 
-  private void requery(IsRow row) {
+  private void requery(final IsRow row) {
     tinyEditor.setContent(row.getString(getDataIndex(COL_DOCUMENT_CONTENT)));
     criteriaHistory.clear();
     criteria.clear();
@@ -716,6 +726,8 @@ public class DocumentDataForm extends AbstractFormInterceptor
                   Autocomplete box = createAutocomplete("DistinctCriterionValues",
                       COL_CRITERION_VALUE, name);
 
+                  box.setEnabled(row.isEditable());
+                  box.setStyleName("bee-disabled", !row.isEditable());
                   box.setValue(value);
 
                   criteriaHistory.put(name, value);
@@ -770,7 +782,10 @@ public class DocumentDataForm extends AbstractFormInterceptor
             @Override
             public void onSuccess(BeeRow result) {
               super.onSuccess(result);
-              getGridView().getGrid().refresh();
+              GridView gridView = getGridView();
+              if (gridView != null) {
+                gridView.getGrid().refresh();
+              }
             }
           });
         }
@@ -781,7 +796,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
         @Override
         public void accept(Long id) {
           for (Entry<String, String> entry : newValues.entrySet()) {
-            Queries.insert(TBL_CRITERIA, Data.getColumns(TBL_CRITERIA,
+            Queries.insert(VIEW_CRITERIA, Data.getColumns(VIEW_CRITERIA,
                 Lists.newArrayList(COL_CRITERIA_GROUP, COL_CRITERION_NAME, COL_CRITERION_VALUE)),
                 Lists.newArrayList(BeeUtils.toString(id), entry.getKey(), entry.getValue()), null,
                 new RowCallback() {
@@ -797,8 +812,8 @@ public class DocumentDataForm extends AbstractFormInterceptor
         ensureDataId(row, new IdCallback() {
           @Override
           public void onSuccess(Long dataId) {
-            Queries.insert(TBL_CRITERIA_GROUPS,
-                Data.getColumns(TBL_CRITERIA_GROUPS, Lists.newArrayList(COL_DOCUMENT_DATA)),
+            Queries.insert(VIEW_CRITERIA_GROUPS,
+                Data.getColumns(VIEW_CRITERIA_GROUPS, Lists.newArrayList(COL_DOCUMENT_DATA)),
                 Lists.newArrayList(BeeUtils.toString(dataId)), null, new RowCallback() {
                   @Override
                   public void onSuccess(BeeRow result) {
@@ -813,7 +828,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
     }
     if (!BeeUtils.isEmpty(changedValues)) {
       for (Entry<Long, String> entry : changedValues.entrySet()) {
-        Queries.update(TBL_CRITERIA, Filter.compareId(entry.getKey()),
+        Queries.update(VIEW_CRITERIA, Filter.compareId(entry.getKey()),
             COL_CRITERION_VALUE, new TextValue(entry.getValue()), new IntCallback() {
               @Override
               public void onSuccess(Integer result) {
@@ -823,7 +838,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
       }
     }
     if (!flt.isEmpty()) {
-      Queries.delete(TBL_CRITERIA, flt, new IntCallback() {
+      Queries.delete(VIEW_CRITERIA, flt, new IntCallback() {
         @Override
         public void onSuccess(Integer result) {
           scheduler.execute();

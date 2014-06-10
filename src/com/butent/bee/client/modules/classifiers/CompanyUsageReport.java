@@ -69,7 +69,7 @@ public class CompanyUsageReport extends ReportInterceptor {
         TaskConstants.VIEW_TASKS,
         TaskConstants.VIEW_RECURRING_TASKS,
         CalendarConstants.VIEW_APPOINTMENTS,
-        ServiceConstants.VIEW_OBJECTS,
+        ServiceConstants.VIEW_SERVICE_OBJECTS,
         TransportConstants.VIEW_ORDERS,
         TransportConstants.VIEW_VEHICLES,
         VIEW_COMPANY_CONTACTS,

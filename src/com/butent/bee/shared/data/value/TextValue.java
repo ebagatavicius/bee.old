@@ -17,6 +17,10 @@ public class TextValue extends Value {
   public static TextValue getNullValue() {
     return NULL_VALUE;
   }
+  
+  public static TextValue of(String value) {
+    return (value == null) ? NULL_VALUE : new TextValue(value);
+  }
 
   private final String value;
 

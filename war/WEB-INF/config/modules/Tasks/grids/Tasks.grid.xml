@@ -1,76 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="Tasks" viewName="Tasks" caption="=tasks"
+  name="Tasks" viewName="Tasks" caption="=crmTasks"
   cacheData="false" favorite="Summary" enabledActions="copy"
   order="Status, FinishTime, TaskID desc" maxColumnWidth="160"
   >
+
+  <xi:include href="columns/TaskMode.column.xml" />
+  <xi:include href="columns/TaskStar.column.xml" />
+
   <g:columns>
-    <CalcColumn name="Mode" type="string" cellType="html" horizontalAlignment="center" width="20"
-      caption="-" label="=taskColumnMode" exportWidthFactor="0.3" />
-
-    <PropColumn name="Star" type="integer" cellType="html" horizontalAlignment="center" width="20"
-      label="=taskColumnStar" exportWidthFactor="0.4">
-      <renderer type="star" />
-    </PropColumn>
-
-    <IdColumn name="Id" caption="=captionId" />
-    <DataColumn name="RecurringTask" readOnly="true" visible="false" />
-
-    <DataColumn name="Priority" />
-    <DataColumn name="Summary" visible="true" />
-    <DataColumn name="Description" visible="false" />
-
-    <RelColumn name="Company" />
-    <RelColumn name="Contact" visible="false" />
-
-    <DataColumn name="Status" visible="true" />
-    <CalcColumn name="Slack" type="string" cellType="html" width="60" caption="=crmTaskDelayPlannedShort" />
-
-    <RelColumn name="Owner" renderColumns="OwnerFirstName OwnerLastName"
-      sortBy="OwnerLastName OwnerFirstName" minWidth="100" />
-    <RelColumn name="Executor" renderColumns="ExecutorFirstName ExecutorLastName"
-      sortBy="ExecutorLastName ExecutorFirstName" minWidth="100" />
-
-    <DataColumn name="StartTime" visible="true" readOnly="true" width="120" />
-    <DataColumn name="FinishTime" width="120" />
-
-    <DataColumn name="ExpectedDuration" visible="false" />
-
-    <DataColumn name="Created" visible="false" />
-    <DataColumn name="Completed" visible="false" />
-    <DataColumn name="Approved" visible="false" />
-    
-    <RelColumn name="Reminder" visible="false" />
-    <DataColumn name="ReminderTime" visible="false" />
-    <DataColumn name="ReminderSent" visible="false" />
+    <IdColumn name="Id" />
   </g:columns>
+
+  <xi:include href="columns/Task.columns.xml" />
   
-  <g:predefinedFilter name="new" label="=taskFilterNew">
+  <g:predefinedFilter name="new" label="=crmTaskFilterNew">
     <g:column name="Mode" value="0" />
   </g:predefinedFilter>
-  <g:predefinedFilter name="updated" label="=taskFilterUpdated">
+  <g:predefinedFilter name="updated" label="=crmTaskFilterUpdated">
     <g:column name="Mode" value="1" />
   </g:predefinedFilter>
-  <g:predefinedFilter name="new_upd" label="=taskFilterNewOrUpdated">
+  <g:predefinedFilter name="new_upd" label="=crmTaskFilterNewOrUpdated">
     <g:column name="Mode" value="2" />
   </g:predefinedFilter>
   
-  <g:predefinedFilter name="starred" label="=taskFilterStarred">
+  <g:predefinedFilter name="starred" label="=crmTaskFilterStarred">
     <g:column name="Star" emptyValues="false" />
   </g:predefinedFilter>
   
-  <g:predefinedFilter name="nv_a" label="=taskFilterNotVisitedOrActive">
+  <g:predefinedFilter name="nv_a" label="=crmTaskFilterNotVisitedOrActive">
     <g:column name="Status" value="0,1" />
   </g:predefinedFilter>  
-  <g:predefinedFilter name="nv_a_c" label="=taskFilterNotVisitedOrActiveOrCompleted">
+  <g:predefinedFilter name="nv_a_c" label="=crmTaskFilterNotVisitedOrActiveOrCompleted">
     <g:column name="Status" value="0,1,4" />
   </g:predefinedFilter>
   
-  <g:predefinedFilter name="late" label="=taskFilterLate">
+  <g:predefinedFilter name="late" label="=crmTaskFilterLate">
     <g:column name="Slack" value="late" />
   </g:predefinedFilter>  
-  <g:predefinedFilter name="scheduled" label="=taskFilterScheduled">
+  <g:predefinedFilter name="scheduled" label="=crmTaskFilterScheduled">
     <g:column name="Slack" value="scheduled" />
   </g:predefinedFilter>  
 </g:Grid>

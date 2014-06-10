@@ -55,7 +55,7 @@
       </page>
 
       <page>
-        <text>=tasks</text>
+        <text>=crmTasks</text>
         <Table style="&tbl;" cellStyle="&cell;">
           <row>
             <cell><text/></cell>

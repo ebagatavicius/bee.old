@@ -3,6 +3,7 @@ package com.butent.bee.client.cli;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
@@ -96,6 +97,7 @@ import com.butent.bee.client.layout.LayoutPanel;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.layout.Split;
 import com.butent.bee.client.logging.ClientLogManager;
+import com.butent.bee.client.logging.LogFormatter;
 import com.butent.bee.client.maps.ApiLoader;
 import com.butent.bee.client.maps.LatLng;
 import com.butent.bee.client.maps.MapContainer;
@@ -236,6 +238,9 @@ public final class CliWorker {
 
     if ("?".equals(z)) {
       whereAmI();
+      
+    } else if (BeeUtils.isDigit(v.charAt(0)) || v.charAt(0) == '(' || v.charAt(0) == '-') {
+      doEval(v);
 
     } else if (z.startsWith("adm") && !args.isEmpty()) {
       doAdmin(z.substring(3), args, errorPopup);
@@ -332,7 +337,7 @@ public final class CliWorker {
       getResource(arr);
 
     } else if ("eval".equals(z) && !args.isEmpty()) {
-      inform(args, JsUtils.evalToString(args));
+      doEval(args);
 
     } else if (z.startsWith("exch")) {
       if (arr.length >= 4) {
@@ -500,7 +505,7 @@ public final class CliWorker {
       showPropData(v, Settings.getInfo());
 
     } else if (z.startsWith("sheets")) {
-      Global.showGrid(v, new PropertiesData(Global.getStyleSheets()));
+      Global.showTable(v, new PropertiesData(Global.getStyleSheets()));
 
     } else if ("size".equals(z) && arr.length >= 2) {
       showSize(arr);
@@ -1224,6 +1229,17 @@ public final class CliWorker {
       }
     });
   }
+  
+  private static void doEval(String args) {
+    String result;
+    if (BeeUtils.isDigit(args)) {
+      result = new DateTime(BeeUtils.toLong(args)).toString();
+    } else {
+      result = JsUtils.evalToString(args);
+    }
+
+    inform(args, result);
+  }
 
   private static void doJdbc(String args, boolean errorPopup) {
     if (BeeUtils.isEmpty(args)) {
@@ -1366,10 +1382,19 @@ public final class CliWorker {
 
       } else if (BeeUtils.startsSame(z, "level")) {
         ClientLogManager.setPanelVisible(true);
-        for (LogLevel lvl : LogLevel.values()) {
-          logger.log(lvl, lvl.name().toLowerCase());
+
+        LogLevel level = (arr.length > 2) ? LogLevel.parse(arr[2]) : null;
+        if (level == null) {
+          for (LogLevel lvl : LogLevel.values()) {
+            logger.log(lvl, lvl.name().toLowerCase());
+          }
+          logger.addSeparator();
+
+        } else {
+          logger.setLevel(level);
+          logger.log(level, "level", level);
+          logger.log(level, LogFormatter.LOG_SEPARATOR_TAG);
         }
-        logger.addSeparator();
 
       } else {
         ClientLogManager.setPanelVisible(true);
@@ -1434,7 +1459,7 @@ public final class CliWorker {
               if (rs.isEmpty()) {
                 logger.debug("sql: RowSet is empty");
               } else {
-                Global.showGrid(BeeUtils.clip(sql, 100), rs);
+                Global.showTable(BeeUtils.clip(sql, 100), rs);
               }
             }
           }
@@ -1567,7 +1592,7 @@ public final class CliWorker {
           }
 
           fileGroup.setCaption("Files: " + fileGroup.getFiles().size() + " size: " + totSize);
-          BeeKeeper.getScreen().updateActivePanel(fileGroup);
+          BeeKeeper.getScreen().showInNewPlace(fileGroup);
         }
       }
     });
@@ -1619,7 +1644,7 @@ public final class CliWorker {
           Resource resource = Resource.restore(response.getResponseAsString());
           ResourceEditor resourceEditor = new ResourceEditor(resource);
 
-          BeeKeeper.getScreen().updateActivePanel(resourceEditor);
+          BeeKeeper.getScreen().showInNewPlace(resourceEditor);
 
         } else {
           ResponseHandler.dispatch(ArrayUtils.joinWords(arr), response);
@@ -1721,7 +1746,7 @@ public final class CliWorker {
                           if (rs.isEmpty()) {
                             logger.debug("sql: RowSet is empty");
                           } else {
-                            Global.showGrid(null, rs);
+                            Global.showTable(null, rs);
                           }
                         }
                       }
@@ -1760,7 +1785,7 @@ public final class CliWorker {
       }
     }, ErrorEvent.getType());
 
-    BeeKeeper.getScreen().updateActivePanel(widget);
+    BeeKeeper.getScreen().showInNewPlace(widget);
   }
 
   private static void playVideo(String args) {
@@ -1778,7 +1803,7 @@ public final class CliWorker {
       }
     }, ErrorEvent.getType());
 
-    BeeKeeper.getScreen().updateActivePanel(widget);
+    BeeKeeper.getScreen().showInNewPlace(widget);
   }
 
   private static void print(String args, boolean errorPopup) {
@@ -1980,7 +2005,7 @@ public final class CliWorker {
           Storage stor = Storage.getSessionStorageIfSupported();
 
           if (stor == null) {
-            BeeKeeper.getScreen().updateActivePanel(p);
+            BeeKeeper.getScreen().showInNewPlace(p);
           } else {
             final String tmpKey = BeeUtils.randomString(5, 5, 'a', 'z');
             stor.setItem(tmpKey, area.getValue());
@@ -2050,7 +2075,6 @@ public final class CliWorker {
       }
     }
   }-*/;
-
   // CHECKSTYLE:ON
 
   private static void scheduleTasks(String[] arr, boolean errorPopup) {
@@ -2348,7 +2372,7 @@ public final class CliWorker {
       table.setHtml(row, col, value);
     }
 
-    BeeKeeper.getScreen().updateActivePanel(table);
+    BeeKeeper.getScreen().showInNewPlace(table);
   }
 
   private static void showCurrentExchangeRate(String currency) {
@@ -2646,7 +2670,7 @@ public final class CliWorker {
   }
 
   private static void showExtData(String caption, List<ExtendedProperty> data) {
-    Global.showGrid(caption, new ExtendedPropertiesData(data, true));
+    Global.showTable(caption, new ExtendedPropertiesData(data, true));
   }
 
   private static void showFlags(String[] arr) {
@@ -2706,7 +2730,7 @@ public final class CliWorker {
           }
 
           if (!table.isEmpty()) {
-            BeeKeeper.getScreen().updateActivePanel(table);
+            BeeKeeper.getScreen().showInNewPlace(table);
           }
         }
       };
@@ -2740,17 +2764,26 @@ public final class CliWorker {
         context.add(s);
       }
     }
+    
+    Range<Character> range = null;
 
     List<Property> styles = PropertyUtils.createProperties(
         CssProperties.DISPLAY, Display.INLINE_BLOCK.getCssName(),
         CssProperties.PADDING, CssUnit.format(5, CssUnit.PX));
 
     if (!BeeUtils.isEmpty(args)) {
+      if (args.startsWith("4.1")) {
+        range = Range.closed(FontAwesome.SPACE_SHUTTLE.getCode(), FontAwesome.BOMB.getCode());
+      }
       styles.addAll(StyleUtils.parseStyles(args));
     }
 
     int count = 0;
     for (FontAwesome fa : FontAwesome.values()) {
+      if (range != null && !range.contains(fa.getCode())) {
+        continue;
+      }
+
       if (!context.isEmpty()) {
         boolean ok = false;
         for (String s : context) {
@@ -2777,7 +2810,7 @@ public final class CliWorker {
 
     if (count > 0) {
       logger.debug(FontAwesome.FAMILY, names, count);
-      BeeKeeper.getScreen().updateActivePanel(panel);
+      BeeKeeper.getScreen().showInNewPlace(panel);
     } else {
       showError(errorPopup, FontAwesome.FAMILY, names, "not found");
     }
@@ -2896,7 +2929,7 @@ public final class CliWorker {
       }
 
       if (!table.isEmpty()) {
-        BeeKeeper.getScreen().updateActivePanel(table);
+        BeeKeeper.getScreen().showInNewPlace(table);
       }
     }
   }
@@ -3052,7 +3085,7 @@ public final class CliWorker {
       row++;
     }
 
-    BeeKeeper.getScreen().updateActivePanel(table);
+    BeeKeeper.getScreen().showInNewPlace(table);
   }
 
   private static void showListOfCurrencies() {
@@ -3116,7 +3149,7 @@ public final class CliWorker {
           }
 
           MapContainer container = new MapContainer(caption, widget);
-          BeeKeeper.getScreen().showWidget(container, true);
+          BeeKeeper.getScreen().showInNewPlace(container);
         }
       }
     });
@@ -3124,7 +3157,7 @@ public final class CliWorker {
 
   @SuppressWarnings("rawtypes")
   private static void showMatrix(String caption, String[][] data, String... columnLabels) {
-    Global.showGrid(caption, new StringMatrix(data, columnLabels));
+    Global.showTable(caption, new StringMatrix(data, columnLabels));
   }
 
   private static void showMeter(String[] arr, boolean errorPopup) {
@@ -3219,7 +3252,7 @@ public final class CliWorker {
       table.setHtml(r, 0, BeeUtils.toString(i));
       table.setWidget(r, 1, new Meter(min, max, i, low, high, optimum));
     }
-    BeeKeeper.getScreen().updateActivePanel(table);
+    BeeKeeper.getScreen().showInNewPlace(table);
   }
 
   private static boolean showModal(int rowCount) {
@@ -3371,7 +3404,7 @@ public final class CliWorker {
   }
 
   private static void showPropData(String caption, List<Property> data, String... columnLabels) {
-    Global.showGrid(caption, new PropertiesData(data, columnLabels));
+    Global.showTable(caption, new PropertiesData(data, columnLabels));
   }
 
   private static void showProperties(String v, String[] arr, boolean errorPopup) {
@@ -3490,7 +3523,7 @@ public final class CliWorker {
       }
 
     } else {
-      Global.showGrid("rpc", new StringMatrix<TableColumn>(
+      Global.showTable("rpc", new StringMatrix<TableColumn>(
           BeeKeeper.getRpc().getRpcList().getDefaultInfo(), RpcList.DEFAULT_INFO_COLUMNS));
     }
   }
@@ -3657,7 +3690,7 @@ public final class CliWorker {
       value = max;
     }
 
-    BeeKeeper.getScreen().updateActivePanel(new SliderBar(value, min, max, step, labels, ticks));
+    BeeKeeper.getScreen().showInNewPlace(new SliderBar(value, min, max, step, labels, ticks));
   }
 
   private static void showSupport(String args, boolean errorPopup) {
@@ -3833,14 +3866,14 @@ public final class CliWorker {
       parent.appendChild(child);
     }
 
-    BeeKeeper.getScreen().updateActivePanel(new Simple(widget, Overflow.HIDDEN));
+    BeeKeeper.getScreen().showInNewPlace(new Simple(widget, Overflow.HIDDEN));
   }
 
   private static void showTable(String caption, IsTable<?, ?> table) {
     if (showModal(table.getNumberOfRows())) {
       Global.showModalGrid(caption, table);
     } else {
-      Global.showGrid(caption, table);
+      Global.showTable(caption, table);
     }
   }
 
@@ -4038,7 +4071,7 @@ public final class CliWorker {
         col = 0;
       }
     }
-    BeeKeeper.getScreen().updateActivePanel(table);
+    BeeKeeper.getScreen().showInNewPlace(table);
   }
 
   private static void sortTable(IsTable<?, ?> table, int col) {

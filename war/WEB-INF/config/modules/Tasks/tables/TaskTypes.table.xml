@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="TaskTypes"
+  idName="TaskTypeID"
+  >
+  <Fields>
+    <String name="Name" notNull="true" precision="100" label="=crmTaskTypeName" />
+
+    <String name="Background" precision="100" label="=backgroundColor" />
+    <String name="Foreground" precision="100" label="=foregroundColor" />
+  </Fields>
+</Table>

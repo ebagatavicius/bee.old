@@ -16,18 +16,4 @@ public class StringRowArray extends ArraySequence<StringRow> {
   public StringRowArray(StringRow[] values) {
     super(values);
   }
-
-  @Override
-  public Sequence<StringRow> copy() {
-    int len = getLength();
-    if (len <= 0) {
-      return new StringRowArray(new StringRow[0]);
-    }
-
-    StringRow[] arr = new StringRow[len];
-    for (int i = 0; i < len; i++) {
-      arr[i] = get(i).copy();
-    }
-    return new StringRowArray(arr);
-  }
 }

@@ -20,17 +20,19 @@ public class RowInfo implements BeeSerializable, Comparable<RowInfo> {
   private long version;
 
   private boolean editable;
-  
+  private boolean removable;
+
   public RowInfo(IsRow row, boolean editable) {
-    this(row.getId(), row.getVersion(), editable);
+    this(row.getId(), row.getVersion(), editable, row.isRemovable());
   }
 
-  public RowInfo(long id, long version, boolean editable) {
+  public RowInfo(long id, long version, boolean editable, boolean removable) {
     super();
 
     this.id = id;
     this.version = version;
     this.editable = editable;
+    this.removable = removable;
   }
 
   private RowInfo() {
@@ -45,6 +47,9 @@ public class RowInfo implements BeeSerializable, Comparable<RowInfo> {
       res = Long.valueOf(getVersion()).compareTo(o.getVersion());
       if (res == BeeConst.COMPARE_EQUAL) {
         res = Boolean.valueOf(isEditable()).compareTo(o.isEditable());
+        if (res == BeeConst.COMPARE_EQUAL) {
+          res = Boolean.valueOf(isRemovable()).compareTo(o.isRemovable());
+        }
       }
     }
     return res;
@@ -53,11 +58,12 @@ public class RowInfo implements BeeSerializable, Comparable<RowInfo> {
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
-    Assert.lengthEquals(arr, 3);
+    Assert.lengthEquals(arr, 4);
 
     setId(BeeUtils.toLong(arr[0]));
     setVersion(BeeUtils.toLong(arr[1]));
     setEditable(Codec.unpack(arr[2]));
+    setRemovable(Codec.unpack(arr[3]));
   }
 
   @Override
@@ -68,9 +74,10 @@ public class RowInfo implements BeeSerializable, Comparable<RowInfo> {
     if (!(obj instanceof RowInfo)) {
       return false;
     }
-    return getId() == ((RowInfo) obj).getId() 
-        && getVersion() == ((RowInfo) obj).getVersion()
-        && isEditable() == ((RowInfo) obj).isEditable();
+
+    RowInfo other = (RowInfo) obj;
+    return getId() == other.getId() && getVersion() == other.getVersion()
+        && isEditable() == other.isEditable() && isRemovable() == other.isRemovable();
   }
 
   public long getId() {
@@ -88,6 +95,7 @@ public class RowInfo implements BeeSerializable, Comparable<RowInfo> {
     result = prime * result + Long.valueOf(getId()).hashCode();
     result = prime * result + Long.valueOf(getVersion()).hashCode();
     result = prime * result + Boolean.valueOf(isEditable()).hashCode();
+    result = prime * result + Boolean.valueOf(isRemovable()).hashCode();
     return result;
   }
 
@@ -95,13 +103,22 @@ public class RowInfo implements BeeSerializable, Comparable<RowInfo> {
     return editable;
   }
 
+  public boolean isRemovable() {
+    return removable;
+  }
+
   @Override
   public String serialize() {
-    return Codec.beeSerialize(new Object[] {getId(), getVersion(), Codec.pack(isEditable())});
+    return Codec.beeSerialize(new Object[] {getId(), getVersion(),
+        Codec.pack(isEditable()), Codec.pack(isRemovable())});
   }
 
   public void setEditable(boolean editable) {
     this.editable = editable;
+  }
+
+  public void setRemovable(boolean removable) {
+    this.removable = removable;
   }
 
   public void setVersion(long version) {
@@ -110,7 +127,8 @@ public class RowInfo implements BeeSerializable, Comparable<RowInfo> {
 
   @Override
   public String toString() {
-    return BeeUtils.joinWords("id:", getId(), "version:", getVersion(), "editable:", isEditable());
+    return BeeUtils.joinWords("id:", getId(), "version:", getVersion(),
+        "editable:", isEditable(), "removable:", isRemovable());
   }
 
   private void setId(long id) {

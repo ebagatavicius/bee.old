@@ -5,7 +5,6 @@ import com.google.gwt.safecss.shared.SafeStyles;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 
 import com.butent.bee.client.data.Data;
-import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.css.CssProperties;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsColumn;
@@ -25,9 +24,10 @@ public final class ColorStyleProvider implements StyleProvider {
 
   public static ColorStyleProvider create(List<? extends IsColumn> columns,
       String bgName, String fgName) {
-    Assert.notEmpty(columns);
-    Assert.notEmpty(bgName);
-    Assert.notEmpty(fgName);
+
+    if (BeeUtils.isEmpty(columns) || BeeUtils.allEmpty(bgName, fgName)) {
+      return null;
+    }
 
     CellSource bgSource = null;
     CellSource fgSource = null;
@@ -49,17 +49,21 @@ public final class ColorStyleProvider implements StyleProvider {
       }
     }
 
-    if (bgSource == null || fgSource == null) {
-      if (bgSource == null) {
-        logger.severe("bg column not found:", bgName);
-      }
-      if (fgSource == null) {
-        logger.severe("fg column not found:", fgName);
-      }
-      return null;
+    boolean ok = true;
 
-    } else {
+    if (bgSource == null && !BeeUtils.isEmpty(bgName)) {
+      logger.severe("bg column not found:", bgName);
+      ok = false;
+    }
+    if (fgSource == null && !BeeUtils.isEmpty(fgName)) {
+      logger.severe("fg column not found:", fgName);
+      ok = false;
+    }
+
+    if (ok) {
       return new ColorStyleProvider(bgSource, fgSource);
+    } else {
+      return null;
     }
   }
 
@@ -71,6 +75,10 @@ public final class ColorStyleProvider implements StyleProvider {
     return create(viewName, COL_BACKGROUND, COL_FOREGROUND);
   }
 
+  public static ColorStyleProvider forBackground(String viewName, String bgName) {
+    return create(Data.getColumns(viewName), bgName, null);
+  }
+  
   private final CellSource bgSource;
   private final CellSource fgSource;
 
@@ -84,14 +92,14 @@ public final class ColorStyleProvider implements StyleProvider {
     if (row == null || sheet == null) {
       return null;
     }
-    
-    String bgValue = bgSource.getString(row);
-    String fgValue = fgSource.getString(row);
-    
+
+    String bgValue = getBg(row);
+    String fgValue = getFg(row);
+
     if (BeeUtils.allEmpty(bgValue, fgValue)) {
       return null;
     }
-    
+
     XStyle style = new XStyle();
     if (!BeeUtils.isEmpty(bgValue)) {
       style.setColor(bgValue);
@@ -102,7 +110,7 @@ public final class ColorStyleProvider implements StyleProvider {
       font.setColor(fgValue);
       style.setFontRef(sheet.registerFont(font));
     }
-    
+
     return sheet.registerStyle(style);
   }
 
@@ -112,8 +120,8 @@ public final class ColorStyleProvider implements StyleProvider {
       return null;
     }
 
-    String bgValue = bgSource.getString(row);
-    String fgValue = fgSource.getString(row);
+    String bgValue = getBg(row);
+    String fgValue = getFg(row);
 
     SafeStyles styles;
     if (BeeUtils.isEmpty(bgValue)) {
@@ -127,5 +135,13 @@ public final class ColorStyleProvider implements StyleProvider {
     }
 
     return (styles == null) ? null : StyleDescriptor.of(styles);
+  }
+
+  private String getBg(IsRow row) {
+    return (bgSource == null) ? null : bgSource.getString(row);
+  }
+
+  private String getFg(IsRow row) {
+    return (fgSource == null) ? null : fgSource.getString(row);
   }
 }

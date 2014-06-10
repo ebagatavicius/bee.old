@@ -136,7 +136,7 @@ public final class Showcase {
     if (!pomInjected) {
       DomUtils.injectExternalScript(
           "http://visapi-gadgets.googlecode.com/svn/trunk/pilesofmoney/pom.js");
-      DomUtils.injectExternalStyle(
+      DomUtils.injectStyleSheet(
           "http://visapi-gadgets.googlecode.com/svn/trunk/pilesofmoney/pom.css");
       pomInjected = true;
     }

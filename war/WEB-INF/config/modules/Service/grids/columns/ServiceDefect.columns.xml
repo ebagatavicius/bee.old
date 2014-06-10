@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <IdColumn name="ID" />
+
+  <DataColumn name="Date" visible="true" />
+  <DataColumn name="Number" visible="true" />
+
+  <RelColumn name="Supplier" />
+  <RelColumn name="Customer" />
+
+  <RelColumn name="Manager" />
+  <RelColumn name="Currency" />
+
+  <DataColumn name="TypeOfWork" />
+  <DataColumn name="Notes" />
+</g:columns>

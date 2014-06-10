@@ -130,10 +130,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
             DomUtils.setAutocomplete(element, field.getAutocomplete());
 
             DomUtils.setValue(element, wav.getB());
-
             elements.add(element);
-
-            logger.debug(name, field.getAutocomplete(), wav.getB());
           }
         }
 
@@ -256,8 +253,6 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
             params.addDataItem(COL_AUTOCOMPLETE_VALUE, value);
 
             BeeKeeper.getRpc().makeRequest(params);
-
-            logger.debug(key, value);
             updated = true;
           }
         }

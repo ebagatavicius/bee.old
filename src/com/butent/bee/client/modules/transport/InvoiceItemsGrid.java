@@ -5,6 +5,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -32,5 +33,10 @@ public class InvoiceItemsGrid extends AbstractGridInterceptor {
         COL_TRADE_VAT_PLUS, COL_TRADE_VAT, COL_TRADE_VAT_PERC)) {
       refresher.execute();
     }
+  }
+  
+  @Override
+  public GridInterceptor getInstance() {
+    return new InvoiceItemsGrid(refresher);
   }
 }

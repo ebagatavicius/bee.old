@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui">
+
+  <PropColumn name="Star" type="integer" cellType="html"
+    horizontalAlignment="center" width="20" label="=crmTaskColumnStar"
+    exportWidthFactor="0.4">
+
+    <dynStyle>
+      <ui:class>bee-crm-task-alien</ui:class>
+      <ui:expression>row.User == null</ui:expression>
+    </dynStyle>
+    <renderer type="star" />
+  </PropColumn>
+</g:columns>

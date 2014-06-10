@@ -5,7 +5,9 @@ public interface LocalizableMailConstants {
   String mail();
 
   String mails();
-  
+
+  String mailSignature();
+
   String mailActionMoveToTrash();
 
   String mailBcc();
@@ -27,7 +29,7 @@ public interface LocalizableMailConstants {
   String mailFolderContentsWillBeRemovedFromTheMailServer();
 
   String mailFolderDrafts();
-  
+
   String mailFolderInbox();
 
   String mailFolders();

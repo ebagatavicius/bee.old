@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="ServiceDefectItems"
+  idName="ServiceDefectItemID"
+  >
+  <Fields>
+    <Relation name="Defect" notNull="true" relation="ServiceDefects" cascade="DELETE" />
+
+    <Relation name="Item" notNull="true" relation="Items" label="=item" />
+    <String name="Article" precision="30" label="=article" />
+
+    <Numeric name="Quantity" precision="12" scale="3" notNull="true" label="=quantity" />
+    <Numeric name="Price" precision="12" scale="2" label="=price" />
+
+    <Boolean name="VatPlus" label="=vatPlus" />
+    <Numeric name="Vat" precision="12" scale="2" label="=vat" />
+    <Boolean name="VatPercent" label="=vatPercent" />
+
+    <Text name="Note" label="=note" />
+  </Fields>
+</Table>

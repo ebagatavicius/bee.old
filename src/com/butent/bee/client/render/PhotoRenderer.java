@@ -66,9 +66,13 @@ public class PhotoRenderer extends AbstractCellRenderer {
 
     if (picture == null) {
       return null;
+
     } else {
       int ref = sheet.registerPicture(picture);
-      return XCell.forPicture(cellIndex, ref);
+      XCell cell = XCell.forPicture(cellIndex, ref);
+      cell.setPictureLayout(XPicture.Layout.RESIZE);
+
+      return cell;
     }
   }
 

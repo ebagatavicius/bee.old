@@ -12,6 +12,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.event.DndHelper;
 import com.butent.bee.client.event.DndTarget;
+import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BiConsumer;
 import com.butent.bee.shared.data.BeeRow;
@@ -65,7 +66,7 @@ class Vehicle extends Filterable implements HasDateRange, HasItemName {
         row.getString(modelNameIndex));
     this.type = BeeUtils.trim(row.getString(typeNameIndex));
 
-    this.range = ChartHelper.getActivity(row.getDate(startIndex), row.getDate(endIndex));
+    this.range = TimeBoardHelper.getActivity(row.getDate(startIndex), row.getDate(endIndex));
 
     this.itemName = BeeUtils.joinWords(number, model);
   }
@@ -90,11 +91,11 @@ class Vehicle extends Filterable implements HasDateRange, HasItemName {
 
     } else if (inactivity.hasUpperBound() && getRange().hasLowerBound()
         && BeeUtils.isLess(inactivity.upperEndpoint(), getRange().lowerEndpoint())) {
-      return ChartHelper.buildTitle(startLabel, getRange().lowerEndpoint());
+      return TimeBoardHelper.buildTitle(startLabel, getRange().lowerEndpoint());
 
     } else if (inactivity.hasLowerBound() && getRange().hasUpperBound()
         && BeeUtils.isMore(inactivity.lowerEndpoint(), getRange().upperEndpoint())) {
-      return ChartHelper.buildTitle(endLabel, getRange().upperEndpoint());
+      return TimeBoardHelper.buildTitle(endLabel, getRange().upperEndpoint());
 
     } else {
       return BeeConst.STRING_EMPTY;
@@ -106,7 +107,7 @@ class Vehicle extends Filterable implements HasDateRange, HasItemName {
   }
 
   String getMessage(String caption) {
-    return ChartHelper.buildTitle(caption, getNumber(), modelLabel, getModel(),
+    return TimeBoardHelper.buildTitle(caption, getNumber(), modelLabel, getModel(),
         notesLabel, getNotes());
   }
 

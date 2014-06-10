@@ -4,8 +4,9 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="RecurringTask" viewName="RecurringTasks" caption="=crmRecurringTask"
-  width="710" height="700">
+  name="RecurringTask" viewName="RecurringTasks"
+  caption="=crmRecurringTask" showRowId="true"
+  width="700" height="700">
 
   <FlowPanel class="flexBox-vertical" style="padding: 10px 2px 2px 10px;">
     <xi:include href="widgets/RTBody.widget.xml" />

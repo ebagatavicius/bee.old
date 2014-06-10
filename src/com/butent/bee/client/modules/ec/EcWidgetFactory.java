@@ -20,7 +20,7 @@ public final class EcWidgetFactory {
     widget.getElement().setInnerText(EcKeeper.formatStock(stock));
 
     DomUtils.setDataProperty(widget.getElement(), EcConstants.DATA_ATTRIBUTE_STOCK, stock);
-    EcStyles.markStock(widget);
+    EcStyles.markStock(widget.getElement());
 
     return widget;
   }

@@ -55,23 +55,23 @@ public class ShoppingCart extends Split {
 
   private static final String STYLE_PRIMARY = EcStyles.name("shoppingCart");
   private static final String STYLE_ITEMS = STYLE_PRIMARY + "-items";
-  private static final String STYLE_ITEM = STYLE_PRIMARY + "-item";
 
-  private static final String STYLE_HEADER_ROW = STYLE_ITEMS + "-headerRow";
-  private static final String STYLE_ITEM_ROW = STYLE_PRIMARY + "-itemRow";
+  private static final String STYLE_HEADER_ROW = STYLE_ITEMS + "-header";
+  private static final String STYLE_ITEM_ROW = STYLE_PRIMARY + "-item";
 
   private static final String STYLE_DELIVERY_ADDRESS = STYLE_PRIMARY + "-address";
   private static final String STYLE_DELIVERY_METHOD = STYLE_PRIMARY + "-method";
   private static final String STYLE_COMMENT = STYLE_PRIMARY + "-comment";
   private static final String STYLE_COPY_BY_MAIL = STYLE_PRIMARY + "-copyByMail";
 
-  private static final String STYLE_PICTURE = STYLE_ITEM + "-picture";
-  private static final String STYLE_NAME = STYLE_ITEM + "-name";
-  private static final String STYLE_CODE = STYLE_ITEM + "-code";
-  private static final String STYLE_BRAND = STYLE_ITEM + "-brand";
-  private static final String STYLE_QUANTITY = STYLE_ITEM + "-quantity";
-  private static final String STYLE_PRICE = STYLE_ITEM + "-price";
-  private static final String STYLE_REMOVE = STYLE_ITEM + "-remove";
+  private static final String STYLE_ITEM_PREFIX = STYLE_PRIMARY + "-item-";
+  private static final String STYLE_PICTURE = STYLE_ITEM_PREFIX + "picture";
+  private static final String STYLE_NAME = STYLE_ITEM_PREFIX + "name";
+  private static final String STYLE_CODE = STYLE_ITEM_PREFIX + "code";
+  private static final String STYLE_BRAND = STYLE_ITEM_PREFIX + "brand";
+  private static final String STYLE_QUANTITY = STYLE_ITEM_PREFIX + "quantity";
+  private static final String STYLE_PRICE = STYLE_ITEM_PREFIX + "price";
+  private static final String STYLE_REMOVE = STYLE_ITEM_PREFIX + "remove";
 
   private static final String STYLE_PANEL = "-panel";
   private static final String STYLE_LABEL = "-label";
@@ -396,6 +396,8 @@ public class ShoppingCart extends Split {
       row++;
       for (CartItem item : items) {
         ItemPicture pictureWidget = new ItemPicture(item.getEcItem().getCaption());
+        pictureWidget.setFeaturedOrNovelty(item.getEcItem());
+
         renderItem(row++, item, pictureWidget);
 
         pictureWidgets.put(item.getEcItem().getArticleId(), pictureWidget);

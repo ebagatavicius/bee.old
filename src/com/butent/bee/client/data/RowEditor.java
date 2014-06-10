@@ -11,6 +11,7 @@ import com.butent.bee.client.dialog.ModalForm;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.event.Previewer.PreviewConsumer;
 import com.butent.bee.client.event.logical.OpenEvent;
+import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.PresenterCallback;
@@ -28,11 +29,9 @@ import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.Service;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
-import com.butent.bee.shared.data.event.RowActionEvent;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -76,7 +75,31 @@ public final class RowEditor {
 
   public static String getSupplierKey(String viewName, long rowId) {
     Assert.notEmpty(viewName);
-    return BeeUtils.join(BeeConst.STRING_UNDER, "row", BeeUtils.normalize(viewName), rowId);
+    String name = BeeUtils.join(BeeConst.STRING_UNDER, viewName, rowId);
+    return WidgetFactory.SupplierKind.ROW_EDITOR.getKey(name);
+  }
+  
+  public static boolean open(String input, final PresenterCallback presenterCallback) {
+    Assert.notEmpty(input);
+    
+    final String viewName = BeeUtils.getPrefix(input, BeeConst.CHAR_UNDER);
+    if (BeeUtils.isEmpty(viewName)) {
+      return false;
+    }
+    
+    Long id = BeeUtils.toLongOrNull(BeeUtils.getSuffix(input, BeeConst.CHAR_UNDER));
+    if (!DataUtils.isId(id)) {
+      return false;
+    }
+    
+    Queries.getRow(viewName, id, new RowCallback() {
+      @Override
+      public void onSuccess(BeeRow result) {
+        openRow(viewName, result, false, null, null, presenterCallback);
+      }
+    });
+    
+    return true;
   }
 
   public static void openRow(String viewName, IsRow row, boolean modal) {
@@ -103,9 +126,7 @@ public final class RowEditor {
     Assert.notNull(dataInfo);
     Assert.notNull(row);
 
-    RowActionEvent event = new RowActionEvent(dataInfo.getViewName(), row, Service.EDIT_ROW);
-    BeeKeeper.getBus().fireEvent(event);
-    if (event.isConsumed()) {
+    if (!RowActionEvent.fireEditRow(dataInfo.getViewName(), row)) {
       return;
     }
 
@@ -249,6 +270,11 @@ public final class RowEditor {
         enabledActions.removeAll(actions);
         disabledActions.addAll(actions);
       }
+    }
+    
+    if (!formView.isRowEditable(oldRow, false)) {
+      enabledActions.remove(Action.SAVE);
+      disabledActions.add(Action.SAVE);
     }
 
     final RowPresenter presenter = new RowPresenter(formView, dataInfo, oldRow.getId(),

@@ -545,7 +545,15 @@
     </xs:complexType>
   </xs:element>
 
-  <xs:element name="GridPanel" type="gridType" substitutionGroup="widget" />
+  <xs:element name="GridPanel" substitutionGroup="widget">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="gridType">
+          <xs:attribute name="child" type="xs:boolean" />
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
 
   <xs:complexType name="hasOneChild">
     <xs:complexContent>
@@ -791,6 +799,7 @@
         <xs:attribute name="parentColumn" type="type:fieldNameType" use="required" />
         <xs:attribute name="orderColumn" type="type:fieldNameType" />
         <xs:attribute name="hideActions" type="xs:boolean" />
+        <xs:attribute name="favorite" type="xs:normalizedString" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>

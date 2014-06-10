@@ -113,7 +113,7 @@ public class FormPresenter extends AbstractPresenter implements ReadyForInsertEv
 
   @Override
   public IsRow getActiveRow() {
-    return formContainer.getContent().getActiveRow();
+    return getFormView().getActiveRow();
   }
 
   @Override
@@ -141,7 +141,7 @@ public class FormPresenter extends AbstractPresenter implements ReadyForInsertEv
   }
 
   public NotificationListener getNotificationListener() {
-    return formContainer.getContent();
+    return getFormView();
   }
 
   @Override
@@ -187,14 +187,14 @@ public class FormPresenter extends AbstractPresenter implements ReadyForInsertEv
         Global.inputString("Options", new StringCallback() {
           @Override
           public void onSuccess(String value) {
-            formContainer.getContent().applyOptions(value);
+            getFormView().applyOptions(value);
           }
         });
         break;
 
       case DELETE:
-        if (hasData() && formContainer.getContent().isRowEditable(true)) {
-          IsRow row = formContainer.getContent().getActiveRow();
+        IsRow row = getFormView().getActiveRow();
+        if (hasData() && getFormView().isRowEnabled(row)) {
           deleteRow(row.getId(), row.getVersion());
         }
         break;
@@ -207,12 +207,12 @@ public class FormPresenter extends AbstractPresenter implements ReadyForInsertEv
 
       case ADD:
         if (hasData()) {
-          formContainer.getContent().startNewRow(false);
+          getFormView().startNewRow(false);
         }
         break;
 
       case PRINT:
-        FormView form = formContainer.getContent();
+        FormView form = getFormView();
         if (form.printHeader() || form.printFooter()) {
           Printer.print(formContainer);
         } else {
@@ -389,7 +389,11 @@ public class FormPresenter extends AbstractPresenter implements ReadyForInsertEv
   }
 
   private FormInterceptor getFormInterceptor() {
-    return formContainer.getContent().getFormInterceptor();
+    return getFormView().getFormInterceptor();
+  }
+
+  private FormView getFormView() {
+    return formContainer.getContent();
   }
 
   private boolean hasData() {

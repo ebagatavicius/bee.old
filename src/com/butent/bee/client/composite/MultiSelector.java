@@ -47,6 +47,7 @@ import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.State;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
+import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
@@ -180,7 +181,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
         RendererFactory.createRenderer(viewName, columns));
   }
 
-  private final String rowProperty;
+  private final CellSource cellSource;
 
   private AbstractCellRenderer renderer;
 
@@ -192,9 +193,9 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
   private final int emptyContainerSize;
 
-  public MultiSelector(Relation relation, boolean embedded, String rowProperty) {
+  public MultiSelector(Relation relation, boolean embedded, CellSource cellSource) {
     super(relation, embedded);
-    this.rowProperty = rowProperty;
+    this.cellSource = cellSource;
 
     this.inputResizer = UiHelper.getTextBoxResizer(MIN_INPUT_WIDTH);
 
@@ -210,6 +211,10 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
     clearChoices();
     setExclusions(null);
+  }
+
+  public CellSource getCellSource() {
+    return cellSource;
   }
 
   @Override
@@ -251,10 +256,6 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
     }
   }
 
-  public String getRowProperty() {
-    return rowProperty;
-  }
-
   @Override
   public FormWidget getWidgetType() {
     return FormWidget.MULTI_SELECTOR;
@@ -272,8 +273,8 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
   @Override
   public void render(IsRow row) {
-    if (!BeeUtils.isEmpty(rowProperty)) {
-      String value = (row == null) ? null : row.getProperty(rowProperty);
+    if (cellSource != null) {
+      String value = cellSource.getString(row);
       render(value);
     }
   }

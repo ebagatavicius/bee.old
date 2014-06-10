@@ -16,7 +16,7 @@ import java.util.List;
 public class XCell implements BeeSerializable {
 
   private enum Serial {
-    INDEX, VALUE, FORMULA, STYLE, PICTURE, COL_SPAN, ROW_SPAN
+    INDEX, VALUE, FORMULA, STYLE, PICTURE_REF, PICTURE_LAYOUT, COL_SPAN, ROW_SPAN
   }
   
   public static XCell forPicture(int index, int pictureRef) {
@@ -50,7 +50,9 @@ public class XCell implements BeeSerializable {
   private String formula;
 
   private Integer styleRef;
+
   private Integer pictureRef;
+  private XPicture.Layout pictureLayout;
 
   private int colSpan;
   private int rowSpan;
@@ -87,6 +89,10 @@ public class XCell implements BeeSerializable {
     this(index, new TextValue(v), styleRef);
   }
 
+  public XCell(int index) {
+    this.index = index;
+  }
+  
   public XCell(int index, Value value) {
     this.index = index;
     this.value = value;
@@ -123,8 +129,11 @@ public class XCell implements BeeSerializable {
         case INDEX:
           setIndex(BeeUtils.toInt(v));
           break;
-        case PICTURE:
+        case PICTURE_REF:
           setPictureRef(BeeUtils.toIntOrNull(v));
+          break;
+        case PICTURE_LAYOUT:
+          setPictureLayout(Codec.unpack(XPicture.Layout.class, v));
           break;
         case ROW_SPAN:
           setRowSpan(BeeUtils.toInt(v));
@@ -149,6 +158,10 @@ public class XCell implements BeeSerializable {
 
   public int getIndex() {
     return index;
+  }
+
+  public XPicture.Layout getPictureLayout() {
+    return pictureLayout;
   }
 
   public Integer getPictureRef() {
@@ -182,8 +195,11 @@ public class XCell implements BeeSerializable {
         case INDEX:
           values.add(BeeUtils.toString(getIndex()));
           break;
-        case PICTURE:
+        case PICTURE_REF:
           values.add((getPictureRef() == null) ? null : BeeUtils.toString(getPictureRef()));
+          break;
+        case PICTURE_LAYOUT:
+          values.add(Codec.pack(getPictureLayout()));
           break;
         case ROW_SPAN:
           values.add(BeeUtils.toString(getRowSpan()));
@@ -206,6 +222,10 @@ public class XCell implements BeeSerializable {
 
   public void setFormula(String formula) {
     this.formula = formula;
+  }
+
+  public void setPictureLayout(XPicture.Layout pictureLayout) {
+    this.pictureLayout = pictureLayout;
   }
 
   public void setPictureRef(Integer pictureRef) {

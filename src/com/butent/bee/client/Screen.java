@@ -66,9 +66,11 @@ public interface Screen extends NotificationListener {
 
   void removeProgress(String id);
   
+  void restore(String input, boolean append);
+  
   void showInfo();
 
-  void showWidget(IdentifiableWidget widget, boolean newPlace);
+  void showInNewPlace(IdentifiableWidget widget);
 
   void start(UserData userData);
   

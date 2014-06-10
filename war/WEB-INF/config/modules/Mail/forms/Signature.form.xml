@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  
+  name="Signature" caption="=mailSignature" width="520" height="270"
+  >
+  <Table>
+    <row>
+      <Label for="Description" style="text-align:right" />
+      <InputText source="Description" style="width:200px" />
+    </row>
+    <row>
+      <Label for="Content" style="text-align:right;" />
+      <RichTextEditor source="Content" style="height:200px" />
+    </row>
+  </Table>
+</f:Form>  

@@ -6,7 +6,7 @@
   >
   <Fields>
     <Relation name="Category" relation="DocumentTree" notNull="true" label="=documentCategory" />
-    <String name="Name" precision="30" notNull="true" label="=templateName" />
+    <String name="Name" precision="30" notNull="true" label="=documentTemplateName" />
     <Relation name="Data" relation="DocumentData" unique="true" label="=documentData" editable="true" />
   </Fields>
 </Table>

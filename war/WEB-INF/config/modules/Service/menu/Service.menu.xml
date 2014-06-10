@@ -7,4 +7,8 @@ name="Service" label="=svcMenu" order="120" module="Service"
 
   <Item name="ServiceInvoices" label="=svcInvoices" service="grid" parameters="ServiceInvoices"
     separator="true" />
+  <Item name="ServiceDefects" label="=svcDefects" service="grid" parameters="ServiceDefects" />
+    
+  <Item name="ServiceCalendar" label="=svcCalendar" service="service_calendar"
+    module="Tasks" separator="true" />
 </Entry>

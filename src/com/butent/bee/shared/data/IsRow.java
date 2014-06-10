@@ -21,8 +21,6 @@ public interface IsRow extends HasCustomProperties {
 
   void clearCell(int index);
 
-  IsRow copy();
-
   Boolean getBoolean(int index);
 
   IsCell getCell(int index);
@@ -46,7 +44,7 @@ public interface IsRow extends HasCustomProperties {
   int getNumberOfCells();
 
   Map<Integer, String> getShadow();
-  
+
   String getString(int index);
 
   Value getValue(int index);
@@ -61,12 +59,14 @@ public interface IsRow extends HasCustomProperties {
 
   boolean isNull(int index);
 
+  boolean isRemovable();
+
   void preliminaryUpdate(int col, String value);
-  
+
   void removeCell(int index);
 
   void reset();
-  
+
   void setCell(int index, IsCell cell);
 
   void setCells(List<IsCell> cells);
@@ -74,6 +74,8 @@ public interface IsRow extends HasCustomProperties {
   void setEditable(boolean editable);
 
   void setId(long id);
+
+  void setRemovable(boolean removable);
 
   void setValue(int index, BigDecimal value);
 

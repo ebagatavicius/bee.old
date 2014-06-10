@@ -251,10 +251,13 @@ class MsSqlBuilder extends SqlBuilder {
 
       case CREATE_INDEX:
         String text = super.sqlKeyword(option, params);
-        String field = (String) params.get("fields");
 
-        if (!isEmpty(params.get("isUnique")) && !field.contains(",")) {
-          text = BeeUtils.joinWords(text, "WHERE", field, "IS NOT NULL");
+        if (!params.containsKey("expression")) {
+          String field = (String) params.get("fields");
+
+          if (!isEmpty(params.get("isUnique")) && !field.contains(",")) {
+            text = BeeUtils.joinWords(text, "WHERE", field, "IS NOT NULL");
+          }
         }
         return text;
 

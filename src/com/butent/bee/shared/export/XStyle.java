@@ -20,9 +20,21 @@ public class XStyle implements BeeSerializable {
     BORDER_TOP, BORDER_TOP_COLOR, BORDER_BOTTOM, BORDER_BOTTOM_COLOR
   }
 
+  public static XStyle background(String bg) {
+    XStyle style = new XStyle();
+    style.setColor(bg);
+    return style;
+  }
+
   public static XStyle center() {
     XStyle style = new XStyle();
     style.setTextAlign(TextAlign.CENTER);
+    return style;
+  }
+
+  public static XStyle middle() {
+    XStyle style = new XStyle();
+    style.setVerticalAlign(VerticalAlign.MIDDLE);
     return style;
   }
 

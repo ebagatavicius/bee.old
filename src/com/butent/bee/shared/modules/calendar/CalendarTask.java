@@ -388,8 +388,18 @@ public class CalendarTask extends CalendarItem implements BeeSerializable {
   }
 
   @Override
+  public boolean isEditable(Long userId) {
+    return isOwner(userId);
+  }
+
+  @Override
   public boolean isMovable(Long userId) {
     return isWhole() && isOwner(userId) && getStatus() == TaskStatus.SCHEDULED;
+  }
+
+  @Override
+  public boolean isRemovable(Long userId) {
+    return isOwner(userId);
   }
 
   @Override
@@ -397,6 +407,11 @@ public class CalendarTask extends CalendarItem implements BeeSerializable {
     return isWhole() && isOwner(userId) && getStatus() != null
         && TaskStatus.in(getStatus().ordinal(), TaskStatus.NOT_VISITED, TaskStatus.ACTIVE,
             TaskStatus.SCHEDULED);
+  }
+
+  @Override
+  public boolean isVisible(Long userId) {
+    return userId != null;
   }
 
   @Override

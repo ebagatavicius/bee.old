@@ -336,7 +336,7 @@ public class EditableWidget implements EditChangeHandler, FocusHandler, BlurHand
   public boolean maybeUpdateRelation(String viewName, IsRow row, boolean updateColumn) {
     boolean ok = false;
     if (!BeeUtils.isEmpty(viewName) && row != null && getEditor() instanceof HasRelatedRow
-        && getRelation() != null && hasColumn()) {
+        && getRelation() != null && hasColumn() && getRelation().renderTarget()) {
       ok = !RelationUtils.updateRow(Data.getDataInfo(viewName), getColumnId(), row,
           Data.getDataInfo(getRelation().getViewName()),
           ((HasRelatedRow) getEditor()).getRelatedRow(), updateColumn).isEmpty();

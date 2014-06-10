@@ -36,6 +36,7 @@ import com.butent.bee.client.widget.InputDateTime;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.State;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
@@ -43,11 +44,13 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.DataChangeEvent;
+import com.butent.bee.shared.data.value.BooleanValue;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.discussions.DiscussionsConstants.DiscussionEvent;
 import com.butent.bee.shared.modules.discussions.DiscussionsUtils;
 import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.ui.HasCheckedness;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -61,6 +64,8 @@ class CreateDiscussionInterceptor extends AbstractFormInterceptor {
   private static final String WIDGET_FILES = "Files";
   private static final String WIDGET_LABEL_MEMBERS = "membersLabel";
   private static final String WIDGET_LABEL_DISPLAY_IN_BOARD = "DisplayInBoard";
+
+  private HasCheckedness mailToggle;
 
   CreateDiscussionInterceptor() {
     super();
@@ -169,6 +174,17 @@ class CreateDiscussionInterceptor extends AbstractFormInterceptor {
       
       tds.addSelectorHandler(selHandler);
     }
+
+    if (BeeUtils.same(name, PROP_MAIL) && (widget instanceof HasCheckedness)) {
+      mailToggle = (HasCheckedness) widget;
+    }
+  }
+
+  @Override
+  public void beforeStateChange(State state, boolean modal) {
+    if (state == State.OPEN && mailToggle != null && mailToggle.isChecked()) {
+      mailToggle.setChecked(false);
+    }
   }
 
   @Override
@@ -181,12 +197,12 @@ class CreateDiscussionInterceptor extends AbstractFormInterceptor {
     event.consume();
     IsRow activeRow = getFormView().getActiveRow();
 
-    boolean discussPublic = BeeUtils.toBoolean(
-        ((InputBoolean) getFormView().getWidgetByName(WIDGET_ACCESSIBILITY)).getValue());
+    boolean discussPublic =
+        ((HasCheckedness) getFormView().getWidgetByName(WIDGET_ACCESSIBILITY)).isChecked();
 
     boolean discussClosed =
-        BeeUtils.toBoolean(((InputBoolean) getFormView().getWidgetByName(COL_PERMIT_COMMENT))
-            .getValue());
+        ((HasCheckedness) getFormView().getWidgetByName(COL_PERMIT_COMMENT))
+            .isChecked();
     
     boolean isTopic =
         DataUtils.isId(BeeUtils.toLongOrNull(((DataSelector) getFormView().getWidgetBySource(
@@ -240,7 +256,11 @@ class CreateDiscussionInterceptor extends AbstractFormInterceptor {
           .valueOf(DiscussionStatus.CLOSED.ordinal()));
     }
 
-    BeeRowSet rowSet =
+    if (mailToggle != null && mailToggle.isChecked()) {
+      newRow.setProperty(PROP_MAIL, BooleanValue.S_TRUE);
+    }
+
+    final BeeRowSet rowSet =
         DataUtils.createRowSetForInsert(VIEW_DISCUSSIONS, getFormView().getDataColumns(), newRow,
             null, true);
     ParameterList args = DiscussionsKeeper.createDiscussionRpcParameters(DiscussionEvent.CREATE);
@@ -272,6 +292,18 @@ class CreateDiscussionInterceptor extends AbstractFormInterceptor {
 
           DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_DISCUSSIONS);
 
+          for (long discussionId : discussions) {
+          ParameterList mailArgs =
+                DiscussionsKeeper.createDiscussionRpcParameters(DiscussionEvent.CREATE_MAIL);
+            mailArgs.addDataItem(VAR_DISCUSSION_DATA, Codec.beeSerialize(rowSet));
+            mailArgs.addDataItem(VAR_DISCUSSION_ID, discussionId);
+            BeeKeeper.getRpc().makePostRequest(mailArgs, new ResponseCallback() {
+              @Override
+              public void onResponse(ResponseObject emptyResp) {
+
+              }
+            });
+          }
         } else {
           event.getCallback().onFailure("Unknown response");
         }

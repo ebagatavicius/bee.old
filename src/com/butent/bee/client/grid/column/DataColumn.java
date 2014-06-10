@@ -3,7 +3,6 @@ package com.butent.bee.client.grid.column;
 import com.butent.bee.client.grid.CellContext;
 import com.butent.bee.client.grid.cell.AbstractCell;
 import com.butent.bee.shared.data.CellSource;
-import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.ui.ColumnDescription.ColType;
 
@@ -22,11 +21,11 @@ public abstract class DataColumn<C> extends AbstractColumn<C> {
   }
   
   @Override
-  public String getString(CellContext context, IsRow row) {
-    if (row == null) {
+  public String getString(CellContext context) {
+    if (context.getRow() == null) {
       return null;
     }
-    return cellSource.getString(row);
+    return cellSource.getString(context.getRow());
   }
 
   @Override

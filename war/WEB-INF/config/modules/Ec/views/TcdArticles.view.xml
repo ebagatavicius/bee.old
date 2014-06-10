@@ -24,6 +24,9 @@
     <SimpleColumn name="Visible" />
     <SimpleColumn name="Novelty" />
     <SimpleColumn name="Featured" />
+
+    <SimpleColumn name="FeaturedPrice" />
+    <SimpleColumn name="FeaturedPercent" />
   </Columns>
 
   <Order>

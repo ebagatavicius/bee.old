@@ -102,6 +102,10 @@ public final class Data {
   public static Integer getColumnPrecision(String viewName, String colName) {
     return getDataInfo(viewName).getColumnPrecision(colName);
   }
+  
+  public static String getColumnRelation(String viewName, String colName) {
+    return getDataInfo(viewName).getRelation(colName);
+  }
 
   public static List<BeeColumn> getColumns(String viewName) {
     return getDataInfo(viewName).getColumns();

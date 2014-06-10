@@ -5,7 +5,7 @@
   -webkit-filter: contrast(1) invert(1) !important;
 }
 
-.bee-Dialog-action:hover {
+.bee-Dialog-action.bee-Image:hover {
   -webkit-filter: contrast(10) invert(1) !important;
 }
 .bee-TreeView-actions img:hover {

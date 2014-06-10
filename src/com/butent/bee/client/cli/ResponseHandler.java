@@ -47,7 +47,7 @@ final class ResponseHandler {
       if (BeeUtils.isEmpty(properties)) {
         onEmptyResponse(caption);
       } else {
-        Global.showGrid(caption, new PropertiesData(properties));
+        Global.showTable(caption, new PropertiesData(properties));
       }
 
     } else if (response.hasArrayResponse(ExtendedProperty.class)) {
@@ -56,7 +56,7 @@ final class ResponseHandler {
       if (BeeUtils.isEmpty(extProperties)) {
         onEmptyResponse(caption);
       } else {
-        Global.showGrid(caption, new ExtendedPropertiesData(extProperties, false));
+        Global.showTable(caption, new ExtendedPropertiesData(extProperties, false));
       }
 
     } else if (response.hasResponse(BeeRowSet.class)) {
@@ -65,7 +65,7 @@ final class ResponseHandler {
       if (DataUtils.isEmpty(rowSet)) {
         onEmptyResponse(caption);
       } else {
-        Global.showGrid(caption, rowSet);
+        Global.showTable(caption, rowSet);
       }
 
     } else if (response.hasResponse(String.class)) {

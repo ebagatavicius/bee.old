@@ -41,11 +41,11 @@ public class RowIdColumn extends AbstractColumn<Long> implements HasNumberFormat
   }
 
   @Override
-  public String getString(CellContext context, IsRow row) {
-    if (row == null) {
+  public String getString(CellContext context) {
+    if (context.getRow() == null) {
       return null;
     }
-    return BeeUtils.toString(row.getId());
+    return BeeUtils.toString(context.getRow().getId());
   }
 
   @Override

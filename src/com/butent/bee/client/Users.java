@@ -248,10 +248,6 @@ public class Users {
     return openSessions.get(sessionId);
   }
 
-  public void setUsers(Map<Long, UserData> users) {
-    this.users = users;
-  }
-
   public String getUserSignatureBySession(String sessionId) {
     Long userId = openSessions.get(sessionId);
     UserData userData = (userId == null) ? null : users.get(userId);

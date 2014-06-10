@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  
+  name="NewRole" viewName="Roles" caption="=newRole"
+  width="400" height="120"
+  >
+  <FlowPanel class="flexBox-vertical">
+    <Table style="border-spacing: 10px;">
+      <row>
+        <Label for="Name" />
+        <InputText source="Name" />
+      </row>
+      <row>
+        <Label text="=rightsInheritedFrom" />
+        <UnboundSelector name="Role" viewName="Roles" newRowEnabled="false"/>
+      </row>
+    </Table>
+  </FlowPanel>
+</f:Form>  

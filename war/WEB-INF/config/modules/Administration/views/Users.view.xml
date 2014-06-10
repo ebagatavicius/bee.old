@@ -31,6 +31,8 @@
     <SimpleColumn name="BlockBefore" />
 
     <SimpleColumn name="MailAssignedTasks" />
+    <SimpleColumn name="MailNewDiscussions" />
+    <SimpleColumn name="MailNewAnnouncements" />
 
     <SimpleColumn name="Properties" />
   </Columns>

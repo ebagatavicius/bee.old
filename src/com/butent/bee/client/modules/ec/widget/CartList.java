@@ -14,7 +14,9 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.modules.ec.EcKeeper;
 import com.butent.bee.client.modules.ec.EcStyles;
+import com.butent.bee.client.screen.BodyPanel;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.RadioButton;
 import com.butent.bee.shared.BeeConst;
@@ -28,7 +30,10 @@ import com.butent.bee.shared.modules.ec.EcItem;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CartList extends HtmlTable implements ValueChangeHandler<Boolean> {
 
@@ -48,7 +53,36 @@ public class CartList extends HtmlTable implements ValueChangeHandler<Boolean> {
   private static final int COL_LABEL = 1;
   private static final int COL_INFO = 2;
 
+  private static String renderInfo(Cart cart) {
+    return BeeUtils.parenthesize(cart.totalQuantity());
+  }
+  private static String renderTitle(Cart cart) {
+    if (cart == null || cart.isEmpty()) {
+      return BeeConst.STRING_EMPTY;
+
+    } else {
+      StringBuilder sb = new StringBuilder();
+
+      for (CartItem item : cart.getItems()) {
+        sb.append(item.getEcItem().getName()).append(BeeUtils.space(3));
+
+        int quantity = item.getQuantity();
+        int price = item.getEcItem().getPrice();
+
+        sb.append(quantity).append(" x ").append(EcUtils.formatCents(price));
+        sb.append(BeeConst.CHAR_EOL);
+      }
+
+      sb.append(Localized.getConstants().ecShoppingCartTotal()).append(BeeConst.CHAR_SPACE);
+      sb.append(EcUtils.formatCents(cart.totalCents())).append(BeeConst.CHAR_SPACE);
+      sb.append(EcConstants.CURRENCY);
+
+      return sb.toString();
+    }
+  }
+
   private final EnumMap<CartType, Cart> carts = Maps.newEnumMap(CartType.class);
+
   private final EnumHashBiMap<CartType, Integer> typesToRows = EnumHashBiMap.create(CartType.class);
 
   private CartType activeCartType = CartType.MAIN;
@@ -109,16 +143,21 @@ public class CartList extends HtmlTable implements ValueChangeHandler<Boolean> {
     return carts.get(cartType);
   }
 
+  public int getQuantity(long articleId) {
+    return carts.get(getActiveCartType()).getQuantity(articleId);
+  }
+
   @Override
   public void onValueChange(ValueChangeEvent<Boolean> event) {
     if (BeeUtils.isTrue(event.getValue())) {
       Integer newRow = getEventRow(event, false);
 
       if (newRow != null) {
+        CartType oldType = getActiveCartType();
         CartType newType = typesToRows.inverse().get(newRow);
 
-        if (newType != null && newType != getActiveCartType()) {
-          int oldRow = typesToRows.get(getActiveCartType());
+        if (oldType != null && newType != null && newType != oldType) {
+          int oldRow = typesToRows.get(oldType);
           getRowFormatter().removeStyleName(oldRow, STYLE_ACTIVE);
           getRowFormatter().addStyleName(oldRow, STYLE_INACTIVE);
 
@@ -126,6 +165,7 @@ public class CartList extends HtmlTable implements ValueChangeHandler<Boolean> {
           getRowFormatter().addStyleName(newRow, STYLE_ACTIVE);
 
           setActiveCartType(newType);
+          onActiveCartTypeChange(oldType, newType);
         }
       }
     }
@@ -171,39 +211,54 @@ public class CartList extends HtmlTable implements ValueChangeHandler<Boolean> {
     return activeCartType;
   }
 
+  private void onActiveCartTypeChange(CartType oldType, CartType newType) {
+    Cart oldCart = carts.get(oldType);
+    Cart newCart = carts.get(newType);
+
+    if (oldCart.isEmpty() && newCart.isEmpty()) {
+      return;
+    }
+
+    Map<Long, Integer> quantities = new HashMap<>();
+    for (CartItem item : newCart.getItems()) {
+      quantities.put(item.getEcItem().getArticleId(), item.getQuantity());
+    }
+
+    for (CartItem item : oldCart.getItems()) {
+      long id = item.getEcItem().getArticleId();
+      int oldQty = item.getQuantity();
+
+      if (quantities.containsKey(id)) {
+        int newQty = quantities.get(id);
+        if (oldQty == newQty) {
+          quantities.remove(id);
+        }
+      } else {
+        quantities.put(id, 0);
+      }
+    }
+
+    if (quantities.isEmpty()) {
+      return;
+    }
+
+    Collection<CartAccumulator> accumulators =
+        UiHelper.getChildren(BodyPanel.get(), CartAccumulator.class);
+    
+    if (!BeeUtils.isEmpty(accumulators)) {
+      for (CartAccumulator accumulator : accumulators) {
+        long id = accumulator.getArticleId();
+        if (quantities.containsKey(id)) {
+          accumulator.renderCount(quantities.get(id));
+        }
+      }
+    }
+  }
+
   private void onLabelClick(ClickEvent event) {
     CartType type = typesToRows.inverse().get(getEventRow(event, false));
     if (type != null && !getCart(type).isEmpty()) {
       EcKeeper.openCart(type);
-    }
-  }
-
-  private static String renderInfo(Cart cart) {
-    return BeeUtils.parenthesize(cart.totalQuantity());
-  }
-
-  private static String renderTitle(Cart cart) {
-    if (cart == null || cart.isEmpty()) {
-      return BeeConst.STRING_EMPTY;
-
-    } else {
-      StringBuilder sb = new StringBuilder();
-
-      for (CartItem item : cart.getItems()) {
-        sb.append(item.getEcItem().getName()).append(BeeUtils.space(3));
-
-        int quantity = item.getQuantity();
-        int price = item.getEcItem().getPrice();
-
-        sb.append(quantity).append(" x ").append(EcUtils.formatCents(price));
-        sb.append(BeeConst.CHAR_EOL);
-      }
-
-      sb.append(Localized.getConstants().ecShoppingCartTotal()).append(BeeConst.CHAR_SPACE);
-      sb.append(EcUtils.formatCents(cart.totalCents())).append(BeeConst.CHAR_SPACE);
-      sb.append(EcConstants.CURRENCY);
-
-      return sb.toString();
     }
   }
 

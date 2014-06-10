@@ -249,7 +249,7 @@ public class Filters implements HasExtendedInfo {
     for (Item item : items) {
       if (item.id != checkedItem.id && item.isInitial() && item.containsAnyComponent(checkedKeys)) {
         item.setInitial(null);
-        Queries.update(VIEW_FILTERS, item.id, COL_INITIAL, new BooleanValue(null));
+        Queries.update(VIEW_FILTERS, item.id, COL_INITIAL, BooleanValue.NULL);
 
         for (Widget widget : table) {
           if (widget instanceof Initial && ((Initial) widget).id == item.id) {
@@ -365,7 +365,7 @@ public class Filters implements HasExtendedInfo {
           Item updatedItem = getItem(items, id);
           updatedItem.setInitial(value);
 
-          Queries.update(VIEW_FILTERS, id, COL_INITIAL, new BooleanValue(value));
+          Queries.update(VIEW_FILTERS, id, COL_INITIAL, BooleanValue.getInstance(value));
 
           if (BeeUtils.isTrue(value) && items.size() > 1) {
             synchronizeInitialFilters(items, updatedItem, table);

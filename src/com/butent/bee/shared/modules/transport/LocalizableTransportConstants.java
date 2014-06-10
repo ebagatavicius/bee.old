@@ -228,8 +228,6 @@ public interface LocalizableTransportConstants {
 
   String trImportValue();
 
-  String trInvoice();
-
   String tripDuration();
 
   String trips();

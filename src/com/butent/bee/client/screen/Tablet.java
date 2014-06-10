@@ -65,7 +65,7 @@ public class Tablet extends Mobile {
   
   @Override
   protected int addLogToggle(LayoutPanel panel) {
-    final Toggle toggle = new Toggle("Hide Log", "Show Log", "toggleLog");
+    final Toggle toggle = new Toggle("Hide Log", "Show Log", "toggleLog", true);
     StyleUtils.setFontSize(toggle, FontSize.SMALL);
     StyleUtils.setHorizontalPadding(toggle, 2);
 
@@ -77,7 +77,6 @@ public class Tablet extends Mobile {
     });
 
     panel.addRightWidthTop(toggle, 3, 76, 1);
-    toggle.setChecked(true);
     return 80;
   }
 

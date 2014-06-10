@@ -54,6 +54,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
+import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
@@ -85,8 +86,438 @@ class TaskEditor extends AbstractFormInterceptor {
 
   private static final String STYLE_EXTENSION = CRM_STYLE_PREFIX + "taskExtension";
 
-  private final List<String> relations = Lists.newArrayList(PROP_COMPANIES, PROP_PERSONS,
-      PROP_DOCUMENTS, PROP_APPOINTMENTS, PROP_DISCUSSIONS, PROP_TASKS);
+  private static final List<String> relations = Lists.newArrayList(PROP_COMPANIES, PROP_PERSONS,
+      PROP_DOCUMENTS, PROP_APPOINTMENTS, PROP_DISCUSSIONS, PROP_SERVICE_OBJECTS, PROP_TASKS);
+
+  private static void addDurationCell(HtmlTable display, int row, int col, String value,
+      String style) {
+    Widget widget = new CustomDiv(STYLE_DURATION + style);
+    if (!BeeUtils.isEmpty(value)) {
+      widget.getElement().setInnerText(value);
+    }
+
+    display.setWidget(row, col, widget, STYLE_DURATION + style + STYLE_DURATION_CELL);
+  }
+
+  private static Widget createEventCell(String colName, String value) {
+    Widget widget = new CustomDiv(STYLE_EVENT + colName);
+    if (!BeeUtils.isEmpty(value)) {
+      widget.getElement().setInnerText(value);
+    }
+    return widget;
+  }
+
+  private static List<StoredFile> filterEventFiles(List<StoredFile> input, long teId) {
+    if (input.isEmpty()) {
+      return input;
+    }
+    List<StoredFile> result = Lists.newArrayList();
+
+    for (StoredFile file : input) {
+      Long id = file.getRelatedId();
+      if (id != null && id == teId) {
+        result.add(file);
+      }
+    }
+    return result;
+  }
+
+  private static MultiSelector getMultiSelector(FormView form, String source) {
+    Widget widget = form.getWidgetBySource(source);
+    return (widget instanceof MultiSelector) ? (MultiSelector) widget : null;
+  }
+
+  private static BeeRow getResponseRow(String caption, ResponseObject ro, Callback<?> callback) {
+    if (!Queries.checkResponse(caption, VIEW_TASKS, ro, BeeRow.class, callback)) {
+      return null;
+    }
+
+    BeeRow row = BeeRow.restore((String) ro.getResponse());
+    if (row == null && callback != null) {
+      callback.onFailure(caption, VIEW_TASKS, "cannot restore row");
+    }
+    return row;
+  }
+
+  private static String getTaskUsers(FormView form, IsRow row) {
+    return DataUtils.buildIdList(TaskUtils.getTaskUsers(row, form.getDataColumns()));
+  }
+
+  private static List<String> getUpdatedRelations(IsRow oldRow, IsRow newRow) {
+    List<String> updatedRelations = Lists.newArrayList();
+    if (oldRow == null || newRow == null) {
+      return updatedRelations;
+    }
+
+    for (String relation : relations) {
+      if (!DataUtils.sameIdSet(oldRow.getProperty(relation), newRow.getProperty(relation))) {
+        updatedRelations.add(relation);
+      }
+    }
+    return updatedRelations;
+  }
+
+  private static List<String> getUpdateNotes(DataInfo dataInfo, IsRow oldRow, IsRow newRow) {
+    List<String> notes = Lists.newArrayList();
+    if (dataInfo == null || oldRow == null || newRow == null) {
+      return notes;
+    }
+
+    List<BeeColumn> columns = dataInfo.getColumns();
+    for (int i = 0; i < columns.size(); i++) {
+      BeeColumn column = columns.get(i);
+
+      String oldValue = oldRow.getString(i);
+      String newValue = newRow.getString(i);
+
+      if (!BeeUtils.equalsTrimRight(oldValue, newValue) && column.isEditable()) {
+        String label = Localized.getLabel(column);
+        String note;
+
+        if (BeeUtils.isEmpty(oldValue)) {
+          note = TaskUtils.getInsertNote(label, renderColumn(dataInfo, newRow, column, i));
+        } else if (BeeUtils.isEmpty(newValue)) {
+          note = TaskUtils.getDeleteNote(label, renderColumn(dataInfo, oldRow, column, i));
+        } else {
+          note = TaskUtils.getUpdateNote(label, renderColumn(dataInfo, oldRow, column, i),
+              renderColumn(dataInfo, newRow, column, i));
+        }
+
+        notes.add(note);
+      }
+    }
+
+    return notes;
+  }
+  
+  private static boolean hasRelations(IsRow row) {
+    if (row == null) {
+      return false;
+    }
+
+    for (String relation : relations) {
+      if (!BeeUtils.isEmpty(row.getProperty(relation))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static String renderColumn(DataInfo dataInfo, IsRow row, BeeColumn column, int index) {
+    if (COL_TASK_TYPE.equals(column.getId())) {
+      int nameIndex = dataInfo.getColumnIndex(ALS_TASK_TYPE_NAME);
+
+      if (!BeeConst.isUndef(nameIndex)) {
+        return row.getString(nameIndex);
+      }
+    }
+
+    return DataUtils.render(dataInfo, row, column, index);
+  }
+
+  private static String renderDuration(long millis) {
+    return TimeUtils.renderTime(millis, false);
+  }
+
+  private static void sendRequest(ParameterList params, final Callback<ResponseObject> callback) {
+    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        if (response.hasErrors()) {
+          if (callback != null) {
+            callback.onFailure(response.getErrors());
+          }
+        } else {
+          if (callback != null) {
+            callback.onSuccess(response);
+          }
+        }
+      }
+    });
+  }
+
+  private static boolean setDurationParams(TaskDialog dialog, Map<String, String> ids,
+      ParameterList params) {
+    String time = dialog.getTime(ids.get(COL_DURATION));
+
+    if (!BeeUtils.isEmpty(time)) {
+      Long type = dialog.getSelector(ids.get(COL_DURATION_TYPE)).getRelatedId();
+      if (!DataUtils.isId(type)) {
+        showError(Localized.getConstants().crmEnterDurationType());
+        return false;
+      }
+
+      DateTime date = dialog.getDateTime(ids.get(COL_DURATION_DATE));
+      if (date == null) {
+        showError(Localized.getConstants().crmEnterDueDate());
+        return false;
+      }
+
+      params.addDataItem(VAR_TASK_DURATION_DATE, date.serialize());
+      params.addDataItem(VAR_TASK_DURATION_TIME, time);
+      params.addDataItem(VAR_TASK_DURATION_TYPE, type);
+    }
+    return true;
+  }
+
+  private static void showDurations(FormView form, Table<String, String, Long> durations) {
+    Widget widget = form.getWidgetByName(VIEW_TASK_DURATIONS);
+    if (!(widget instanceof Flow)) {
+      return;
+    }
+
+    Flow panel = (Flow) widget;
+    panel.clear();
+
+    if (durations.isEmpty()) {
+      return;
+    }
+
+    Set<String> rows = durations.rowKeySet();
+    Set<String> columns = durations.columnKeySet();
+
+    HtmlTable display = new HtmlTable();
+    display.addStyleName(STYLE_DURATION + "display");
+
+    int r = 0;
+    int c = 0;
+
+    addDurationCell(display, r, c++, Localized.getConstants().crmSpentTime(), "caption");
+    for (String column : columns) {
+      addDurationCell(display, r, c++, column, "colLabel");
+    }
+    r++;
+
+    long totMillis = 0;
+    for (String row : rows) {
+      c = 0;
+      addDurationCell(display, r, c++, row, "rowLabel");
+
+      long rowMillis = 0;
+      for (String column : columns) {
+        Long millis = durations.get(row, column);
+
+        if (BeeUtils.isPositive(millis)) {
+          addDurationCell(display, r, c, renderDuration(millis), "value");
+
+          rowMillis += millis;
+          totMillis += millis;
+        }
+        c++;
+      }
+
+      if (columns.size() > 1) {
+        addDurationCell(display, r, c, renderDuration(rowMillis), "rowTotal");
+      }
+      r++;
+    }
+
+    if (rows.size() > 1) {
+      c = 1;
+
+      for (String column : columns) {
+        Collection<Long> values = durations.column(column).values();
+
+        long colMillis = 0;
+        for (Long value : values) {
+          colMillis += BeeUtils.unbox(value);
+        }
+        addDurationCell(display, r, c++, renderDuration(colMillis), "rowTotal");
+      }
+
+      if (columns.size() > 1) {
+        addDurationCell(display, r, c, renderDuration(totMillis), "colTotal");
+      }
+    }
+
+    panel.add(display);
+  }
+
+  private static void showError(String message) {
+    Global.showError(Localized.getConstants().error(), Lists.newArrayList(message));
+  }
+
+  private static void showEvent(Flow panel, BeeRow row, List<BeeColumn> columns,
+      List<StoredFile> files, Table<String, String, Long> durations, boolean renderPhoto) {
+
+    Flow container = new Flow();
+    container.addStyleName(STYLE_EVENT_ROW);
+
+    if (renderPhoto) {
+      Flow colPhoto = new Flow();
+      colPhoto.addStyleName(STYLE_EVENT_COL + COL_PHOTO);
+
+      String photo = row.getString(DataUtils.getColumnIndex(COL_PHOTO, columns));
+      if (!BeeUtils.isEmpty(photo)) {
+        Image image = new Image(PhotoRenderer.getUrl(photo));
+        image.addStyleName(STYLE_EVENT + COL_PHOTO);
+        colPhoto.add(image);
+      }
+
+      container.add(colPhoto);
+    }
+
+    int c = 0;
+    Flow col0 = new Flow();
+    col0.addStyleName(STYLE_EVENT_COL + BeeUtils.toString(c));
+
+    Integer ev = row.getInteger(DataUtils.getColumnIndex(COL_EVENT, columns));
+    TaskEvent event = EnumUtils.getEnumByIndex(TaskEvent.class, ev);
+    if (event != null) {
+      col0.add(createEventCell(COL_EVENT, event.getCaption()));
+    }
+
+    DateTime publishTime = row.getDateTime(DataUtils.getColumnIndex(COL_PUBLISH_TIME, columns));
+    if (publishTime != null) {
+      col0.add(createEventCell(COL_PUBLISH_TIME,
+          Format.getDefaultDateTimeFormat().format(publishTime)));
+    }
+
+    String publisher = BeeUtils.joinWords(
+        row.getString(DataUtils.getColumnIndex(ALS_PUBLISHER_FIRST_NAME, columns)),
+        row.getString(DataUtils.getColumnIndex(ALS_PUBLISHER_LAST_NAME, columns)));
+    if (!BeeUtils.isEmpty(publisher)) {
+      col0.add(createEventCell(COL_PUBLISHER, publisher));
+    }
+
+    container.add(col0);
+
+    c++;
+    Flow col1 = new Flow();
+    col1.addStyleName(STYLE_EVENT_COL + BeeUtils.toString(c));
+
+    String note = row.getString(DataUtils.getColumnIndex(COL_EVENT_NOTE, columns));
+    if (!BeeUtils.isEmpty(note)) {
+      col1.add(createEventCell(COL_EVENT_NOTE, note));
+    }
+
+    String comment = row.getString(DataUtils.getColumnIndex(COL_COMMENT, columns));
+    if (!BeeUtils.isEmpty(comment)) {
+      col1.add(createEventCell(COL_COMMENT, comment));
+    }
+
+    container.add(col1);
+
+    String duration = row.getString(DataUtils.getColumnIndex(COL_DURATION, columns));
+    if (!BeeUtils.isEmpty(duration)) {
+      c++;
+      Flow col2 = new Flow();
+      col2.addStyleName(STYLE_EVENT_COL + BeeUtils.toString(c));
+
+      col2.add(createEventCell(COL_DURATION, Localized.getConstants().crmSpentTime() + " "
+          + duration));
+
+      String durType = row.getString(DataUtils.getColumnIndex(COL_DURATION_TYPE, columns));
+      if (!BeeUtils.isEmpty(durType)) {
+        col2.add(createEventCell(COL_DURATION_TYPE, durType));
+      }
+
+      DateTime durDate = row.getDateTime(DataUtils.getColumnIndex(COL_DURATION_DATE, columns));
+      if (durDate != null) {
+        col2.add(createEventCell(COL_DURATION_DATE, durDate.toCompactString()));
+      }
+
+      container.add(col2);
+
+      Long millis = TimeUtils.parseTime(duration);
+      if (BeeUtils.isPositive(millis) && !BeeUtils.isEmpty(publisher)
+          && !BeeUtils.isEmpty(durType)) {
+        Long value = durations.get(publisher, durType);
+        durations.put(publisher, durType, millis + BeeUtils.unbox(value));
+      }
+    }
+
+    panel.add(container);
+
+    if (!files.isEmpty()) {
+      Simple fileContainer = new Simple();
+      fileContainer.addStyleName(STYLE_EVENT_FILES);
+
+      FileGroup fileGroup = new FileGroup();
+      fileGroup.addFiles(files);
+
+      fileContainer.setWidget(fileGroup);
+      panel.add(fileContainer);
+    }
+  }
+
+  private static void showEventsAndDuration(FormView form, BeeRowSet rowSet,
+      List<StoredFile> files) {
+
+    Widget widget = form.getWidgetByName(VIEW_TASK_EVENTS);
+    if (!(widget instanceof Flow) || DataUtils.isEmpty(rowSet)) {
+      return;
+    }
+
+    Flow panel = (Flow) widget;
+    panel.clear();
+
+    Table<String, String, Long> durations = TreeBasedTable.create();
+
+    boolean hasPhoto = false;
+    int photoIndex = rowSet.getColumnIndex(COL_PHOTO);
+    if (photoIndex >= 0) {
+      for (BeeRow row : rowSet.getRows()) {
+        if (!BeeUtils.isEmpty(row.getString(photoIndex))) {
+          hasPhoto = true;
+          break;
+        }
+      }
+    }
+
+    for (BeeRow row : rowSet.getRows()) {
+      showEvent(panel, row, rowSet.getColumns(), filterEventFiles(files, row.getId()), durations,
+          hasPhoto);
+    }
+
+    showExtensions(form, rowSet);
+    showDurations(form, durations);
+
+    if (panel.getWidgetCount() > 1 && form.asWidget().isVisible()) {
+      final Widget last = panel.getWidget(panel.getWidgetCount() - 1);
+      Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+        @Override
+        public void execute() {
+          last.getElement().scrollIntoView();
+        }
+      });
+    }
+  }
+
+  private static void showExtensions(FormView form, BeeRowSet rowSet) {
+    if (DataUtils.isEmpty(rowSet)) {
+      return;
+    }
+    int index = rowSet.getColumnIndex(COL_FINISH_TIME);
+    if (BeeConst.isUndef(index)) {
+      return;
+    }
+
+    Widget widget = form.getWidgetByName("TaskExtensions");
+    if (!(widget instanceof HasWidgets)) {
+      return;
+    }
+
+    HasWidgets panel = (HasWidgets) widget;
+    panel.clear();
+
+    List<DateTime> extensions = Lists.newArrayList();
+
+    for (BeeRow row : rowSet.getRows()) {
+      DateTime dt = row.getDateTime(index);
+      if (dt != null) {
+        extensions.add(dt);
+      }
+    }
+
+    if (!extensions.isEmpty()) {
+      for (int i = extensions.size() - 1; i >= 0; i--) {
+        Label label = new Label(extensions.get(i).toCompactString());
+        label.addStyleName(STYLE_EXTENSION);
+        panel.add(label);
+      }
+    }
+  }
 
   private final long userId;
 
@@ -128,8 +559,13 @@ class TaskEditor extends AbstractFormInterceptor {
   }
 
   @Override
+  public boolean isRowEditable(IsRow row) {
+    return row != null && BeeKeeper.getUser().is(row.getLong(getDataIndex(COL_OWNER)));
+  }
+  
+  @Override
   public void onSaveChanges(HasHandlers listener, SaveChangesEvent event) {
-    IsRow oldRow = event.getOldRow();
+    final IsRow oldRow = event.getOldRow();
     IsRow newRow = event.getNewRow();
 
     if (oldRow == null || newRow == null) {
@@ -150,6 +586,10 @@ class TaskEditor extends AbstractFormInterceptor {
 
         if (data != null) {
           RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_TASKS, data);
+          
+          if (hasRelations(oldRow) || hasRelations(data)) {
+            DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_RELATED_TASKS);
+          }
         }
       }
     });
@@ -214,6 +654,9 @@ class TaskEditor extends AbstractFormInterceptor {
         }
 
         RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_TASKS, data);
+        if (hasRelations(data)) {
+          DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_RELATED_TASKS);
+        }
 
         Widget fileWidget = form.getWidgetByName(PROP_FILES);
         if (fileWidget instanceof FileGroup) {
@@ -240,24 +683,6 @@ class TaskEditor extends AbstractFormInterceptor {
       }
     });
     return false;
-  }
-
-  private static void addDurationCell(HtmlTable display, int row, int col, String value,
-      String style) {
-    Widget widget = new CustomDiv(STYLE_DURATION + style);
-    if (!BeeUtils.isEmpty(value)) {
-      widget.getElement().setInnerText(value);
-    }
-
-    display.setWidget(row, col, widget, STYLE_DURATION + style + STYLE_DURATION_CELL);
-  }
-
-  private static Widget createEventCell(String colName, String value) {
-    Widget widget = new CustomDiv(STYLE_EVENT + colName);
-    if (!BeeUtils.isEmpty(value)) {
-      widget.getElement().setInnerText(value);
-    }
-    return widget;
   }
 
   private ParameterList createParams(TaskEvent event, BeeRow newRow, String comment) {
@@ -364,9 +789,8 @@ class TaskEditor extends AbstractFormInterceptor {
   private void doApprove() {
     final TaskDialog dialog = new TaskDialog(Localized.getConstants().crmTaskConfirmation());
 
-    final String did =
-        dialog.addDateTime(Localized.getConstants().crmTaskConfirmDate(), true, TimeUtils
-            .nowMinutes());
+    final String did = dialog.addDateTime(Localized.getConstants().crmTaskConfirmDate(), true,
+        TimeUtils.nowMinutes());
     final String cid = dialog.addComment(false);
 
     dialog.addAction(Localized.getConstants().crmTaskConfirm(), new ScheduledCommand() {
@@ -720,21 +1144,6 @@ class TaskEditor extends AbstractFormInterceptor {
     dialog.display();
   }
 
-  private static List<StoredFile> filterEventFiles(List<StoredFile> input, long teId) {
-    if (input.isEmpty()) {
-      return input;
-    }
-    List<StoredFile> result = Lists.newArrayList();
-
-    for (StoredFile file : input) {
-      Long id = file.getRelatedId();
-      if (id != null && id == teId) {
-        result.add(file);
-      }
-    }
-    return result;
-  }
-
   private DateTime getDateTime(String colName) {
     return getFormView().getActiveRow().getDateTime(getFormView().getDataIndex(colName));
   }
@@ -745,11 +1154,6 @@ class TaskEditor extends AbstractFormInterceptor {
 
   private Long getLong(String colName) {
     return getFormView().getActiveRow().getLong(getFormView().getDataIndex(colName));
-  }
-
-  private static MultiSelector getMultiSelector(FormView form, String source) {
-    Widget widget = form.getWidgetBySource(source);
-    return (widget instanceof MultiSelector) ? (MultiSelector) widget : null;
   }
 
   private BeeRow getNewRow() {
@@ -766,71 +1170,8 @@ class TaskEditor extends AbstractFormInterceptor {
     return getLong(COL_OWNER);
   }
 
-  private static BeeRow getResponseRow(String caption, ResponseObject ro, Callback<?> callback) {
-    if (!Queries.checkResponse(caption, VIEW_TASKS, ro, BeeRow.class, callback)) {
-      return null;
-    }
-
-    BeeRow row = BeeRow.restore((String) ro.getResponse());
-    if (row == null && callback != null) {
-      callback.onFailure(caption, VIEW_TASKS, "cannot restore row");
-    }
-    return row;
-  }
-
   private Integer getStatus() {
     return getFormView().getActiveRow().getInteger(getFormView().getDataIndex(COL_STATUS));
-  }
-
-  private static String getTaskUsers(FormView form, IsRow row) {
-    return DataUtils.buildIdList(TaskUtils.getTaskUsers(row, form.getDataColumns()));
-  }
-
-  private List<String> getUpdatedRelations(IsRow oldRow, IsRow newRow) {
-    List<String> updatedRelations = Lists.newArrayList();
-    if (oldRow == null || newRow == null) {
-      return updatedRelations;
-    }
-
-    for (String relation : relations) {
-      if (!DataUtils.sameIdSet(oldRow.getProperty(relation), newRow.getProperty(relation))) {
-        updatedRelations.add(relation);
-      }
-    }
-    return updatedRelations;
-  }
-
-  private static List<String> getUpdateNotes(DataInfo dataInfo, IsRow oldRow, IsRow newRow) {
-    List<String> notes = Lists.newArrayList();
-    if (dataInfo == null || oldRow == null || newRow == null) {
-      return notes;
-    }
-
-    List<BeeColumn> columns = dataInfo.getColumns();
-    for (int i = 0; i < columns.size(); i++) {
-      BeeColumn column = columns.get(i);
-
-      String oldValue = oldRow.getString(i);
-      String newValue = newRow.getString(i);
-
-      if (!BeeUtils.equalsTrimRight(oldValue, newValue) && column.isEditable()) {
-        String label = Localized.getLabel(column);
-        String note;
-
-        if (BeeUtils.isEmpty(oldValue)) {
-          note = TaskUtils.getInsertNote(label, DataUtils.render(dataInfo, newRow, column, i));
-        } else if (BeeUtils.isEmpty(newValue)) {
-          note = TaskUtils.getDeleteNote(label, DataUtils.render(dataInfo, oldRow, column, i));
-        } else {
-          note = TaskUtils.getUpdateNote(label, DataUtils.render(dataInfo, oldRow, column, i),
-              DataUtils.render(dataInfo, newRow, column, i));
-        }
-
-        notes.add(note);
-      }
-    }
-
-    return notes;
   }
 
   private boolean isEventEnabled(TaskEvent event, Integer status, Long owner, Long executor) {
@@ -893,6 +1234,9 @@ class TaskEditor extends AbstractFormInterceptor {
     RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_TASKS, data);
 
     FormView form = getFormView();
+    if (hasRelations(form.getOldRow()) || hasRelations(data)) {
+      DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_RELATED_TASKS);
+    }
 
     String events = data.getProperty(PROP_EVENTS);
     if (!BeeUtils.isEmpty(events)) {
@@ -901,10 +1245,6 @@ class TaskEditor extends AbstractFormInterceptor {
     }
 
     form.updateRow(data, true);
-  }
-
-  private static String renderDuration(long millis) {
-    return TimeUtils.renderTime(millis, false);
   }
 
   private void requeryEvents(final long taskId) {
@@ -964,23 +1304,6 @@ class TaskEditor extends AbstractFormInterceptor {
     }
   }
 
-  private static void sendRequest(ParameterList params, final Callback<ResponseObject> callback) {
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        if (response.hasErrors()) {
-          if (callback != null) {
-            callback.onFailure(response.getErrors());
-          }
-        } else {
-          if (callback != null) {
-            callback.onSuccess(response);
-          }
-        }
-      }
-    });
-  }
-
   private void sendRequest(ParameterList params, TaskEvent event) {
     sendRequest(params, event, null);
   }
@@ -1015,288 +1338,5 @@ class TaskEditor extends AbstractFormInterceptor {
     };
 
     sendRequest(params, callback);
-  }
-
-  private static boolean setDurationParams(TaskDialog dialog, Map<String, String> ids,
-      ParameterList params) {
-    String time = dialog.getTime(ids.get(COL_DURATION));
-
-    if (!BeeUtils.isEmpty(time)) {
-      Long type = dialog.getSelector(ids.get(COL_DURATION_TYPE)).getRelatedId();
-      if (!DataUtils.isId(type)) {
-        showError(Localized.getConstants().crmEnterDurationType());
-        return false;
-      }
-
-      DateTime date = dialog.getDateTime(ids.get(COL_DURATION_DATE));
-      if (date == null) {
-        showError(Localized.getConstants().crmEnterDueDate());
-        return false;
-      }
-
-      params.addDataItem(VAR_TASK_DURATION_DATE, date.serialize());
-      params.addDataItem(VAR_TASK_DURATION_TIME, time);
-      params.addDataItem(VAR_TASK_DURATION_TYPE, type);
-    }
-    return true;
-  }
-
-  private static void showDurations(FormView form, Table<String, String, Long> durations) {
-    Widget widget = form.getWidgetByName(VIEW_TASK_DURATIONS);
-    if (!(widget instanceof Flow)) {
-      return;
-    }
-
-    Flow panel = (Flow) widget;
-    panel.clear();
-
-    if (durations.isEmpty()) {
-      return;
-    }
-
-    Set<String> rows = durations.rowKeySet();
-    Set<String> columns = durations.columnKeySet();
-
-    HtmlTable display = new HtmlTable();
-    display.addStyleName(STYLE_DURATION + "display");
-
-    int r = 0;
-    int c = 0;
-
-    addDurationCell(display, r, c++, Localized.getConstants().crmSpentTime(), "caption");
-    for (String column : columns) {
-      addDurationCell(display, r, c++, column, "colLabel");
-    }
-    r++;
-
-    long totMillis = 0;
-    for (String row : rows) {
-      c = 0;
-      addDurationCell(display, r, c++, row, "rowLabel");
-
-      long rowMillis = 0;
-      for (String column : columns) {
-        Long millis = durations.get(row, column);
-
-        if (BeeUtils.isPositive(millis)) {
-          addDurationCell(display, r, c, renderDuration(millis), "value");
-
-          rowMillis += millis;
-          totMillis += millis;
-        }
-        c++;
-      }
-
-      if (columns.size() > 1) {
-        addDurationCell(display, r, c, renderDuration(rowMillis), "rowTotal");
-      }
-      r++;
-    }
-
-    if (rows.size() > 1) {
-      c = 1;
-
-      for (String column : columns) {
-        Collection<Long> values = durations.column(column).values();
-
-        long colMillis = 0;
-        for (Long value : values) {
-          colMillis += BeeUtils.unbox(value);
-        }
-        addDurationCell(display, r, c++, renderDuration(colMillis), "rowTotal");
-      }
-
-      if (columns.size() > 1) {
-        addDurationCell(display, r, c, renderDuration(totMillis), "colTotal");
-      }
-    }
-
-    panel.add(display);
-  }
-
-  private static void showError(String message) {
-    Global.showError(Localized.getConstants().error(), Lists.newArrayList(message));
-  }
-
-  private static void showEvent(Flow panel, BeeRow row, List<BeeColumn> columns,
-      List<StoredFile> files, Table<String, String, Long> durations, boolean renderPhoto) {
-
-    Flow container = new Flow();
-    container.addStyleName(STYLE_EVENT_ROW);
-
-    if (renderPhoto) {
-      Flow colPhoto = new Flow();
-      colPhoto.addStyleName(STYLE_EVENT_COL + COL_PHOTO);
-
-      String photo = row.getString(DataUtils.getColumnIndex(COL_PHOTO, columns));
-      if (!BeeUtils.isEmpty(photo)) {
-        Image image = new Image(PhotoRenderer.getUrl(photo));
-        image.addStyleName(STYLE_EVENT + COL_PHOTO);
-        colPhoto.add(image);
-      }
-
-      container.add(colPhoto);
-    }
-
-    int c = 0;
-    Flow col0 = new Flow();
-    col0.addStyleName(STYLE_EVENT_COL + BeeUtils.toString(c));
-
-    Integer ev = row.getInteger(DataUtils.getColumnIndex(COL_EVENT, columns));
-    TaskEvent event = EnumUtils.getEnumByIndex(TaskEvent.class, ev);
-    if (event != null) {
-      col0.add(createEventCell(COL_EVENT, event.getCaption()));
-    }
-
-    DateTime publishTime = row.getDateTime(DataUtils.getColumnIndex(COL_PUBLISH_TIME, columns));
-    if (publishTime != null) {
-      col0.add(createEventCell(COL_PUBLISH_TIME,
-          Format.getDefaultDateTimeFormat().format(publishTime)));
-    }
-
-    String publisher = BeeUtils.joinWords(
-        row.getString(DataUtils.getColumnIndex(ALS_PUBLISHER_FIRST_NAME, columns)),
-        row.getString(DataUtils.getColumnIndex(ALS_PUBLISHER_LAST_NAME, columns)));
-    if (!BeeUtils.isEmpty(publisher)) {
-      col0.add(createEventCell(COL_PUBLISHER, publisher));
-    }
-
-    container.add(col0);
-
-    c++;
-    Flow col1 = new Flow();
-    col1.addStyleName(STYLE_EVENT_COL + BeeUtils.toString(c));
-
-    String note = row.getString(DataUtils.getColumnIndex(COL_EVENT_NOTE, columns));
-    if (!BeeUtils.isEmpty(note)) {
-      col1.add(createEventCell(COL_EVENT_NOTE, note));
-    }
-
-    String comment = row.getString(DataUtils.getColumnIndex(COL_COMMENT, columns));
-    if (!BeeUtils.isEmpty(comment)) {
-      col1.add(createEventCell(COL_COMMENT, comment));
-    }
-
-    container.add(col1);
-
-    String duration = row.getString(DataUtils.getColumnIndex(COL_DURATION, columns));
-    if (!BeeUtils.isEmpty(duration)) {
-      c++;
-      Flow col2 = new Flow();
-      col2.addStyleName(STYLE_EVENT_COL + BeeUtils.toString(c));
-
-      col2.add(createEventCell(COL_DURATION, Localized.getConstants().crmSpentTime() + " "
-          + duration));
-
-      String durType = row.getString(DataUtils.getColumnIndex(COL_DURATION_TYPE, columns));
-      if (!BeeUtils.isEmpty(durType)) {
-        col2.add(createEventCell(COL_DURATION_TYPE, durType));
-      }
-
-      DateTime durDate = row.getDateTime(DataUtils.getColumnIndex(COL_DURATION_DATE, columns));
-      if (durDate != null) {
-        col2.add(createEventCell(COL_DURATION_DATE, durDate.toCompactString()));
-      }
-
-      container.add(col2);
-
-      Long millis = TimeUtils.parseTime(duration);
-      if (BeeUtils.isPositive(millis) && !BeeUtils.isEmpty(publisher)
-          && !BeeUtils.isEmpty(durType)) {
-        Long value = durations.get(publisher, durType);
-        durations.put(publisher, durType, millis + BeeUtils.unbox(value));
-      }
-    }
-
-    panel.add(container);
-
-    if (!files.isEmpty()) {
-      Simple fileContainer = new Simple();
-      fileContainer.addStyleName(STYLE_EVENT_FILES);
-
-      FileGroup fileGroup = new FileGroup();
-      fileGroup.addFiles(files);
-
-      fileContainer.setWidget(fileGroup);
-      panel.add(fileContainer);
-    }
-  }
-
-  private static void showEventsAndDuration(FormView form, BeeRowSet rowSet,
-      List<StoredFile> files) {
-
-    Widget widget = form.getWidgetByName(VIEW_TASK_EVENTS);
-    if (!(widget instanceof Flow) || DataUtils.isEmpty(rowSet)) {
-      return;
-    }
-
-    Flow panel = (Flow) widget;
-    panel.clear();
-
-    Table<String, String, Long> durations = TreeBasedTable.create();
-
-    boolean hasPhoto = false;
-    int photoIndex = rowSet.getColumnIndex(COL_PHOTO);
-    if (photoIndex >= 0) {
-      for (BeeRow row : rowSet.getRows()) {
-        if (!BeeUtils.isEmpty(row.getString(photoIndex))) {
-          hasPhoto = true;
-          break;
-        }
-      }
-    }
-
-    for (BeeRow row : rowSet.getRows()) {
-      showEvent(panel, row, rowSet.getColumns(), filterEventFiles(files, row.getId()), durations,
-          hasPhoto);
-    }
-
-    showExtensions(form, rowSet);
-    showDurations(form, durations);
-
-    if (panel.getWidgetCount() > 1 && form.asWidget().isVisible()) {
-      final Widget last = panel.getWidget(panel.getWidgetCount() - 1);
-      Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-        @Override
-        public void execute() {
-          last.getElement().scrollIntoView();
-        }
-      });
-    }
-  }
-
-  private static void showExtensions(FormView form, BeeRowSet rowSet) {
-    if (DataUtils.isEmpty(rowSet)) {
-      return;
-    }
-    int index = rowSet.getColumnIndex(COL_FINISH_TIME);
-    if (BeeConst.isUndef(index)) {
-      return;
-    }
-
-    Widget widget = form.getWidgetByName("TaskExtensions");
-    if (!(widget instanceof HasWidgets)) {
-      return;
-    }
-
-    HasWidgets panel = (HasWidgets) widget;
-    panel.clear();
-
-    List<DateTime> extensions = Lists.newArrayList();
-
-    for (BeeRow row : rowSet.getRows()) {
-      DateTime dt = row.getDateTime(index);
-      if (dt != null) {
-        extensions.add(dt);
-      }
-    }
-
-    if (!extensions.isEmpty()) {
-      for (int i = extensions.size() - 1; i >= 0; i--) {
-        Label label = new Label(extensions.get(i).toCompactString());
-        label.addStyleName(STYLE_EXTENSION);
-        panel.add(label);
-      }
-    }
   }
 }

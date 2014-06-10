@@ -4,19 +4,22 @@
   name="RelatedDocuments" source="Relations" caption="=documentsRelated"
   >
   <Columns>
+    <SimpleColumn name="Request" />
+    <SimpleColumn name="Cargo" />
     <SimpleColumn name="Company" />
     <SimpleColumn name="Person" />
     <SimpleColumn name="Appointment" />
     <SimpleColumn name="Task" />
+    <SimpleColumn name="RecurringTask" />
+    <SimpleColumn name="Document" />
     <SimpleColumn name="Vehicle" />
     <SimpleColumn name="Driver" />
     <SimpleColumn name="TransportationOrder" />
-    <SimpleColumn name="Cargo" />
     <SimpleColumn name="Trip" />
     <SimpleColumn name="CargoRequest" />
+    <SimpleColumn name="Discussion" />
     <SimpleColumn name="ServiceObject" />
 
-    <SimpleColumn name="Document" />
     <SimpleJoin name="Document" joinType="INNER">
 
       <SimpleColumn name="Name" />
@@ -28,7 +31,7 @@
       <SimpleColumn name="RegistrationNumber" />
 
       <SimpleColumn name="Category" />
-      <SimpleJoin joinType="LEFT" name="Category">
+      <SimpleJoin joinType="INNER" name="Category">
         <SimpleColumn alias="CategoryName" name="Name" />
       </SimpleJoin>
 

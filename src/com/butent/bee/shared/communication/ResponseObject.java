@@ -26,7 +26,7 @@ public class ResponseObject implements BeeSerializable {
    */
 
   private enum Serial {
-    MESSAGES, RESPONSE_TYPE, ARRAY_TYPE, RESPONSE
+    MESSAGES, RESPONSE_TYPE, ARRAY_TYPE, RESPONSE, SIZE
   }
 
   public static <T> ResponseObject collection(Collection<T> response, Class<T> clazz) {
@@ -170,6 +170,10 @@ public class ResponseObject implements BeeSerializable {
 
         case RESPONSE:
           this.response = value;
+          break;
+          
+        case SIZE:
+          this.size = BeeUtils.toInt(value);
           break;
       }
     }
@@ -343,6 +347,10 @@ public class ResponseObject implements BeeSerializable {
 
         case RESPONSE:
           arr[i++] = response;
+          break;
+
+        case SIZE:
+          arr[i++] = size;
           break;
       }
     }

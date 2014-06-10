@@ -9,7 +9,7 @@
       label="=svcObject" />
     <DateTime name="Date" notNull="true" label="=date" />
 
-    <Relation name="Item" notNull="true" relation="Items" label="=trProductService" />
+    <Relation name="Item" notNull="true" relation="Items" label="=productService" />
     <Numeric name="Quantity" precision="12" scale="3" notNull="true" label="=quantity" />
     <Numeric name="Price" precision="12" scale="2" label="=price" />
     <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
@@ -22,6 +22,7 @@
     <Relation name="Master" relation="CompanyPersons" label="=svcMaster" />
 
     <Relation name="Invoice" relation="Sales" cascade="SET_NULL" label="=trdInvoiceId" />
+    <Relation name="Defect" relation="ServiceDefects" cascade="SET_NULL" label="=svcDefectId" />
 
     <Text name="Description" label="=description" />
     <Text name="Notes" label="=notes" />

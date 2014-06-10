@@ -109,6 +109,8 @@
     <SimpleColumn name="TogglePrice" />
     <SimpleColumn name="ToggleStockLimit" />
 
+    <SimpleColumn name="CarTypeHistorySize" />
+
     <SimpleColumn name="Notes" />
   </Columns>
 

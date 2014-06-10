@@ -16,10 +16,10 @@
     <Numeric name="KwTo" precision="3" label="=ecCarPowerTo" />
     <Numeric name="Cylinders" precision="2" label="=ecCarCylinders" />
     <Numeric name="MaxWeight" precision="6" scale="2" label="=ecCarMaxWeight" />
-    <String name="Engine" precision="50" />
-    <String name="Fuel" precision="50" />
-    <String name="Body" precision="50" />
-    <String name="Axle" precision="50" />
+    <String name="Engine" precision="50" label="=ecCarEngine" />
+    <String name="Fuel" precision="50" label="=vehicleFuel" />
+    <String name="Body" precision="50" label="=vehicleBodyType" />
+    <String name="Axle" precision="50" label="=vehicleChassis"/>
 
     <Boolean name="Visible" label="=ecCarTypeVisible" defValue="true" />
     

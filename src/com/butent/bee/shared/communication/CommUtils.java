@@ -3,6 +3,7 @@ package com.butent.bee.shared.communication;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
+import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
@@ -42,6 +43,30 @@ public final class CommUtils {
       return url;
     } else {
       return url.trim() + QUERY_STRING_SEPARATOR + qs.trim();
+    }
+  }
+  
+  public static String addTimeStamp(String url, HasDateValue dt) {
+    Assert.notEmpty(url);
+    
+    if (dt == null) {
+      return url;
+
+    } else {
+      StringBuilder sb = new StringBuilder();
+      sb.append(url.trim());
+      
+      if (url.contains(QUERY_STRING_SEPARATOR)) {
+        sb.append(QUERY_STRING_PAIR_SEPARATOR);
+      } else {
+        sb.append(QUERY_STRING_SEPARATOR);
+      }
+      
+      sb.append("v");
+      sb.append(QUERY_STRING_VALUE_SEPARATOR);
+      sb.append(dt.toTimeStamp());
+      
+      return sb.toString();
     }
   }
 

@@ -15,6 +15,7 @@ import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
@@ -48,7 +49,13 @@ public class CargoPurchaseInvoiceForm extends PrintFormInterceptor {
         grid.setGridInterceptor(new InvoiceItemsGrid(getRefresher()));
 
       } else if (BeeUtils.inListSame(name, VIEW_CARGO_PURCHASES, VIEW_CARGO_SALES)) {
-        grid.setGridInterceptor(new AbstractGridInterceptor() /* Kill default interceptor */);
+        /* Kill default interceptor */
+        grid.setGridInterceptor(new AbstractGridInterceptor() {
+          @Override
+          public GridInterceptor getInstance() {
+            return null;
+          }
+        });
       }
     }
   }
@@ -74,7 +81,7 @@ public class CargoPurchaseInvoiceForm extends PrintFormInterceptor {
         public void execute() {
           final FormView form = getFormView();
 
-          Queries.getRow(form.getViewName(), form.getActiveRow().getId(), new RowCallback() {
+          Queries.getRow(form.getViewName(), form.getActiveRowId(), new RowCallback() {
             @Override
             public void onSuccess(BeeRow result) {
               RowUpdateEvent.fire(BeeKeeper.getBus(), form.getViewName(), result);

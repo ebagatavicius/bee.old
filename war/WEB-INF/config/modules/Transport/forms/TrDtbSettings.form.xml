@@ -16,7 +16,7 @@
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
  
   name="TrDtbSettings" viewName="TransportSettings" caption="=settings"
-  width="440" height="380"
+  width="440" height="420"
   >
 
   <FlowPanel style="background-color: WhiteSmoke;">
@@ -48,21 +48,21 @@
 
     &separator;
     <FlowPanel style="&row;">
-      <Label text="=trTbSettingsPixelsPerDay" style="&lbl;" />
+      <Label text="=timeboardPixelsPerDay" style="&lbl;" />
       <InputSpinner source="DtbPixelsPerDay" minValue="1" maxValue="100" style="&spin;" />
     </FlowPanel>
     <FlowPanel style="&row;">
-      <Label text="=trTbSettingsPixelsPerRow" style="&lbl;" />
+      <Label text="=timeboardPixelsPerRow" style="&lbl;" />
       <InputSpinner source="DtbPixelsPerRow" minValue="2" maxValue="1000" style="&spin;" />
     </FlowPanel>
 
     &separator;
     <FlowPanel style="&row;">
-      <Label text="=trTbSettingsHeaderHeight" style="&lbl;" />
+      <Label text="=timeboardHeaderHeight" style="&lbl;" />
       <InputSpinner source="DtbHeaderHeight" minValue="1" maxValue="100" style="&spin;" />
     </FlowPanel>
     <FlowPanel style="&row;">
-      <Label text="=trTbSettingsFooterHeight" style="&lbl;" />
+      <Label text="=timeboardFooterHeight" style="&lbl;" />
       <InputSpinner source="DtbFooterHeight" minValue="3" maxValue="1000" style="&spin;" />
     </FlowPanel>
 
@@ -74,11 +74,11 @@
 
     &separator;
     <FlowPanel style="&slider_row;">
-      <Label text="=transportItemOpacity" style="&lbl;" />
+      <Label text="=timeboardItemOpacity" style="&lbl;" />
       <InputRange source="DtbItemOpacity" minValue="0" maxValue="100" step="5" style="&slider_inp;" />
     </FlowPanel>
     <FlowPanel style="&slider_row;">
-      <Label text="=transportStripOpacity" style="&lbl;" />
+      <Label text="=timeboardStripOpacity" style="&lbl;" />
       <InputRange source="DtbStripOpacity" minValue="0" maxValue="100" step="5" style="&slider_inp;" />
     </FlowPanel>
 

@@ -169,6 +169,10 @@ public final class Selectors {
     return getElement(root.getElement(), selectors);
   }
 
+  public static Element getElementByDataIndex(UIObject root, long idx) {
+    return getElement(root, attributeEquals(DomUtils.ATTRIBUTE_DATA_INDEX, idx));
+  }
+
   public static NodeList<Element> getNodes(Collection<String> selectors) {
     return getNodes(buildSelectors(selectors));
   }

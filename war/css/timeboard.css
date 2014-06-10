@@ -1,0 +1,229 @@
+.bee-timeboard-canvas {
+  position: absolute;
+  top: 30px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.bee-timeboard-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.bee-timeboard-scroll-area {
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: auto;
+}
+
+.bee-timeboard-content {
+  position: relative;
+}
+
+.bee-timeboard-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.bee-timeboard-header-splitter,
+.bee-timeboard-footer-splitter {
+  right: 0;
+}
+
+.bee-timeboard-row-sep {
+  position: absolute;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.bee-timeboard-selector-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.bee-timeboard-selector-strip {
+  position: absolute;
+}
+
+.bee-timeboard-selector-start-slider-label,
+.bee-timeboard-selector-end-slider-label {
+  position: absolute;
+  padding: 2px;
+  margin-bottom: 2px;
+  background-color: WhiteSmoke;
+  color: #222;
+  border: 1px solid #ccc;
+}
+
+.bee-timeboard-selector-start-slider,
+.bee-timeboard-selector-end-slider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background-image: linear-gradient(to right, #888, #ccc, #888);
+  cursor: col-resize;
+}
+
+.bee-timeboard-selector-mover {
+  position: absolute;
+  top: 0; 
+  bottom: 0;
+  cursor: move;
+  background-color: rgba(0, 0, 255, 0.1);
+}
+
+.bee-timeboard-day-separator,
+.bee-timeboard-month-separator,
+.bee-timeboard-right-separator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+.bee-timeboard-day-separator {
+  background-color: #ddd;
+}
+.bee-timeboard-month-separator {
+  background-color: #888;
+}
+.bee-timeboard-right-separator {
+  background-color: #888;
+}
+
+.bee-timeboard-day-label,
+.bee-timeboard-day-narrow,
+.bee-timeboard-day-picture {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.bee-timeboard-day-label {
+  text-align: center;
+}
+
+.bee-timeboard-day-narrow > * {
+  position: absolute;
+  left: 0;
+  font-size: 12px;
+  line-height: 12px;
+}
+.bee-timeboard-day-narrow-tens {
+  top: 0;
+}
+.bee-timeboard-day-narrow-ones {
+  bottom: 0;
+}
+
+.bee-timeboard-day-picture {
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  align-items: flex-end;
+  -webkit-align-items: flex-end;
+  -ms-flex-align: end;
+  align-content: flex-end;
+  -webkit-align-content: flex-end;
+  -ms-flex-line-pack: end;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+}
+.bee-timeboard-day-picture-tens {
+  background-color: #888;
+}
+.bee-timeboard-day-picture-ones {
+  background-color: #ccc;
+}
+
+.bee-timeboard-visible-range-panel,
+.bee-timeboard-max-range-panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  justify-content: space-around;
+  -webkit-justify-content: space-around;
+  -ms-flex-pack: justify;
+}
+
+.bee-timeboard-visible-range-start:hover,
+.bee-timeboard-visible-range-end:hover {
+  text-decoration: underline;
+  color: #00e;
+  cursor: pointer;
+}
+
+.bee-timeboard-day-background {
+  position: absolute;
+  top: 0;
+}
+
+.bee-timeboard-past {
+  background-color: #e8e8e8;
+}
+.bee-timeboard-today {
+  background-color: #f1f1f1;
+}
+.bee-timeboard-weekend {
+  background-color: #f8f8f8;
+}
+
+.bee-timeboard-horizontal-mover {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  background-color: #ccc;
+  border-left: 1px solid #888;
+  border-right: 1px solid #888;
+  cursor: col-resize;
+}
+.bee-timeboard-vertical-mover {
+  position: absolute;
+  left: 0;
+  height: 1px;
+  background-color: #ccc;
+  border-top: 1px solid #888;
+  border-bottom: 1px solid #888;
+  cursor: row-resize;
+}
+
+.bee-timeboard-item-start {
+  border-top-left-radius: 6px 50%;
+  border-bottom-left-radius: 6px 50%;
+}
+.bee-timeboard-item-end {
+  border-top-right-radius: 6px 50%;
+  border-bottom-right-radius: 6px 50%;
+}
+
+.bee-timeboard-item-has-handling {
+  background-image: repeating-linear-gradient(90deg, rgba(211,211,211,1) 10px, rgba(211,211,211,0) 20px);
+}
+
+.bee-timeboard-filter-label {
+  color: #00a;
+  padding-right: 10px;
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bee-timeboard-action-remove-filter {
+  font-size: 17px;
+}
+.bee-timeboard-action-remove-filter:hover {
+  color: red;
+  cursor: pointer;
+}

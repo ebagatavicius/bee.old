@@ -22,7 +22,7 @@
       <row>
         <Label for="Company" />
         <DataSelector source="Company" renderColumns="CompanyName" />
-        <Label text="=type" for="Type" visible="true" />
+        <Label text="=type" for="Type" visible="true" class="bee-required"/>
         <DataSelector source="AppointmentType" renderColumns="TypeName" visible="true"/>
       </row>
  

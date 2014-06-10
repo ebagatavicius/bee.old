@@ -7,7 +7,7 @@
   <g:footer height="30" />
 
   <g:columns>
-    <IdColumn name="Id" caption="ID" horizontalAlignment="left">
+    <IdColumn name="Id" horizontalAlignment="left">
       <footer html="total" />
     </IdColumn>
 

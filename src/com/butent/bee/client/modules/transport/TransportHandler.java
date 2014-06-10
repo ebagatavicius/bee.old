@@ -29,7 +29,7 @@ import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.grid.column.AbstractColumn;
 import com.butent.bee.client.modules.trade.TradeUtils;
-import com.butent.bee.client.modules.transport.charts.ChartHelper;
+import com.butent.bee.client.modules.transport.charts.ChartBase;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.presenter.TreePresenter;
 import com.butent.bee.client.render.ProvidesGridColumnRenderer;
@@ -84,6 +84,11 @@ public final class TransportHandler {
         Collection<RowInfo> selectedRows, DeleteMode defMode) {
 
       return new CargoTripChecker().getDeleteMode(presenter, activeRow, selectedRows, defMode);
+    }
+
+    @Override
+    public GridInterceptor getInstance() {
+      return new CargoGridHandler();
     }
   }
 
@@ -487,7 +492,7 @@ public final class TransportHandler {
 
     BeeKeeper.getBus().registerRowActionHandler(new TransportActionHandler(), false);
 
-    ChartHelper.register();
+    ChartBase.registerBoards();
     CargoIncomesObserver.register();
   }
 
@@ -497,6 +502,11 @@ public final class TransportHandler {
     switch (gridName) {
       case GRID_ASSESSMENT_REQUESTS:
         interceptor = new AbstractGridInterceptor() {
+          @Override
+          public GridInterceptor getInstance() {
+            return null;
+          }
+
           @Override
           public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
             newRow.setValue(gridView.getDataIndex(COL_ASSESSMENT_STATUS),

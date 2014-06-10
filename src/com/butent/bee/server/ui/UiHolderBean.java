@@ -7,6 +7,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import com.butent.bee.server.Config;
+import com.butent.bee.server.data.BeeView;
+import com.butent.bee.server.data.SystemBean;
 import com.butent.bee.server.data.UserServiceBean;
 import com.butent.bee.server.io.FileUtils;
 import com.butent.bee.server.modules.ModuleHolderBean;
@@ -22,8 +24,8 @@ import com.butent.bee.shared.menu.Menu;
 import com.butent.bee.shared.menu.MenuEntry;
 import com.butent.bee.shared.menu.MenuItem;
 import com.butent.bee.shared.menu.MenuService;
-import com.butent.bee.shared.modules.administration.AdministrationConstants.RightsState;
 import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.rights.RightsUtils;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.ui.UiConstants;
@@ -126,6 +128,8 @@ public class UiHolderBean {
   GridLoaderBean gridBean;
   @EJB
   UserServiceBean usr;
+  @EJB
+  SystemBean sys;
 
   private final Map<String, String> gridCache = Maps.newHashMap();
   private final Map<String, String> formCache = Maps.newHashMap();
@@ -150,8 +154,11 @@ public class UiHolderBean {
     }
 
     Element formElement = doc.getDocumentElement();
-    checkWidgetChildrenVisibility(formElement,
-        formElement.getAttribute(UiConstants.ATTR_VIEW_NAME));
+    
+    String viewName = formElement.getAttribute(UiConstants.ATTR_VIEW_NAME);
+    BeeView view = sys.isView(viewName) ? sys.getView(viewName) : null;
+    
+    checkWidgetChildrenVisibility(formElement, view);
 
     return ResponseObject.response(XmlUtils.toString(doc, false));
   }
@@ -289,7 +296,7 @@ public class UiHolderBean {
     return XmlUtils.unmarshal(Menu.class, resource, UiObject.MENU.getSchemaPath());
   }
 
-  private void checkWidgetChildrenVisibility(Element parent, String viewName) {
+  private void checkWidgetChildrenVisibility(Element parent, BeeView view) {
     List<Element> elements = XmlUtils.getAllDescendantElements(parent);
     boolean visible;
     
@@ -297,7 +304,7 @@ public class UiHolderBean {
       if (element.hasAttribute(UiConstants.ATTR_VISIBLE)) {
         visible = !BeeConst.isFalse(element.getAttribute(UiConstants.ATTR_VISIBLE));
       } else {
-        visible = isWidgetVisible(element, viewName);
+        visible = isWidgetVisible(element, view);
       }
       
       if (!visible && isHidable(XmlUtils.getParentElement(element))) {
@@ -345,7 +352,7 @@ public class UiHolderBean {
   }
 
   private Menu getMenu(String parent, Menu entry, boolean checkRights) {
-    String ref = RightsUtils.JOINER.join(parent, entry.getName());
+    String ref = RightsUtils.NAME_JOINER.join(parent, entry.getName());
 
     boolean visible;
     if (checkRights) {
@@ -539,15 +546,15 @@ public class UiHolderBean {
     }
   }
 
-  private boolean isWidgetVisible(Element element, String viewName) {
+  private boolean isWidgetVisible(Element element, BeeView view) {
     if (element.hasAttribute(UiConstants.ATTR_MODULE)
         && !usr.isModuleVisible(element.getAttribute(UiConstants.ATTR_MODULE))) {
       return false;
     }
 
-    if (!BeeUtils.isEmpty(viewName)) {
+    if (view != null) {
       String source = element.getAttribute(UiConstants.ATTR_SOURCE);
-      if (!BeeUtils.isEmpty(source) && !usr.isColumnVisible(viewName, source)) {
+      if (!BeeUtils.isEmpty(source) && !usr.isColumnVisible(view, source)) {
         return false;
       }
     }
@@ -556,7 +563,7 @@ public class UiHolderBean {
     String field = element.getAttribute(UiConstants.ATTR_FOR);
 
     if (BeeUtils.isEmpty(data)) {
-      if (BeeUtils.allNotEmpty(viewName, field) && !usr.isColumnVisible(viewName, field)) {
+      if (view != null && !BeeUtils.isEmpty(field) && !usr.isColumnVisible(view, field)) {
         return false;
       }
 
@@ -565,7 +572,7 @@ public class UiHolderBean {
         return false;
       }
 
-      if (!BeeUtils.isEmpty(field) && !usr.isColumnVisible(data, field)) {
+      if (!BeeUtils.isEmpty(field) && !usr.isColumnVisible(sys.getView(data), field)) {
         return false;
       }
     }

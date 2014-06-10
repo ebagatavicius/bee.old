@@ -263,13 +263,9 @@ public final class FormFactory {
     return info;
   }
 
-  public static String getSupplierKey(String formName, FormInterceptor formInterceptor) {
-    String key = (formInterceptor == null) ? null : formInterceptor.getSupplierKey();
-    if (BeeUtils.isEmpty(key)) {
-      Assert.notEmpty(formName);
-      key = "form_" + BeeUtils.normalize(formName);
-    }
-    return key;
+  public static String getSupplierKey(String formName) {
+    Assert.notEmpty(formName);
+    return WidgetFactory.SupplierKind.FORM.getKey(formName);
   }
 
   public static FormWidget getWidgetType(BeeColumn column) {
@@ -353,10 +349,9 @@ public final class FormFactory {
   }
 
   public static void openForm(final String formName, final FormInterceptor formInterceptor) {
+    String supplierKey = getSupplierKey(formName);
 
-    String supplierKey = getSupplierKey(formName, formInterceptor);
     if (!WidgetFactory.hasSupplier(supplierKey)) {
-
       WidgetSupplier supplier = new WidgetSupplier() {
         @Override
         public void create(final Callback<IdentifiableWidget> callback) {

@@ -13,6 +13,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.view.grid.GridView.SelectedRows;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
@@ -55,5 +56,10 @@ public class EcCostChangesHandler extends AbstractGridInterceptor {
             });
           }
         }));
+  }
+  
+  @Override
+  public GridInterceptor getInstance() {
+    return new EcCostChangesHandler();
   }
 }

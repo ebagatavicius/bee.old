@@ -1,14 +1,12 @@
 package com.butent.bee.client.data;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
 import com.butent.bee.client.utils.JsUtils;
 import com.butent.bee.shared.AbstractSequence;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.Pair;
-import com.butent.bee.shared.Sequence;
 
 import java.util.List;
 
@@ -34,15 +32,6 @@ public class JsStringSequence extends AbstractSequence<String> {
   @Override
   public void clear() {
     values.setLength(0);
-  }
-
-  @Override
-  public Sequence<String> copy() {
-    JsArrayString arr = JavaScriptObject.createArray().cast();
-    for (int i = 0; i < getLength(); i++) {
-      arr.set(i, get(i));
-    }
-    return new JsStringSequence(arr);
   }
 
   @Override

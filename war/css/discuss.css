@@ -340,8 +340,8 @@
 .bee-discuss-adsFormContent-chatBalloon {
  width: 0px;
  height: 0px;
- position: absolute;
- left: -10px;
+ position: relative;
+ left: -17px;
  top: 8px;
  border-top: 10px solid transparent;
  border-bottom: 10px solid transparent;

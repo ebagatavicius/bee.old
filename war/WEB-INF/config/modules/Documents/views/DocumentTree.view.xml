@@ -2,7 +2,7 @@
 <View xmlns="http://www.butent.com/view"
 
   name="DocumentTree" source="DocumentTree"
-  caption="=documentTree"
+  caption="=documentTree" editForm="BookmarkedDocuments"
   >
   <Columns>
     <SimpleColumn name="Parent" />
@@ -10,6 +10,7 @@
     <SimpleColumn name="Name" />
     <SimpleJoin joinType="LEFT" name="Parent">
       <SimpleColumn alias="ParentOrder" name="Order" />
+      <SimpleColumn alias="ParentName" name="Name" />
     </SimpleJoin>
     <ExternalJoin source="Documents" joinType="LEFT" name="Category">
       <AggregateColumn alias="DocumentCount" aggregate="COUNT" name="Category" />

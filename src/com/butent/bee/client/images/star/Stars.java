@@ -6,6 +6,8 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 
 import com.butent.bee.client.images.Images;
+import com.butent.bee.shared.export.XPicture;
+import com.butent.bee.shared.export.XSheet;
 
 import java.util.List;
 
@@ -70,6 +72,20 @@ public final class Stars {
   
   public static int count() {
     return list.size();
+  }
+  
+  public static Integer export(int index, XSheet sheet) {
+    ImageResource resource = get(index);
+    if (resource == null || sheet == null) {
+      return null;
+    }
+
+    XPicture picture = XPicture.create(resource.getSafeUri().asString());
+    if (picture == null) {
+      return null;
+    }
+
+    return sheet.registerPicture(picture);
   }
   
   public static ImageResource get(int index) {

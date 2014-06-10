@@ -46,6 +46,7 @@ import com.butent.bee.client.view.grid.CellGrid;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.GridView.SelectedRows;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.InputArea;
 import com.butent.bee.client.widget.InputBoolean;
@@ -455,6 +456,11 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
     return false;
   }
 
+  @Override
+  public GridInterceptor getInstance() {
+    return new TripCargoGrid(tripForm);
+  }
+  
   @Override
   public String getRowCaption(IsRow row, boolean edit) {
     return Localized.getConstants().trCargoActualPlaces();

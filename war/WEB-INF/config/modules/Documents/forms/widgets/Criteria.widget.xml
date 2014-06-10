@@ -2,11 +2,14 @@
 <FlowPanel xmlns="http://www.butent.com/widget" class="flexBox-vertical">
   <FieldSet style="margin:10px; border:1px solid #ccc">
     <Legend name="MainCriteriaEditor" class="bee-Button" text="=mainCriteria" />
-    <FlowPanel name="MainCriteriaContainer" class="flexBox-horizontal" style="max-height:200px; overflow:auto;" />
+    <FlowPanel name="MainCriteriaContainer" class="flexBox-horizontal" 
+      style="max-height: 200px; overflow:auto;" />
   </FieldSet>
 
   <FlowPanel class="flexBox-horizontal-space-between flexible" style="overflow: scroll;">
-    <ChildGrid name="CriteriaGroups" relColumn="Data" source="Data" style="width:350px; margin-right:20px" />
-    <ChildGrid class="flexible" name="Criteria" parent="CriteriaGroups" relColumn="Group" style="margin-top:30px" />
+    <ChildGrid name="CriteriaGroups" relColumn="Data" source="Data" 
+      style="width: 350px; margin-right: 20px;" />
+    <ChildGrid class="flexible" name="Criteria" parent="CriteriaGroups" relColumn="Group" 
+      style="margin-top: 30px;" />
   </FlowPanel>
 </FlowPanel>

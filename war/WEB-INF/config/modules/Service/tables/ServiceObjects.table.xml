@@ -7,6 +7,8 @@
   <Fields>
     <Relation name="Category" relation="ServiceTree" notNull="true" label="=category" />
     <String name="Address" precision="100" notNull="true" label="=address" />
+
     <Relation name="Customer" relation="Companies" label="=customer" />
+    <Relation name="Contractor" relation="Companies" label="=svcContractor" />
   </Fields>
 </Table>

@@ -15,6 +15,7 @@ import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasFosterParent;
 import com.butent.bee.client.ui.UiOption;
+import com.butent.bee.client.view.HasGridView;
 import com.butent.bee.client.view.grid.GridSettings;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
@@ -40,7 +41,7 @@ import java.util.Map;
  */
 
 public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFosterParent,
-    ParentRowEvent.Handler {
+    ParentRowEvent.Handler, HasGridView {
   
   private static final Collection<UiOption> uiOptions = EnumSet.of(UiOption.CHILD);
 
@@ -76,6 +77,11 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
     this.gridInterceptor = GridFactory.getGridInterceptor(gridName);
 
     addStyleName("bee-ChildGrid");
+  }
+
+  @Override
+  public GridView getGridView() {
+    return getPresenter() == null ? null : getPresenter().getGridView();
   }
 
   @Override
@@ -219,7 +225,7 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
   }
 
   private String getGridKey() {
-    return GridFactory.getSupplierKey(gridName, getGridInterceptor());
+    return GridFactory.getSupplierKey(gridName);
   }
 
   private GridFactory.GridOptions getGridOptions() {
@@ -355,11 +361,11 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
   private void setPendingRow(IsRow pendingRow) {
     this.pendingRow = pendingRow;
   }
-
+  
   private void setPresenter(GridPresenter presenter) {
     this.presenter = presenter;
   }
-  
+
   private void unregister() {
     if (getParentRowReg() != null) {
       getParentRowReg().removeHandler();
