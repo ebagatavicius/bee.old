@@ -52,7 +52,6 @@
       <SimpleColumn name="Email" alias="LoadingEmailId" label="=trLoadingEmail" />
       <SimpleJoin name="Email" joinType="LEFT">
         <SimpleColumn name="Email" alias="LoadingEmail" />
-        <SimpleColumn name="Label" alias="LoadingEmailLabel" />
       </SimpleJoin>
       
       <SimpleColumn name="Phone" alias="LoadingPhone" editable="true" label="=trLoadingPhone" />
@@ -85,7 +84,6 @@
       <SimpleColumn name="Email" alias="UnloadingEmailId" label="=trUnloadingEmail" />
       <SimpleJoin name="Email" joinType="LEFT">
         <SimpleColumn name="Email" alias="UnloadingEmail" />
-        <SimpleColumn name="Label" alias="UnloadingEmailLabel" />
       </SimpleJoin>
       
       <SimpleColumn name="Phone" alias="UnloadingPhone" editable="true" 

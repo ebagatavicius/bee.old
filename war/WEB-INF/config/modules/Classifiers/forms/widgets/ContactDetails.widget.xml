@@ -13,12 +13,9 @@
   </row>
 
   <row>
-    <Label text="=email" style="&lbl;" for="EmailId" />
+    <Label for="EmailId" style="&lbl;" />
     <cell colSpan="2" for="EmailId" >
-      <DataSelector source="EmailId" style="width: 100%;"
-        renderColumns="Label Email">
-        <renderer type="mail" />
-      </DataSelector>
+      <DataSelector source="EmailId" style="width: 100%;" />
     </cell>
 
     <Label text="=website" style="&lbl;" for="Website" />

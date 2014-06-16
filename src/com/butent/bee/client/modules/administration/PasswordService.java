@@ -12,6 +12,7 @@ import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.widget.InputPassword;
@@ -28,8 +29,11 @@ import java.util.Objects;
 
 public final class PasswordService {
 
-  private static final String STYLE_DIALOG = "bee-ChangePassword";
+  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "ChangePassword-";
 
+  private static final String STYLE_LABEL = STYLE_PREFIX + "label";
+  private static final String STYLE_INPUT = STYLE_PREFIX + "input";
+  
   public static void change() {
     final Long userId = BeeKeeper.getUser().getUserId();
     if (userId == null) {
@@ -71,7 +75,8 @@ public final class PasswordService {
   }
 
   private static void openDialog(final String oldPass, final Consumer<String> callback) {
-    HtmlTable table = new HtmlTable();
+
+    HtmlTable table = new HtmlTable(STYLE_PREFIX + "table");
     int row = 0;
 
     final InputPassword inpOld;
@@ -79,19 +84,19 @@ public final class PasswordService {
       inpOld = null;
     } else {
       inpOld = new InputPassword(UiConstants.MAX_PASSWORD_LENGTH);
-      table.setHtml(row, 0, Localized.getConstants().oldPassword());
-      table.setWidget(row, 1, inpOld);
+      table.setText(row, 0, Localized.getConstants().oldPassword(), STYLE_LABEL);
+      table.setWidgetAndStyle(row, 1, inpOld, STYLE_INPUT);
       row++;
     }
 
     final InputPassword inpNew = new InputPassword(UiConstants.MAX_PASSWORD_LENGTH);
-    table.setHtml(row, 0, Localized.getConstants().newPassword());
-    table.setWidget(row, 1, inpNew);
+    table.setText(row, 0, Localized.getConstants().newPassword(), STYLE_LABEL);
+    table.setWidgetAndStyle(row, 1, inpNew, STYLE_INPUT);
     row++;
 
     final InputPassword inpNew2 = new InputPassword(UiConstants.MAX_PASSWORD_LENGTH);
-    table.setHtml(row, 0, Localized.getConstants().repeatNewPassword());
-    table.setWidget(row, 1, inpNew2);
+    table.setText(row, 0, Localized.getConstants().repeatNewPassword(), STYLE_LABEL);
+    table.setWidgetAndStyle(row, 1, inpNew2, STYLE_INPUT);
     row++;
 
     if (inpOld != null) {
@@ -160,7 +165,7 @@ public final class PasswordService {
       public void onSuccess() {
         callback.accept(Codec.encodePassword(BeeUtils.trim(inpNew.getValue())));
       }
-    }, STYLE_DIALOG);
+    }, STYLE_PREFIX + "dialog");
   }
 
   private PasswordService() {

@@ -14,9 +14,7 @@
         </row>
         <row>
           <Label for="Address" horizontalAlignment="right" />
-          <DataSelector source="Address" style="width:200px" renderColumns="Label Email">
-            <renderer type="mail" />
-          </DataSelector>
+          <DataSelector source="Address" style="width:200px" />
           <CheckBox source="Main" text="=mailDefault" />
         </row>
         <row>

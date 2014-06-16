@@ -8,7 +8,7 @@
     <String name="Phone" precision="50" label="=phone" />
     <String name="Mobile" precision="50" label="=mobile" />
     <String name="Fax" precision="50" label="=fax" />
-    <Relation name="Email" relation="Emails" unique="true" label="=email" />
+    <Relation name="Email" relation="Emails" label="=email" />
     <String name="Website" precision="100" label="=website" />
     <String name="Address" precision="100" label="=address" />
     <String name="PostIndex" precision="20" label="=postIndex" />

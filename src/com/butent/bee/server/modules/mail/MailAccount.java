@@ -132,6 +132,10 @@ public class MailAccount {
     return accountInfo.getAccountId();
   }
 
+  public String getAddress() {
+    return accountInfo.getAddress();
+  }
+
   public Long getAddressId() {
     return accountInfo.getAddressId();
   }

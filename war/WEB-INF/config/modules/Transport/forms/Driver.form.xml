@@ -49,9 +49,7 @@
 	  </row>
 	  <row>
         <Label text="=email" class="bee-co-companyInfo-label" style="&lbl;" />
-        <TextLabel style="&w2;" textOnly="true" renderColumns="Label Email">
-          <renderer type="mail" />
-        </TextLabel>
+        <TextLabel style="&w2;" textOnly="true" />
 
         <Label text="=trDriverEndingDate" style="&lbl;" />
         <SimplePanel style="&w2;">

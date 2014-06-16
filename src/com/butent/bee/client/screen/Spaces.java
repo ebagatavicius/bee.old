@@ -118,8 +118,11 @@ public class Spaces {
 
       CustomDiv label = new CustomDiv(STYLE_LABEL);
       label.setText(item.getLabel());
-      label.setTitle(item.getWorkspace().replace(BeeConst.CHAR_COMMA, BeeConst.CHAR_EOL));
-      
+
+      if (Global.isDebug()) {
+        label.setTitle(item.getWorkspace().replace(BeeConst.CHAR_COMMA, BeeConst.CHAR_EOL));
+      }
+
       DomUtils.preventSelection(label);
 
       label.addClickHandler(new ClickHandler() {

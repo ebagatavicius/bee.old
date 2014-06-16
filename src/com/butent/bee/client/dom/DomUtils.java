@@ -64,6 +64,7 @@ public final class DomUtils {
   public static final String ATTRIBUTE_DATA_COLUMN = Attributes.DATA_PREFIX + "col";
   public static final String ATTRIBUTE_DATA_ROW = Attributes.DATA_PREFIX + "row";
   public static final String ATTRIBUTE_ROLE = Attributes.DATA_PREFIX + "role";
+  public static final String ATTRIBUTE_DATA_SIZE = Attributes.DATA_PREFIX + "size";
 
   public static final String VALUE_TRUE = "true";
 
@@ -272,7 +273,7 @@ public final class DomUtils {
   public static boolean dataEquals(Element elem, String key, long value) {
     return dataEquals(elem, key, Long.toString(value));
   }
-  
+
   public static boolean dataEquals(Element elem, String key, String value) {
     return !BeeUtils.isEmpty(value) && BeeUtils.same(getDataProperty(elem, key), value);
   }
@@ -345,7 +346,7 @@ public final class DomUtils {
     Assert.notNull(elem);
     return elem.getPropertyString(Attributes.AUTOCOMPLETE);
   }
-  
+
   public static int getCheckBoxClientHeight() {
     if (checkBoxClientHeight <= 0) {
       calculateCheckBoxSize();
@@ -511,6 +512,18 @@ public final class DomUtils {
     return lst;
   }
 
+  public static native String getClassName(Element elem) /*-{
+    var cl = elem.className;
+    
+    if (typeof cl == 'string') {
+      return cl;
+    } else if (cl instanceof SVGAnimatedString) {
+      return cl.baseVal;
+    } else {
+      return '';
+    }
+  }-*/;
+
   public static int getClientHeight() {
     return Document.get().getClientHeight();
   }
@@ -532,7 +545,7 @@ public final class DomUtils {
   }
 
   public static int getDataColumnInt(Element elem) {
-    String value = getDataColumn(elem); 
+    String value = getDataColumn(elem);
     return BeeUtils.isEmpty(value) ? BeeConst.UNDEF : BeeUtils.toInt(value);
   }
 
@@ -554,13 +567,18 @@ public final class DomUtils {
   public static Integer getDataPropertyInt(Element elem, String key) {
     return BeeUtils.toIntOrNull(getDataProperty(elem, key));
   }
-  
+
   public static Long getDataPropertyLong(Element elem, String key) {
     return BeeUtils.toLongOrNull(getDataProperty(elem, key));
   }
 
   public static String getDataRow(Element elem) {
     return (elem == null) ? null : elem.getAttribute(ATTRIBUTE_DATA_ROW);
+  }
+
+  public static int getDataSize(Element elem) {
+    String value = (elem == null) ? null : elem.getAttribute(ATTRIBUTE_DATA_SIZE);
+    return BeeUtils.isEmpty(value) ? BeeConst.UNDEF : BeeUtils.toInt(value);
   }
 
   public static Element getElement(String id) {
@@ -579,7 +597,7 @@ public final class DomUtils {
         "Absolute Left", el.getAbsoluteLeft(),
         "Absolute Right", el.getAbsoluteRight(),
         "Absolute Top", el.getAbsoluteTop(),
-        "Class Name", el.getClassName(),
+        "Class Name", getClassName(el),
         "Client Height", el.getClientHeight(),
         "Client Width", el.getClientWidth(),
         "Dir", el.getDir(),
@@ -1289,7 +1307,7 @@ public final class DomUtils {
   public static boolean isEmpty(NodeList<?> nodes) {
     return nodes == null || nodes.getLength() <= 0;
   }
-  
+
   public static boolean isEnabled(UIObject obj) {
     Assert.notNull(obj);
     if (obj instanceof HasEnabled) {
@@ -1344,19 +1362,6 @@ public final class DomUtils {
     return (el != null) && el.getTagName().equalsIgnoreCase(Tags.LABEL);
   }
 
-  public static boolean isOrHasChild(UIObject obj, String id) {
-    if (obj == null || BeeUtils.isEmpty(id)) {
-      return false; 
-
-    } else if (idEquals(obj, id)) {
-      return true;
-    
-    } else {
-      Element child = Document.get().getElementById(id);
-      return (child != null) && obj.getElement().isOrHasChild(child);
-    }
-  }
-  
   public static boolean isOrHasAncestor(Element el, String id) {
     if (el == null || BeeUtils.isEmpty(id)) {
       return false;
@@ -1364,6 +1369,19 @@ public final class DomUtils {
       return true;
     } else {
       return isOrHasAncestor(el.getParentElement(), id);
+    }
+  }
+
+  public static boolean isOrHasChild(UIObject obj, String id) {
+    if (obj == null || BeeUtils.isEmpty(id)) {
+      return false;
+
+    } else if (idEquals(obj, id)) {
+      return true;
+
+    } else {
+      Element child = Document.get().getElementById(id);
+      return (child != null) && obj.getElement().isOrHasChild(child);
     }
   }
 
@@ -1639,7 +1657,7 @@ public final class DomUtils {
     Assert.notNull(obj);
     resizeVerticalBy(obj.getElement(), dh);
   }
-  
+
   public static void scrollToBottom(Element elem) {
     Assert.notNull(elem);
     elem.setScrollTop(elem.getScrollHeight());
@@ -1656,7 +1674,7 @@ public final class DomUtils {
       elem.setScrollTop(0);
     }
   }
-  
+
   public static void scrollToTop(UIObject obj) {
     Assert.notNull(obj);
     scrollToTop(obj.getElement());
@@ -1678,7 +1696,7 @@ public final class DomUtils {
     Assert.notNull(elem);
     elem.setPropertyString(Attributes.AUTOCOMPLETE, ac);
   }
-  
+
   public static void setCheckValue(Element elem, boolean value) {
     Assert.notNull(elem);
     InputElement input = getInputElement(elem);
@@ -1738,6 +1756,11 @@ public final class DomUtils {
     } else {
       elem.setAttribute(Attributes.DATA_PREFIX + key.trim(), value);
     }
+  }
+
+  public static void setDataSize(Element elem, int size) {
+    Assert.notNull(elem);
+    elem.setAttribute(ATTRIBUTE_DATA_SIZE, Integer.toString(size));
   }
 
   public static void setDraggable(Element elem) {
@@ -1877,7 +1900,7 @@ public final class DomUtils {
     if (el == null) {
       return BeeConst.STRING_EMPTY;
     } else {
-      return BeeUtils.joinWords(el.getTagName(), el.getId(), el.getClassName());
+      return BeeUtils.joinWords(el.getTagName(), el.getId(), getClassName(el));
     }
   }
 

@@ -5,7 +5,4 @@ name="Contacts" label="=contacts" order="20" module="Classifiers.Contacts"
 >
   <Item name="Companies" label="=clients" service="grid" parameters="Companies" />
   <Item name="Persons" label="=persons" service="grid" parameters="Persons" />
-
-  <Item name="Emails" label="=emailAddresses" service="grid" parameters="Emails" separator="true" />
-
 </Entry>

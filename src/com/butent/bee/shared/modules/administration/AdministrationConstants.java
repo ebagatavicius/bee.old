@@ -121,6 +121,7 @@ public final class AdministrationConstants {
   public static final String AUDIT_FLD_VALUE = "Value";
 
   public static final String TBL_USERS = "Users";
+  public static final String TBL_USER_SETTINGS = "UserSettings";
   public static final String TBL_ROLES = "Roles";
   public static final String TBL_USER_ROLES = "UserRoles";
   public static final String TBL_OBJECTS = "Objects";
@@ -146,6 +147,7 @@ public final class AdministrationConstants {
   public static final String TBL_AUTOCOMPLETE = "Autocomplete";
 
   public static final String VIEW_USERS = "Users";
+  public static final String VIEW_USER_SETTINGS = "UserSettings";
   public static final String VIEW_USER_GROUP_SETTINGS = "UserGroupSettings";
   public static final String VIEW_USER_GROUP_MEMBERS = "UserGroupMembers";
 
@@ -190,7 +192,6 @@ public final class AdministrationConstants {
 
   public static final String COL_LOGIN = "Login";
   public static final String COL_PASSWORD = "Password";
-  public static final String COL_USER_PROPERTIES = "Properties";
   public static final String COL_USER_LOCALE = "Locale";
   public static final String COL_USER_INTERFACE = "Interface";
   public static final String COL_USER_BLOCK_AFTER = "BlockAfter";
@@ -288,6 +289,7 @@ public final class AdministrationConstants {
   public static final String ALS_CURRENCY_NAME = "CurrencyName";
 
   public static final String FORM_USER = "User";
+  public static final String FORM_USER_SETTINGS = "UserSettings";
   public static final String FORM_DEPARTMENT = "Department";
   public static final String FORM_NEW_ROLE = "NewRole";
 

@@ -6,6 +6,5 @@
   >
   <Fields>
     <String name="Email" precision="255" unique="true" notNull="true" label="=email" />
-    <String name="Label" precision="255" label="=name" />
   </Fields>
 </Table>

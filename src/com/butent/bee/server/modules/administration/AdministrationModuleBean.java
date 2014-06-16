@@ -308,8 +308,7 @@ public class AdministrationModuleBean implements BeeModule {
     if (!BeeUtils.isEmpty(email)) {
       cpRow.setValue(DataUtils.getColumnIndex(ALS_EMAIL_ID, cpColumns),
           qs.insertData(new SqlInsert(TBL_EMAILS)
-              .addConstant(COL_EMAIL_ADDRESS, address)
-              .addNotEmpty(COL_EMAIL_LABEL, BeeUtils.joinWords(firstName, lastName))));
+              .addConstant(COL_EMAIL_ADDRESS, address)));
     }
 
     if (!BeeUtils.isEmpty(positionName)) {

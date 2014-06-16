@@ -511,7 +511,6 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
   private static final String STYLE_EMBEDDED = STYLE_SELECTOR + "-embedded";
 
   private static final String STYLE_WAITING = STYLE_SELECTOR + "-waiting";
-  private static final String STYLE_NOT_FOUND = STYLE_SELECTOR + "-notFound";
   private static final String STYLE_EMPTY = STYLE_SELECTOR + "-empty";
 
   private static final String STYLE_POPUP = STYLE_SELECTOR + "-popup";
@@ -535,11 +534,8 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
     public void onSuggestionsReady(Request request, Response response) {
       Autocomplete.this.getInput().removeStyleName(STYLE_WAITING);
 
-      boolean found = !response.isEmpty();
-      Autocomplete.this.getInput().setStyleName(STYLE_NOT_FOUND, !found);
-
       if (request.isEmpty()) {
-        Autocomplete.this.setAlive(found);
+        Autocomplete.this.setAlive(!response.isEmpty());
       }
       if (isEditing()) {
         setHasMore(response.hasMoreSuggestions());
@@ -950,7 +946,6 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
     setHasMore(false);
 
     getInput().removeStyleName(STYLE_WAITING);
-    getInput().removeStyleName(STYLE_NOT_FOUND);
   }
 
   protected void setActive(boolean active) {

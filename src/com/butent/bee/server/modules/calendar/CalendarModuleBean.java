@@ -70,7 +70,6 @@ import com.butent.bee.shared.modules.calendar.CalendarConstants.Report;
 import com.butent.bee.shared.modules.calendar.CalendarConstants.ViewType;
 import com.butent.bee.shared.modules.calendar.CalendarSettings;
 import com.butent.bee.shared.modules.calendar.CalendarTask;
-import com.butent.bee.shared.modules.mail.MailConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.modules.tasks.TaskType;
@@ -1415,10 +1414,10 @@ public class CalendarModuleBean implements BeeModule {
       logger.warning("attendees not available, user", userId);
       return null;
     }
-    
+
     List<Long> attIds = attendees.getRowIds();
 
-    Filter filter = Filter.and(Filter.equals(COL_USER_CALENDAR, ucId), 
+    Filter filter = Filter.and(Filter.equals(COL_USER_CALENDAR, ucId),
         Filter.any(COL_ATTENDEE, attIds));
 
     if (!isNew) {
@@ -1542,15 +1541,16 @@ public class CalendarModuleBean implements BeeModule {
     IsCondition wh = sys.idEquals(TBL_APPOINTMENT_REMINDERS, reminderId);
 
     String personContacts = SqlUtils.uniqueName();
+    String personEmails = SqlUtils.uniqueName();
     String personEmail = SqlUtils.uniqueName();
 
     SimpleRow data = qs.getRow(new SqlSelect()
         .addFields(TBL_APPOINTMENTS, COL_START_DATE_TIME)
-        .addFields(TBL_CONTACTS, COL_EMAIL)
+        .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
         .addFields(TBL_APPOINTMENT_REMINDERS, COL_APPOINTMENT, COL_MESSAGE)
         .addFields(TBL_REMINDER_TYPES, COL_REMINDER_METHOD,
             COL_REMINDER_TEMPLATE_CAPTION, COL_REMINDER_TEMPLATE)
-        .addField(personContacts, COL_EMAIL, personEmail)
+        .addField(personEmails, COL_EMAIL_ADDRESS, personEmail)
         .addFrom(TBL_APPOINTMENTS)
         .addFromInner(TBL_APPOINTMENT_REMINDERS,
             sys.joinTables(TBL_APPOINTMENTS, TBL_APPOINTMENT_REMINDERS, COL_APPOINTMENT))
@@ -1560,12 +1560,14 @@ public class CalendarModuleBean implements BeeModule {
         .addFromLeft(VIEW_COMPANIES,
             sys.joinTables(VIEW_COMPANIES, TBL_APPOINTMENTS, COL_COMPANY))
         .addFromLeft(TBL_CONTACTS, sys.joinTables(TBL_CONTACTS, VIEW_COMPANIES, COL_CONTACT))
+        .addFromLeft(TBL_EMAILS, sys.joinTables(TBL_EMAILS, TBL_CONTACTS, COL_EMAIL))
         .addFromLeft(TBL_COMPANY_PERSONS,
             sys.joinTables(TBL_COMPANY_PERSONS, TBL_APPOINTMENT_REMINDERS,
                 COL_RECIPIENT))
         .addFromLeft(TBL_CONTACTS, personContacts,
-            SqlUtils.join(personContacts, sys.getIdName(TBL_CONTACTS),
-                TBL_COMPANY_PERSONS, COL_CONTACT))
+            sys.joinTables(TBL_CONTACTS, personContacts, TBL_COMPANY_PERSONS, COL_CONTACT))
+        .addFromLeft(TBL_EMAILS, personEmails,
+            sys.joinTables(TBL_EMAILS, personEmails, personContacts, COL_EMAIL))
         .setWhere(SqlUtils.and(wh,
             SqlUtils.more(TBL_APPOINTMENTS, COL_START_DATE_TIME,
                 System.currentTimeMillis() - TimeUtils.MILLIS_PER_MINUTE),
@@ -1590,16 +1592,16 @@ public class CalendarModuleBean implements BeeModule {
             data.getInt(COL_REMINDER_METHOD));
 
         if (method == ReminderMethod.EMAIL) {
-          Long sender = prm.getRelation(MailConstants.PRM_DEFAULT_ACCOUNT);
-          Long email = BeeUtils.toLongOrNull(BeeUtils.notEmpty(data.getValue(personEmail),
-              data.getValue(COL_EMAIL)));
+          Long account = mail.getSenderAccountId("CalendarRemainders");
+          String email = BeeUtils.notEmpty(data.getValue(personEmail),
+              data.getValue(COL_EMAIL_ADDRESS));
 
-          if (!DataUtils.isId(sender)) {
-            error = "No default sender specified (parameter DefaultAccount)";
-          } else if (!DataUtils.isId(email)) {
+          if (!DataUtils.isId(account)) {
+            error = "No default account specified";
+          } else if (BeeUtils.isEmpty(email)) {
             error = "No recipient email address specified";
           } else {
-            ResponseObject response = mail.sendMail(sender, email, subject,
+            ResponseObject response = mail.sendMail(account, email, subject,
                 template.replace("{time}", data.getDateTime(COL_START_DATE_TIME).toString()));
 
             if (response.hasErrors()) {

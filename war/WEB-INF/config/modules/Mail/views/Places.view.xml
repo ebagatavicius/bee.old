@@ -15,16 +15,20 @@
       <SimpleColumn name="Sender" />
 
       <SimpleJoin name="Sender" joinType="LEFT">
-        <SimpleColumn name="Label" alias="SenderLabel" />
         <SimpleColumn name="Email" alias="SenderEmail" />
+        <ExternalJoin name="Email" source="Addressbook" joinType="LEFT">
+          <SimpleColumn name="Label" alias="SenderLabel" />
+        </ExternalJoin>
       </SimpleJoin>
 
       <ExternalJoin name="Message" source="Recipients" joinType="LEFT">
         <AggregateColumn name="Address" alias="RecipientCount" aggregate="COUNT" />
 
         <SimpleJoin name="Address" joinType="LEFT">
-          <AggregateColumn name="Label" alias="RecipientLabel" aggregate="MAX" />
           <AggregateColumn name="Email" alias="RecipientEmail" aggregate="MAX" />
+          <ExternalJoin name="Email" source="Addressbook" joinType="LEFT">
+            <AggregateColumn name="Label" alias="RecipientLabel" aggregate="MAX" />
+          </ExternalJoin>
         </SimpleJoin>
       </ExternalJoin>
     </SimpleJoin>

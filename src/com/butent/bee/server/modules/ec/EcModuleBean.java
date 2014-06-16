@@ -926,12 +926,13 @@ public class EcModuleBean implements BeeModule {
     if (reqInfo.hasParameter(VAR_MAIL)) {
       row = (BeeRow) response.getResponse();
 
-      Long sender = getSenderEmailId(row.getLong(managerIndex));
+      Long account = getSenderAccountId(row.getLong(managerIndex));
 
-      Long recipient = DataUtils.getLong(columns, row, ALS_EMAIL_ID);
-      if (!DataUtils.isId(recipient)) {
+      String recipient = DataUtils.getString(columns, row, COL_EMAIL_ADDRESS);
+
+      if (BeeUtils.isEmpty(recipient)) {
         Long userId = DataUtils.getLong(columns, row, COL_CLIENT_USER);
-        recipient = usr.getEmailId(userId, true);
+        recipient = usr.getUserEmail(userId, true);
       }
 
       String login = DataUtils.getString(columns, row, COL_LOGIN);
@@ -940,9 +941,9 @@ public class EcModuleBean implements BeeModule {
       SupportedLocale locale = EnumUtils.getEnumByIndex(SupportedLocale.class,
           BeeUtils.toIntOrNull(reqInfo.getParameter(COL_USER_LOCALE)));
 
-      if (DataUtils.isId(sender) && DataUtils.isId(recipient)
+      if (DataUtils.isId(account) && !BeeUtils.isEmpty(recipient)
           && !BeeUtils.anyEmpty(login, password)) {
-        response.addMessagesFrom(mailRegistration(sender, recipient, login, password, locale));
+        response.addMessagesFrom(mailRegistration(account, recipient, login, password, locale));
       }
     }
 
@@ -1668,15 +1669,6 @@ public class EcModuleBean implements BeeModule {
     return ResponseObject.response(deliveryMethods);
   }
 
-  private String getEmailAddress(Long emailId) {
-    if (DataUtils.isId(emailId)) {
-      return qs.getValue(new SqlSelect().addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
-          .addFrom(TBL_EMAILS).setWhere(sys.idEquals(TBL_EMAILS, emailId)));
-    } else {
-      return null;
-    }
-  }
-
   private ResponseObject getFinancialInformation(Long client) {
     EcFinInfo finInfo = new EcFinInfo();
     if (!DataUtils.isId(client)) {
@@ -2051,28 +2043,24 @@ public class EcModuleBean implements BeeModule {
     }
   }
 
-  private Long getIncomingEmailId(Long manager) {
+  private String getIncomingEmail(Long manager) {
     if (DataUtils.isId(manager)) {
-      Long emailId = qs.getLong(new SqlSelect()
-          .addFields(TBL_MANAGERS, COL_MANAGER_INCOMING_MAIL)
+      String email = qs.getValue(new SqlSelect()
+          .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
           .addFrom(TBL_MANAGERS)
+          .addFromInner(TBL_EMAILS,
+              sys.joinTables(TBL_EMAILS, TBL_MANAGERS, COL_MANAGER_INCOMING_MAIL))
           .setWhere(sys.idEquals(TBL_MANAGERS, manager)));
 
-      if (DataUtils.isId(emailId)) {
-        return emailId;
+      if (!BeeUtils.isEmpty(email)) {
+        return email;
       }
     }
-
-    SimpleRowSet data = qs.getData(new SqlSelect()
-        .addFields(TBL_CONFIGURATION, COL_CONFIG_INCOMING_MAIL)
+    return qs.getValue(new SqlSelect()
+        .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
         .addFrom(TBL_CONFIGURATION)
-        .setWhere(SqlUtils.notNull(TBL_CONFIGURATION, COL_CONFIG_INCOMING_MAIL)));
-
-    if (DataUtils.isEmpty(data)) {
-      return null;
-    } else {
-      return data.getLong(0, COL_CONFIG_INCOMING_MAIL);
-    }
+        .addFromInner(TBL_EMAILS,
+            sys.joinTables(TBL_EMAILS, TBL_CONFIGURATION, COL_CONFIG_INCOMING_MAIL)));
   }
 
   private ResponseObject getItemAnalogs(RequestInfo reqInfo) {
@@ -2475,33 +2463,25 @@ public class EcModuleBean implements BeeModule {
     return ResponseObject.response(Pair.of(a, b));
   }
 
-  private Long getSenderEmailId(Long manager) {
+  private Long getSenderAccountId(Long manager) {
+    Long accountId = null;
+
     if (DataUtils.isId(manager)) {
-      SimpleRowSet data = qs.getData(new SqlSelect()
-          .addFields(MailConstants.TBL_ACCOUNTS, MailConstants.COL_ADDRESS)
+      accountId = qs.getLong(new SqlSelect()
+          .addFields(MailConstants.TBL_ACCOUNTS, sys.getIdName(MailConstants.TBL_ACCOUNTS))
           .addFrom(MailConstants.TBL_ACCOUNTS)
           .addFromInner(TBL_MANAGERS, sys.joinTables(MailConstants.TBL_ACCOUNTS, TBL_MANAGERS,
               COL_MANAGER_MAIL_ACCOUNT))
           .setWhere(sys.idEquals(TBL_MANAGERS, manager)));
-
-      if (!DataUtils.isEmpty(data)) {
-        return data.getLong(0, MailConstants.COL_ADDRESS);
-      }
     }
-
-    SimpleRowSet data =
-        qs.getData(new SqlSelect()
-            .addFields(MailConstants.TBL_ACCOUNTS, MailConstants.COL_ADDRESS)
-            .addFrom(MailConstants.TBL_ACCOUNTS)
-            .addFromInner(TBL_CONFIGURATION,
-                sys.joinTables(MailConstants.TBL_ACCOUNTS, TBL_CONFIGURATION,
-                    COL_CONFIG_MAIL_ACCOUNT)));
-
-    if (DataUtils.isEmpty(data)) {
-      return null;
-    } else {
-      return data.getLong(0, MailConstants.COL_ADDRESS);
+    if (!DataUtils.isId(accountId)) {
+      accountId = qs.getLong(new SqlSelect()
+          .addFields(MailConstants.TBL_ACCOUNTS, sys.getIdName(MailConstants.TBL_ACCOUNTS))
+          .addFrom(MailConstants.TBL_ACCOUNTS)
+          .addFromInner(TBL_CONFIGURATION, sys.joinTables(MailConstants.TBL_ACCOUNTS,
+              TBL_CONFIGURATION, COL_CONFIG_MAIL_ACCOUNT)));
     }
+    return accountId;
   }
 
   private ResponseObject getShoppingCarts() {
@@ -2642,29 +2622,29 @@ public class EcModuleBean implements BeeModule {
 
     ResponseObject response = ResponseObject.emptyResponse();
 
-    Set<Long> recipients = new HashSet<>();
+    Set<String> recipients = new HashSet<>();
 
-    Long clientEmailId = null;
+    String clientEmail = null;
     if (!isClient
         || BeeUtils.isTrue(DataUtils.getBoolean(orderData, orderRow, COL_ORDER_COPY_BY_MAIL))) {
-      clientEmailId = usr.getEmailId(clientUser, true);
+      clientEmail = usr.getUserEmail(clientUser, true);
 
-      if (DataUtils.isId(clientEmailId)) {
-        recipients.add(clientEmailId);
+      if (!BeeUtils.isEmpty(clientEmail)) {
+        recipients.add(clientEmail);
       } else {
         response.addWarning(usr.getLocalizableConstants().ecMailClientAddressNotFound());
       }
     }
 
-    Long incomingEmailId = null;
+    String incomingEmail = null;
     if (status == EcOrderStatus.NEW) {
-      incomingEmailId = getIncomingEmailId(manager);
-      if (incomingEmailId != null && incomingEmailId.equals(clientEmailId)) {
-        incomingEmailId = null;
+      incomingEmail = getIncomingEmail(manager);
+      if (incomingEmail != null && incomingEmail.equals(clientEmail)) {
+        incomingEmail = null;
       }
 
-      if (DataUtils.isId(incomingEmailId)) {
-        recipients.add(incomingEmailId);
+      if (!BeeUtils.isEmpty(incomingEmail)) {
+        recipients.add(incomingEmail);
       }
     }
 
@@ -2672,8 +2652,8 @@ public class EcModuleBean implements BeeModule {
       return response;
     }
 
-    Long sender = getSenderEmailId(manager);
-    if (!DataUtils.isId(sender)) {
+    Long account = getSenderAccountId(manager);
+    if (!DataUtils.isId(account)) {
       return ResponseObject.warning(usr.getLocalizableConstants().ecMailAccountNotFound());
     }
 
@@ -2683,8 +2663,8 @@ public class EcModuleBean implements BeeModule {
     Document document = orderToHtml(orderData.getColumns(), orderRow, constants);
     String content = document.buildLines();
 
-    ResponseObject mailResponse = mail.sendMail(sender, recipients, status.getSubject(constants),
-        content);
+    ResponseObject mailResponse = mail.sendMail(account, recipients.toArray(new String[0]),
+        status.getSubject(constants), content);
     if (mailResponse.hasErrors()) {
       if (isClient) {
         return ResponseObject.warning(usr.getLocalizableConstants().ecMailFailed());
@@ -2693,27 +2673,24 @@ public class EcModuleBean implements BeeModule {
       }
     }
 
-    String clientAddress = getEmailAddress(clientEmailId);
-    String incomingAddress = getEmailAddress(incomingEmailId);
+    logger.info(SVC_MAIL_ORDER, orderId, "sent to", clientEmail, incomingEmail);
 
-    logger.info(SVC_MAIL_ORDER, orderId, "sent to", clientAddress, incomingAddress);
-
-    if (isClient && !DataUtils.isId(clientEmailId)) {
+    if (isClient && BeeUtils.isEmpty(clientEmail)) {
       return response;
     }
 
     response.addInfo(usr.getLocalizableConstants().ecMailSent());
-    if (!BeeUtils.isEmpty(clientAddress)) {
-      response.addInfo(clientAddress);
+    if (!BeeUtils.isEmpty(clientEmail)) {
+      response.addInfo(clientEmail);
     }
-    if (!isClient && !BeeUtils.isEmpty(incomingAddress)) {
-      response.addInfo(incomingAddress);
+    if (!isClient && !BeeUtils.isEmpty(incomingEmail)) {
+      response.addInfo(incomingEmail);
     }
 
     return response;
   }
 
-  private ResponseObject mailRegistration(Long sender, Long recipient, String login,
+  private ResponseObject mailRegistration(Long account, String recipient, String login,
       String password, SupportedLocale locale) {
 
     String companyName = BeeUtils.trim(prm.getText(PRM_COMPANY));
@@ -2724,13 +2701,13 @@ public class EcModuleBean implements BeeModule {
     String subject = BeeUtils.trim(messages.ecRegistrationMailSubject(companyName));
     String content = BeeUtils.trim(messages.ecRegistrationMailContent(login, password, url));
 
-    ResponseObject response = mail.sendMail(sender, recipient, subject, content);
+    ResponseObject response = mail.sendMail(account, recipient, subject, content);
     if (response.hasErrors()) {
       return response;
     }
 
     response.addInfo(usr.getLocalizableConstants().ecMailSent());
-    response.addInfo(getEmailAddress(recipient));
+    response.addInfo(recipient);
 
     return response;
   }

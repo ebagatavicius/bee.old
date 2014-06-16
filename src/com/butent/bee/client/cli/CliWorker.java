@@ -705,7 +705,7 @@ public final class CliWorker {
               logger.warning("element id:", value, "not found");
             } else {
               raf.style = elem.getStyle();
-              logger.debug("id", value, elem.getTagName(), elem.getClassName());
+              logger.debug("id", value, elem.getTagName(), DomUtils.getClassName(elem));
             }
           }
           break;
@@ -1485,7 +1485,10 @@ public final class CliWorker {
       }
 
     } else {
-      BeeKeeper.getScreen().showInfo();
+      List<ExtendedProperty> info = BeeKeeper.getScreen().getExtendedInfo();
+
+      ExtendedPropertiesData data = new ExtendedPropertiesData(info, false);
+      Global.showModalGrid("Screen", data);
     }
   }
 
@@ -3862,6 +3865,8 @@ public final class CliWorker {
       child.setAttribute("fill", "rgb(" + r + "," + g + "," + b + ")");
       child.setAttribute("opacity", BeeUtils.toString((minOpacity == maxOpacity)
           ? minOpacity : BeeUtils.randomDouble(minOpacity, maxOpacity)));
+      
+      DomUtils.createId(child, child.getTagName());
 
       parent.appendChild(child);
     }

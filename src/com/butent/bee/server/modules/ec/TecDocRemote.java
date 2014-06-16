@@ -10,7 +10,6 @@ import com.butent.bee.server.sql.SqlBuilderFactory;
 import com.butent.bee.server.sql.SqlCreate;
 import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
-import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -20,7 +19,6 @@ import com.butent.bee.shared.exceptions.BeeRuntimeException;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogLevel;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.sql.ResultSet;
@@ -71,18 +69,14 @@ public class TecDocRemote {
   }
 
   public BeeRowSet getCrossai(SimpleRowSet orphans) {
-    String tmp = "Bnovo";
-    String[] fields = new String[] {"code", "brand"};
+    String tmp = SqlUtils.uniqueName();
     DataSource ds = getCrossaiDs();
     SqlBuilder builder = SqlBuilderFactory.getBuilder(qs.dbEngine(ds));
 
-    processSql(ds, SqlUtils.dropTable("IF EXISTS " + tmp).getSqlString(builder));
-
-    processSql(ds, new SqlCreate(tmp, false)
+    processSql(ds, new SqlCreate(tmp)
         .setDataSource(new SqlSelect()
             .addField("tof_articles", "art_article_nr", "code")
             .addField("tof_articles", "art_article_nr", "brand")
-            .addField("tof_articles", "art_des_id", "supplierid")
             .addFrom("tof_articles")
             .setWhere(SqlUtils.sqlFalse()))
         .getSqlString(builder));
@@ -94,7 +88,7 @@ public class TecDocRemote {
       messyLogger.setLevel(LogLevel.INFO);
     }
     SqlInsert insert = new SqlInsert(tmp)
-        .addFields(fields);
+        .addFields("code", "brand");
     int c = 0;
 
     for (SimpleRow row : orphans) {
@@ -113,39 +107,106 @@ public class TecDocRemote {
     if (isDebugEnabled) {
       messyLogger.setLevel(LogLevel.DEBUG);
     }
-    processSql(ds, SqlUtils.createIndex(tmp, "brand", Lists.newArrayList("brand"), false)
-        .getSqlString(builder));
+    processSql(ds, SqlUtils.dropTable("IF EXISTS Bnovo").getSqlString(builder));
 
-    processSql(ds, new SqlUpdate(BeeUtils.joinItems(tmp, "brands"))
-        .addExpression(SqlUtils.field(tmp, "supplierid").getSqlString(builder),
-            SqlUtils.field("brands", "supplierid"))
-        .setWhere(SqlUtils.joinUsing(tmp, "brands", "brand"))
-        .getSqlString(builder));
+    processSql(ds, "CREATE TABLE Bnovo ENGINE MyISAM AS SELECT"
+        + "  CONVERT(code using ascii) collate ascii_bin AS code,"
+        + "  CONVERT(brand using ascii) collate ascii_bin AS brand"
+        + " FROM " + tmp);
+
+    processSql(ds, SqlUtils.dropTable("IF EXISTS " + tmp).getSqlString(builder));
 
     String union = new StringBuilder()
-        .append("SELECT Bnovo.code AS Kodas,")
-        .append("   Bnovo.brand AS Tiekejas,")
-        .append("   tof_art_lookup.ARL_DISPLAY_NR AS AnalogoKodas,")
-        .append("   brands2.Brand AS AnalogoTiekejas")
-        .append(" FROM Bnovo")
-        .append(" INNER JOIN brands ON Bnovo.supplierId = brands.SupplierId")
-        .append(" INNER JOIN tof_articles ON Bnovo.code = tof_articles.ART_ARTICLE_NR")
-        .append("   AND tof_articles.ART_SUP_ID = brands.SupplierNr")
-        .append(" INNER JOIN tof_art_lookup ON tof_articles.ART_ID = tof_art_lookup.ARL_ART_ID")
+        .append("SELECT")
+        .append("  Bnovo.code AS eolto_Kodas,")
+        .append("  brands2.Brand AS eolto_Tiekejas,")
+        .append("  tof_art_lookup.ARL_DISPLAY_NR AS analogo_Kodas,")
+        .append("  brands.Brand AS analogo_Tiekejas")
+        .append(" FROM")
+        .append("  tof_art_lookup")
+        .append(" Inner Join tof_articles ON tof_articles.ART_ID = tof_art_lookup.ARL_ART_ID")
         .append("   AND tof_art_lookup.ARL_KIND = 4")
-        .append(" INNER JOIN brands AS brands2 ON tof_art_lookup.ARL_BRA_ID = brands2.SupplierNr")
-        .append(" UNION ")
-        .append("SELECT Bnovo.code AS Kodas,")
-        .append("   Bnovo.brand AS Tiekejas,")
-        .append("   tof_articles.ART_ARTICLE_NR AS AnalogoKodas,")
-        .append("   brands2.Brand AS AnalogoTiekejas")
-        .append(" FROM Bnovo")
-        .append(" INNER JOIN brands ON Bnovo.supplierId = brands.SupplierId")
-        .append(" INNER JOIN tof_art_lookup ON Bnovo.code = tof_art_lookup.ARL_DISPLAY_NR")
+        .append(" Inner Join brands ON tof_art_lookup.ARL_BRA_ID = brands.SupplierNr")
+        .append(" Inner Join brands AS brands2 ON tof_articles.ART_SUP_ID = brands2.SupplierNr")
+        .append(" Inner Join Bnovo ON Bnovo.code = tof_articles.ART_ARTICLE_NR")
+        .append("   AND Bnovo.brand = brands2.Brand")
+        .append(" UNION")
+        .append(" SELECT")
+        .append("  Bnovo.code  AS eolto_Kodas,")
+        .append("  brands.Brand AS eolto_Tiekejas,")
+        .append("  tof_articles.ART_ARTICLE_NR,")
+        .append("  brands2.Brand AS analogo_Tiekejas")
+        .append(" FROM")
+        .append("  tof_art_lookup")
+        .append(" Inner Join brands ON brands.SupplierNr = tof_art_lookup.ARL_BRA_ID")
         .append("   AND tof_art_lookup.ARL_KIND = 4")
-        .append("   AND brands.SupplierNr = tof_art_lookup.ARL_BRA_ID")
-        .append(" INNER JOIN tof_articles ON tof_art_lookup.ARL_ART_ID = tof_articles.ART_ID")
-        .append(" INNER JOIN brands AS brands2 ON tof_articles.ART_SUP_ID = brands2.SupplierNr")
+        .append(" Inner Join Bnovo ON Bnovo.brand = brands.Brand")
+        .append("   AND Bnovo.code = tof_art_lookup.ARL_DISPLAY_NR")
+        .append(" Inner Join tof_articles ON tof_art_lookup.ARL_ART_ID = tof_articles.ART_ID")
+        .append(" Inner Join brands AS brands2 ON tof_articles.ART_SUP_ID = brands2.SupplierNr")
+        .append(" UNION")
+        .append(" SELECT")
+        .append("  Bnovo.code  AS eolto_Kodas,")
+        .append("  brands.Brand AS eolto_Tiekejas,")
+        .append("  tof_art_lookup.ARL_DISPLAY_NR  AS analogo_Kodas,")
+        .append("  brands2.Brand AS analogo_Tiekejas")
+        .append(" FROM")
+        .append("  Bnovo")
+        .append(" Inner Join brands ON Bnovo.brand = brands.Brand")
+        .append(" Inner Join crossainew ON crossainew.SupplierId = brands.SupplierId")
+        .append("   AND Bnovo.code = crossainew.CodeExistTcd")
+        .append(" Inner Join tof_articles ON brands.SupplierNr = tof_articles.ART_SUP_ID")
+        .append("   AND crossainew.CodeExistTcd = tof_articles.ART_ARTICLE_NR")
+        .append(" Inner Join tof_art_lookup ON tof_articles.ART_ID = tof_art_lookup.ARL_ART_ID")
+        .append("   AND tof_art_lookup.ARL_KIND = 4")
+        .append(" Inner Join brands AS brands2 ON tof_art_lookup.ARL_BRA_ID = brands2.SupplierNr")
+        .append(" UNION")
+        .append(" SELECT")
+        .append("  Bnovo.code,")
+        .append("  brands.Brand,")
+        .append("  tof_art_lookup.ARL_DISPLAY_NR,")
+        .append("  brands2.Brand")
+        .append(" FROM")
+        .append("  Bnovo")
+        .append(" Inner Join brands ON Bnovo.brand = brands.Brand")
+        .append(" Inner Join crossainew ON crossainew.SupplierId = brands.SupplierNr")
+        .append("   AND Bnovo.code = crossainew.Code")
+        .append(" Inner Join tof_articles")
+        .append("  ON crossainew.SupplierComperableId = tof_articles.ART_SUP_ID")
+        .append("   AND crossainew.CodeComperable = tof_articles.ART_ARTICLE_NR")
+        .append(" Inner Join tof_art_lookup ON tof_articles.ART_ID = tof_art_lookup.ARL_ART_ID")
+        .append("   AND tof_art_lookup.ARL_KIND = 4")
+        .append(" Inner Join brands AS brands2 ON tof_art_lookup.ARL_BRA_ID = brands2.SupplierNr")
+        .append(" UNION")
+        .append(" SELECT")
+        .append("  Bnovo.code,")
+        .append("  brands.Brand,")
+        .append("  tof_articles.ART_ARTICLE_NR as analogo_Kodas,")
+        .append("  brands2.Brand AS analogo_Tiekejas")
+        .append(" FROM")
+        .append("  Bnovo")
+        .append(" Inner Join brands ON Bnovo.brand = brands.Brand")
+        .append(" Inner Join crossainew ON crossainew.SupplierId = brands.SupplierNr")
+        .append("   AND Bnovo.code = crossainew.Code")
+        .append(" Inner Join tof_art_lookup")
+        .append("  ON crossainew.CodeComperable = tof_art_lookup.ARL_DISPLAY_NR")
+        .append("   AND tof_art_lookup.ARL_BRA_ID = crossainew.SupplierComperableId")
+        .append("   AND tof_art_lookup.ARL_KIND = 4")
+        .append(" Inner Join tof_articles ON tof_articles.ART_ID = tof_art_lookup.ARL_ART_ID")
+        .append(" Inner Join brands AS brands2 ON tof_articles.ART_SUP_ID  = brands2.SupplierNr")
+        .append(" UNION")
+        .append(" SELECT")
+        .append("  Bnovo.code,")
+        .append("  brands.Brand,")
+        .append("  crossainew.CodeComperable as analogo_Kodas,")
+        .append("  brands2.Brand AS analogo_Tiekejas")
+        .append(" FROM")
+        .append("  Bnovo")
+        .append(" Inner Join brands ON Bnovo.brand = brands.Brand")
+        .append(" Inner Join crossainew ON crossainew.SupplierId = brands.SupplierNr")
+        .append("   AND Bnovo.code = crossainew.Code")
+        .append(" Inner Join brands AS brands2")
+        .append("  ON crossainew.SupplierComperableId = brands2.SupplierNr")
         .toString();
 
     return (BeeRowSet) processSql(ds, union);

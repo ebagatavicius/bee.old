@@ -8,6 +8,12 @@
     <Relation name="User" relation="Users" notNull="true" unique="true" cascade="DELETE"
       label="=user" />
 
+    <Enum name="Locale" key="SupportedLocale" label="=userLocale" />
+
+    <Boolean name="MailAssignedTasks" label="=crmMailAssignedTasks" />
+    <Boolean name="MailNewDiscussions" label="=discussMailNewDiscussions" />
+    <Boolean name="MailNewAnnouncements" label="=discussMailNewAnnouncements" />    
+      
     <Boolean name="OpenInNewTab" label="=openInNewTab" />
 
     <Boolean name="WorkspaceContinue" label="=workspaceContinue" />

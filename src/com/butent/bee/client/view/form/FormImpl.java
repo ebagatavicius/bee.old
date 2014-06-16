@@ -1,8 +1,5 @@
 package com.butent.bee.client.view.form;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -104,8 +101,11 @@ import com.butent.bee.shared.ui.NavigationOrigin;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -315,7 +315,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   private static final String STYLE_FORM = StyleUtils.CLASS_NAME_PREFIX + "Form";
   private static final String STYLE_FORM_DISABLED = StyleUtils.CLASS_NAME_PREFIX + "Form-"
       + StyleUtils.NAME_DISABLED;
-  private static final String STYLE_WIDGET_DISABLED = StyleUtils.CLASS_NAME_PREFIX 
+  private static final String STYLE_WIDGET_DISABLED = StyleUtils.CLASS_NAME_PREFIX
       + StyleUtils.NAME_DISABLED;
 
   private static final String NEW_ROW_CAPTION = "Create New";
@@ -360,12 +360,12 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   private FormInterceptor formInterceptor;
 
   private final CreationCallback creationCallback = new CreationCallback();
-  private final List<String> disablableWidgets = Lists.newArrayList();
+  private final List<String> disablableWidgets = new ArrayList<>();
 
-  private final Set<DisplayWidget> displayWidgets = Sets.newHashSet();
-  private final List<EditableWidget> editableWidgets = Lists.newArrayList();
+  private final Set<DisplayWidget> displayWidgets = new HashSet<>();
+  private final List<EditableWidget> editableWidgets = new ArrayList<>();
 
-  private final List<TabEntry> tabOrder = Lists.newArrayList();
+  private final List<TabEntry> tabOrder = new ArrayList<>();
 
   private String previewId;
 
@@ -378,12 +378,12 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   private DataObserver dataObserver;
 
   private String options;
-  private final Map<String, String> properties = Maps.newHashMap();
+  private final Map<String, String> properties = new HashMap<>();
 
   public FormImpl(String formName) {
     super(Position.RELATIVE, Overflow.AUTO);
     this.formName = formName;
-    
+
     if (!BeeUtils.isEmpty(formName)) {
       addStyleName(StyleUtils.CLASS_NAME_PREFIX + "form-" + formName.trim());
     }
@@ -620,7 +620,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
   @Override
   public Collection<RowChildren> getChildrenForInsert() {
-    Collection<RowChildren> result = Lists.newArrayList();
+    Collection<RowChildren> result = new ArrayList<>();
 
     for (EditableWidget editableWidget : getEditableWidgets()) {
       if (editableWidget.getEditor() instanceof HasRowChildren) {
@@ -636,7 +636,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
   @Override
   public Collection<RowChildren> getChildrenForUpdate() {
-    Collection<RowChildren> result = Lists.newArrayList();
+    Collection<RowChildren> result = new ArrayList<>();
 
     for (EditableWidget editableWidget : getEditableWidgets()) {
       if (editableWidget.getEditor() instanceof HasRowChildren) {
@@ -787,7 +787,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
   @Override
   public List<? extends IsRow> getRowData() {
-    List<IsRow> data = Lists.newArrayList();
+    List<IsRow> data = new ArrayList<>();
     if (getActiveRow() != null) {
       data.add(getActiveRow());
     }
@@ -847,7 +847,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     if (widget == null) {
       logger.warning("widget not found:", name);
     }
-    
+
     return widget;
   }
 
@@ -1001,7 +1001,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
     boolean wasRowEnabled = isRowEnabled(rowValue);
 
-    Set<String> refreshed = Sets.newHashSet();
+    Set<String> refreshed = new HashSet<>();
     for (EditableWidget editableWidget : getEditableWidgets()) {
       if (editableWidget.hasSource(source)) {
         editableWidget.refresh(rowValue);
@@ -1029,7 +1029,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       }
 
       if (rowEnabled != wasRowEnabled) {
-        Set<String> editableIds = Sets.newHashSet();
+        Set<String> editableIds = new HashSet<>();
         for (EditableWidget editableWidget : getEditableWidgets()) {
           editableIds.add(editableWidget.getWidgetId());
         }
@@ -1062,8 +1062,8 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
     boolean isNew = DataUtils.isNewRow(getActiveRow());
 
-    List<String> messages = Lists.newArrayList();
-    List<String> updatedLabels = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
+    List<String> updatedLabels = new ArrayList<>();
 
     final BeeRowSet rowSet =
         DataUtils.getUpdated(getViewName(), getDataColumns(), getOldRow(), getActiveRow(), null);
@@ -1165,11 +1165,22 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       if (isFlushable()) {
         rowValue.setValue(index, newValue);
 
-        Set<String> refreshed = Sets.newHashSet();
+        Set<String> refreshed = new HashSet<>();
 
         if (event.hasRelation() && source instanceof EditableWidget) {
-          ((EditableWidget) source).maybeUpdateRelation(getViewName(), rowValue, false);
+          Collection<String> updatedColumns =
+              ((EditableWidget) source).maybeUpdateRelation(getViewName(), rowValue, false);
+
           refreshed.addAll(refreshEditableWidget(index));
+
+          if (!BeeUtils.isEmpty(updatedColumns)) {
+            for (String uc : updatedColumns) {
+              if (!column.getId().equals(uc)) {
+                refreshed.addAll(refreshEditableWidget(getDataIndex(uc)));
+              }
+            }
+          }
+
         } else if (event.isRowMode()) {
           refreshed.addAll(refreshEditableWidgets());
         }
@@ -1243,8 +1254,8 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       return;
     }
 
-    List<BeeColumn> columns = Lists.newArrayList();
-    List<String> values = Lists.newArrayList();
+    List<BeeColumn> columns = new ArrayList<>();
+    List<String> values = new ArrayList<>();
 
     for (int i = 0; i < getDataColumns().size(); i++) {
       String value = getActiveRow().getString(i);
@@ -1321,7 +1332,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   @Override
   public int refreshBySource(String source) {
     Assert.notEmpty(source);
-    Set<String> refreshed = Sets.newHashSet();
+    Set<String> refreshed = new HashSet<>();
 
     for (EditableWidget editableWidget : getEditableWidgets()) {
       if (editableWidget.hasSource(source)) {
@@ -1915,19 +1926,21 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   }
 
   private Set<String> refreshEditableWidget(int dataIndex) {
-    Set<String> refreshed = Sets.newHashSet();
+    Set<String> refreshed = new HashSet<>();
 
-    for (EditableWidget editableWidget : getEditableWidgets()) {
-      if (editableWidget.getDataIndex() == dataIndex) {
-        editableWidget.refresh(getActiveRow());
-        refreshed.add(editableWidget.getWidgetId());
+    if (!BeeConst.isUndef(dataIndex)) {
+      for (EditableWidget editableWidget : getEditableWidgets()) {
+        if (editableWidget.getDataIndex() == dataIndex) {
+          editableWidget.refresh(getActiveRow());
+          refreshed.add(editableWidget.getWidgetId());
+        }
       }
     }
     return refreshed;
   }
 
   private Set<String> refreshEditableWidgets() {
-    Set<String> refreshed = Sets.newHashSet();
+    Set<String> refreshed = new HashSet<>();
 
     boolean rowEnabled = isRowEnabled(getActiveRow());
     boolean isNew = DataUtils.isNewRow(getActiveRow());

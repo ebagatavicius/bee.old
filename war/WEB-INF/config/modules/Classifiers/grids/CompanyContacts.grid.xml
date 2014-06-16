@@ -16,9 +16,7 @@
     </CalcColumn>  
     <DataColumn name="Phone" minWidth="100" maxWidth="200"/>
     <DataColumn name="Fax" minWidth="50" maxWidth="200" visible="false" />
-    <RelColumn name="EmailId" renderColumns="Label Email">
-      <renderer type="mail" />
-    </RelColumn>
+    <RelColumn name="EmailId" />
     <DataColumn name="Website" minWidth="100" maxWidth="200" visible="false" />
     <DataColumn name="SocialContacts" minWidth="100" maxWidth="200" visible="false" />
   </g:columns>

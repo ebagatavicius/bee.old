@@ -89,12 +89,14 @@ public class ReportSettings {
       CustomDiv label = new CustomDiv(STYLE_LABEL);
       label.setText(item.getCaption());
 
-      List<String> params = Lists.newArrayList();
-      for (Map.Entry<String, String> entry : item.getParameters().entrySet()) {
-        params.add(BeeUtils.joinWords(entry.getKey(), entry.getValue()));
-      }
-      if (!params.isEmpty()) {
-        label.setTitle(BeeUtils.buildLines(params));
+      if (Global.isDebug()) {
+        List<String> params = Lists.newArrayList();
+        for (Map.Entry<String, String> entry : item.getParameters().entrySet()) {
+          params.add(BeeUtils.joinWords(entry.getKey(), entry.getValue()));
+        }
+        if (!params.isEmpty()) {
+          label.setTitle(BeeUtils.buildLines(params));
+        }
       }
 
       label.addClickHandler(new ClickHandler() {
@@ -191,8 +193,8 @@ public class ReportSettings {
     }
 
     final SettingsWidget settingsWidget = find(report, parameters);
-    
-    String defValue = (settingsWidget == null) ? caption : settingsWidget.getItem().getCaption(); 
+
+    String defValue = (settingsWidget == null) ? caption : settingsWidget.getItem().getCaption();
     int maxLength = Data.getColumnPrecision(VIEW_REPORT_SETTINGS, COL_RS_CAPTION);
 
     Global.inputString(Localized.getConstants().bookmarkName(), null, new StringCallback() {

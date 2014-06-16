@@ -213,7 +213,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
     public GridInterceptor getInstance() {
       return new ChildAssessmentsGrid();
     }
-    
+
     @Override
     public AbstractCellRenderer getRenderer(String columnName,
         List<? extends IsColumn> dataColumns, ColumnDescription columnDescription,
@@ -724,11 +724,11 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
               + BeeUtils.joinWords(activeRow.getString(form.getDataIndex("FirstName")),
                   activeRow.getString(form.getDataIndex("LastName"))));
 
-          Set<Long> recipient = null;
-          Long addr = activeRow.getLong(form.getDataIndex("PersonEmail"));
+          Set<String> recipient = null;
+          String addr = activeRow.getString(form.getDataIndex("PersonEmail"));
 
           if (addr == null) {
-            addr = activeRow.getLong(form.getDataIndex("CustomerEmail"));
+            addr = activeRow.getString(form.getDataIndex("CustomerEmail"));
           }
           if (addr != null) {
             recipient = Sets.newHashSet(addr);

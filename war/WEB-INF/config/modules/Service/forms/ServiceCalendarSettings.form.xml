@@ -38,7 +38,7 @@
     
       <row>
         <Label for="CalendarSeparateObjects" style="&lbl;" />
-        <CheckBox source="CalendarSeparateObjects" style="&cb_inp;"/>
+        <CheckBox source="CalendarSeparateObjects" html="-" style="&cb_inp;" />
       </row>
     
       <row>

@@ -33,31 +33,31 @@
     &separator;
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsSeparateTrips" style="&lbl;" />
-      <CheckBox source="SsSeparateTrips" style="&cb_inp;"/>
+      <CheckBox source="SsSeparateTrips" html="-" style="&cb_inp;" />
     </FlowPanel>
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsSeparateCargo" style="&lbl;" />
-      <CheckBox source="SsSeparateCargo" style="&cb_inp;"/>
+      <CheckBox source="SsSeparateCargo" html="-" style="&cb_inp;" />
     </FlowPanel>
 
     &separator;
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsCountryFlags" style="&lbl;" />
-      <CheckBox source="SsCountryFlags" style="&cb_inp;"/>
+      <CheckBox source="SsCountryFlags" html="-" style="&cb_inp;" />
     </FlowPanel>
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceInfo" style="&lbl;" />
-      <CheckBox source="SsPlaceInfo" style="&cb_inp;"/>
+      <CheckBox source="SsPlaceInfo" html="-" style="&cb_inp;" />
     </FlowPanel>
 
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCities" style="&lbl;" />
-      <CheckBox source="SsPlaceCities" style="&cb_inp;"/>
+      <CheckBox source="SsPlaceCities" html="-" style="&cb_inp;" />
     </FlowPanel>
     
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCodes" style="&lbl;" />
-      <CheckBox source="SsPlaceCodes" style="&cb_inp;"/>
+      <CheckBox source="SsPlaceCodes" html="-" style="&cb_inp;" />
     </FlowPanel>
 
     &separator;

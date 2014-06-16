@@ -1,6 +1,9 @@
 package com.butent.bee.client;
 
 import com.butent.bee.shared.HasInfo;
+import com.butent.bee.shared.data.BeeRow;
+import com.butent.bee.shared.data.BeeRowSet;
+import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
@@ -22,6 +25,8 @@ public class UserInfo implements HasInfo {
 
   private String sessionId;
   private UserData userData;
+  
+  private BeeRowSet settings;
 
   public boolean canCreateData(String object) {
     return isLoggedIn() && userData.canCreateData(object);
@@ -87,6 +92,14 @@ public class UserInfo implements HasInfo {
 
   public String getSessionId() {
     return sessionId;
+  }
+
+  public BeeRow getSettingsRow() {
+    if (DataUtils.isEmpty(settings)) {
+      return null;
+    } else {
+      return settings.getRow(0); 
+    }
   }
 
   public UserData getUserData() {
@@ -155,9 +168,17 @@ public class UserInfo implements HasInfo {
   public boolean isModuleVisible(String object) {
     return isLoggedIn() && userData.isModuleVisible(object);
   }
-
+  
   public boolean isWidgetVisible(RegulatedWidget widget) {
     return isLoggedIn() && userData.isWidgetVisible(widget);
+  }
+  
+  public void loadSettings(String serialized) {
+    if (!BeeUtils.isEmpty(serialized)) {
+      settings = BeeRowSet.restore(serialized);
+    } else {
+      settings = null;
+    }
   }
 
   public void setSessionId(String sessionId) {
@@ -166,5 +187,15 @@ public class UserInfo implements HasInfo {
 
   public void setUserData(UserData userData) {
     this.userData = userData;
+  }
+  
+  public void updateSettings(BeeRow row) {
+    if (settings != null && row != null) {
+      if (!settings.isEmpty()) {
+        settings.clearRows();
+      }
+      
+      settings.addRow(row);
+    }
   }
 }

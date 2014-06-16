@@ -12,9 +12,7 @@
     </RelColumn>
 
     <DataColumn name="Mobile" visible="false" />
-    <DataColumn name="Email" renderColumns="Label Email" visible="false">
-      <renderer type="mail" />
-    </DataColumn>
+    <DataColumn name="Email" visible="false" />
 
     <RelColumn name="TypeName" label="=type" newRowEnabled="false" visible="true" />
     <DataColumn name="Method" visible="false" />

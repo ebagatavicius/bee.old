@@ -33,6 +33,7 @@ import com.butent.bee.shared.rights.RegulatedWidget;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.GridDescription;
+import com.butent.bee.shared.ui.UserInterface.Component;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
@@ -48,7 +49,8 @@ public class GridMenu {
     BOOKMARK(Action.BOOKMARK) {
       @Override
       boolean isEnabled(GridDescription gridDescription, Collection<UiOption> uiOptions) {
-        return !BeeUtils.isEmpty(gridDescription.getFavorite());
+        return !BeeUtils.isEmpty(gridDescription.getFavorite())
+            && BeeKeeper.getScreen().getUserInterface().hasComponent(Component.FAVORITES);
       }
 
       @Override

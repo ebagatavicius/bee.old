@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="UserSettings" viewName="UserSettings" caption="=userSettings"
+  disabledActions="add delete"
+  >
+  <g:columns>
+    <DataColumn name="User" visible="false" />
+    <DataColumn name="Login" visible="true" />
+
+    <DataColumn name="FirstName" />
+    <DataColumn name="LastName" />
+    <DataColumn name="CompanyName" label="=company" />
+    <DataColumn name="PositionName" label="=personPosition" visible="false" />
+
+    <DataColumn name="Locale" />
+
+    <DataColumn name="MailAssignedTasks" module="Tasks" />
+    <DataColumn name="MailNewDiscussions" module="Discussions" />
+    <DataColumn name="MailNewAnnouncements" module="Discussions" />
+
+    <DataColumn name="OpenInNewTab" />
+    <DataColumn name="WorkspaceContinue" />
+
+    <DataColumn name="LastWorkspace" visible="false" />
+
+    <DataColumn name="Style" visible="false" />
+  </g:columns>
+</g:Grid>

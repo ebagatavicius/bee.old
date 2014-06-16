@@ -10,32 +10,22 @@
     style="margin:5px; position:relative; width:760px; height:460px;">
 
     <FlowPanel class="bee-mail-Envelope">
-      <MultiSelector name="To" viewName="Emails" renderColumns="Label Email"
-         caption="=mailTo" d:size="40" d:unit="px" style="display:inline-block; width:600px;">
-        <renderer type="mail" />
-      </MultiSelector>
-
-      <Disclosure style="display: inline-block;">
-        <Label text="=mailMailingCopies" style="font-size: smaller" />
-        <FlowPanel>
-          <Table>
-            <row>
-              <Label text="=mailCc" horizontalAlignment="right" />
-              <MultiSelector name="Cc" viewName="Emails" style="width:600px"
-                 renderColumns="Label Email">
-                <renderer type="mail" />
-              </MultiSelector>
-            </row>
-            <row>
-              <Label text="=mailBcc" horizontalAlignment="right" />
-              <MultiSelector name="Bcc" viewName="Emails" style="width:600px;"
-                 renderColumns="Label Email">
-                <renderer type="mail" />
-              </MultiSelector>
-            </row>
-          </Table>
-        </FlowPanel>
-      </Disclosure>
+      <FlowPanel>
+        <Table>
+          <row>
+            <Label text="=mailTo" horizontalAlignment="right"  />
+            <FlowPanel name="To" />
+          </row>
+          <row>
+            <Label text="=mailCc" horizontalAlignment="right" />
+            <FlowPanel name="Cc" />
+          </row>
+          <row>
+            <Label text="=mailBcc" horizontalAlignment="right" />
+            <FlowPanel name="Bcc" />
+          </row>
+        </Table>
+      </FlowPanel>
 
       <InputText name="Subject" placeholder="=mailSubject" style="width:600px; display:block;" />
 

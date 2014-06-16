@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="Addressbook" source="Addressbook"
+  caption="=mailAddressbook" newRowCaption="=newEmailAddress"
+  >
+  <Columns>
+    <SimpleColumn name="User" />
+    <SimpleColumn name="Email" alias="EmailId" />
+    <SimpleJoin name="Email" joinType="INNER">
+      <SimpleColumn name="Email" />
+    </SimpleJoin>
+    <SimpleColumn name="Label" />
+  </Columns>
+  <Order>
+    <OrderBy column="Email" />
+  </Order>
+</View>
+ 

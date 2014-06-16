@@ -2,25 +2,22 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
   name="Users" viewName="Users" caption="=users"
-  newRowPopup="true" editInPlace="Interface BlockAfter BlockBefore"
+  newRowPopup="true"
   >
   <g:columns>
     <IdColumn name="Id" />
-    <DataColumn name="Login" caption="=userLogin" visible="true" />
+    <DataColumn name="Login" visible="true" />
 
-    <RelColumn name="CompanyPerson" renderColumns="FirstName LastName" caption="=personFullName"
-      visible="true" />
-    <DataColumn name="CompanyName" caption="=company" />
-    <DataColumn name="PositionName" visible="false" />
+    <RelColumn name="CompanyPerson" renderColumns="FirstName LastName"
+      label="=personFullName" visible="true" />
+    <DataColumn name="CompanyName" label="=company" />
 
-    <DataColumn name="Locale" />
+    <DataColumn name="PositionName" label="=personPosition" visible="false" />
+    <DataColumn name="DateOfBirth" visible="false" />
+
     <DataColumn name="Interface" />
 
     <DataColumn name="BlockAfter" />
     <DataColumn name="BlockBefore" />
-
-    <DataColumn name="MailAssignedTasks" visible="false" />
-
-    <DataColumn name="Properties" visible="false" />
   </g:columns>
 </g:Grid>

@@ -2,14 +2,49 @@
 <View xmlns="http://www.butent.com/view"
 
   name="UserSettings" source="UserSettings" module="Administration"
-  caption="=userSettings"
+  caption="=userSettings" editForm="UserSettings"
   >
   <Columns>
     <SimpleColumn name="User" />
+    
+    <SimpleJoin name="User" joinType="LEFT">
+      <SimpleColumn name="Login" />
+      <SimpleColumn name="Password" />
+      
+      <SimpleColumn name="CompanyPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleColumn name="Person" />
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" />
+          <SimpleColumn name="LastName" />
+        </SimpleJoin>
+        <SimpleJoin name="Position" joinType="LEFT">
+          <SimpleColumn name="Name" alias="PositionName" />
+        </SimpleJoin>
+        <SimpleJoin name="Company" joinType="LEFT">
+          <SimpleColumn name="Name" alias="CompanyName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Locale" />
+
+    <SimpleColumn name="MailAssignedTasks" />
+    <SimpleColumn name="MailNewDiscussions" />
+    <SimpleColumn name="MailNewAnnouncements" />
+
     <SimpleColumn name="OpenInNewTab" />
+
     <SimpleColumn name="WorkspaceContinue" />
     <SimpleColumn name="LastWorkspace" />
+
     <SimpleColumn name="Style" />
   </Columns>
+  
+  <Order>
+    <OrderBy column="LastName" />
+    <OrderBy column="FirstName" />
+    <OrderBy column="CompanyName" />
+  </Order>
 </View>
  

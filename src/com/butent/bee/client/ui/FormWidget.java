@@ -137,6 +137,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Calculation;
+import com.butent.bee.shared.ui.Captions;
 import com.butent.bee.shared.ui.ConditionalStyleDeclaration;
 import com.butent.bee.shared.ui.HasCapsLock;
 import com.butent.bee.shared.ui.HasMaxLength;
@@ -1019,7 +1020,16 @@ public enum FormWidget {
         break;
 
       case CHECK_BOX:
-        widget = new InputBoolean(html);
+        String label;
+        if (BeeUtils.isEmpty(html)) {
+          label = (column == null) ? null : Localized.getLabel(column);
+        } else if (Captions.isCaption(html)) {
+          label = html;
+        } else {
+          label = null;
+        }
+        
+        widget = new InputBoolean(label);
         if (BeeConst.isTrue(attributes.get(ATTR_CHECKED))) {
           ((InputBoolean) widget).setValue(BeeConst.STRING_TRUE);
         }

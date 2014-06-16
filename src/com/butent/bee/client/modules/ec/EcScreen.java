@@ -11,7 +11,6 @@ import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.butent.bee.client.Global;
 import com.butent.bee.client.cli.Shell;
 import com.butent.bee.client.dialog.Notification;
 import com.butent.bee.client.dom.DomUtils;
@@ -37,11 +36,72 @@ import com.butent.bee.shared.modules.ec.EcConstants;
 import com.butent.bee.shared.modules.ec.EcUtils;
 import com.butent.bee.shared.ui.UserInterface;
 import com.butent.bee.shared.utils.BeeUtils;
-import com.butent.bee.shared.utils.NameUtils;
+import com.butent.bee.shared.utils.ExtendedProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EcScreen extends ScreenImpl {
+
+  private static void createCommands(HasWidgets container) {
+    String panelStyle = "commandPanel";
+
+    Horizontal info = new Horizontal();
+    EcStyles.add(info, panelStyle);
+    EcStyles.add(info, panelStyle, "info");
+
+    info.add(createCommandWidget(EcConstants.SVC_FINANCIAL_INFORMATION,
+        Localized.getConstants().ecFinancialInformation(), Type.LINK));
+
+    info.add(createCommandWidget(EcConstants.SVC_SHOW_TERMS_OF_DELIVERY,
+        Localized.getConstants().ecTermsOfDelivery(), Type.LINK));
+    info.add(createCommandWidget(EcConstants.SVC_SHOW_CONTACTS,
+        Localized.getConstants().ecContacts(), Type.LINK));
+
+    container.add(info);
+
+    String styleName = "searchBy";
+
+    Horizontal searchBy = new Horizontal();
+    EcStyles.add(searchBy, panelStyle);
+    EcStyles.add(searchBy, panelStyle, styleName);
+
+    Label label = new Label(Localized.getConstants().ecSearchBy());
+    EcStyles.add(label, styleName, "label");
+    searchBy.add(label);
+
+    searchBy.add(createCommandWidget(EcConstants.SVC_SEARCH_BY_ITEM_CODE,
+        Localized.getConstants().ecSearchByItemCode(), Type.LABEL));
+    searchBy.add(createCommandWidget(EcConstants.SVC_SEARCH_BY_OE_NUMBER,
+        Localized.getConstants().ecSearchByOeNumber(), Type.LABEL));
+    searchBy.add(createCommandWidget(EcConstants.SVC_SEARCH_BY_CAR,
+        Localized.getConstants().ecSearchByCar(), Type.LABEL));
+    searchBy.add(createCommandWidget(EcConstants.SVC_SEARCH_BY_BRAND,
+        Localized.getConstants().ecSearchByBrand(), Type.LABEL));
+
+    searchBy.add(createCommandWidget(EcConstants.SVC_GENERAL_ITEMS,
+        Localized.getConstants().ecSearchByItemGroup(), Type.LABEL));
+    searchBy.add(createCommandWidget(EcConstants.SVC_BIKE_ITEMS,
+        Localized.getConstants().ecBikeItemsShort(), Type.LABEL));
+
+    container.add(searchBy);
+
+    Horizontal carts = new Horizontal();
+    EcStyles.add(carts, "carts");
+
+    Image image = new Image(EcUtils.imageUrl("cart.png"));
+    EcStyles.add(image, "cartPicture");
+
+    carts.add(image);
+    carts.add(EcKeeper.getCartlist());
+
+    container.add(carts);
+  }
+
+  private static Widget createCommandWidget(String service, String html, Type type) {
+    EcCommandWidget commandWidget = new EcCommandWidget(service, html, type);
+    return commandWidget.getWidget();
+  }
 
   public EcScreen() {
     super();
@@ -92,6 +152,16 @@ public class EcScreen extends ScreenImpl {
   }
 
   @Override
+  public List<ExtendedProperty> getExtendedInfo() {
+    List<ExtendedProperty> info = new ArrayList<>();
+
+    info.add(new ExtendedProperty("Center Width", BeeUtils.toString(getActivePanelWidth())));
+    info.add(new ExtendedProperty("Center Height", BeeUtils.toString(getActivePanelHeight())));
+    
+    return info;
+  }
+
+  @Override
   public List<IdentifiableWidget> getOpenWidgets() {
     List<IdentifiableWidget> result = Lists.newArrayList();
     if (getActiveWidget() != null) {
@@ -125,15 +195,13 @@ public class EcScreen extends ScreenImpl {
   }
 
   @Override
-  public void showInfo() {
-    Global.showInfo(NameUtils.getName(this),
-        Lists.newArrayList("Center Width " + getActivePanelWidth(),
-            "Center Height " + getActivePanelHeight()));
-  }
-
-  @Override
   public void showInNewPlace(IdentifiableWidget widget) {
     updateActivePanel(widget);
+  }
+  
+  @Override
+  public void updateActivePanel(IdentifiableWidget widget) {
+    getScreenPanel().updateCenter(widget);
   }
 
   @Override
@@ -215,72 +283,12 @@ public class EcScreen extends ScreenImpl {
   }
 
   @Override
-  protected void onUserSignatureClick(long userId) {
+  protected void onUserSignatureClick() {
     PasswordService.change();
   }
 
   @Override
   protected void showProgressPanel() {
-  }
-
-  private static void createCommands(HasWidgets container) {
-    String panelStyle = "commandPanel";
-
-    Horizontal info = new Horizontal();
-    EcStyles.add(info, panelStyle);
-    EcStyles.add(info, panelStyle, "info");
-
-    info.add(createCommandWidget(EcConstants.SVC_FINANCIAL_INFORMATION,
-        Localized.getConstants().ecFinancialInformation(), Type.LINK));
-
-    info.add(createCommandWidget(EcConstants.SVC_SHOW_TERMS_OF_DELIVERY,
-        Localized.getConstants().ecTermsOfDelivery(), Type.LINK));
-    info.add(createCommandWidget(EcConstants.SVC_SHOW_CONTACTS,
-        Localized.getConstants().ecContacts(), Type.LINK));
-
-    container.add(info);
-
-    String styleName = "searchBy";
-
-    Horizontal searchBy = new Horizontal();
-    EcStyles.add(searchBy, panelStyle);
-    EcStyles.add(searchBy, panelStyle, styleName);
-
-    Label label = new Label(Localized.getConstants().ecSearchBy());
-    EcStyles.add(label, styleName, "label");
-    searchBy.add(label);
-
-    searchBy.add(createCommandWidget(EcConstants.SVC_SEARCH_BY_ITEM_CODE,
-        Localized.getConstants().ecSearchByItemCode(), Type.LABEL));
-    searchBy.add(createCommandWidget(EcConstants.SVC_SEARCH_BY_OE_NUMBER,
-        Localized.getConstants().ecSearchByOeNumber(), Type.LABEL));
-    searchBy.add(createCommandWidget(EcConstants.SVC_SEARCH_BY_CAR,
-        Localized.getConstants().ecSearchByCar(), Type.LABEL));
-    searchBy.add(createCommandWidget(EcConstants.SVC_SEARCH_BY_BRAND,
-        Localized.getConstants().ecSearchByBrand(), Type.LABEL));
-
-    searchBy.add(createCommandWidget(EcConstants.SVC_GENERAL_ITEMS,
-        Localized.getConstants().ecSearchByItemGroup(), Type.LABEL));
-    searchBy.add(createCommandWidget(EcConstants.SVC_BIKE_ITEMS,
-        Localized.getConstants().ecBikeItemsShort(), Type.LABEL));
-
-    container.add(searchBy);
-
-    Horizontal carts = new Horizontal();
-    EcStyles.add(carts, "carts");
-
-    Image image = new Image(EcUtils.imageUrl("cart.png"));
-    EcStyles.add(image, "cartPicture");
-
-    carts.add(image);
-    carts.add(EcKeeper.getCartlist());
-
-    container.add(carts);
-  }
-
-  private static Widget createCommandWidget(String service, String html, Type type) {
-    EcCommandWidget commandWidget = new EcCommandWidget(service, html, type);
-    return commandWidget.getWidget();
   }
 
   private Widget createGlobalSearch() {

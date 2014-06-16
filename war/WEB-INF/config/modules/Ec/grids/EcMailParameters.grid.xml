@@ -11,9 +11,6 @@
       <renderer type="mail" />
     </RelColumn>
 
-    <RelColumn name="IncomingMail" renderColumns="IncomingLabel IncomingEmail" visible="true"
-      sortable="false">
-      <renderer type="mail" />
-    </RelColumn>
+    <RelColumn name="IncomingMail" visible="true" sortable="false" />
   </g:columns>
 </g:Grid>

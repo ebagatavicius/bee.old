@@ -13,6 +13,7 @@ public final class Tags {
   public static final String INPUT = "input";
   public static final String LABEL = "label";
   public static final String METER = "meter";
+  public static final String NAV = "nav";
   public static final String OPTION = "option";
   public static final String PROGRESS = "progress";
   public static final String SELECT = "select";

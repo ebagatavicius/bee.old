@@ -5,15 +5,13 @@
   name="Accounts" viewName="Accounts" caption="=mailAccounts"
   newRowForm="NewAccount" newRowPopup="true"
   editForm="Account" editPopup="true"
-  filter="User = {u}"
+  currentUserFilter="User"
   >
 
   <g:columns>
     <DataColumn name="Description" />
     <DataColumn name="Main" caption="=mailDefaultShort" />
-    <RelColumn name="Address" caption="=email" renderColumns="Label Email">
-      <renderer type="mail" />
-    </RelColumn>
+    <RelColumn name="Address" caption="=email" />
     <DataColumn name="StoreType" />
   </g:columns>
 </g:Grid>

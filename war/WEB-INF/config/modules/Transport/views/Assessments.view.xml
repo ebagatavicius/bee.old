@@ -32,7 +32,9 @@
           <SimpleColumn name="Name" alias="CustomerName" label="=customer" />
 
           <SimpleJoin name="Contact" joinType="LEFT">
-            <SimpleColumn name="Email" alias="CustomerEmail" />
+            <SimpleJoin name="Email" joinType="LEFT">
+              <SimpleColumn name="Email" alias="CustomerEmail" />
+            </SimpleJoin>
           </SimpleJoin>
         </SimpleJoin>
       
@@ -43,7 +45,9 @@
             <SimpleColumn alias="PersonLastName" name="LastName" />
           </SimpleJoin>
           <SimpleJoin name="Contact" joinType="LEFT">
-            <SimpleColumn name="Email" alias="PersonEmail" />
+            <SimpleJoin name="Email" joinType="LEFT">
+              <SimpleColumn name="Email" alias="PersonEmail" />
+            </SimpleJoin>
           </SimpleJoin>
         </SimpleJoin>
 

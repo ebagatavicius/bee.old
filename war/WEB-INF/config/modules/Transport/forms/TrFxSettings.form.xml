@@ -33,21 +33,21 @@
     &separator;
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsCountryFlags" style="&lbl;" />
-      <CheckBox source="FxCountryFlags" style="&cb_inp;"/>
+      <CheckBox source="FxCountryFlags" html="-" style="&cb_inp;" />
     </FlowPanel>
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceInfo" style="&lbl;" />
-      <CheckBox source="FxPlaceInfo" style="&cb_inp;"/>
+      <CheckBox source="FxPlaceInfo" html="-" style="&cb_inp;" />
     </FlowPanel>
 
      <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCities" style="&lbl;" />
-      <CheckBox source="FxPlaceCities" style="&cb_inp;"/>
+      <CheckBox source="FxPlaceCities" html="-" style="&cb_inp;" />
     </FlowPanel>
     
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCodes" style="&lbl;" />
-      <CheckBox source="FxPlaceCodes" style="&cb_inp;"/>
+      <CheckBox source="FxPlaceCodes" html="-" style="&cb_inp;" />
     </FlowPanel>
 
     &separator;

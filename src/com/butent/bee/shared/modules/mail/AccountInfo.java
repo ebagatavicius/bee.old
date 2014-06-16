@@ -13,6 +13,7 @@ import java.util.Objects;
 public class AccountInfo {
   private final long accountId;
   private final long addressId;
+  private final String address;
   private final long userId;
   private final String description;
   private final Long signatureId;
@@ -22,9 +23,9 @@ public class AccountInfo {
   public AccountInfo(SimpleRow row) {
     this.accountId = row.getLong(COL_ACCOUNT);
     this.addressId = row.getLong(COL_ADDRESS);
+    this.address = row.getValue(ClassifierConstants.COL_EMAIL_ADDRESS);
     this.userId = row.getLong(COL_USER);
-    this.description = row.getValue(COL_ACCOUNT_DESCRIPTION)
-        + " <" + row.getValue(ClassifierConstants.COL_EMAIL_ADDRESS) + ">";
+    this.description = row.getValue(COL_ACCOUNT_DESCRIPTION);
     this.signatureId = row.getLong(COL_SIGNATURE);
 
     for (SystemFolder sysFolder : SystemFolder.values()) {
@@ -38,6 +39,10 @@ public class AccountInfo {
 
   public long getAccountId() {
     return accountId;
+  }
+
+  public String getAddress() {
+    return address;
   }
 
   public long getAddressId() {

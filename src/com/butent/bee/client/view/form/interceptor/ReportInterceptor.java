@@ -23,6 +23,7 @@ import com.butent.bee.client.output.ReportParameters;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.ui.HasIndexedWidgets;
+import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.widget.InputDateTime;
@@ -38,6 +39,7 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.HasStringValue;
+import com.butent.bee.shared.ui.UserInterface.Component;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.List;
@@ -174,6 +176,14 @@ public abstract class ReportInterceptor extends AbstractFormInterceptor implemen
   public void onLoad(FormView form) {
     if (getInitialParameters() != null) {
       doReport();
+    }
+    
+    if (!BeeKeeper.getScreen().getUserInterface().hasComponent(Component.REPORTS)) {
+      HeaderView header = form.getViewPresenter().getHeader();
+      
+      if (header != null && header.hasAction(Action.BOOKMARK)) {
+        header.showAction(Action.BOOKMARK, false);
+      }
     }
   }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="Addressbook"
+  idName="AddressbookID"
+  >
+  <Fields>
+    <Relation name="User" relation="Users" cascade="DELETE" notNull="true" label="=user" defExpr="CURRENT_USER" />
+    <Relation name="Email" relation="Emails" notNull="true" label="=email" />
+    <String name="Label" precision="255" label="=name" />
+  </Fields>
+  <Constraints>
+    <Unique fields="User Email" />
+  </Constraints>
+</Table>

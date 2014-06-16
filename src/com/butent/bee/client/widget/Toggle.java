@@ -66,20 +66,31 @@ public class Toggle extends CustomWidget implements Editor, HasValueChangeHandle
   }
 
   public Toggle(String upFace, String downFace, String styleName, boolean checked) {
-    super(Document.get().createDivElement(), BeeUtils.notEmpty(styleName, "bee-Toggle"));
-    addStyleDependentName(STYLE_SUFFIX_UNCHECKED);
+    this(Document.get().createDivElement(), upFace, downFace, styleName, checked);
+  }
 
+  public Toggle(Element element, String upFace, String downFace, String styleName,
+      boolean checked) {
+
+    super(element, BeeUtils.notEmpty(styleName, "bee-Toggle"));
+    addStyleDependentName(STYLE_SUFFIX_UNCHECKED);
+    
     this.upFace = upFace;
     this.downFace = downFace;
     
     this.checked = checked;
-
+    
     getElement().setInnerHTML(checked ? downFace : upFace);
     sinkEvents(Event.ONCLICK);
   }
 
   public Toggle(FontAwesome up, FontAwesome down, String styleName, boolean checked) {
-    this(String.valueOf(up.getCode()), String.valueOf(down.getCode()), styleName, checked);
+    this(Document.get().createDivElement(), up, down, styleName, checked);
+  }
+
+  public Toggle(Element element, FontAwesome up, FontAwesome down, String styleName,
+      boolean checked) {
+    this(element, String.valueOf(up.getCode()), String.valueOf(down.getCode()), styleName, checked);
     StyleUtils.setFontFamily(this, FontAwesome.FAMILY);
   }
   

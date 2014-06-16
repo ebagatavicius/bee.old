@@ -17,9 +17,7 @@
     <DataColumn name="Phone" />
     <DataColumn name="Mobile" />
 
-    <RelColumn name="EmailId" renderColumns="Label Email">
-      <renderer type="mail" />
-    </RelColumn>
+    <RelColumn name="EmailId" />
 
     <DataColumn name="Address" />
 
@@ -31,5 +29,7 @@
       filterOptions="-" exportWidthFactor="0.5">
       <renderer type="flag" />
     </CalcColumn>
+
+    <DataColumn name="DateOfBirth" visible="false" />
   </g:columns>
 </g:Grid>

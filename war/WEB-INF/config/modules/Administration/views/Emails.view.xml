@@ -3,11 +3,9 @@
 
   name="Emails" source="Emails" module="Classifiers.Contacts"
   caption="=emailAddresses" newRowCaption="=newEmailAddress"
-  newRowForm="Email"
   >
   <Columns>
     <SimpleColumn name="Email" />
-    <SimpleColumn name="Label" />
   </Columns>
   <Order>
     <OrderBy column="Email" />

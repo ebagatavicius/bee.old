@@ -29,21 +29,21 @@
     &separator;
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsCountryFlags" style="&lbl;" />
-      <CheckBox source="DtbCountryFlags" style="&cb_inp;"/>
+      <CheckBox source="DtbCountryFlags" html="-" style="&cb_inp;" />
     </FlowPanel>
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceInfo" style="&lbl;" />
-      <CheckBox source="DtbPlaceInfo" style="&cb_inp;"/>
+      <CheckBox source="DtbPlaceInfo" html="-" style="&cb_inp;" />
     </FlowPanel>
 
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCities" style="&lbl;" />
-      <CheckBox source="DtbPlaceCities" style="&cb_inp;"/>
+      <CheckBox source="DtbPlaceCities" html="-" style="&cb_inp;" />
     </FlowPanel>
     
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCodes" style="&lbl;" />
-      <CheckBox source="DtbPlaceCodes" style="&cb_inp;"/>
+      <CheckBox source="DtbPlaceCodes" html="-" style="&cb_inp;" />
     </FlowPanel>
 
     &separator;

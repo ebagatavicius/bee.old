@@ -1,7 +1,6 @@
 package com.butent.bee.client.screen;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
@@ -43,6 +42,8 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,9 +84,9 @@ public class Favorites implements HandlesDeleteEvents {
       }
     };
 
-    private final Map<String, HtmlTable> displays = Maps.newHashMap();
+    private final Map<String, HtmlTable> displays = new HashMap<>();
 
-    private final Map<String, List<Item>> items = Maps.newHashMap();
+    private final Map<String, List<Item>> items = new HashMap<>();
 
     abstract String getCaption(String key);
 
@@ -242,7 +243,7 @@ public class Favorites implements HandlesDeleteEvents {
   private static final String COL_ORDER = "Order";
   private static final String COL_HTML = "Html";
 
-  private static final List<BeeColumn> columns = Lists.newArrayList();
+  private static final List<BeeColumn> columns = new ArrayList<>();
 
   private static void addDisplayRow(final HtmlTable display, final Group group, final String key,
       final Item item) {
@@ -329,14 +330,11 @@ public class Favorites implements HandlesDeleteEvents {
     Queries.update(VIEW_FAVORITES, filter, COL_HTML, new TextValue(html), null);
     return true;
   }
+
   private int groupIndex = BeeConst.UNDEF;
-
   private int keyIndex = BeeConst.UNDEF;
-
   private int itemIndex = BeeConst.UNDEF;
-
   private int orderIndex = BeeConst.UNDEF;
-  
   private int htmlIndex = BeeConst.UNDEF;
 
   public Favorites() {
@@ -344,6 +342,10 @@ public class Favorites implements HandlesDeleteEvents {
   }
 
   public void addItem(Group group, String key, long id, String html) {
+    if (columns.isEmpty()) {
+      initViewColumns(Data.getColumns(VIEW_FAVORITES));
+    }
+
     int order = group.maxOrder(key) + 1;
     Item item = new Item(id, html, order);
 
@@ -400,18 +402,12 @@ public class Favorites implements HandlesDeleteEvents {
     return !BeeUtils.isEmpty(viewName) && DataUtils.hasId(row)
         && Group.ROW.find(viewName, row.getId()) != null;
   }
-
+  
   public void load(String serialized) {
     Assert.notEmpty(serialized);
 
     BeeRowSet rowSet = BeeRowSet.restore(serialized);
-    BeeUtils.overwrite(columns, rowSet.getColumns());
-
-    groupIndex = DataUtils.getColumnIndex(COL_GROUP, columns);
-    keyIndex = DataUtils.getColumnIndex(COL_KEY, columns);
-    itemIndex = DataUtils.getColumnIndex(COL_ITEM, columns);
-    orderIndex = DataUtils.getColumnIndex(COL_ORDER, columns);
-    htmlIndex = DataUtils.getColumnIndex(COL_HTML, columns);
+    initViewColumns(rowSet.getColumns());
 
     loadItems(rowSet);
 
@@ -445,6 +441,16 @@ public class Favorites implements HandlesDeleteEvents {
     String html = row.getString(htmlIndex);
 
     return new Item(itm, html.trim(), BeeUtils.unbox(ord));
+  }
+
+  private void initViewColumns(List<BeeColumn> viewColumns) {
+    BeeUtils.overwrite(columns, viewColumns);
+
+    groupIndex = DataUtils.getColumnIndex(COL_GROUP, columns);
+    keyIndex = DataUtils.getColumnIndex(COL_KEY, columns);
+    itemIndex = DataUtils.getColumnIndex(COL_ITEM, columns);
+    orderIndex = DataUtils.getColumnIndex(COL_ORDER, columns);
+    htmlIndex = DataUtils.getColumnIndex(COL_HTML, columns);
   }
 
   private void loadItems(BeeRowSet rowSet) {

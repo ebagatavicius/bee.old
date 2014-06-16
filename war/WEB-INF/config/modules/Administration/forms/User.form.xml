@@ -3,59 +3,58 @@
   xmlns:f="http://www.butent.com/form"
   
   name="User" viewName="Users" caption="=user"
-  width="600" height="440"
+  width="700" height="75" heightUnit="vh"
   >
   <FlowPanel class="flexBox-vertical">
-    <Table style="border-spacing: 10px;">
+    <Table style="border-collapse: collapse;" cellStyle="padding-top: 2px; padding-left: 1em;">
+      <col index="0" cellStyle="text-align: right;" />
+      <col index="2" cellStyle="text-align: right;" />
+
+      <br/>
       <row>
         <Label for="Login" />
-        <InputText source="Login" style="width: 150px;" />
+        <InputText source="Login" />
+        <Label for="Interface" />
+        <ListBox source="Interface" />
       </row>
 
+      <br/>
       <row>
         <Label text="=personFullName" for="CompanyPerson" />
-        <DataSelector source="CompanyPerson" editSource="Person" style="width: 150px;"
+        <DataSelector source="CompanyPerson" editSource="Person"
           renderColumns="FirstName Lastname" choiceColumns="FirstName Lastname CompanyName" />
-        <Label text="=company" horizontalAlignment="right" for="CompanyName" />
-        <TextLabel source="CompanyName" style="width: 150px;" />
+        <Label text="=company" for="CompanyName" />
+        <InputText source="CompanyName" readOnly="true" style="width: 200px;" />
       </row>
 
       <row>
         <Label for="DateOfBirth" />
-        <DateLabel source="DateOfBirth" />
-        <Label text="=personPosition" horizontalAlignment="right" for="PositionName" />
-        <TextLabel source="PositionName" />
+        <InputDate source="DateOfBirth" readOnly="true" />
+        <Label text="=personPosition" for="PositionName" />
+        <InputText source="PositionName" readOnly="true" style="width: 200px;" />
       </row>
+
+      <br/>
+      <row>
+        <Label for="BlockAfter" />
+        <InputDateTime source="BlockAfter" />
+        <Label for="BlockBefore" />
+        <InputDateTime source="BlockBefore" />
+      </row>
+      
+      <br/>
+      <row data="UserRoles">
+        <Label text="=roles" class="bee-required" />
+        <cell colSpan="3">
+          <ChildSelector childTable="UserRoles" viewName="Roles"
+            targetRelColumn="User" sourceRelColumn="Role"
+            style="width: 400px;" required="true" />
+        </cell>
+      </row>  
+
+      <br/>
     </Table>
 
-    <br/>
-    <Table style="border-spacing: 10px;" data="UserRoles">
-      <row>
-        <Label text="=roles" class="bee-required" />
-        <ChildSelector childTable="UserRoles" viewName="Roles"
-          targetRelColumn="User" sourceRelColumn="Role"
-          style="width: 400px;" required="true" />
-      </row>
-    </Table>  
-
-    <br/>
-    <TabbedPages class="flexible">
-      <page>
-        <text>=feeds</text>
-        <ChildGrid class="flexible" name="UserFeeds" relColumn="User" />
-      </page>
-      <page module="Mail">
-        <text>=mailNotify</text>
-        <FlowPanel class="flexBox-vertical">
-          <br />
-          <CheckBox source="MailAssignedTasks" text="=crmMailAssignedTasks" style="margin-left: 10px;" />
-          <br/>
-          <CheckBox source="MailNewAnnouncements" text="=discussMailNewAnnouncements" module="Discussions" style="margin-left: 10px;" />
-          <br/>
-          <CheckBox source="MailNewDiscussions" text="=discussMailNewDiscussions" module="Discussions" style="margin-left: 10px;" />
-          <br/>
-        </FlowPanel>
-      </page>
-    </TabbedPages>     
+    <ChildGrid class="flexible" name="UserFeeds" relColumn="User" />
   </FlowPanel>
 </f:Form>  

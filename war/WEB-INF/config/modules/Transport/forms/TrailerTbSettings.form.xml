@@ -33,27 +33,27 @@
     &separator;
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsSeparateCargo" style="&lbl;" />
-      <CheckBox source="TrailerSeparateCargo" style="&cb_inp;"/>
+      <CheckBox source="TrailerSeparateCargo" html="-" style="&cb_inp;" />
     </FlowPanel>
 
     &separator;
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsCountryFlags" style="&lbl;" />
-      <CheckBox source="TrailerCountryFlags" style="&cb_inp;"/>
+      <CheckBox source="TrailerCountryFlags" html="-" style="&cb_inp;" />
     </FlowPanel>
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceInfo" style="&lbl;" />
-      <CheckBox source="TrailerPlaceInfo" style="&cb_inp;"/>
+      <CheckBox source="TrailerPlaceInfo" html="-" style="&cb_inp;" />
     </FlowPanel>
 
      <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCities" style="&lbl;" />
-      <CheckBox source="TrailerPlaceCities" style="&cb_inp;"/>
+      <CheckBox source="TrailerPlaceCities" html="-" style="&cb_inp;" />
     </FlowPanel>
     
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCodes" style="&lbl;" />
-      <CheckBox source="TrailerPlaceCodes" style="&cb_inp;"/>
+      <CheckBox source="TrailerPlaceCodes" html="-" style="&cb_inp;" />
     </FlowPanel>
 
     &separator;

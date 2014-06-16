@@ -11,17 +11,24 @@
   name="&form;" caption="=trdInvoice" disabledActions="save"
   width="70" widthUnit="%" height="90" heightUnit="%"
   >
-  <FlowPanel style="padding: 10px; background-color: white;">
+  <FlowPanel class="bee-form-PrintableContent">
     <HorizontalPanel>
       <Image  url="images/logo.png" />
       <cell width="100" widthUnit="%">
-        <FlowPanel style="text-align:center;">
-          <Label html="PVM Sąskaita-faktūra" style="&bold;" />
-          <TextLabel source="InvoiceNo">
-            <renderToken source="InvoicePrefix" prefix="Serija " suffix=" " />
-            <renderToken source="InvoiceNo" prefix="Nr. " />
-          </TextLabel>
-        </FlowPanel>
+        <Table style="text-align:right; margin-left: auto;">
+          <row>
+            <Label html="PVM sąskaita faktūra" style="&bold; margin-right: 1ex;" />
+            <TextLabel source="InvoiceNo">
+              <renderToken source="InvoicePrefix" prefix="Serija " suffix=" " />
+              <renderToken source="InvoiceNo" prefix="Nr. " />
+            </TextLabel>
+          </row>
+          <row>
+            <cell colSpan="2">
+               <DateTimeLabel source="Date" format="DATE_LONG" horizontalAlignment="right" />
+            </cell>
+          </row>
+        </Table>
       </cell>
     </HorizontalPanel>
 
@@ -29,13 +36,13 @@
       <Table style="width: 100%;">
         <row>
           <cell rowSpan="2" style="vertical-align: top;">
-            <Label html="Tiekėjas:" />
+            <Label html="Pardavėjas:" />
           </cell>
           <cell rowSpan="2" style="vertical-align: top; width: 50%;">
             <FlowPanel name="Supplier" />
           </cell>
           <cell style="vertical-align:top;">
-            <Label html="Gavėjas:" horizontalAlignment="right" />
+            <Label html="Pirkėjas:" horizontalAlignment="right" />
           </cell>
           <cell style="vertical-align:top; width:50%;">
             <FlowPanel name="Customer" />
@@ -57,11 +64,12 @@
       </Table>
     </FlowPanel>
 
-    <DateTimeLabel source="Date" format="DATE_LONG" horizontalAlignment="right" />
-
     <Table name="InvoiceDetails" style="&section; width: 100%;">
       <properties rateCurrency="EUR" />
       <row>
+       <Label text="=ordinal" style="text-align:center;">
+          <properties name="Ordinal" />
+        </Label>
         <Label text="=itemName">
           <properties name="Name" />
         </Label>
@@ -151,17 +159,17 @@
         <Label html="Priėmė" />
       </row>
 
-      <row style="font-size: xx-small;">
-        <Label html="(vardas, pavardė, pareigos ir parašas)" />
-        <Label html="(vardas, pavardė, pareigos ir parašas)" />
-      </row>
-
-      <row>
+      <row style="min-height: 1em;">
         <TextLabel source="Manager" style="margin-top: 5px;">
           <renderToken source="ManagerFirstName" />
           <renderToken source="ManagerLastName" />
         </TextLabel>
       </row>
+
+      <row style="font-size: xx-small;">
+        <Label html="(vardas, pavardė, pareigos ir parašas)" />
+        <Label html="(vardas, pavardė, pareigos ir parašas)" />
+      </row>  
     </Table>
   </FlowPanel>
 </f:Form>

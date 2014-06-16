@@ -32,9 +32,7 @@
 
       <TextLabel source="CompanyEmail" caption="=email" inline="true" textOnly="true"
         style="&display; width: 200px;" d:size="80" d:unit="px"
-        d:rootStyle="&absolute; left: 460px; top: 30px;" renderColumns="CompanyLabel CompanyEmail">
-        <renderer type="mail" />
-      </TextLabel>
+        d:rootStyle="&absolute; left: 460px; top: 30px;" />
     </FlowPanel>
 
     <FlowPanel style="&relative; height: 30px;">

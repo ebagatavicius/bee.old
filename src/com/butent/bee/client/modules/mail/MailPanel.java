@@ -758,7 +758,7 @@ public class MailPanel extends AbstractFormInterceptor {
 
     for (int i = 0; i < accounts.size(); i++) {
       AccountInfo accountInfo = accounts.get(i);
-      accountsWidget.addItem(accountInfo.getDescription());
+      accountsWidget.addItem(accountInfo.getDescription() + " <" + accountInfo.getAddress() + ">");
 
       if (Objects.equals(accountInfo, currentAccount)) {
         accountsWidget.setSelectedIndex(i);

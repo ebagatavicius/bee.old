@@ -8,13 +8,13 @@ import com.google.common.eventbus.Subscribe;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 
+import com.butent.bee.server.data.BeeTable;
 import com.butent.bee.server.data.BeeView;
 import com.butent.bee.server.data.DataEditorBean;
 import com.butent.bee.server.data.DataEvent.ViewDeleteEvent;
 import com.butent.bee.server.data.DataEvent.ViewInsertEvent;
 import com.butent.bee.server.data.DataEvent.ViewModifyEvent;
 import com.butent.bee.server.data.DataEvent.ViewUpdateEvent;
-import com.butent.bee.server.data.BeeTable;
 import com.butent.bee.server.data.DataEventHandler;
 import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.data.SystemBean;
@@ -431,7 +431,7 @@ public class ClassifiersModuleBean implements BeeModule {
 
           if (BeeUtils.allEmpty(sourceField, relationsField)) {
             logger.severe("filter", FILTER_COMPANY_USAGE, "relation", relation, "not supported");
-          
+
           } else if (!BeeUtils.isPositive(count) && operator == Operator.LT) {
             conditions.add(SqlUtils.sqlFalse());
 
@@ -647,8 +647,7 @@ public class ClassifiersModuleBean implements BeeModule {
     if (!BeeUtils.isEmpty(email)) {
       row.setValue(DataUtils.getColumnIndex(ALS_EMAIL_ID, columns),
           qs.insertData(new SqlInsert(TBL_EMAILS)
-              .addConstant(COL_EMAIL_ADDRESS, address)
-              .addNotEmpty(COL_EMAIL_LABEL, companyName)));
+              .addConstant(COL_EMAIL_ADDRESS, address)));
     }
     Long country = null;
 
@@ -735,7 +734,7 @@ public class ClassifiersModuleBean implements BeeModule {
     translations.put(COL_PHONE, constants.phone());
     translations.put(COL_MOBILE, constants.mobile());
     translations.put(COL_FAX, constants.fax());
-    translations.put(COL_EMAIL_ADDRESS, constants.address());
+    translations.put(COL_EMAIL_ADDRESS, constants.email());
     translations.put(COL_CITY, constants.city());
     translations.put(COL_COUNTRY, constants.country());
 

@@ -55,7 +55,6 @@
 
         <SimpleJoin name="Email" joinType="LEFT">
           <SimpleColumn name="Email" alias="CompanyEmail" />
-          <SimpleColumn name="Label" alias="CompanyLabel" />
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>

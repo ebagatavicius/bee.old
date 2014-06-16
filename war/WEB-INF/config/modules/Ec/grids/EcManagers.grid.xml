@@ -18,9 +18,7 @@
       <renderer type="mail" />
     </RelColumn>
 
-    <RelColumn name="IncomingMail" renderColumns="IncomingLabel IncomingEmail">
-      <renderer type="mail" />
-    </RelColumn>
+    <RelColumn name="IncomingMail" />
 
     <DataColumn name="Notes" />
   </g:columns>

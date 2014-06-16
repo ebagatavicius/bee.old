@@ -10,6 +10,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 
+import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Consumer;
@@ -120,7 +121,8 @@ public final class Previewer implements NativePreviewHandler, HasInfo {
     if (element.getId() != null && element.getId().startsWith("mce_")) {
       return true;
     }
-    if (element.getClassName() != null && element.getClassName().startsWith("mce-")) {
+    String className = DomUtils.getClassName(element);
+    if (className != null && className.startsWith("mce-")) {
       return true;
     }
     return false;

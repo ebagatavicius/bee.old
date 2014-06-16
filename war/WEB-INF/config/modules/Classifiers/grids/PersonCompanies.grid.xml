@@ -11,8 +11,6 @@
     <RelColumn name="Position" />
     <DataColumn name="Phone" />
 
-    <RelColumn name="EmailId" renderColumns="Label Email">
-      <renderer type="mail" />
-    </RelColumn>
+    <RelColumn name="EmailId" />
   </g:columns>
 </g:Grid>

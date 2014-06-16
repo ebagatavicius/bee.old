@@ -32,7 +32,9 @@ import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.ui.UserInterface;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.ExtendedProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,12 +54,10 @@ public class Mobile extends ScreenImpl {
   
   @Override
   public void activateWidget(IdentifiableWidget widget) {
-    notifyWarning("The white zone is for loading and unloading only");
   }
 
   @Override
   public void addDomainEntry(Domain domain, IdentifiableWidget widget, Long key, String caption) {
-    notifyWarning("The white zone is for loading and unloading only");
   }
 
   @Override
@@ -94,6 +94,16 @@ public class Mobile extends ScreenImpl {
   }
 
   @Override
+  public List<ExtendedProperty> getExtendedInfo() {
+    List<ExtendedProperty> info = new ArrayList<>();
+
+    info.add(new ExtendedProperty("Center Width", BeeUtils.toString(getActivePanelWidth())));
+    info.add(new ExtendedProperty("Center Height", BeeUtils.toString(getActivePanelHeight())));
+    
+    return info;
+  }
+  
+  @Override
   public List<IdentifiableWidget> getOpenWidgets() {
     List<IdentifiableWidget> result = Lists.newArrayList();
     if (getActiveWidget() != null) {
@@ -101,25 +111,19 @@ public class Mobile extends ScreenImpl {
     }
     return result;
   }
-  
+
   @Override
   public UserInterface getUserInterface() {
     return UserInterface.MOBILE;
   }
-
+  
   @Override
   public void onWidgetChange(IdentifiableWidget widget) {
   }
-  
+
   @Override
   public boolean removeDomainEntry(Domain domain, Long key) {
     return false;
-  }
-
-  @Override
-  public void showInfo() {
-    Global.showInfo(Lists.newArrayList(String.valueOf(getActivePanelWidth()),
-        String.valueOf(getActivePanelHeight())));
   }
 
   @Override

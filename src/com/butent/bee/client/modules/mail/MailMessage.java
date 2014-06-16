@@ -1,6 +1,7 @@
 package com.butent.bee.client.modules.mail;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -57,6 +58,7 @@ import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class MailMessage extends AbstractFormInterceptor {
@@ -79,14 +81,10 @@ public class MailMessage extends AbstractFormInterceptor {
   private static final int ATTA_NAME = 1;
   private static final int ATTA_SIZE = 2;
 
-  private static final int ADDR_ID = 0;
-  private static final int ADDR_EMAIL = 1;
-  private static final int ADDR_LABEL = 2;
-
   private final MailPanel mailPanel;
-  private Long sender;
   private Long draftId;
-  private final Multimap<String, String[]> recipients = HashMultimap.create();
+  private Pair<String, String> sender;
+  private final Multimap<String, Pair<String, String>> recipients = HashMultimap.create();
   private final List<String[]> attachments = Lists.newArrayList();
   private final Map<String, Widget> widgets = Maps.newHashMap();
 
@@ -126,28 +124,32 @@ public class MailMessage extends AbstractFormInterceptor {
             final Popup popup = new Popup(OutsideClick.CLOSE, "bee-mail-RecipientsPopup");
             HtmlTable ft = new HtmlTable();
             ft.setBorderSpacing(5);
-            List<Pair<String, String>> types = Lists.newArrayList();
-            types.add(Pair.of(AddressType.TO.name(), Localized.getConstants().mailTo() + ":"));
-            types.add(Pair.of(AddressType.CC.name(), Localized.getConstants().mailCc() + ":"));
-            types.add(Pair.of(AddressType.BCC.name(), Localized.getConstants().mailBcc() + ":"));
+            LocalizableConstants loc = Localized.getConstants();
 
-            for (Pair<String, String> type : types) {
-              if (recipients.containsKey(type.getA())) {
+            for (Entry<AddressType, String> entry : ImmutableMap.of(AddressType.TO, loc.mailTo(),
+                AddressType.CC, loc.mailCc(), AddressType.BCC, loc.mailBcc()).entrySet()) {
+
+              String type = entry.getKey().name();
+
+              if (recipients.containsKey(type)) {
                 int c = ft.getRowCount();
                 ft.getCellFormatter().setStyleName(c, 0, "bee-mail-RecipientsType");
-                ft.setHtml(c, 0, type.getB());
+                ft.setHtml(c, 0, entry.getValue() + ":");
                 FlowPanel fp = new FlowPanel();
 
-                for (String[] address : recipients.get(type.getA())) {
+                for (Pair<String, String> address : recipients.get(type)) {
                   FlowPanel adr = new FlowPanel();
                   adr.setStyleName("bee-mail-Recipient");
-                  InlineLabel nm =
-                      new InlineLabel(BeeUtils.notEmpty(address[ADDR_LABEL], address[ADDR_EMAIL]));
+
+                  String email = address.getA();
+                  String label = address.getB();
+
+                  InlineLabel nm = new InlineLabel(BeeUtils.notEmpty(label, email));
                   nm.setStyleName("bee-mail-RecipientLabel");
                   adr.add(nm);
 
-                  if (!BeeUtils.isEmpty(address[ADDR_LABEL])) {
-                    nm = new InlineLabel(address[ADDR_EMAIL]);
+                  if (!BeeUtils.isEmpty(label)) {
+                    nm = new InlineLabel(email);
                     nm.setStyleName("bee-mail-RecipientEmail");
                     adr.add(nm);
                   }
@@ -189,72 +191,9 @@ public class MailMessage extends AbstractFormInterceptor {
     }
   }
 
-  public Map<Long, NewFileInfo> getAttachments() {
-    Map<Long, NewFileInfo> attach = Maps.newLinkedHashMap();
-
-    for (final String[] att : attachments) {
-      attach.put(BeeUtils.toLong(att[ATTA_ID]),
-          new NewFileInfo(att[ATTA_NAME], BeeUtils.toLong(att[ATTA_SIZE]), null));
-    }
-    return attach;
-  }
-
-  public Set<Long> getBcc() {
-    return getRecipients(AddressType.BCC.name());
-  }
-
-  public Set<Long> getCc() {
-    return getRecipients(AddressType.CC.name());
-  }
-
-  public String getContent() {
-    Widget widget = widgets.get(PARTS);
-
-    if (widget != null) {
-      return widget.getElement().getInnerHTML();
-    }
-    return null;
-  }
-
-  public String getDate() {
-    Widget widget = widgets.get(DATE);
-
-    if (widget != null && widget instanceof DateTimeLabel) {
-      return ((DateTimeLabel) widget).getValue().toString();
-    }
-    return null;
-  }
-
   @Override
   public FormInterceptor getInstance() {
     return null;
-  }
-
-  public String getRecipients() {
-    StringBuilder sb = new StringBuilder();
-
-    for (String[] recipient : recipients.values()) {
-      if (sb.length() > 0) {
-        sb.append(", ");
-      }
-      sb.append(BeeUtils.joinWords(recipient[ADDR_LABEL], "<" + recipient[ADDR_EMAIL] + ">"));
-    }
-    return sb.toString();
-  }
-
-  public String getSender() {
-    String email = getWidgetText(SENDER_EMAIL);
-    String label = getWidgetText(SENDER_LABEL);
-
-    return BeeUtils.isEmpty(email) ? "<" + label + ">" : label + " <" + email + ">";
-  }
-
-  public String getSubject() {
-    return getWidgetText(SUBJECT);
-  }
-
-  public Set<Long> getTo() {
-    return getRecipients(AddressType.TO.name());
   }
 
   public void reset() {
@@ -263,7 +202,7 @@ public class MailMessage extends AbstractFormInterceptor {
         setWidgetText(name, null);
       }
     }
-    sender = null;
+    sender = Pair.of(null, null);
     draftId = null;
     recipients.clear();
     attachments.clear();
@@ -296,10 +235,11 @@ public class MailMessage extends AbstractFormInterceptor {
           packet.put(data[i], SimpleRowSet.restore(data[i + 1]));
         }
         SimpleRow row = packet.get(TBL_MESSAGES).getRow(0);
-        sender = row.getLong(COL_SENDER);
         draftId = row.getLong(SystemFolder.Drafts.name());
-        String lbl = row.getValue(ClassifierConstants.COL_EMAIL_LABEL);
+        String lbl = row.getValue(COL_EMAIL_LABEL);
         String mail = row.getValue(ClassifierConstants.COL_EMAIL_ADDRESS);
+
+        sender = Pair.of(mail, lbl);
 
         setWidgetText(SENDER_LABEL, BeeUtils.notEmpty(lbl, mail));
         setWidgetText(SENDER_EMAIL, BeeUtils.isEmpty(lbl) ? "" : mail);
@@ -309,13 +249,11 @@ public class MailMessage extends AbstractFormInterceptor {
         String txt = null;
 
         for (SimpleRow address : packet.get(TBL_RECIPIENTS)) {
-          String[] info = new String[Ints.max(ADDR_ID, ADDR_EMAIL, ADDR_LABEL)];
-          info[ADDR_ID] = address.getValue(COL_ADDRESS);
-          info[ADDR_EMAIL] = address.getValue(ClassifierConstants.COL_EMAIL_ADDRESS);
-          info[ADDR_LABEL] = address.getValue(ClassifierConstants.COL_EMAIL_LABEL);
+          String email = address.getValue(ClassifierConstants.COL_EMAIL_ADDRESS);
+          String label = address.getValue(COL_EMAIL_LABEL);
 
-          recipients.put(address.getValue(COL_ADDRESS_TYPE), info);
-          txt = BeeUtils.join(", ", txt, BeeUtils.notEmpty(info[ADDR_LABEL], info[ADDR_EMAIL]));
+          recipients.put(address.getValue(COL_ADDRESS_TYPE), Pair.of(email, label));
+          txt = BeeUtils.joinItems(txt, BeeUtils.notEmpty(label, email));
         }
         setWidgetText(RECIPIENTS, BeeUtils.joinWords(Localized.getConstants().mailTo() + ":", txt));
 
@@ -371,15 +309,75 @@ public class MailMessage extends AbstractFormInterceptor {
     });
   }
 
-  private Set<Long> getRecipients(String type) {
-    Set<Long> ids = Sets.newHashSet();
+  private Map<Long, NewFileInfo> getAttachments() {
+    Map<Long, NewFileInfo> attach = Maps.newLinkedHashMap();
+
+    for (final String[] att : attachments) {
+      attach.put(BeeUtils.toLong(att[ATTA_ID]),
+          new NewFileInfo(att[ATTA_NAME], BeeUtils.toLong(att[ATTA_SIZE]), null));
+    }
+    return attach;
+  }
+
+  private Set<String> getBcc() {
+    return getRecipients(AddressType.BCC.name());
+  }
+
+  private Set<String> getCc() {
+    return getRecipients(AddressType.CC.name());
+  }
+
+  private String getContent() {
+    Widget widget = widgets.get(PARTS);
+
+    if (widget != null) {
+      return widget.getElement().getInnerHTML();
+    }
+    return null;
+  }
+
+  private String getDate() {
+    Widget widget = widgets.get(DATE);
+
+    if (widget != null && widget instanceof DateTimeLabel) {
+      return ((DateTimeLabel) widget).getValue().toString();
+    }
+    return null;
+  }
+
+  private String getRecipients() {
+    StringBuilder sb = new StringBuilder();
+
+    for (Pair<String, String> recipient : recipients.values()) {
+      if (sb.length() > 0) {
+        sb.append(", ");
+      }
+      sb.append(BeeUtils.joinWords(recipient.getB(), "<" + recipient.getA() + ">"));
+    }
+    return sb.toString();
+  }
+
+  private Set<String> getRecipients(String type) {
+    Set<String> emails = Sets.newHashSet();
 
     if (recipients.containsKey(type)) {
-      for (String[] r : recipients.get(type)) {
-        ids.add(BeeUtils.toLongOrNull(r[ADDR_ID]));
+      for (Pair<String, String> r : recipients.get(type)) {
+        emails.add(r.getA());
       }
     }
-    return ids;
+    return emails;
+  }
+
+  private String getSender() {
+    return BeeUtils.joinWords(sender.getB(), "<" + sender.getA() + ">");
+  }
+
+  private String getSubject() {
+    return getWidgetText(SUBJECT);
+  }
+
+  private Set<String> getTo() {
+    return getRecipients(AddressType.TO.name());
   }
 
   private String getWidgetText(String name) {
@@ -395,9 +393,9 @@ public class MailMessage extends AbstractFormInterceptor {
     widget.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent ev) {
-        Set<Long> to = null;
-        Set<Long> cc = null;
-        Set<Long> bcc = null;
+        Set<String> to = null;
+        Set<String> cc = null;
+        Set<String> bcc = null;
         String subject = getSubject();
         String content = null;
         Map<Long, NewFileInfo> attach = null;
@@ -408,8 +406,8 @@ public class MailMessage extends AbstractFormInterceptor {
         switch (mode) {
           case REPLY:
           case REPLY_ALL:
-            if (DataUtils.isId(sender)) {
-              to = Sets.newHashSet(sender);
+            if (!BeeUtils.isEmpty(sender.getA())) {
+              to = Sets.newHashSet(sender.getA());
             }
             if (mode == NewMailMode.REPLY_ALL) {
               cc = getTo();

@@ -20,7 +20,6 @@
 
         <SimpleJoin name="Email" joinType="LEFT">
           <SimpleColumn name="Email" />
-          <SimpleColumn name="Label" />
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>

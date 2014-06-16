@@ -186,6 +186,10 @@ public class Bee implements EntryPoint {
           case REPORTS:
             Global.getReportSettings().load(serialized);
             break;
+            
+          case SETTINGS:
+            BeeKeeper.getUser().loadSettings(serialized);
+            break;
 
           case USERS:
             Global.getUsers().loadUserData(serialized);

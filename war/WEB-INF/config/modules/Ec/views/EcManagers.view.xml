@@ -30,14 +30,12 @@
       <SimpleColumn name="Address" alias="AccountAddress" />
       <SimpleJoin name="Address" joinType="LEFT">
         <SimpleColumn name="Email" alias="AccountEmail" />
-        <SimpleColumn name="Label" alias="AccountLabel" />
       </SimpleJoin>
     </SimpleJoin>
 
     <SimpleColumn name="IncomingMail" />
     <SimpleJoin name="IncomingMail" joinType="LEFT">
       <SimpleColumn name="Email" alias="IncomingEmail" />
-      <SimpleColumn name="Label" alias="IncomingLabel" />
     </SimpleJoin>
     
     <SimpleColumn name="Notes" />

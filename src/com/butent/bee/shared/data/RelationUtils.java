@@ -1,8 +1,5 @@
 package com.butent.bee.shared.data;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 import com.butent.bee.client.data.ClientDefaults;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.view.DataInfo;
@@ -13,8 +10,10 @@ import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,7 +25,7 @@ public final class RelationUtils {
   public static Collection<String> copyWithDescendants(DataInfo sourceInfo, String sourceColumn,
       IsRow sourceRow, DataInfo targetInfo, String targetColumn, IsRow targetRow) {
 
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (BeeUtils.anyNull(sourceInfo, sourceRow, targetInfo, targetRow)
         || BeeUtils.anyEmpty(sourceColumn, targetColumn)) {
       return result;
@@ -102,7 +101,7 @@ public final class RelationUtils {
   }
 
   public static List<String> getRenderColumns(DataInfo dataInfo, String colName) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (dataInfo == null || BeeUtils.isEmpty(colName)) {
       return result;
     }
@@ -110,7 +109,7 @@ public final class RelationUtils {
     Collection<ViewColumn> descendants = dataInfo.getDescendants(colName, false);
 
     if (!descendants.isEmpty()) {
-      List<Integer> columnIndexes = Lists.newArrayList();
+      List<Integer> columnIndexes = new ArrayList<>();
       for (ViewColumn vc : descendants) {
         if (BeeUtils.isEmpty(vc.getRelation())) {
           int index = dataInfo.getColumnIndex(vc.getName());
@@ -246,7 +245,7 @@ public final class RelationUtils {
   public static Collection<String> updateRow(DataInfo targetInfo, String targetColumn,
       IsRow targetRow, DataInfo sourceInfo, IsRow sourceRow, boolean updateRelationColumn) {
 
-    Set<String> result = Sets.newHashSet();
+    Set<String> result = new HashSet<>();
     if (targetInfo == null || sourceInfo == null || BeeUtils.isEmpty(targetColumn)
         || targetRow == null) {
       return result;

@@ -214,6 +214,7 @@
       <xs:enumeration value="AbsenceTypes" />
       <xs:enumeration value="Accounts" />
       <xs:enumeration value="ActiveTrips" />
+      <xs:enumeration value="Addressbook" />
       <xs:enumeration value="AdsTopics" />
       <xs:enumeration value="AllCargo" />
       <xs:enumeration value="AllDrivers" />
@@ -437,6 +438,7 @@
       <xs:enumeration value="UnsuppliedItems" />
       <xs:enumeration value="UserCalAttendees" />
       <xs:enumeration value="UserCalendars" />
+      <xs:enumeration value="UserEmails" />
       <xs:enumeration value="UserFeeds" />
       <xs:enumeration value="UserGroupMembers" />
       <xs:enumeration value="UserGroups" />

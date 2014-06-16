@@ -1,6 +1,5 @@
 package com.butent.bee.server.ui;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
@@ -66,7 +65,6 @@ import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
-import com.butent.bee.shared.modules.mail.MailConstants;
 import com.butent.bee.shared.rights.RightsObjectType;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.rights.RightsUtils;
@@ -155,8 +153,6 @@ public class UiServiceBean {
     } else if (BeeUtils.same(svc, Service.GET_FORM)) {
       response = getForm(reqInfo);
 
-    } else if (BeeUtils.same(svc, Service.MAIL)) {
-      response = doMail(reqInfo);
     } else if (BeeUtils.same(svc, Service.REBUILD)) {
       response = rebuildData(reqInfo);
     } else if (BeeUtils.same(svc, Service.DO_SQL)) {
@@ -251,7 +247,7 @@ public class UiServiceBean {
 
     } else if (BeeUtils.same(svc, Service.SET_ROW_RIGHTS)) {
       response = setRowRights(reqInfo);
-      
+
     } else if (BeeUtils.same(svc, Service.IMPORT_CSV_COMPANIES)) {
       response = importCSVCompanies(reqInfo);
     } else {
@@ -359,7 +355,7 @@ public class UiServiceBean {
   public BeeRowSet getWorkspaces() {
     return qs.getViewData(VIEW_WORKSPACES, usr.getCurrentUserFilter(COL_USER));
   }
-  
+
   private void buildDbList(String rootTable, Set<String> tables, boolean initial) {
     boolean recurse = BeeUtils.isSuffix(rootTable, '*');
     String root = BeeUtils.normalize(BeeUtils.removeSuffix(rootTable, '*'));
@@ -479,49 +475,6 @@ public class UiServiceBean {
       rows[i] = RowInfo.restore(entries[i]);
     }
     return deb.deleteRows(viewName, rows);
-  }
-
-  private ResponseObject doMail(RequestInfo reqInfo) {
-    int c = 0;
-    String to = null;
-    String subject = null;
-    String body = null;
-
-    if (!BeeUtils.isEmpty(reqInfo.getContent())) {
-      for (String part : Splitter.on(CharMatcher.is(';')).trimResults().omitEmptyStrings()
-          .split(reqInfo.getContent())) {
-        switch (++c) {
-          case 1:
-            to = part;
-            break;
-          case 2:
-            subject = part;
-            break;
-          case 3:
-            body = part;
-            break;
-        }
-      }
-    }
-    if (c < 3) {
-      return ResponseObject.error("Syntax: mail <ToAddress>;<Subject>;<Body>");
-    }
-    Long sender = qs.getLong(new SqlSelect()
-        .addFields(MailConstants.TBL_ACCOUNTS, MailConstants.COL_ADDRESS)
-        .addFrom(MailConstants.TBL_ACCOUNTS)
-        .setWhere(SqlUtils.and(SqlUtils.equals(MailConstants.TBL_ACCOUNTS, MailConstants.COL_USER,
-            usr.getCurrentUserId()),
-            SqlUtils.notNull(MailConstants.TBL_ACCOUNTS, MailConstants.COL_ACCOUNT_DEFAULT))));
-
-    if (!DataUtils.isId(sender)) {
-      return ResponseObject.error("No default mail account for user:", usr.getCurrentUser());
-    }
-
-    ResponseObject response = mail.sendMail(sender, to, subject, body);
-    if (response.isEmpty()) {
-      response.addInfo("Mail sent");
-    }
-    return response;
   }
 
   private ResponseObject doSql(RequestInfo reqInfo) {
@@ -845,7 +798,7 @@ public class UiServiceBean {
           } else {
             value = state.isChecked();
           }
-          
+
           row.setProperty(alias, Codec.pack(value));
         }
       }
@@ -1162,27 +1115,27 @@ public class UiServiceBean {
     }
     return response;
   }
-  
+
   private ResponseObject setRowRights(RequestInfo reqInfo) {
     String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
     if (BeeUtils.isEmpty(viewName)) {
       return ResponseObject.parameterNotFound(reqInfo.getService(), Service.VAR_VIEW_NAME);
     }
-    
+
     if (!sys.isView(viewName)) {
       return ResponseObject.error(reqInfo.getService(), viewName, "not a view");
     }
-    
+
     Long id = BeeUtils.toLongOrNull(reqInfo.getParameter(Service.VAR_ID));
     if (!DataUtils.isId(id)) {
       return ResponseObject.parameterNotFound(reqInfo.getService(), Service.VAR_ID);
     }
-    
+
     Long role = BeeUtils.toLongOrNull(reqInfo.getParameter(COL_ROLE));
     if (!DataUtils.isId(role) && !Objects.equals(role, 0L)) {
       return ResponseObject.parameterNotFound(reqInfo.getService(), COL_ROLE);
     }
-    
+
     RightsState state = EnumUtils.getEnumByIndex(RightsState.class,
         reqInfo.getParameter(COL_STATE));
     if (state == null) {
@@ -1190,12 +1143,12 @@ public class UiServiceBean {
     }
 
     boolean value = Codec.unpack(reqInfo.getParameter(Service.VAR_VALUE));
-    
+
     BeeView view = sys.getView(viewName);
     String tblName = view.getSourceName();
-    
+
     deb.setState(tblName, state, id, role, value);
-    
+
     return ResponseObject.emptyResponse();
   }
 

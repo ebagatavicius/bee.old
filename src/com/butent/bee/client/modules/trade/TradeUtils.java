@@ -48,6 +48,7 @@ public final class TradeUtils {
   private static final String STYLE_ITEMS_FOOTER = STYLE_ITEMS + "footer";
 
   private static final String COL_NAME = "Name";
+  private static final String COL_ORDINAL = "Ordinal";
   private static final String COL_TOTAL = "Total";
   private static final String COL_RATE_AMOUNT = COL_CURRENCY_RATE + COL_TRADE_AMOUNT;
   private static final String COL_RATE_VAT = COL_CURRENCY_RATE + COL_TRADE_VAT;
@@ -82,6 +83,7 @@ public final class TradeUtils {
         }
         if (table.getRowCount() == 0) {
           Map<String, String> cols = Maps.newLinkedHashMap();
+          // cols.put(COL_ORDINAL, Localized.getConstants().ordinal());
           cols.put(COL_NAME, Localized.getConstants().item());
           cols.put(ClassifierConstants.COL_ITEM_ARTICLE, Localized.getConstants().article());
           cols.put(COL_TRADE_ITEM_QUANTITY, Localized.getConstants().trdQuantity());
@@ -163,8 +165,11 @@ public final class TradeUtils {
         double currSumTotal = 0;
 
         SimpleRowSet rs = SimpleRowSet.restore((String) response.getResponse());
+        int ordinal = 0;
 
         for (SimpleRow row : rs) {
+
+          ordinal++;
           if (BeeUtils.isEmpty(currency)) {
             currency = row.getValue(COL_CURRENCY);
           }
@@ -229,6 +234,9 @@ public final class TradeUtils {
 
                 } else if (BeeUtils.same(fld, COL_RATE_AMOUNT)) {
                   value = formater.format(currSum);
+
+                } else if (BeeUtils.same(fld, COL_ORDINAL)) {
+                  value = BeeUtils.toString(ordinal);
 
                 } else if (!rs.hasColumn(fld)) {
                   if (xml == null) {

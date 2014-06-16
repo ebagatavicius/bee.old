@@ -24,18 +24,12 @@
       </SimpleJoin>
     </SimpleJoin>
 
-    <SimpleColumn name="Locale" />
     <SimpleColumn name="Interface" />
 
     <SimpleColumn name="BlockAfter" />
     <SimpleColumn name="BlockBefore" />
-
-    <SimpleColumn name="MailAssignedTasks" />
-    <SimpleColumn name="MailNewDiscussions" />
-    <SimpleColumn name="MailNewAnnouncements" />
-
-    <SimpleColumn name="Properties" />
   </Columns>
+
   <Order>
     <OrderBy column="LastName" />
     <OrderBy column="FirstName" />

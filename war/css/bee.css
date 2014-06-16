@@ -385,6 +385,13 @@
 .bee-ProgressBar-shell {
   background-color: Snow;
 }
+
+.bee-form-PrintableContent {
+  max-width: 100%;
+  padding: 1em;
+  background-color: white !important;
+}
+
 .bee-ProgressBar-bar {
   background-color: SpringGreen;
 }
@@ -887,10 +894,9 @@
 
 .bee-DataSelector-editableContainer {
   display: inline-block;
-  width: 155px;
 }
 
-.bee-DataSelector-editableInput {
+.bee-DataSelector-editableContainer .bee-DataSelector-editableInput {
   width: calc(100% - 16px);
   border: none !important;
 }
@@ -1274,6 +1280,9 @@
   padding-left: 1em;
   padding-right: 1em;
 }
+.bee-NewRow-inputCell {
+  padding-right: 1em;
+}
 .bee-NewRow-inputCell > .bee-SimpleCheckBox {
   margin: 0;
 }
@@ -1328,6 +1337,7 @@
   flex-wrap: wrap;
   -webkit-flex-wrap: wrap;
   -ms-flex-wrap: wrap;
+  border-top: 1px solid #f2f2f2;
 }
 
 .bee-Workspace-tab {
@@ -1344,18 +1354,18 @@
   border-top: 1px solid #e4e4e4;
   border-bottom-style: solid;
 }
-.bee-Workspace-tabSelected .bee-Workspace-caption {
+.bee-Workspace-tabSelected .bee-Workspace-tab-caption {
   cursor: default;
 }
 
-.bee-Workspace-caption {
+.bee-Workspace-tab-caption {
   max-width: 150px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
-.bee-Workspace-newTab {
+.bee-Workspace-new-tab {
   margin-left: 1px;
   width: 25px;
   height: 25px;
@@ -1368,25 +1378,44 @@
   cursor: pointer;
 }
 .bee-Workspace-tab:hover,
-.bee-Workspace-newTab:hover {
+.bee-Workspace-new-tab:hover {
   background-color: #fbfbfb;
 }
+.bee-Workspace-new-tab:hover {
+  color: black;
+}
 
-.bee-Workspace-tabWrapper {
+.bee-workspace-expander {
+  margin-left: auto;
+}
+.bee-workspace-expander > div {
+  display: inline-block;
+  margin-top: 1px;
+  margin-right: 6px;
+  font-size: 15px;
+  color: #999;
+  cursor: pointer;
+}
+.bee-workspace-expander > div:hover {
+  background-color: white;
+  color: black;
+}
+
+.bee-Workspace-tab-wrapper {
   display: flex;
   display: -webkit-flex;
   display: -ms-flexbox;
 }
 
-.bee-Workspace-dropDown {
+.bee-Workspace-tab-drop-down {
   color: #a1bff5;
 }
-.bee-Workspace-dropDown,
-.bee-Workspace-caption {
+.bee-Workspace-tab-drop-down,
+.bee-Workspace-tab-caption {
   line-height: 25px;
   padding-right: 3px;
 }
-.bee-Workspace-closeTab {
+.bee-Workspace-tab-close {
   width: 14px;
   height: 14px;
   font-size: 18px;
@@ -1394,40 +1423,47 @@
   text-align: center;
   color: #777;
 }
-.bee-Workspace-closeTab:hover {
+.bee-Workspace-tab-close:hover {
   color: white;
   background-color: #800;
   opacity: 0.4;
   border-radius: 50%;
 }
 
-.bee-Workspace-tabPanel > div:only-of-type .bee-Workspace-dropDown {
+.bee-Workspace-tabPanel > div:only-of-type .bee-Workspace-tab-drop-down {
   padding-left: 3px;
 }
-.bee-Workspace-tabPanel > div:only-of-type .bee-Workspace-caption {
+.bee-Workspace-tabPanel > div:only-of-type .bee-Workspace-tab-caption {
   display: none;
 }
-.bee-Workspace-tabPanel > div:only-of-type .bee-Workspace-closeTab {
+.bee-Workspace-tabPanel > div:only-of-type .bee-Workspace-tab-close {
   display: none;
 }
 
-.bee-Workspace-actionPopup {
+.bee-Workspace-action-popup {
   background-color: white;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
 }
-.bee-Workspace-actionMenu-panel {
+.bee-Workspace-action-table {
   border-collapse: collapse;
 }
-.bee-Workspace-actionMenu-panel tr:hover {
+.bee-Workspace-action-enabled,
+.bee-Workspace-action-disabled {
+  padding: 5px 25px;
+  font: menu;
+}
+.bee-Workspace-action-enabled:hover {
   background-color: #f2f2f2;
-}
-.bee-Workspace-actionMenu-panel td {
-  padding: 3px 1em;
-}
-.bee-Workspace-actionMenu-item {
-  font-size: 12px;
   cursor: pointer;
+}
+.bee-Workspace-action-disabled {
+  color: #aaa;
+}
+.bee-Workspace-action-separator {
+  height: 1px;
+  margin: 2px 0;
+  background-color: #e7e7e7;
 }
 
 .bee-MessageBox-message-cell {
@@ -1627,6 +1663,7 @@
 
 .bee-Appliance-icon {
   position: absolute;
+  top: 4px;
   left: 15px;
 }
 .bee-Appliance-label {
@@ -1901,7 +1938,7 @@
   width: 120px;
   height: 23px;
 }
-.bee-ColorEditor-textBox {
+.bee-ColorEditor-container .bee-ColorEditor-textBox {
   width: calc(100% - 30px);
   margin: 0;
 }
@@ -2022,6 +2059,10 @@
   font-size: inherit;
 }
 
+.bee-Label-withColon:after {
+  content: ': '
+}
+
 .bee-ListBox[size="1"] {
   padding-top: 0;
   padding-bottom: 0;
@@ -2118,7 +2159,7 @@
   right: 0;
   background-color: WhiteSmoke;
 }
-.bee-ResourceEditor-inputArea {
+.bee-ResourceEditor-wrapper .bee-ResourceEditor-inputArea {
   position: absolute;
   left: 3px;
   top: 3px;
@@ -3112,7 +3153,16 @@
   .bee-Header-control {
     display: none;
   }
-} 
+
+  .bee-form-PrintableContent {
+    display: block;
+    box-sizing: border-box; /* Don't render content out of margin */
+    width: 100%;
+    min-width: 17.5cm; /* B5 format width*/
+    padding: 0.5cm !important; /* Allow user set manual margins */
+    overflow: hidden !important; /* Hide all scrools */
+  }
+}
 
 .bee-GridMenu-popup {
   background-color: white;
@@ -3214,4 +3264,17 @@
 .bee-spaces-delete:hover {
   color: white;
   background-color: red;
+}
+
+input[type="text"],
+textarea,
+.bee-DataSelector-editableContainer {
+  width: 150px;
+}
+
+.bee-ChangePassword-table {
+  border-collapse: collapse;
+}
+.bee-ChangePassword-table td {
+  padding: 5px 10px;
 }

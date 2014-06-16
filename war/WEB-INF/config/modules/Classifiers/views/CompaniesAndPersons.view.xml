@@ -39,7 +39,6 @@
       <SimpleColumn name="Email" alias="EmailId" />
       <SimpleJoin name="Email" joinType="LEFT">
         <SimpleColumn name="Email" />
-        <SimpleColumn name="Label" />
       </SimpleJoin>
 
       <SimpleColumn name="Address" />

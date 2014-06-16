@@ -23,6 +23,11 @@ import java.util.List;
 public enum UserInterface implements HasCaption {
   DESKTOP {
     @Override
+    public String getCaption() {
+      return "Desktop";
+    }
+
+    @Override
     public Collection<Component> getComponents() {
       return EnumSet.allOf(Component.class);
     }
@@ -59,8 +64,15 @@ public enum UserInterface implements HasCaption {
 
   TABLET {
     @Override
+    public String getCaption() {
+      return "Tablet";
+    }
+
+    @Override
     public Collection<Component> getComponents() {
-      return EnumSet.allOf(Component.class);
+      return EnumSet.of(Component.AUTOCOMPLETE, Component.DATA_INFO, Component.DECORATORS,
+          Component.DICTIONARY, Component.FILTERS, Component.GRIDS, Component.MENU,
+          Component.SETTINGS, Component.USERS);
     }
 
     @Override
@@ -97,8 +109,15 @@ public enum UserInterface implements HasCaption {
 
   MOBILE {
     @Override
+    public String getCaption() {
+      return "Mobile";
+    }
+
+    @Override
     public Collection<Component> getComponents() {
-      return EnumSet.allOf(Component.class);
+      return EnumSet.of(Component.AUTOCOMPLETE, Component.DATA_INFO, Component.DECORATORS,
+          Component.DICTIONARY, Component.FILTERS, Component.GRIDS, Component.MENU,
+          Component.SETTINGS, Component.USERS);
     }
 
     @Override
@@ -135,6 +154,11 @@ public enum UserInterface implements HasCaption {
 
   E_COMMERCE {
     @Override
+    public String getCaption() {
+      return "E-Commerce";
+    }
+
+    @Override
     public Collection<Component> getComponents() {
       return EnumSet.of(Component.DATA_INFO, Component.AUTOCOMPLETE, Component.USERS);
     }
@@ -167,9 +191,14 @@ public enum UserInterface implements HasCaption {
 
   SELF_SERVICE {
     @Override
+    public String getCaption() {
+      return "Self-service";
+    }
+
+    @Override
     public Collection<Component> getComponents() {
-      return EnumSet.of(Component.DATA_INFO, Component.DICTIONARY, Component.FILTERS,
-          Component.DECORATORS, Component.GRIDS, Component.AUTOCOMPLETE, Component.USERS);
+      return EnumSet.of(Component.AUTOCOMPLETE, Component.DATA_INFO, Component.DECORATORS,
+          Component.DICTIONARY, Component.FILTERS, Component.GRIDS, Component.USERS);
     }
 
     @Override
@@ -209,6 +238,7 @@ public enum UserInterface implements HasCaption {
     MENU(false),
     NEWS(false),
     REPORTS(false),
+    SETTINGS(false),
     USERS(true),
     WORKSPACES(false);
 
@@ -265,11 +295,6 @@ public enum UserInterface implements HasCaption {
     return (ui == null) ? DEFAULT : ui;
   }
 
-  @Override
-  public String getCaption() {
-    return name();
-  }
-
   public abstract Collection<Component> getComponents();
 
   public abstract List<Meta> getMeta();
@@ -282,6 +307,10 @@ public enum UserInterface implements HasCaption {
 
   public abstract String getTitle();
   
+  public boolean hasComponent(Component component) {
+    return getComponents().contains(component);
+  }
+
   public boolean hasMenu() {
     return getComponents().contains(Component.MENU);
   }

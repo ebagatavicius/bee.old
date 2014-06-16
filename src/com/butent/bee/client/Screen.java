@@ -2,23 +2,26 @@ package com.butent.bee.client;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 
+import com.butent.bee.client.layout.Direction;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Split;
 import com.butent.bee.client.screen.Domain;
 import com.butent.bee.client.screen.Workspace;
 import com.butent.bee.client.ui.HasProgress;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.shared.HasExtendedInfo;
 import com.butent.bee.shared.NotificationListener;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.ui.UserInterface;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * manages the main browser window and it's main containing elements (f.e. panels).
  */
 
-public interface Screen extends NotificationListener {
+public interface Screen extends NotificationListener, HasExtendedInfo {
 
   boolean activateDomainEntry(Domain domain, Long key);
 
@@ -46,6 +49,8 @@ public interface Screen extends NotificationListener {
   
   int getHeight();
   
+  Set<Direction> getHiddenDirections();
+  
   List<IdentifiableWidget> getOpenWidgets();
 
   Split getScreenPanel();
@@ -55,6 +60,8 @@ public interface Screen extends NotificationListener {
   int getWidth();
 
   Workspace getWorkspace();
+  
+  void hideDirections(Set<Direction> directions);
   
   void init();
 
@@ -68,8 +75,6 @@ public interface Screen extends NotificationListener {
   
   void restore(String input, boolean append);
   
-  void showInfo();
-
   void showInNewPlace(IdentifiableWidget widget);
 
   void start(UserData userData);

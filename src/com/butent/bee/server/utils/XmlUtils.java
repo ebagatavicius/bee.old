@@ -1184,10 +1184,8 @@ public final class XmlUtils {
 
     try {
       ret = domBuilder.parse(new InputSource(rdr));
-    } catch (SAXException ex) {
-      logger.error(ex);
-    } catch (IOException ex) {
-      logger.error(ex);
+    } catch (SAXException | IOException ex) {
+      throw new BeeRuntimeException(ex);
     }
     return ret;
   }

@@ -10,25 +10,23 @@
   name="PrintServiceDefect" viewName="ServiceDefects" caption="=svcDefect" disabledActions="save"
   width="70" widthUnit="%" height="90" heightUnit="%">
 
-  <FlowPanel style="padding: 2ex 3em; background-color: white;">
+  <FlowPanel class="bee-form-PrintableContent">
     <FlowPanel class="flexBox-horizontal-top">
       <Image url="images/logo.png" />
-      <Label text="=svcDefectSupplier" style="&lbl; &bold;" class="flexible"
+      <Label text="=svcDefectSupplier" style="&lbl; &bold;" class="flexible bee-Label-withColon"
         horizontalAlignment="right" />
-      <div name="Supplier" />
+      <div name="Supplier" style="max-width: 45%"/>
     </FlowPanel>
     
     <br/>
     <br/>
     <HorizontalPanel verticalAlignment="top">
-      <Label for="TypeOfWork" style="&bold; &lbl;" />
+      <Label for="TypeOfWork" style="&bold;" class="bee-Label-withColon" />
       <TextLabel source="TypeOfWork" style="white-space: pre-wrap;" />
     </HorizontalPanel>
 
     <br/>
     <DateTimeLabel source="Date" format="DATE_LONG" horizontalAlignment="center" />
-
-    <br/>
     <HorizontalPanel style="margin: 0 auto;">
       <Label text="=svcDefectPrintNumberLabel" style="&bold;" />
       <TextLabel source="Number" />
@@ -37,13 +35,16 @@
     <br/>
     <Table name="ServiceDefectItems" class="bee-svc-print-defect-items-table" />
     
-    <br/>
-    <TextLabel source="Notes" style="white-space: pre-wrap;" />
-
+    <br/> <br/>
+    <HorizontalPanel verticalAlignment="top" style="min-height: 2em">
+      <Label for="Notes" style="text-transform: uppercase;" class="bee-Label-withColon" />
+      <TextLabel source="Notes" style="white-space: pre-wrap;" />
+    </HorizontalPanel>
+  
     <br/>
     <FlowPanel class="flexBox-horizontal-space-between">
       <FlowPanel>
-        <Label text="=customer" style="&bold;" />
+        <Label text="=customer" class="bee-Label-withColon" style="&bold;" />
         <div name="Customer" />
       </FlowPanel>
 

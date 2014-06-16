@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  
+  name="UserSettings" viewName="UserSettings" caption="=userSettings"
+  width="700" height="80" heightUnit="%"
+  >
+  <FlowPanel class="flexBox-vertical">
+    <Table style="border-collapse: collapse; margin: 2ex 0 2ex 2em;" 
+        cellStyle="padding: 1ex 1em; border: 1px solid #ccc;">
+      <col index="0" cellStyle="text-align: right;" />
+      <col index="2" cellStyle="text-align: right;" />
+
+      <row>
+        <Label for="Login" />
+        <TextLabel source="Login" />
+        <Label text="=company" for="CompanyName" />
+        <TextLabel source="CompanyName" />
+      </row>
+
+      <row>
+        <Label text="=personFullName" for="CompanyPerson" />
+        <TextLabel source="CompanyPerson" renderColumns="FirstName Lastname" />
+        <Label text="=personPosition" for="PositionName" />
+        <TextLabel source="PositionName" />
+      </row>
+    </Table>
+
+    <TabbedPages class="flexible">
+      <page>
+        <text>=feeds</text>
+        <ChildGrid class="flexible" name="UserFeeds" source="User" relColumn="User" />
+      </page>
+
+      <page module="Mail">
+        <text>=mailNotify</text>
+        <FlowPanel style="padding-left: 2em; padding-top: 2ex;">
+          <CheckBox source="MailAssignedTasks" module="Tasks" />
+          <br/>
+          <br/>
+          <CheckBox source="MailNewAnnouncements" module="Discussions" />
+          <br/>
+          <br/>
+          <CheckBox source="MailNewDiscussions" module="Discussions" />
+        </FlowPanel>
+      </page>
+      
+      <page>
+        <text>=userInterface</text>
+        <FlowPanel style="padding-left: 2em; padding-top: 2ex;">
+          <CheckBox source="OpenInNewTab" />
+          <br/>
+          <br/>
+          <CheckBox source="WorkspaceContinue" />
+        </FlowPanel>
+      </page>
+
+      <page>
+        <text>=style</text>
+        <SimplePanel>
+          <InputArea source="Style" class="occupy-1" />
+        </SimplePanel>
+      </page>
+    </TabbedPages>     
+  </FlowPanel>
+</f:Form>  

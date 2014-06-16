@@ -8,8 +8,8 @@
   <FlowPanel style="margin: 1ex 1em;">
     <Table style="border-collapse: collapse;" cellStyle="padding: 5px; border: 1px solid #aaa;">
       <row>
+        <CheckBox source="Boolean" html="-" />
         <CheckBox source="Boolean" />
-        <CheckBox source="Boolean" html="Boolean" />
         <Toggle source="Boolean" />
         <InputInteger source="Integer" readOnly="true" />
         <InputRange source="Integer" minValue="-10" maxValue="10" />

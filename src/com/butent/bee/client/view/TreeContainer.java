@@ -25,6 +25,7 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.UserInterface.Component;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
@@ -80,7 +81,8 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
       hdr.addStyleName(STYLE_NAME + "-actions");
 
       boolean editable = BeeKeeper.getUser().canEditData(viewName);
-      boolean bookmarked = !BeeUtils.isEmpty(favorite);
+      boolean bookmarkable = !BeeUtils.isEmpty(favorite)
+          && BeeKeeper.getScreen().getUserInterface().hasComponent(Component.FAVORITES);
 
       Image img;
 
@@ -98,9 +100,9 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
         hdr.add(img);
       }
 
-      if (bookmarked) {
+      if (bookmarkable) {
         setFavorite(NameUtils.toList(favorite));
-        
+
         img =
             new Image(Global.getImages().silverBookmarkAdd(), new ActionListener(Action.BOOKMARK));
         img.addStyleName(STYLE_NAME + "-bookmark");
@@ -371,7 +373,7 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
   private void setFavorite(List<String> favorite) {
     BeeUtils.overwrite(this.favorite, favorite);
   }
-  
+
   private Tree getTree() {
     return tree;
   }

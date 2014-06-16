@@ -103,7 +103,12 @@ public final class RowEditor {
   }
 
   public static void openRow(String viewName, IsRow row, boolean modal) {
-    openRow(viewName, row, modal, null, null, modal ? null : PresenterCallback.SHOW_IN_NEW_TAB);
+    openRow(viewName, row, modal, null);
+  }
+
+  public static void openRow(String viewName, IsRow row, boolean modal, RowCallback rowCallback) {
+    openRow(viewName, row, modal, null, rowCallback,
+        modal ? null : PresenterCallback.SHOW_IN_NEW_TAB);
   }
 
   public static void openRow(String viewName, IsRow row, boolean modal, UIObject target,

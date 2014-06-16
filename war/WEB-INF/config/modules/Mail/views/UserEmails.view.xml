@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="UserEmails" source="Emails"
+  filter="Contact OR Addressbook"
+  >
+  <Columns>
+    <SimpleColumn name="Email" />
+
+    <ExternalJoin source="Contacts" name="Email" joinType="LEFT">
+      <IdColumn name="Contact" aggregate="MAX" />
+    </ExternalJoin>
+
+    <ExternalJoin source="Addressbook" name="Email" joinType="LEFT">
+      <IdColumn name="Addressbook" aggregate="MAX" />
+      <AggregateColumn name="Label" aggregate="MAX" />
+    </ExternalJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="Email" />
+  </Order>
+</View>
+ 

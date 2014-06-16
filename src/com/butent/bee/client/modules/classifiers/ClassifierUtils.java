@@ -111,8 +111,8 @@ public final class ClassifierUtils {
           switch (col) {
             case COL_ADDRESS:
               String value = BeeUtils.joinItems(info.get(COL_ADDRESS).getB(),
-                  info.get(COL_CITY).getB(), info.get(COL_COUNTRY).getB(),
-                  info.get(COL_POST_INDEX).getB());
+                  info.get(COL_POST_INDEX).getB(), info.get(COL_CITY).getB(),
+                  info.get(COL_COUNTRY).getB());
               
               if (!BeeUtils.isEmpty(value)) {
                 Widget widget = new Label(info.get(col).getA());

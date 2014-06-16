@@ -915,7 +915,7 @@ public final class StyleUtils {
 
   public static String getStylePrimaryName(Element el) {
     Assert.notNull(el);
-    String className = el.getClassName();
+    String className = DomUtils.getClassName(el);
     if (BeeUtils.isEmpty(className)) {
       return BeeConst.STRING_EMPTY;
     }
@@ -989,7 +989,7 @@ public final class StyleUtils {
     if (el == null || BeeUtils.isEmpty(className)) {
       return false;
     }
-    return containsClassName(el.getClassName(), className);
+    return containsClassName(DomUtils.getClassName(el), className);
   }
 
   public static void hideDisplay(Element el) {
@@ -1052,7 +1052,7 @@ public final class StyleUtils {
     Assert.notEmpty(beforeName);
     Assert.isFalse(BeeUtils.same(className, beforeName));
 
-    String classes = el.getClassName();
+    String classes = DomUtils.getClassName(el);
     int beforeIndex = indexOfClassName(beforeName, classes);
     if (beforeIndex < 0) {
       el.addClassName(className);
@@ -1081,6 +1081,7 @@ public final class StyleUtils {
       }
       sb.append(name);
     }
+
     el.setClassName(sb.toString());
   }
 
@@ -2348,7 +2349,7 @@ public final class StyleUtils {
     Assert.notNull(classes);
 
     if (BeeUtils.same(classes, String.valueOf(REMOVE_CLASS))) {
-      if (!BeeUtils.isEmpty(el.getClassName())) {
+      if (!BeeUtils.isEmpty(DomUtils.getClassName(el))) {
         el.setClassName(BeeConst.STRING_EMPTY);
       }
       return;

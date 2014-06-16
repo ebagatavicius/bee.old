@@ -6,7 +6,7 @@ public final class ClassifierConstants {
   public static final String SVC_COMPANY_INFO = "GetCompanyInfo";
 
   public static final String SVC_GET_COMPANY_TYPE_REPORT = "get_company_type_report";
-  
+
   public static final String TBL_ITEMS = "Items";
   public static final String TBL_UNITS = "Units";
   public static final String TBL_ITEM_CATEGORIES = "ItemCategories";
@@ -23,7 +23,7 @@ public final class ClassifierConstants {
   public static final String TBL_COMPANY_RELATION_TYPE_STORE = "CompRelTypeStore";
 
   public static final String TBL_COMPANY_ACTIVITY_STORE = "CompActStore";
-  
+
   public static final String TBL_PERSONS = "Persons";
   public static final String TBL_POSITIONS = "Positions";
 
@@ -64,7 +64,7 @@ public final class ClassifierConstants {
   public static final String VIEW_COMPANY_CONTACTS = "CompanyContacts";
   public static final String VIEW_COMPANY_DEPARTMENTS = "CompanyDepartments";
   public static final String VIEW_COMPANY_USERS = "CompanyUsers";
-  
+
   public static final String GRID_PERSONS = "Persons";
   public static final String GRID_COMPANIES = "Companies";
   public static final String GRID_COMPANY_BANK_ACCOUNTS = "CompanyBankAccounts";
@@ -92,8 +92,6 @@ public final class ClassifierConstants {
   public static final String COL_LAST_NAME = "LastName";
   public static final String COL_PHOTO = "Photo";
   public static final String COL_DATE_OF_BIRTH = "DateOfBirth";
-  public static final String COL_EMAIL_ADDRESS = "Email";
-  public static final String COL_EMAIL_LABEL = "Label";
 
   public static final String COL_CATEGORY = "Category";
   public static final String COL_CATEGORY_NAME = "Name";
@@ -115,6 +113,7 @@ public final class ClassifierConstants {
   public static final String COL_MOBILE = "Mobile";
   public static final String COL_FAX = "Fax";
   public static final String COL_EMAIL = "Email";
+  public static final String COL_EMAIL_ADDRESS = "Email";
   public static final String COL_ADDRESS = "Address";
   public static final String COL_POST_INDEX = "PostIndex";
 
@@ -162,10 +161,10 @@ public final class ClassifierConstants {
   public static final String ALS_EMAIL_ID = "EmailId";
 
   public static final String ALS_CATEGORY_PARENT_NAME = "ParentName";
-  
+
   public static final String FILTER_COMPANY_CREATION_AND_TYPE = "company_creation_and_type";
   public static final String FILTER_COMPANY_USAGE = "company_usage";
-  
+
   private ClassifierConstants() {
   }
 }

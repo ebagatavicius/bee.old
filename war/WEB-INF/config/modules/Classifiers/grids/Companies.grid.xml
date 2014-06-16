@@ -14,9 +14,7 @@
     <DataColumn name="Phone" />
     <DataColumn name="Mobile" />
     <DataColumn name="Fax" visible="false" />
-    <RelColumn name="EmailId" renderColumns="Label Email">
-      <renderer type="mail" />
-    </RelColumn>
+    <RelColumn name="EmailId" />
 
     <DataColumn name="Address" />
     <DataColumn name="PostIndex" />

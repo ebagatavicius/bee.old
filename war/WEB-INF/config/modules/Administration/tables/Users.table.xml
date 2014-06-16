@@ -10,18 +10,12 @@
     <Relation name="CompanyPerson" relation="CompanyPersons" notNull="true" unique="true"
       label="=companyPerson" />
     
-    <Enum name="Locale" key="SupportedLocale" label="=userLocale" />
     <Enum name="Interface" key="UserInterface" label="=userInterface" />
     
     <DateTime name="BlockAfter" label="=blockAfter" />
     <DateTime name="BlockBefore" label="=blockBefore" />
-
-    <Boolean name="MailAssignedTasks" label="=crmMailAssignedTasks" />
-    <Boolean name="MailNewDiscussions" label="=discussMailNewDiscussions" />
-    <Boolean name="MailNewAnnouncements" label="=discussMailNewAnnouncements" />    
-      
-    <Text name="Properties" label="=userProperties" />
   </Fields>
+
   <Indexes>
     <Index unique="true">
       <PostgreSql>LOWER("Login")</PostgreSql>
