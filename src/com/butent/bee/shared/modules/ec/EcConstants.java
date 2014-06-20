@@ -540,6 +540,7 @@ public final class EcConstants {
   public static final String COL_CW_WAREHOUSE = "Warehouse";
 
   public static final String PRM_BUTENT_INTERVAL = "ButentIntervalInMinutes";
+  public static final String PRM_BUTENT_PRICE = "ButentPrice";
   public static final String PRM_MOTONET_HOURS = "MotoprofilRefreshHours";
   public static final String PRM_PROMO_FEATURED = "PromoFeatured";
   public static final String PRM_PROMO_NOVELTY = "PromoNovelty";

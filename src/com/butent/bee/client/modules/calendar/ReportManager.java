@@ -157,7 +157,7 @@ class ReportManager {
     GridPresenter presenter = new GridPresenter(gridDescription, gridView,
         rowSet.getNumberOfRows(), rowSet, ProviderType.LOCAL, CachingPolicy.NONE, uiOptions);
 
-    BeeKeeper.getScreen().updateActivePanel(presenter.getWidget());
+    BeeKeeper.getScreen().showWidget(presenter.getWidget());
   }
 
   private final Map<Report, BeeRow> reportOptions = Maps.newHashMap();

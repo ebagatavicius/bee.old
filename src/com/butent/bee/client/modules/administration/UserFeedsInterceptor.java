@@ -57,8 +57,12 @@ public class UserFeedsInterceptor extends AbstractGridInterceptor {
     BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (!response.hasErrors() && !Endpoint.isOpen()) {
-          DataChangeEvent.fireRefresh(BeeKeeper.getBus(), NewsConstants.VIEW_USER_FEEDS);
+        if (!response.hasErrors()) {
+          if (!Endpoint.isOpen()) {
+            DataChangeEvent.fireRefresh(BeeKeeper.getBus(), NewsConstants.VIEW_USER_FEEDS);
+          } else if (!BeeKeeper.getUser().is(user)) {
+            DataChangeEvent.fireLocalRefresh(BeeKeeper.getBus(), NewsConstants.VIEW_USER_FEEDS);
+          }
         }
       }
     });

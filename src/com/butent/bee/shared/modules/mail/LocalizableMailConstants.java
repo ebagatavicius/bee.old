@@ -4,11 +4,11 @@ public interface LocalizableMailConstants {
 
   String mail();
 
+  String mailActionMoveToTrash();
+
   String mails();
 
   String mailSignature();
-
-  String mailActionMoveToTrash();
 
   String mailBcc();
 
@@ -47,6 +47,30 @@ public interface LocalizableMailConstants {
   String mailQuestionSaveToDraft();
 
   String mailReplayPrefix();
+
+  String mailRule();
+
+  String mailRuleActionCopy();
+
+  String mailRuleActionDelete();
+
+  String mailRuleActionFlag();
+
+  String mailRuleActionForward();
+
+  String mailRuleActionMove();
+
+  String mailRuleActionRead();
+
+  String mailRuleActionReply();
+
+  String mailRuleConditionAll();
+
+  String mailRuleConditionRecipients();
+
+  String mailRuleConditionSender();
+
+  String mailRuleConditionSubject();
 
   String mailMessageIsSavedInDraft();
 

@@ -28,6 +28,7 @@ import com.butent.bee.client.render.FileLinkRenderer;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.utils.NewFileInfo;
@@ -335,7 +336,7 @@ public final class DocumentsHandler {
         Long docId = event.getRowValue().getLong(documentIndex);
 
         if (DataUtils.isId(docId)) {
-          RowEditor.openRow(VIEW_DOCUMENTS, docId, true, new RowCallback() {
+          RowEditor.open(VIEW_DOCUMENTS, docId, Opener.MODAL, new RowCallback() {
             @Override
             public void onSuccess(BeeRow result) {
               getGridPresenter().handleAction(Action.REFRESH);

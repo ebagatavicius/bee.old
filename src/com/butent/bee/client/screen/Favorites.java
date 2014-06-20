@@ -17,6 +17,7 @@ import com.butent.bee.client.dialog.StringCallback;
 import com.butent.bee.client.event.logical.BookmarkEvent;
 import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.InternalLink;
 import com.butent.bee.shared.Assert;
@@ -80,7 +81,7 @@ public class Favorites implements HandlesDeleteEvents {
           return;
         }
 
-        RowEditor.openRow(formName, dataInfo, id);
+        RowEditor.openForm(formName, dataInfo, id, Opener.modeless());
       }
     };
 

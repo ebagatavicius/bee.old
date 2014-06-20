@@ -13,6 +13,7 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowInsertCallback;
 import com.butent.bee.client.dialog.StringCallback;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.Button;
@@ -70,7 +71,7 @@ public class DocumentTemplateForm extends DocumentDataForm {
                           @Override
                           public void onSuccess(BeeRow result) {
                             super.onSuccess(result);
-                            RowEditor.openRow(VIEW_DOCUMENTS, result, true);
+                            RowEditor.open(VIEW_DOCUMENTS, result, Opener.MODAL);
                           }
                         });
                   }

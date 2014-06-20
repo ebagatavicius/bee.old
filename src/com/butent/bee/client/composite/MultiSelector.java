@@ -1,9 +1,5 @@
 package com.butent.bee.client.composite;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -36,6 +32,7 @@ import com.butent.bee.client.render.RendererFactory;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.ui.HandlesValueChange;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.FaLabel;
@@ -52,27 +49,35 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.value.LongValue;
+import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class MultiSelector extends DataSelector implements HandlesRendering, HandlesValueChange {
 
   private final class ChoiceWidget extends Flow {
 
-    private final long rowId;
+    private final Value choice;
     private final String labelId;
 
-    private ChoiceWidget(long rowId, String caption) {
+    private ChoiceWidget(Value choice, String caption) {
       super();
-      this.rowId = rowId;
+      this.choice = choice;
 
       addStyleName(STYLE_CHOICE);
 
@@ -86,7 +91,11 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
           @Override
           public void onClick(ClickEvent event) {
             event.stopPropagation();
-            MultiSelector.this.editChoice(getRowId());
+
+            Long rowId = getChoice().getLong();
+            if (DataUtils.isId(rowId)) {
+              MultiSelector.this.editChoice(rowId);
+            }
           }
         });
       }
@@ -101,7 +110,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
         @Override
         public void onClick(ClickEvent event) {
           event.stopPropagation();
-          MultiSelector.this.removeChoice(getRowId());
+          MultiSelector.this.removeChoice(getChoice());
         }
       });
 
@@ -113,8 +122,8 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
       return "choice";
     }
 
-    private long getRowId() {
-      return rowId;
+    private Value getChoice() {
+      return choice;
     }
 
     private void setCaption(String caption) {
@@ -181,11 +190,32 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
         RendererFactory.createRenderer(viewName, columns));
   }
 
+  private static List<Long> getIds(Collection<Value> choices) {
+    List<Long> ids = new ArrayList<>();
+
+    if (!BeeUtils.isEmpty(choices)) {
+      for (Value choice : choices) {
+        if (choice != null && choice.getType() == ValueType.LONG) {
+          Long id = choice.getLong();
+          if (DataUtils.isId(id)) {
+            ids.add(id);
+          }
+        }
+      }
+    }
+    return ids;
+  }
+
+  private static boolean hasChoice(Widget widget, Value choice) {
+    return widget instanceof ChoiceWidget && ((ChoiceWidget) widget).getChoice().equals(choice);
+  }
+
   private final CellSource cellSource;
 
   private AbstractCellRenderer renderer;
 
-  private final Map<Long, String> cache = Maps.newHashMap();
+  private final Map<Value, String> cache = new HashMap<>();
+  private String value;
 
   private String oldValue;
 
@@ -242,18 +272,25 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
   }
 
   public String getRowLabel(long rowId) {
-    if (cache.containsKey(rowId)) {
-      return cache.get(rowId);
-
-    } else {
-      BeeRowSet data = getOracle().getViewData();
-      if (DataUtils.isEmpty(data)) {
-        return null;
+    if (selectsIds()) {
+      String label = cache.get(new LongValue(rowId));
+      if (!BeeUtils.isEmpty(label)) {
+        return label;
       }
-
-      BeeRow row = data.getRowById(rowId);
-      return (row == null) ? null : getRenderer().render(row);
     }
+
+    BeeRowSet data = getOracle().getViewData();
+    if (DataUtils.isEmpty(data)) {
+      return null;
+    }
+
+    BeeRow row = data.getRowById(rowId);
+    return (row == null) ? null : getRenderer().render(row);
+  }
+
+  @Override
+  public String getValue() {
+    return value;
   }
 
   @Override
@@ -268,53 +305,57 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
   @Override
   public boolean isValueChanged() {
-    return !DataUtils.sameIdSet(getValue(), getOldValue());
+    return !BeeUtils.equalsTrim(getValue(), getOldValue());
   }
 
   @Override
   public void render(IsRow row) {
     if (cellSource != null) {
-      String value = cellSource.getString(row);
-      render(value);
+      render(cellSource.getString(row));
     }
   }
 
-  public void render(String value) {
-    setOldValue(value);
-    setValue(value);
+  public void render(String input) {
+    setOldValue(input);
+    setValue(input);
 
-    final List<Long> choices = DataUtils.parseIdList(value);
+    final List<Value> choices = parseChoices(input);
     if (choices.isEmpty()) {
       clearChoices();
       setExclusions(null);
-      return;
-    }
 
-    if (cache.keySet().containsAll(choices)) {
-      renderChoices(choices);
-      return;
-    }
-
-    Set<Long> notCached = Sets.newHashSet(choices);
-    notCached.removeAll(cache.keySet());
-
-    getData(notCached, new Queries.RowSetCallback() {
-      @Override
-      public void onSuccess(BeeRowSet result) {
-        if (result != null) {
-          for (BeeRow r : result.getRows()) {
-            cache.put(r.getId(), getRenderer().render(r));
-          }
-        }
-        renderChoices(choices);
+    } else if (hasValueSource()) {
+      clearChoices();
+      for (Value choice : choices) {
+        cache.put(choice, choice.getString());
       }
-    });
+      renderChoices(choices);
+
+    } else if (cache.keySet().containsAll(choices)) {
+      renderChoices(choices);
+
+    } else {
+      Set<Long> notCached = new HashSet<>(getIds(choices));
+      notCached.removeAll(getIds(cache.keySet()));
+
+      getData(notCached, new Queries.RowSetCallback() {
+        @Override
+        public void onSuccess(BeeRowSet result) {
+          if (result != null) {
+            for (BeeRow r : result.getRows()) {
+              cache.put(getRowValue(r), getRenderer().render(r));
+            }
+          }
+          renderChoices(choices);
+        }
+      });
+    }
   }
 
   @Override
-  public void setDisplayValue(String value) {
-    if (!Objects.equal(getDisplayValue(), value)) {
-      super.setDisplayValue(value);
+  public void setDisplayValue(String dv) {
+    if (!Objects.equals(getDisplayValue(), dv)) {
+      super.setDisplayValue(dv);
       inputResizer.accept(getInput());
     }
   }
@@ -325,27 +366,35 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
   }
 
   @Override
-  public void setSelection(BeeRow row, boolean fire) {
+  public void setSelection(BeeRow row, Value sv, boolean fire) {
     hideSelector();
     reset();
     clearInput();
 
-    if (row != null) {
-      String label = renderer.render(row);
-      cache.put(row.getId(), label);
+    Value selectedValue = (sv == null) ? getRowValue(row) : sv;
 
-      addChoice(new ChoiceWidget(row.getId(), label));
-      updateValue();
+    if (selectedValue != null) {
+      String label = (sv == null) ? renderer.render(row) : sv.getString();
+      cache.put(selectedValue, label);
+
+      if (addChoice(new ChoiceWidget(selectedValue, label))) {
+        updateValue();
+
+        setRelatedRow(row);
+
+        if (fire) {
+          SelectorEvent.fire(this, State.INSERTED);
+        }
+      }
 
       getElement().scrollIntoView();
       setFocus(true);
-
-      setRelatedRow(row);
-
-      if (fire) {
-        SelectorEvent.fire(this, State.INSERTED);
-      }
     }
+  }
+
+  @Override
+  public void setValue(String value) {
+    this.value = value;
   }
 
   @Override
@@ -362,7 +411,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
   @Override
   public List<String> validate(String normalizedValue, boolean checkForNull) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     messages.addAll(super.validate(normalizedValue, checkForNull));
     if (!messages.isEmpty()) {
       return messages;
@@ -457,9 +506,27 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
     initWidget(container);
   }
 
-  private void addChoice(ChoiceWidget choice) {
+  private boolean addChoice(ChoiceWidget choiceWidget) {
     Flow container = getContainer();
-    container.insert(choice, container.getWidgetCount() - emptyContainerSize);
+
+    for (Widget child : container) {
+      if (hasChoice(child, choiceWidget.getChoice())) {
+        return false;
+      }
+    }
+
+    container.insert(choiceWidget, container.getWidgetCount() - emptyContainerSize);
+    return true;
+  }
+
+  private String buildValue(List<Value> choices) {
+    if (BeeUtils.isEmpty(choices)) {
+      return null;
+    } else if (hasValueSource()) {
+      return Codec.beeSerialize(choices);
+    } else {
+      return DataUtils.buildIdList(getIds(choices));
+    }
   }
 
   private void clearChoices() {
@@ -489,8 +556,8 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
         rowCallback = null;
       }
 
-      RowEditor.openRow(getEditForm(), getOracle().getDataInfo(), rowId, modal, getWidget(),
-          rowCallback, null);
+      Opener opener = modal ? Opener.relativeTo(getWidget()) : Opener.NEW_TAB;
+      RowEditor.openForm(getEditForm(), getOracle().getDataInfo(), rowId, opener, rowCallback);
 
     } else {
       BeeRow row = getOracle().getCachedRow(rowId);
@@ -543,23 +610,24 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
       rowCallback = null;
     }
 
-    RowEditor.openRow(getEditForm(), Data.getDataInfo(getEditViewName()), sourceId, modal,
-        getWidget(), rowCallback, null);
+    Opener opener = modal ? Opener.relativeTo(getWidget()) : Opener.NEW_TAB;
+    RowEditor.openForm(getEditForm(), Data.getDataInfo(getEditViewName()), sourceId, opener,
+        rowCallback);
   }
 
   private Flow getContainer() {
     return (Flow) getWidget();
   }
 
-  private void getData(Collection<Long> choices, Queries.RowSetCallback callback) {
-    int size = choices.size();
+  private void getData(Collection<Long> ids, Queries.RowSetCallback callback) {
+    int size = ids.size();
 
     BeeRowSet cached = getOracle().getViewData();
     if (cached != null && cached.getNumberOfRows() >= size) {
       BeeRowSet result = new BeeRowSet(cached.getViewName(), cached.getColumns());
 
       for (BeeRow row : cached.getRows()) {
-        if (choices.contains(row.getId())) {
+        if (ids.contains(row.getId())) {
           result.addRow(row);
           if (result.getNumberOfRows() == size) {
             callback.onSuccess(result);
@@ -569,7 +637,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
       }
     }
 
-    Queries.getRowSet(getOracle().getViewName(), null, Filter.idIn(choices),
+    Queries.getRowSet(getOracle().getViewName(), null, Filter.idIn(ids),
         getOracle().getViewOrder(), callback);
   }
 
@@ -584,13 +652,40 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
       if (container.getWidgetCount() > emptyContainerSize) {
         Widget child = container.getWidget(container.getWidgetCount() - emptyContainerSize - 1);
         if (child instanceof ChoiceWidget) {
-          removeChoice(((ChoiceWidget) child).getRowId());
+          removeChoice(((ChoiceWidget) child).getChoice());
         }
       }
     }
   }
 
-  private void removeChoice(long rowId) {
+  private List<Value> parseChoices(String input) {
+    List<Value> choices = new ArrayList<>();
+    if (BeeUtils.isEmpty(input)) {
+      return choices;
+    }
+
+    if (hasValueSource()) {
+      String[] arr = Codec.beeDeserializeCollection(input);
+      if (arr != null) {
+        for (String s : arr) {
+          Value choice = Value.restore(s);
+          if (choice != null) {
+            choices.add(choice);
+          }
+        }
+      }
+
+    } else {
+      List<Long> ids = DataUtils.parseIdList(input);
+      for (Long id : ids) {
+        choices.add(new LongValue(id));
+      }
+    }
+
+    return choices;
+  }
+
+  private void removeChoice(Value choice) {
     if (!isEnabled()) {
       return;
     }
@@ -605,8 +700,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
     boolean removed = false;
 
     for (int i = 0; i < count; i++) {
-      Widget child = panel.getWidget(i);
-      if (child instanceof ChoiceWidget && ((ChoiceWidget) child).getRowId() == rowId) {
+      if (hasChoice(panel.getWidget(i), choice)) {
         removed = panel.remove(i);
         break;
       }
@@ -622,20 +716,27 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
     }
   }
 
-  private void renderChoices(List<Long> choices) {
+  private void renderChoices(List<Value> choices) {
     clearChoices();
 
-    for (Long rowId : choices) {
-      addChoice(new ChoiceWidget(rowId, cache.get(rowId)));
+    for (Value choice : choices) {
+      addChoice(new ChoiceWidget(choice, cache.get(choice)));
     }
 
     setExclusions(choices);
   }
 
-  private void setExclusions(Collection<Long> exclusions) {
-    SelectorEvent event = SelectorEvent.fireExclusions(this, exclusions);
-    if (!event.isConsumed()) {
-      getOracle().setExclusions(exclusions);
+  private boolean selectsIds() {
+    return !hasValueSource();
+  }
+
+  private void setExclusions(List<Value> choices) {
+    if (selectsIds()) {
+      Collection<Long> exclusions = getIds(choices);
+      SelectorEvent event = SelectorEvent.fireExclusions(this, exclusions);
+      if (!event.isConsumed()) {
+        getOracle().setExclusions(exclusions);
+      }
     }
   }
 
@@ -644,17 +745,17 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
   }
 
   private void updateChoice(IsRow row) {
-    long rowId = row.getId();
+    Value choice = getRowValue(row);
 
-    if (cache.containsKey(rowId)) {
+    if (choice != null && cache.containsKey(choice)) {
       String label = getRenderer().render(row);
 
-      if (!BeeUtils.isEmpty(label) && !label.equals(cache.get(rowId))) {
-        cache.put(rowId, label);
+      if (!BeeUtils.isEmpty(label) && !label.equals(cache.get(choice))) {
+        cache.put(choice, label);
 
         Flow panel = getContainer();
         for (Widget child : panel) {
-          if (child instanceof ChoiceWidget && ((ChoiceWidget) child).getRowId() == rowId) {
+          if (hasChoice(child, choice)) {
             ((ChoiceWidget) child).setCaption(label);
             break;
           }
@@ -664,16 +765,16 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
   }
 
   private void updateValue() {
-    List<Long> choices = Lists.newArrayList();
+    List<Value> choices = new ArrayList<>();
 
     Flow panel = getContainer();
     for (Widget child : panel) {
       if (child instanceof ChoiceWidget) {
-        choices.add(((ChoiceWidget) child).getRowId());
+        choices.add(((ChoiceWidget) child).getChoice());
       }
     }
 
-    setValue(DataUtils.buildIdList(choices));
+    setValue(buildValue(choices));
     setExclusions(choices);
   }
 }

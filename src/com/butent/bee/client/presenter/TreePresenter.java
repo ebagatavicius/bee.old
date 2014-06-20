@@ -186,6 +186,7 @@ public class TreePresenter extends AbstractPresenter implements CatchEvent.Catch
       case BOOKMARK:
         createBookmark();
         break;
+
       case DELETE:
         if (getView().isEnabled()) {
           removeItem();

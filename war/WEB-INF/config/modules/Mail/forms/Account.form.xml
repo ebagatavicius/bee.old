@@ -3,9 +3,9 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   
-  name="Account" viewName="Accounts" caption="=mailAccount" width="650" height="350"
+  name="Account" viewName="Accounts" caption="=mailAccount" width="650" height="400"
   >
-  <FlowPanel>
+  <FlowPanel class="flexBox-vertical">
     <FlowPanel class="flexBox-vertical-center">
       <Table>
         <row>
@@ -25,94 +25,101 @@
       </Table>
     </FlowPanel>
     
-    <hr />
+    <TabbedPages class="flexible" style="margin-top:5px;">
+      <page>
+        <text>=mailAccountSettings</text>
+        <FlowPanel class="flexBox-horizontal">
+          <FlowPanel class="flexBox-vertical-center flexible">
+            <Table>
+              <row>
+                <cell colSpan="2">
+                  <TextLabel style="font-weight:bold; text-align:center;">
+                    <render><ui:expression>row.StoreType + ' ' + $wnd.Bee_maybeTranslate('=serverParameters')</ui:expression></render>
+                  </TextLabel>
+                </cell>
+              </row>
+              <row>
+                <Label for="StoreServer" horizontalAlignment="right" />
+                <InputText source="StoreServer" />
+              </row>
+              <row>
+                <Label for="StorePort" horizontalAlignment="right" />
+                <FlowPanel>
+                  <InputInteger source="StorePort" style="width:50px;" />
+                  <Button text="=mailServerProperties" name="StoreProperties" for="StoreProperties" style="float:right" />
+                </FlowPanel>
+              </row>
+              <row>
+                <Label for="StoreLogin" horizontalAlignment="right" />
+                <InputText source="StoreLogin" />
+              </row>
+              <row>
+                <CheckBox source="StoreSSL" text="=mailServerSSL" style="float:right" />
+                <Button text="=mailServerPassword" name="StorePassword" for="StorePassword" style="float:right" />
+              </row>
+              <row>
+                <cell colSpan="2">
+                  <Label text="=mailSystemFolders" style="font-weight:bold; text-align:center;" />
+                </cell>
+              </row>
+              <row>
+                <Label for="SentFolder" class="bee-required" horizontalAlignment="right" />
+                <DataSelector name="SentFolder" source="SentFolder" required="true" newRowEnabled="false">
+                  <renderToken source="SentParent" suffix="/" />
+                  <renderToken source="SentName" />
+                </DataSelector>
+              </row>
+              <row>
+                <Label for="DraftsFolder" class="bee-required" horizontalAlignment="right" />
+                <DataSelector name="DraftsFolder" source="DraftsFolder" required="true" newRowEnabled="false">
+                  <renderToken source="DraftsParent" suffix="/" />
+                  <renderToken source="DraftsName" />
+                </DataSelector>
+              </row>
+              <row>
+                <Label for="TrashFolder" class="bee-required" horizontalAlignment="right" />
+                <DataSelector name="TrashFolder" source="TrashFolder" required="true" newRowEnabled="false">
+                  <renderToken source="TrashParent" suffix="/" />
+                  <renderToken source="TrashName" />
+                </DataSelector>
+              </row>
+            </Table>
+          </FlowPanel>
     
-    <FlowPanel class="flexBox-horizontal">
-      <FlowPanel class="flexBox-vertical-center flexible">
-        <Table>
-          <row>
-            <cell colSpan="2">
-              <TextLabel style="font-weight:bold; text-align:center;">
-                <render><ui:expression>row.StoreType + ' ' + $wnd.Bee_maybeTranslate('=serverParameters')</ui:expression></render>
-              </TextLabel>
-            </cell>
-          </row>
-          <row>
-            <Label for="StoreServer" horizontalAlignment="right" />
-            <InputText source="StoreServer" />
-          </row>
-          <row>
-            <Label for="StorePort" horizontalAlignment="right" />
-            <FlowPanel>
-              <InputInteger source="StorePort" style="width:50px;" />
-              <Button text="=mailServerProperties" name="StoreProperties" for="StoreProperties" style="float:right" />
-            </FlowPanel>
-          </row>
-          <row>
-            <Label for="StoreLogin" horizontalAlignment="right" />
-            <InputText source="StoreLogin" />
-          </row>
-          <row>
-            <CheckBox source="StoreSSL" text="=mailServerSSL" style="float:right" />
-            <Button text="=mailServerPassword" name="StorePassword" for="StorePassword" style="float:right" />
-          </row>
-          <row>
-            <cell colSpan="2">
-              <Label text="=mailSystemFolders" style="font-weight:bold; text-align:center;" />
-            </cell>
-          </row>
-          <row>
-            <Label for="SentFolder" class="bee-required" horizontalAlignment="right" />
-            <DataSelector name="SentFolder" source="SentFolder" required="true" newRowEnabled="false">
-              <renderToken source="SentParent" suffix="/" />
-              <renderToken source="SentName" />
-            </DataSelector>
-          </row>
-          <row>
-            <Label for="DraftsFolder" class="bee-required" horizontalAlignment="right" />
-            <DataSelector name="DraftsFolder" source="DraftsFolder" required="true" newRowEnabled="false">
-              <renderToken source="DraftsParent" suffix="/" />
-              <renderToken source="DraftsName" />
-            </DataSelector>
-          </row>
-          <row>
-            <Label for="TrashFolder" class="bee-required" horizontalAlignment="right" />
-            <DataSelector name="TrashFolder" source="TrashFolder" required="true" newRowEnabled="false">
-              <renderToken source="TrashParent" suffix="/" />
-              <renderToken source="TrashName" />
-            </DataSelector>
-          </row>
-        </Table>
-      </FlowPanel>
-
-      <FlowPanel class="flexBox-vertical-center flexible">
-        <Table>
-          <row>
-            <cell colSpan="2">
-              <Label text="=mailSMTPServerSettings" style="font-weight:bold; text-align:center;" />
-            </cell>
-          </row>
-          <row>
-            <Label for="TransportServer" horizontalAlignment="right" />
-            <InputText source="TransportServer" />
-          </row>
-          <row>
-            <Label for="TransportPort" horizontalAlignment="right" />
-            <FlowPanel>
-              <InputInteger source="TransportPort" style="width:50px;" />
-              <Button text="=mailServerProperties" name="TransportProperties" for="TransportProperties" style="float:right" />
-            </FlowPanel>
-          </row>
-          <row>
-            <Label for="TransportLogin" horizontalAlignment="right" />
-            <InputText source="TransportLogin" />
-          </row>
-          <row>
-            <CheckBox source="TransportSSL" text="=mailServerSSL" style="float:right" />
-            <Button text="=mailServerPassword" name="TransportPassword" for="TransportPassword" style="float:right" />
-          </row>
-        </Table>
-      </FlowPanel>
-    </FlowPanel>
+          <FlowPanel class="flexBox-vertical-center flexible">
+            <Table>
+              <row>
+                <cell colSpan="2">
+                  <Label text="=mailSMTPServerSettings" style="font-weight:bold; text-align:center;" />
+                </cell>
+              </row>
+              <row>
+                <Label for="TransportServer" horizontalAlignment="right" />
+                <InputText source="TransportServer" />
+              </row>
+              <row>
+                <Label for="TransportPort" horizontalAlignment="right" />
+                <FlowPanel>
+                  <InputInteger source="TransportPort" style="width:50px;" />
+                  <Button text="=mailServerProperties" name="TransportProperties" for="TransportProperties" style="float:right" />
+                </FlowPanel>
+              </row>
+              <row>
+                <Label for="TransportLogin" horizontalAlignment="right" />
+                <InputText source="TransportLogin" />
+              </row>
+              <row>
+                <CheckBox source="TransportSSL" text="=mailServerSSL" style="float:right" />
+                <Button text="=mailServerPassword" name="TransportPassword" for="TransportPassword" style="float:right" />
+              </row>
+            </Table>
+          </FlowPanel>
+        </FlowPanel>
+      </page>
+      <page>
+        <text>=mailAccountRules</text>
+        <ChildGrid name="Rules" relColumn="Account" />
+      </page>
+    </TabbedPages>
   </FlowPanel>
 </f:Form>  

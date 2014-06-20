@@ -119,7 +119,9 @@ public class BeeServlet extends LoginServlet {
       }
 
     } else if (doLogout) {
+      dispatcher.beforeLogout(reqInfo);
       logout(req, session);
+
       try {
         req.getRequestDispatcher(req.getRequestURI()).forward(req, resp);
       } catch (ServletException | IOException ex) {

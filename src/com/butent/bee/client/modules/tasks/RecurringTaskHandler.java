@@ -37,6 +37,7 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.validation.CellValidateEvent;
 import com.butent.bee.client.view.HeaderView;
@@ -620,7 +621,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
       case EDIT:
         dataRow = getOffspring(dataId);
         if (dataRow != null) {
-          RowEditor.openRow(VIEW_TASKS, dataRow, true);
+          RowEditor.open(VIEW_TASKS, dataRow, Opener.MODAL);
         }
         break;
 

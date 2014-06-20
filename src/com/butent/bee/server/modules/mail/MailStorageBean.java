@@ -33,6 +33,7 @@ import com.butent.bee.shared.modules.mail.MailConstants.AddressType;
 import com.butent.bee.shared.modules.mail.MailConstants.MessageFlag;
 import com.butent.bee.shared.modules.mail.MailConstants.SystemFolder;
 import com.butent.bee.shared.modules.mail.MailFolder;
+import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.io.ByteArrayInputStream;
@@ -54,7 +55,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.mail.Address;
 import javax.mail.FetchProfile;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -212,7 +212,7 @@ public class MailStorageBean {
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  public boolean storeMail(Long userId, Message message, Long folderId, Long messageUID)
+  public Long storeMail(Long userId, Message message, Long folderId, Long messageUID)
       throws MessagingException {
 
     MailEnvelope envelope = new MailEnvelope(message);
@@ -239,7 +239,7 @@ public class MailStorageBean {
       Long fileId;
       InputStream is = null;
       Long senderId = null;
-      Address sender = envelope.getSender();
+      InternetAddress sender = envelope.getSender();
 
       if (sender != null) {
         try {
@@ -268,7 +268,7 @@ public class MailStorageBean {
 
       Set<Long> allAddresses = Sets.newHashSet();
 
-      for (Entry<AddressType, Address> entry : envelope.getRecipients().entries()) {
+      for (Entry<AddressType, InternetAddress> entry : envelope.getRecipients().entries()) {
         try {
           Long adr = storeAddress(userId, entry.getValue());
 
@@ -290,13 +290,15 @@ public class MailStorageBean {
       }
     }
     if (!DataUtils.isId(placeId)) {
-      qs.insertData(new SqlInsert(TBL_PLACES)
+      placeId = qs.insertData(new SqlInsert(TBL_PLACES)
           .addConstant(COL_MESSAGE, messageId)
           .addConstant(COL_FOLDER, folderId)
           .addConstant(COL_FLAGS, envelope.getFlagMask())
           .addConstant(COL_MESSAGE_UID, messageUID));
+    } else {
+      placeId = null;
     }
-    return !DataUtils.isId(placeId);
+    return placeId;
   }
 
   @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -397,19 +399,16 @@ public class MailStorageBean {
     return folder;
   }
 
-  private Long storeAddress(Long userId, Address address) throws AddressException {
+  private Long storeAddress(Long userId, InternetAddress address) throws AddressException {
     Assert.notNull(address);
     String email;
     String label = null;
 
-    if (address instanceof InternetAddress) {
-      ((InternetAddress) address).validate();
+    address.validate();
 
-      label = ((InternetAddress) address).getPersonal();
-      email = BeeUtils.normalize(((InternetAddress) address).getAddress());
-    } else {
-      email = BeeUtils.normalize(address.toString());
-    }
+    label = address.getPersonal();
+    email = BeeUtils.normalize(address.getAddress());
+
     Assert.notEmpty(email);
 
     Long id = null;
@@ -531,9 +530,13 @@ public class MailStorageBean {
       } catch (ParseException e) {
         logger.warning("( MessageID =", messageId, ") Error getting part file name:", e);
       }
+      boolean isBase64 = BeeUtils.same("base64",
+          ArrayUtils.getQuietly(part.getHeader("Content-Transfer-Encoding"), 0));
+
       if (!part.isMimeType("text/*")
           || BeeUtils.same(disposition, Part.ATTACHMENT)
-          || !BeeUtils.isEmpty(fileName)) {
+          || !BeeUtils.isEmpty(fileName)
+          || isBase64) {
 
         Long fileId = fs.storeFile(part.getInputStream(), fileName, contentType);
 

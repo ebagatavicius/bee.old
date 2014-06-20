@@ -4,14 +4,12 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.ui.HasWidgets;
 
 import static com.butent.bee.shared.modules.mail.MailConstants.*;
 
@@ -20,8 +18,8 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
-import com.butent.bee.client.composite.Autocomplete;
 import com.butent.bee.client.composite.FileCollector;
+import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.Queries.RowSetCallback;
 import com.butent.bee.client.data.RowFactory;
@@ -54,12 +52,13 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.mail.AccountInfo;
 import com.butent.bee.shared.modules.mail.MailConstants.AddressType;
-import com.butent.bee.shared.ui.Relation;
+import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
@@ -119,8 +118,6 @@ public final class NewMailMessage extends AbstractFormInterceptor
     }
   }
 
-  private static final String SIGNATURE_SEPARATOR = "<br><br><br>";
-
   public static void create(final Set<String> to, final Set<String> cc, final Set<String> bcc,
       final String subject, final String content, final Map<Long, NewFileInfo> attach,
       final Long draftId) {
@@ -172,7 +169,7 @@ public final class NewMailMessage extends AbstractFormInterceptor
   private final String content;
   private final Map<Long, NewFileInfo> defaultAttachments;
 
-  private final Map<String, Autocomplete> recipientWidgets = Maps.newHashMap();
+  private final Map<String, MultiSelector> recipientWidgets = Maps.newHashMap();
   private Editor subjectWidget;
   private Editor contentWidget;
   private final ListBox signaturesWidget = new ListBox();
@@ -201,19 +198,6 @@ public final class NewMailMessage extends AbstractFormInterceptor
     for (Long id : defaultAttachments.keySet()) {
       attachments.put(defaultAttachments.get(id).getName(), id);
     }
-    if (!DataUtils.isId(draftId)) {
-      Long addressId = defaultAccount.getAddressId();
-
-      if (to != null) {
-        to.remove(addressId);
-      }
-      if (cc != null) {
-        cc.remove(addressId);
-      }
-      if (bcc != null) {
-        bcc.remove(addressId);
-      }
-    }
     Map<AddressType, Set<String>> recs = new HashMap<>();
     recs.put(AddressType.TO, to);
     recs.put(AddressType.CC, cc);
@@ -222,6 +206,9 @@ public final class NewMailMessage extends AbstractFormInterceptor
     for (AddressType type : recs.keySet()) {
       Set<String> emails = recs.get(type);
 
+      if (!DataUtils.isId(draftId) && emails != null) {
+        emails.remove(defaultAccount.getAddress());
+      }
       if (!BeeUtils.isEmpty(emails)) {
         recipients.putAll(type.name(), emails);
       }
@@ -234,19 +221,18 @@ public final class NewMailMessage extends AbstractFormInterceptor
 
     AddressType type = EnumUtils.getEnumByName(AddressType.class, name);
 
-    if (widget instanceof HasWidgets && type != null) {
-      HasWidgets panel = (HasWidgets) widget;
-      panel.clear();
-
-      Autocomplete input = Autocomplete.create(Relation.create("UserEmails",
-          Lists.newArrayList("Email")), true);
-
-      panel.add(input);
+    if (widget instanceof MultiSelector && type != null) {
+      MultiSelector input = (MultiSelector) widget;
 
       Collection<String> lst = recipients.get(type.name());
 
       if (!BeeUtils.isEmpty(lst)) {
-        input.setValue(lst.iterator().next());
+        List<Value> choices = new ArrayList<>();
+
+        for (String address : lst) {
+          choices.add(Value.getValue(address));
+        }
+        input.render(Codec.beeSerialize(choices));
       }
       recipientWidgets.put(type.name(), input);
 
@@ -339,13 +325,15 @@ public final class NewMailMessage extends AbstractFormInterceptor
 
   private boolean hasChanges() {
     for (String type : recipientWidgets.keySet()) {
-      Set<String> recs = new HashSet<>();
-      String recipient = recipientWidgets.get(type).getValue();
+      Set<String> values = new HashSet<>();
+      String[] recs = Codec.beeDeserializeCollection(recipientWidgets.get(type).getValue());
 
-      if (!BeeUtils.isEmpty(recipient)) {
-        recs.add(recipient);
+      if (!ArrayUtils.isEmpty(recs)) {
+        for (String rec : recs) {
+          values.add(Value.restore(rec).getString());
+        }
       }
-      if (!BeeUtils.sameElements(recipients.get(type), recs)) {
+      if (!BeeUtils.sameElements(recipients.get(type), values)) {
         return true;
       }
     }
@@ -428,10 +416,15 @@ public final class NewMailMessage extends AbstractFormInterceptor
     params.addDataItem(COL_ACCOUNT, account.getAccountId());
 
     for (String type : recipientWidgets.keySet()) {
-      String recipient = recipientWidgets.get(type).getValue();
+      String[] recs = Codec.beeDeserializeCollection(recipientWidgets.get(type).getValue());
 
-      if (!BeeUtils.isEmpty(recipient)) {
-        params.addDataItem(type, Codec.beeSerialize(Sets.newHashSet(recipient)));
+      if (!ArrayUtils.isEmpty(recs)) {
+        Set<String> values = new HashSet<>();
+
+        for (String rec : recs) {
+          values.add(Value.restore(rec).getString());
+        }
+        params.addDataItem(type, Codec.beeSerialize(values));
       }
     }
     if (draftId != null) {
@@ -462,8 +455,8 @@ public final class NewMailMessage extends AbstractFormInterceptor
     boolean hasRecipients = false;
     String error = null;
 
-    for (Autocomplete r : recipientWidgets.values()) {
-      if (!BeeUtils.isEmpty(r.getValue())) {
+    for (MultiSelector r : recipientWidgets.values()) {
+      if (!ArrayUtils.isEmpty(Codec.beeDeserializeCollection(r.getValue()))) {
         hasRecipients = true;
         break;
       }

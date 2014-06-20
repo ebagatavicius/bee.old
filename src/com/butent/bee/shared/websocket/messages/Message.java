@@ -30,6 +30,12 @@ public abstract class Message {
         return new EchoMessage();
       }
     },
+    CONFIG {
+      @Override
+      Message createMessage() {
+        return new ConfigMessage();
+      }
+    },
     INFO {
       @Override
       Message createMessage() {

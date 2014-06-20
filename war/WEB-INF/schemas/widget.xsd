@@ -731,6 +731,7 @@
       <xs:complexContent>
         <xs:extension base="selectorType">
           <xs:attribute name="viewName" type="type:dataView" use="required" />
+          <xs:attribute name="separators" type="xs:normalizedString" />
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>

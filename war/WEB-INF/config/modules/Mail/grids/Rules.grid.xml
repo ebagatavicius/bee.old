@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+  name="Rules" viewName="Rules" editInPlace="Ordinal Active"
+  >
+  <g:columns>
+    <DataColumn name="Ordinal" sortable="false" />
+    
+    <CalcColumn name="Rule" type="string" cellType="html" flexGrow="1" flexShrink="1"
+      caption="=mailRule" maxWidth="600" visible="true" whiteSpace="nowrap" />
+
+    <DataColumn name="Active" sortable="false" />
+  </g:columns>
+</g:Grid>

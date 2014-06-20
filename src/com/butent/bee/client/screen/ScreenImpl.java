@@ -36,6 +36,7 @@ import com.butent.bee.client.screen.TilePanel.Tile;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasProgress;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.BrowsingContext;
 import com.butent.bee.client.widget.FaLabel;
@@ -60,6 +61,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,6 +73,9 @@ import java.util.Set;
 public class ScreenImpl implements Screen {
 
   private static final BeeLogger logger = LogUtils.getLogger(ScreenImpl.class);
+
+  private static final Set<Direction> hidableDirections = EnumSet.of(Direction.WEST,
+      Direction.NORTH, Direction.EAST);
 
   private Split screenPanel;
 
@@ -212,7 +217,7 @@ public class ScreenImpl implements Screen {
     if (!hidden.isEmpty()) {
       for (Map.Entry<Direction, Integer> entry : hidden.entrySet()) {
         info.add(new ExtendedProperty("Hidden", entry.getKey().name(),
-            BeeUtils.toString(entry.getKey())));
+            BeeUtils.toString(entry.getValue())));
       }
     }
 
@@ -354,8 +359,26 @@ public class ScreenImpl implements Screen {
   }
 
   @Override
+  public String serialize() {
+    if (getWorkspace() == null) {
+      return null;
+    } else {
+      return getWorkspace().serialize();
+    }
+  }
+
+  @Override
   public void showInNewPlace(IdentifiableWidget widget) {
     getWorkspace().openInNewPlace(widget);
+  }
+
+  @Override
+  public void showWidget(IdentifiableWidget widget) {
+    if (BeeKeeper.getUser().openInNewTab()) {
+      showInNewPlace(widget);
+    } else {
+      updateActivePanel(widget);
+    }
   }
 
   @Override
@@ -502,10 +525,8 @@ public class ScreenImpl implements Screen {
       @Override
       public void onClick(ClickEvent event) {
         if (getMaximizer().isChecked()) {
-          for (Direction direction : Direction.values()) {
-            if (!direction.isCenter()) {
-              expand(direction, false);
-            }
+          for (Direction direction : hidableDirections) {
+            expand(direction, false);
           }
 
         } else {
@@ -747,7 +768,7 @@ public class ScreenImpl implements Screen {
   protected void onUserSignatureClick() {
     BeeRow row = BeeKeeper.getUser().getSettingsRow();
     if (row != null) {
-      RowEditor.openRow(AdministrationConstants.VIEW_USER_SETTINGS, row, true,
+      RowEditor.open(AdministrationConstants.VIEW_USER_SETTINGS, row, Opener.MODAL,
           new RowCallback() {
             @Override
             public void onSuccess(BeeRow result) {
@@ -873,7 +894,13 @@ public class ScreenImpl implements Screen {
     }
 
     if (getMaximizer() != null) {
-      checked = !hidden.isEmpty();
+      checked = true;
+      for (Direction direction : hidableDirections) {
+        if (getScreenPanel().getDirectionSize(direction) > 0) {
+          checked = false;
+          break;
+        }
+      }
 
       title = checked
           ? Localized.getConstants().actionWorkspaceRestoreSize()

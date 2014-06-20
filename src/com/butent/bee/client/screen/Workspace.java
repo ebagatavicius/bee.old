@@ -751,6 +751,29 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
     }
   }
 
+  String serialize() {
+    JSONObject json = toJson();
+    
+    if (json == null || json.size() <= 0) {
+      return null;
+
+    } else if (json.size() == 1 && json.containsKey(KEY_TABS)) {
+      JSONArray arr = json.get(KEY_TABS).isArray();
+      
+      if (arr == null) {
+        return null;
+
+      } else if (arr.size() == 1) {
+        JSONObject tab = arr.get(0).isObject();
+        if (tab == null || tab.size() <= 0) {
+          return null;
+        }
+      }
+    }
+    
+    return json.toString();
+  }
+
   void updateActivePanel(IdentifiableWidget widget) {
     if (widget == null) {
       showError("widget is null");
@@ -892,7 +915,7 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
   private void showError(String message) {
     logger.severe(getClass().getName(), message);
   }
-
+  
   private void splitActiveTile(Direction direction) {
     TilePanel panel = getActivePanel();
     if (panel != null) {
@@ -928,7 +951,6 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
     if (BeeUtils.isEmpty(caption)) {
       caption = tile.getPanel().getCaption();
     }
-
     if (BeeUtils.isEmpty(caption)) {
       caption = Localized.getConstants().newTab();
     }

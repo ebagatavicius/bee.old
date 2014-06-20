@@ -140,6 +140,10 @@ public class MailAccount {
     return accountInfo.getAddressId();
   }
 
+  public Long getSignatureId() {
+    return accountInfo.getSignatureId();
+  }
+
   public String getStoreErrorMessage() {
     String err = error;
 

@@ -19,6 +19,7 @@ import com.butent.bee.shared.Launchable;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -109,27 +110,32 @@ public final class UnboundSelector extends DataSelector implements HandlesRender
   }
 
   @Override
-  public void setSelection(BeeRow row, boolean fire) {
-    super.setSelection(row, fire);
-    render(row);
+  public void setSelection(BeeRow row, Value value, boolean fire) {
+    super.setSelection(row, value, fire);
+
+    if (value == null) {
+      render(row);
+    } else {
+      setRenderedValue(value.getString());
+    }
   }
-  
+
   public void setValue(Long id, final boolean fire) {
     if (DataUtils.isId(id)) {
       Queries.getRow(getOracle().getViewName(), id, new RowCallback() {
         @Override
         public void onSuccess(BeeRow result) {
-          setSelection(result, fire);
+          setSelection(result, null, fire);
           updateDisplay(getRenderedValue());
         }
       });
-      
+
     } else {
-      setSelection(null, fire);
+      setSelection(null, null, fire);
       updateDisplay(getRenderedValue());
     }
   }
-  
+
   @Override
   public List<String> validate(boolean checkForNull) {
     return validate(getNormalizedValue(), checkForNull);
@@ -179,10 +185,12 @@ public final class UnboundSelector extends DataSelector implements HandlesRender
       @Override
       public void onEditStop(EditStopEvent event) {
         if (getRenderer() != null) {
-          if (event.isChanged()) {
-            render(getRelatedRow());
+          if (getRelatedRow() != null || isStrict()) {
+            if (event.isChanged()) {
+              render(getRelatedRow());
+            }
+            updateDisplay(getRenderedValue());
           }
-          updateDisplay(getRenderedValue());
 
           if (!isHandledByForm()) {
             UiHelper.moveFocus(getParent(), getElement(), true);

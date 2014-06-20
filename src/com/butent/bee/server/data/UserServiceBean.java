@@ -75,6 +75,23 @@ import javax.servlet.http.HttpServletRequest;
 @Lock(LockType.READ)
 public class UserServiceBean {
 
+  private static final class IpFilter {
+    private final String host;
+    private final DateTime blockAfter;
+    private final DateTime blockBefore;
+
+    private IpFilter(String host, DateTime blockAfter, DateTime blockBefore) {
+      this.host = host;
+      this.blockAfter = blockAfter;
+      this.blockBefore = blockBefore;
+    }
+
+    private boolean isBlocked(String addr, DateTime dt) {
+      return Wildcards.isLike(addr, host)
+          && TimeUtils.isBetweenExclusiveNotRequired(dt, blockAfter, blockBefore);
+    }
+  }
+
   private static final class UserInfo {
 
     private final UserData userData;
@@ -175,23 +192,6 @@ public class UserServiceBean {
     }
   }
 
-  private static final class IpFilter {
-    private final String host;
-    private final DateTime blockAfter;
-    private final DateTime blockBefore;
-
-    private IpFilter(String host, DateTime blockAfter, DateTime blockBefore) {
-      this.host = host;
-      this.blockAfter = blockAfter;
-      this.blockBefore = blockBefore;
-    }
-
-    private boolean isBlocked(String addr, DateTime dt) {
-      return Wildcards.isLike(addr, host)
-          && TimeUtils.isBetweenExclusiveNotRequired(dt, blockAfter, blockBefore);
-    }
-  }
-
   private static BeeLogger logger = LogUtils.getLogger(UserServiceBean.class);
 
   private static String key(String value) {
@@ -240,7 +240,7 @@ public class UserServiceBean {
     UserInfo info = getCurrentUserInfo();
     return (info == null) ? false : info.getUserData().canEditColumn(viewName, column);
   }
-  
+
   public BeeRowSet ensureUserSettings() {
     Long userId = getCurrentUserId();
 
@@ -256,9 +256,9 @@ public class UserServiceBean {
           logger.severe("cannot create user settings for", userId);
         }
       }
-      
+
       return rowSet;
-      
+
     } else {
       return null;
     }
@@ -294,55 +294,6 @@ public class UserServiceBean {
 
   public Long getCurrentUserId() {
     return getUserId(getCurrentUser());
-  }
-
-  public String getUserEmail(Long userId, boolean checkCompany) {
-    if (userId == null) {
-      return null;
-    }
-
-    UserInfo userInfo = getUserInfo(userId);
-    if (userInfo == null) {
-      return null;
-    }
-    if (DataUtils.isId(userInfo.getCompanyPerson())) {
-      String email = qs.getValue(new SqlSelect()
-          .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
-          .addFrom(TBL_COMPANY_PERSONS)
-          .addFromLeft(TBL_CONTACTS,
-              sys.joinTables(TBL_CONTACTS, TBL_COMPANY_PERSONS, COL_CONTACT))
-          .addFromLeft(TBL_EMAILS, sys.joinTables(TBL_EMAILS, TBL_CONTACTS, COL_EMAIL))
-          .setWhere(sys.idEquals(TBL_COMPANY_PERSONS, userInfo.getCompanyPerson())));
-
-      if (!BeeUtils.isEmpty(email)) {
-        return email;
-      }
-    }
-    if (DataUtils.isId(userInfo.getPerson())) {
-      String email = qs.getValue(new SqlSelect()
-          .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
-          .addFrom(TBL_PERSONS)
-          .addFromLeft(TBL_CONTACTS, sys.joinTables(TBL_CONTACTS, TBL_PERSONS, COL_CONTACT))
-          .addFromLeft(TBL_EMAILS, sys.joinTables(TBL_EMAILS, TBL_CONTACTS, COL_EMAIL))
-          .setWhere(sys.idEquals(TBL_PERSONS, userInfo.getPerson())));
-
-      if (!BeeUtils.isEmpty(email)) {
-        return email;
-      }
-    }
-    if (checkCompany && DataUtils.isId(userInfo.getCompany())) {
-      String email = qs.getValue(new SqlSelect()
-          .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
-          .addFrom(TBL_COMPANIES)
-          .addFromLeft(TBL_CONTACTS, sys.joinTables(TBL_CONTACTS, TBL_COMPANIES, COL_CONTACT))
-          .addFromLeft(TBL_EMAILS, sys.joinTables(TBL_EMAILS, TBL_CONTACTS, COL_EMAIL))
-          .setWhere(sys.idEquals(TBL_COMPANIES, userInfo.getCompany())));
-
-      if (!BeeUtils.isEmpty(email)) {
-        return email;
-      }
-    }
-    return null;
   }
 
   public String getLanguage() {
@@ -453,6 +404,55 @@ public class UserServiceBean {
 
       return ResponseObject.response(result);
     }
+  }
+
+  public String getUserEmail(Long userId, boolean checkCompany) {
+    if (userId == null) {
+      return null;
+    }
+
+    UserInfo userInfo = getUserInfo(userId);
+    if (userInfo == null) {
+      return null;
+    }
+    if (DataUtils.isId(userInfo.getCompanyPerson())) {
+      String email = qs.getValue(new SqlSelect()
+          .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
+          .addFrom(TBL_COMPANY_PERSONS)
+          .addFromLeft(TBL_CONTACTS,
+              sys.joinTables(TBL_CONTACTS, TBL_COMPANY_PERSONS, COL_CONTACT))
+          .addFromLeft(TBL_EMAILS, sys.joinTables(TBL_EMAILS, TBL_CONTACTS, COL_EMAIL))
+          .setWhere(sys.idEquals(TBL_COMPANY_PERSONS, userInfo.getCompanyPerson())));
+
+      if (!BeeUtils.isEmpty(email)) {
+        return email;
+      }
+    }
+    if (DataUtils.isId(userInfo.getPerson())) {
+      String email = qs.getValue(new SqlSelect()
+          .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
+          .addFrom(TBL_PERSONS)
+          .addFromLeft(TBL_CONTACTS, sys.joinTables(TBL_CONTACTS, TBL_PERSONS, COL_CONTACT))
+          .addFromLeft(TBL_EMAILS, sys.joinTables(TBL_EMAILS, TBL_CONTACTS, COL_EMAIL))
+          .setWhere(sys.idEquals(TBL_PERSONS, userInfo.getPerson())));
+
+      if (!BeeUtils.isEmpty(email)) {
+        return email;
+      }
+    }
+    if (checkCompany && DataUtils.isId(userInfo.getCompany())) {
+      String email = qs.getValue(new SqlSelect()
+          .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
+          .addFrom(TBL_COMPANIES)
+          .addFromLeft(TBL_CONTACTS, sys.joinTables(TBL_CONTACTS, TBL_COMPANIES, COL_CONTACT))
+          .addFromLeft(TBL_EMAILS, sys.joinTables(TBL_EMAILS, TBL_CONTACTS, COL_EMAIL))
+          .setWhere(sys.idEquals(TBL_COMPANIES, userInfo.getCompany())));
+
+      if (!BeeUtils.isEmpty(email)) {
+        return email;
+      }
+    }
+    return null;
   }
 
   public Long getUserId(String user) {
@@ -782,6 +782,14 @@ public class UserServiceBean {
     }
   }
 
+  public void saveWorkspace(Long userId, String workspace) {
+    if (DataUtils.isId(userId)) {
+      qs.updateData(new SqlUpdate(TBL_USER_SETTINGS)
+          .addConstant(COL_LAST_WORKSPACE, workspace)
+          .setWhere(SqlUtils.equals(TBL_USER_SETTINGS, COL_USER, userId)));
+    }
+  }
+
   @Lock(LockType.WRITE)
   public ResponseObject setRoleRights(RightsObjectType type, Long role,
       Map<String, String> changes) {
@@ -845,7 +853,6 @@ public class UserServiceBean {
     return saveRights(type, COL_STATE, state.ordinal(), COL_ROLE, plus, minus);
   }
 
-  @Lock(LockType.WRITE)
   public boolean updateUserLocale(String user, SupportedLocale locale) {
     if (!isUser(user) || locale == null) {
       return false;
@@ -884,7 +891,7 @@ public class UserServiceBean {
       qs.updateData(new SqlUpdate(TBL_USER_SETTINGS)
           .addConstant(COL_USER_LOCALE, locale.ordinal())
           .setWhere(where));
-      
+
       logger.info("user", user, "updated locale:", locale.getLanguage());
       return true;
     }

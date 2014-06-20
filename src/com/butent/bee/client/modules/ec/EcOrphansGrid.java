@@ -31,6 +31,7 @@ import com.butent.bee.client.grid.column.AbstractColumn;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.edit.EditableColumn;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
@@ -239,7 +240,7 @@ public class EcOrphansGrid extends AbstractGridInterceptor implements ClickHandl
               RowDeleteEvent.fire(BeeKeeper.getBus(), getViewName(), orphan.getId());
             }
           });
-          RowEditor.openRow(TBL_TCD_ARTICLES, response.getResponseAsLong(), false, null);
+          RowEditor.open(TBL_TCD_ARTICLES, response.getResponseAsLong(), Opener.NEW_TAB);
         }
       }
     });
@@ -288,7 +289,7 @@ public class EcOrphansGrid extends AbstractGridInterceptor implements ClickHandl
         Queries.insert(TBL_TCD_ARTICLE_CODES, cols, vals, null, new RowCallback() {
           @Override
           public void onSuccess(BeeRow result) {
-            RowEditor.openRow(TBL_TCD_ARTICLES, row, false);
+            RowEditor.open(TBL_TCD_ARTICLES, row, Opener.NEW_TAB);
           }
         });
         Queries.deleteRow(orphans, orphan.getId(), new IntCallback() {

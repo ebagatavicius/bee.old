@@ -20,6 +20,7 @@ import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dialog.ChoiceCallback;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.grid.GridView.SelectedRows;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
@@ -127,9 +128,9 @@ public class AssessmentOrdersGrid extends AbstractGridInterceptor implements Cli
                                               presenter.getViewName(),
                                               DataChangeEvent.CANCEL_RESET_REFRESH);
 
-                                          RowEditor.openRow(FORM_ASSESSMENT_TRANSPORTATION,
+                                          RowEditor.openForm(FORM_ASSESSMENT_TRANSPORTATION,
                                               Data.getDataInfo(VIEW_ASSESSMENT_TRANSPORTATIONS),
-                                              tripId);
+                                              tripId, Opener.MODAL);
                                         }
                                       }
                                     });

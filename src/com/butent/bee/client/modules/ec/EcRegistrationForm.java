@@ -14,6 +14,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.modules.administration.AdministrationUtils;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -155,8 +156,8 @@ class EcRegistrationForm extends AbstractFormInterceptor {
                 
                 if (response.hasResponse(BeeRow.class)) {
                   DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_CLIENTS);
-                  RowEditor.openRow(VIEW_CLIENTS, BeeRow.restore(response.getResponseAsString()),
-                      true);
+                  RowEditor.open(VIEW_CLIENTS, BeeRow.restore(response.getResponseAsString()),
+                      Opener.MODAL);
                 }
               }
             });

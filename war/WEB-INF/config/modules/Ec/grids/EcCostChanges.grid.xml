@@ -4,7 +4,7 @@
   
   name="EcCostChanges" viewName="TcdArticleSuppliers" caption="=ecCostChanges"
   readOnly="true"
-  filter="Cost != UpdatedCost"
+  filter="!(Cost) AND UpdatedCost OR Cost AND !(UpdatedCost) OR Cost != UpdatedCost"
   >
   <g:columns>
     <SelectionColumn name="Select" label="=selectionColumnLabel" width="20" />

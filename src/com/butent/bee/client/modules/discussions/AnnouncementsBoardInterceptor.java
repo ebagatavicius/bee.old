@@ -21,6 +21,7 @@ import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.render.PhotoRenderer;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -230,7 +231,7 @@ class AnnouncementsBoardInterceptor extends AbstractFormInterceptor implements
 
         @Override
         public void execute() {
-          RowEditor.openRow(VIEW_DISCUSSIONS, rowId, false, null);
+          RowEditor.open(VIEW_DISCUSSIONS, rowId, Opener.NEW_TAB);
         }
       };
       String btnCaption = BeeUtils.joinWords(

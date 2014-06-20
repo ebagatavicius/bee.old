@@ -27,6 +27,7 @@ import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -250,7 +251,7 @@ public class CargoSalesGrid extends AbstractGridInterceptor implements ClickHand
                         }
                         Data.onViewChange(presenter.getViewName(),
                             DataChangeEvent.CANCEL_RESET_REFRESH);
-                        RowEditor.openRow(FORM_CARGO_INVOICE, saleInfo, row.getId());
+                        RowEditor.openForm(FORM_CARGO_INVOICE, saleInfo, row.getId(), Opener.MODAL);
                       }
                     });
                     onCancel();

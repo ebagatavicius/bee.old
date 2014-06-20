@@ -28,6 +28,7 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.timeboard.TimeBoard;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.WidgetFactory;
 import com.butent.bee.client.ui.WidgetSupplier;
 import com.butent.bee.client.widget.CustomDiv;
@@ -73,7 +74,7 @@ public abstract class ChartBase extends TimeBoard {
     final Callback<IdentifiableWidget> showInNewTab = new Callback<IdentifiableWidget>() {
       @Override
       public void onSuccess(IdentifiableWidget result) {
-        BeeKeeper.getScreen().showInNewPlace(result);
+        BeeKeeper.getScreen().showWidget(result);
       }
     };
 
@@ -147,7 +148,7 @@ public abstract class ChartBase extends TimeBoard {
       }
     });
   }
-  
+
   private final Multimap<Long, CargoHandling> cargoHandling = ArrayListMultimap.create();
 
   private boolean showCountryFlags;
@@ -201,7 +202,7 @@ public abstract class ChartBase extends TimeBoard {
         super.handleAction(action);
     }
   }
-  
+
   protected void addRelevantDataViews(String... viewNames) {
     if (viewNames != null) {
       for (String viewName : viewNames) {
@@ -259,8 +260,8 @@ public abstract class ChartBase extends TimeBoard {
     BeeRow oldSettings = getSettings().getRow(0);
     final Long oldTheme = getColorTheme(oldSettings);
 
-    RowEditor.openRow(getSettingsFormName(), getSettings().getViewName(), oldSettings, true,
-        new RowCallback() {
+    RowEditor.openForm(getSettingsFormName(), getSettings().getViewName(), oldSettings,
+        Opener.MODAL, new RowCallback() {
           @Override
           public void onSuccess(BeeRow result) {
             if (result != null) {
@@ -284,7 +285,6 @@ public abstract class ChartBase extends TimeBoard {
   }
 
   protected abstract boolean filter(FilterType filterType);
-
 
   protected Collection<CargoHandling> getCargoHandling(Long cargoId) {
     return cargoHandling.get(cargoId);
@@ -343,7 +343,7 @@ public abstract class ChartBase extends TimeBoard {
   }
 
   protected abstract boolean persistFilter();
-  
+
   @Override
   protected void prepareDefaults(Size canvasSize) {
     super.prepareDefaults(canvasSize);
@@ -560,14 +560,14 @@ public abstract class ChartBase extends TimeBoard {
           if (!BeeUtils.isEmpty(number) && BeeUtils.containsSame(info, number)) {
             info.add(number);
           }
-          
+
           if (showPlaceCities()) {
             String cityLabel = Places.getCityLabel(event.getCityId());
             if (!BeeUtils.isEmpty(cityLabel) && !BeeUtils.containsSame(info, cityLabel)) {
               info.add(cityLabel);
             }
           }
-          
+
         }
 
         if (!info.isEmpty()) {
@@ -595,7 +595,7 @@ public abstract class ChartBase extends TimeBoard {
           widget.add(label);
         }
       }
-      
+
       if (showPlaceCodes()) {
         List<String> info = Lists.newArrayList();
 
@@ -733,7 +733,7 @@ public abstract class ChartBase extends TimeBoard {
   private boolean showPlaceInfo() {
     return showPlaceInfo;
   }
-  
+
   private void updateColorTheme(Long theme) {
     ParameterList args = TransportHandler.createArgs(SVC_GET_COLORS);
     if (theme != null) {
@@ -748,7 +748,7 @@ public abstract class ChartBase extends TimeBoard {
       }
     });
   }
-  
+
   private void updateFilterData() {
     List<ChartData> newData = FilterHelper.notEmptyData(prepareFilterData(null));
     if (newData != null) {
@@ -793,7 +793,7 @@ public abstract class ChartBase extends TimeBoard {
 
           persistFilter();
           refreshFilterInfo();
-          
+
         } else {
           clearFilter();
         }

@@ -459,6 +459,8 @@
     <xs:attribute name="editKey" type="xs:int" />
     <xs:attribute name="editSource" type="type:nameType" />
     <xs:attribute name="editViewName" type="type:dataView" />
+    <xs:attribute name="valueSource" type="type:nameType" />
+    <xs:attribute name="strict" type="xs:boolean" />
   </xs:attributeGroup>
   
   <xs:simpleType name="refreshType">

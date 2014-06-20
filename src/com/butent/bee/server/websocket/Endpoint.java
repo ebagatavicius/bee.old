@@ -1,5 +1,6 @@
 package com.butent.bee.server.websocket;
 
+import com.butent.bee.server.Config;
 import com.butent.bee.server.communication.Rooms;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.ChatRoom;
@@ -8,11 +9,14 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogLevel;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 import com.butent.bee.shared.websocket.SessionUser;
 import com.butent.bee.shared.websocket.WsUtils;
 import com.butent.bee.shared.websocket.messages.ChatMessage;
+import com.butent.bee.shared.websocket.messages.ConfigMessage;
+import com.butent.bee.shared.websocket.messages.EchoMessage;
 import com.butent.bee.shared.websocket.messages.HasRecipient;
 import com.butent.bee.shared.websocket.messages.InfoMessage;
 import com.butent.bee.shared.websocket.messages.LogMessage;
@@ -28,6 +32,7 @@ import com.butent.bee.shared.websocket.messages.ShowMessage;
 import com.butent.bee.shared.websocket.messages.ShowMessage.Subject;
 import com.butent.bee.shared.websocket.messages.UsersMessage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -47,6 +52,9 @@ import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
+import javax.websocket.RemoteEndpoint;
+import javax.websocket.SendHandler;
+import javax.websocket.SendResult;
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.RemoteEndpoint.Basic;
 import javax.websocket.Session;
@@ -59,10 +67,15 @@ public class Endpoint {
 
   private static final String PROPERTY_USER_ID = "UserId";
 
+  private static final Class<? extends RemoteEndpoint> DEFAULT_REMOTE_ENDPOINT_TYPE =
+      RemoteEndpoint.Async.class;
+
   private static BeeLogger logger = LogUtils.getLogger(Endpoint.class);
 
   private static Queue<Session> openSessions = new ConcurrentLinkedQueue<>();
   private static Map<String, String> progressToSession = new ConcurrentHashMap<>();
+
+  private static Class<? extends RemoteEndpoint> remoteEndpointType;
 
   public static boolean closeProgress(String progressId) {
     boolean ok = false;
@@ -129,31 +142,6 @@ public class Endpoint {
     }
   }
 
-  private static void sendToOccupants(ChatRoom room, Message message) {
-    for (Session session : openSessions) {
-      if (session.isOpen() && room.isVisible(getUserId(session))) {
-        send(session, message);
-      }
-    }
-  }
-
-  private static void sendToOtherSessions(Message message, String mySessionId) {
-    for (Session session : openSessions) {
-      if (session.isOpen() && !mySessionId.equals(session.getId())) {
-        send(session, message);
-      }
-    }
-  }
-
-  private static void sendToNeighbors(ChatRoom room, Message message, String mySessionId) {
-    for (Session session : openSessions) {
-      if (session.isOpen() && !mySessionId.equals(session.getId())
-          && room.isVisible(getUserId(session))) {
-        send(session, message);
-      }
-    }
-  }
-
   private static void dispatch(Session session, Message message) {
     ChatRoom room;
 
@@ -182,6 +170,35 @@ public class Endpoint {
 
         } else {
           logger.warning("cannot add message", message);
+        }
+        break;
+
+      case CONFIG:
+        ConfigMessage configMessage = (ConfigMessage) message;
+
+        if (configMessage.isValid()) {
+          switch (configMessage.getKey()) {
+            case ConfigMessage.KEY_REMOTE_ENDPOINT:
+              Class<? extends RemoteEndpoint> type =
+                  parseRemoteEndpointType(configMessage.getValue());
+
+              if (type != null) {
+                setRemoteEndpointType(type);
+
+                String text = BeeUtils.joinWords(configMessage.getKey(), "set to",
+                    NameUtils.getClassName(type));
+                logger.info(text);
+
+                send(session, new EchoMessage(text));
+              }
+              break;
+
+            default:
+              logger.warning("key not recognized", message);
+          }
+
+        } else {
+          WsUtils.onEmptyMessage(message, toLog(session));
         }
         break;
 
@@ -384,6 +401,10 @@ public class Endpoint {
       info.add(new Property("Log Level", level.name()));
     }
 
+    if (remoteEndpointType != null) {
+      info.add(new Property("Remote Endpoint", NameUtils.getClassName(remoteEndpointType)));
+    }
+
     return info;
   }
 
@@ -408,6 +429,21 @@ public class Endpoint {
     }
 
     return info;
+  }
+
+  private static synchronized Class<? extends RemoteEndpoint> getRemoteEndpointType() {
+    if (remoteEndpointType == null) {
+      String value = Config.getProperty(NameUtils.getClassName(RemoteEndpoint.class));
+      if (!BeeUtils.isEmpty(value)) {
+        remoteEndpointType = parseRemoteEndpointType(value.trim());
+      }
+
+      if (remoteEndpointType == null) {
+        remoteEndpointType = DEFAULT_REMOTE_ENDPOINT_TYPE;
+      }
+    }
+
+    return remoteEndpointType;
   }
 
   private static List<Property> getSessionInfo(Session session) {
@@ -512,19 +548,97 @@ public class Endpoint {
     return info;
   }
 
+  private static Class<? extends RemoteEndpoint> parseRemoteEndpointType(String input) {
+    char ch = BeeUtils.isEmpty(input) ? BeeConst.CHAR_SPACE : input.trim().toLowerCase().charAt(0);
+
+    switch (ch) {
+      case 'a':
+        return RemoteEndpoint.Async.class;
+      case 'b':
+        return RemoteEndpoint.Basic.class;
+      default:
+        logger.warning("cannot parse remote endpoint type", input);
+        return null;
+    }
+  }
+
   private static void send(Session session, Message message) {
     if (message == null) {
       WsUtils.onEmptyMessage(message, toLog(session));
 
     } else {
+      Class<? extends RemoteEndpoint> type = getRemoteEndpointType();
       String text = message.encode();
-      session.getAsyncRemote().sendText(message.encode());
+
+      final String info;
 
       if (message.isLoggable()) {
         logger.debug("->", message);
-        logger.info("->", message.getType(), "length:", text.length(), toLog(session));
+
+        info = BeeUtils.joinWords(message.getType(), "length", text.length(), toLog(session));
+        logger.info("->", info);
+      } else {
+        info = null;
+      }
+
+      if (RemoteEndpoint.Async.class.equals(type)) {
+        session.getAsyncRemote().sendText(text, new SendHandler() {
+          @Override
+          public void onResult(SendResult result) {
+            if (result.isOK()) {
+              if (info != null) {
+                logger.debug("transmitted", info);
+              }
+            } else {
+              logger.error(result.getException());
+            }
+          }
+        });
+
+      } else if (RemoteEndpoint.Basic.class.equals(type)) {
+        sendBasic(session, text);
+
+      } else {
+        logger.severe(type, "not supported");
       }
     }
+  }
+
+  private static synchronized void sendBasic(Session session, String text) {
+    try {
+      session.getBasicRemote().sendText(text);
+    } catch (IOException ex) {
+      logger.error(ex);
+    }
+  }
+
+  private static void sendToNeighbors(ChatRoom room, Message message, String mySessionId) {
+    for (Session session : openSessions) {
+      if (session.isOpen() && !mySessionId.equals(session.getId())
+          && room.isVisible(getUserId(session))) {
+        send(session, message);
+      }
+    }
+  }
+
+  private static void sendToOccupants(ChatRoom room, Message message) {
+    for (Session session : openSessions) {
+      if (session.isOpen() && room.isVisible(getUserId(session))) {
+        send(session, message);
+      }
+    }
+  }
+
+  private static void sendToOtherSessions(Message message, String mySessionId) {
+    for (Session session : openSessions) {
+      if (session.isOpen() && !mySessionId.equals(session.getId())) {
+        send(session, message);
+      }
+    }
+  }
+
+  private static synchronized void setRemoteEndpointType(Class<? extends RemoteEndpoint> type) {
+    Endpoint.remoteEndpointType = type;
   }
 
   private static void setUserId(Session session, Long userId) {
@@ -614,7 +728,7 @@ public class Endpoint {
       if (message != null) {
         if (message.isLoggable()) {
           logger.debug("<-", message);
-          logger.info("<-", message.getType(), "length:", data.length(), toLog(session));
+          logger.info("<-", message.getType(), "length", data.length(), toLog(session));
         }
         dispatch(session, message);
       }

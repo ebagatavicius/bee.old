@@ -274,6 +274,12 @@ public final class AdministrationConstants {
   public static final String COL_RS_CAPTION = "Caption";
   public static final String COL_RS_PARAMETERS = "Parameters";
 
+  public static final String COL_OPEN_IN_NEW_TAB = "OpenInNewTab";
+  public static final String COL_WORKSPACE_CONTINUE = "WorkspaceContinue";
+  public static final String COL_LAST_WORKSPACE = "LastWorkspace";
+
+  public static final String COL_USER_STYLE = "Style";
+
   public static final String ALS_FILE_NAME = "FileName";
   public static final String ALS_FILE_SIZE = "FileSize";
   public static final String ALS_FILE_TYPE = "FileType";

@@ -1,6 +1,10 @@
 package com.butent.bee.shared.modules.mail;
 
+import com.butent.bee.shared.i18n.LocalizableConstants;
+import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.ui.HasLocalizedCaption;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.EnumUtils;
 
 public final class MailConstants {
 
@@ -44,6 +48,90 @@ public final class MailConstants {
     }
   }
 
+  public enum RuleCondition implements HasLocalizedCaption {
+    SENDER {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleConditionSender();
+      }
+    },
+    RECIPIENTS {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleConditionRecipients();
+      }
+    },
+    SUBJECT {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleConditionSubject();
+      }
+    },
+    ALL {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleConditionAll();
+      }
+    };
+
+    @Override
+    public String getCaption() {
+      return getCaption(Localized.getConstants());
+    }
+  }
+
+  public enum RuleAction implements HasLocalizedCaption {
+    MOVE {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleActionMove();
+      }
+    },
+    COPY {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleActionCopy();
+      }
+    },
+    DELETE {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleActionDelete();
+      }
+    },
+    READ {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleActionRead();
+      }
+    },
+    FLAG {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleActionFlag();
+      }
+    },
+    REPLY {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleActionReply();
+      }
+    },
+    FORWARD {
+      @Override
+      public String getCaption(LocalizableConstants constants) {
+        return constants.mailRuleActionForward();
+      }
+    };
+
+    @Override
+    public String getCaption() {
+      return getCaption(Localized.getConstants());
+    }
+  }
+
+  public static final String SIGNATURE_SEPARATOR = "<br><br><br>";
+
   public static final String SVC_RESTART_PROXY = "restart_proxy";
   public static final String SVC_GET_ACCOUNTS = "get_accounts";
   public static final String SVC_GET_FOLDERS = "get_folders";
@@ -63,6 +151,7 @@ public final class MailConstants {
   public static final String TBL_ACCOUNTS = "Accounts";
   public static final String TBL_ADDRESSBOOK = "Addressbook";
   public static final String TBL_FOLDERS = "Folders";
+  public static final String TBL_RULES = "Rules";
 
   public static final String TBL_MESSAGES = "Messages";
   public static final String TBL_PARTS = "Parts";
@@ -116,8 +205,17 @@ public final class MailConstants {
   public static final String COL_FLAGS = "Flags";
   public static final String COL_MESSAGE_UID = "MessageUID";
 
+  public static final String COL_RULE = "Rule";
+  public static final String COL_RULE_ACTIVE = "Active";
+  public static final String COL_RULE_ORDINAL = "Ordinal";
+  public static final String COL_RULE_CONDITION = "Condition";
+  public static final String COL_RULE_CONDITION_OPTIONS = "ConditionOptions";
+  public static final String COL_RULE_ACTION = "Action";
+  public static final String COL_RULE_ACTION_OPTIONS = "ActionOptions";
+
   public static final String FORM_ACCOUNT = "Account";
   public static final String FORM_NEW_ACCOUNT = "NewAccount";
+  public static final String FORM_RULE = "Rule";
 
   public static final String FORM_MAIL = "Mail";
   public static final String FORM_MAIL_MESSAGE = "MailMessage";
@@ -130,6 +228,11 @@ public final class MailConstants {
   public static final String PRM_DEFAULT_ACCOUNT = "DefaultAccount";
 
   public static final String STYLE_SHEET = "mail";
+
+  public static void register() {
+    EnumUtils.register(RuleCondition.class);
+    EnumUtils.register(RuleAction.class);
+  }
 
   private MailConstants() {
   }

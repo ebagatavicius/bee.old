@@ -10,7 +10,7 @@
   
   <g:west size="200" splitterSize="2">
     <w:DataTree class="bee-documents-parentWiget" name="Tree" caption="=documentCategories"
-    viewName="DocumentTree" parentColumn="Parent" hideActions="false" favorite="Name">
+    viewName="DocumentTree" parentColumn="Parent" favorite="Name">
       <w:calc>
         <ui:expression>row.Name + (row.DocumentCount != 0 ? ' [' + row.DocumentCount + ']' : '')</ui:expression>
       </w:calc>
@@ -28,7 +28,6 @@
     <DataColumn name="DocumentDate" />
     <DataColumn name="Expires" />
     <DataColumn name="Number" />
-    <DataColumn name="CategoryName" label="=documentCategory" />
     <DataColumn name="TypeName" />
     <DataColumn name="PlaceName" />
     <DataColumn name="StatusName" />

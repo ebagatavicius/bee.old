@@ -345,6 +345,7 @@ public class TecDocBean {
 
   public Collection<BeeParameter> getDefaultParameters() {
     return Lists.newArrayList(
+        BeeParameter.createText(Module.ECOMMERCE.getName(), PRM_BUTENT_PRICE, false, null),
         BeeParameter.createNumber(Module.ECOMMERCE.getName(), PRM_BUTENT_INTERVAL, false, null),
         BeeParameter.createText(Module.ECOMMERCE.getName(), PRM_MOTONET_HOURS, false, null));
   }
@@ -421,7 +422,8 @@ public class TecDocBean {
 
       SimpleRowSet rows = ButentWS.connect(remoteNamespace, remoteAddress, remoteLogin,
           remotePassword)
-          .getSQLData("SELECT preke AS pr, savikaina AS sv, pard_kaina AS kn, gam_art AS ga,"
+          .getSQLData("SELECT preke AS pr, savikaina AS sv, "
+              + BeeUtils.notEmpty(prm.getText(PRM_BUTENT_PRICE), "null") + " AS kn, gam_art AS ga,"
               + " gamintojas AS gam, pavad AS pav, aprasymas AS apr"
               + " FROM prekes"
               + " WHERE " + itemsFilter,

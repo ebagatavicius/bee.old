@@ -10,6 +10,7 @@ import com.butent.bee.client.dialog.ChoiceCallback;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.BeeConst;
@@ -48,11 +49,11 @@ public abstract class PrintFormInterceptor extends AbstractFormInterceptor {
             if (BeeUtils.isEmpty(viewName)
                 || BeeUtils.same(viewName, getFormView().getViewName())) {
 
-              RowEditor.openRow(form.getName(), Data.getDataInfo(getFormView().getViewName()),
-                  row, true, null, null, null, getPrintFormInterceptor());
+              RowEditor.openForm(form.getName(), Data.getDataInfo(getFormView().getViewName()),
+                  row, Opener.MODAL, null, getPrintFormInterceptor());
             } else {
-              RowEditor.openRow(form.getName(), Data.getDataInfo(viewName), row.getId(), true,
-                  null, null, getPrintFormInterceptor());
+              RowEditor.openForm(form.getName(), Data.getDataInfo(viewName), row.getId(),
+                  Opener.MODAL, null, getPrintFormInterceptor());
             }
           }
         };

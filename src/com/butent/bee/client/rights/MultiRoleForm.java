@@ -30,6 +30,7 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Selectors;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.presenter.Presenter;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
@@ -546,7 +547,7 @@ abstract class MultiRoleForm extends RightsForm {
     widget.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        RowEditor.openRow(VIEW_ROLES, roleId, true, new RowCallback() {
+        RowEditor.open(VIEW_ROLES, roleId, Opener.MODAL, new RowCallback() {
           @Override
           public void onSuccess(BeeRow result) {
             String name = Data.getString(VIEW_ROLES, result, COL_ROLE_NAME);

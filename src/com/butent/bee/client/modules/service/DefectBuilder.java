@@ -13,6 +13,7 @@ import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.BiConsumer;
@@ -140,7 +141,7 @@ final class DefectBuilder {
                   DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_MAINTENANCE);
                   DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_SERVICE_OBJECTS);
 
-                  RowEditor.openRow(VIEW_SERVICE_DEFECTS, dfId, true, null);
+                  RowEditor.open(VIEW_SERVICE_DEFECTS, dfId, Opener.MODAL);
                 }
               }
             });

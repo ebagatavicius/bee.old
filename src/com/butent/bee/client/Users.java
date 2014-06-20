@@ -13,6 +13,7 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.render.PhotoRenderer;
 import com.butent.bee.client.screen.Domain;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.websocket.Endpoint;
 import com.butent.bee.client.widget.Badge;
 import com.butent.bee.client.widget.CustomDiv;
@@ -80,7 +81,7 @@ public class Users {
       nameWidget.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          RowEditor.openRow(ClassifierConstants.VIEW_PERSONS, personId, true, null);
+          RowEditor.open(ClassifierConstants.VIEW_PERSONS, personId, Opener.MODAL);
         }
       });
 

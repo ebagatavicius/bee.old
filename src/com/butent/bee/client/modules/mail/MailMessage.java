@@ -13,7 +13,6 @@ import com.google.gwt.dom.client.Style.WhiteSpace;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -412,15 +411,13 @@ public class MailMessage extends AbstractFormInterceptor {
             if (mode == NewMailMode.REPLY_ALL) {
               cc = getTo();
               cc.addAll(getCc());
-              bcc = getBcc();
             }
             Element bq = Document.get().createBlockQuoteElement();
             bq.setAttribute("style",
                 "border-left:1px solid #039; margin:0; padding:10px; color:#039;");
             bq.setInnerHTML(getContent());
             content = BeeUtils.join("<br>", "<br>", getDate() + ", "
-                + SafeHtmlUtils.htmlEscape(getSender() + " "
-                    + loc.mailTextWrote().toLowerCase() + ":"),
+                + Codec.escapeHtml(getSender() + " " + loc.mailTextWrote().toLowerCase() + ":"),
                 bq.getString());
 
             if (!BeeUtils.isPrefix(subject, loc.mailReplayPrefix())) {
@@ -439,10 +436,10 @@ public class MailMessage extends AbstractFormInterceptor {
             } else {
               content = BeeUtils.join("<br>", "<br>", "---------- "
                   + loc.mailForwardedMessage() + " ----------",
-                  loc.mailFrom() + ": " + SafeHtmlUtils.htmlEscape(getSender()),
+                  loc.mailFrom() + ": " + Codec.escapeHtml(getSender()),
                   loc.date() + ": " + getDate(),
-                  loc.mailSubject() + ": " + SafeHtmlUtils.htmlEscape(getSubject()),
-                  loc.mailTo() + ": " + SafeHtmlUtils.htmlEscape(getRecipients()),
+                  loc.mailSubject() + ": " + Codec.escapeHtml(getSubject()),
+                  loc.mailTo() + ": " + Codec.escapeHtml(getRecipients()),
                   "<br>" + getContent());
 
               if (!BeeUtils.isPrefix(subject, loc.mailForwardedPrefix())) {

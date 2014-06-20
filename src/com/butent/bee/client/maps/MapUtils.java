@@ -117,7 +117,7 @@ public final class MapUtils {
           });
           
           MapContainer container = new MapContainer(caption, widget);
-          BeeKeeper.getScreen().showInNewPlace(container);
+          BeeKeeper.getScreen().showWidget(container);
         }
       }
     });

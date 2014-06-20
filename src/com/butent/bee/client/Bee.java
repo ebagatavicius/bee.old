@@ -46,6 +46,8 @@ import java.util.Map;
 public class Bee implements EntryPoint {
 
   public static void exit() {
+    final String workspace = BeeKeeper.getScreen().serialize();
+
     ClientLogManager.close();
     BodyPanel.get().clear();
 
@@ -60,71 +62,41 @@ public class Bee implements EntryPoint {
             info.cancel();
           }
 
-          logout();
+          logout(workspace);
         }
       };
 
       timer.schedule(1000);
 
     } else {
-      logout();
+      logout(workspace);
     }
   }
 
-  private static void logout() {
-    BeeKeeper.getRpc().makeGetRequest(Service.LOGOUT);
-  }
+  private static void initWorkspace() {
+    if (BeeKeeper.getUser().workspaceContinue()) {
+      String workspace = BeeKeeper.getUser().getLastWorkspace();
 
-  @Override
-  public void onModuleLoad() {
-    BeeConst.setClient();
-    LogUtils.setLoggerFactory(new ClientLogManager());
-
-    Localized.setConstants((LocalizableConstants) GWT.create(LocalizableConstants.class));
-    Localized.setMessages((LocalizableMessages) GWT.create(LocalizableMessages.class));
-
-    LayoutEngine layoutEngine = LayoutEngine.detect();
-    if (layoutEngine != null && layoutEngine.hasStyleSheet()) {
-      DomUtils.injectStyleSheet(layoutEngine.getStyleSheet());
-    }
-
-    List<String> extStyleSheets = Settings.getStyleSheets();
-    if (!BeeUtils.isEmpty(extStyleSheets)) {
-      for (String styleSheet : extStyleSheets) {
-        DomUtils.injectStyleSheet(styleSheet);
+      if (!BeeUtils.isEmpty(workspace) && !BeeConst.EMPTY.equals(workspace)) {
+        BeeKeeper.getScreen().restore(workspace, false);
       }
-    }
 
-    BeeKeeper.init();
-    Global.init();
+    } else {
 
-    if (GWT.isProdMode()) {
-      GWT.setUncaughtExceptionHandler(new ExceptionHandler());
-    }
+      List<String> onStartup = Global.getSpaces().getStartup();
 
-    BeeKeeper.getScreen().init();
-    Window.addResizeHandler(new ResizeHandler() {
-      @Override
-      public void onResize(ResizeEvent event) {
-        BeeKeeper.getScreen().getScreenPanel().onResize();
-      }
-    });
+      if (BeeUtils.isEmpty(onStartup)) {
+        onStartup = Settings.getOnStartup();
+        if (!BeeUtils.isEmpty(onStartup) && !BeeKeeper.getMenu().isEmpty()) {
+          for (String item : onStartup) {
+            BeeKeeper.getMenu().executeItem(item);
+          }
+        }
 
-    ParameterList params = BeeKeeper.getRpc().createParameters(Service.LOGIN);
-    params.addQueryItem(Service.VAR_UI, BeeKeeper.getScreen().getUserInterface().getShortName());
-
-    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        load(Codec.deserializeMap((String) response.getResponse()));
-        start();
-      }
-    });
-
-    List<String> extScripts = Settings.getScripts();
-    if (!BeeUtils.isEmpty(extScripts)) {
-      for (String script : extScripts) {
-        DomUtils.injectExternalScript(script);
+      } else {
+        for (int i = 0; i < onStartup.size(); i++) {
+          BeeKeeper.getScreen().restore(onStartup.get(i), i > 0);
+        }
       }
     }
   }
@@ -186,7 +158,7 @@ public class Bee implements EntryPoint {
           case REPORTS:
             Global.getReportSettings().load(serialized);
             break;
-            
+
           case SETTINGS:
             BeeKeeper.getUser().loadSettings(serialized);
             break;
@@ -203,6 +175,18 @@ public class Bee implements EntryPoint {
     }
   }
 
+  private static void logout(String workspace) {
+    ParameterList params = BeeKeeper.getRpc().createParameters(Service.LOGOUT);
+
+    if (!BeeUtils.isEmpty(workspace)) {
+      params.addDataItem(AdministrationConstants.COL_LAST_WORKSPACE, workspace);
+    } else if (BeeKeeper.getUser().workspaceContinue()) {
+      params.addQueryItem(AdministrationConstants.COL_LAST_WORKSPACE, BeeConst.EMPTY);
+    }
+
+    BeeKeeper.getRpc().makeRequest(params);
+  }
+
   private static void start() {
     BeeKeeper.getScreen().onLoad();
 
@@ -212,22 +196,62 @@ public class Bee implements EntryPoint {
 
     Endpoint.open(BeeKeeper.getUser().getUserId());
 
-    List<String> onStartup = Global.getSpaces().getStartup();
+    BeeKeeper.getBus().registerExitHandler("Don't leave me this way");
 
-    if (BeeUtils.isEmpty(onStartup)) {
-      onStartup = Settings.getOnStartup();
-      if (!BeeUtils.isEmpty(onStartup) && !BeeKeeper.getMenu().isEmpty()) {
-        for (String item : onStartup) {
-          BeeKeeper.getMenu().executeItem(item);
-        }
-      }
+    initWorkspace();
+  }
 
-    } else {
-      for (int i = 0; i < onStartup.size(); i++) {
-        BeeKeeper.getScreen().restore(onStartup.get(i), i > 0);
+  @Override
+  public void onModuleLoad() {
+    BeeConst.setClient();
+    LogUtils.setLoggerFactory(new ClientLogManager());
+
+    Localized.setConstants((LocalizableConstants) GWT.create(LocalizableConstants.class));
+    Localized.setMessages((LocalizableMessages) GWT.create(LocalizableMessages.class));
+
+    LayoutEngine layoutEngine = LayoutEngine.detect();
+    if (layoutEngine != null && layoutEngine.hasStyleSheet()) {
+      DomUtils.injectStyleSheet(layoutEngine.getStyleSheet());
+    }
+
+    List<String> extStyleSheets = Settings.getStyleSheets();
+    if (!BeeUtils.isEmpty(extStyleSheets)) {
+      for (String styleSheet : extStyleSheets) {
+        DomUtils.injectStyleSheet(styleSheet);
       }
     }
 
-    BeeKeeper.getBus().registerExitHandler("Don't leave me this way");
+    BeeKeeper.init();
+    Global.init();
+
+    if (GWT.isProdMode()) {
+      GWT.setUncaughtExceptionHandler(new ExceptionHandler());
+    }
+
+    BeeKeeper.getScreen().init();
+    Window.addResizeHandler(new ResizeHandler() {
+      @Override
+      public void onResize(ResizeEvent event) {
+        BeeKeeper.getScreen().getScreenPanel().onResize();
+      }
+    });
+
+    ParameterList params = BeeKeeper.getRpc().createParameters(Service.LOGIN);
+    params.addQueryItem(Service.VAR_UI, BeeKeeper.getScreen().getUserInterface().getShortName());
+
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        load(Codec.deserializeMap((String) response.getResponse()));
+        start();
+      }
+    });
+
+    List<String> extScripts = Settings.getScripts();
+    if (!BeeUtils.isEmpty(extScripts)) {
+      for (String script : extScripts) {
+        DomUtils.injectExternalScript(script);
+      }
+    }
   }
 }

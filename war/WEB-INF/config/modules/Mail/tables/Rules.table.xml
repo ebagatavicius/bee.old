@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="Rules"
+  idName="RuleID"
+  >
+  <Fields>
+    <Relation name="Account" relation="Accounts" notNull="true" cascade="DELETE" label="=mailAccount" />
+
+    <Enum name="Condition" key="RuleCondition" notNull="true" label="=mailRuleCondition" />
+    <String name="ConditionOptions" precision="100" label="=mailRuleConditionOptions" />
+    <Enum name="Action" key="RuleAction" notNull="true" label="=mailRuleAction" />
+    <Text name="ActionOptions" label="=mailRuleActionOptions" />
+
+    <Boolean name="Active" label="=mailRuleActive" defValue="1" />
+    <Numeric name="Ordinal" precision="2" scale="0" label="=ordinal" />
+  </Fields>
+</Table>

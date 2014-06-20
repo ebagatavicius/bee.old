@@ -29,6 +29,7 @@ import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.utils.Command;
 import com.butent.bee.client.view.HeaderImpl;
@@ -364,7 +365,7 @@ public class Search {
     @Override
     public void onBrowserEvent(Event event) {
       if (EventUtils.isClick(event)) {
-        RowEditor.openRow(getViewName(), getRow(), false);
+        RowEditor.open(getViewName(), getRow(), Opener.NEW_TAB);
       }
       super.onBrowserEvent(event);
     }
@@ -517,7 +518,7 @@ public class Search {
 
   private static void processResults(String query, List<SearchResult> results) {
     if (results.size() == 1) {
-      RowEditor.openRow(results.get(0).getViewName(), results.get(0).getRow(), false);
+      RowEditor.open(results.get(0).getViewName(), results.get(0).getRow(), Opener.modeless());
     } else {
       showResults(query, results);
     }
@@ -533,7 +534,7 @@ public class Search {
 
   private static void showResults(String query, List<SearchResult> results) {
     ResultPanel resultPanel = new ResultPanel(query, results);
-    BeeKeeper.getScreen().updateActivePanel(resultPanel);
+    BeeKeeper.getScreen().showWidget(resultPanel);
   }
 
   private void submit() {

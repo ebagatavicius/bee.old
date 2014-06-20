@@ -49,6 +49,7 @@ import com.butent.bee.shared.websocket.SessionUser;
 import com.butent.bee.shared.websocket.WsUtils;
 import com.butent.bee.shared.websocket.messages.AdminMessage;
 import com.butent.bee.shared.websocket.messages.ChatMessage;
+import com.butent.bee.shared.websocket.messages.ConfigMessage;
 import com.butent.bee.shared.websocket.messages.EchoMessage;
 import com.butent.bee.shared.websocket.messages.InfoMessage;
 import com.butent.bee.shared.websocket.messages.LocationMessage;
@@ -292,6 +293,16 @@ class MessageDispatcher {
           WsUtils.onEmptyMessage(message);
         }
         break;
+        
+      case CONFIG:
+        ConfigMessage configMessage = (ConfigMessage) message;
+
+        if (configMessage.isValid()) {
+          logger.info(configMessage);
+        } else {
+          WsUtils.onEmptyMessage(message);
+        }
+        break;
 
       case ECHO:
         BeeKeeper.getScreen().notifyInfo(((EchoMessage) message).getText());
@@ -359,13 +370,14 @@ class MessageDispatcher {
         MailMessage mailMessage = (MailMessage) message;
 
         if (mailMessage.isValid()) {
-          boolean refreshFolders = mailMessage.messagesUpdated() || mailMessage.foldersUpdated()
+          boolean updated = mailMessage.messagesUpdated() || mailMessage.foldersUpdated();
+          boolean refreshFolders = updated
               || Objects.equals(mailMessage.getFlag(), MessageFlag.SEEN);
 
           if (Global.getNewsAggregator().hasSubscription(Feed.MAIL) && refreshFolders) {
             Global.getNewsAggregator().refresh();
           }
-          MailKeeper.refreshActivePanel(refreshFolders, mailMessage.getFolderId());
+          MailKeeper.refreshActivePanel(refreshFolders, updated ? mailMessage.getFolderId() : null);
 
         } else {
           logger.severe(mailMessage.getError());

@@ -61,6 +61,7 @@ import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.EditableColumn;
@@ -252,7 +253,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
 
         switch (context.getGrid().getColumnId(context.getColumnIndex())) {
           case COL_ASSESSMENT:
-            RowEditor.openRow(TBL_ASSESSMENTS, row.getId(), false, null);
+            RowEditor.open(TBL_ASSESSMENTS, row.getId(), Opener.NEW_TAB);
             break;
 
           case COL_STATUS:

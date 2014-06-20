@@ -24,6 +24,7 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -224,7 +225,8 @@ public class CargoCreditSalesGrid extends AbstractGridInterceptor implements Cli
                     if (!response.hasErrors()) {
                       Data.onViewChange(presenter.getViewName(),
                           DataChangeEvent.CANCEL_RESET_REFRESH);
-                      RowEditor.openRow(FORM_CARGO_PURCHASE_INVOICE, purchaseInfo, row.getId());
+                      RowEditor.openForm(FORM_CARGO_PURCHASE_INVOICE, purchaseInfo, row.getId(),
+                          Opener.MODAL);
                     }
                   }
                 });

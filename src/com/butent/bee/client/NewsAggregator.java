@@ -16,6 +16,7 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.modules.administration.UserFeedsInterceptor;
 import com.butent.bee.client.screen.Domain;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.widget.Badge;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.FaLabel;
@@ -457,7 +458,7 @@ public class NewsAggregator implements HandlesAllDataEvents {
     if (feed != null && (!registeredAccessHandlers.containsKey(feed.getHeadlineView())
         || !registeredAccessHandlers.get(feed.getHeadlineView()).read(headlinePanel.getDataId()))) {
 
-      RowEditor.openRow(feed.getHeadlineView(), headlinePanel.getDataId(), false, null);
+      RowEditor.open(feed.getHeadlineView(), headlinePanel.getDataId(), Opener.modeless());
     }
   }
 

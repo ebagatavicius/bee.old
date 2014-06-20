@@ -8,6 +8,7 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.List;
@@ -65,23 +66,27 @@ public final class JsonUtils {
     }
   }
 
-  public static JSONObject parse(String s) {
-    if (BeeUtils.isEmpty(s)) {
-      return null;
-    }
-    JSONValue value = JSONParser.parseStrict(s);
-    if (value == null) {
-      return null;
-    }
-    return value.isObject();
+  public static boolean isJson(String s) {
+    return BeeUtils.isPrefix(s, BeeConst.STRING_LEFT_BRACE)
+        && BeeUtils.isSuffix(s, BeeConst.STRING_RIGHT_BRACE);
   }
-  
+
+  public static JSONObject parse(String s) {
+    if (isJson(s)) {
+      JSONValue value = JSONParser.parseStrict(s);
+      return (value == null) ? null : value.isObject();
+
+    } else {
+      return null;
+    }
+  }
+
   public static List<String> toList(JSONValue json) {
     List<String> result = Lists.newArrayList();
     if (json == null) {
       return result;
     }
-    
+
     if (json.isArray() == null) {
       result.add(toString(json));
     } else {
@@ -89,7 +94,7 @@ public final class JsonUtils {
         result.add(toString(json.isArray().get(i)));
       }
     }
-    
+
     return result;
   }
 

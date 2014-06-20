@@ -531,7 +531,7 @@ public final class Global {
     }
 
     if (widget != null) {
-      BeeKeeper.getScreen().showInNewPlace(widget);
+      BeeKeeper.getScreen().showWidget(widget);
     }
   }
 

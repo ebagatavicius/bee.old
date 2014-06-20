@@ -107,14 +107,14 @@ public class TecDocRemote {
     if (isDebugEnabled) {
       messyLogger.setLevel(LogLevel.DEBUG);
     }
-    processSql(ds, SqlUtils.dropTable("IF EXISTS Bnovo").getSqlString(builder));
+    String bnovo = SqlUtils.uniqueName();
 
-    processSql(ds, "CREATE TABLE Bnovo ENGINE MyISAM AS SELECT"
+    processSql(ds, "CREATE TABLE " + bnovo + " ENGINE MyISAM AS SELECT"
         + "  CONVERT(code using ascii) collate ascii_bin AS code,"
         + "  CONVERT(brand using ascii) collate ascii_bin AS brand"
         + " FROM " + tmp);
 
-    processSql(ds, SqlUtils.dropTable("IF EXISTS " + tmp).getSqlString(builder));
+    processSql(ds, SqlUtils.dropTable(tmp).getSqlString(builder));
 
     String union = new StringBuilder()
         .append("SELECT")
@@ -209,7 +209,11 @@ public class TecDocRemote {
         .append("  ON crossainew.SupplierComperableId = brands2.SupplierNr")
         .toString();
 
-    return (BeeRowSet) processSql(ds, union);
+    BeeRowSet rs = (BeeRowSet) processSql(ds, union.replace("Bnovo", bnovo));
+
+    processSql(ds, SqlUtils.dropTable(bnovo).getSqlString(builder));
+
+    return rs;
   }
 
   public List<StringBuilder> getRemoteData(SqlSelect query, final SqlInsert insert) {

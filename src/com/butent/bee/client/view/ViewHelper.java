@@ -7,7 +7,9 @@ import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.data.Provider;
+import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.navigation.PagerView;
 import com.butent.bee.client.view.search.SearchView;
@@ -96,6 +98,14 @@ public final class ViewHelper {
       }
     }
     return pagers;
+  }
+  
+  public static PresenterCallback getPresenterCallback() {
+    if (BeeKeeper.getUser().openInNewTab()) {
+      return PresenterCallback.SHOW_IN_NEW_TAB;
+    } else {
+      return PresenterCallback.SHOW_IN_ACTIVE_PANEL;
+    }
   }
 
   public static Collection<SearchView> getSearchers(HasWidgets container) {

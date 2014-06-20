@@ -16,6 +16,7 @@ import com.butent.bee.client.presenter.FormPresenter;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.utils.XmlUtils;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormImpl;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -380,7 +381,7 @@ public final class FormFactory {
     getFormDescription(formName, new Callback<FormDescription>() {
       @Override
       public void onSuccess(FormDescription result) {
-        openForm(result, formInterceptor, PresenterCallback.SHOW_IN_ACTIVE_PANEL);
+        openForm(result, formInterceptor, ViewHelper.getPresenterCallback());
       }
     });
   }

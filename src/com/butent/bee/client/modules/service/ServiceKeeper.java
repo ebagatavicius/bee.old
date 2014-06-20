@@ -55,7 +55,7 @@ public final class ServiceKeeper {
         ServiceCalendar.open(new Callback<IdentifiableWidget>() {
           @Override
           public void onSuccess(IdentifiableWidget result) {
-            BeeKeeper.getScreen().updateActivePanel(result);
+            BeeKeeper.getScreen().showWidget(result);
           }
         });
       }

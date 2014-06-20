@@ -59,6 +59,7 @@ import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.WidgetDescription;
 import com.butent.bee.client.utils.Evaluator;
@@ -2220,8 +2221,9 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
     } else {
       rowCallback = null;
     }
-
-    RowEditor.openRow(formName, editDataInfo, id, modal, null, rowCallback, null);
+    
+    Opener opener = modal ? Opener.MODAL : Opener.NEW_TAB;
+    RowEditor.openForm(formName, editDataInfo, id, opener, rowCallback);
     return true;
   }
 

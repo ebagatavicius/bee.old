@@ -92,7 +92,11 @@ public final class CalendarKeeper {
             openCalendar(calId, calName, new Callback<IdentifiableWidget>() {
               @Override
               public void onSuccess(IdentifiableWidget result) {
-                BeeKeeper.getScreen().showInNewPlace(result);
+                if (event.isOpenFavorite()) {
+                  BeeKeeper.getScreen().showWidget(result);
+                } else {
+                  BeeKeeper.getScreen().showInNewPlace(result);
+                }
               }
             });
           }
@@ -276,7 +280,7 @@ public final class CalendarKeeper {
       }
     });
   }
-  
+
   static void createAppointment(final Long calendarId, final DateTime start,
       final Long attendeeId) {
 
@@ -574,7 +578,7 @@ public final class CalendarKeeper {
               } else {
                 enabledActions = EnumSet.of(Action.PRINT);
               }
-              
+
               String caption = result.isEnabled() ? result.getCaption()
                   : BeeUtils.joinWords(result.getCaption(),
                       BeeUtils.bracket(Localized.getConstants().rowIsReadOnly().trim()));
@@ -800,7 +804,7 @@ public final class CalendarKeeper {
 
   private static void openCalendar(final long id, final String name,
       Callback<IdentifiableWidget> callback) {
-    
+
     final class OpenCommand extends Command {
       private final long calendarId;
       private final String calendarName;

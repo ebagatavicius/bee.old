@@ -34,6 +34,7 @@ import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.ui.WidgetFactory;
 import com.butent.bee.client.ui.WidgetSupplier;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.grid.CellGrid;
 import com.butent.bee.client.view.grid.ColumnInfo;
 import com.butent.bee.client.view.grid.GridFilterManager;
@@ -400,7 +401,7 @@ public final class GridFactory {
 
   public static void openGrid(String gridName, GridInterceptor gridInterceptor,
       GridOptions gridOptions) {
-    openGrid(gridName, gridInterceptor, gridOptions, PresenterCallback.SHOW_IN_ACTIVE_PANEL);
+    openGrid(gridName, gridInterceptor, gridOptions, ViewHelper.getPresenterCallback());
   }
 
   public static void openGrid(String gridName, GridInterceptor gridInterceptor,

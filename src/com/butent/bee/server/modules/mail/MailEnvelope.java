@@ -20,6 +20,7 @@ import javax.mail.Flags.Flag;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 public class MailEnvelope {
@@ -52,9 +53,9 @@ public class MailEnvelope {
 
   private final String messageId;
   private final DateTime date;
-  private final Address sender;
+  private final InternetAddress sender;
   private final String subject;
-  private final Multimap<AddressType, Address> recipients = HashMultimap.create();
+  private final Multimap<AddressType, InternetAddress> recipients = HashMultimap.create();
   private final Integer flagMask;
 
   private final String uniqueId;
@@ -66,9 +67,15 @@ public class MailEnvelope {
     MimeMessage msg = (MimeMessage) message;
     messageId = msg.getMessageID();
     date = new DateTime(msg.getSentDate());
-    sender = ArrayUtils.getQuietly(msg.getFrom(), 0);
     subject = msg.getSubject();
 
+    Address senderAddress = ArrayUtils.getQuietly(msg.getFrom(), 0);
+
+    if (senderAddress instanceof InternetAddress) {
+      sender = (InternetAddress) senderAddress;
+    } else {
+      sender = null;
+    }
     for (RecipientType type : new RecipientType[] {
         RecipientType.TO, RecipientType.CC, RecipientType.BCC}) {
 
@@ -76,7 +83,10 @@ public class MailEnvelope {
 
       if (addresses != null) {
         for (Address address : addresses) {
-          recipients.put(EnumUtils.getEnumByName(AddressType.class, type.toString()), address);
+          if (address instanceof InternetAddress) {
+            recipients.put(EnumUtils.getEnumByName(AddressType.class, type.toString()),
+                (InternetAddress) address);
+          }
         }
       }
     }
@@ -96,11 +106,11 @@ public class MailEnvelope {
     return messageId;
   }
 
-  public Multimap<AddressType, Address> getRecipients() {
+  public Multimap<AddressType, InternetAddress> getRecipients() {
     return recipients;
   }
 
-  public Address getSender() {
+  public InternetAddress getSender() {
     return sender;
   }
 

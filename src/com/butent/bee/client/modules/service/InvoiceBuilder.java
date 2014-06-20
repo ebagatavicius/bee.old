@@ -14,6 +14,7 @@ import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.form.FormView;
@@ -192,7 +193,7 @@ final class InvoiceBuilder {
                       DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_MAINTENANCE);
                       DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_SERVICE_INVOICES);
 
-                      RowEditor.openRow(VIEW_SERVICE_INVOICES, invId, true, null);
+                      RowEditor.open(VIEW_SERVICE_INVOICES, invId, Opener.MODAL);
                     }
                   }
                 });

@@ -325,7 +325,7 @@ public class MailPanel extends AbstractFormInterceptor {
       } else if (BeeUtils.same(columnName, "Envelope")) {
         return new EnvelopeRenderer(dataColumns);
       }
-      return null;
+      return super.getRenderer(columnName, dataColumns, columnDescription, cellSource);
     }
 
     @Override

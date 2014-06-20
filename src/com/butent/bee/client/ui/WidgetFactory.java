@@ -45,7 +45,7 @@ public final class WidgetFactory {
     ROW_EDITOR("row_") {
       @Override
       void create(String item, Callback<IdentifiableWidget> callback) {
-        RowEditor.open(item, getPresenterCallback(callback));
+        RowEditor.parse(item, Opener.with(getPresenterCallback(callback)));
       }
     },
 
@@ -124,7 +124,7 @@ public final class WidgetFactory {
     create(key, new Callback<IdentifiableWidget>() {
       @Override
       public void onSuccess(IdentifiableWidget result) {
-        BeeKeeper.getScreen().updateActivePanel(result);
+        BeeKeeper.getScreen().showWidget(result);
       }
     });
   }

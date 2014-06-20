@@ -137,7 +137,7 @@ public final class RowFactory {
             SelectorEvent.fireRowCreated(selector, result);
 
             selector.setAdding(false);
-            selector.setSelection(result, true);
+            selector.setSelection(result, null, true);
           }
         });
   }

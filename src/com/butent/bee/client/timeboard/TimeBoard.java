@@ -36,6 +36,7 @@ import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
@@ -578,7 +579,9 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   }
 
   public void openDataRow(HasNativeEvent event, String viewName, Long rowId) {
-    RowEditor.openRow(viewName, rowId, !EventUtils.hasModifierKey(event.getNativeEvent()), null);
+    Opener opener = EventUtils.hasModifierKey(event.getNativeEvent())
+        ? Opener.NEW_TAB : Opener.MODAL;
+    RowEditor.open(viewName, rowId, opener);
   }
 
   @Override

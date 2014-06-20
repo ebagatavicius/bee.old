@@ -10,8 +10,10 @@ import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.TreeView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.List;
@@ -23,7 +25,7 @@ final class DocumentsGrid extends AbstractGridInterceptor implements
 
   private static Filter getFilter(Long category) {
     if (category == null) {
-      return null;
+      return Filter.isFalse();
     } else {
       return Filter.equals(COL_DOCUMENT_CATEGORY, category);
     }
@@ -40,6 +42,11 @@ final class DocumentsGrid extends AbstractGridInterceptor implements
       setTreeView((TreeView) widget);
       getTreeView().addSelectionHandler(this);
     }
+  }
+
+  @Override
+  public BeeRowSet getInitialRowSet(GridDescription gridDescription) {
+    return Data.createRowSet(gridDescription.getViewName());
   }
 
   @Override

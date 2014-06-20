@@ -61,6 +61,7 @@ public final class MailKeeper {
 
     FormFactory.registerFormInterceptor(FORM_ACCOUNT, new AccountEditor());
     FormFactory.registerFormInterceptor(FORM_NEW_ACCOUNT, new AccountEditor());
+    FormFactory.registerFormInterceptor(FORM_RULE, new RuleForm());
 
     Global.getNewsAggregator().registerFilterHandler(Feed.MAIL,
         new Consumer<GridFactory.GridOptions>() {

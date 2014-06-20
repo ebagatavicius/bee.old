@@ -18,6 +18,7 @@ import com.butent.bee.client.dialog.ConfirmationCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
@@ -157,7 +158,7 @@ class RelatedRecurringTasksGrid extends AbstractGridInterceptor {
 
   private void openRecurringTask(Long rtId) {
     if (DataUtils.isId(rtId)) {
-      RowEditor.openRow(VIEW_RECURRING_TASKS, rtId, true, new RowCallback() {
+      RowEditor.open(VIEW_RECURRING_TASKS, rtId, Opener.MODAL, new RowCallback() {
         @Override
         public void onSuccess(BeeRow result) {
           getGridPresenter().handleAction(Action.REFRESH);

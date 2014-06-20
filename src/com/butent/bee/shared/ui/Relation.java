@@ -65,6 +65,9 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
   public static final String ATTR_MIN_QUERY_LENGTH = "minQueryLength";
   public static final String ATTR_INSTANT = "instant";
 
+  public static final String ATTR_VALUE_SOURCE = "valueSource";
+  public static final String ATTR_STRICT = "strict";
+
   public static Relation create() {
     return new Relation();
   }
@@ -267,6 +270,9 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
   private RenderMode renderMode;
 
   private String targetViewName;
+  
+  private String valueSource;
+  private Boolean strict;
 
   private Relation() {
   }
@@ -401,7 +407,9 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
         "Instant", getInstant(),
         "Enum Key", getEnumKey(),
         "Render Mode", getRenderMode(),
-        "Target View Name", getTargetViewName());
+        "Target View Name", getTargetViewName(),
+        "Value Source", getValueSource(),
+        "Strict", getStrict());
 
     if (!getChoiceColumns().isEmpty()) {
       PropertyUtils.addProperties(info, "Choice Columns", getChoiceColumns());
@@ -500,8 +508,16 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     return selectorColumns;
   }
 
+  public Boolean getStrict() {
+    return strict;
+  }
+
   public String getTargetViewName() {
     return targetViewName;
+  }
+
+  public String getValueSource() {
+    return valueSource;
   }
 
   @Override
@@ -571,6 +587,15 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
       setEnumKey(key);
     }
 
+    String valSrc = getAttribute(ATTR_VALUE_SOURCE);
+    if (!BeeUtils.isEmpty(valSrc)) {
+      setValueSource(valSrc);
+    }
+    String strictRel = getAttribute(ATTR_STRICT);
+    if (strictRel != null) {
+      setStrict(BeeUtils.toBooleanOrNull(strictRel));
+    }
+    
     String flt = getAttribute(UiConstants.ATTR_FILTER);
     String cuf = getAttribute(UiConstants.ATTR_CURRENT_USER_FILTER);
     String ord = getAttribute(UiConstants.ATTR_ORDER);
@@ -613,6 +638,11 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
       }
       if (!BeeUtils.isEmpty(ord)) {
         setOrder(sourceInfo.parseOrder(ord));
+      }
+
+      if (BeeUtils.isEmpty(renderColumns.get()) && sourceInfo.containsColumn(valSrc)
+          && renderSource()) {
+        renderColumns.set(Lists.newArrayList(valSrc));
       }
     }
 
@@ -695,7 +725,9 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
   }
 
   public boolean isEditEnabled(boolean defEnabled) {
-    if (defEnabled) {
+    if (!BeeUtils.isEmpty(getValueSource())) {
+      return false;
+    } else if (defEnabled) {
       return !BeeConst.isFalse(getAttribute(UiConstants.ATTR_EDIT_ENABLED));
     } else {
       return BeeConst.isTrue(getAttribute(UiConstants.ATTR_EDIT_ENABLED));
@@ -707,7 +739,8 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
   }
 
   public boolean isNewRowEnabled() {
-    return !BeeConst.isFalse(getAttribute(UiConstants.ATTR_NEW_ROW_ENABLED));
+    return BeeUtils.isEmpty(getValueSource()) 
+        && !BeeConst.isFalse(getAttribute(UiConstants.ATTR_NEW_ROW_ENABLED));
   }
 
   public boolean renderSource() {
@@ -857,6 +890,14 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     if (selectorColumns != null) {
       getSelectorColumns().addAll(selectorColumns);
     }
+  }
+
+  public void setStrict(Boolean strict) {
+    this.strict = strict;
+  }
+
+  public void setValueSource(String valueSource) {
+    this.valueSource = valueSource;
   }
 
   public void setViewName(String viewName) {
