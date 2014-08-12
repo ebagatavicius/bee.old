@@ -32,7 +32,8 @@ public class NumberLabel<T extends Number> extends ValueLabel<T> implements HasN
   }
 
   @Override
-  protected void init() {    super.init();
+  protected void init() {
+    super.init();
     StyleUtils.setTextAlign(getElement(), TextAlign.END);
   }
 }

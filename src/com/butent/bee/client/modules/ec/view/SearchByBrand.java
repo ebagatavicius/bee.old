@@ -35,7 +35,7 @@ class SearchByBrand extends EcView {
   private static final String STYLE_BRAND = STYLE_PREFIX + "brand-";
 
   private static final Edges selectorMargins = new Edges(0, 0, 3, 0);
-  
+
   private final Button brandWidget;
   private final IndexSelector brandSelector;
 
@@ -101,10 +101,10 @@ class SearchByBrand extends EcView {
 
       EcBrand brand = brands.get(index);
       String name = brand.getName();
-      
+
       brandWidget.setHtml(name);
       brandWidget.addStyleName(STYLE_BRAND + "selected");
-      
+
       brandSelector.retainValue(name);
 
       itemPanel.clear();

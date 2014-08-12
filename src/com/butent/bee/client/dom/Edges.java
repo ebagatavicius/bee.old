@@ -17,7 +17,7 @@ import com.butent.bee.shared.utils.BeeUtils;
  */
 
 public class Edges {
-  
+
   /**
    * Lists all possible edges on the screen.
    */
@@ -82,7 +82,7 @@ public class Edges {
     }
     return BeeUtils.isPositive(edges.getTopValue());
   }
-  
+
   public static boolean hasPositiveVerticalValue(Edges edges) {
     if (edges == null) {
       return false;
@@ -196,10 +196,10 @@ public class Edges {
     Assert.notNull(el);
     applyPosition(el.getStyle());
   }
-  
+
   public void applyPosition(Style st) {
     Assert.notNull(st);
-    
+
     if (getLeftValue() != null) {
       StyleUtils.setLeft(st, getLeftValue(), normalizeUnit(getLeftUnit()));
     }
@@ -218,7 +218,7 @@ public class Edges {
     Assert.notNull(obj);
     applyPosition(obj.getElement());
   }
-  
+
   public void applyTo(Element el, String propertyName) {
     Assert.notNull(el);
     applyTo(el.getStyle(), propertyName);
@@ -319,7 +319,7 @@ public class Edges {
         + getCssEdge(Edge.BOTTOM, CSS_SHAPE_AUTO) + CSS_SHAPE_SEPARATOR
         + getCssEdge(Edge.LEFT, CSS_SHAPE_AUTO) + ")";
   }
-  
+
   public String getCssTop(String emptyValue) {
     return getCssEdge(Edge.TOP, emptyValue);
   }
@@ -509,7 +509,7 @@ public class Edges {
   private static CssUnit normalizeUnit(CssUnit unit) {
     return (unit == null) ? DEFAULT_UNIT : unit;
   }
-  
+
   private void setFromString(String s) {
     if (BeeUtils.isEmpty(s)) {
       return;
@@ -526,7 +526,7 @@ public class Edges {
     int cnt = 0;
     Double v;
     CssUnit u;
-    
+
     for (String cssLength : CSS_SPLITTER.split(s)) {
       if (BeeUtils.isDigit(cssLength)) {
         v = BeeUtils.toDouble(cssLength);

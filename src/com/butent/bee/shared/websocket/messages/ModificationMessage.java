@@ -20,7 +20,7 @@ public class ModificationMessage extends Message {
   @Override
   public String brief() {
     if (getEvent() == null || getEvent().getKind() == null) {
-      return BeeConst.NULL; 
+      return BeeConst.NULL;
     } else {
       return BeeUtils.joinWords(getEvent().getKind().getBrief(), getEvent().getViewName());
     }

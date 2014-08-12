@@ -23,7 +23,7 @@ public abstract class ExtendedUsageQueryProvider implements UsageQueryProvider {
     return NewsHelper.getUpdatesQuery(feed.getUsageTable(), relationColumn,
         getJoins(), getConditions(userId), userId, startDate);
   }
-  
+
   protected abstract List<IsCondition> getConditions(long userId);
 
   protected abstract List<Pair<String, IsCondition>> getJoins();

@@ -209,11 +209,16 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="modules">
+    <xs:list itemType="module" />
+  </xs:simpleType>
+
   <xs:simpleType name="dataView">
     <xs:restriction base="xs:string">
       <xs:enumeration value="AbsenceTypes" />
       <xs:enumeration value="Accounts" />
       <xs:enumeration value="ActiveTrips" />
+      <xs:enumeration value="ActivityTypes" />
       <xs:enumeration value="Addressbook" />
       <xs:enumeration value="AdsTopics" />
       <xs:enumeration value="AllCargo" />
@@ -274,6 +279,7 @@
       <xs:enumeration value="CompanyUsers" />
       <xs:enumeration value="CompRelTypeStore" />
       <xs:enumeration value="Configuration" />
+      <xs:enumeration value="CostCenters" />
       <xs:enumeration value="Countries" />
       <xs:enumeration value="Criteria" />
       <xs:enumeration value="CriteriaGroups" />
@@ -319,6 +325,7 @@
       <xs:enumeration value="EcOrderItems" />
       <xs:enumeration value="EcOrders" />
       <xs:enumeration value="EcRegistrations" />
+      <xs:enumeration value="EditorTemplates" />
       <xs:enumeration value="Emails" />
       <xs:enumeration value="ExpeditionTypes" />
       <xs:enumeration value="ExpeditionTrips" />
@@ -342,6 +349,7 @@
       <xs:enumeration value="ItemCategories" />
       <xs:enumeration value="Items" />
       <xs:enumeration value="Maintenance" />
+      <xs:enumeration value="Messages" />
       <xs:enumeration value="Objects" />
       <xs:enumeration value="OrderCargo" />
       <xs:enumeration value="Parameters" />
@@ -356,6 +364,7 @@
       <xs:enumeration value="RecurringTasks" />
       <xs:enumeration value="RejectionReasons" />
       <xs:enumeration value="RelatedDocuments" />
+      <xs:enumeration value="RelatedMessages" />
       <xs:enumeration value="RelatedRecurringTasks" />
       <xs:enumeration value="RelatedTasks" />
       <xs:enumeration value="Relations" />

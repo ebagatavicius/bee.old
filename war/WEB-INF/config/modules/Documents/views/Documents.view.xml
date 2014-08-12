@@ -6,6 +6,7 @@
   editForm="Document" newRowForm="NewDocument"
   rowCaption="Name Number"
   >
+  <Relation renderColumns="Name" />
   <Columns>
     <SimpleColumn name="Name" />
 

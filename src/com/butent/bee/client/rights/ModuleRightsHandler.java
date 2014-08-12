@@ -46,8 +46,8 @@ final class ModuleRightsHandler extends MultiRoleForm {
           int cnt = 0;
 
           for (SubModule subModule : module.getSubModules()) {
-            ModuleAndSub ms = ModuleAndSub.of(module, subModule); 
-            
+            ModuleAndSub ms = ModuleAndSub.of(module, subModule);
+
             if (ms.isEnabled()) {
               result.add(new RightsObject(subModule.getName(), subModule.getCaption(), ms,
                   1, module.getName()));

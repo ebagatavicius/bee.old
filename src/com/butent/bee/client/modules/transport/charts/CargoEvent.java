@@ -12,7 +12,7 @@ class CargoEvent {
   enum Type {
     LOADING, UNLOADING
   }
-  
+
   static Multimap<Long, CargoEvent> splitByCountry(Collection<CargoEvent> events) {
     Multimap<Long, CargoEvent> result = LinkedListMultimap.create();
     if (BeeUtils.isEmpty(events)) {
@@ -44,7 +44,7 @@ class CargoEvent {
 
     return result;
   }
-  
+
   private final OrderCargo cargo;
   private final CargoHandling handling;
 
@@ -122,7 +122,7 @@ class CargoEvent {
   boolean isLoading() {
     return loading;
   }
-  
+
   boolean isUnloading() {
     return !loading;
   }

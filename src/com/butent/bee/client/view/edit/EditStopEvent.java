@@ -19,7 +19,7 @@ public class EditStopEvent extends GwtEvent<EditStopEvent.Handler> {
     void onEditStop(EditStopEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static Type<Handler> getType() {
     return TYPE;
@@ -30,7 +30,7 @@ public class EditStopEvent extends GwtEvent<EditStopEvent.Handler> {
 
   private final Integer keyCode;
   private final boolean hasModifiers;
-  
+
   public EditStopEvent(State state) {
     this(state, null);
   }
@@ -42,7 +42,7 @@ public class EditStopEvent extends GwtEvent<EditStopEvent.Handler> {
   public EditStopEvent(State state, Integer keyCode, boolean hasModifiers) {
     this(state, null, keyCode, hasModifiers);
   }
-  
+
   public EditStopEvent(State state, String message, Integer keyCode, boolean hasModifiers) {
     super();
     this.state = state;
@@ -59,7 +59,7 @@ public class EditStopEvent extends GwtEvent<EditStopEvent.Handler> {
   public Integer getKeyCode() {
     return keyCode;
   }
-  
+
   public String getMessage() {
     return message;
   }
@@ -67,7 +67,7 @@ public class EditStopEvent extends GwtEvent<EditStopEvent.Handler> {
   public State getState() {
     return state;
   }
-  
+
   public boolean hasKeyCode() {
     return keyCode != null;
   }
@@ -75,7 +75,7 @@ public class EditStopEvent extends GwtEvent<EditStopEvent.Handler> {
   public boolean hasModifiers() {
     return hasModifiers;
   }
-  
+
   public boolean isCanceled() {
     return State.CANCELED.equals(getState());
   }
@@ -91,7 +91,7 @@ public class EditStopEvent extends GwtEvent<EditStopEvent.Handler> {
   public boolean isEdited() {
     return State.EDITED.equals(getState());
   }
-  
+
   public boolean isError() {
     return State.ERROR.equals(getState());
   }

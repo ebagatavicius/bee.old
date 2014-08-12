@@ -49,7 +49,7 @@ public class Meta extends Element {
   }
 
   public Meta httpEquiv(HttpEquiv httpEquiv) {
-    if (httpEquiv == null) { 
+    if (httpEquiv == null) {
       removeAttribute(Attributes.HTTP_EQUIV);
     } else {
       setAttribute(Attributes.HTTP_EQUIV, httpEquiv.getKeyword());

@@ -136,7 +136,7 @@ public final class Exporter {
     row.setHeightFactor(HEADER_HEIGHT_FACTOR);
     return row;
   }
-  
+
   public static void export(GridPresenter presenter, String caption, final String fileName) {
     Assert.notNull(presenter);
     Assert.isTrue(validateFileName(fileName));
@@ -221,7 +221,7 @@ public final class Exporter {
         sheet.add(row);
       }
       rowIndex++;
-      
+
       addCaption(sheet, caption, rowIndex++, columnCount);
     }
 
@@ -231,7 +231,7 @@ public final class Exporter {
       if (BeeUtils.isEmpty(label)) {
         label = filter.toString();
       }
-      
+
       addFilterLabel(sheet, label, rowIndex++, columnCount);
     }
 
@@ -299,7 +299,7 @@ public final class Exporter {
 
         for (int i = 0; i < columnCount; i++) {
           ColumnFooter footer = columns.get(i).getFooter();
-        
+
           if (footer == null) {
             footerValue = null;
             footerTextAlign = null;
@@ -307,13 +307,13 @@ public final class Exporter {
             footerValue = footer.reduce(grid.getRowData());
             footerTextAlign = BeeUtils.isEmpty(footerValue) ? null : footer.getTextAlign();
           }
-          
+
           if (footerTextAlign == null) {
             footerStyleRef = styleRef;
           } else {
             XStyle footerStyle = style.copy();
             footerStyle.setTextAlign(footerTextAlign);
-            
+
             footerStyleRef = sheet.registerStyle(footerStyle);
           }
 
@@ -322,7 +322,7 @@ public final class Exporter {
 
         sheet.add(row);
       }
-      
+
       autosizeNoPictures(sheet, columns.size());
       export(sheet, fileName);
 
@@ -457,6 +457,7 @@ public final class Exporter {
 
     return inputElement;
   }
+
   private static void exportRow(CellContext context, IsRow dataRow, List<ColumnInfo> columns,
       int rowIndex, XSheet sheet, Map<Integer, Integer> styles) {
 

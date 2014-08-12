@@ -32,7 +32,7 @@ public final class SimpleEditorHandler implements EditChangeHandler, EditStopEve
     Assert.notNull(editor);
     SimpleEditorHandler handler = new SimpleEditorHandler(caption, editor, focusParent,
         notificationListener);
-    
+
     editor.addEditChangeHandler(handler);
     editor.addEditStopHandler(handler);
 
@@ -102,7 +102,7 @@ public final class SimpleEditorHandler implements EditChangeHandler, EditStopEve
   public void onValueChange(ValueChangeEvent<String> event) {
     end(true);
   }
-  
+
   private void end(boolean forward) {
     if (validate()) {
       normalize();

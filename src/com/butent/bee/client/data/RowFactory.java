@@ -121,7 +121,7 @@ public final class RowFactory {
     Assert.notEmpty(formName);
     Assert.notNull(row);
     Assert.notNull(selector);
-    
+
     selector.setAdding(true);
 
     createRow(formName, selector.getNewRowCaption(), selector.getOracle().getDataInfo(), row,
@@ -364,7 +364,7 @@ public final class RowFactory {
         }
       }
     };
-    
+
     presenter.setActionDelegate(new HandlesActions() {
       @Override
       public void handleAction(Action action) {

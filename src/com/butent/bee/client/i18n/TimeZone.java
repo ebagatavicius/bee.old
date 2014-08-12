@@ -76,7 +76,7 @@ public final class TimeZone {
     data[5] += (x / 60) % 10;
     data[7] += (x % 60) / 10;
     data[8] += x % 10;
-    
+
     return new String(data);
   }
 
@@ -125,7 +125,7 @@ public final class TimeZone {
   private int standardOffset;
   private String[] tzNames;
   private int[] transitionPoints;
-  private int[]  adjustments;
+  private int[] adjustments;
 
   private TimeZone() {
   }

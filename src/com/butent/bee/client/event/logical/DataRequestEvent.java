@@ -13,8 +13,8 @@ public class DataRequestEvent extends GwtEvent<DataRequestEvent.Handler> {
     void onDataRequest(DataRequestEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static void fire(HasHandlers source, NavigationOrigin origin) {
     Assert.notNull(source);
     source.fireEvent(new DataRequestEvent(origin));
@@ -23,7 +23,7 @@ public class DataRequestEvent extends GwtEvent<DataRequestEvent.Handler> {
   public static Type<Handler> getType() {
     return TYPE;
   }
-  
+
   private final NavigationOrigin origin;
 
   public DataRequestEvent(NavigationOrigin origin) {
@@ -35,7 +35,7 @@ public class DataRequestEvent extends GwtEvent<DataRequestEvent.Handler> {
   public Type<Handler> getAssociatedType() {
     return TYPE;
   }
-  
+
   public NavigationOrigin getOrigin() {
     return origin;
   }
@@ -47,7 +47,7 @@ public class DataRequestEvent extends GwtEvent<DataRequestEvent.Handler> {
   public boolean isScrolling() {
     return NavigationOrigin.SCROLLER.equals(origin);
   }
-  
+
   @Override
   protected void dispatch(Handler handler) {
     handler.onDataRequest(this);

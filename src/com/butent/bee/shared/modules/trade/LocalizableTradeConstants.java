@@ -2,15 +2,41 @@ package com.butent.bee.shared.modules.trade;
 
 public interface LocalizableTradeConstants {
 
-  String barcode();
+  String printBankAccount();
 
-  String itemCategories();
+  String printBankCode();
 
-  String itemCategoryTree();
+  String printBankSwift();
 
-  String itemUnits();
+  String printDocumentNumber();
 
-  String sellingPrice();
+  String printDocumentSubtotal();
+
+  String printDocumentTotal();
+
+  String printDocumentVat();
+
+  String printDueDate();
+
+  String printInvoice();
+
+  String printInvoiceItemName();
+
+  String printInvoiceVat();
+
+  String printItemOrdinal();
+
+  String printItemQuantity();
+
+  String printItemVatAmount();
+
+  String printItemVatRate();
+
+  String printItemTotalWithoutVat();
+
+  String printItemTotalWithVat();
+
+  String printItemUom();
 
   String trade();
 
@@ -19,7 +45,7 @@ public interface LocalizableTradeConstants {
   String trdAmountWoVat();
 
   String trdDebt();
-  
+
   String trdInvoice();
 
   String trdNewInvoice();

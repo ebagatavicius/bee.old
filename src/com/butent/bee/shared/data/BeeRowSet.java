@@ -27,7 +27,7 @@ public class BeeRowSet extends RowList<BeeRow, BeeColumn> implements BeeSerializ
   private enum Serial {
     VIEW, COLUMNS, ROWS, PROPERTIES
   }
-  
+
   public static BeeRowSet getIfPresent(Map<String, String> map, String key) {
     if (BeeUtils.containsKey(map, key)) {
       String serialized = map.get(key);
@@ -36,6 +36,14 @@ public class BeeRowSet extends RowList<BeeRow, BeeColumn> implements BeeSerializ
       }
     }
     return null;
+  }
+
+  public static BeeRowSet maybeRestore(String s) {
+    if (BeeUtils.isEmpty(s)) {
+      return null;
+    } else {
+      return restore(s);
+    }
   }
 
   public static BeeRowSet restore(String s) {
@@ -162,10 +170,6 @@ public class BeeRowSet extends RowList<BeeRow, BeeColumn> implements BeeSerializ
 
   public String getShadowString(int rowIdx, String columnId) {
     return getShadowString(rowIdx, getColumnIndex(columnId));
-  }
-
-  public String getString(int rowIdx, String columnId) {
-    return getString(rowIdx, getColumnIndex(columnId));
   }
 
   public String getStringByRowId(long rowId, String columnId) {

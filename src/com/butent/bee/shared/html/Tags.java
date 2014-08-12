@@ -26,7 +26,7 @@ public final class Tags {
   public static final String TH = "th";
   public static final String TR = "tr";
   public static final String VIDEO = "video";
-  
+
   private Tags() {
   }
 }

@@ -5,6 +5,8 @@
   newRowForm="RecurringTask" newRowCaption="=crmNewRecurringTask"
   editForm="RecurringTask" rowCaption="Summary" 
   >
+  <Relation renderColumns="Summary"
+    choiceColumns="Summary CompanyName ScheduleFrom ScheduleUntil ScheduleDays" />
   <Columns>
     <SimpleColumn name="Summary" />
     <SimpleColumn name="Description" />

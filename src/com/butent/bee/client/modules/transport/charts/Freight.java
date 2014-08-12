@@ -47,7 +47,7 @@ final class Freight extends OrderCargo {
       }
     }
   };
-  
+
   static Freight create(SimpleRow row, JustDate minLoad, JustDate maxUnload) {
     return new Freight(row.getLong(COL_ORDER),
         EnumUtils.getEnumByIndex(OrderStatus.class, row.getInt(COL_STATUS)),
@@ -64,7 +64,7 @@ final class Freight extends OrderCargo {
         BeeUtils.nvl(row.getValue(ALS_LOADING_POST_INDEX),
             row.getValue(defaultLoadingColumnAlias(COL_PLACE_POST_INDEX))),
         BeeUtils.nvl(row.getLong(loadingColumnAlias(COL_PLACE_CITY)),
-                row.getLong(defaultLoadingColumnAlias(COL_PLACE_CITY))),
+            row.getLong(defaultLoadingColumnAlias(COL_PLACE_CITY))),
         BeeUtils.nvl(row.getValue(loadingColumnAlias(COL_PLACE_NUMBER)),
             row.getValue(defaultLoadingColumnAlias(COL_PLACE_NUMBER))),
         BeeUtils.nvl(Places.getUnloadingDate(row, unloadingColumnAlias(COL_PLACE_DATE)),
@@ -103,7 +103,7 @@ final class Freight extends OrderCargo {
       Long customerId, String customerName, Long cargoId, String cargoDescription, String notes,
       JustDate loadingDate, Long loadingCountry, String loadingPlace, String loadingPostIndex,
       Long loadingCity, String loadingNumber,
-      JustDate unloadingDate, Long unloadingCountry, String unloadingPlace, 
+      JustDate unloadingDate, Long unloadingCountry, String unloadingPlace,
       String unloadingPostIndex, Long unloadingCity,
       String unloadingNumber, Long tripId, Long truckId, Long trailerId, Long cargoTripId,
       Long cargoTripVersion) {

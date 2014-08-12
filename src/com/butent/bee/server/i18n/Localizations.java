@@ -82,7 +82,7 @@ public final class Localizations {
       logger.severe(LocalizableType.CONSTANTS, I18nUtils.toString(locale), "not available");
       return null;
     }
-    
+
     if (dictionaries.containsKey(z)) {
       return dictionaries.get(z);
     }
@@ -93,11 +93,11 @@ public final class Localizations {
     for (String name : properties.stringPropertyNames()) {
       dictionary.put(name, properties.getProperty(name));
     }
-    
+
     dictionaries.put(z, dictionary);
     logger.debug("loaded", I18nUtils.toString(z), "dictionary",
         BeeUtils.bracket(dictionary.size()));
-    
+
     return dictionary;
   }
 
@@ -150,7 +150,7 @@ public final class Localizations {
       return getMessages(locale);
     }
   }
-  
+
   public static Locale normalize(Locale locale, Collection<Locale> available) {
     if (locale == null || available == null) {
       return null;

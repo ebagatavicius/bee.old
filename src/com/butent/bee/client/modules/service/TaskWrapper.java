@@ -50,7 +50,7 @@ class TaskWrapper implements HasDateRange {
     this.status = EnumUtils.getEnumByIndex(TaskStatus.class, row.getInt(COL_STATUS));
 
     this.typeColor = row.getValue(ALS_TASK_TYPE_BACKGROUND);
-    this.star = row.getInt(COL_STAR); 
+    this.star = row.getInt(COL_STAR);
 
     DateTime start = row.getDateTime(COL_START_TIME);
     DateTime end = row.getDateTime(COL_FINISH_TIME);

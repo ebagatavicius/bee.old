@@ -523,7 +523,7 @@ public class ShoppingCart extends Split {
 
   private void updateQuantity(CartItem item, int value) {
     item.setQuantity(value);
-    
+
     BeeKeeper.getScreen().clearNotifications();
     BeeKeeper.getScreen().notifyInfo(Localized.getMessages()
         .ecUpdateCartItem(cartType.getCaption(), item.getEcItem().getName(), value));

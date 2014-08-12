@@ -26,8 +26,8 @@ public class EditStartEvent extends GwtEvent<EditStartEvent.Handler> implements 
   public static final int CLICK = 1;
   public static final int ENTER = 2;
   public static final int DELETE = 3;
-  
-  private static final Type<Handler> TYPE = new Type<Handler>();
+
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static int getStartKey(int keyCode) {
     int startKey;
@@ -45,11 +45,11 @@ public class EditStartEvent extends GwtEvent<EditStartEvent.Handler> implements 
 
     return startKey;
   }
-  
+
   public static Type<Handler> getType() {
     return TYPE;
   }
-  
+
   public static boolean isClickOrEnter(int code) {
     return code == CLICK || isEnter(code);
   }
@@ -63,11 +63,11 @@ public class EditStartEvent extends GwtEvent<EditStartEvent.Handler> implements 
 
   private final Element sourceElement;
   private final int charCode;
-  
+
   private final boolean readOnly;
 
   private boolean consumed;
-  
+
   public EditStartEvent(IsRow rowValue, String columnId, Element sourceElement, int charCode,
       boolean readOnly) {
     this.rowValue = rowValue;
@@ -81,7 +81,7 @@ public class EditStartEvent extends GwtEvent<EditStartEvent.Handler> implements 
   public void consume() {
     setConsumed(true);
   }
-  
+
   @Override
   public Type<Handler> getAssociatedType() {
     return TYPE;
@@ -111,7 +111,7 @@ public class EditStartEvent extends GwtEvent<EditStartEvent.Handler> implements 
   public boolean isDelete() {
     return charCode == DELETE;
   }
-  
+
   public boolean isReadOnly() {
     return readOnly;
   }

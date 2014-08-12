@@ -11,12 +11,11 @@ import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.ProvidesResize;
-import com.google.gwt.user.client.ui.RequiresResize;
 
 import com.butent.bee.client.data.Queries.IntCallback;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.event.logical.ReadyEvent;
+import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.modules.calendar.event.HasTimeBlockClickHandlers;
 import com.butent.bee.client.modules.calendar.event.HasUpdateHandlers;
 import com.butent.bee.client.modules.calendar.event.TimeBlockClickEvent;
@@ -26,11 +25,13 @@ import com.butent.bee.client.modules.calendar.view.MonthView;
 import com.butent.bee.client.modules.calendar.view.ResourceView;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.HasState;
+import com.butent.bee.shared.State;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.calendar.CalendarConstants.ItemType;
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 import com.butent.bee.shared.modules.calendar.CalendarSettings;
-import com.butent.bee.shared.modules.calendar.CalendarConstants.ItemType;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -39,8 +40,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class CalendarWidget extends FlowPanel implements HasOpenHandlers<CalendarItem>,
-    HasTimeBlockClickHandlers, HasUpdateHandlers, RequiresResize, ProvidesResize {
+public class CalendarWidget extends Flow implements HasOpenHandlers<CalendarItem>,
+    HasTimeBlockClickHandlers, HasUpdateHandlers, ReadyEvent.HasReadyHandlers, HasState {
 
   private static final BeeLogger logger = LogUtils.getLogger(CalendarWidget.class);
 
@@ -70,6 +71,8 @@ public class CalendarWidget extends FlowPanel implements HasOpenHandlers<Calenda
   private boolean layoutPending;
   private boolean scrollPending;
 
+  private State state;
+
   public CalendarWidget(long calendarId, CalendarSettings settings) {
     super();
 
@@ -93,6 +96,11 @@ public class CalendarWidget extends FlowPanel implements HasOpenHandlers<Calenda
   }
 
   @Override
+  public HandlerRegistration addReadyHandler(ReadyEvent.Handler handler) {
+    return addHandler(handler, ReadyEvent.getType());
+  }
+
+  @Override
   public HandlerRegistration addTimeBlockClickHandler(TimeBlockClickEvent.Handler handler) {
     return addHandler(handler, TimeBlockClickEvent.getType());
   }
@@ -100,10 +108,6 @@ public class CalendarWidget extends FlowPanel implements HasOpenHandlers<Calenda
   @Override
   public HandlerRegistration addUpdateHandler(UpdateEvent.Handler handler) {
     return addHandler(handler, UpdateEvent.getType());
-  }
-
-  public List<CalendarItem> getItems() {
-    return dataManager.getItems();
   }
 
   public List<Long> getAttendees() {
@@ -118,8 +122,17 @@ public class CalendarWidget extends FlowPanel implements HasOpenHandlers<Calenda
     return displayedDays;
   }
 
+  public List<CalendarItem> getItems() {
+    return dataManager.getItems();
+  }
+
   public CalendarSettings getSettings() {
     return settings;
+  }
+
+  @Override
+  public State getState() {
+    return state;
   }
 
   public CalendarView.Type getType() {
@@ -145,6 +158,14 @@ public class CalendarWidget extends FlowPanel implements HasOpenHandlers<Calenda
           logger.debug("load", CalendarUtils.renderRange(range), result,
               TimeUtils.elapsedMillis(startMillis));
           refresh(scroll);
+
+          if (getState() == null) {
+            setState(State.INITIALIZED);
+
+            if (isAttached()) {
+              ReadyEvent.fire(CalendarWidget.this);
+            }
+          }
         }
       });
     }
@@ -229,41 +250,55 @@ public class CalendarWidget extends FlowPanel implements HasOpenHandlers<Calenda
     }
   }
 
+  @Override
+  public void setState(State state) {
+    this.state = state;
+  }
+
   public void suspendLayout() {
     layoutSuspended = true;
   }
 
   public boolean update(CalendarView.Type viewType, JustDate newDate, int days) {
     boolean changed = false;
-    
+
     if (viewType != null && !viewType.equals(getType())) {
       setType(viewType);
       changed = true;
     }
-    
+
     if (newDate != null && !newDate.equals(getDate())) {
       setDate(newDate);
       changed = true;
     }
-    
+
     if (days != getDisplayedDays()) {
       setDisplayedDays(days);
       changed = true;
     }
-    
+
     if (changed) {
       loadItems(false, true);
     }
-    
+
     return changed;
   }
-  
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+
+    if (getState() == State.INITIALIZED) {
+      ReadyEvent.fire(this);
+    }
+  }
+
   private void doLayout() {
     if (getView() != null) {
       long startMillis = System.currentTimeMillis();
 
       getView().doLayout(calendarId);
-      
+
       logger.debug("layout", getView().getItemWidgets().size(),
           TimeUtils.elapsedMillis(startMillis));
     }
@@ -311,7 +346,7 @@ public class CalendarWidget extends FlowPanel implements HasOpenHandlers<Calenda
       setView(cached);
       return;
     }
-    
+
     CalendarView cv;
 
     switch (viewType) {

@@ -46,7 +46,7 @@ public class DatePicker extends Composite implements HasValue<JustDate>, HasKeyD
     public String dayIsActive() {
       return day("Active");
     }
-    
+
     public String dayIsDisabled() {
       return day("Disabled");
     }
@@ -94,7 +94,7 @@ public class DatePicker extends Composite implements HasValue<JustDate>, HasKeyD
     public String monthNavigationDisabled() {
       return monthNavigation() + "-disabled";
     }
-    
+
     public String monthSelector() {
       return wrap("monthSelector");
     }
@@ -176,7 +176,7 @@ public class DatePicker extends Composite implements HasValue<JustDate>, HasKeyD
     Assert.notNull(monthSelector);
     Assert.notNull(view);
     Assert.notNull(model);
-    
+
     this.minDate = (minDate == null) ? null : TimeUtils.min(date, minDate);
     this.maxDate = (maxDate == null) ? null : TimeUtils.max(date, maxDate);
 
@@ -280,13 +280,13 @@ public class DatePicker extends Composite implements HasValue<JustDate>, HasKeyD
     if (getMinDate() != null && TimeUtils.isLess(date, getMinDate())) {
       return false;
     }
-    
+
     if (getMaxDate() != null && TimeUtils.isMore(date, getMaxDate())) {
       return false;
     }
     return true;
   }
-  
+
   boolean isDateVisible(JustDate date) {
     return TimeUtils.isBetweenInclusiveRequired(date, getFirstDate(), getLastDate());
   }

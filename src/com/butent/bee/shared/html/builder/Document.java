@@ -42,7 +42,7 @@ public class Document extends Node {
 
     return sb.toString();
   }
-  
+
   public String buildLines() {
     return build(0, DEFAULT_INDENTATION);
   }
@@ -54,7 +54,7 @@ public class Document extends Node {
   public Head getHead() {
     return head;
   }
-  
+
   public List<Element> queryTag(String tagName) {
     return html.queryTag(tagName);
   }

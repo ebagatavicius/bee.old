@@ -12,15 +12,15 @@ import com.butent.bee.shared.utils.Codec;
 import java.util.List;
 
 public class TextMessage implements BeeSerializable {
-  
+
   public static final int MAX_LENGTH = 1000;
-  
+
   public static TextMessage restore(String s) {
     TextMessage textMessage = new TextMessage();
     textMessage.deserialize(s);
     return textMessage;
   }
-  
+
   private long userId;
   private String text;
 
@@ -29,10 +29,10 @@ public class TextMessage implements BeeSerializable {
   public TextMessage(long userId, String text) {
     this.userId = userId;
     this.text = text;
-    
+
     this.millis = System.currentTimeMillis();
   }
-  
+
   private TextMessage() {
   }
 
@@ -58,7 +58,7 @@ public class TextMessage implements BeeSerializable {
   public long getUserId() {
     return userId;
   }
-  
+
   public boolean isValid() {
     return DataUtils.isId(getUserId()) && !BeeUtils.isEmpty(getText());
   }
@@ -66,14 +66,14 @@ public class TextMessage implements BeeSerializable {
   @Override
   public String serialize() {
     List<String> values = Lists.newArrayList(BeeUtils.toString(getUserId()), getText(),
-       BeeUtils.toString(getMillis())); 
+        BeeUtils.toString(getMillis()));
     return Codec.beeSerialize(values);
   }
 
   public void setMillis(long millis) {
     this.millis = millis;
   }
-  
+
   @Override
   public String toString() {
     return BeeUtils.joinOptions("userId", BeeUtils.toString(getUserId()),

@@ -3,8 +3,7 @@
   xmlns:ui="http://www.butent.com/ui" xmlns:w="http://www.butent.com/widget"
 
   name="Discussions" viewName="Discussions" caption="=discussions"
-  favorite="Subject" flexGrow="1" order="DiscussionID desc"
-  disabledActions="delete" >
+  favorite="Subject" flexGrow="1" order="DiscussionID desc" >
   <g:columns>
     <CalcColumn name="Mode" type="string" cellType="html"
       horizontalAlignment="center" width="20" maxWidth="20" caption="-"

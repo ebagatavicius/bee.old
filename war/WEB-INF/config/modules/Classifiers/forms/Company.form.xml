@@ -148,6 +148,11 @@
           <InputArea source="Notes" class="occupy-1" />
         </SimplePanel>
       </page>  
+
+      <page for="RelatedMessages">
+        <text>=mails</text>
+        <ChildGrid name="RelatedMessages" relColumn="Company" />
+      </page>  
     </TabbedPages>
 
   </FlowPanel>

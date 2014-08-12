@@ -78,7 +78,7 @@ public class Spaces {
     }
 
     private void open(boolean append) {
-      BeeKeeper.getScreen().restore(workspace, append);
+      BeeKeeper.getScreen().restore(Lists.newArrayList(workspace), append);
     }
 
     private void setLabel(String label) {

@@ -13,6 +13,7 @@ import static com.butent.bee.shared.modules.administration.AdministrationConstan
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
+import com.butent.bee.server.Config;
 import com.butent.bee.server.data.BeeView;
 import com.butent.bee.server.data.DataEditorBean;
 import com.butent.bee.server.data.DataEvent.ViewQueryEvent;
@@ -63,7 +64,7 @@ import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.html.builder.elements.Tbody;
 import com.butent.bee.shared.html.builder.elements.Td;
 import com.butent.bee.shared.i18n.LocalizableConstants;
-import com.butent.bee.shared.io.StoredFile;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
@@ -75,6 +76,7 @@ import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.news.Headline;
 import com.butent.bee.shared.news.HeadlineProducer;
 import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.time.CronExpression;
 import com.butent.bee.shared.time.DateRange;
 import com.butent.bee.shared.time.DateTime;
@@ -132,7 +134,7 @@ public class TasksModuleBean implements BeeModule {
   public List<SearchResult> doSearch(String query) {
     List<SearchResult> result = Lists.newArrayList();
 
-    if (usr.isModuleVisible(Module.TASKS.getName())) {
+    if (usr.isModuleVisible(ModuleAndSub.of(Module.TASKS))) {
       List<SearchResult> tasksSr = qs.getSearchResults(VIEW_TASKS,
           Filter.anyContains(Sets.newHashSet(COL_SUMMARY, COL_DESCRIPTION,
               ALS_COMPANY_NAME, ALS_EXECUTOR_FIRST_NAME, ALS_EXECUTOR_LAST_NAME),
@@ -453,7 +455,7 @@ public class TasksModuleBean implements BeeModule {
     }
 
     if (propNames.contains(PROP_FILES)) {
-      List<StoredFile> files = getTaskFiles(taskId);
+      List<FileInfo> files = getTaskFiles(taskId);
       if (!files.isEmpty()) {
         row.setProperty(PROP_FILES, Codec.beeSerialize(files));
       }
@@ -473,6 +475,9 @@ public class TasksModuleBean implements BeeModule {
 
   @Schedule(hour = "5", persistent = false)
   private void checkTaskStatus() {
+    if (!Config.isInitialized()) {
+      return;
+    }
     logger.info("check task status timeout");
 
     int count = maybeUpdateTaskStatus();
@@ -1224,10 +1229,10 @@ public class TasksModuleBean implements BeeModule {
                 sys.joinTables(TBL_FILES, TBL_REQUEST_FILES, COL_FILE))
             .setWhere(SqlUtils.equals(TBL_REQUEST_FILES, COL_REQUEST, requestId)));
 
-    List<StoredFile> files = Lists.newArrayList();
+    List<FileInfo> files = Lists.newArrayList();
 
     for (SimpleRow file : data) {
-      StoredFile sf = new StoredFile(file.getLong(COL_FILE),
+      FileInfo sf = new FileInfo(file.getLong(COL_FILE),
           BeeUtils.notEmpty(file.getValue(COL_CAPTION),
               file.getValue(COL_FILE_NAME)),
           file.getLong(COL_FILE_SIZE),
@@ -1334,8 +1339,8 @@ public class TasksModuleBean implements BeeModule {
     return getTaskData(taskId, null, propNames, addRelations);
   }
 
-  private List<StoredFile> getTaskFiles(long taskId) {
-    List<StoredFile> result = Lists.newArrayList();
+  private List<FileInfo> getTaskFiles(long taskId) {
+    List<FileInfo> result = Lists.newArrayList();
 
     BeeRowSet rowSet = qs.getViewData(VIEW_TASK_FILES, Filter.equals(COL_TASK, taskId));
     if (rowSet == null || rowSet.isEmpty()) {
@@ -1343,7 +1348,7 @@ public class TasksModuleBean implements BeeModule {
     }
 
     for (BeeRow row : rowSet.getRows()) {
-      StoredFile sf = new StoredFile(DataUtils.getLong(rowSet, row, COL_FILE),
+      FileInfo sf = new FileInfo(DataUtils.getLong(rowSet, row, COL_FILE),
           DataUtils.getString(rowSet, row, ALS_FILE_NAME),
           DataUtils.getLong(rowSet, row, ALS_FILE_SIZE),
           DataUtils.getString(rowSet, row, ALS_FILE_TYPE));
@@ -1769,6 +1774,9 @@ public class TasksModuleBean implements BeeModule {
 
   @Schedule(hour = "4", persistent = false)
   private void recurringTaskSchedulingTimeout() {
+    if (!Config.isInitialized()) {
+      return;
+    }
     logger.info("recurring task scheduling timeout ");
 
     Set<Long> tasks = scheduleRecurringTasks(DateRange.day(TimeUtils.today()));
@@ -1925,6 +1933,7 @@ public class TasksModuleBean implements BeeModule {
       }
 
       CronExpression.Builder builder = new CronExpression.Builder(from, until)
+          .id(BeeUtils.toString(rtId))
           .dayOfMonth(DataUtils.getString(rtData, rtRow, COL_RT_DAY_OF_MONTH))
           .month(DataUtils.getString(rtData, rtRow, COL_RT_MONTH))
           .dayOfWeek(DataUtils.getString(rtData, rtRow, COL_RT_DAY_OF_WEEK))
@@ -2321,6 +2330,9 @@ public class TasksModuleBean implements BeeModule {
 
   @Schedule(minute = "0,30", hour = "*", persistent = false)
   private void taskReminderTimeout(Timer timer) {
+    if (!Config.isInitialized()) {
+      return;
+    }
     long timeRemaining = timer.getTimeRemaining();
     logger.info("task reminder timeout, time remainining", timeRemaining);
 

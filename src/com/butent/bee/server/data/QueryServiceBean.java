@@ -61,6 +61,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -76,6 +77,12 @@ import javax.sql.DataSource;
 @Stateless
 @LocalBean
 public class QueryServiceBean {
+
+  public interface ViewDataProvider {
+    BeeRowSet getViewData(BeeView view, SqlSelect query, Filter filter);
+
+    int getViewSize(BeeView view, SqlSelect query, Filter filter);
+  }
 
   /**
    * Is a private interface for SQL processing.
@@ -111,6 +118,15 @@ public class QueryServiceBean {
     }
 
     public abstract T processUpdateCount(int updateCount);
+  }
+
+  private static final Map<String, ViewDataProvider> viewDataProviders = new ConcurrentHashMap<>();
+
+  public static void registerViewDataProvider(String viewName, ViewDataProvider provider) {
+    Assert.notEmpty(viewName);
+    Assert.state(!viewDataProviders.containsKey(viewName),
+        "View data provider for view \"" + viewName + "\" already registered");
+    viewDataProviders.put(viewName, Assert.notNull(provider));
   }
 
   private static BeeLogger logger = LogUtils.getLogger(QueryServiceBean.class);
@@ -554,7 +570,7 @@ public class QueryServiceBean {
       List<String> order) {
 
     BeeView view = sys.getView(viewName);
-    SqlSelect viewQuery = view.getQuery(filter, null, columns, sys.getViewFinder());
+    SqlSelect viewQuery = view.getQuery(usr.getCurrentUserId(), filter, null, columns);
 
     String queryAlias = "Hist_" + SqlUtils.uniqueName();
     String countAlias = "Count_" + SqlUtils.uniqueName();
@@ -736,25 +752,18 @@ public class QueryServiceBean {
       List<String> columns) {
 
     BeeView view = sys.getView(viewName);
-    SqlSelect ss = view.getQuery(filter, order, columns, sys.getViewFinder());
+    SqlSelect query = view.getQuery(usr.getCurrentUserId(), filter, order, columns);
 
     if (limit > 0) {
-      ss.setLimit(limit);
+      query.setLimit(limit);
     }
     if (offset > 0) {
-      ss.setOffset(offset);
+      query.setOffset(offset);
     }
-    return getViewData(ss, view);
-  }
-
-  public BeeRowSet getViewData(final SqlSelect query, final BeeView view) {
-    Assert.notNull(query);
-    Assert.state(!query.isEmpty());
-
-    String tableName = view.getSourceName();
-    String tableAlias = view.getSourceAlias();
-
     if (!usr.isAdministrator()) {
+      String tableName = view.getSourceName();
+      String tableAlias = view.getSourceAlias();
+
       sys.filterVisibleState(query, tableName, tableAlias);
 
       BeeTable table = sys.getTable(tableName);
@@ -774,6 +783,18 @@ public class QueryServiceBean {
         }
       }
     }
+    ViewDataProvider provider = viewDataProviders.get(viewName);
+
+    if (provider != null) {
+      return provider.getViewData(view, query, filter);
+    }
+    return getViewData(query, view);
+  }
+
+  public BeeRowSet getViewData(final SqlSelect query, final BeeView view) {
+    Assert.noNulls(query, view);
+    Assert.state(!query.isEmpty());
+
     activateTables(query);
 
     final ViewQueryEvent event = new ViewQueryEvent(view.getName(), query);
@@ -796,12 +817,16 @@ public class QueryServiceBean {
 
   public int getViewSize(String viewName, Filter filter) {
     BeeView view = sys.getView(viewName);
-    SqlSelect query = view.getQuery(filter, sys.getViewFinder());
+    SqlSelect query = view.getQuery(usr.getCurrentUserId(), filter);
 
     if (!usr.isAdministrator()) {
       sys.filterVisibleState(query, view.getSourceName(), view.getSourceAlias());
     }
-    
+    ViewDataProvider provider = viewDataProviders.get(viewName);
+
+    if (provider != null) {
+      return provider.getViewSize(view, query, filter);
+    }
     return sqlCount(query);
   }
 
@@ -988,6 +1013,13 @@ public class QueryServiceBean {
         .addFields(source, field)
         .addFrom(source)
         .setWhere(sys.idEquals(source, id)));
+  }
+
+  public void tweakSql(boolean on) {
+    if (SqlEngine.POSTGRESQL != SqlBuilderFactory.getBuilder().getEngine()) {
+      return;
+    }
+    doSql("SET LOCAL enable_seqscan=" + (on ? "off" : "on"));
   }
 
   @TransactionAttribute(TransactionAttributeType.MANDATORY)

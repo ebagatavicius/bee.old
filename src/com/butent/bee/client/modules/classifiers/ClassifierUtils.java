@@ -35,8 +35,8 @@ public final class ClassifierUtils {
   private static final String KEY_LOCALE = "locale";
 
   private static final String[] COMPANY_INFO_COLS = new String[] {
-    COL_COMPANY_NAME, COL_COMPANY_CODE, COL_COMPANY_VAT_CODE,
-    COL_ADDRESS, COL_PHONE, COL_EMAIL_ADDRESS};
+      COL_COMPANY_NAME, COL_COMPANY_CODE, COL_COMPANY_VAT_CODE,
+      COL_ADDRESS, COL_PHONE, COL_EMAIL_ADDRESS};
 
   public static void createCompany(final Map<String, String> parameters,
       final NotificationListener notificationListener, final IdCallback callback) {
@@ -92,7 +92,7 @@ public final class ClassifierUtils {
         if (response.hasErrors()) {
           return;
         }
-        
+
         Map<String, String> entries = Codec.deserializeMap(response.getResponseAsString());
         if (BeeUtils.isEmpty(entries)) {
           return;
@@ -107,35 +107,35 @@ public final class ClassifierUtils {
 
         for (String col : COMPANY_INFO_COLS) {
           Flow record = new Flow(STYLE_COMPANY + "-" + col.toLowerCase());
-          
+
           switch (col) {
             case COL_ADDRESS:
               String value = BeeUtils.joinItems(info.get(COL_ADDRESS).getB(),
                   info.get(COL_POST_INDEX).getB(), info.get(COL_CITY).getB(),
                   info.get(COL_COUNTRY).getB());
-              
+
               if (!BeeUtils.isEmpty(value)) {
                 Widget widget = new Label(info.get(col).getA());
                 widget.setStyleName(STYLE_COMPANY_LABEL);
                 record.add(widget);
-                
+
                 widget = new Label(value);
                 widget.setStyleName(STYLE_COMPANY_ITEM);
                 record.add(widget);
               }
               break;
-              
+
             case COL_PHONE:
               Flow phone = new Flow();
-              
+
               for (String fld : new String[] {COL_PHONE, COL_MOBILE, COL_FAX}) {
                 Pair<String, String> pair = info.get(fld);
-                
+
                 if (!BeeUtils.isEmpty(pair.getB())) {
                   Widget label = new Label(pair.getA());
                   label.setStyleName(STYLE_COMPANY_LABEL);
                   phone.add(label);
-                  
+
                   Widget item = new Label(pair.getB());
                   item.setStyleName(STYLE_COMPANY_ITEM);
                   phone.add(item);
@@ -148,7 +148,7 @@ public final class ClassifierUtils {
 
             default:
               Pair<String, String> pair = info.get(col);
-              
+
               if (!BeeUtils.isEmpty(pair.getB())) {
                 Widget widget = new Label(pair.getA());
                 widget.setStyleName(STYLE_COMPANY_LABEL);

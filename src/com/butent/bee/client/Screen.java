@@ -26,17 +26,19 @@ public interface Screen extends NotificationListener, HasExtendedInfo {
   boolean activateDomainEntry(Domain domain, Long key);
 
   void activateWidget(IdentifiableWidget widget);
-  
-  void addCommandItem(IdentifiableWidget widget);  
+
+  void addCommandItem(IdentifiableWidget widget);
 
   void addDomainEntry(Domain domain, IdentifiableWidget widget, Long key, String caption);
-  
+
   String addProgress(HasProgress widget);
-  
+
+  void closeAll();
+
   void closeWidget(IdentifiableWidget widget);
 
   boolean containsDomainEntry(Domain domain, Long key);
-  
+
   int getActivePanelHeight();
 
   int getActivePanelWidth();
@@ -46,50 +48,50 @@ public interface Screen extends NotificationListener, HasExtendedInfo {
   HasWidgets getCommandPanel();
 
   Flow getDomainHeader(Domain domain, Long key);
-  
+
   int getHeight();
-  
+
   Set<Direction> getHiddenDirections();
-  
+
   List<IdentifiableWidget> getOpenWidgets();
 
   Split getScreenPanel();
 
   UserInterface getUserInterface();
-  
+
   int getWidth();
 
   Workspace getWorkspace();
-  
+
   void hideDirections(Set<Direction> directions);
-  
+
   void init();
 
   void onLoad();
-  
+
   void onWidgetChange(IdentifiableWidget widget);
-  
+
   boolean removeDomainEntry(Domain domain, Long key);
 
   void removeProgress(String id);
-  
-  void restore(String input, boolean append);
-  
+
+  void restore(List<String> spaces, boolean append);
+
   String serialize();
-  
+
+  void show(IdentifiableWidget widget);
+
   void showInNewPlace(IdentifiableWidget widget);
 
-  void showWidget(IdentifiableWidget widget);
-
   void start(UserData userData);
-  
+
   void updateActivePanel(IdentifiableWidget widget);
 
   void updateCommandPanel(IdentifiableWidget widget);
-  
+
   void updateMenu(IdentifiableWidget widget);
 
-  void updateProgress(String id, double value);
-  
+  boolean updateProgress(String id, double value);
+
   void updateUserData(UserData userData);
 }

@@ -15,14 +15,14 @@ public class ParentRowEvent extends Event<ParentRowEvent.Handler> implements Has
     void onParentRow(ParentRowEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static HandlerRegistration register(EventBus eventBus, Object source, Handler handler) {
     Assert.notNull(eventBus);
     Assert.notNull(handler);
     return eventBus.addHandlerToSource(TYPE, source, handler);
   }
-  
+
   private final String viewName;
   private final IsRow row;
   private final boolean enabled;
@@ -42,7 +42,7 @@ public class ParentRowEvent extends Event<ParentRowEvent.Handler> implements Has
   public IsRow getRow() {
     return row;
   }
-  
+
   public Long getRowId() {
     return (row == null) ? null : row.getId();
   }

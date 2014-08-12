@@ -67,7 +67,7 @@ class ArticleCodesGridInterceptor extends AbstractGridInterceptor {
 
     return true;
   }
-  
+
   @Override
   public GridInterceptor getInstance() {
     return new ArticleCodesGridInterceptor();

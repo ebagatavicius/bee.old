@@ -7,10 +7,15 @@
   <Fields>
     <Relation name="Discussion" notNull="true" relation="Discussions" cascade="DELETE" label="=discussion" />
     <Relation name="User" notNull="true" relation="Users" label="=user" />
-    <Relation name="Comment" defValue="NULL" relation="DiscussionsComments" cascade="DELETE" label="=discussion" />
+    <Relation name="Comment" relation="DiscussionsComments" cascade="DELETE" label="=discussion" />
     <Relation name="Mark" defValue="NULL" relation="CommentsMarksTypes" />
   </Fields>
-  <Constraints>
-    <Unique fields="Discussion User Comment" />
-  </Constraints>
+  <Indexes>
+    <Index unique="true">
+      <PostgreSql>(("Discussion" || ' ' || "User" || ' ' || COALESCE("Comment", 0)))
+       </PostgreSql>
+      <MsSql>(([Discussion] || ' ' || [User] || ' ' || COALESCE([Comment], 0)))</MsSql>
+      <Oracle>(("Discussion" || ' ' || "User" || ' ' || COALESCE("Comment", 0)))</Oracle>
+    </Index>
+  </Indexes>
 </Table>

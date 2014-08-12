@@ -1,6 +1,11 @@
 package com.butent.bee.server.communication;
 
+import com.butent.bee.server.Config;
+import com.butent.bee.server.http.RequestInfo;
+import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ChatRoom;
+import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.communication.TextMessage;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -21,8 +26,12 @@ public final class Rooms {
   private static Queue<ChatRoom> chatRooms = new ConcurrentLinkedQueue<>();
 
   static {
-    chatRooms.add(new ChatRoom("101", ChatRoom.Type.PUBLIC,
-        emptyTextMessages(ChatRoom.DEFAULT_CAPACITY)));
+    String defRoom = Config.getProperty("DefaultChatRoom");
+
+    if (!BeeUtils.isEmpty(defRoom) && !BeeConst.STRING_MINUS.equals(defRoom)) {
+      chatRooms.add(new ChatRoom(defRoom.trim(), ChatRoom.Type.PUBLIC,
+          emptyTextMessages(ChatRoom.DEFAULT_CAPACITY)));
+    }
   }
 
   public static boolean addMessage(ChatRoom room, TextMessage message) {
@@ -109,6 +118,21 @@ public final class Rooms {
 
     logger.warning("room not found:", roomId);
     return null;
+  }
+
+  public static ResponseObject getRoom(RequestInfo reqInfo) {
+    Long id = BeeUtils.toLongOrNull(reqInfo.getParameter(Service.VAR_ID));
+    if (id == null) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(), Service.VAR_ID);
+    }
+
+    ChatRoom room = getRoom(id);
+
+    if (room == null) {
+      return ResponseObject.error("room", id, "not found");
+    } else {
+      return ResponseObject.response(room);
+    }
   }
 
   public static List<ChatRoom> getRoomDataWithoutMessagess(Long userId) {

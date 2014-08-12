@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="CostCenters" source="CostCenters" module="Classifiers"
+  caption="=costCenters" newRowCaption="=newCostCenter"
+  >
+  <Columns>
+    <SimpleColumn name="CostCenterName" />
+    <SimpleColumn name="Description" />
+  </Columns>
+  <Order>
+    <OrderBy column="CostCenterName" />
+  </Order>
+</View>

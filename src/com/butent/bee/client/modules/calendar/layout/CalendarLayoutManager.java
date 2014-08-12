@@ -25,7 +25,7 @@ import java.util.List;
 public final class CalendarLayoutManager {
 
   private static final BeeLogger logger = LogUtils.getLogger(CalendarLayoutManager.class);
-  
+
   private static final double SIMPLE_MARGIN_LEFT = 0.3;
   private static final double SIMPLE_MARGIN_RIGHT = 0.3;
 
@@ -208,7 +208,7 @@ public final class CalendarLayoutManager {
       return BeeConst.UNDEF;
     }
   }
-  
+
   public static int getTodayWidth(int columnCount, int todayStartColumn, int todayEndColumn) {
     if (BeeUtils.betweenExclusive(todayStartColumn, 0, columnCount)) {
       int endColumn = BeeUtils.clamp(todayEndColumn, todayStartColumn, columnCount - 1);

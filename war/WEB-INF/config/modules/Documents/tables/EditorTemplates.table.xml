@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="EditorTemplates"
+  idName="TemplateID"
+  >
+  <Fields>
+    <String name="Origin" precision="20" notNull="true" />
+    <String name="Name" precision="30" notNull="true" label="=name" />
+    <Text name="Content" label="=content" notNull="true" />
+  </Fields>
+  <Constraints>
+    <Unique fields="Origin Name" />
+  </Constraints>
+</Table>

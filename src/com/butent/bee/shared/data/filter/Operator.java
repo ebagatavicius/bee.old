@@ -19,7 +19,8 @@ public enum Operator {
   MATCHES("~"),
   IN,
   IS_NULL,
-  NOT_NULL;
+  NOT_NULL,
+  FULL_TEXT;
 
   public static final String CHAR_ANY = "*";
   public static final String CHAR_ONE = "?";

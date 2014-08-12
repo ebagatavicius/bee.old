@@ -11,9 +11,9 @@ class Template {
     if (element == null) {
       return null;
     }
-    
+
     String id = element.getAttribute(DecoratorConstants.ATTR_ID);
-    
+
     StringBuilder sb = new StringBuilder();
     for (Element child : XmlUtils.getChildrenElements(element)) {
       sb.append(child.toString());
@@ -25,7 +25,7 @@ class Template {
       return null;
     }
   }
-  
+
   private final String id;
   private final String markup;
 
@@ -34,7 +34,7 @@ class Template {
     this.id = id;
     this.markup = markup;
   }
-  
+
   Template getCopy() {
     return new Template(id, markup);
   }

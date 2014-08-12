@@ -24,13 +24,13 @@ public class RowDeleteEvent extends ModificationEvent<RowDeleteEvent.Handler> im
     void onRowDelete(RowDeleteEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static void fire(FiresModificationEvents eventManager, String viewName, long rowId) {
     Assert.notNull(eventManager);
     Assert.notEmpty(viewName);
     Assert.isTrue(DataUtils.isId(rowId));
-    
+
     eventManager.fireModificationEvent(new RowDeleteEvent(viewName, rowId), Locality.ENTANGLED);
   }
 
@@ -38,7 +38,7 @@ public class RowDeleteEvent extends ModificationEvent<RowDeleteEvent.Handler> im
     Assert.notNull(handler);
     handler.onRowDelete(new RowDeleteEvent(viewName, rowId));
   }
-  
+
   public static HandlerRegistration register(EventBus eventBus, Handler handler) {
     Assert.notNull(eventBus);
     Assert.notNull(handler);
@@ -52,7 +52,7 @@ public class RowDeleteEvent extends ModificationEvent<RowDeleteEvent.Handler> im
     this.viewName = viewName;
     this.rowId = rowId;
   }
-  
+
   RowDeleteEvent() {
   }
 
@@ -85,7 +85,7 @@ public class RowDeleteEvent extends ModificationEvent<RowDeleteEvent.Handler> im
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
-    
+
     this.viewName = arr[0];
     this.rowId = BeeUtils.toLong(arr[1]);
   }

@@ -3,9 +3,10 @@ package com.butent.bee.server;
 import com.butent.bee.server.http.HttpUtils;
 import com.butent.bee.server.io.FileUtils;
 import com.butent.bee.server.modules.administration.FileStorageBean;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.data.DataUtils;
-import com.butent.bee.shared.io.StoredFile;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -67,7 +68,7 @@ public class FileServlet extends LoginServlet {
     }
     if (DataUtils.isId(fileId)) {
       try {
-        StoredFile sf = fs.getFile(fileId);
+        FileInfo sf = fs.getFile(fileId);
         path = sf.getPath();
         fileName = BeeUtils.notEmpty(fileName, sf.getName());
         mimeType = sf.getType();
@@ -101,7 +102,7 @@ public class FileServlet extends LoginServlet {
       mimeType = "application/octet-stream";
     }
     try {
-      fileName = MimeUtility.encodeText(fileName);
+      fileName = MimeUtility.encodeText(fileName, BeeConst.CHARSET_UTF8, null);
     } catch (UnsupportedEncodingException ex) {
       logger.warning(ex);
     }

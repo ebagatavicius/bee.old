@@ -14,25 +14,25 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> {
-  
+
   public enum Effect {
-    CANCEL, REFRESH, RESET 
+    CANCEL, REFRESH, RESET
   }
 
   public interface Handler {
     void onDataChange(DataChangeEvent event);
   }
-  
-  public static final EnumSet<Effect> CANCEL_RESET_REFRESH = 
+
+  public static final EnumSet<Effect> CANCEL_RESET_REFRESH =
       EnumSet.of(Effect.CANCEL, Effect.REFRESH, Effect.RESET);
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static void fire(FiresModificationEvents em, String viewName, EnumSet<Effect> effects) {
     Assert.notNull(em);
     Assert.notEmpty(viewName);
     Assert.notEmpty(effects);
-    
+
     em.fireModificationEvent(new DataChangeEvent(viewName, effects), Locality.ENTANGLED);
   }
 
@@ -41,7 +41,7 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
     Assert.notNull(em);
     Assert.notEmpty(viewName);
     Assert.notEmpty(effects);
-    
+
     em.fireModificationEvent(new DataChangeEvent(viewName, effects), Locality.LOCAL);
   }
 
@@ -60,7 +60,7 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
   public static void fireReset(FiresModificationEvents em, String viewName) {
     fire(em, viewName, EnumSet.of(Effect.REFRESH, Effect.RESET));
   }
-  
+
   public static HandlerRegistration register(EventBus eventBus, Handler handler) {
     Assert.notNull(eventBus);
     Assert.notNull(handler);
@@ -74,22 +74,22 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
     this.viewName = viewName;
     this.effects = effects;
   }
-  
+
   DataChangeEvent() {
   }
-  
+
   public boolean contains(Effect effect) {
     return effects != null && effect != null && effects.contains(effect);
   }
-  
+
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
-    
+
     this.viewName = arr[0];
     this.effects = EnumSet.noneOf(Effect.class);
-    
+
     String[] packedEffects = Codec.beeDeserializeCollection(arr[1]);
     if (!ArrayUtils.isEmpty(packedEffects)) {
       for (String pe : packedEffects) {
@@ -102,7 +102,7 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
   public Type<Handler> getAssociatedType() {
     return TYPE;
   }
-  
+
   @Override
   public Kind getKind() {
     return Kind.DATA_CHANGE;
@@ -112,7 +112,7 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
   public String getViewName() {
     return viewName;
   }
-  
+
   public boolean hasCancel() {
     return contains(Effect.CANCEL);
   }
@@ -138,7 +138,7 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
         packedEffects.add(Codec.pack(effect));
       }
     }
-    
+
     Object[] arr = new Object[] {getViewName(), packedEffects};
     return Codec.beeSerialize(arr);
   }

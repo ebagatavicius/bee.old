@@ -44,17 +44,17 @@ public class DataInfoProvider implements DataInfo.Provider, ColumnNamesProvider 
     }
     return dataInfo;
   }
-  
+
   public Collection<String> getViewNames(String tableName) {
     Assert.notEmpty(tableName);
-    
+
     Set<String> viewNames = Sets.newHashSet();
     for (DataInfo dataInfo : views.values()) {
       if (BeeUtils.same(dataInfo.getTableName(), tableName)) {
         viewNames.add(dataInfo.getViewName());
       }
     }
-    
+
     return viewNames;
   }
 

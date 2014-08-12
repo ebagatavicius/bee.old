@@ -64,7 +64,7 @@ public class ResponseObject implements BeeSerializable {
   public static ResponseObject response(Object response, Class<?> clazz) {
     return new ResponseObject().setResponse(response).setType(clazz);
   }
-  
+
   public static ResponseObject restore(String s) {
     ResponseObject response = new ResponseObject();
     response.deserialize(s);
@@ -79,7 +79,7 @@ public class ResponseObject implements BeeSerializable {
   private Object response;
   private String type;
   private boolean isArrayType;
-  
+
   private int size;
 
   public ResponseObject addDebug(Object... obj) {
@@ -132,7 +132,7 @@ public class ResponseObject implements BeeSerializable {
     messages.add(new ResponseMessage(LogLevel.WARNING, ArrayUtils.joinWords(obj)));
     return this;
   }
-  
+
   public ResponseObject clearMessages() {
     messages.clear();
     return this;
@@ -171,14 +171,14 @@ public class ResponseObject implements BeeSerializable {
         case RESPONSE:
           this.response = value;
           break;
-          
+
         case SIZE:
           this.size = BeeUtils.toInt(value);
           break;
       }
     }
   }
-  
+
   public String[] getErrors() {
     return getMessageArray(LogLevel.ERROR);
   }
@@ -231,7 +231,7 @@ public class ResponseObject implements BeeSerializable {
   public int getSize() {
     return size;
   }
-  
+
   public String getType() {
     return type;
   }
@@ -305,14 +305,14 @@ public class ResponseObject implements BeeSerializable {
     if (notificator != null && hasMessages()) {
       LogLevel level = null;
       List<String> list = Lists.newArrayList();
-      
+
       for (ResponseMessage message : getMessages()) {
         if (!BeeUtils.isEmpty(message.getMessage())) {
           level = BeeUtils.max(level, message.getLevel());
           list.add(message.getMessage());
         }
       }
-      
+
       if (!list.isEmpty()) {
         if (level == LogLevel.ERROR) {
           notificator.notifySevere(ArrayUtils.toArray(list));
@@ -366,7 +366,7 @@ public class ResponseObject implements BeeSerializable {
 
     return this;
   }
-  
+
   public ResponseObject setResponse(Object rsp) {
     if (rsp != null) {
       setType(rsp.getClass());

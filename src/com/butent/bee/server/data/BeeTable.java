@@ -103,8 +103,9 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
     private final String label;
     private final boolean auditable;
     private final String enumKey;
+    private final String expression;
 
-    protected BeeField(XmlField xmlField, boolean extended) {
+    protected BeeField(XmlField xmlField, String expression, boolean extended) {
       this.name = xmlField.name;
       this.type = EnumUtils.getEnumByName(SqlDataType.class, xmlField.type);
 
@@ -120,6 +121,7 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
       this.translatable = xmlField.translatable;
       this.defExpr = xmlField.defExpr;
       this.auditable = xmlField.audit;
+      this.expression = expression;
 
       String key = (xmlField instanceof XmlEnum) ? ((XmlEnum) xmlField).key : null;
 
@@ -181,6 +183,10 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
 
     public String getEnumKey() {
       return enumKey;
+    }
+
+    public String getExpression() {
+      return expression;
     }
 
     public String getLabel() {
@@ -337,8 +343,8 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
     private final SqlKeyword cascade;
     private final boolean editable;
 
-    private BeeRelation(XmlRelation xmlField, boolean extended) {
-      super(xmlField, extended);
+    private BeeRelation(XmlRelation xmlField, String expression, boolean extended) {
+      super(xmlField, expression, extended);
 
       this.relation = xmlField.relation;
       this.cascade = EnumUtils.getEnumByName(SqlKeyword.class, xmlField.cascade);
@@ -1335,10 +1341,10 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
     checks.put(BeeUtils.normalize(check.getName()), check);
   }
 
-  void addField(XmlField xmlField, boolean extended) {
+  void addField(XmlField xmlField, String expression, boolean extended) {
     BeeField field = (xmlField instanceof XmlRelation)
-        ? new BeeRelation((XmlRelation) xmlField, extended)
-        : new BeeField(xmlField, extended);
+        ? new BeeRelation((XmlRelation) xmlField, expression, extended)
+        : new BeeField(xmlField, expression, extended);
 
     String fieldName = field.getName();
 

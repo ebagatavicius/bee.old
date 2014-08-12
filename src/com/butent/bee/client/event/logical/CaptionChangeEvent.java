@@ -12,13 +12,13 @@ public class CaptionChangeEvent extends GwtEvent<CaptionChangeEvent.Handler> imp
   public interface HasCaptionChangeHandlers extends HasHandlers {
     HandlerRegistration addCaptionChangeHandler(Handler handler);
   }
-  
+
   public interface Handler extends EventHandler {
     void onCaptionChange(CaptionChangeEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static void fire(HasCaptionChangeHandlers source, String caption) {
     source.fireEvent(new CaptionChangeEvent(caption));
   }
@@ -28,7 +28,7 @@ public class CaptionChangeEvent extends GwtEvent<CaptionChangeEvent.Handler> imp
   }
 
   private final String caption;
-  
+
   public CaptionChangeEvent(String caption) {
     super();
     this.caption = caption;

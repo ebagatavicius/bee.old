@@ -14,7 +14,6 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Queries;
@@ -27,10 +26,11 @@ import com.butent.bee.client.modules.transport.charts.Filterable.FilterType;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.timeboard.TimeBoard;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
-import com.butent.bee.client.ui.WidgetFactory;
-import com.butent.bee.client.ui.WidgetSupplier;
+import com.butent.bee.client.view.View;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.ViewSupplier;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
@@ -71,23 +71,23 @@ public abstract class ChartBase extends TimeBoard {
   public static void registerBoards() {
     ensureStyleSheet();
 
-    final Callback<IdentifiableWidget> showInNewTab = new Callback<IdentifiableWidget>() {
+    final ViewCallback showCallback = new ViewCallback() {
       @Override
-      public void onSuccess(IdentifiableWidget result) {
-        BeeKeeper.getScreen().showWidget(result);
+      public void onSuccess(View result) {
+        BeeKeeper.getScreen().show(result);
       }
     };
 
     MenuService.FREIGHT_EXCHANGE.setHandler(new MenuHandler() {
       @Override
       public void onSelection(String parameters) {
-        FreightExchange.open(showInNewTab);
+        FreightExchange.open(showCallback);
       }
     });
 
-    WidgetFactory.registerSupplier(FreightExchange.SUPPLIER_KEY, new WidgetSupplier() {
+    ViewFactory.registerSupplier(FreightExchange.SUPPLIER_KEY, new ViewSupplier() {
       @Override
-      public void create(Callback<IdentifiableWidget> callback) {
+      public void create(ViewCallback callback) {
         FreightExchange.open(callback);
       }
     });
@@ -95,13 +95,13 @@ public abstract class ChartBase extends TimeBoard {
     MenuService.SHIPPING_SCHEDULE.setHandler(new MenuHandler() {
       @Override
       public void onSelection(String parameters) {
-        ShippingSchedule.open(showInNewTab);
+        ShippingSchedule.open(showCallback);
       }
     });
 
-    WidgetFactory.registerSupplier(ShippingSchedule.SUPPLIER_KEY, new WidgetSupplier() {
+    ViewFactory.registerSupplier(ShippingSchedule.SUPPLIER_KEY, new ViewSupplier() {
       @Override
-      public void create(Callback<IdentifiableWidget> callback) {
+      public void create(ViewCallback callback) {
         ShippingSchedule.open(callback);
       }
     });
@@ -109,13 +109,13 @@ public abstract class ChartBase extends TimeBoard {
     MenuService.DRIVER_TIME_BOARD.setHandler(new MenuHandler() {
       @Override
       public void onSelection(String parameters) {
-        DriverTimeBoard.open(showInNewTab);
+        DriverTimeBoard.open(showCallback);
       }
     });
 
-    WidgetFactory.registerSupplier(DriverTimeBoard.SUPPLIER_KEY, new WidgetSupplier() {
+    ViewFactory.registerSupplier(DriverTimeBoard.SUPPLIER_KEY, new ViewSupplier() {
       @Override
-      public void create(Callback<IdentifiableWidget> callback) {
+      public void create(ViewCallback callback) {
         DriverTimeBoard.open(callback);
       }
     });
@@ -123,13 +123,13 @@ public abstract class ChartBase extends TimeBoard {
     MenuService.TRUCK_TIME_BOARD.setHandler(new MenuHandler() {
       @Override
       public void onSelection(String parameters) {
-        TruckTimeBoard.open(showInNewTab);
+        TruckTimeBoard.open(showCallback);
       }
     });
 
-    WidgetFactory.registerSupplier(TruckTimeBoard.SUPPLIER_KEY, new WidgetSupplier() {
+    ViewFactory.registerSupplier(TruckTimeBoard.SUPPLIER_KEY, new ViewSupplier() {
       @Override
-      public void create(Callback<IdentifiableWidget> callback) {
+      public void create(ViewCallback callback) {
         TruckTimeBoard.open(callback);
       }
     });
@@ -137,13 +137,13 @@ public abstract class ChartBase extends TimeBoard {
     MenuService.TRAILER_TIME_BOARD.setHandler(new MenuHandler() {
       @Override
       public void onSelection(String parameters) {
-        TrailerTimeBoard.open(showInNewTab);
+        TrailerTimeBoard.open(showCallback);
       }
     });
 
-    WidgetFactory.registerSupplier(TrailerTimeBoard.SUPPLIER_KEY, new WidgetSupplier() {
+    ViewFactory.registerSupplier(TrailerTimeBoard.SUPPLIER_KEY, new ViewSupplier() {
       @Override
-      public void create(Callback<IdentifiableWidget> callback) {
+      public void create(ViewCallback callback) {
         TrailerTimeBoard.open(callback);
       }
     });

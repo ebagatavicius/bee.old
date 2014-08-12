@@ -7,7 +7,6 @@ public class StringArray extends ArraySequence<String> {
 
   /**
    * Creates new string array with new values.
-   * 
    * @param values array of string values
    */
   public StringArray(String[] values) {

@@ -259,7 +259,7 @@ public class Users {
   public boolean isOpen(String sessionId) {
     return !BeeUtils.isEmpty(sessionId) && openSessions.containsKey(sessionId);
   }
-  
+
   public void loadUserData(String serialized) {
     String[] arr = Codec.beeDeserializeCollection(serialized);
     if (ArrayUtils.isEmpty(arr)) {
@@ -421,7 +421,7 @@ public class Users {
     if (header == null) {
       return;
     }
-    
+
     int size = openSessions.size();
 
     if (getSizeBadge() == null) {
@@ -429,7 +429,7 @@ public class Users {
 
       header.add(badge);
       setSizeBadge(badge);
-    
+
     } else if (initial) {
       getSizeBadge().setValue(size);
 

@@ -20,5 +20,6 @@
     <Relation name="CargoRequest" relation="CargoRequests" label="=trRequest" cascade="DELETE" />
     <Relation name="Discussion" relation="Discussions" label="=discussion" cascade="DELETE" />
     <Relation name="ServiceObject" relation="ServiceObjects" label="=svcObject" cascade="DELETE" />
+    <Relation name="Message" relation="Messages" label="=mailMessage" cascade="DELETE" editable="true" />
   </Fields>
 </Table>

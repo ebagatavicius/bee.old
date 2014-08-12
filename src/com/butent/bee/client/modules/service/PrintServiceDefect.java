@@ -24,7 +24,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.List;
 
 public class PrintServiceDefect extends AbstractFormInterceptor {
-  
+
   private static final String STYLE_PREFIX = ServiceKeeper.STYLE_PREFIX + "print-defect-";
 
   private static final String STYLE_ITEMS_HEADER = STYLE_PREFIX + "items-header";
@@ -41,7 +41,7 @@ public class PrintServiceDefect extends AbstractFormInterceptor {
 
   private static final String STYLE_ITEMS_TOTAL_LABEL = STYLE_PREFIX + "items-total-label";
   private static final String STYLE_ITEMS_TOTAL_VALUE = STYLE_PREFIX + "items-total-value";
-  
+
   private static final int COL_ORDINAL = 0;
   private static final int COL_NAME = 1;
   private static final int COL_ARTICLE = 2;
@@ -57,7 +57,7 @@ public class PrintServiceDefect extends AbstractFormInterceptor {
       ClassifierUtils.getCompanyInfo(company, widget);
     }
   }
-  
+
   private final List<? extends IsRow> items;
 
   PrintServiceDefect(List<? extends IsRow> items) {
@@ -69,13 +69,13 @@ public class PrintServiceDefect extends AbstractFormInterceptor {
     if (form != null && row != null) {
       getCompanyInfo(form, row, COL_DEFECT_SUPPLIER);
       getCompanyInfo(form, row, COL_SERVICE_CUSTOMER);
-      
+
       Widget widget = form.getWidgetByName(VIEW_SERVICE_DEFECT_ITEMS);
-      
+
       if (widget instanceof HtmlTable && !BeeUtils.isEmpty(items)) {
         int index = form.getDataIndex(AdministrationConstants.ALS_CURRENCY_NAME);
         String currencyName = row.getString(index);
-        
+
         renderItems((HtmlTable) widget, currencyName);
       }
     }
@@ -85,14 +85,14 @@ public class PrintServiceDefect extends AbstractFormInterceptor {
   public FormInterceptor getInstance() {
     return this;
   }
-  
+
   private void renderItems(HtmlTable table, String currencyName) {
     if (!table.isEmpty()) {
       table.clear();
     }
-    
+
     int r = 0;
-    
+
     table.setText(r, COL_ORDINAL, Localized.getConstants().ordinal(),
         STYLE_ITEMS_HEADER, STYLE_ITEM_ORDINAL);
     table.setText(r, COL_NAME, Localized.getConstants().svcDefectPrintItemLabel(),
@@ -105,7 +105,7 @@ public class PrintServiceDefect extends AbstractFormInterceptor {
         STYLE_ITEMS_HEADER, STYLE_ITEM_QUANTITY);
     table.setText(r, COL_PRICE, BeeUtils.joinWords(Localized.getConstants().price(), currencyName),
         STYLE_ITEMS_HEADER, STYLE_ITEM_PRICE);
-    
+
     int nameIndex = Data.getColumnIndex(VIEW_SERVICE_DEFECT_ITEMS, ALS_DEFECT_ITEM_NAME);
     int articleIndex = Data.getColumnIndex(VIEW_SERVICE_DEFECT_ITEMS,
         ClassifierConstants.COL_ITEM_ARTICLE);
@@ -114,16 +114,16 @@ public class PrintServiceDefect extends AbstractFormInterceptor {
         TradeConstants.COL_TRADE_ITEM_QUANTITY);
     int priceIndex = Data.getColumnIndex(VIEW_SERVICE_DEFECT_ITEMS,
         TradeConstants.COL_TRADE_ITEM_PRICE);
-    
+
     NumberFormat priceFormat = Format.getDefaultCurrencyFormat();
-    
+
     double total = BeeConst.DOUBLE_ZERO;
-    
+
     for (IsRow item : items) {
       r++;
-      
+
       table.setValue(r, COL_ORDINAL, r, STYLE_ITEMS_BODY, STYLE_ITEM_ORDINAL);
-      
+
       table.setText(r, COL_NAME, item.getString(nameIndex),
           STYLE_ITEMS_BODY, STYLE_ITEM_NAME);
       table.setText(r, COL_ARTICLE, item.getString(articleIndex),
@@ -133,15 +133,15 @@ public class PrintServiceDefect extends AbstractFormInterceptor {
           STYLE_ITEMS_BODY, STYLE_ITEM_UNIT);
       table.setText(r, COL_QUANTITY, item.getString(quantityIndex),
           STYLE_ITEMS_BODY, STYLE_ITEM_QUANTITY);
-      
+
       double price = BeeUtils.unbox(item.getDouble(priceIndex));
       table.setText(r, COL_PRICE, priceFormat.format(price), STYLE_ITEMS_BODY, STYLE_ITEM_PRICE);
-      
+
       total += BeeUtils.unbox(item.getDouble(quantityIndex)) * price;
     }
-    
+
     r++;
-    
+
     table.setText(r, COL_QUANTITY, Localized.getConstants().total(),
         STYLE_ITEMS_FOOTER, STYLE_ITEMS_TOTAL_LABEL);
 

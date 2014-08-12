@@ -41,7 +41,7 @@ public class MetaDataBean {
   public ResponseObject doService(String svc, BeeDataSource ds, RequestInfo reqInfo) {
     Assert.notEmpty(svc);
     Assert.notNull(ds);
-    
+
     ResponseObject response;
 
     if (BeeUtils.same(svc, Service.DB_PING)) {
@@ -49,28 +49,28 @@ public class MetaDataBean {
 
     } else if (BeeUtils.same(svc, Service.DB_INFO)) {
       response = dbInfo(ds, reqInfo);
-    
+
     } else if (BeeUtils.same(svc, Service.DB_TABLES)) {
       response = getTables(ds, reqInfo);
-    
+
     } else if (BeeUtils.same(svc, Service.DB_KEYS)) {
       response = getKeys(ds, reqInfo, true);
-    
+
     } else if (BeeUtils.same(svc, Service.DB_PRIMARY)) {
       response = getKeys(ds, reqInfo, false);
-    
+
     } else {
       String msg = BeeUtils.joinWords(svc, "meta data service not recognized");
       logger.warning(msg);
       response = ResponseObject.error(msg);
     }
-    
-    return response; 
+
+    return response;
   }
 
   private static ResponseObject dbInfo(BeeDataSource ds, RequestInfo reqInfo) {
     ResponseObject response = new ResponseObject();
-    
+
     List<ExtendedProperty> prp = null;
     boolean ok = true;
 
@@ -121,26 +121,26 @@ public class MetaDataBean {
     } catch (JdbcException ex) {
       logger.error(ex);
       response = ResponseObject.error(ex);
-    
+
     } catch (SQLException ex) {
       logger.error(ex);
       response = ResponseObject.error(ex);
     }
-    
+
     return response;
   }
 
   private ResponseObject getTables(BeeDataSource ds, RequestInfo reqInfo) {
     String catalog = reqInfo.getParameter(Service.VAR_CATALOG);
     String schema = reqInfo.getParameter(Service.VAR_SCHEMA);
-    
+
     String table = reqInfo.getParameter(Service.VAR_TABLE);
     String type = reqInfo.getParameter(Service.VAR_TYPE);
-    
+
     boolean check = reqInfo.hasParameter(Service.VAR_CHECK);
-    
+
     ResponseObject response;
-    
+
     try {
       DatabaseMetaData md = ds.getDbMd();
       ResultSet rs = md.getTables(null, null, null, null);
@@ -156,42 +156,42 @@ public class MetaDataBean {
       logger.error(ex);
       response = ResponseObject.error(ex);
     }
-    
+
     if (!response.hasErrors() && response.hasResponse(BeeRowSet.class)
         && !DataUtils.isEmpty((BeeRowSet) response.getResponse())) {
-      
+
       if (BeeUtils.anyNotEmpty(catalog, schema, table, type) || check) {
         BeeRowSet tables = filterTables((BeeRowSet) response.getResponse(),
             catalog, schema, table, type, check);
-        
+
         if (DataUtils.isEmpty(tables)) {
-          response = ResponseObject.warning("no tables found"); 
+          response = ResponseObject.warning("no tables found");
         } else {
           response = ResponseObject.response(tables);
         }
       }
     }
-    
+
     return response;
   }
-  
+
   private BeeRowSet filterTables(BeeRowSet input, String catalog, String schema, String name,
       String type, boolean checkDescription) {
-    
+
     int catIndex = 0;
     int schIndex = 1;
     int nameIndex = 2;
     int typeIndex = 3;
-    
+
     boolean catCheck = !BeeUtils.isEmpty(catalog);
     boolean schCheck = !BeeUtils.isEmpty(schema);
     boolean nameCheck = !BeeUtils.isEmpty(name);
     boolean typeCheck = !BeeUtils.isEmpty(type);
-    
+
     List<String> tableNames = checkDescription ? sys.getTableNames() : null;
 
     BeeRowSet result = new BeeRowSet(input.getColumns());
-    
+
     for (BeeRow row : input) {
       if (catCheck && !BeeUtils.same(row.getString(catIndex), catalog)) {
         continue;
@@ -205,7 +205,7 @@ public class MetaDataBean {
       if (typeCheck && !BeeUtils.same(row.getString(typeIndex), type)) {
         continue;
       }
-      
+
       if (checkDescription && tableNames.contains(row.getString(nameIndex))) {
         continue;
       }

@@ -13,16 +13,15 @@ public class Summary extends CustomHasHtml {
     this();
     setHtml(text);
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "summary";
   }
-  
+
   @Override
   protected void init() {
     super.init();
     addStyleName("bee-Summary");
   }
 }
-

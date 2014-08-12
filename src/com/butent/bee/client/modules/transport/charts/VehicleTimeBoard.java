@@ -710,7 +710,7 @@ abstract class VehicleTimeBoard extends ChartBase {
           if (itemWidget != null) {
             Rectangle rectangle = getRectangle(item.getRange(), rowIndex + i);
             TimeBoardHelper.apply(itemWidget, rectangle, margins);
-            
+
             styleItemWidget(item, itemWidget);
             if (opacity != null) {
               StyleUtils.setOpacity(itemWidget, opacity);
@@ -825,7 +825,7 @@ abstract class VehicleTimeBoard extends ChartBase {
     panel.setTitle(freight.getCargoAndTripTitle());
 
     bindOpener(panel, VIEW_ORDER_CARGO, freight.getCargoId());
-    
+
     if (freight.isEditable()) {
       DndHelper.makeSource(panel, DATA_TYPE_FREIGHT, freight, STYLE_FREIGHT_DRAG);
       freight.makeTarget(panel, STYLE_FREIGHT_DRAG_OVER);

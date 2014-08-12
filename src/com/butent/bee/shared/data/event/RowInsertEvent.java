@@ -24,14 +24,14 @@ public class RowInsertEvent extends ModificationEvent<RowInsertEvent.Handler> im
     void onRowInsert(RowInsertEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static void fire(FiresModificationEvents eventManager, String viewName, BeeRow row,
       String sourceId) {
     Assert.notNull(eventManager);
     Assert.notEmpty(viewName);
     Assert.notNull(row);
-    
+
     eventManager.fireModificationEvent(new RowInsertEvent(viewName, row, sourceId),
         Locality.ENTANGLED);
   }
@@ -45,7 +45,7 @@ public class RowInsertEvent extends ModificationEvent<RowInsertEvent.Handler> im
 
   private String viewName;
   private BeeRow row;
-  
+
   private transient String sourceId;
 
   private RowInsertEvent(String viewName, BeeRow row, String sourceId) {
@@ -53,7 +53,7 @@ public class RowInsertEvent extends ModificationEvent<RowInsertEvent.Handler> im
     this.row = row;
     this.sourceId = sourceId;
   }
-  
+
   RowInsertEvent() {
   }
 
@@ -61,7 +61,7 @@ public class RowInsertEvent extends ModificationEvent<RowInsertEvent.Handler> im
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
-    
+
     this.viewName = arr[0];
     this.row = BeeRow.restore(arr[1]);
   }
@@ -70,7 +70,7 @@ public class RowInsertEvent extends ModificationEvent<RowInsertEvent.Handler> im
   public Type<Handler> getAssociatedType() {
     return TYPE;
   }
-  
+
   @Override
   public Kind getKind() {
     return Kind.INSERT;
@@ -84,7 +84,7 @@ public class RowInsertEvent extends ModificationEvent<RowInsertEvent.Handler> im
   public long getRowId() {
     return getRow().getId();
   }
-  
+
   public String getSourceId() {
     return sourceId;
   }
@@ -101,7 +101,7 @@ public class RowInsertEvent extends ModificationEvent<RowInsertEvent.Handler> im
   public boolean hasSourceId(String id) {
     return !BeeUtils.isEmpty(id) && BeeUtils.same(id, getSourceId());
   }
-  
+
   @Override
   public boolean hasView(String view) {
     return !BeeUtils.isEmpty(getViewName()) && BeeUtils.same(view, getViewName());

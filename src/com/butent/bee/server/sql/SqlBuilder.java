@@ -44,7 +44,7 @@ public abstract class SqlBuilder {
    * Generates an SQL CREATE query from the specified argument {@code sc}. There are two ways to
    * generate the query. First: by defining a {@code  dataSource}. Second: describing the fields
    * manually. Only one at an instance of the SqlCreate object is possible.
-   * 
+   *
    * @param sc the SqlCreate object
    * @return a generated SQL CREATE query
    */
@@ -73,9 +73,13 @@ public abstract class SqlBuilder {
           query.append(", ");
         }
         SqlField field = fieldList.get(i);
-        query.append(SqlUtils.name(field.getName()).getSqlString(this))
-            .append(" ").append(sqlType(field.getType(), field.getPrecision(), field.getScale()));
+        query.append(SqlUtils.name(field.getName()).getSqlString(this)).append(" ");
 
+        if (!BeeUtils.isEmpty(field.getExpression())) {
+          query.append(field.getExpression());
+        } else {
+          query.append(sqlType(field.getType(), field.getPrecision(), field.getScale()));
+        }
         if (field.isNotNull()) {
           query.append(" NOT NULL");
         }
@@ -88,7 +92,7 @@ public abstract class SqlBuilder {
   /**
    * Generates an SQL DELETE query from the specified argument {@code sd}. {@code sd} must have From
    * and Where conditions set.
-   * 
+   *
    * @param sd the SqlDelete object to use for generating
    * @return a generated SQL DELETE query
    */
@@ -112,7 +116,7 @@ public abstract class SqlBuilder {
    * Generates an SQL INSERT query from the specified argument {@code si}. There are two ways to
    * generate the query. First: by defining a {@code  dataSource}. Second: describing the fields
    * manually. Only one at an instance of the SqlInsert object is possible.
-   * 
+   *
    * @param si the SqlInsert object
    * @return a generated SQL INSERT query
    */
@@ -189,7 +193,7 @@ public abstract class SqlBuilder {
   /**
    * Generates an SQL SELECT query from the specified argument {@code ss}. From value must be
    * defined in order to generate the query.
-   * 
+   *
    * @param ss the SqlSelect object
    * @return a generated SQL SELECT query
    */
@@ -278,7 +282,9 @@ public abstract class SqlBuilder {
             ? SqlUtils.name(orderEntry[SqlSelect.ORDER_FLD])
             : SqlUtils.field(src, orderEntry[SqlSelect.ORDER_FLD]);
 
-        query.append(order.getSqlString(this)).append(orderEntry[SqlSelect.ORDER_DESC]);
+        query.append(order.getSqlString(this))
+            .append(orderEntry[SqlSelect.ORDER_DESC])
+            .append(orderEntry[SqlSelect.ORDER_NULLS]);
       }
     }
     return query.toString();
@@ -312,7 +318,7 @@ public abstract class SqlBuilder {
   /**
    * Generates an SQL UPDATE query from the specified argument {@code su}. A target table and at
    * least one expression must be defined.
-   * 
+   *
    * @param su the SqlUpdate object.
    * @return a generated SQL UPDATE query
    */
@@ -427,12 +433,16 @@ public abstract class SqlBuilder {
       case ENDS:
       case CONTAINS:
       case MATCHES:
+      case FULL_TEXT:
         boolean matches = operator == Operator.MATCHES;
         value = value.replace("|", "||").replace("%", "|%").replace("_", "|_");
 
         if (matches) {
           value = value.replace(Operator.CHAR_ANY, "%").replace(Operator.CHAR_ONE, "_");
         } else {
+          if (operator == Operator.FULL_TEXT) {
+            value = sqlTransform(value);
+          }
           value = value.replaceFirst("^(" + sqlTransform(")(.*)(") + ")$",
               "$1" + (operator != Operator.STARTS ? "%" : "")
                   + "$2" + (operator != Operator.ENDS ? "%" : "") + "$3");
@@ -600,8 +610,8 @@ public abstract class SqlBuilder {
             "CREATE", isEmpty(params.get("isUnique")) ? "" : "UNIQUE",
             "INDEX", params.get("name"),
             "ON", params.get("table"),
-            BeeUtils.parenthesize(BeeUtils.notEmpty((String) params.get("expression"),
-                (String) params.get("fields"))));
+            BeeUtils.notEmpty((String) params.get("expression"),
+                BeeUtils.parenthesize(params.get("fields"))));
 
       case ADD_CONSTRAINT:
         return BeeUtils.joinWords(

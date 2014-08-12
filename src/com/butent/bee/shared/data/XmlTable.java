@@ -24,12 +24,21 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name = "Table", namespace = DataUtils.TABLE_NAMESPACE)
 public class XmlTable {
 
+  public static abstract class XmlSqlEngine {
+    @XmlElement(name = "PostgreSql", namespace = DataUtils.TABLE_NAMESPACE)
+    public String postgreSql;
+    @XmlElement(name = "MsSql", namespace = DataUtils.TABLE_NAMESPACE)
+    public String msSql;
+    @XmlElement(name = "Oracle", namespace = DataUtils.TABLE_NAMESPACE)
+    public String oracle;
+  }
+
   @XmlSeeAlso({XmlBoolean.class,
       XmlInteger.class, XmlLong.class, XmlDouble.class, XmlNumeric.class,
       XmlChar.class, XmlString.class, XmlText.class, XmlBlob.class,
       XmlDate.class, XmlDateTime.class,
       XmlRelation.class, XmlEnum.class})
-  public abstract static class XmlField {
+  public abstract static class XmlField extends XmlSqlEngine {
     @XmlAttribute
     public String name;
     @XmlAttribute
@@ -151,15 +160,6 @@ public class XmlTable {
   public static class XmlEnum extends XmlField {
     @XmlAttribute
     public String key;
-  }
-
-  public static abstract class XmlSqlEngine {
-    @XmlElement(name = "PostgreSql", namespace = DataUtils.TABLE_NAMESPACE)
-    public String postgreSql;
-    @XmlElement(name = "MsSql", namespace = DataUtils.TABLE_NAMESPACE)
-    public String msSql;
-    @XmlElement(name = "Oracle", namespace = DataUtils.TABLE_NAMESPACE)
-    public String oracle;
   }
 
   @XmlSeeAlso({XmlCheck.class, XmlUnique.class, XmlReference.class})

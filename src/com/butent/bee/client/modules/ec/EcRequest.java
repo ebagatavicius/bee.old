@@ -12,10 +12,10 @@ public class EcRequest {
 
   private final String service;
   private final String label;
-  
+
   private String progressId;
   private int requestId = BeeConst.UNDEF;
-  
+
   public EcRequest(String service, String label) {
     this.service = service;
     this.label = label;
@@ -24,7 +24,7 @@ public class EcRequest {
   public String elapsedMillis() {
     return TimeUtils.elapsedMillis(startTime);
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     return (obj instanceof EcRequest) ? requestId == ((EcRequest) obj).requestId : false;
@@ -46,15 +46,15 @@ public class EcRequest {
   public int hashCode() {
     return requestId;
   }
-  
+
   public boolean hasProgress() {
     return !BeeUtils.isEmpty(getProgressId());
   }
-  
+
   public boolean isValid() {
     return !BeeConst.isUndef(getRequestId());
   }
-  
+
   public boolean sameLabel(String lbl) {
     return BeeUtils.equalsTrim(label, lbl);
   }

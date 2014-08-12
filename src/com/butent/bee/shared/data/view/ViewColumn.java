@@ -16,9 +16,9 @@ import com.butent.bee.shared.utils.PropertyUtils;
 import java.util.List;
 
 public class ViewColumn implements BeeSerializable, HasInfo {
-  
+
   public static final class Level implements Predicate<ViewColumn> {
-    
+
     public static Level of(int level) {
       return new Level(level, null);
     }
@@ -26,7 +26,7 @@ public class ViewColumn implements BeeSerializable, HasInfo {
     public static Level of(Range<Integer> range) {
       return (range == null) ? null : new Level(BeeConst.UNDEF, range);
     }
-    
+
     private final int level;
     private final Range<Integer> range;
 
@@ -57,7 +57,7 @@ public class ViewColumn implements BeeSerializable, HasInfo {
       return (input == null) ? false : !input.isHidden();
     }
   };
-  
+
   public static ViewColumn restore(String s) {
     if (BeeUtils.isEmpty(s)) {
       return null;
@@ -67,16 +67,16 @@ public class ViewColumn implements BeeSerializable, HasInfo {
     vc.deserialize(s);
     return vc;
   }
-  
+
   private String name;
   private String parent;
 
   private String table;
   private String field;
-  
+
   private String relation;
   private int level;
-  
+
   private boolean hidden;
   private boolean readOnly;
 
@@ -151,7 +151,7 @@ public class ViewColumn implements BeeSerializable, HasInfo {
     }
     return BeeUtils.same(getName(), ((ViewColumn) obj).getName());
   }
-  
+
   public Boolean getEditable() {
     return editable;
   }
@@ -187,7 +187,7 @@ public class ViewColumn implements BeeSerializable, HasInfo {
   public String getTable() {
     return table;
   }
-  
+
   @Override
   public int hashCode() {
     return BeeUtils.normalize(getName()).hashCode();

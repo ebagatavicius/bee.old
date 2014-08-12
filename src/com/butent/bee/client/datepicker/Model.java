@@ -14,7 +14,7 @@ class Model {
 
   private static final int WEEKEND_START;
   private static final int WEEKEND_END;
-  
+
   private static final String[] DAY_OF_WEEK_NAMES;
   private static final String[] DAY_OF_MONTH_NAMES;
 
@@ -23,19 +23,19 @@ class Model {
     WEEKEND_START = (info.weekendStart() + 5) % 7 + 1;
     WEEKEND_END = (info.weekendEnd() + 5) % 7 + 1;
 
-    DAY_OF_WEEK_NAMES = new String[7]; 
+    DAY_OF_WEEK_NAMES = new String[7];
     String[] arr = ArrayUtils.copyOf(info.weekdaysNarrow());
     for (int i = 1; i < arr.length; i++) {
       DAY_OF_WEEK_NAMES[i - 1] = arr[i];
     }
     DAY_OF_WEEK_NAMES[6] = arr[0];
-    
+
     DAY_OF_MONTH_NAMES = new String[31];
     for (int i = 0; i < DAY_OF_MONTH_NAMES.length; ++i) {
       DAY_OF_MONTH_NAMES[i] = Integer.toString(i + 1);
     }
   }
-  
+
   static String formatDayOfMonth(JustDate date) {
     return DAY_OF_MONTH_NAMES[date.getDom() - 1];
   }
@@ -47,7 +47,7 @@ class Model {
   static boolean isWeekend(int dow) {
     return dow == WEEKEND_START || dow == WEEKEND_END;
   }
-  
+
   private final YearMonth currentMonth;
 
   Model(JustDate date) {

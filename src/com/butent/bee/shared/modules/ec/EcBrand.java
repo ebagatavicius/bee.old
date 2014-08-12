@@ -19,7 +19,7 @@ public class EcBrand implements BeeSerializable {
 
   private long id;
   private String name;
-  
+
   private boolean selected;
 
   public EcBrand(long id, String name) {
@@ -48,7 +48,7 @@ public class EcBrand implements BeeSerializable {
         case NAME:
           setName(value);
           break;
-        
+
         case SELECTED:
           setSelected(Codec.unpack(value));
           break;
@@ -83,7 +83,7 @@ public class EcBrand implements BeeSerializable {
         case NAME:
           arr[i++] = getName();
           break;
-          
+
         case SELECTED:
           arr[i++] = Codec.pack(isSelected());
           break;
@@ -104,4 +104,3 @@ public class EcBrand implements BeeSerializable {
     this.name = name;
   }
 }
-

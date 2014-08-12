@@ -18,7 +18,7 @@ public final class AutocompleteEvent extends GwtEvent<AutocompleteEvent.Handler>
     void onDataSelector(AutocompleteEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static void fire(Autocomplete selector, State state) {
     fireEvent(selector, new AutocompleteEvent(state));

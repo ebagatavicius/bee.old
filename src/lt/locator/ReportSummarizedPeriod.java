@@ -227,7 +227,7 @@ public class ReportSummarizedPeriod {
      */
     public List<TripSumRepData> getTripSummaryByCountries() {
         if (tripSummaryByCountries == null) {
-            tripSummaryByCountries = new ArrayList<TripSumRepData>();
+            tripSummaryByCountries = new ArrayList<>();
         }
         return this.tripSummaryByCountries;
     }
@@ -256,7 +256,7 @@ public class ReportSummarizedPeriod {
      */
     public List<TripSumRepData> getTripSummaryByCountriesGrouped() {
         if (tripSummaryByCountriesGrouped == null) {
-            tripSummaryByCountriesGrouped = new ArrayList<TripSumRepData>();
+            tripSummaryByCountriesGrouped = new ArrayList<>();
         }
         return this.tripSummaryByCountriesGrouped;
     }
@@ -285,7 +285,7 @@ public class ReportSummarizedPeriod {
      */
     public List<TripSumRepData> getTripSummaryByDays() {
         if (tripSummaryByDays == null) {
-            tripSummaryByDays = new ArrayList<TripSumRepData>();
+            tripSummaryByDays = new ArrayList<>();
         }
         return this.tripSummaryByDays;
     }

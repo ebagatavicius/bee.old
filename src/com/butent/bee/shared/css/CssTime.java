@@ -5,9 +5,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 public enum CssTime implements HasCaption {
   S("s"), MS("ms");
-  
-  public static final CssTime DEFAULT = MS; 
-  
+
+  public static final CssTime DEFAULT = MS;
+
   public static String format(double value, CssTime time) {
     return BeeUtils.toString(value) + normalize(time).getCaption();
   }
@@ -15,11 +15,11 @@ public enum CssTime implements HasCaption {
   public static String format(int value, CssTime time) {
     return BeeUtils.toString(value) + normalize(time).getCaption();
   }
-  
+
   public static CssTime normalize(CssTime time) {
     return (time == null) ? DEFAULT : time;
   }
-  
+
   public static CssTime parse(String input) {
     if (BeeUtils.isEmpty(input)) {
       return null;
@@ -32,11 +32,11 @@ public enum CssTime implements HasCaption {
     }
     return null;
   }
-  
+
   public static CssTime parse(String input, CssTime defTime) {
     return BeeUtils.nvl(parse(input), defTime);
   }
-  
+
   private final String caption;
 
   private CssTime(String caption) {

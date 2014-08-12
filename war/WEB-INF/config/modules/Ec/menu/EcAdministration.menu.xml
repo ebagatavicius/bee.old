@@ -15,7 +15,6 @@ module="Ec.Administration"
     separator="true" />
 
   <Item name="Branches" label="=branches" service="grid" parameters="Branches" separator="true" />
-  <Item name="Warehouses" label="=warehouses" service="grid" parameters="Warehouses" />
 
   <Item name="TermsOfDelivery" label="=ecTermsOfDelivery" service="edit_terms_of_delivery"
     separator="true" />

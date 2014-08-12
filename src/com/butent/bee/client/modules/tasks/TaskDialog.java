@@ -17,7 +17,6 @@ import com.butent.bee.client.event.DndTarget;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.UiHelper;
-import com.butent.bee.client.utils.NewFileInfo;
 import com.butent.bee.client.view.edit.SimpleEditorHandler;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.Image;
@@ -27,6 +26,7 @@ import com.butent.bee.client.widget.InputTime;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -225,7 +225,7 @@ class TaskDialog extends DialogBox {
     }
   }
 
-  List<NewFileInfo> getFiles(String id) {
+  List<FileInfo> getFiles(String id) {
     Widget child = getChild(id);
     if (child instanceof FileCollector) {
       return ((FileCollector) child).getFiles();

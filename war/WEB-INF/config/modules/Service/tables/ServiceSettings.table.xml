@@ -7,6 +7,9 @@
   <Fields>
     <Relation name="User" notNull="true" relation="Users" cascade="DELETE" unique="true" />
 
+    <Date name="CalendarMinDate" label="=dateFrom" />
+    <Date name="CalendarMaxDate" label="=dateTo" />
+
     <Enum name="CalendarCompanyKind" key="ServiceCompanyKind" label="=company" />
 
     <Integer name="CalendarPixelsPerCompany" label="=svcCalendarPixelsPerCompany" />
@@ -19,6 +22,8 @@
 
     <Integer name="CalendarHeaderHeight" label="=timeboardHeaderHeight" />
     <Integer name="CalendarFooterHeight" label="=timeboardFooterHeight" />
+
+    <Boolean name="CalendarFooterMap" label="=timeboardFooterMap" />
 
     <Integer name="CalendarItemOpacity" label="=timeboardItemOpacity" />
     <Integer name="CalendarStripOpacity" label="=timeboardStripOpacity" />

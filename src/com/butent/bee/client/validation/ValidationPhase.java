@@ -6,7 +6,7 @@ public enum ValidationPhase {
   public boolean isPostValidation() {
     return POST == this;
   }
-  
+
   public boolean isPreValidation() {
     return PRE == this;
   }

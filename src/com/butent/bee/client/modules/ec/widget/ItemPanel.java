@@ -139,7 +139,7 @@ public class ItemPanel extends Flow implements SelectionHandler<TreeItem> {
         millis = System.currentTimeMillis();
       }
     }
-    
+
     Flow brandsAndItems = new Flow(EcStyles.name(STYLE_BRANDS_AND_ITEMS, STYLE_WRAPPER));
 
     if (showBrands) {

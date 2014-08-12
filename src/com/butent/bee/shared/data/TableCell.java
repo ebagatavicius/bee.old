@@ -72,7 +72,7 @@ public class TableCell implements IsCell {
       properties.remove(key);
     }
   }
-  
+
   @Override
   public void clearValue() {
     setValue(Value.getNullValueFromValueType(getType()));

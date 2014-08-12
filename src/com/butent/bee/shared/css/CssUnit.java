@@ -19,13 +19,13 @@ public enum CssUnit implements HasCaption {
   VH("vh", Type.VIEWPORT_PERCENTAGE),
   VMIN("vmin", Type.VIEWPORT_PERCENTAGE),
   VMAX("vmax", Type.VIEWPORT_PERCENTAGE);
-  
+
   public enum Type {
     ABSOLUTE, FONT_RELATIVE, VIEWPORT_PERCENTAGE, CONTAINER_PERCENTAGE
   }
-  
+
   public static final CssUnit DEFAULT = PX;
-  
+
   public static String format(double value, CssUnit unit) {
     return BeeUtils.toString(value) + normalize(unit).getCaption();
   }
@@ -33,11 +33,11 @@ public enum CssUnit implements HasCaption {
   public static String format(int value, CssUnit unit) {
     return BeeUtils.toString(value) + normalize(unit).getCaption();
   }
-  
+
   public static CssUnit normalize(CssUnit unit) {
     return (unit == null) ? DEFAULT : unit;
   }
-  
+
   public static CssUnit parse(String input) {
     if (BeeUtils.isEmpty(input)) {
       return null;
@@ -50,11 +50,11 @@ public enum CssUnit implements HasCaption {
     }
     return null;
   }
-  
+
   public static CssUnit parse(String input, CssUnit defUnit) {
     return BeeUtils.nvl(parse(input), defUnit);
   }
-  
+
   private final String caption;
   private final Type type;
 
@@ -71,8 +71,8 @@ public enum CssUnit implements HasCaption {
   public Type getType() {
     return type;
   }
-  
+
   public boolean isPercentage() {
-    return type == Type.CONTAINER_PERCENTAGE || type == Type.VIEWPORT_PERCENTAGE; 
+    return type == Type.CONTAINER_PERCENTAGE || type == Type.VIEWPORT_PERCENTAGE;
   }
 }

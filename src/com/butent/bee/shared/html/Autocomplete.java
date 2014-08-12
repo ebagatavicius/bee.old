@@ -45,13 +45,13 @@ public class Autocomplete {
   public static final String FIELD_SEX = "sex";
   public static final String FIELD_URL = "url";
   public static final String FIELD_PHOTO = "photo";
-  
+
   public static final String CONTACT_HOME = "home";
   public static final String CONTACT_WORK = "work";
   public static final String CONTACT_MOBILE = "mobile";
   public static final String CONTACT_FAX = "fax";
   public static final String CONTACT_PAGER = "pager";
-  
+
   public static final String CONTACT_FIELD_TEL = "tel";
   public static final String CONTACT_FIELD_TEL_COUNTRY_CODE = "tel-country-code";
   public static final String CONTACT_FIELD_TEL_NATIONAL = "tel-national";
@@ -62,14 +62,14 @@ public class Autocomplete {
   public static final String CONTACT_FIELD_TEL_EXTENSION = "tel-extension";
   public static final String CONTACT_FIELD_EMAIL = "email";
   public static final String CONTACT_FIELD_IMPP = "impp";
-  
+
   private static final char SEPARATOR = ' ';
 
   private static final String SECTION_PREFIX = "section-";
 
   private static final String SHIPPING = "shipping";
   private static final String BILLING = "billing";
-  
+
   private String section;
   private String hint;
   private String contact;
@@ -78,14 +78,14 @@ public class Autocomplete {
   public Autocomplete() {
     super();
   }
-  
+
   public Autocomplete billing() {
     return hint(BILLING);
   }
 
   public String build() {
     StringBuilder sb = new StringBuilder();
-    
+
     if (!BeeUtils.isEmpty(getSection())) {
       sb.append(SECTION_PREFIX + section.trim());
     }
@@ -110,7 +110,7 @@ public class Autocomplete {
       }
       sb.append(getField().trim());
     }
-    
+
     return (sb.length() > 0) ? sb.toString() : null;
   }
 

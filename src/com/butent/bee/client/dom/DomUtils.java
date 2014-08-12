@@ -1,7 +1,5 @@
 package com.butent.bee.client.dom;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.ButtonElement;
@@ -25,8 +23,6 @@ import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableElement;
 import com.google.gwt.dom.client.TableRowElement;
-import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
@@ -108,11 +104,6 @@ public final class DomUtils {
     }
   }
 
-  public static void clearTitle(UIObject obj) {
-    Assert.notNull(obj);
-    obj.setTitle(null);
-  }
-
   public static Element createButton(String html) {
     ButtonElement elem = Document.get().createPushButtonElement();
     if (!BeeUtils.isEmpty(html)) {
@@ -151,18 +142,22 @@ public final class DomUtils {
     return (DtElement) createElement(DtElement.TAG);
   }
 
+//@formatter:off
   public static native Element createElement(Document doc, String tag) /*-{
     return doc.createElement(tag);
   }-*/;
+//@formatter:on
 
   public static Element createElement(String tag) {
     Assert.notEmpty(tag);
     return createElement(Document.get(), tag);
   }
 
+//@formatter:off
   public static native Element createElementNs(Document doc, String ns, String tag) /*-{
     return doc.createElementNS(ns, tag);
   }-*/;
+//@formatter:on
 
   public static Element createElementNs(String ns, String tag) {
     Assert.notEmpty(ns);
@@ -278,15 +273,6 @@ public final class DomUtils {
     return !BeeUtils.isEmpty(value) && BeeUtils.same(getDataProperty(elem, key), value);
   }
 
-  public static void enableChildren(HasWidgets parent, boolean enabled) {
-    Assert.notNull(parent);
-    for (Widget child : parent) {
-      if (child instanceof HasEnabled) {
-        ((HasEnabled) child).setEnabled(enabled);
-      }
-    }
-  }
-
   public static String ensureId(Element elem, String prefix) {
     Assert.notNull(elem);
 
@@ -302,45 +288,11 @@ public final class DomUtils {
     return ensureId(obj.getElement(), prefix);
   }
 
-  public static boolean focus(UIObject obj) {
-    if (obj instanceof Focusable && isEnabled(obj) && isVisible(obj)) {
-      ((Focusable) obj).setFocus(true);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
+//@formatter:off
   public static native Element getActiveElement() /*-{
     return $doc.activeElement;
   }-*/;
-
-  public static List<String> getAncestry(Widget w) {
-    Assert.notNull(w);
-    List<String> lst = new ArrayList<>();
-
-    Widget p = w.getParent();
-    if (p == null) {
-      return lst;
-    }
-
-    for (int i = 0; i < MAX_GENERATIONS; i++) {
-      lst.add(BeeUtils.joinWords(transformClass(p), p.getElement().getId(), p.getStyleName()));
-
-      p = p.getParent();
-      if (p == null) {
-        break;
-      }
-    }
-    return lst;
-  }
-
-  public static String getAttribute(UIObject obj, String name) {
-    Assert.notNull(obj);
-    Assert.notEmpty(name);
-
-    return obj.getElement().getAttribute(name);
-  }
+//@formatter:on
 
   public static String getAutocomplete(Element elem) {
     Assert.notNull(elem);
@@ -425,7 +377,7 @@ public final class DomUtils {
       return root;
     }
 
-    Widget ret = null;
+    Widget ret = root;
     Widget found;
     for (Widget child : (HasWidgets) root) {
       found = getChildByElement(child, elem);
@@ -512,9 +464,10 @@ public final class DomUtils {
     return lst;
   }
 
+//@formatter:off
   public static native String getClassName(Element elem) /*-{
     var cl = elem.className;
-    
+
     if (typeof cl == 'string') {
       return cl;
     } else if (cl instanceof SVGAnimatedString) {
@@ -523,6 +476,7 @@ public final class DomUtils {
       return '';
     }
   }-*/;
+//@formatter:on
 
   public static int getClientHeight() {
     return Document.get().getClientHeight();
@@ -645,7 +599,7 @@ public final class DomUtils {
 
   public static List<Element> getElementsByAttributeValueUsingCollectionFilters(Element root,
       String name, String value, Collection<Element> exclude, Collection<Element> cutoff) {
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
     if (root == null || BeeUtils.isEmpty(name)) {
       return result;
     }
@@ -670,9 +624,11 @@ public final class DomUtils {
     return result;
   }
 
+//@formatter:off
   public static native NodeList<Element> getElementsByName(String name) /*-{
     return $doc.getElementsByName(name);
   }-*/;
+//@formatter:on
 
   public static Element getFirstVisibleChild(Element parent) {
     if (parent == null) {
@@ -803,14 +759,11 @@ public final class DomUtils {
     return ret;
   }
 
-  public static String getName(Element elem) {
-    Assert.notNull(elem);
-    return elem.getPropertyString(Attributes.NAME);
-  }
-
+//@formatter:off
   public static native String getNamespaceUri(Node nd) /*-{
     return nd.namespaceURI;
   }-*/;
+//@formatter:on
 
   public static List<Property> getNodeInfo(Node nd) {
     Assert.notNull(nd);
@@ -839,6 +792,7 @@ public final class DomUtils {
         + ComputedStyles.getPixels(elem, StyleUtils.STYLE_MARGIN_BOTTOM);
   }
 
+//@formatter:off
   public static native String getOuterHtml(Element elem) /*-{
     if (elem == null) {
       return "";
@@ -858,6 +812,7 @@ public final class DomUtils {
 
     return new XMLSerializer().serializeToString(elem);
   }-*/;
+//@formatter:on
 
   public static int getOuterWidth(Element elem) {
     Assert.notNull(elem);
@@ -1013,10 +968,6 @@ public final class DomUtils {
     return top;
   }
 
-  public static String getRole(Element el) {
-    return Assert.notNull(el).getAttribute(ATTRIBUTE_ROLE);
-  }
-
   public static int getRowSpan(Element elem) {
     if (isTableCellElement(elem)) {
       return elem.getPropertyInt(Attributes.ROW_SPAN);
@@ -1037,21 +988,6 @@ public final class DomUtils {
       calculateScrollBarSize();
     }
     return scrollBarWidth;
-  }
-
-  public static List<Widget> getSiblings(Widget w) {
-    Assert.notNull(w);
-
-    Widget p = w.getParent();
-    if (!(p instanceof HasWidgets)) {
-      return null;
-    }
-
-    List<Widget> sib = new ArrayList<>();
-    for (Widget c : (HasWidgets) p) {
-      sib.add(c);
-    }
-    return sib;
   }
 
   public static int getTabIndex(Element el) {
@@ -1181,7 +1117,7 @@ public final class DomUtils {
   }
 
   public static List<Element> getVisibleChildren(Element parent) {
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
     if (parent == null) {
       return result;
     }
@@ -1196,13 +1132,7 @@ public final class DomUtils {
   }
 
   public static Widget getWidget(String id) {
-    Widget root = BeeKeeper.getScreen().getScreenPanel();
-    return (root == null) ? null : getPhysicalChild(root, id);
-  }
-
-  public static int getWidgetCount(HasWidgets container) {
-    Assert.notNull(container);
-    return Iterables.size(container);
+    return getPhysicalChild(BodyPanel.get(), id);
   }
 
   public static List<ExtendedProperty> getWidgetExtendedInfo(Widget w, String prefix) {
@@ -1297,24 +1227,8 @@ public final class DomUtils {
     return isChecked(obj.getElement());
   }
 
-  public static boolean isEmpty(HasWidgets container) {
-    if (container == null) {
-      return true;
-    }
-    return !container.iterator().hasNext();
-  }
-
   public static boolean isEmpty(NodeList<?> nodes) {
     return nodes == null || nodes.getLength() <= 0;
-  }
-
-  public static boolean isEnabled(UIObject obj) {
-    Assert.notNull(obj);
-    if (obj instanceof HasEnabled) {
-      return ((HasEnabled) obj).isEnabled();
-    } else {
-      return true;
-    }
   }
 
   public static boolean isImageElement(JavaScriptObject obj) {
@@ -1967,6 +1881,7 @@ public final class DomUtils {
 
   private static void calculateTextBoxSize() {
     Element elem = Document.get().createTextInputElement();
+    elem.addClassName(StyleUtils.NAME_TEXT_BOX);
 
     BodyPanel.conceal(elem);
 
@@ -1979,9 +1894,11 @@ public final class DomUtils {
     elem.removeFromParent();
   }
 
+//@formatter:off
   private static native void setType(InputElement el, String tp) /*-{
     el.type = tp;
   }-*/;
+//@formatter:on
 
   private static String transformNode(Node nd) {
     if (nd == null) {

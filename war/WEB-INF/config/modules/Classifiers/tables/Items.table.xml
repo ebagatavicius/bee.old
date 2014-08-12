@@ -6,15 +6,43 @@
   >
   <Fields>
     <String name="Name" precision="100" notNull="true" label="=itemName" />
-    <Relation name="Unit" notNull="true" relation="Units" label="=unitName" />
+    <String name="Name2" precision="100" label="=itemName2" />
+
     <String name="Article" precision="30" unique="true" label="=article" />
+    <String name="Article2" precision="30" label="=article2" />
     <String name="Barcode" precision="30" unique="true" label="=itemBarcode" />
+
+    <Relation name="Unit" notNull="true" relation="Units" label="=unit" />
+    <Numeric name="Weight" precision="10" scale="3" label="=weight" />
+
     <Numeric name="Price" precision="15" scale="5" label="=sellingPrice" />
     <Relation name="Currency" relation="Currencies" label="=currency" />
+
+    <Numeric name="Cost" precision="15" scale="5" label="=cost" />
+    <Relation name="CostCurrency" relation="Currencies" label="=costCurrency" />
+
+    <Numeric name="Price1" precision="15" scale="5" label="=price1" />
+    <Relation name="Currency1" relation="Currencies" label="=currency1" />
+    <Numeric name="Price2" precision="15" scale="5" label="=price2" />
+    <Relation name="Currency2" relation="Currencies" label="=currency2" />
+
     <Boolean name="Vat" label="=vat" />
     <Numeric name="VatPercent" precision="3" label="=vatPercent" />
+
     <Boolean name="IsService" label="=service" />
-    <String name="ExternalCode" precision="10" label="ERPCode" />
+
+    <Relation name="Type" relation="CategoryTree" label="=type" />
+    <Relation name="Group" relation="CategoryTree" label="=group" />
+
+    <Relation name="Department" relation="Departments" label="=department" />
+    <Relation name="ActivityType" relation="ActivityTypes" label="=activityType" />
+    <Relation name="CostCenter" relation="CostCenters" label="=costCenter" />
+
+    <Integer name="Ordinal" label="=ordinal" />
+    <String name="ExternalCode" precision="10" label="=externalCode" />
+
+    <Text name="Description" label="=description" />
+    <Text name="Notes" label="=notes" />
   </Fields>
 
   <Indexes>

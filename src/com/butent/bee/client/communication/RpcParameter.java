@@ -24,7 +24,7 @@ public class RpcParameter {
     this.name = name;
     this.value = value;
   }
-  
+
   public RpcParameter copy() {
     return new RpcParameter(getSection(), getName(), getValue());
   }

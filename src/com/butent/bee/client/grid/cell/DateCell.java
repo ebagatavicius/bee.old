@@ -18,7 +18,7 @@ public class DateCell extends AbstractCell<JustDate> implements HasDateTimeForma
   public DateCell() {
     this(null);
   }
-  
+
   public DateCell(DateTimeFormat format) {
     super();
     this.format = format;

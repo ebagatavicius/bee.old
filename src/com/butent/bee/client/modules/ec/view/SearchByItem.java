@@ -16,24 +16,24 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.List;
 
 class SearchByItem extends EcView implements SelectionHandler<InputText> {
-  
+
   private final String service;
   private final String selectorCaption;
-  
+
   private final ItemPanel itemPanel;
 
   SearchByItem(String service, String selectorCaption) {
     super();
     this.service = service;
     this.selectorCaption = selectorCaption;
-    
+
     this.itemPanel = new ItemPanel();
   }
 
   @Override
   public void onSelection(SelectionEvent<InputText> event) {
     itemPanel.clear();
-    
+
     final InputText editor = event.getSelectedItem();
 
     EcKeeper.searchItems(service, BeeUtils.trim(editor.getValue()), new Consumer<List<EcItem>>() {

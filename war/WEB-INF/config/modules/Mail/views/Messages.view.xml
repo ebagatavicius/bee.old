@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="Messages" source="Messages" caption="=mails"
+  editForm="MailMessage"
+  >
+  <Relation renderColumns="Date Subject" newRowEnabled="false" />
+  <Columns>
+    <IdColumn name="Message" />
+    <SimpleColumn name="Date" />
+    <SimpleColumn name="Subject" />
+    <SimpleColumn name="AttachmentCount" />
+
+    <SimpleJoin name="Sender" joinType="LEFT">
+      <SimpleColumn name="Email" alias="SenderEmail" label="=mailSender" />
+    </SimpleJoin>
+
+    <ExternalJoin name="Message" source="Recipients" joinType="LEFT">
+      <AggregateColumn name="Address" alias="RecipientCnt" aggregate="COUNT_DISTINCT" />
+
+      <SimpleJoin name="Address" joinType="LEFT">
+        <HiddenColumn name="Email" alias="RecipientEmail" />
+        <AggregateColumn name="Email" alias="RecipientMin" aggregate="MIN" />
+        <AggregateColumn name="Email" alias="RecipientMax" aggregate="MAX" />
+      </SimpleJoin>
+    </ExternalJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="Date" descending="true" />
+  </Order>
+</View>
+ 

@@ -12,7 +12,7 @@ import java.util.List;
 public final class Paths {
 
   public static final String IMAGE_DIR = "images";
-  
+
   public static final String FILE_ICON_DIR = "fileicons";
   public static final String PHOTO_DIR = "photo";
 
@@ -24,12 +24,12 @@ public final class Paths {
 
   private static final String JS_DIR = "js";
   private static final String JS_EXT = "js";
-  
+
   private static final String LANG_DIR = "lang";
   private static final String LANG_EXT = "png";
 
   private static final String SEGMENT_SEPARATOR = "/";
-  
+
   public static String buildPath(String first, String second, String... rest) {
     List<String> segments = Lists.newArrayList(first, second);
     if (rest != null) {
@@ -37,7 +37,7 @@ public final class Paths {
     }
     return BeeUtils.join(SEGMENT_SEPARATOR, segments);
   }
-  
+
   public static String ensureEndSeparator(String segment) {
     if (BeeUtils.isEmpty(segment)) {
       return segment;
@@ -47,7 +47,7 @@ public final class Paths {
       return segment.trim() + SEGMENT_SEPARATOR;
     }
   }
-  
+
   public static String getFlagPath(String fileName) {
     if (BeeUtils.isEmpty(fileName)) {
       return null;
@@ -63,7 +63,7 @@ public final class Paths {
       return buildPath(IMAGE_DIR, fileName);
     }
   }
-  
+
   public static String getLangIconPath(String fileName) {
     if (BeeUtils.isEmpty(fileName)) {
       return null;
@@ -95,11 +95,11 @@ public final class Paths {
       return CommUtils.addTimeStamp(getStyleSheetPath(fileName), version);
     }
   }
-  
+
   public static boolean isAbsolute(String path) {
     return !BeeUtils.isEmpty(path) && path.startsWith(SEGMENT_SEPARATOR);
   }
-  
+
   private static String normalizePath(String dir, String name, String ext) {
     if (FileNameUtils.hasSeparator(name)) {
       return FileNameUtils.defaultExtension(name, ext);
@@ -107,7 +107,7 @@ public final class Paths {
       return buildPath(dir, FileNameUtils.defaultExtension(name, ext));
     }
   }
-  
+
   private Paths() {
   }
 }

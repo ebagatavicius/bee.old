@@ -19,7 +19,7 @@ public class ActiveRowChangeEvent extends GwtEvent<ActiveRowChangeEvent.Handler>
     void onActiveRowChange(ActiveRowChangeEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static Type<Handler> getType() {
     return TYPE;

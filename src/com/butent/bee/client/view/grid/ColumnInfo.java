@@ -383,7 +383,7 @@ public class ColumnInfo implements HasValueType, Flexible {
   boolean isRightsColumn() {
     return ColType.RIGHTS == getColumn().getColType();
   }
-  
+
   boolean isSelection() {
     return ColType.SELECTION == getColumn().getColType();
   }

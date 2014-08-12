@@ -54,7 +54,7 @@ public class ImportPropertiesGrid extends AbstractGridInterceptor {
   public GridInterceptor getInstance() {
     return new ImportPropertiesGrid(form);
   }
-  
+
   @Override
   public AbstractCellRenderer getRenderer(final String columnName,
       List<? extends IsColumn> dataColumns, ColumnDescription columnDescription,

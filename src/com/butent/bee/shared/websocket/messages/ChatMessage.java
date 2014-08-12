@@ -10,13 +10,13 @@ import com.butent.bee.shared.utils.Codec;
 import java.util.List;
 
 public class ChatMessage extends Message {
-  
+
   private long roomId;
   private TextMessage textMessage;
 
   public ChatMessage(long roomId, TextMessage textMessage) {
     this();
-    
+
     this.roomId = roomId;
     this.textMessage = textMessage;
   }
@@ -24,12 +24,12 @@ public class ChatMessage extends Message {
   ChatMessage() {
     super(Type.CHAT);
   }
-  
+
   @Override
   public String brief() {
     return (getTextMessage() == null) ? null : getTextMessage().getText();
   }
-  
+
   public long getRoomId() {
     return roomId;
   }
@@ -37,12 +37,12 @@ public class ChatMessage extends Message {
   public TextMessage getTextMessage() {
     return textMessage;
   }
-  
+
   @Override
   public boolean isValid() {
     return getTextMessage() != null && getTextMessage().isValid();
   }
-  
+
   @Override
   public String toString() {
     return BeeUtils.joinOptions("roomId", BeeUtils.toString(getRoomId()),
@@ -61,13 +61,13 @@ public class ChatMessage extends Message {
   @Override
   protected String serialize() {
     List<Object> values = Lists.newArrayList();
-    
+
     values.add(getRoomId());
     values.add(getTextMessage());
-    
+
     return Codec.beeSerialize(values);
   }
-  
+
   private void setRoomId(long roomId) {
     this.roomId = roomId;
   }

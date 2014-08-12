@@ -5,7 +5,7 @@
   idName="DepartmentID"
   >
   <Fields>
-    <String name="DepartmentName" precision="50" notNull="true" unique="true" label="=department" />   
+    <String name="DepartmentName" precision="100" notNull="true" unique="true" label="=department" />   
     <Relation name="DepartmentHead" unique="true" relation="DepartmentEmployees" label="=departmentHead" />
   </Fields>
 </Table>

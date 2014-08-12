@@ -31,5 +31,6 @@
     </CalcColumn>
 
     <DataColumn name="DateOfBirth" visible="false" />
+    <PropColumn type="string" name="CompanyNames" label="=company" visible="false" />
   </g:columns>
 </g:Grid>

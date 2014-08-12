@@ -13,16 +13,15 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.presenter.FormPresenter;
-import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.utils.XmlUtils;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormImpl;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.HasItems;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -33,8 +32,6 @@ import com.butent.bee.shared.data.ProviderType;
 import com.butent.bee.shared.data.cache.CachingPolicy;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.ui.EditorDescription;
-import com.butent.bee.shared.ui.EditorType;
 import com.butent.bee.shared.ui.UiConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
@@ -48,6 +45,10 @@ import java.util.Map;
  * Creates and handles user interface forms.
  */
 
+/**
+ * @author Marius
+ *
+ */
 public final class FormFactory {
 
   public abstract static class FormViewCallback {
@@ -69,8 +70,6 @@ public final class FormFactory {
   private static final BeeLogger logger = LogUtils.getLogger(FormFactory.class);
 
   public static final String TAG_FORM = "Form";
-
-  private static final String ATTR_TYPE = "type";
 
   private static final Map<String, FormDescription> descriptionCache = Maps.newHashMap();
   private static final Map<String, Pair<FormInterceptor, Integer>> formInterceptors =
@@ -176,28 +175,6 @@ public final class FormFactory {
     return widget;
   }
 
-  public static EditorDescription getEditorDescription(Element element) {
-    Assert.notNull(element);
-
-    String typeCode = element.getAttribute(ATTR_TYPE);
-    if (BeeUtils.isEmpty(typeCode)) {
-      return null;
-    }
-    EditorType editorType = EditorType.getByTypeCode(typeCode);
-    if (editorType == null) {
-      return null;
-    }
-
-    EditorDescription editor = new EditorDescription(editorType);
-    editor.setAttributes(XmlUtils.getAttributes(element));
-
-    List<String> items = XmlUtils.getChildrenText(element, HasItems.TAG_ITEM);
-    if (!BeeUtils.isEmpty(items)) {
-      editor.setItems(items);
-    }
-    return editor;
-  }
-
   public static FormDescription getFormDescription(String formName) {
     return descriptionCache.get(getFormKey(Assert.notEmpty(formName)));
   }
@@ -266,7 +243,7 @@ public final class FormFactory {
 
   public static String getSupplierKey(String formName) {
     Assert.notEmpty(formName);
-    return WidgetFactory.SupplierKind.FORM.getKey(formName);
+    return ViewFactory.SupplierKind.FORM.getKey(formName);
   }
 
   public static FormWidget getWidgetType(BeeColumn column) {
@@ -349,35 +326,10 @@ public final class FormFactory {
     openForm(formName, getFormInterceptor(formName));
   }
 
+  /**
+   * This method should be used in sync with {@code ViewFactory.registerSupplier}.
+   */
   public static void openForm(final String formName, final FormInterceptor formInterceptor) {
-    String supplierKey = getSupplierKey(formName);
-
-    if (!WidgetFactory.hasSupplier(supplierKey)) {
-      WidgetSupplier supplier = new WidgetSupplier() {
-        @Override
-        public void create(final Callback<IdentifiableWidget> callback) {
-
-          final PresenterCallback presenterCallback = new PresenterCallback() {
-            @Override
-            public void onCreate(Presenter presenter) {
-              callback.onSuccess(presenter.getWidget());
-            }
-          };
-
-          Callback<FormDescription> descriptionCallback = new Callback<FormDescription>() {
-            @Override
-            public void onSuccess(FormDescription result) {
-              openForm(result, formInterceptor, presenterCallback);
-            }
-          };
-
-          getFormDescription(formName, descriptionCallback);
-        }
-      };
-
-      WidgetFactory.registerSupplier(supplierKey, supplier);
-    }
-
     getFormDescription(formName, new Callback<FormDescription>() {
       @Override
       public void onSuccess(FormDescription result) {

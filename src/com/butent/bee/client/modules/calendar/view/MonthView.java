@@ -367,7 +367,7 @@ public class MonthView extends CalendarView {
   private void layOnItem(long calendarId, CalendarItem item, boolean multi,
       int colStart, int colEnd, int row, int cellPosition, boolean separate,
       Map<Long, String> attColors) {
-    
+
     Long sa = separate ? item.getSeparatedAttendee() : null;
     String bg = (sa != null && attColors != null) ? attColors.get(sa) : null;
 
@@ -498,7 +498,7 @@ public class MonthView extends CalendarView {
         } else {
           barTo = 1;
         }
-        
+
         StyleUtils.setLeft(bar, BeeUtils.round(barFrom * 100, PERCENT_SCALE), CssUnit.PCT);
         StyleUtils.setRight(bar, BeeUtils.round((1 - barTo) * 100, PERCENT_SCALE), CssUnit.PCT);
       }

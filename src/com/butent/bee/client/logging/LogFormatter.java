@@ -15,7 +15,7 @@ public class LogFormatter extends Formatter {
 
   public static final Level LOG_SEPARATOR_LEVEL = Level.INFO;
   public static final String LOG_SEPARATOR_TAG = "-";
-  
+
   private static final int MAX_MESSAGE_LENGTH = 1024;
 
   @Override

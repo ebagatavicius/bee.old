@@ -28,7 +28,7 @@ public class ProxyBean {
   public ResponseObject commitRow(BeeRowSet rs) {
     return deb.commitRow(rs);
   }
-  
+
   public Datalist getDataList(String tblName, String fldName) {
     String[] values = qs.getColumn(new SqlSelect().setDistinctMode(true)
         .addFields(tblName, fldName)
@@ -48,7 +48,7 @@ public class ProxyBean {
 
     return datalist;
   }
-  
+
   public ResponseObject insert(SqlInsert si) {
     return qs.insertDataWithResponse(si);
   }

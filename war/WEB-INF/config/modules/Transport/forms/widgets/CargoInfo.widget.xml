@@ -103,7 +103,7 @@
     <InputDecimal source="Volume" format="#.000" style="&input;" />
     <DataSelector source="VolumeUnit" style="&inline; width:40px; margin-left:5px;" editEnabled="false" />
     <Label text="=valuation" style="&labelRight;" />
-    <InputCurrency source="Value" style="&input;" />
+    <InputMoney source="Value" style="&input;" />
     <DataSelector source="ValueCurrency" style="&inline; width:40px; margin-left:5px;" editEnabled="false" />
   </FlowPanel>
 </FlowPanel>

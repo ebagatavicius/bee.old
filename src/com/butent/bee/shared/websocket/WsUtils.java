@@ -30,7 +30,7 @@ public final class WsUtils {
       logger.warning(sessionInfo);
     }
   }
-  
+
   private WsUtils() {
   }
 }

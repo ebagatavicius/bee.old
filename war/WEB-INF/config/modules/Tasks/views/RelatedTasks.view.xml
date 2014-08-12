@@ -20,6 +20,7 @@
     <SimpleColumn name="CargoRequest" />
     <SimpleColumn name="Discussion" />
     <SimpleColumn name="ServiceObject" />
+    <SimpleColumn name="Message" />
   
     <SimpleJoin name="Task" joinType="INNER">
       <SimpleColumn name="Summary" editable="true" />

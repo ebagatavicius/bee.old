@@ -372,7 +372,7 @@ public class Appointment extends CalendarItem {
   public boolean isVisible(Long userId) {
     if (userId == null) {
       return false;
-    
+
     } else if (isOwner(userId)) {
       return true;
 
@@ -389,7 +389,7 @@ public class Appointment extends CalendarItem {
   public void setStart(DateTime start) {
     row.setValue(START_DATE_TIME_INDEX, start);
   }
-  
+
   public void updateAttendees(List<Long> ids) {
     attendees.clear();
     if (!BeeUtils.isEmpty(ids)) {
@@ -411,7 +411,7 @@ public class Appointment extends CalendarItem {
   private CalendarVisibility getVisibility() {
     return EnumUtils.getEnumByIndex(CalendarVisibility.class, row.getInteger(VISIBILITY_INDEX));
   }
-  
+
   private boolean isOwner(Long userId) {
     return userId != null && (owners.contains(userId) || userId.equals(getCreator()));
   }

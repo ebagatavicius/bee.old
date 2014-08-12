@@ -13,7 +13,7 @@ public class TimeBlock {
 
   private int totalColumns = 1;
   private int order;
-  
+
   private int start;
   private int end;
 

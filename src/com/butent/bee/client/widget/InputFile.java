@@ -5,19 +5,19 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasName;
 
-import elemental.html.InputElement;
 import elemental.html.FileList;
+import elemental.html.InputElement;
 import elemental.js.html.JsInputElement;
 
-public class InputFile extends Widget implements HasName, HasChangeHandlers, HasEnabled,
+public class InputFile extends Widget implements HasName, HasChangeHandlers, EnablableWidget,
     IdentifiableWidget {
 
   public InputFile() {
@@ -79,7 +79,7 @@ public class InputFile extends Widget implements HasName, HasChangeHandlers, Has
   public void setAccept(String accept) {
     getInputElement().setAccept(accept);
   }
-  
+
   @Override
   public void setEnabled(boolean enabled) {
     getInputElement().setDisabled(!enabled);

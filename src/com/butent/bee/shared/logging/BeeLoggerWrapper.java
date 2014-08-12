@@ -29,7 +29,7 @@ public class BeeLoggerWrapper implements BeeLogger {
       logger.error(ex, messages);
     }
   }
-  
+
   @Override
   public LogLevel getLevel() {
     if (initLogger()) {

@@ -46,7 +46,7 @@ public class ResourceView extends CalendarView {
   @Override
   public void attach(CalendarWidget widget) {
     super.attach(widget);
-    
+
     widget.clear();
 
     widget.add(viewHeader);
@@ -65,7 +65,7 @@ public class ResourceView extends CalendarView {
 
     viewHeader.setAttendees(calendarId, attendees);
     viewHeader.setDate(date);
-    
+
     if (TimeUtils.isToday(date)) {
       viewMulti.setColumns(cc, 0, cc - 1);
       viewBody.build(cc, getSettings(), 0, cc - 1);
@@ -81,9 +81,9 @@ public class ResourceView extends CalendarView {
     resizeController.setSettings(getSettings());
 
     getItemWidgets().clear();
-    
+
     int multiHeight = BeeConst.UNDEF;
-    
+
     Map<Long, String> attendeeColors = CalendarKeeper.getAttendeeColors(calendarId);
 
     for (int i = 0; i < cc; i++) {
@@ -103,20 +103,20 @@ public class ResourceView extends CalendarView {
         for (CalendarItem item : multi) {
           adapters.add(new ItemAdapter(item));
         }
-        
+
         multiHeight = Math.max(multiHeight,
             CalendarLayoutManager.doMultiLayout(adapters, date, i, cc));
         addItemsToGrid(calendarId, adapters, true, i, bg);
       }
     }
-    
+
     if (multiHeight > 0) {
       StyleUtils.setHeight(viewMulti.getGrid(), multiHeight);
     } else {
       StyleUtils.clearHeight(viewMulti.getGrid());
     }
   }
-  
+
   @Override
   public void doScroll() {
     viewBody.doScroll(getSettings(), getItemWidgets());
@@ -134,7 +134,7 @@ public class ResourceView extends CalendarView {
   public Widget getScrollArea() {
     return viewBody.getScrollArea();
   }
-  
+
   @Override
   public String getStyleName() {
     return CalendarStyleManager.RESOURCE_VIEW;
@@ -154,7 +154,7 @@ public class ResourceView extends CalendarView {
       return Range.closedOpen(date.getDateTime(), TimeUtils.nextDay(date).getDateTime());
     }
   }
-  
+
   @Override
   public boolean onClick(long calendarId, Element element, Event event) {
     ItemWidget widget = CalendarUtils.findWidget(getItemWidgets(), element);
@@ -179,13 +179,13 @@ public class ResourceView extends CalendarView {
   public void onClock() {
     viewBody.onClock(getSettings());
   }
-  
+
   private void addItemsToGrid(long calendarId, List<ItemAdapter> adapters,
       boolean multi, int columnIndex, String bg) {
 
     Orientation footerOrientation = multi ? null : Orientation.VERTICAL;
     Long userId = BeeKeeper.getUser().getUserId();
-    
+
     for (ItemAdapter adapter : adapters) {
       ItemWidget widget = new ItemWidget(adapter.getItem(), multi,
           columnIndex, adapter.getHeight(), footerOrientation);
@@ -235,7 +235,7 @@ public class ResourceView extends CalendarView {
 
     List<Long> attendees = getCalendarWidget().getAttendees();
     int columnIndex = viewBody.getColumnIndex(x, attendees.size());
-    
+
     DateTime dateTime = viewBody.getCoordinatesDate(x, y, getSettings(), getDate(), 1);
 
     createAppointment(dateTime, attendees.get(columnIndex));

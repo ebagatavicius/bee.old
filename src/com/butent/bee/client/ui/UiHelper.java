@@ -7,8 +7,10 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
@@ -83,6 +85,11 @@ public final class UiHelper {
     return w;
   }
 
+  public static void clearTitle(UIObject obj) {
+    Assert.notNull(obj);
+    obj.setTitle(null);
+  }
+
   public static boolean closeDialog(Widget source) {
     if (source != null) {
       Popup popup = getParentPopup(source);
@@ -94,8 +101,33 @@ public final class UiHelper {
     return false;
   }
 
+  public static void enableAndStyle(EnablableWidget widget, boolean enabled) {
+    Assert.notNull(widget);
+    widget.setEnabled(enabled);
+    widget.setStyleName(StyleUtils.NAME_DISABLED, !enabled);
+  }
+
+  public static void enableAndStyleChildren(HasWidgets parent, boolean enabled) {
+    Assert.notNull(parent);
+    for (Widget child : parent) {
+      if (child instanceof EnablableWidget) {
+        enableAndStyle((EnablableWidget) child, enabled);
+      }
+    }
+  }
+
+  public static void enableChildren(HasWidgets parent, boolean enabled) {
+    Assert.notNull(parent);
+    for (Widget child : parent) {
+      if (child instanceof HasEnabled) {
+        ((HasEnabled) child).setEnabled(enabled);
+      }
+    }
+  }
+
   public static boolean focus(Widget target) {
-    if (DomUtils.focus(target)) {
+    if (target instanceof Focusable && isEnabled(target) && DomUtils.isVisible(target)) {
+      ((Focusable) target).setFocus(true);
       return true;
 
     } else if (target instanceof HasOneWidget) {
@@ -136,7 +168,7 @@ public final class UiHelper {
 
     return result;
   }
-  
+
   public static Collection<Widget> getChildrenByStyleName(Widget parent,
       Collection<String> styleNames) {
 
@@ -179,7 +211,7 @@ public final class UiHelper {
     }
     return null;
   }
-  
+
   public static TextAlign getDefaultHorizontalAlignment(ValueType type) {
     if (type == null) {
       return null;
@@ -222,6 +254,14 @@ public final class UiHelper {
       }
     }
     return result;
+  }
+
+  public static FormView getForm(IsWidget widget) {
+    if (widget == null) {
+      return null;
+    } else {
+      return getForm(widget.asWidget());
+    }
   }
 
   public static FormView getForm(Widget widget) {
@@ -550,9 +590,9 @@ public final class UiHelper {
     if (parent == null || BeeUtils.isEmpty(styleName)) {
       return 0;
     }
-    
+
     Collection<Widget> children = getChildrenByStyleName(parent, Sets.newHashSet(styleName));
-    
+
     for (Widget child : children) {
       child.removeStyleName(styleName);
     }
@@ -724,6 +764,14 @@ public final class UiHelper {
     }
 
     form.updateCell(columnId, value);
+  }
+
+  private static boolean isEnabled(UIObject obj) {
+    if (obj instanceof HasEnabled) {
+      return ((HasEnabled) obj).isEnabled();
+    } else {
+      return obj != null;
+    }
   }
 
   private static boolean isOrHasChild(Focusable widget, Element element) {

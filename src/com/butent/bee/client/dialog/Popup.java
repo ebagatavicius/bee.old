@@ -122,7 +122,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
         }
       }
       StyleUtils.clearClip(curPanel);
-      curPanel.getElement().getStyle().setOverflow(Overflow.VISIBLE);
+      curPanel.getElement().getStyle().clearOverflow();
     }
 
     @Override
@@ -178,7 +178,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
           BodyPanel.get().remove(curPanel);
         }
       }
-      curPanel.getElement().getStyle().setOverflow(Overflow.VISIBLE);
+      curPanel.getElement().getStyle().clearOverflow();
     }
 
     private void setState(boolean sh, boolean unl) {
@@ -292,7 +292,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
 
     setPopupPosition(0, 0);
     DomUtils.createId(this, getIdPrefix());
-    
+
     if (styleName != null) {
       setStyleName(styleName);
     }
@@ -480,7 +480,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
           }
 
         } else if (nativeEvent.getKeyCode() == KeyCodes.KEY_TAB) {
-          if (!eventTargetsPopup 
+          if (!eventTargetsPopup
               || Element.is(targetNode) && handleTabulation(Element.as(targetNode))) {
             event.cancel();
             UiHelper.moveFocus(getWidget(), !EventUtils.hasModifierKey(nativeEvent));
@@ -489,7 +489,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
       }
 
       if (!event.isCanceled()) {
-        if (eventTargetsPopup || getKeyboardPartner() != null && targetNode != null 
+        if (eventTargetsPopup || getKeyboardPartner() != null && targetNode != null
             && getKeyboardPartner().isOrHasChild(targetNode)) {
           event.consume();
 
@@ -674,7 +674,6 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     }
   }
 
-
   private String getDesiredHeight() {
     return desiredHeight;
   }
@@ -744,7 +743,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
 
     int objectWidth = relativeElement.getOffsetWidth();
     int objectHeight = relativeElement.getOffsetHeight();
-    
+
     if (margins != null) {
       left -= margins.getIntLeft();
       top -= margins.getIntTop();
@@ -813,7 +812,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
   private void setTopPosition(int topPosition) {
     this.topPosition = topPosition;
   }
-  
+
   private void show() {
     if (isShowing()) {
       return;

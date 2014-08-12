@@ -19,7 +19,7 @@ public abstract class DataColumn<C> extends AbstractColumn<C> {
   public ColType getColType() {
     return ColType.DATA;
   }
-  
+
   @Override
   public String getString(CellContext context) {
     if (context.getRow() == null) {

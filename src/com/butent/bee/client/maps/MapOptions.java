@@ -28,6 +28,7 @@ public class MapOptions extends JavaScriptObject {
   protected MapOptions() {
   }
 
+//@formatter:off
   public final native String getBackgroundColor() /*-{
     return this.backgroundColor;
   }-*/;
@@ -71,12 +72,14 @@ public class MapOptions extends JavaScriptObject {
   public final native boolean getMapTypeControl() /*-{
     return this.mapTypeControl;
   }-*/;
+//@formatter:on
 
   public final MapTypeId getMapTypeId() {
     String type = getMapTypeIdJs();
     return EnumUtils.getEnumByName(MapTypeId.class, type);
   }
 
+//@formatter:off
   public final native int getMaxZoom() /*-{
     return this.maxZoom;
   }-*/;
@@ -168,11 +171,13 @@ public class MapOptions extends JavaScriptObject {
   public final native void setMapTypeControl(boolean mapTypeControl) /*-{
     this.mapTypeControl = mapTypeControl;
   }-*/;
+//@formatter:on
 
   public final void setMapTypeId(MapTypeId mapTypeId) {
     setMapTypeIdJs(mapTypeId.name());
   }
 
+//@formatter:off
   public final native void setMaxZoom(int maxZoom) /*-{
     this.maxZoom = maxZoom;
   }-*/;
@@ -228,4 +233,5 @@ public class MapOptions extends JavaScriptObject {
   private native void setMapTypeIdJs(String type) /*-{
     this.mapTypeId = $wnd.google.maps.MapTypeId[type];
   }-*/;
+//@formatter:on
 }

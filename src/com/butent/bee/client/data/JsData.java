@@ -41,13 +41,13 @@ public class JsData<C extends IsColumn> extends StringMatrix<C> {
 
     int rc = (data.length() - start) / rowSize;
     StringRow[] arr = new StringRow[rc];
-    
+
     for (int i = 0; i < rc; i++) {
       String[] values = new String[rowSize];
       for (int j = 0; j < rowSize; j++) {
         values[j] = data.get(start + i * rowSize + j);
       }
-    
+
       arr[i] = new StringRow(i + 1, values);
     }
 

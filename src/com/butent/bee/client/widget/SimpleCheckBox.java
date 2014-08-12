@@ -62,12 +62,12 @@ public class SimpleCheckBox extends FocusWidget implements BooleanWidget {
   public boolean isChecked() {
     return getValue();
   }
-  
+
   @Override
   public void setChecked(boolean checked) {
     setValue(checked);
   }
-  
+
   @Override
   public void setId(String id) {
     DomUtils.setId(this, id);
@@ -85,7 +85,7 @@ public class SimpleCheckBox extends FocusWidget implements BooleanWidget {
 
     getInputElement().setChecked(b);
     getInputElement().setDefaultChecked(b);
-    
+
     if (fireEvents && (b != oldValue)) {
       ValueChangeEvent.fire(this, b);
     }

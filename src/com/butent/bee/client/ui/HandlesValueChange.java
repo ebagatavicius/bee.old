@@ -4,5 +4,5 @@ public interface HandlesValueChange {
 
   String getLabel();
 
-  boolean isValueChanged();  
+  boolean isValueChanged();
 }

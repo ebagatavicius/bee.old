@@ -157,7 +157,7 @@ class TransportRegistrationForm extends AbstractFormInterceptor {
         header.addCommandItem(this.registerCommand);
       }
 
-      if (!BeeUtils.isEmpty(getStringValue(COL_REGISTRATION_HOST)) 
+      if (!BeeUtils.isEmpty(getStringValue(COL_REGISTRATION_HOST))
           && Data.isViewEditable(AdministrationConstants.VIEW_IP_FILTERS)) {
         if (this.blockCommand == null) {
           this.blockCommand =

@@ -1,14 +1,17 @@
 package com.butent.bee.client.view.navigation;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.NumberFormat;
 
 import com.butent.bee.client.Global;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Rulers;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.event.logical.ScopeChangeEvent;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.Command;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.Label;
@@ -65,11 +68,11 @@ public class SimplePager extends AbstractPager {
     FIRST, REWIND, PREV, NEXT, FORWARD, LAST
   }
 
-  private static final String STYLE_PREFIX = "bee-SimplePager-";
+  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "SimplePager-";
   private static final String STYLE_CONTAINER = STYLE_PREFIX + "container";
   private static final String STYLE_DISABLED_BUTTON = STYLE_PREFIX + "disabledButton";
   private static final String STYLE_INFO = STYLE_PREFIX + "info";
-  
+
   private static final NumberFormat NUMBER_FORMAT = NumberFormat.getFormat("#,###");
   private static final String POSITION_SEPARATOR = " - ";
   private static final String ROW_COUNT_SEPARATOR = " / ";
@@ -86,15 +89,15 @@ public class SimplePager extends AbstractPager {
   private final Image widgetLast;
 
   private final Label widgetInfo;
-  
+
   private final boolean showPageSize;
-  
+
   private int maxRowCount;
 
   public SimplePager(int maxRowCount) {
     this(maxRowCount, true);
   }
-  
+
   public SimplePager(int maxRowCount, boolean showPageSize) {
     this(maxRowCount, showPageSize, maxRowCount >= MIN_ROW_COUNT_FOR_FAST_NAVIGATION);
   }
@@ -151,6 +154,11 @@ public class SimplePager extends AbstractPager {
   }
 
   @Override
+  public HandlerRegistration addReadyHandler(ReadyEvent.Handler handler) {
+    return addHandler(handler, ReadyEvent.getType());
+  }
+
+  @Override
   public boolean onPrint(Element source, Element target) {
     return !DomUtils.isImageElement(source);
   }
@@ -160,18 +168,18 @@ public class SimplePager extends AbstractPager {
     if (event == null) {
       return;
     }
-    
+
     int start = BeeUtils.toNonNegativeInt(event.getStart());
     int length = BeeUtils.toNonNegativeInt(event.getLength());
     int rowCount = BeeUtils.toNonNegativeInt(event.getTotal());
-    
+
     if (start >= rowCount) {
       start = Math.max(rowCount - 1, 0);
     }
     if (start + length > rowCount) {
       length = Math.max(rowCount - start, 0);
     }
-    
+
     if (rowCount > getMaxRowCount()) {
       setMaxRowCount(rowCount);
       StyleUtils.setWidth(widgetInfo, getMaxInfoWidth(rowCount));
@@ -192,7 +200,7 @@ public class SimplePager extends AbstractPager {
         widgetRewind.setTitle(format(getRewindPosition(start, length, rowCount) + 1));
       } else {
         widgetRewind.setEnabled(false);
-        DomUtils.clearTitle(widgetRewind);
+        UiHelper.clearTitle(widgetRewind);
       }
 
       if (start + length < rowCount) {
@@ -200,7 +208,7 @@ public class SimplePager extends AbstractPager {
         widgetForw.setTitle(format(getForwardPosition(start, length, rowCount) + 1));
       } else {
         widgetForw.setEnabled(false);
-        DomUtils.clearTitle(widgetForw);
+        UiHelper.clearTitle(widgetForw);
       }
     }
   }
@@ -208,6 +216,12 @@ public class SimplePager extends AbstractPager {
   @Override
   protected NavigationOrigin getNavigationOrigin() {
     return NavigationOrigin.PAGER;
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    ReadyEvent.fire(this);
   }
 
   private String createText(int start, int end, int rowCount) {
@@ -260,7 +274,7 @@ public class SimplePager extends AbstractPager {
       return pos - pos % pageSize;
     }
   }
-  
+
   private int getMaxInfoWidth(int rowCount) {
     return Rulers.getLineWidth(null, createText(rowCount, rowCount, rowCount), false) + 1;
   }

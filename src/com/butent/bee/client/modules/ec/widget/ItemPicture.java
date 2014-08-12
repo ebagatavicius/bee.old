@@ -26,7 +26,7 @@ import com.butent.bee.shared.utils.NameUtils;
 public class ItemPicture extends Flow {
 
   private static final BeeLogger logger = LogUtils.getLogger(ItemPicture.class);
-  
+
   private static final String STYLE_PREFIX = EcStyles.name("ItemPicture-");
 
   private static final String STYLE_CONTAINER = STYLE_PREFIX + "container";
@@ -39,10 +39,10 @@ public class ItemPicture extends Flow {
 
   private static final String STYLE_SLIDES = STYLE_PREFIX + "slides";
   private static final String STYLE_OPEN = STYLE_PREFIX + "open";
-  
+
   private static final String STYLE_FEATURED = STYLE_PREFIX + "featured";
   private static final String STYLE_NOVELTY = STYLE_PREFIX + "novelty";
-  
+
   private final String itemCaption;
 
   public ItemPicture(String itemCaption) {
@@ -58,14 +58,14 @@ public class ItemPicture extends Flow {
   public String getItemCaption() {
     return itemCaption;
   }
-  
+
   public void setFeaturedOrNovelty(EcItem item) {
     if (item != null) {
       if (item.isFeatured()) {
         CustomDiv banner = new CustomDiv(STYLE_FEATURED);
         banner.setText(Localized.getConstants().ecFeaturedBanner());
         add(banner);
-        
+
       } else if (item.isNovelty()) {
         CustomDiv banner = new CustomDiv(STYLE_NOVELTY);
         banner.setText(Localized.getConstants().ecNoveltyBanner());
@@ -88,11 +88,11 @@ public class ItemPicture extends Flow {
 
       if (pictures.size() > 1) {
         Flow more = new Flow(STYLE_MORE);
-        
+
         FaLabel play = new FaLabel(FontAwesome.PLAY, true);
         play.addStyleName(STYLE_MORE_PLAY);
         more.add(play);
-        
+
         InlineLabel count = new InlineLabel(BeeUtils.toString(pictures.size() - 1));
         count.addStyleName(STYLE_MORE_COUNT);
         more.add(count);
@@ -109,10 +109,10 @@ public class ItemPicture extends Flow {
                 StyleUtils.setWidth(dialog.getHeader(), result.getWidth());
 
                 dialog.setWidget(result);
-                
+
                 dialog.setAnimationEnabled(true);
                 dialog.setHideOnEscape(true);
-                
+
                 dialog.center();
                 result.handleKeyboard();
               }

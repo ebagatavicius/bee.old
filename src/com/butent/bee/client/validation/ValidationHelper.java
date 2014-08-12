@@ -41,24 +41,24 @@ public final class ValidationHelper {
     if (!BeeUtils.isEmpty(maxValue)) {
       result.add(BeeUtils.joinWords(Localized.getConstants().maxValue(), maxValue));
     }
-    
+
     return result;
   }
 
   public static void showError(NotificationListener notificationListener, String caption,
       List<String> messages) {
     Assert.notNull(notificationListener);
-    
+
     if (BeeUtils.isEmpty(messages)) {
       notificationListener.notifySevere(caption);
-    
+
     } else if (BeeUtils.isEmpty(caption) || messages.contains(caption)) {
       notificationListener.notifySevere(ArrayUtils.toArray(messages));
 
     } else {
       String[] arr = new String[messages.size() + 1];
       arr[0] = caption;
-      
+
       for (int i = 0; i < messages.size(); i++) {
         arr[i + 1] = messages.get(i);
       }
@@ -109,7 +109,7 @@ public final class ValidationHelper {
       return false;
     }
   }
-  
+
   private static boolean validateCell(CellValidation cv) {
     List<String> messages = Lists.newArrayList();
 
@@ -136,7 +136,7 @@ public final class ValidationHelper {
       cv.getEvaluator().update(cv.getRow(), BeeConst.UNDEF, cv.getColIndex(), cv.getType(),
           cv.getOldValue(), cv.getNewValue());
       String msg = cv.getEvaluator().evaluate();
-      
+
       if (!BeeUtils.isEmpty(msg)) {
         messages.add(msg);
       }

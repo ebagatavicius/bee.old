@@ -8,24 +8,27 @@
   height="300" width="800"
   >
   <FlowPanel>
-    <Table style="margin: 1ex 1em;" cellStyle="padding: 1ex 1em; vertical-align: top;">
+    <Table style="margin: 1ex 1em;">
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+
       <row>
-        <Label text="=code" class="bee-required" />
-        <InputText source="Code" style="width: 100px" />
-        <Label text="=name" />
-        <InputText source="Name" style="width: 400px" />
+        <Label for="Code" />
+        <InputText source="Code" style="width: 100px;" />
+        <Label for="Name" />
+        <InputText source="Name" style="width: 400px;" />
       </row>
-      <row>
-        <Label text="=branch" />
+      <row module="Ec">
+        <Label for="SupplierCode" />
+        <InputText source="SupplierCode" style="width: 100px;" />
+        <Label for="Branch" />
         <DataSelector source="Branch" />
-        <Label text="=description" />
-        <cell rowSpan="2">
-          <InputArea source="Description" visibleLines="3" style="width: 400px;" />
-        </cell>
       </row>
       <row>
-        <Label text="=ecSupplierWarehouse" />
-        <InputText source="SupplierCode" style="width: 100px" />
+        <Label for="Description" />
+        <cell colSpan="3">
+          <InputArea source="Description" visibleLines="3" style="width: 100%;" />
+        </cell>
       </row>
     </Table>
 

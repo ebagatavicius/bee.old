@@ -46,7 +46,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
     private Header(Widget child, int size) {
       super();
       this.size = size;
-      
+
       Style style = child.getElement().getStyle();
       style.setPosition(Position.ABSOLUTE);
       StyleUtils.setLeft(style, 0);
@@ -78,7 +78,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
       return size;
     }
   }
-  
+
   private static final class Revelation extends RafCallback {
     private static final double FROM = 0.2;
     private static final double TO = 1.0;
@@ -112,14 +112,14 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
   private static final String CONTENT_STYLE = "bee-StackContent";
 
   private static final String SELECTED_STYLE = HEADER_STYLE + "-selected";
-  
+
   private final Revelation revelation = new Revelation(200);
 
   private int selectedIndex = BeeConst.UNDEF;
 
   public Stack() {
     setElement(Document.get().createDivElement());
-    
+
     setStyleName(CONTAINER_STYLE);
     DomUtils.createId(this, getIdPrefix());
   }
@@ -154,7 +154,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
       remove(0);
     }
   }
-  
+
   public void doLayout(boolean animate) {
     if (isAttached()) {
       layoutChildren(animate);
@@ -221,7 +221,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
   public boolean isOpen() {
     return isIndex(getSelectedIndex());
   }
-  
+
   @Override
   public void onResize() {
     for (Widget child : getChildren()) {
@@ -286,7 +286,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
         return;
       }
     }
-    
+
     if (isOpen()) {
       hideContent(getSelectedIndex());
     }
@@ -307,7 +307,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
     if (isOpen()) {
       hideContent(getSelectedIndex());
       setSelectedIndex(BeeConst.UNDEF);
-      
+
       layoutChildren(false);
       return true;
     } else {
@@ -320,7 +320,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
     if (!isIndex(index)) {
       return null;
     }
-    
+
     if (index == getSelectedIndex()) {
       close();
       return State.CLOSED;
@@ -344,19 +344,19 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
   private Header getHeader(int index) {
     return (Header) super.getWidget(index * 2);
   }
-  
+
   private void hideContent(int index) {
     getContentWidget(index).setVisible(false);
   }
 
   private void insert(final Widget child, Header header, int before) {
     Assert.betweenInclusive(before, 0, getStackSize(), "before index out of bounds");
-    
+
     child.setVisible(false);
 
     header.addStyleName(HEADER_STYLE);
     child.addStyleName(CONTENT_STYLE);
-    
+
     Style style = child.getElement().getStyle();
     style.setPosition(Position.ABSOLUTE);
     StyleUtils.setLeft(style, 0);
@@ -368,10 +368,10 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
         Stack.this.onHeaderClick(child);
       }
     });
-    
+
     super.insert(header, Element.as(getElement()), before * 2, true);
     super.insert(child, Element.as(getElement()), before * 2 + 1, true);
-    
+
     if (before >= 0 && before <= getSelectedIndex()) {
       setSelectedIndex(getSelectedIndex() + 1);
     }
@@ -416,7 +416,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
 
       StyleUtils.setTop(style, top);
       StyleUtils.setBottom(style, bottom);
-      
+
       if (animate) {
         StyleUtils.setTransformScale(style, Revelation.FROM, Revelation.FROM);
         widget.setVisible(true);

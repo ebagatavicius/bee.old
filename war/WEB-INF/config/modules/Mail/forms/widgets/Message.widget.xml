@@ -4,20 +4,15 @@
 
   <FlowPanel name="Container" class="flexBox-vertical flexible" >
     <FlowPanel class="bee-mail-Envelope">
-      <FlowPanel>
-        <FlowPanel name="bee-mail-Sender">
-          <TextLabel name="SenderLabel" class="bee-mail-SenderLabel" />
-          <TextLabel name="SenderEmail" class="bee-mail-SenderEmail" />
-        </FlowPanel>
+      <FlowPanel class="flexBox-horizontal">
+        <TextLabel name="Sender" class="bee-mail-Sender flexible" />
         <DateTimeLabel name="Date" class="bee-mail-Date" format="EEEE, y 'm'. MMMM d 'd'. HH:mm" />
       </FlowPanel>
 
-      <SimplePanel>
-        <TextLabel name="Recipients" class="bee-mail-Recipients" />
-      </SimplePanel>
+      <TextLabel name="Recipients" class="bee-mail-Recipients" />
 
-      <FlowPanel>
-        <TextLabel name="Subject" class="bee-mail-Subject" />
+      <FlowPanel class="flexBox-horizontal">
+        <TextLabel name="Subject" class="bee-mail-Subject flexible" />
         <FlowPanel name="Attachments" class="bee-mail-Attachments" />
       </FlowPanel>
 
@@ -25,9 +20,10 @@
         <cell style="width:50%; padding:0;">
           <hr style="border:0; border-top:1px solid lightgray;"/>
         </cell>
-        <FaLabel name="reply" char="mail_reply" />
-        <FaLabel name="replyAll" char="mail_reply_all" />
-        <FaLabel name="forward" char="mail_forward" />
+        <FaLabel name="Reply" char="mail_reply" />
+        <FaLabel name="ReplyAll" char="mail_reply_all" />
+        <FaLabel name="Forward" char="mail_forward" />
+        <Relations relColumn="Message" defaultRelations="Requests Tasks" blockedRelations="Messages" />
         <cell style="width:50%; padding:0;">
           <hr style="border:0; border-top:1px solid lightgray;"/>
         </cell>

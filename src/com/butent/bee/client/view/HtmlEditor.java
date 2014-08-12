@@ -5,6 +5,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
@@ -12,13 +13,14 @@ import com.butent.bee.client.dialog.DecisionCallback;
 import com.butent.bee.client.dialog.DialogConstants;
 import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.dialog.StringCallback;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.richtext.RichTextEditor;
 import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
@@ -32,14 +34,15 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.EnumSet;
 
-public class HtmlEditor extends Flow implements Presenter, View, Printable {
+public class HtmlEditor extends Flow implements Presenter, View, Printable, HasWidgetSupplier {
 
   private static final BeeLogger logger = LogUtils.getLogger(HtmlEditor.class);
 
-  private static final String STYLE_PREFIX = "bee-HtmlEditor-";
+  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "HtmlEditor-";
 
   private static final String STYLE_VIEW = STYLE_PREFIX + "view";
   private static final String STYLE_CANVAS = STYLE_PREFIX + "canvas";
@@ -52,6 +55,7 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable {
   private static final String STYLE_SUFFIX_HTML = "-html";
   private static final String STYLE_SUFFIX_TEXT = "-text";
 
+  private final String supplierKey;
   private final String caption;
 
   private final String oldUrl;
@@ -73,10 +77,12 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable {
 
   private boolean enabled = true;
 
-  public HtmlEditor(String caption, String url, String html, BiConsumer<String, String> onSave) {
-    super();
-    addStyleName(STYLE_VIEW);
+  public HtmlEditor(String supplierKey, String caption, String url, String html,
+      BiConsumer<String, String> onSave) {
 
+    super(STYLE_VIEW);
+
+    this.supplierKey = supplierKey;
     this.caption = caption;
 
     this.oldUrl = url;
@@ -117,6 +123,11 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable {
   }
 
   @Override
+  public HandlerRegistration addReadyHandler(ReadyEvent.Handler handler) {
+    return addHandler(handler, ReadyEvent.getType());
+  }
+
+  @Override
   public String getCaption() {
     return caption;
   }
@@ -142,12 +153,12 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable {
   }
 
   @Override
-  public Presenter getViewPresenter() {
-    return this;
+  public String getSupplierKey() {
+    return supplierKey;
   }
 
   @Override
-  public IdentifiableWidget getWidget() {
+  public Presenter getViewPresenter() {
     return this;
   }
 
@@ -166,7 +177,7 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable {
       case PRINT:
         Printer.print(this);
         break;
-        
+
       case CANCEL:
         close();
         break;
@@ -215,7 +226,7 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable {
   @Override
   public void onResize() {
     super.onResize();
-    
+
     Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
       @Override
       public void execute() {
@@ -226,6 +237,11 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable {
 
   @Override
   public void onViewUnload() {
+  }
+
+  @Override
+  public boolean reactsTo(Action action) {
+    return EnumUtils.in(action, Action.SAVE, Action.PRINT, Action.CANCEL, Action.CLOSE);
   }
 
   @Override
@@ -245,6 +261,8 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable {
   protected void onLoad() {
     super.onLoad();
     updateSizes();
+
+    ReadyEvent.fire(this);
   }
 
   private boolean changed() {

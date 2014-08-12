@@ -71,7 +71,7 @@ class OrderCargoForm extends AbstractFormInterceptor {
             refresh(Data.getLong(viewName, getActiveRow(), COL_CURRENCY));
           }
         }
-        
+
         @Override
         public GridInterceptor getInstance() {
           return null;

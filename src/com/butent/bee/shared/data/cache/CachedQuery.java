@@ -85,7 +85,7 @@ class CachedQuery extends SimpleCache<Integer, Long> {
       add(offset + i, idList.get(i));
     }
   }
-  
+
   boolean containsColumn(String columnId) {
     if (BeeUtils.isEmpty(columnId)) {
       return false;
@@ -105,7 +105,7 @@ class CachedQuery extends SimpleCache<Integer, Long> {
     }
     return true;
   }
-  
+
   int getRowCount() {
     return rowCount;
   }
@@ -130,7 +130,7 @@ class CachedQuery extends SimpleCache<Integer, Long> {
     }
     return result;
   }
- 
+
   String getStrFilter() {
     return strFilter;
   }

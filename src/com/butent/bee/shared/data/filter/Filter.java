@@ -336,6 +336,10 @@ public abstract class Filter implements BeeSerializable, RowFilter {
     }
   }
 
+  public static Filter or(Filter f1, Filter f2, Filter f3) {
+    return or(or(f1, f2), f3);
+  }
+
   public static Filter restore(String s) {
     if (BeeUtils.isEmpty(s)) {
       return null;

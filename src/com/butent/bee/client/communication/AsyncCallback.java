@@ -7,11 +7,13 @@ import com.google.gwt.http.client.RequestTimeoutException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
 
+import com.butent.bee.client.Bee;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.utils.Duration;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
+import com.butent.bee.shared.State;
 import com.butent.bee.shared.communication.CommUtils;
 import com.butent.bee.shared.communication.ContentType;
 import com.butent.bee.shared.communication.ResponseMessage;
@@ -42,8 +44,6 @@ public class AsyncCallback implements RequestCallback {
 
   @Override
   public void onResponseReceived(Request req, Response resp) {
-    int statusCode = resp.getStatusCode();
-
     String qid = resp.getHeader(Service.RPC_VAR_QID);
     if (qid == null) {
       BeeKeeper.getBus().removeExitHandler();
@@ -53,6 +53,14 @@ public class AsyncCallback implements RequestCallback {
 
     int id = BeeUtils.toInt(qid);
     RpcInfo info = BeeKeeper.getRpc().getRpcInfo(id);
+
+    if (!Bee.isEnabled()) {
+      if (info != null) {
+        info.done();
+        info.setState(State.CLOSED);
+      }
+      return;
+    }
 
     if (info == null) {
       logger.warning("Rpc info not available");
@@ -68,6 +76,7 @@ public class AsyncCallback implements RequestCallback {
       logger.warning("Rpc service", BeeUtils.bracket(Service.RPC_VAR_SVC), "not available");
     }
 
+    int statusCode = resp.getStatusCode();
     if (statusCode != Response.SC_OK) {
       String msg = BeeUtils.joinWords(NameUtils.addName(Service.RPC_VAR_QID, id),
           NameUtils.addName(Service.RPC_VAR_SVC, svc));

@@ -223,9 +223,9 @@ public class InputDateTime extends InputDate {
     if (newValue != null) {
       DateTime min = DateTime.get(getMinBound());
       DateTime max = DateTime.get(getMaxBound());
-      
+
       newValue = TimeUtils.clamp(newValue, min, max);
-      
+
       if (!TimeUtils.sameDateTime(newValue, oldValue)) {
         setDateTime(newValue);
       }

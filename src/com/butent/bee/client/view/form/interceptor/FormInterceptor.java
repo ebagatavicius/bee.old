@@ -79,7 +79,7 @@ public interface FormInterceptor extends WidgetInterceptor, HasGridView, Handles
   boolean hasFooter(int rowCount);
 
   boolean isRowEditable(IsRow row);
-  
+
   void notifyRequired(String message);
 
   void onClose(List<String> messages, IsRow oldRow, IsRow newRow);

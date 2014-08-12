@@ -13,12 +13,12 @@ public class ColumnInFilter extends Filter {
   private enum Serial {
     COLUMN, IN_VIEW, IN_COLUMN, IN_FILTER
   }
-  
+
   private String column;
-  
+
   private String inView;
   private String inColumn;
-  
+
   private Filter inFilter;
 
   protected ColumnInFilter() {
@@ -28,7 +28,7 @@ public class ColumnInFilter extends Filter {
   protected ColumnInFilter(String column, String inView, String inColumn) {
     this(column, inView, inColumn, null);
   }
-  
+
   protected ColumnInFilter(String column, String inView, String inColumn, Filter inFilter) {
     super();
     this.column = column;

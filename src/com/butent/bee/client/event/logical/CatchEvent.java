@@ -16,7 +16,7 @@ public final class CatchEvent<T> extends GwtEvent<CatchEvent.CatchHandler<T>> {
     void onCatch(CatchEvent<T> event);
   }
 
-  private static final Type<CatchHandler<?>> TYPE = new Type<CatchHandler<?>>();
+  private static final Type<CatchHandler<?>> TYPE = new Type<>();
 
   public static <T> CatchEvent<T> fire(HasCatchHandlers<T> source, T packet, T destination,
       ScheduledCommand scheduled) {
@@ -24,7 +24,7 @@ public final class CatchEvent<T> extends GwtEvent<CatchEvent.CatchHandler<T>> {
     CatchEvent<T> event = null;
 
     if (TYPE != null) {
-      event = new CatchEvent<T>(packet, destination, scheduled);
+      event = new CatchEvent<>(packet, destination, scheduled);
       source.fireEvent(event);
     }
     return event;

@@ -743,6 +743,11 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
   }
 
   @Override
+  public void render(String value) {
+    setValue(value);
+  }
+
+  @Override
   public void setAccessKey(char key) {
     getInput().setAccessKey(key);
   }

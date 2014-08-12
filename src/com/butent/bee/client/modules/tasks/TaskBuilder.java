@@ -20,10 +20,9 @@ import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
+import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.utils.FileUtils;
-import com.butent.bee.client.utils.NewFileInfo;
 import com.butent.bee.client.validation.CellValidateEvent;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.EditChangeHandler;
@@ -45,6 +44,7 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.value.BooleanValue;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskEvent;
 import com.butent.bee.shared.time.DateTime;
@@ -72,7 +72,7 @@ class TaskBuilder extends AbstractFormInterceptor {
   private static final String NAME_REMINDER_TIME = "Reminder_Time";
 
   private static final String NAME_FILES = "Files";
-  
+
   private HasCheckedness mailToggle;
   private InputTime expectedDurationInput;
   private Label endDateInputLabel;
@@ -200,7 +200,7 @@ class TaskBuilder extends AbstractFormInterceptor {
   @Override
   public void onReadyForInsert(HasHandlers listener, final ReadyForInsertEvent event) {
     event.consume();
-    
+
     IsRow activeRow = getFormView().getActiveRow();
 
     DateTime start = getStart();
@@ -219,7 +219,7 @@ class TaskBuilder extends AbstractFormInterceptor {
       event.getCallback().onFailure(Localized.getConstants().crmFinishTimeMustBeGreaterThanStart());
       return;
     }
-    
+
     DateTime reminderTime = getReminderTime(end);
     if (reminderTime != null) {
       DateTime now = TimeUtils.nowMinutes();
@@ -251,11 +251,11 @@ class TaskBuilder extends AbstractFormInterceptor {
 
     Data.setValue(VIEW_TASKS, newRow, COL_START_TIME, start);
     Data.setValue(VIEW_TASKS, newRow, COL_FINISH_TIME, end);
-    
+
     if (reminderTime != null) {
       Data.setValue(VIEW_TASKS, newRow, COL_REMINDER_TIME, reminderTime);
     }
-    
+
     if (mailToggle != null && mailToggle.isChecked()) {
       newRow.setProperty(PROP_MAIL, BooleanValue.S_TRUE);
     }
@@ -274,13 +274,13 @@ class TaskBuilder extends AbstractFormInterceptor {
         if (response.hasWarnings()) {
           BeeKeeper.getScreen().notifyWarning(response.getWarnings());
         }
-        
+
         if (response.hasErrors()) {
           event.getCallback().onFailure(response.getErrors());
-          
+
         } else if (!response.hasResponse()) {
           event.getCallback().onFailure("No tasks created");
-          
+
         } else if (response.hasResponse(BeeRowSet.class)) {
           BeeRowSet tasks = BeeRowSet.restore(response.getResponseAsString());
           if (tasks.isEmpty()) {
@@ -298,12 +298,12 @@ class TaskBuilder extends AbstractFormInterceptor {
           createFiles(tasks.getRowIds());
 
           event.getCallback().onSuccess(null);
-          
+
           String message = Localized.getMessages().crmCreatedNewTasks(tasks.getNumberOfRows());
           BeeKeeper.getScreen().notifyInfo(message);
-          
+
           event.getCallback().onSuccess(tasks.getRow(0));
-          
+
           DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_TASKS);
 
         } else {
@@ -324,12 +324,12 @@ class TaskBuilder extends AbstractFormInterceptor {
     Widget widget = getFormView().getWidgetByName(NAME_FILES);
 
     if (widget instanceof FileCollector && !((FileCollector) widget).isEmpty()) {
-      List<NewFileInfo> files = Lists.newArrayList(((FileCollector) widget).getFiles());
+      List<FileInfo> files = Lists.newArrayList(((FileCollector) widget).getFiles());
 
       final List<BeeColumn> columns = Data.getColumns(VIEW_TASK_FILES,
           Lists.newArrayList(COL_TASK, AdministrationConstants.COL_FILE, COL_CAPTION));
 
-      for (final NewFileInfo fileInfo : files) {
+      for (final FileInfo fileInfo : files) {
         FileUtils.uploadFile(fileInfo, new Callback<Long>() {
           @Override
           public void onSuccess(Long result) {
@@ -369,7 +369,7 @@ class TaskBuilder extends AbstractFormInterceptor {
     }
     return null;
   }
-  
+
   private Long getMillis(String widgetName) {
     Widget widget = getFormView().getWidgetByName(widgetName);
     if (widget instanceof InputTime) {
@@ -382,7 +382,7 @@ class TaskBuilder extends AbstractFormInterceptor {
   private DateTime getReminderTime(DateTime end) {
     HasDateValue datePart = getDate(NAME_REMINDER_DATE);
     Long timePart = getMillis(NAME_REMINDER_TIME);
-    
+
     if (datePart == null && timePart == null) {
       return null;
     } else if (datePart == null) {
@@ -391,7 +391,7 @@ class TaskBuilder extends AbstractFormInterceptor {
       return TimeUtils.combine(datePart, timePart);
     }
   }
-  
+
   private DateTime getStart() {
     HasDateValue datePart = getDate(NAME_START_DATE);
     if (datePart == null) {

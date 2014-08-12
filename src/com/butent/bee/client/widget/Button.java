@@ -44,7 +44,7 @@ public class Button extends FocusWidget implements IdentifiableWidget, HasComman
   public void click() {
     ButtonElement.as(getElement()).click();
   }
-  
+
   @Override
   public Scheduler.ScheduledCommand getCommand() {
     return command;
@@ -64,7 +64,7 @@ public class Button extends FocusWidget implements IdentifiableWidget, HasComman
   public String getIdPrefix() {
     return "b";
   }
-  
+
   @Override
   public String getText() {
     return getElement().getInnerText();
@@ -88,7 +88,7 @@ public class Button extends FocusWidget implements IdentifiableWidget, HasComman
       initEvents();
     }
   }
-  
+
   @Override
   public void setHtml(String html) {
     getElement().setInnerHTML(html);
@@ -103,7 +103,7 @@ public class Button extends FocusWidget implements IdentifiableWidget, HasComman
   public void setText(String text) {
     getElement().setInnerText(text);
   }
-  
+
   private void init() {
     DomUtils.createId(this, getIdPrefix());
     addStyleName("bee-Button");

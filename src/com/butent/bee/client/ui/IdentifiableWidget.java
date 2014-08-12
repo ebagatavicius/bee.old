@@ -4,8 +4,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.IsWidget;
 
 public interface IdentifiableWidget extends IsWidget, HasIdentity {
-  
-  void addStyleName(String style);  
-  
+
+  void addStyleName(String style);
+
   Element getElement();
 }

@@ -8,10 +8,10 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.butent.bee.shared.IsUnique;
 
 public interface PreviewHandler extends EventHandler, IsUnique {
-  
+
   Element getElement();
-  
+
   boolean isModal();
-  
+
   void onEventPreview(NativePreviewEvent event, Node targetNode);
 }

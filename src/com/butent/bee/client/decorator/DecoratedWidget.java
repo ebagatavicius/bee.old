@@ -16,10 +16,10 @@ import java.util.NoSuchElementException;
 public class DecoratedWidget extends Panel implements IdentifiableWidget {
 
   private final Widget widget;
-  
+
   private final JsFunction onInserted;
   private final JsFunction onRemoved;
-  
+
   private int insertCounter;
   private int removeCounter;
 
@@ -29,10 +29,10 @@ public class DecoratedWidget extends Panel implements IdentifiableWidget {
     setElement(Assert.notNull(element));
     this.onInserted = onInserted;
     this.onRemoved = onRemoved;
-    
+
     widget.removeFromParent();
     adopt(widget);
-    
+
     if (BeeUtils.isEmpty(element.getId())) {
       DomUtils.createId(element, getIdPrefix());
     }

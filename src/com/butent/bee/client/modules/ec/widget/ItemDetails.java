@@ -71,7 +71,7 @@ public class ItemDetails extends Flow {
       table.setText(row, colLabel, Localized.getConstants().ecListPrice(), pfx + STYLE_LABEL);
       table.setText(row, colValue, EcUtils.formatCents(listPrice), pfx + STYLE_VALUE);
       table.setText(row, colCurrency, EcConstants.CURRENCY, pfx + STYLE_CURRENCY);
-      
+
       EcStyles.markListPrice(table.getRow(row));
       row++;
     }
@@ -88,10 +88,10 @@ public class ItemDetails extends Flow {
         row++;
 
         pfx = stylePrefix + "featured-price-";
-        
+
         table.setText(row, colValue, EcUtils.formatCents(price), pfx + STYLE_VALUE);
         table.setText(row, colCurrency, EcConstants.CURRENCY, pfx + STYLE_CURRENCY);
-        
+
         EcStyles.markPrice(table.getRow(row));
         row++;
 
@@ -106,7 +106,7 @@ public class ItemDetails extends Flow {
         row++;
       }
     }
-    
+
     container.add(table);
 
     return container;

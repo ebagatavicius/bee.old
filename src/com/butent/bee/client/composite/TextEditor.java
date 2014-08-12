@@ -12,14 +12,14 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
 import com.butent.bee.client.Global;
-import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.layout.Absolute;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.ui.FormWidget;
+import com.butent.bee.client.ui.UiHelper;
+import com.butent.bee.client.view.edit.EditChangeHandler;
 import com.butent.bee.client.view.edit.EditStopEvent;
 import com.butent.bee.client.view.edit.EditStopEvent.Handler;
-import com.butent.bee.client.view.edit.EditChangeHandler;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.edit.EditorFactory;
 import com.butent.bee.client.view.edit.HasTextBox;
@@ -210,6 +210,11 @@ public class TextEditor extends Absolute implements Editor, HasTextDimensions, H
   }
 
   @Override
+  public void render(String value) {
+    setValue(value);
+  }
+
+  @Override
   public void setAccessKey(char key) {
     getArea().setAccessKey(key);
   }
@@ -226,7 +231,7 @@ public class TextEditor extends Absolute implements Editor, HasTextDimensions, H
 
   @Override
   public void setEnabled(boolean enabled) {
-    DomUtils.enableChildren(this, enabled);
+    UiHelper.enableChildren(this, enabled);
   }
 
   @Override

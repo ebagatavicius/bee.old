@@ -63,12 +63,12 @@ public abstract class AbstractDate implements HasDateValue {
         return null;
     }
   }
-  
+
   private static void assertType(ValueType type) {
     Assert.notNull(type);
     Assert.isTrue(type.equals(ValueType.DATE) || type.equals(ValueType.DATE_TIME));
   }
-  
+
   @Override
   public HasDateValue fromDate(JustDate justDate) {
     if (justDate == null) {

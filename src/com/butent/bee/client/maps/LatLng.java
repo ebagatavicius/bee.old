@@ -12,9 +12,11 @@ public class LatLng extends JavaScriptObject {
     return createJso(lat, lng, noWrap);
   }
 
+//@formatter:off
   private static native LatLng createJso(double lat, double lng, boolean noWrap) /*-{
     return new $wnd.google.maps.LatLng(lat, lng, noWrap);
   }-*/;
+//@formatter:on
 
   protected LatLng() {
   }
@@ -27,6 +29,7 @@ public class LatLng extends JavaScriptObject {
     return getLng();
   }
 
+//@formatter:off
   public final native String getString() /*-{
     return this.toString();
   }-*/;
@@ -42,4 +45,5 @@ public class LatLng extends JavaScriptObject {
   private native double getLng() /*-{
     return this.lng();
   }-*/;
+//@formatter:on
 }

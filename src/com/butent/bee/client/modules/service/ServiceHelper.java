@@ -155,7 +155,7 @@ final class ServiceHelper {
     dialog.setWidget(panel);
     dialog.center();
   }
-  
+
   private ServiceHelper() {
   }
 }

@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -27,6 +26,7 @@ import com.butent.bee.client.modules.administration.PasswordService;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.screen.ScreenImpl;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
@@ -41,6 +41,7 @@ import com.butent.bee.shared.modules.documents.DocumentConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.ui.UserInterface;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SelfServiceScreen extends ScreenImpl {
@@ -61,17 +62,23 @@ public class SelfServiceScreen extends ScreenImpl {
         }
       }
 
-      activeViews.put(viewKey, presenter.getWidget().getId());
-      showInNewPlace(presenter.getWidget());
+      activeViews.put(viewKey, presenter.getMainView().getId());
+      showInNewPlace(presenter.getMainView());
     }
   }
 
-  private static final String STYLE_PREFIX = "bee-tr-SelfService-";
+  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "tr-SelfService-";
 
-  private final Map<String, String> activeViews = Maps.newHashMap();
+  private final Map<String, String> activeViews = new HashMap<>();
 
   public SelfServiceScreen() {
     super();
+  }
+
+  @Override
+  public void closeAll() {
+    super.closeAll();
+    activeViews.clear();
   }
 
   @Override
@@ -219,7 +226,8 @@ public class SelfServiceScreen extends ScreenImpl {
 
   private void openGrid(String gridName, boolean intercept, GridOptions gridOptions) {
     GridInterceptor gridInterceptor = intercept ? GridFactory.getGridInterceptor(gridName) : null;
-    ActivationCallback callback = new ActivationCallback(GridFactory.getSupplierKey(gridName));
+    ActivationCallback callback =
+        new ActivationCallback(GridFactory.getSupplierKey(gridName, gridInterceptor));
 
     GridFactory.openGrid(gridName, gridInterceptor, gridOptions, callback);
   }

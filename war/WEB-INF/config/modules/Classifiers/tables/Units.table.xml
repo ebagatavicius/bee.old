@@ -7,7 +7,7 @@
   <Fields>
     <String name="Name" precision="10" notNull="true" unique="true" label="=unit" />
     <String name="Caption" precision="30" label="=caption" />
-    <Relation name="BaseUnit" relation="Units" label="=baseUnit"/>
+    <Relation name="BaseUnit" relation="Units" label="=baseUnit" />
     <Double name="Factor" label="=unitFactor" />
   </Fields>
 </Table>

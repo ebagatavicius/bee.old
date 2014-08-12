@@ -21,7 +21,7 @@ public final class Opener {
       return UPDATE;
     }
   }
-  
+
   public static Opener relativeTo(Element element) {
     return new Opener(true, element);
   }
@@ -38,7 +38,7 @@ public final class Opener {
     Assert.notNull(callback);
     return new Opener(callback);
   }
-  
+
   private final boolean modal;
   private final Element target;
 
@@ -47,7 +47,7 @@ public final class Opener {
   private Opener(boolean modal, Element target) {
     this(modal, target, null);
   }
-  
+
   private Opener(boolean modal, Element target, PresenterCallback presenterCallback) {
     this.modal = modal;
     this.target = target;

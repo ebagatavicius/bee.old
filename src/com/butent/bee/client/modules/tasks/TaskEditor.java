@@ -34,7 +34,6 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.render.PhotoRenderer;
 import com.butent.bee.client.utils.FileUtils;
-import com.butent.bee.client.utils.NewFileInfo;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.view.form.FormView;
@@ -58,7 +57,7 @@ import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.io.StoredFile;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskEvent;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.modules.tasks.TaskUtils;
@@ -107,13 +106,13 @@ class TaskEditor extends AbstractFormInterceptor {
     return widget;
   }
 
-  private static List<StoredFile> filterEventFiles(List<StoredFile> input, long teId) {
+  private static List<FileInfo> filterEventFiles(List<FileInfo> input, long teId) {
     if (input.isEmpty()) {
       return input;
     }
-    List<StoredFile> result = Lists.newArrayList();
+    List<FileInfo> result = Lists.newArrayList();
 
-    for (StoredFile file : input) {
+    for (FileInfo file : input) {
       Long id = file.getRelatedId();
       if (id != null && id == teId) {
         result.add(file);
@@ -189,7 +188,7 @@ class TaskEditor extends AbstractFormInterceptor {
 
     return notes;
   }
-  
+
   private static boolean hasRelations(IsRow row) {
     if (row == null) {
       return false;
@@ -338,7 +337,7 @@ class TaskEditor extends AbstractFormInterceptor {
   }
 
   private static void showEvent(Flow panel, BeeRow row, List<BeeColumn> columns,
-      List<StoredFile> files, Table<String, String, Long> durations, boolean renderPhoto) {
+      List<FileInfo> files, Table<String, String, Long> durations, boolean renderPhoto) {
 
     Flow container = new Flow();
     container.addStyleName(STYLE_EVENT_ROW);
@@ -442,7 +441,7 @@ class TaskEditor extends AbstractFormInterceptor {
   }
 
   private static void showEventsAndDuration(FormView form, BeeRowSet rowSet,
-      List<StoredFile> files) {
+      List<FileInfo> files) {
 
     Widget widget = form.getWidgetByName(VIEW_TASK_EVENTS);
     if (!(widget instanceof Flow) || DataUtils.isEmpty(rowSet)) {
@@ -562,7 +561,7 @@ class TaskEditor extends AbstractFormInterceptor {
   public boolean isRowEditable(IsRow row) {
     return row != null && BeeKeeper.getUser().is(row.getLong(getDataIndex(COL_OWNER)));
   }
-  
+
   @Override
   public void onSaveChanges(HasHandlers listener, SaveChangesEvent event) {
     final IsRow oldRow = event.getOldRow();
@@ -586,7 +585,7 @@ class TaskEditor extends AbstractFormInterceptor {
 
         if (data != null) {
           RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_TASKS, data);
-          
+
           if (hasRelations(oldRow) || hasRelations(data)) {
             DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_RELATED_TASKS);
           }
@@ -663,10 +662,10 @@ class TaskEditor extends AbstractFormInterceptor {
           ((FileGroup) fileWidget).clear();
         }
 
-        List<StoredFile> files = StoredFile.restoreCollection(data.getProperty(PROP_FILES));
+        List<FileInfo> files = FileInfo.restoreCollection(data.getProperty(PROP_FILES));
         if (!files.isEmpty()) {
           if (fileWidget instanceof FileGroup) {
-            for (StoredFile file : files) {
+            for (FileInfo file : files) {
               if (file.getRelatedId() == null) {
                 ((FileGroup) fileWidget).addFile(file);
               }
@@ -1240,7 +1239,7 @@ class TaskEditor extends AbstractFormInterceptor {
 
     String events = data.getProperty(PROP_EVENTS);
     if (!BeeUtils.isEmpty(events)) {
-      List<StoredFile> files = StoredFile.restoreCollection(data.getProperty(PROP_FILES));
+      List<FileInfo> files = FileInfo.restoreCollection(data.getProperty(PROP_FILES));
       showEventsAndDuration(form, BeeRowSet.restore(events), files);
     }
 
@@ -1276,14 +1275,14 @@ class TaskEditor extends AbstractFormInterceptor {
     sendRequest(params, callback);
   }
 
-  private void sendFiles(final List<NewFileInfo> files, final long taskId, final long teId) {
+  private void sendFiles(final List<FileInfo> files, final long taskId, final long teId) {
 
     final Holder<Integer> counter = Holder.of(0);
 
     final List<BeeColumn> columns = Data.getColumns(VIEW_TASK_FILES,
         Lists.newArrayList(COL_TASK, COL_TASK_EVENT, COL_FILE, COL_CAPTION));
 
-    for (final NewFileInfo fileInfo : files) {
+    for (final FileInfo fileInfo : files) {
       FileUtils.uploadFile(fileInfo, new Callback<Long>() {
         @Override
         public void onSuccess(Long result) {
@@ -1309,7 +1308,7 @@ class TaskEditor extends AbstractFormInterceptor {
   }
 
   private void sendRequest(ParameterList params, final TaskEvent event,
-      final List<NewFileInfo> files) {
+      final List<FileInfo> files) {
 
     Callback<ResponseObject> callback = new Callback<ResponseObject>() {
       @Override

@@ -4,24 +4,19 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.dialog.ModalForm;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.event.Previewer.PreviewConsumer;
 import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.output.Printer;
-import com.butent.bee.client.presenter.Presenter;
-import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.presenter.RowPresenter;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
-import com.butent.bee.client.ui.WidgetFactory;
-import com.butent.bee.client.ui.WidgetSupplier;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.view.form.CloseCallback;
 import com.butent.bee.client.view.form.FormView;
@@ -76,7 +71,7 @@ public final class RowEditor {
   public static String getSupplierKey(String viewName, long rowId) {
     Assert.notEmpty(viewName);
     String name = BeeUtils.join(BeeConst.STRING_UNDER, viewName, rowId);
-    return WidgetFactory.SupplierKind.ROW_EDITOR.getKey(name);
+    return ViewFactory.SupplierKind.ROW_EDITOR.getKey(name);
   }
 
   public static void open(String viewName, IsRow row, Opener opener) {
@@ -225,26 +220,6 @@ public final class RowEditor {
   private static void getRow(final String formName, final DataInfo dataInfo, final long rowId,
       final Opener opener, final RowCallback rowCallback, final FormInterceptor formInteceptor) {
 
-    String supplierKey = getSupplierKey(dataInfo.getViewName(), rowId);
-
-    if (!opener.isModal() && !WidgetFactory.hasSupplier(supplierKey)) {
-      WidgetSupplier supplier = new WidgetSupplier() {
-        @Override
-        public void create(final Callback<IdentifiableWidget> callback) {
-          Opener widgetOpener = Opener.with(new PresenterCallback() {
-            @Override
-            public void onCreate(Presenter presenter) {
-              callback.onSuccess(presenter.getWidget());
-            }
-          });
-
-          getRow(formName, dataInfo, rowId, widgetOpener, null, formInteceptor);
-        }
-      };
-
-      WidgetFactory.registerSupplier(supplierKey, supplier);
-    }
-
     Queries.getRow(dataInfo.getViewName(), rowId, new RowCallback() {
       @Override
       public void onSuccess(BeeRow result) {
@@ -305,7 +280,7 @@ public final class RowEditor {
         if (opener.isModal()) {
           dialog.close();
         } else {
-          BeeKeeper.getScreen().closeWidget(presenter.getWidget());
+          BeeKeeper.getScreen().closeWidget(presenter.getMainView());
         }
       }
     };

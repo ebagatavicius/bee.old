@@ -10,8 +10,8 @@ import com.butent.bee.shared.State;
 
 public interface DndTarget extends HasDragEnterHandlers, HasDragLeaveHandlers, HasDragOverHandlers,
     HasDropHandlers, IdentifiableWidget {
-  
+
   State getTargetState();
-  
+
   void setTargetState(State targetState);
 }

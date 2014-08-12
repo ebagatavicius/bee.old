@@ -27,7 +27,7 @@ public final class CalendarSettings {
     }
     return settings;
   }
-  
+
   private static boolean getBool(IsRow row, List<? extends IsColumn> columns, String columnId) {
     Boolean value = row.getBoolean(DataUtils.getColumnIndex(columnId, columns));
     return (value == null) ? false : value;
@@ -47,23 +47,23 @@ public final class CalendarSettings {
   private int workingHourEnd;
 
   private int scrollToHour;
-  
+
   private int defaultDisplayedDays;
-  
+
   private TimeBlockClick timeBlockClickNumber;
   private boolean separateAttendees;
-  
+
   private MultidayLayout multidayLayout;
-  
+
   private MultidayLayout multidayTaskLayout;
 
   private final EnumMap<ViewType, Boolean> views;
 
   private ViewType activeView;
-  
+
   private CalendarSettings() {
     this.views = Maps.newEnumMap(ViewType.class);
-    
+
     for (ViewType view : ViewType.values()) {
       this.views.put(view, true);
     }
@@ -78,7 +78,7 @@ public final class CalendarSettings {
   }
 
   public int getHourHeight() {
-    return getIntervalsPerHour() * getPixelsPerInterval(); 
+    return getIntervalsPerHour() * getPixelsPerInterval();
   }
 
   public long getId() {
@@ -96,11 +96,11 @@ public final class CalendarSettings {
   public MultidayLayout getMultidayTaskLayout() {
     return multidayTaskLayout;
   }
-  
+
   public int getPixelsPerInterval() {
     return pixelsPerInterval;
   }
-  
+
   public int getScrollToHour() {
     return scrollToHour;
   }
@@ -152,7 +152,7 @@ public final class CalendarSettings {
 
     Integer tbcn = row.getInteger(DataUtils.getColumnIndex(COL_TIME_BLOCK_CLICK_NUMBER, columns));
     setTimeBlockClickNumber(EnumUtils.getEnumByIndex(TimeBlockClick.class, tbcn));
-    
+
     setSeparateAttendees(getBool(row, columns, COL_SEPARATE_ATTENDEES));
 
     Integer mdl = row.getInteger(DataUtils.getColumnIndex(COL_MULTIDAY_LAYOUT, columns));
@@ -160,11 +160,11 @@ public final class CalendarSettings {
 
     mdl = row.getInteger(DataUtils.getColumnIndex(COL_MULTIDAY_TASK_LAYOUT, columns));
     setMultidayTaskLayout(EnumUtils.getEnumByIndex(MultidayLayout.class, mdl));
-    
+
     for (ViewType view : ViewType.values()) {
       views.put(view, getBool(row, columns, view.getColumnId()));
     }
-    
+
     Integer av;
     if (DataUtils.contains(columns, COL_ACTIVE_VIEW)) {
       av = row.getInteger(DataUtils.getColumnIndex(COL_ACTIVE_VIEW, columns));
@@ -189,7 +189,7 @@ public final class CalendarSettings {
   private void setId(long id) {
     this.id = id;
   }
-  
+
   private void setIntervalsPerHour(int intervals) {
     int value = BeeUtils.clamp(intervals, 1, TimeUtils.MINUTES_PER_HOUR);
     while (TimeUtils.MINUTES_PER_HOUR % value != 0) {

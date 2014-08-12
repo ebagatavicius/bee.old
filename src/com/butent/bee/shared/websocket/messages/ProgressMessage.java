@@ -53,7 +53,7 @@ public class ProgressMessage extends Message {
   public String brief() {
     return (getValue() == null) ? string(getState()) : string(getValue());
   }
-  
+
   public String getProgressId() {
     return progressId;
   }
@@ -95,13 +95,13 @@ public class ProgressMessage extends Message {
   public boolean isValid() {
     return !BeeUtils.isEmpty(getProgressId()) && getState() != null;
   }
-  
+
   @Override
   public String toString() {
     return BeeUtils.joinOptions("type", string(getType()), "progressId", getProgressId(),
         "state", string(getState()), "value", string(getValue()));
   }
-  
+
   @Override
   protected void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);

@@ -127,7 +127,7 @@ public final class BeeUtils {
     if (rest == null) {
       return false;
     }
-    
+
     for (String s : rest) {
       if (!isEmpty(s)) {
         return true;
@@ -167,7 +167,7 @@ public final class BeeUtils {
     }
     return false;
   }
-  
+
   /**
    * Checks if the specified value {@code x} is between values {@code min} and {@code max}. Note:
    * {@code min} value is inclusive, {@code max} value - exclusive.
@@ -502,7 +502,7 @@ public final class BeeUtils {
       return src.trim().toLowerCase().contains(ctxt.trim().toLowerCase());
     }
   }
-  
+
   public static boolean containsWhitespace(CharSequence cs) {
     if (cs == null) {
       return false;
@@ -568,9 +568,17 @@ public final class BeeUtils {
     }
     return src.substring(0, start) + src.substring(end);
   }
-  
+
   public static double div(int x, int y) {
     return x / (double) y;
+  }
+
+  public static String embrace(String s) {
+    if (isEmpty(s)) {
+      return BeeConst.STRING_EMPTY;
+    } else {
+      return BeeConst.STRING_LEFT_BRACE + s + BeeConst.STRING_RIGHT_BRACE;
+    }
   }
 
   /**
@@ -840,6 +848,10 @@ public final class BeeUtils {
     return contains(s, 'E') || contains(s, 'e');
   }
 
+  public static boolean hasLength(CharSequence cs) {
+    return hasLength(cs, 1);
+  }
+
   public static boolean hasLength(CharSequence cs, int min) {
     if (cs == null) {
       return false;
@@ -1001,7 +1013,7 @@ public final class BeeUtils {
   public static boolean isAsciiLetter(char c) {
     return Ascii.isUpperCase(c) || Ascii.isLowerCase(c);
   }
-  
+
   public static boolean isBetween(Double d, Double min, boolean minInclusive,
       Double max, boolean maxInclusive) {
     if (!isDouble(d)) {
@@ -1274,11 +1286,11 @@ public final class BeeUtils {
   public static boolean isNegative(Integer x) {
     return (x == null) ? false : x < 0;
   }
-  
+
   public static boolean isNegativeInt(String s) {
     return isInt(s) && toInt(s) < 0;
   }
-  
+
   public static boolean isNonNegative(Double d) {
     if (isDouble(d)) {
       return Double.compare(d, BeeConst.DOUBLE_ZERO) >= 0;
@@ -2059,6 +2071,14 @@ public final class BeeUtils {
       idx--;
     }
     return str.substring(0, idx);
+  }
+
+  public static String removeWhiteSpace(String str) {
+    if (str == null) {
+      return null;
+    } else {
+      return CharMatcher.WHITESPACE.removeFrom(str);
+    }
   }
 
   /**

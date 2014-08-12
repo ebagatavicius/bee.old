@@ -11,7 +11,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 public class Flag extends CustomWidget {
 
   public static final String ATTR_COUNTRY = "country";
-  
+
   public Flag() {
     super(Document.get().createImageElement());
     addStyleName("bee-Flag");
@@ -23,22 +23,22 @@ public class Flag extends CustomWidget {
       render(country);
     }
   }
-  
+
   public void clear() {
     getElement().getStyle().setVisibility(Visibility.HIDDEN);
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "flag";
   }
-  
+
   public void render(String country) {
     if (BeeUtils.isEmpty(country)) {
       clear();
       return;
     }
-    
+
     Flags.get(country, new Callback<String>() {
       @Override
       public void onFailure(String... reason) {
@@ -56,7 +56,7 @@ public class Flag extends CustomWidget {
       }
     });
   }
-  
+
   private ImageElement getImageElement() {
     return ImageElement.as(getElement());
   }

@@ -29,6 +29,7 @@ import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.html.Keywords;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.GridDescription;
@@ -95,10 +96,10 @@ class ArticleGraphicsHandler extends AbstractGridInterceptor {
 
   private FileCollector ensureCollector() {
     if (collector == null) {
-      collector = FileCollector.headless(new Consumer<Collection<NewFileInfo>>() {
+      collector = FileCollector.headless(new Consumer<Collection<? extends FileInfo>>() {
         @Override
-        public void accept(Collection<NewFileInfo> input) {
-          final Collection<NewFileInfo> files = Images.sanitizeInput(input, getGridView());
+        public void accept(Collection<? extends FileInfo> input) {
+          final Collection<FileInfo> files = Images.sanitizeInput(input, getGridView());
           if (!files.isEmpty()) {
             getGridView().ensureRelId(new IdCallback() {
               @Override
@@ -131,34 +132,36 @@ class ArticleGraphicsHandler extends AbstractGridInterceptor {
     return result;
   }
 
-  private void uploadGraphics(final Long articleId, Collection<NewFileInfo> files) {
+  private void uploadGraphics(final Long articleId, Collection<FileInfo> files) {
     final Holder<Integer> latch = Holder.of(files.size());
     final Holder<Integer> sort = Holder.of(getMaxSort());
 
-    for (NewFileInfo fileInfo : files) {
-      FileUtils.readAsDataURL(fileInfo.getFile(), new Consumer<String>() {
+    for (FileInfo fileInfo : files) {
+      if (fileInfo instanceof NewFileInfo) {
+        FileUtils.readAsDataURL(((NewFileInfo) fileInfo).getFile(), new Consumer<String>() {
 
-        @Override
-        public void accept(String input) {
-          sort.set(sort.get() + 1);
+          @Override
+          public void accept(String input) {
+            sort.set(sort.get() + 1);
 
-          ParameterList params = EcKeeper.createArgs(SVC_UPLOAD_GRAPHICS);
-          params.addQueryItem(COL_TCD_ARTICLE, articleId);
-          params.addQueryItem(COL_TCD_SORT, sort.get());
+            ParameterList params = EcKeeper.createArgs(SVC_UPLOAD_GRAPHICS);
+            params.addQueryItem(COL_TCD_ARTICLE, articleId);
+            params.addQueryItem(COL_TCD_SORT, sort.get());
 
-          params.addDataItem(COL_TCD_GRAPHICS_RESOURCE, input);
+            params.addDataItem(COL_TCD_GRAPHICS_RESOURCE, input);
 
-          BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
-            @Override
-            public void onResponse(ResponseObject response) {
-              latch.set(latch.get() - 1);
-              if (!BeeUtils.isPositive(latch.get())) {
-                DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getViewName());
+            BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+              @Override
+              public void onResponse(ResponseObject response) {
+                latch.set(latch.get() - 1);
+                if (!BeeUtils.isPositive(latch.get())) {
+                  DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getViewName());
+                }
               }
-            }
-          });
-        }
-      });
+            });
+          }
+        });
+      }
     }
   }
 }

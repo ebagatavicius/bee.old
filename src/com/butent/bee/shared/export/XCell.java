@@ -18,10 +18,10 @@ public class XCell implements BeeSerializable {
   private enum Serial {
     INDEX, VALUE, FORMULA, STYLE, PICTURE_REF, PICTURE_LAYOUT, COL_SPAN, ROW_SPAN
   }
-  
+
   public static XCell forPicture(int index, int pictureRef) {
     XCell cell = new XCell();
-    
+
     cell.setIndex(index);
     cell.setPictureRef(pictureRef);
 
@@ -30,10 +30,10 @@ public class XCell implements BeeSerializable {
 
   public static XCell forStyle(int index, int styleRef) {
     XCell cell = new XCell();
-    
+
     cell.setIndex(index);
     cell.setStyleRef(styleRef);
-    
+
     return cell;
   }
 
@@ -92,7 +92,7 @@ public class XCell implements BeeSerializable {
   public XCell(int index) {
     this.index = index;
   }
-  
+
   public XCell(int index, Value value) {
     this.index = index;
     this.value = value;

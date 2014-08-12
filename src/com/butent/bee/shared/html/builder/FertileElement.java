@@ -51,14 +51,14 @@ public class FertileElement extends Element {
 
     } else {
       StringBuilder sb = new StringBuilder(Node.indent(indentStart, buildStart()));
-      
+
       int textCount = 0;
       for (Node child : children) {
         if (child instanceof Text) {
           textCount++;
         }
       }
-      
+
       boolean indentChildren = textCount != 1;
 
       int nextIndent;
@@ -86,7 +86,7 @@ public class FertileElement extends Element {
   public Node getChild(int index) {
     return BeeUtils.getQuietly(children, index);
   }
-  
+
   public List<Node> getChildren() {
     return children;
   }
@@ -94,7 +94,7 @@ public class FertileElement extends Element {
   public Node getFirstChild() {
     return getChild(0);
   }
-  
+
   public boolean hasComment() {
     for (Node child : children) {
       if (child instanceof Comment) {
@@ -125,12 +125,12 @@ public class FertileElement extends Element {
     child.setParent(this);
     children.add(index, child);
   }
-  
+
   public Element queryId(String id) {
     if (BeeUtils.same(id, getId())) {
       return this;
     }
-    
+
     Element result = null;
 
     for (Node child : children) {
@@ -139,15 +139,15 @@ public class FertileElement extends Element {
       } else if (child instanceof Element && BeeUtils.same(id, ((Element) child).getId())) {
         result = (Element) child;
       }
-      
+
       if (result != null) {
         break;
       }
     }
-    
+
     return result;
   }
-  
+
   public List<Element> queryTag(String tagName) {
     List<Element> result = Lists.newArrayList();
     if (getTag().equals(tagName)) {
@@ -161,7 +161,7 @@ public class FertileElement extends Element {
         result.add((Element) child);
       }
     }
-    
+
     return result;
   }
 
@@ -172,7 +172,7 @@ public class FertileElement extends Element {
   public int size() {
     return children.size();
   }
-  
+
   @Override
   protected String buildEnd() {
     StringBuilder sb = new StringBuilder("</");

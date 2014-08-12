@@ -6,19 +6,19 @@ public enum EventState {
     public boolean proceed() {
       return true;
     }
-  }, 
+  },
   CONSUMED {
     @Override
     public boolean proceed() {
       return false;
     }
-  }, 
+  },
   CANCELED {
     @Override
     public boolean proceed() {
       return false;
     }
   };
-  
-  public abstract boolean proceed(); 
+
+  public abstract boolean proceed();
 }

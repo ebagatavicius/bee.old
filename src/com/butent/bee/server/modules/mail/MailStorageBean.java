@@ -66,10 +66,12 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 import javax.mail.internet.ParseException;
 
 @Stateless
 @LocalBean
+@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 public class MailStorageBean {
 
   private static final BeeLogger logger = LogUtils.getLogger(MailStorageBean.class);
@@ -141,11 +143,13 @@ public class MailStorageBean {
         .setWhere(sys.idEquals(TBL_FOLDERS, folder.getId())));
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public MailAccount getAccount(Long accountId) {
     Assert.state(DataUtils.isId(accountId));
     return getAccount(sys.idEquals(TBL_ACCOUNTS, accountId), false);
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public MailAccount getAccount(IsCondition condition, boolean checkUnread) {
     MailAccount account = new MailAccount(qs.getRow(new SqlSelect()
         .addAllFields(TBL_ACCOUNTS)
@@ -184,6 +188,7 @@ public class MailStorageBean {
     return account;
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRED)
   public void initAccount(Long accountId) {
     MailAccount account = getAccount(accountId);
 
@@ -211,7 +216,6 @@ public class MailStorageBean {
         .setWhere(sys.idEquals(TBL_FOLDERS, folder.getId())));
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   public Long storeMail(Long userId, Message message, Long folderId, Long messageUID)
       throws MessagingException {
 
@@ -263,7 +267,7 @@ public class MailStorageBean {
           .addConstant(COL_UNIQUE_ID, envelope.getUniqueId())
           .addConstant(COL_DATE, envelope.getDate())
           .addNotNull(COL_SENDER, senderId)
-          .addConstant(COL_SUBJECT, envelope.getSubject())
+          .addConstant(COL_SUBJECT, BeeUtils.left(envelope.getSubject(), 255))
           .addConstant(COL_RAW_CONTENT, fileId));
 
       Set<Long> allAddresses = Sets.newHashSet();
@@ -301,7 +305,6 @@ public class MailStorageBean {
     return placeId;
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   public long syncFolder(Long userId, MailFolder localFolder, Folder remoteFolder)
       throws MessagingException {
     Assert.noNulls(localFolder, remoteFolder);
@@ -365,7 +368,6 @@ public class MailStorageBean {
     return lastUid;
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   public void validateFolder(MailFolder folder, Long uidValidity) {
     Assert.notNull(folder);
 
@@ -434,17 +436,16 @@ public class MailStorageBean {
       id = qs.insertData(new SqlInsert(TBL_EMAILS)
           .addConstant(COL_EMAIL_ADDRESS, email));
     }
-    if (BeeUtils.isEmpty(bookLabel) && !BeeUtils.isEmpty(label)) {
-      if (DataUtils.isId(bookId)) {
-        qs.updateData(new SqlUpdate(TBL_ADDRESSBOOK)
-            .addConstant(COL_EMAIL_LABEL, label)
-            .setWhere(sys.idEquals(TBL_ADDRESSBOOK, bookId)));
-      } else {
-        qs.insertData(new SqlInsert(TBL_ADDRESSBOOK)
-            .addConstant(COL_USER, userId)
-            .addConstant(COL_EMAIL, id)
-            .addConstant(COL_EMAIL_LABEL, label));
-      }
+    if (!DataUtils.isId(bookId)) {
+      qs.insertData(new SqlInsert(TBL_ADDRESSBOOK)
+          .addConstant(COL_USER, userId)
+          .addConstant(COL_EMAIL, id)
+          .addConstant(COL_EMAIL_LABEL, label));
+
+    } else if (BeeUtils.isEmpty(bookLabel) && !BeeUtils.isEmpty(label)) {
+      qs.updateData(new SqlUpdate(TBL_ADDRESSBOOK)
+          .addConstant(COL_EMAIL_LABEL, label)
+          .setWhere(sys.idEquals(TBL_ADDRESSBOOK, bookId)));
     }
     return id;
   }
@@ -527,6 +528,10 @@ public class MailStorageBean {
 
       try {
         fileName = part.getFileName();
+
+        if (!BeeUtils.isEmpty(fileName)) {
+          fileName = MimeUtility.decodeText(fileName);
+        }
       } catch (ParseException e) {
         logger.warning("( MessageID =", messageId, ") Error getting part file name:", e);
       }
@@ -572,10 +577,28 @@ public class MailStorageBean {
 
   private void savePart(Long messageId, String text, String html) {
     if (BeeUtils.anyNotEmpty(text, html)) {
+      String cleanHtml = html;
+
+      if (!BeeUtils.isEmpty(html)) {
+        int idx = html.indexOf(0);
+
+        switch (idx) {
+          case -1:
+            break;
+
+          case 0:
+            cleanHtml = null;
+            break;
+
+          default:
+            cleanHtml = html.substring(0, idx);
+            break;
+        }
+      }
       qs.insertData(new SqlInsert(TBL_PARTS)
           .addConstant(COL_MESSAGE, messageId)
-          .addConstant(COL_CONTENT, BeeUtils.isEmpty(text) ? HtmlUtils.stripHtml(html) : text)
-          .addConstant(COL_HTML_CONTENT, html));
+          .addConstant(COL_CONTENT, BeeUtils.isEmpty(text) ? HtmlUtils.stripHtml(cleanHtml) : text)
+          .addConstant(COL_HTML_CONTENT, cleanHtml));
     }
   }
 }

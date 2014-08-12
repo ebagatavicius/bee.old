@@ -9,16 +9,15 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.math.BigDecimal;
 
 /**
- * The {@code BooleanValue} class represents a boolean value. These values 
- * are set by using
- * {@link com.butent.bee.shared.data.value.BooleanValue#getInstance(Boolean)} 
- * and are comparable. 
+ * The {@code BooleanValue} class represents a boolean value. These values
+ * are set by using {@link com.butent.bee.shared.data.value.BooleanValue#getInstance(Boolean)} and
+ * are comparable.
  */
 public final class BooleanValue extends Value {
 
   public static final String S_TRUE = "t";
   public static final String S_FALSE = "f";
-  
+
   public static final BooleanValue TRUE = new BooleanValue(true);
   public static final BooleanValue FALSE = new BooleanValue(false);
   public static final BooleanValue NULL = new BooleanValue(null);
@@ -70,7 +69,7 @@ public final class BooleanValue extends Value {
   public Boolean getBoolean() {
     return value;
   }
-  
+
   @Override
   public JustDate getDate() {
     if (isNull()) {
@@ -149,9 +148,9 @@ public final class BooleanValue extends Value {
 
   @Override
   public boolean isEmpty() {
-    return !BeeUtils.isTrue(value); 
+    return !BeeUtils.isTrue(value);
   }
-  
+
   @Override
   public boolean isNull() {
     return this == NULL || getBoolean() == null;

@@ -103,6 +103,17 @@ final class FromJoin extends FromSource {
     this.on = on;
   }
 
+  @Override
+  public FromJoin copyOf() {
+    Object source = getSource();
+    String alias = getAlias();
+
+    if (source instanceof SqlSelect) {
+      return new FromJoin(join, ((SqlSelect) source).copyOf(true), alias, on.copyOf());
+    }
+    return new FromJoin(join, (String) source, alias, on.copyOf());
+  }
+
   public IsCondition getJoinCondition() {
     return on;
   }

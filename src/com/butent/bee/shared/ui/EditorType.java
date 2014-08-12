@@ -24,7 +24,7 @@ public enum EditorType {
   TIME("time"),
   TIME_OF_DAY("timeOfDay"),
   COLOR("color", null, null, 100, null);
-  
+
   public static EditorType getByTypeCode(String code) {
     if (code == null || code.isEmpty()) {
       return null;
@@ -38,7 +38,7 @@ public enum EditorType {
   }
 
   private final String typeCode;
-  
+
   private final Integer defaultWidth;
   private final Integer defaultHeight;
   private final Integer minWidth;
@@ -51,7 +51,7 @@ public enum EditorType {
   private EditorType(String typeCode, Integer defaultWidth, Integer defaultHeight) {
     this(typeCode, defaultWidth, defaultHeight, null, null);
   }
-  
+
   private EditorType(String typeCode, Integer defaultWidth, Integer defaultHeight,
       Integer minWidth, Integer minHeight) {
     this.typeCode = typeCode;

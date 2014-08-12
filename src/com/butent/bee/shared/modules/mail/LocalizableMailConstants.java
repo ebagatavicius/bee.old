@@ -20,12 +20,6 @@ public interface LocalizableMailConstants {
 
   String mailInFolder();
 
-  String mailMessageBodyIsEmpty();
-
-  String mailMessageWasNotSent();
-
-  String mailNewAccountPassword();
-
   String mailFolderContentsWillBeRemovedFromTheMailServer();
 
   String mailFolderDrafts();
@@ -43,6 +37,14 @@ public interface LocalizableMailConstants {
   String mailForwardedPrefix();
 
   String mailFrom();
+
+  String mailMessageBodyIsEmpty();
+
+  String mailMessageWasNotSent();
+
+  String mailNewAccountPassword();
+
+  String mailNoAccountsFound();
 
   String mailQuestionSaveToDraft();
 

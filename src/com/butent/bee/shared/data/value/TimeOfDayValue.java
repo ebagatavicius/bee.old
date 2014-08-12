@@ -91,7 +91,7 @@ public class TimeOfDayValue extends Value {
       TimeOfDayValue other = (TimeOfDayValue) o;
       diff = ComparisonChain.start().compare(getHours(), other.getHours()).compare(getMinutes(),
           other.getMinutes()).compare(getSeconds(), other.getSeconds()).compare(getMilliseconds(),
-              other.getMilliseconds()).result();
+          other.getMilliseconds()).result();
     }
     return diff;
   }
@@ -208,7 +208,7 @@ public class TimeOfDayValue extends Value {
   public boolean isEmpty() {
     return isNull() || BeeConst.isUndef(getHours());
   }
-  
+
   @Override
   public boolean isNull() {
     return this == NULL_VALUE;

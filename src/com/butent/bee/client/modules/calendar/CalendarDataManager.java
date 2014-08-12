@@ -49,31 +49,31 @@ public class CalendarDataManager {
       int whStart, int whEnd) {
 
     List<CalendarItem> result = Lists.newArrayList();
-    
+
     DateTime start = item.getStartTime();
     DateTime end = item.getEndTime();
-    
+
     DateTime tmp = DateTime.copyOf(start);
-    
+
     DateTime from;
     DateTime until;
-    
+
     switch (mdl) {
       case VERTICAL:
         while (tmp.getTime() < end.getTime()) {
           until = min(end, TimeUtils.startOfDay(tmp, 1));
           result.add(item.split(tmp, until));
-          
+
           tmp.setTime(until.getTime());
         }
         break;
-      
+
       case WORKING_HOURS:
         while (tmp.getTime() < end.getTime()) {
           from = (TimeUtils.sameDate(tmp, start) && TimeUtils.minutesSinceDayStarted(start) > 0)
               ? start : hour(tmp, whStart);
           until = TimeUtils.sameDate(tmp, end) ? end : hour(tmp, whEnd);
-          
+
           if (until.getTime() <= from.getTime()) {
             if (TimeUtils.sameDate(from, start)) {
               until = TimeUtils.startOfDay(from, 1);
@@ -83,7 +83,7 @@ public class CalendarDataManager {
           }
 
           result.add(item.split(from, until));
-          
+
           tmp = TimeUtils.startOfDay(tmp, 1);
         }
         break;
@@ -92,7 +92,7 @@ public class CalendarDataManager {
         if (TimeUtils.minutesSinceDayStarted(end) > 0) {
           from = max(start, TimeUtils.startOfDay(end));
           until = end;
-          
+
           if (validateWorkingHours(whStart, whEnd)) {
             tmp = hour(end, whStart);
             if (tmp.getTime() > from.getTime() && tmp.getTime() < end.getTime()) {
@@ -107,19 +107,19 @@ public class CalendarDataManager {
           if (until.getTime() <= from.getTime()) {
             until = end;
           }
-          
+
         } else {
           from = max(start, TimeUtils.startOfDay(end, -1));
           until = end;
         }
-        
+
         result.add(item.split(from, until));
         break;
 
       default:
         result.add(item);
     }
-    
+
     return result;
   }
 
@@ -152,14 +152,14 @@ public class CalendarDataManager {
           mdl = settings.getMultidayTaskLayout();
           break;
       }
-      
+
       if (mdl == null || mdl == MultidayLayout.HORIZONTAL) {
         items.add(item);
 
       } else {
         int whStart = settings.getWorkingHourStart();
         int whEnd = settings.getWorkingHourEnd();
-        
+
         if (mdl == MultidayLayout.WORKING_HOURS && !validateWorkingHours(whStart, whEnd)) {
           mdl = MultidayLayout.VERTICAL;
         }
@@ -256,7 +256,7 @@ public class CalendarDataManager {
       Collections.sort(items);
     }
   }
-  
+
   private int getItemIndex(ItemType type, long id) {
     for (int i = 0; i < items.size(); i++) {
       if (items.get(i).getItemType() == type && items.get(i).getId() == id) {
@@ -269,11 +269,11 @@ public class CalendarDataManager {
   private Range<DateTime> getRange() {
     return range;
   }
-  
+
   private int getSize() {
     return items.size();
   }
-  
+
   private void setRange(Range<DateTime> range) {
     this.range = range;
   }

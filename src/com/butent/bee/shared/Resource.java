@@ -6,7 +6,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 public class Resource implements BeeSerializable {
-  
+
   public static Resource restore(String s) {
     Resource resource = new Resource();
     resource.deserialize(s);
@@ -48,7 +48,7 @@ public class Resource implements BeeSerializable {
   /**
    * Deserializes the provided argument {@code src}, and sets the deserialized values to the
    * resource.
-   * 
+   *
    * @param src the String to deserialize
    */
   @Override
@@ -107,7 +107,7 @@ public class Resource implements BeeSerializable {
   /**
    * Serializes resources {@code (name, uri, type, readOnly, content)} in this and sequence and
    * returns a serialized String.
-   * 
+   *
    * @return a serializes String for deserialization.
    */
   @Override

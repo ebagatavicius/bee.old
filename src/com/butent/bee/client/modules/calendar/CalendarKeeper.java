@@ -29,9 +29,10 @@ import com.butent.bee.client.style.ConditionalStyle;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
-import com.butent.bee.client.ui.WidgetFactory;
-import com.butent.bee.client.ui.WidgetSupplier;
 import com.butent.bee.client.utils.Command;
+import com.butent.bee.client.view.View;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.view.form.CloseCallback;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.interceptor.UniqueChildInterceptor;
@@ -73,6 +74,37 @@ import java.util.Set;
 
 public final class CalendarKeeper {
 
+  private static final class CalendarOpener extends Command {
+    private final long id;
+    private final String name;
+    private final ViewCallback callback;
+
+    private CalendarOpener(long id, String name, ViewCallback callback) {
+      super();
+      this.id = id;
+      this.name = name;
+      this.callback = callback;
+    }
+
+    @Override
+    public void execute() {
+      getUserCalendar(id, new Queries.RowSetCallback() {
+        @Override
+        public void onSuccess(BeeRowSet result) {
+          BeeRow row = result.getRow(0);
+          BeeRowSet ucAttendees = BeeRowSet.restore(row.getProperty(TBL_USER_CAL_ATTENDEES));
+
+          CalendarSettings settings = CalendarSettings.create(row, result.getColumns());
+          CalendarPanel calendarPanel = new CalendarPanel(id, name, settings, ucAttendees);
+
+          onCreatePanel(id, row.getId(), name, ucAttendees);
+
+          callback.onSuccess(calendarPanel);
+        }
+      });
+    }
+  }
+
   private static class RowActionHandler implements RowActionEvent.Handler {
     @Override
     public void onRowAction(final RowActionEvent event) {
@@ -89,11 +121,11 @@ public final class CalendarKeeper {
               calName = event.getOptions();
             }
 
-            openCalendar(calId, calName, new Callback<IdentifiableWidget>() {
+            openCalendar(calId, calName, new ViewCallback() {
               @Override
-              public void onSuccess(IdentifiableWidget result) {
+              public void onSuccess(View result) {
                 if (event.isOpenFavorite()) {
-                  BeeKeeper.getScreen().showWidget(result);
+                  BeeKeeper.getScreen().show(result);
                 } else {
                   BeeKeeper.getScreen().showInNewPlace(result);
                 }
@@ -270,7 +302,7 @@ public final class CalendarKeeper {
     CalendarKeeper.dataLoaded = dataLoaded;
   }
 
-  public static void openCalendar(final long id, final Callback<IdentifiableWidget> callback) {
+  public static void openCalendar(final long id, final ViewCallback callback) {
     Queries.getValue(VIEW_CALENDARS, id, COL_CALENDAR_NAME, new Callback<String>() {
       @Override
       public void onSuccess(String result) {
@@ -423,7 +455,7 @@ public final class CalendarKeeper {
   }
 
   static String getCalendarSupplierKey(long calendarId) {
-    return WidgetFactory.SupplierKind.CALENDAR.getKey(BeeUtils.toString(calendarId));
+    return ViewFactory.SupplierKind.CALENDAR.getKey(BeeUtils.toString(calendarId));
   }
 
   static void getData(Collection<String> viewNames, final Command command) {
@@ -802,57 +834,9 @@ public final class CalendarKeeper {
     }
   }
 
-  private static void openCalendar(final long id, final String name,
-      Callback<IdentifiableWidget> callback) {
-
-    final class OpenCommand extends Command {
-      private final long calendarId;
-      private final String calendarName;
-      private final Callback<IdentifiableWidget> calendarCallback;
-
-      private OpenCommand(long calendarId, String calendarName,
-          Callback<IdentifiableWidget> calendarCallback) {
-        super();
-        this.calendarId = calendarId;
-        this.calendarName = calendarName;
-        this.calendarCallback = calendarCallback;
-      }
-
-      @Override
-      public void execute() {
-        getUserCalendar(id, new Queries.RowSetCallback() {
-          @Override
-          public void onSuccess(BeeRowSet result) {
-            BeeRow row = result.getRow(0);
-            BeeRowSet ucAttendees = BeeRowSet.restore(row.getProperty(TBL_USER_CAL_ATTENDEES));
-
-            CalendarSettings settings = CalendarSettings.create(row, result.getColumns());
-            CalendarPanel calendarPanel = new CalendarPanel(calendarId, calendarName, settings,
-                ucAttendees);
-
-            onCreatePanel(calendarId, row.getId(), calendarName, ucAttendees);
-
-            calendarCallback.onSuccess(calendarPanel);
-          }
-        });
-      }
-    }
-
-    String supplierKey = getCalendarSupplierKey(id);
-    if (!WidgetFactory.hasSupplier(supplierKey)) {
-      WidgetSupplier supplier = new WidgetSupplier() {
-        @Override
-        public void create(final Callback<IdentifiableWidget> cb) {
-          OpenCommand command = new OpenCommand(id, name, cb);
-          ensureData(command);
-        }
-      };
-
-      WidgetFactory.registerSupplier(supplierKey, supplier);
-    }
-
-    OpenCommand command = new OpenCommand(id, name, callback);
-    ensureData(command);
+  private static void openCalendar(final long id, final String name, ViewCallback callback) {
+    CalendarOpener opener = new CalendarOpener(id, name, callback);
+    ensureData(opener);
   }
 
   private static void openSettingsForm(final BeeRowSet rowSet, final CalendarPanel cp) {

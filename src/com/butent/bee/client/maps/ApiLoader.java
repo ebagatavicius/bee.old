@@ -40,16 +40,18 @@ public final class ApiLoader {
       }
     }
   }
-  
+
   public static boolean isLoaded() {
     return state == State.LOADED;
   }
 
+//@formatter:off
   private static native void createCallbackFunction() /*-{
     $wnd.beemapsapiloaded = function() {
       @com.butent.bee.client.maps.ApiLoader::onLoad()();
     }
   }-*/;
+//@formatter:on
 
   private static String getProtocol() {
     return Window.Location.getProtocol();

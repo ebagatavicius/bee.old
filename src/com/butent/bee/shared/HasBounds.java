@@ -8,7 +8,7 @@ public interface HasBounds {
 
   String ATTR_MIN_VALUE = "minValue";
   String ATTR_MAX_VALUE = "maxValue";
-  
+
   String getMaxValue();
 
   String getMinValue();

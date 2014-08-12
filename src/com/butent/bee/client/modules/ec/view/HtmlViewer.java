@@ -10,14 +10,14 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.Map;
 
 class HtmlViewer extends EcView {
-  
+
   private final String caption;
   private final String urlKey;
   private final String htmlKey;
 
   HtmlViewer(String caption, String urlKey, String htmlKey) {
     super();
-    
+
     this.caption = caption;
     this.urlKey = urlKey;
     this.htmlKey = htmlKey;
@@ -41,7 +41,7 @@ class HtmlViewer extends EcView {
           EcStyles.add(widget, getPrimaryStyle(), "html");
           widget.setHtml(html);
           add(widget);
-        
+
         } else {
           add(renderNoData(caption));
         }

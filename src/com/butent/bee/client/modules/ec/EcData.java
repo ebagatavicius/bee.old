@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 class EcData {
-  
+
   private final class CategoryComparator implements Comparator<Long> {
     private CategoryComparator() {
     }
@@ -72,7 +72,7 @@ class EcData {
 
   private final Map<String, String> clientInfo = Maps.newHashMap();
   private final List<String> clientStockLabels = Lists.newArrayList();
-  
+
   private BeeRowSet warehouses;
 
   EcData() {
@@ -96,7 +96,7 @@ class EcData {
 
     TreeItem rootItem = new TreeItem(Localized.getConstants().ecSelectCategory());
     tree.addItem(rootItem);
-    
+
     if (roots.size() > 1) {
       Collections.sort(roots, categoryComparator);
     }
@@ -181,7 +181,7 @@ class EcData {
         }
       }
     };
-    
+
     ensureCategories(consumer);
     ensureBrands(consumer);
     ensureClientStockLabels(consumer);
@@ -205,7 +205,7 @@ class EcData {
       Queries.getRowSet(ClassifierConstants.VIEW_WAREHOUSES, null, new Queries.RowSetCallback() {
         @Override
         public void onSuccess(BeeRowSet result) {
-          warehouses = result; 
+          warehouses = result;
           callback.accept(result != null);
         }
       });
@@ -213,7 +213,7 @@ class EcData {
       callback.accept(true);
     }
   }
-  
+
   String getBrandName(long brand) {
     return brandNames.get(brand);
   }
@@ -244,7 +244,7 @@ class EcData {
       callback.accept(carManufacturers);
     }
   }
-  
+
   void getCarModels(final String manufacturer, final Consumer<List<EcCarModel>> callback) {
     if (carModelsByManufacturer.containsKey(manufacturer)) {
       callback.accept(carModelsByManufacturer.get(manufacturer));
@@ -272,7 +272,7 @@ class EcData {
       });
     }
   }
-  
+
   void getCarTypes(final long modelId, final Consumer<List<EcCarType>> callback) {
     if (carTypesByModel.containsKey(modelId)) {
       callback.accept(carTypesByModel.get(modelId));
@@ -334,13 +334,13 @@ class EcData {
         names.add(name);
       }
     }
-    
+
     if (names.size() > 1) {
       Collections.sort(names);
     }
     return names;
   }
-  
+
   void getClientValues(final List<String> keys, final Consumer<List<String>> callback) {
     if (clientInfo.isEmpty()) {
       ParameterList params = EcKeeper.createArgs(SVC_GET_CLIENT_INFO);
@@ -358,7 +358,7 @@ class EcData {
           }
         }
       });
-      
+
     } else {
       List<String> values = Lists.newArrayList();
       for (String key : keys) {
@@ -451,11 +451,11 @@ class EcData {
   String getPrimaryStockLabel() {
     return BeeUtils.getQuietly(clientStockLabels, 0);
   }
-  
+
   String getSecondaryStockLabel() {
     return BeeUtils.getQuietly(clientStockLabels, 1);
   }
-  
+
   String getWarehouseLabel(String code) {
     if (BeeUtils.isEmpty(code) || DataUtils.isEmpty(warehouses)) {
       return null;

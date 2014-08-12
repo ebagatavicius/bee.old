@@ -1,11 +1,15 @@
 package com.butent.bee.client.view;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.event.logical.SelectionCountChangeEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.Presenter;
+import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.navigation.PagerView;
 import com.butent.bee.client.view.navigation.SimplePager;
 import com.butent.bee.client.view.search.SearchBox;
@@ -13,6 +17,7 @@ import com.butent.bee.client.view.search.SearchView;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
@@ -23,11 +28,12 @@ import java.util.Collection;
 
 public class FooterImpl extends Flow implements FooterView, HasNavigation, HasSearch {
 
-  private static final String STYLE_CONTAINER = "bee-FooterContainer";
-  
-  private static final String STYLE_PAGER = "bee-SimplePager";
-  private static final String STYLE_SEARCH = "bee-FooterSearch";
-  private static final String STYLE_SELECTION_COUNTER = "bee-SelectionCounter";
+  private static final String STYLE_CONTAINER = StyleUtils.CLASS_NAME_PREFIX + "FooterContainer";
+
+  private static final String STYLE_PAGER = StyleUtils.CLASS_NAME_PREFIX + "SimplePager";
+  private static final String STYLE_SEARCH = StyleUtils.CLASS_NAME_PREFIX + "FooterSearch";
+  private static final String STYLE_SELECTION_COUNTER = StyleUtils.CLASS_NAME_PREFIX
+      + "SelectionCounter";
 
   private static final int HEIGHT = 26;
 
@@ -40,8 +46,12 @@ public class FooterImpl extends Flow implements FooterView, HasNavigation, HasSe
   private boolean enabled = true;
 
   public FooterImpl() {
-    super();
-    addStyleName(STYLE_CONTAINER);
+    super(STYLE_CONTAINER);
+  }
+
+  @Override
+  public HandlerRegistration addReadyHandler(ReadyEvent.Handler handler) {
+    return addHandler(handler, ReadyEvent.getType());
   }
 
   @Override
@@ -115,7 +125,7 @@ public class FooterImpl extends Flow implements FooterView, HasNavigation, HasSe
         }
       }
     }
-    
+
     if (!BeeUtils.isEmpty(getSearchId()) && getSearchId().equals(source.getId())) {
       return !BeeUtils.isEmpty(DomUtils.getValue(source));
     }
@@ -133,17 +143,28 @@ public class FooterImpl extends Flow implements FooterView, HasNavigation, HasSe
   }
 
   @Override
+  public boolean reactsTo(Action action) {
+    return false;
+  }
+
+  @Override
   public void setEnabled(boolean enabled) {
     if (enabled == isEnabled()) {
       return;
     }
     this.enabled = enabled;
-    DomUtils.enableChildren(this, enabled);
+    UiHelper.enableChildren(this, enabled);
   }
 
   @Override
   public void setViewPresenter(Presenter viewPresenter) {
     this.viewPresenter = viewPresenter;
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    ReadyEvent.fire(this);
   }
 
   private String getPagerId() {

@@ -10,13 +10,13 @@ import com.butent.bee.shared.utils.PropertyUtils;
 import java.util.List;
 
 public class InfoMessage extends Message implements HasCaption, HasInfo {
-  
+
   private String caption;
   private List<Property> info;
 
   public InfoMessage(String caption, List<Property> info) {
     this();
-    
+
     this.caption = caption;
     this.info = info;
   }
@@ -24,12 +24,12 @@ public class InfoMessage extends Message implements HasCaption, HasInfo {
   InfoMessage() {
     super(Type.INFO);
   }
-  
+
   @Override
   public String brief() {
     return BeeUtils.joinWords(getCaption(), BeeUtils.size(getInfo()));
   }
-  
+
   @Override
   public String getCaption() {
     return caption;
@@ -50,11 +50,11 @@ public class InfoMessage extends Message implements HasCaption, HasInfo {
     return BeeUtils.joinOptions("type", string(getType()), "caption", getCaption(),
         "info", BeeUtils.isEmpty(info) ? null : info.toString());
   }
-  
+
   @Override
   protected void deserialize(String s) {
     Pair<String, String> pair = Pair.restore(s);
-    
+
     this.caption = pair.getA();
     this.info = PropertyUtils.restoreProperties(pair.getB());
   }

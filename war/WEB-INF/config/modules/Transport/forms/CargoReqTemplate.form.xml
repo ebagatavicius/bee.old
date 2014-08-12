@@ -196,7 +196,7 @@
 
         <row>
           <Label text="=trRequestCargoValue" />
-          <InputCurrency source="Value" />
+          <InputMoney source="Value" />
           <Label text="=trRequestCargoCurrency" />
           <DataSelector source="ValueCurrency" newRowEnabled="false" editEnabled="false" style="width: 60px;" />
         </row>

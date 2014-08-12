@@ -44,7 +44,7 @@ public class Progress extends CustomWidget {
   public double getValue() {
     return getProgressElement().getValue();
   }
-  
+
   public void setMax(double max) {
     getProgressElement().setMax(max);
   }
@@ -58,7 +58,7 @@ public class Progress extends CustomWidget {
     super.init();
     addStyleName("bee-Progress");
   }
-  
+
   private ProgressElement getProgressElement() {
     return (JsProgressElement) getElement().cast();
   }

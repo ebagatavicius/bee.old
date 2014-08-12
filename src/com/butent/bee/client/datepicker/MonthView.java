@@ -10,7 +10,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.impl.ElementMapperImpl;
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.UIObject;
 
 import com.butent.bee.client.datepicker.DatePicker.CssClasses;
@@ -19,6 +18,7 @@ import com.butent.bee.client.event.Binder;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.time.JustDate;
@@ -33,7 +33,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
 
   private final class DayGrid extends HtmlTable {
 
-    private final class Cell extends UIObject implements HasEnabled {
+    private final class Cell extends UIObject implements EnablableWidget {
 
       private final int index;
       private final JustDate value = new JustDate();
@@ -86,7 +86,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
       private void setDateStyle(String dateStyle) {
         this.dateStyle = dateStyle;
       }
-      
+
       private void setHtml(String html) {
         getElement().setInnerHTML(html);
       }
@@ -96,7 +96,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
 
         value.setDate(date);
         setHtml(Model.formatDayOfMonth(value));
-        
+
         StringList styles = StringList.uniqueCaseInsensitive();
         styles.add(cellStyle);
 
@@ -108,7 +108,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
             styles.add(extraStyle);
           }
         }
-        
+
         setDateStyle(StyleUtils.buildClasses(styles));
         updateStyle();
       }
@@ -128,7 +128,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
       }
     }
 
-    private final ElementMapperImpl<Cell> elementToCell = new ElementMapperImpl<Cell>();
+    private final ElementMapperImpl<Cell> elementToCell = new ElementMapperImpl<>();
     private final List<Cell> cellList = Lists.newArrayList();
 
     private int activeCellIndex = BeeConst.UNDEF;
@@ -148,7 +148,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
           formatter.setStyleName(0, i, css().weekdayLabel());
         }
       }
-      
+
       int index = 0;
       for (int row = 1; row <= WEEKS_IN_MONTH; row++) {
         for (int column = 0; column < DAYS_IN_WEEK; column++) {
@@ -165,7 +165,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
     public void onBrowserEvent(Event event) {
       Element e;
       Cell cell;
-      
+
       switch (DOM.eventGetType(event)) {
         case Event.ONCLICK:
           cell = getCell(event);
@@ -193,7 +193,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
             }
           }
           break;
-        
+
         case Event.ONKEYDOWN:
           if (navigate(event.getKeyCode(), EventUtils.hasModifierKey(event))) {
             event.preventDefault();
@@ -201,7 +201,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
           }
           break;
       }
-      
+
       super.onBrowserEvent(event);
     }
 
@@ -210,9 +210,9 @@ class MonthView extends Component implements HasKeyDownHandlers {
       if (activate && cell.index == oldIndex) {
         return;
       }
-      
+
       setActiveCellIndex(activate ? cell.index : BeeConst.UNDEF);
-      
+
       if (activate && oldIndex >= 0) {
         getCell(oldIndex).updateStyle();
       }
@@ -224,15 +224,15 @@ class MonthView extends Component implements HasKeyDownHandlers {
     }
 
     private Cell getCell(Event event) {
-      TableCellElement cellElement = 
+      TableCellElement cellElement =
           DomUtils.getParentCell(EventUtils.getEventTargetElement(event), true);
-      
+
       while (cellElement != null) {
         Cell cell = elementToCell.get(cellElement);
         if (cell != null) {
           return cell;
         }
-        
+
         cellElement = DomUtils.getParentCell(cellElement, false);
       }
 
@@ -250,7 +250,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
     private boolean isActive(Cell cell) {
       return cell != null && cell.isEnabled();
     }
-    
+
     private void setActiveCellIndex(int activeCellIndex) {
       this.activeCellIndex = activeCellIndex;
     }
@@ -281,7 +281,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
     JustDate start = getModel().getCurrentMonth().getDate();
     int incr = (start.getDow() == 1) ? -1 : 0;
     firstDisplayed.setDate(TimeUtils.startOfWeek(start, incr));
-    
+
     grid.setActiveCellIndex(BeeConst.UNDEF);
 
     int days = firstDisplayed.getDays();
@@ -319,11 +319,11 @@ class MonthView extends Component implements HasKeyDownHandlers {
   void setFocus(boolean focus) {
     DomUtils.setFocus(grid, focus);
   }
-  
+
   private JustDate clamp(JustDate date) {
     return TimeUtils.clamp(date, getDatePicker().getMinDate(), getDatePicker().getMaxDate());
   }
- 
+
   private CssClasses css() {
     return cssClasses;
   }
@@ -334,11 +334,11 @@ class MonthView extends Component implements HasKeyDownHandlers {
     Assert.state(cell.value.equals(date));
     return cell;
   }
-  
+
   private boolean isIndex(int index) {
     return BeeUtils.betweenExclusive(index, 0, grid.getNumCells());
   }
-  
+
   private boolean navigate(int keyCode, boolean hasModifiers) {
     int oldIndex = grid.getActiveCellIndex();
     if (BeeConst.isUndef(oldIndex)) {
@@ -348,13 +348,13 @@ class MonthView extends Component implements HasKeyDownHandlers {
       }
     }
     int newIndex = BeeConst.UNDEF;
-    
+
     int increment = 0;
     JustDate newDate = null;
     boolean ok = false;
-    
+
     DayGrid.Cell cell = null;
-    
+
     switch (keyCode) {
       case KeyCodes.KEY_ENTER:
         if (oldIndex >= 0) {
@@ -379,7 +379,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
       case KeyCodes.KEY_UP:
         increment = -7;
         break;
-        
+
       case KeyCodes.KEY_DOWN:
         increment = 7;
         break;
@@ -393,19 +393,19 @@ class MonthView extends Component implements HasKeyDownHandlers {
           newDate = clamp(today);
         }
         break;
-        
+
       case KeyCodes.KEY_END:
         newIndex = grid.getNumCells() - 1;
         if (newIndex == oldIndex) {
           newIndex = 0;
         }
         break;
-        
+
       case KeyCodes.KEY_PAGEUP:
         newDate = clamp(hasModifiers ? TimeUtils.endOfMonth(getModel().getCurrentMonth(), -12)
             : TimeUtils.endOfPreviousMonth(getModel().getCurrentMonth()));
         break;
-        
+
       case KeyCodes.KEY_PAGEDOWN:
         newDate = clamp(hasModifiers ? TimeUtils.startOfMonth(getModel().getCurrentMonth(), 12)
             : TimeUtils.startOfNextMonth(getModel().getCurrentMonth()));
@@ -414,7 +414,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
     if (ok) {
       return ok;
     }
-    
+
     if (newIndex >= 0 && newIndex != oldIndex) {
       cell = grid.getCell(newIndex);
       ok = true;
@@ -440,7 +440,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
     if (grid.isActive(cell)) {
       grid.activateCell(cell, true);
     }
-    
+
     return ok;
   }
 }

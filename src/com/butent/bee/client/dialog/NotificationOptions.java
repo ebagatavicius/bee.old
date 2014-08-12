@@ -20,6 +20,7 @@ public class NotificationOptions {
     }
   }
 
+//@formatter:off
   public static native JavaScriptObject toJso(NotificationOptions options) /*-{
     var obj = {};
     if (options) {
@@ -41,6 +42,7 @@ public class NotificationOptions {
     }
     return obj;
   }-*/;
+//@formatter:on
 
   private String dir;
   private String lang;

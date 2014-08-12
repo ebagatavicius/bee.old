@@ -283,7 +283,7 @@ public class EcServlet extends LoginServlet {
     si.addConstant(COL_REGISTRATION_DATE, TimeUtils.nowMinutes());
     si.addConstant(COL_REGISTRATION_HOST, req.getRemoteAddr());
     si.addConstant(COL_REGISTRATION_AGENT, req.getHeader(HttpHeaders.USER_AGENT));
-    
+
     SupportedLocale locale = SupportedLocale.getByLanguage(constants.languageTag());
     if (locale != null) {
       si.addConstant(COL_REGISTRATION_LANGUAGE, locale.ordinal());

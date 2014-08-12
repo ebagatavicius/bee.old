@@ -1,8 +1,6 @@
 package com.butent.bee.client.modules.ec;
 
-import static com.butent.bee.shared.modules.ec.EcConstants.COL_BANNER_PICTURE;
-import static com.butent.bee.shared.modules.ec.EcConstants.SVC_UPLOAD_BANNERS;
-import static com.butent.bee.shared.modules.ec.EcConstants.TBL_BANNERS;
+import static com.butent.bee.shared.modules.ec.EcConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
@@ -29,6 +27,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.html.Keywords;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.GridDescription;
@@ -43,19 +42,19 @@ class BannerGridInterceptor extends AbstractGridInterceptor {
 
   BannerGridInterceptor() {
   }
-  
+
   @Override
   public boolean afterCreateColumn(String columnName, List<? extends IsColumn> dataColumns,
       AbstractColumn<?> column, ColumnHeader header, ColumnFooter footer,
       EditableColumn editableColumn) {
-    
+
     if (BeeUtils.same(columnName, COL_BANNER_PICTURE)) {
       EcKeeper.addPictureCellHandlers(column.getCell(), TBL_BANNERS);
     }
-    
+
     return super.afterCreateColumn(columnName, dataColumns, column, header, footer, editableColumn);
   }
-  
+
   @Override
   public boolean beforeAction(Action action, final GridPresenter presenter) {
     if (action == Action.ADD) {
@@ -94,16 +93,16 @@ class BannerGridInterceptor extends AbstractGridInterceptor {
 
   private FileCollector ensureCollector() {
     if (collector == null) {
-      collector = FileCollector.headless(new Consumer<Collection<NewFileInfo>>() {
+      collector = FileCollector.headless(new Consumer<Collection<? extends FileInfo>>() {
         @Override
-        public void accept(Collection<NewFileInfo> input) {
-          Collection<NewFileInfo> files = Images.sanitizeInput(input, getGridView());
+        public void accept(Collection<? extends FileInfo> input) {
+          Collection<FileInfo> files = Images.sanitizeInput(input, getGridView());
           if (!files.isEmpty()) {
             uploadBanners(files);
           }
         }
       });
-      
+
       collector.setAccept(Keywords.ACCEPT_IMAGE);
 
       getGridView().add(collector);
@@ -111,28 +110,30 @@ class BannerGridInterceptor extends AbstractGridInterceptor {
     return collector;
   }
 
-  private void uploadBanners(Collection<NewFileInfo> files) {
+  private void uploadBanners(Collection<FileInfo> files) {
     final Holder<Integer> latch = Holder.of(files.size());
 
-    for (NewFileInfo fileInfo : files) {
-      FileUtils.readAsDataURL(fileInfo.getFile(), new Consumer<String>() {
+    for (FileInfo fileInfo : files) {
+      if (fileInfo instanceof NewFileInfo) {
+        FileUtils.readAsDataURL(((NewFileInfo) fileInfo).getFile(), new Consumer<String>() {
 
-        @Override
-        public void accept(String input) {
-          ParameterList params = EcKeeper.createArgs(SVC_UPLOAD_BANNERS);
-          params.addDataItem(COL_BANNER_PICTURE, input);
+          @Override
+          public void accept(String input) {
+            ParameterList params = EcKeeper.createArgs(SVC_UPLOAD_BANNERS);
+            params.addDataItem(COL_BANNER_PICTURE, input);
 
-          BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
-            @Override
-            public void onResponse(ResponseObject response) {
-              latch.set(latch.get() - 1);
-              if (!BeeUtils.isPositive(latch.get())) {
-                DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getViewName());
+            BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+              @Override
+              public void onResponse(ResponseObject response) {
+                latch.set(latch.get() - 1);
+                if (!BeeUtils.isPositive(latch.get())) {
+                  DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getViewName());
+                }
               }
-            }
-          });
-        }
-      });
+            });
+          }
+        });
+      }
     }
   }
 }

@@ -60,6 +60,7 @@ public final class ClassifierConstants {
   public static final String VIEW_INFORMATION_SOURCES = "InformationSources";
   public static final String VIEW_COMPANY_ACTIVITIES = "CompanyActivities";
   public static final String VIEW_COMPANY_ACTIVITY_STORE = "CompActStore";
+  public static final String VIEW_COMPANY_BANK_ACCOUNTS = "CompanyBankAccounts";
 
   public static final String VIEW_COMPANY_CONTACTS = "CompanyContacts";
   public static final String VIEW_COMPANY_DEPARTMENTS = "CompanyDepartments";
@@ -104,6 +105,8 @@ public final class ClassifierConstants {
   public static final String COL_ITEM_EXTERNAL_CODE = "ExternalCode";
   public static final String COL_ITEM_PRICE = "Price";
   public static final String COL_ITEM_CURRENCY = "Currency";
+  public static final String COL_ITEM_TYPE = "Type";
+  public static final String COL_ITEM_GROUP = "Group";
 
   public static final String COL_UNIT = "Unit";
   public static final String COL_UNIT_NAME = "Name";
@@ -116,6 +119,7 @@ public final class ClassifierConstants {
   public static final String COL_EMAIL_ADDRESS = "Email";
   public static final String COL_ADDRESS = "Address";
   public static final String COL_POST_INDEX = "PostIndex";
+  public static final String COL_WEBSITE = "Website";
 
   public static final String COL_CITY = "City";
   public static final String COL_CITY_NAME = "Name";
@@ -148,6 +152,12 @@ public final class ClassifierConstants {
 
   public static final String COL_COMPANY_TYPE_NAME = "Name";
 
+  public static final String COL_BANK_NAME = "Name";
+  public static final String COL_BANK_CODE = "BankCode";
+  public static final String COL_SWIFT_CODE = "SWIFTCode";
+
+  public static final String COL_BANK_ACCOUNT = "BankAccount";
+
   public static final String ALS_COMPANY_NAME = "CompanyName";
   public static final String ALS_COMPANY_CODE = "CompanyCode";
   public static final String ALS_COMPANY_TYPE = "CompanyType";
@@ -161,6 +171,14 @@ public final class ClassifierConstants {
   public static final String ALS_EMAIL_ID = "EmailId";
 
   public static final String ALS_CATEGORY_PARENT_NAME = "ParentName";
+
+  public static final String ALS_BANK_NAME = "BankName";
+
+  public static final String ALS_ITEM_NAME = "ItemName";
+  public static final String ALS_UNIT_NAME = "UnitName";
+
+  public static final String PROP_COMPANY_NAMES = "CompanyNames";
+  public static final String PROP_COMPANY_IDS = "CompanyIds";
 
   public static final String FILTER_COMPANY_CREATION_AND_TYPE = "company_creation_and_type";
   public static final String FILTER_COMPANY_USAGE = "company_usage";

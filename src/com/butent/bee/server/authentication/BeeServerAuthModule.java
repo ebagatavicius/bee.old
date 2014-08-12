@@ -169,7 +169,7 @@ public class BeeServerAuthModule implements ServerAuthModule {
 
   private boolean validateHost(MessageInfo messageInfo, HttpServletRequest request) {
     boolean ok = true;
-  
+
     if (usr != null) {
       ok = usr.validateHost(request);
     }
@@ -181,7 +181,7 @@ public class BeeServerAuthModule implements ServerAuthModule {
         logger.error(e);
       }
     }
-  
+
     return ok;
   }
 }

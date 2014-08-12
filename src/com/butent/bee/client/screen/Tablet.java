@@ -3,7 +3,6 @@ package com.butent.bee.client.screen;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
-import com.butent.bee.client.canvas.CanvasDemo;
 import com.butent.bee.client.cli.CliWorker;
 import com.butent.bee.client.composite.VolumeSlider;
 import com.butent.bee.client.grid.HtmlTable;
@@ -12,7 +11,6 @@ import com.butent.bee.client.logging.ClientLogManager;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.utils.Command;
-import com.butent.bee.client.visualization.showcase.Showcase;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.Toggle;
 import com.butent.bee.shared.Pair;
@@ -37,11 +35,11 @@ public class Tablet extends Mobile {
     @Override
     public void execute() {
       String opt = BeeUtils.joinWords("t" + type,
-        "c" + minCount.getValue() + "-" + maxCount.getValue(),
-        "r" + minRadius.getValue() + "-" + maxRadius.getValue(),
-        "s" + colorStep.getValue(),
-        "o" + BeeUtils.toString(minOpacity.getLong() / 100.0) + "-"
-            + BeeUtils.toString(maxOpacity.getLong() / 100.0));
+          "c" + minCount.getValue() + "-" + maxCount.getValue(),
+          "r" + minRadius.getValue() + "-" + maxRadius.getValue(),
+          "s" + colorStep.getValue(),
+          "o" + BeeUtils.toString(minOpacity.getLong() / 100.0) + "-"
+              + BeeUtils.toString(maxOpacity.getLong() / 100.0));
       CliWorker.execute("svg " + opt, true);
     }
   }
@@ -62,7 +60,7 @@ public class Tablet extends Mobile {
   public UserInterface getUserInterface() {
     return UserInterface.TABLET;
   }
-  
+
   @Override
   protected int addLogToggle(LayoutPanel panel) {
     final Toggle toggle = new Toggle("Hide Log", "Show Log", "toggleLog", true);
@@ -143,28 +141,6 @@ public class Tablet extends Mobile {
 
     Button ellipse = new Button("SVG Ellipses", new SvgCommand(2));
     grid.setWidget(r, 0, ellipse);
-    grid.alignCenter(r, 0);
-    grid.getCellFormatter().setColSpan(r, 0, c);
-    r++;
-    
-    Button canvas = new Button("Canvas Demo", new Command() {
-      @Override
-      public void execute() {
-        new CanvasDemo().start();
-      }
-    });
-    grid.setWidget(r, 0, canvas);
-    grid.alignCenter(r, 0);
-    grid.getCellFormatter().setColSpan(r, 0, c);
-    r++;
-
-    Button visual = new Button("Visualization", new Command() {
-      @Override
-      public void execute() {
-        Showcase.open();
-      }
-    });
-    grid.setWidget(r, 0, visual);
     grid.alignCenter(r, 0);
     grid.getCellFormatter().setColSpan(r, 0, c);
     r++;

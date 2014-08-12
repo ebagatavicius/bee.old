@@ -8,13 +8,16 @@ public class LatLngBounds extends JavaScriptObject {
     return createJso(sw, ne).cast();
   }
 
+//@formatter:off
   private static native JavaScriptObject createJso(LatLng sw, LatLng ne) /*-{
     return new $wnd.google.maps.LatLngBounds(sw, ne);
   }-*/;
+//@formatter:on
 
   protected LatLngBounds() {
   }
 
+//@formatter:off
   public final native boolean contains(LatLng latlng) /*-{
     return this.contains(latlng);
   }-*/;
@@ -58,4 +61,5 @@ public class LatLngBounds extends JavaScriptObject {
   public final native LatLngBounds union(LatLngBounds other) /*-{
     return this.union(other);
   }-*/;
+//@formatter:on
 }

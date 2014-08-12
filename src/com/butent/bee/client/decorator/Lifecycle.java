@@ -12,11 +12,11 @@ class Lifecycle {
     if (element == null) {
       return null;
     }
-    
+
     String created = null;
     String inserted = null;
     String removed = null;
-    
+
     for (Element child : XmlUtils.getChildrenElements(element)) {
       String tag = XmlUtils.getLocalName(child);
       String text = XmlUtils.getText(child);
@@ -32,14 +32,14 @@ class Lifecycle {
         removed = text;
       }
     }
-    
+
     if (BeeUtils.allEmpty(created, inserted, removed)) {
       return null;
     } else {
       return new Lifecycle(created, inserted, removed);
     }
   }
-  
+
   private String created;
   private String inserted;
   private String removed;
@@ -50,11 +50,11 @@ class Lifecycle {
     this.inserted = inserted;
     this.removed = removed;
   }
-  
+
   Lifecycle getCopy() {
     return new Lifecycle(created, inserted, removed);
   }
-  
+
   String getCreated() {
     return created;
   }
@@ -78,12 +78,12 @@ class Lifecycle {
   void setRemoved(String removed) {
     this.removed = removed;
   }
-  
+
   void updateFrom(Lifecycle other, boolean override) {
     if (other == null) {
       return;
     }
-    
+
     if (override || BeeUtils.isEmpty(getCreated()) && !BeeUtils.isEmpty(other.getCreated())) {
       setCreated(other.getCreated());
     }

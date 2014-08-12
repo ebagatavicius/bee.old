@@ -169,7 +169,7 @@ public class Notification extends Composite implements PreviewHandler, Identifia
 
     container.setClassName(STYLE_CONTAINER);
     container.getStyle().setDisplay(Display.NONE);
-    
+
     container.appendChild(messageContainer);
 
     Label html = new Label(container);
@@ -214,7 +214,7 @@ public class Notification extends Composite implements PreviewHandler, Identifia
   public void info(String... lines) {
     show(LogLevel.INFO, lines);
   }
-  
+
   public boolean isActive() {
     return getState() == State.OPENING || getState() == State.SHOWING;
   }
@@ -405,7 +405,7 @@ public class Notification extends Composite implements PreviewHandler, Identifia
         style.clearRight();
       }
     }
-    
+
     style.setDisplay(Display.BLOCK);
   }
 }

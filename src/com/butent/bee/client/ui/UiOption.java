@@ -9,7 +9,7 @@ public enum UiOption {
   CHILD(EnumSet.of(Type.SETTINGS)),
   EMBEDDED(EnumSet.of(Type.PAGING, Type.SEARCH, Type.SETTINGS)),
   REPORT(EnumSet.of(Type.WINDOW));
-  
+
   private enum Type {
     PAGING, SEARCH, SETTINGS, WINDOW
   }
@@ -25,16 +25,16 @@ public enum UiOption {
   public static boolean hasSettings(Collection<UiOption> options) {
     return hasType(options, Type.SETTINGS);
   }
-  
+
   public static boolean isWindow(Collection<UiOption> options) {
     return hasType(options, Type.WINDOW);
   }
-  
+
   private static boolean hasType(Collection<UiOption> options, Type type) {
     if (options == null) {
       return false;
     }
-    
+
     for (UiOption option : options) {
       if (option.hasType(type)) {
         return true;
@@ -48,7 +48,7 @@ public enum UiOption {
   private UiOption(Set<Type> types) {
     this.types = types;
   }
-  
+
   private Set<Type> getTypes() {
     return types;
   }

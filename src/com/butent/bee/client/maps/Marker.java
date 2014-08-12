@@ -8,13 +8,16 @@ public class Marker extends JavaScriptObject {
     return createJso(options);
   }
 
+//@formatter:off
   private static native Marker createJso(MarkerOptions options) /*-{
     return new $wnd.google.maps.Marker(options);
   }-*/;
+//@formatter:on
 
   protected Marker() {
   }
 
+//@formatter:off
   public final native void clear() /*-{
     this.setMap();
   }-*/;
@@ -98,4 +101,5 @@ public class Marker extends JavaScriptObject {
   private native void setMap(MapImpl map) /*-{
     this.setMap(map);
   }-*/;
+//@formatter:on
 }

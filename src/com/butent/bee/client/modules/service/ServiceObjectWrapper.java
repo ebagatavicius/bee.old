@@ -3,18 +3,15 @@ package com.butent.bee.client.modules.service;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.data.Queries;
-import com.butent.bee.client.data.Queries.RowSetCallback;
-import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.data.BeeRow;
-import com.butent.bee.shared.data.BeeRowSet;
-import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
-import com.butent.bee.shared.data.filter.Filter;
-import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.Property;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class ServiceObjectWrapper {
 
@@ -29,7 +26,57 @@ class ServiceObjectWrapper {
   private static final String contractorLabel = Data.getColumnLabel(VIEW_SERVICE_OBJECTS,
       COL_SERVICE_CONTRACTOR);
 
-  private static final int MAX_MAIN_CRITERIA_COUNT = 20;
+  private static final int MAX_TITLE_CRITERIA = 20;
+
+  private static String buildTitle(SimpleRow row) {
+    String t1 = TimeBoardHelper.buildTitle(
+        categoryLabel, row.getValue(ALS_SERVICE_CATEGORY_NAME),
+        addressLabel, row.getValue(COL_SERVICE_ADDRESS),
+        customerLabel, row.getValue(ALS_SERVICE_CUSTOMER_NAME),
+        contractorLabel, row.getValue(ALS_SERVICE_CONTRACTOR_NAME));
+
+    String t2 = null;
+
+    String criteria = row.getValue(PROP_CRITERIA);
+    if (!BeeUtils.isEmpty(criteria)) {
+      String[] arr = Codec.beeDeserializeCollection(criteria);
+
+      if (arr != null) {
+        List<Property> properties = new ArrayList<>();
+
+        for (int i = 0; i < Math.min(arr.length, MAX_TITLE_CRITERIA); i++) {
+          Property property = Property.restore(arr[i]);
+          if (property != null) {
+            properties.add(Property.restore(arr[i]));
+          }
+        }
+
+        if (arr.length > MAX_TITLE_CRITERIA) {
+          properties.add(new Property(BeeConst.ELLIPSIS,
+              BeeUtils.bracket(arr.length - MAX_TITLE_CRITERIA)));
+        }
+
+        if (!properties.isEmpty()) {
+          Object[] labelsAndValues = new Object[properties.size() * 2];
+
+          for (int i = 0; i < properties.size(); i++) {
+            Property property = properties.get(i);
+
+            labelsAndValues[i * 2] = property.getName();
+            labelsAndValues[i * 2 + 1] = property.getValue();
+          }
+
+          t2 = TimeBoardHelper.buildTitle(labelsAndValues);
+        }
+      }
+    }
+
+    if (BeeUtils.isEmpty(t2)) {
+      return t1;
+    } else {
+      return BeeUtils.buildLines(t1, BeeConst.STRING_EMPTY, t2);
+    }
+  }
 
   private final Long id;
 
@@ -37,74 +84,23 @@ class ServiceObjectWrapper {
 
   private final String title;
 
-  private final String mainCriteriaTitle;
-
   ServiceObjectWrapper(SimpleRow row) {
     this.id = row.getLong(idColumn);
 
     this.address = row.getValue(COL_SERVICE_ADDRESS);
 
-    this.mainCriteriaTitle = BeeConst.STRING_EMPTY;
-
-    this.title = TimeBoardHelper.buildTitle(
-        categoryLabel, row.getValue(ALS_SERVICE_CATEGORY_NAME),
-        addressLabel, row.getValue(COL_SERVICE_ADDRESS),
-        customerLabel, row.getValue(ALS_SERVICE_CUSTOMER_NAME),
-        contractorLabel, row.getValue(ALS_SERVICE_CONTRACTOR_NAME));
-  }
-
-  Long getId() {
-    return id;
+    this.title = buildTitle(row);
   }
 
   String getAddress() {
     return address;
   }
 
+  Long getId() {
+    return id;
+  }
+
   String getTitle() {
     return title;
-  }
-
-  String getMainCriteriaTitle() {
-    return this.mainCriteriaTitle;
-  }
-
-  void appendMainCriteriaTitle(final Flow panel) {
-    Filter filter = Filter.and(Filter.equals(COL_SERVICE_OBJECT, getId()),
-        Filter.isNull(COL_SERVICE_CRITERIA_GROUP_NAME));
-
-    Queries.getRowSet(VIEW_SERVICE_OBJECT_CRITERIA, null, filter, new RowSetCallback() {
-
-      @Override
-      public void onSuccess(BeeRowSet result) {
-        if (result.getNumberOfRows() < 0) {
-          return;
-        }
-
-        int i = 0;
-        for (BeeRow crit : result) {
-          String name = DataUtils.getString(result, crit, COL_SERVICE_CRITERION_NAME);
-
-          if (!BeeUtils.isEmpty(name)) {
-            String value = DataUtils.getString(result, crit, COL_SERVICE_CRITERION_VALUE);
-
-            value = BeeUtils.isEmpty(value) ? Localized.getConstants().filterNullLabel() : value;
-
-            panel.setTitle(BeeUtils.buildLines(panel.getTitle(), TimeBoardHelper.buildTitle(name,
-                value)));
-
-            i++;
-            int left = result.getNumberOfRows() - MAX_MAIN_CRITERIA_COUNT;
-            if ((i >= MAX_MAIN_CRITERIA_COUNT) && (left > 0)) {
-              panel.setTitle(BeeUtils.buildLines(panel.getTitle(), TimeBoardHelper.buildTitle(
-                  BeeConst.ELLIPSIS,
-                  BeeUtils.bracket(left))));
-              break;
-            }
-          }
-        }
-      }
-
-    });
   }
 }

@@ -10,6 +10,8 @@ name="Documents" label="=documents" order="50" module="Documents"
 
   <Item name="Templates" label="=documentTemplates" service="grid" parameters="DocumentTemplates"
     separator="true" module="Documents.Templates" />
+  <Item name="EditorTemplates" label="=editorTemplates" service="grid" parameters="EditorTemplates"
+    module="Documents.Templates" />
 
   <Item name="Types" label="=documentTypes" service="grid" parameters="DocumentTypes"
     separator="true" />

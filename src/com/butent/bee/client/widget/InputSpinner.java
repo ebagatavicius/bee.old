@@ -13,7 +13,7 @@ import com.butent.bee.shared.ui.EditorAction;
 public class InputSpinner extends InputInteger {
 
   private static Input.Type inputType = Input.Type.NUMBER;
-  
+
   public InputSpinner() {
     super();
     DomUtils.setInputType(this, inputType);
@@ -27,7 +27,7 @@ public class InputSpinner extends InputInteger {
   public EditorAction getDefaultFocusAction() {
     return null;
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "spin";

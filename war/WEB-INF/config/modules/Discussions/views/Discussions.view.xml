@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view" name="Discussions" source="Discussions"
   caption="=discussions" rowCaption="Subject" newRowForm="NewDiscussion"
-  editForm="Discussion">
+  editForm="Discussion"
+  >
+  <Relation renderColumns="Subject" />
   <Columns>
     <SimpleColumn name="Subject" />
     <SimpleColumn name="Description" />

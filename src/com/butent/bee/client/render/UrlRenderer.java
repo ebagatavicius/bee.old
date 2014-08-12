@@ -11,7 +11,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 public class UrlRenderer extends AbstractCellRenderer {
 
   private static final AnchorElement anchorElement = Document.get().createAnchorElement();
-  
+
   static {
     anchorElement.setTarget(Keywords.BROWSING_CONTEXT_BLANK);
   }

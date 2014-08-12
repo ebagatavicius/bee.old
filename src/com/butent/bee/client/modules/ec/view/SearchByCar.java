@@ -13,7 +13,6 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.ec.EcConstants.*;
@@ -35,6 +34,7 @@ import com.butent.bee.client.modules.ec.EcKeeper;
 import com.butent.bee.client.modules.ec.EcStyles;
 import com.butent.bee.client.modules.ec.widget.IndexSelector;
 import com.butent.bee.client.modules.ec.widget.ItemPanel;
+import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Label;
@@ -61,7 +61,7 @@ import java.util.Set;
 
 public class SearchByCar extends EcView implements HasBeforeSelectionHandlers<EcCarType> {
 
-  private static final class CarAttributeWidget extends CustomDiv implements HasEnabled {
+  private static final class CarAttributeWidget extends CustomDiv implements EnablableWidget {
 
     private boolean enabled = true;
 

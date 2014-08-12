@@ -84,7 +84,7 @@ public class EcOrderItem implements BeeSerializable, HasCaption {
   public long getArticleId() {
     return articleId;
   }
-  
+
   public double getAmount() {
     return BeeUtils.unbox(getQuantitySubmit()) * BeeUtils.unbox(getPrice());
   }
@@ -93,7 +93,7 @@ public class EcOrderItem implements BeeSerializable, HasCaption {
   public String getCaption() {
     return BeeUtils.joinWords(getName(), getCode());
   }
-  
+
   public String getCode() {
     return code;
   }

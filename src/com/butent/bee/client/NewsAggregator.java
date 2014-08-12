@@ -13,17 +13,20 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.layout.Flow;
-import com.butent.bee.client.modules.administration.UserFeedsInterceptor;
+import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.screen.Domain;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.widget.Badge;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.Consumer;
+import com.butent.bee.shared.BiConsumer;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.event.CellUpdateEvent;
@@ -47,6 +50,7 @@ import com.butent.bee.shared.news.Subscription;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -179,11 +183,8 @@ public class NewsAggregator implements HandlesAllDataEvents {
       settingsWidget.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          UserFeedsInterceptor interceptor =
-              new UserFeedsInterceptor(BeeKeeper.getUser().getUserId());
-          GridOptions gridOptions = GridOptions.forCurrentUserFilter(NewsConstants.COL_UF_USER);
-
-          GridFactory.openGrid(NewsConstants.GRID_USER_FEEDS, interceptor, gridOptions);
+          ViewFactory.createAndShow(GridFactory.getSupplierKey(NewsConstants.GRID_USER_FEEDS,
+              null));
         }
       });
 
@@ -452,24 +453,15 @@ public class NewsAggregator implements HandlesAllDataEvents {
   private static final String STYLE_PREFIX = "bee-News-";
   private static final String STYLE_APATHY = STYLE_PREFIX + "apathy";
 
-  private void readHeadline(HeadlinePanel headlinePanel) {
-    Feed feed = headlinePanel.getFeed();
-
-    if (feed != null && (!registeredAccessHandlers.containsKey(feed.getHeadlineView())
-        || !registeredAccessHandlers.get(feed.getHeadlineView()).read(headlinePanel.getDataId()))) {
-
-      RowEditor.open(feed.getHeadlineView(), headlinePanel.getDataId(), Opener.modeless());
-    }
-  }
-
   private final List<Subscription> subscriptions = Lists.newArrayList();
 
   private final NewsPanel newsPanel = new NewsPanel();
 
   private Badge sizeBadge;
 
-  private final EnumMap<Feed, Consumer<GridOptions>> registeredFilterHandlers =
+  private final EnumMap<Feed, BiConsumer<GridOptions, PresenterCallback>> registeredFilterHandlers =
       Maps.newEnumMap(Feed.class);
+
   private final Map<String, HeadlineAccessor> registeredAccessHandlers = Maps.newHashMap();
 
   NewsAggregator() {
@@ -481,6 +473,24 @@ public class NewsAggregator implements HandlesAllDataEvents {
       count += subscription.size();
     }
     return count;
+  }
+
+  public void filterNews(String input, ViewCallback callback) {
+    Assert.notEmpty(input);
+    Assert.notNull(callback);
+
+    Feed feed = EnumUtils.getEnumByName(Feed.class, input);
+    if (feed == null) {
+      callback.onFailure("cannot parse feed", input);
+
+    } else {
+      Subscription subscription = findSubscription(feed);
+      if (subscription == null) {
+        callback.onFailure("subscription not found for", feed.name());
+      } else {
+        doFilter(feed, subscription, ViewFactory.getPresenterCallback(callback));
+      }
+    }
   }
 
   public IdentifiableWidget getNewsPanel() {
@@ -632,7 +642,7 @@ public class NewsAggregator implements HandlesAllDataEvents {
     registeredAccessHandlers.put(viewName, handler);
   }
 
-  public void registerFilterHandler(Feed feed, Consumer<GridOptions> handler) {
+  public void registerFilterHandler(Feed feed, BiConsumer<GridOptions, PresenterCallback> handler) {
     Assert.notNull(feed);
     Assert.notNull(handler);
 
@@ -678,6 +688,24 @@ public class NewsAggregator implements HandlesAllDataEvents {
     }
   }
 
+  private void doFilter(Feed feed, Subscription subscription, PresenterCallback callback) {
+    String caption = BeeUtils.join(" - ", Domain.NEWS.getCaption(), feed.getCaption());
+
+    Set<Long> idSet = subscription.getIdSet();
+    Filter filter = idSet.isEmpty() ? Filter.isFalse() : Filter.idIn(idSet);
+
+    GridOptions gridOptions = GridOptions.forFeed(feed, caption, filter);
+
+    if (registeredFilterHandlers.containsKey(feed)) {
+      registeredFilterHandlers.get(feed).accept(gridOptions, callback);
+
+    } else {
+      String gridName = feed.getHeadlineView();
+      GridFactory.openGrid(gridName, GridFactory.getGridInterceptor(gridName), gridOptions,
+          callback);
+    }
+  }
+
   private List<Subscription> filterSubscriptions(String viewName) {
     List<Subscription> result = Lists.newArrayList();
 
@@ -714,19 +742,18 @@ public class NewsAggregator implements HandlesAllDataEvents {
 
   private void onFilter(Feed feed) {
     Subscription subscription = findSubscription(feed);
-
     if (subscription != null && !subscription.isEmpty()) {
-      Set<Long> idSet = subscription.getIdSet();
+      doFilter(feed, subscription, ViewHelper.getPresenterCallback());
+    }
+  }
 
-      String caption = BeeUtils.join(" - ", Domain.NEWS.getCaption(), feed.getCaption());
-      Filter filter = Filter.idIn(idSet);
-      GridOptions gridOptions = GridOptions.forCaptionAndFilter(caption, filter);
+  private void readHeadline(HeadlinePanel headlinePanel) {
+    Feed feed = headlinePanel.getFeed();
 
-      if (registeredFilterHandlers.containsKey(feed)) {
-        registeredFilterHandlers.get(feed).accept(gridOptions);
-      } else {
-        GridFactory.openGrid(feed.getHeadlineView(), gridOptions);
-      }
+    if (feed != null && (!registeredAccessHandlers.containsKey(feed.getHeadlineView())
+        || !registeredAccessHandlers.get(feed.getHeadlineView()).read(headlinePanel.getDataId()))) {
+
+      RowEditor.open(feed.getHeadlineView(), headlinePanel.getDataId(), Opener.modeless());
     }
   }
 

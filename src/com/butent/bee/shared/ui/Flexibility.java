@@ -83,14 +83,14 @@ public class Flexibility implements BeeSerializable, HasInfo {
   public static boolean isAttributeRelevant(String name) {
     return BeeUtils.inListSame(name, ATTR_GROW, ATTR_SHRINK, ATTR_BASIS, ATTR_BASIS_UNIT);
   }
-  
+
   public static Flexibility maybeCreate(Integer grow, Integer shrink, Integer basis,
       String basisUnit) {
 
     if (BeeUtils.isNonNegative(grow) || BeeUtils.isNonNegative(shrink)
         || BeeUtils.isNonNegative(basis)) {
-      
-      Flexibility flexibility = new Flexibility();      
+
+      Flexibility flexibility = new Flexibility();
 
       if (BeeUtils.isNonNegative(grow)) {
         flexibility.setGrow(grow);
@@ -105,9 +105,9 @@ public class Flexibility implements BeeSerializable, HasInfo {
       if (!BeeUtils.isEmpty(basisUnit)) {
         flexibility.setBasisUnit(CssUnit.parse(basisUnit));
       }
-      
+
       return flexibility;
-    
+
     } else {
       return null;
     }
@@ -152,7 +152,7 @@ public class Flexibility implements BeeSerializable, HasInfo {
   private Flexibility() {
     super();
   }
-  
+
   public Flexibility copy() {
     Flexibility copy = new Flexibility(getGrow(), getShrink(), getBasisWidth(), getBasisUnit());
     copy.setBasisAuto(isBasisAuto());
@@ -221,17 +221,17 @@ public class Flexibility implements BeeSerializable, HasInfo {
   public boolean isEmpty() {
     return getGrow() < 0 && getShrink() < 0 && getBasisWidth() < 0 && !isBasisAuto();
   }
-  
+
   public void merge(Flexibility preferred) {
     Assert.notNull(preferred);
-    
+
     if (preferred.getGrow() >= 0) {
       setGrow(preferred.getGrow());
     }
     if (preferred.getShrink() >= 0) {
       setShrink(preferred.getShrink());
     }
-    
+
     if (preferred.getBasisWidth() >= 0 || preferred.isBasisAuto()) {
       setBasisWidth(preferred.getBasisWidth());
       setBasisAuto(preferred.isBasisAuto());

@@ -504,7 +504,7 @@ public class EcModuleBean implements BeeModule {
 
       if (filter != null) {
         clause = SqlUtils.in(TBL_TCD_ORPHANS, sys.getIdName(TBL_TCD_ORPHANS),
-            sys.getView(TBL_TCD_ORPHANS).getQuery(filter, null)
+            sys.getView(TBL_TCD_ORPHANS).getQuery(usr.getCurrentUserId(), filter)
                 .resetFields()
                 .addFields(TBL_TCD_ORPHANS, sys.getIdName(TBL_TCD_ORPHANS)));
       }
@@ -2401,7 +2401,6 @@ public class EcModuleBean implements BeeModule {
     SimpleRowSet graphicsData = qs.getData(graphicsQuery);
 
     if (DataUtils.isEmpty(graphicsData)) {
-      logger.warning("graphics not found for", articles);
       return ResponseObject.emptyResponse();
     }
 
@@ -2577,18 +2576,17 @@ public class EcModuleBean implements BeeModule {
     return ResponseObject.error(usr.getLocalizableConstants().actionCanNotBeExecuted());
   }
 
-  private void logHistory(String service, String query, Long artice, int count,
-      long duration) {
+  private void logHistory(String service, String query, Long article, int count, long duration) {
     SqlInsert ins = new SqlInsert(TBL_HISTORY);
     ins.addConstant(COL_HISTORY_DATE, System.currentTimeMillis());
     ins.addConstant(COL_HISTORY_USER, usr.getCurrentUserId());
 
-    ins.addConstant(COL_HISTORY_SERVICE, service);
+    ins.addConstant(COL_HISTORY_SERVICE, sys.clampValue(TBL_HISTORY, COL_HISTORY_SERVICE, service));
     if (!BeeUtils.isEmpty(query)) {
-      ins.addConstant(COL_HISTORY_QUERY, query);
+      ins.addConstant(COL_HISTORY_QUERY, sys.clampValue(TBL_HISTORY, COL_HISTORY_QUERY, query));
     }
-    if (artice != null) {
-      ins.addConstant(COL_HISTORY_ARTICLE, artice);
+    if (article != null) {
+      ins.addConstant(COL_HISTORY_ARTICLE, article);
     }
 
     ins.addConstant(COL_HISTORY_COUNT, count);

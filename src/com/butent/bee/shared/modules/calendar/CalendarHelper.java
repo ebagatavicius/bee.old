@@ -11,7 +11,7 @@ public final class CalendarHelper {
 
   private static final String LABEL_SEPARATOR = BeeConst.STRING_COLON + BeeConst.STRING_SPACE;
   private static final String CHILD_SEPARATOR = ", ";
-  
+
   private static final String SUBSTITUTE_PREFIX = "{";
   private static final String SUBSTITUTE_SUFFIX = "}";
 
@@ -22,11 +22,11 @@ public final class CalendarHelper {
       return BeeUtils.trim(value);
     }
   }
-  
+
   public static boolean hasSubstitutes(String s) {
     return s != null && s.contains(SUBSTITUTE_PREFIX) && s.contains(SUBSTITUTE_SUFFIX);
   }
-  
+
   public static String join(String label, String value) {
     if (BeeUtils.isEmpty(value)) {
       return BeeConst.STRING_EMPTY;
@@ -38,13 +38,13 @@ public final class CalendarHelper {
   }
 
   public static String joinChildren(List<String> children) {
-    return BeeUtils.join(CHILD_SEPARATOR, children); 
+    return BeeUtils.join(CHILD_SEPARATOR, children);
   }
-  
+
   public static String wrap(String s) {
     return SUBSTITUTE_PREFIX + s.trim() + SUBSTITUTE_SUFFIX;
   }
-  
+
   private CalendarHelper() {
   }
 }

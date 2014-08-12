@@ -5,7 +5,7 @@ import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.utils.Codec;
 
 public class ArticleCriteria implements BeeSerializable {
-  
+
   public static ArticleCriteria restore(String s) {
     ArticleCriteria criteria = new ArticleCriteria();
     criteria.deserialize(s);
@@ -27,7 +27,7 @@ public class ArticleCriteria implements BeeSerializable {
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
-    
+
     setName(arr[0]);
     setValue(arr[1]);
   }

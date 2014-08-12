@@ -1,15 +1,17 @@
 package com.butent.bee.client.grid;
 
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.event.logical.ParentRowEvent;
+import com.butent.bee.client.event.logical.ReadyEvent;
+import com.butent.bee.client.event.logical.ReadyEvent.HasReadyHandlers;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.HasFosterParent;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HasGridView;
@@ -19,8 +21,8 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.EnumSet;
 
-public class GridPanel extends Simple implements HasEnabled, HasFosterParent,
-    ParentRowEvent.Handler, HasGridView {
+public class GridPanel extends Simple implements EnablableWidget, HasFosterParent,
+    ParentRowEvent.Handler, HasGridView, ReadyEvent.HasReadyHandlers {
 
   private final String gridName;
   private GridFactory.GridOptions gridOptions;
@@ -46,6 +48,13 @@ public class GridPanel extends Simple implements HasEnabled, HasFosterParent,
 
   public GridFactory.GridOptions getGridOptions() {
     return gridOptions;
+  }
+
+  @Override
+  public com.google.gwt.event.shared.HandlerRegistration addReadyHandler(
+      ReadyEvent.Handler handler) {
+
+    return addHandler(handler, ReadyEvent.getType());
   }
 
   @Override
@@ -113,7 +122,12 @@ public class GridPanel extends Simple implements HasEnabled, HasFosterParent,
   public void setWidget(Widget w) {
     if (w != null) {
       StyleUtils.makeAbsolute(w);
+
+      if (w instanceof HasReadyHandlers) {
+        ReadyEvent.maybeDelegate(this, (HasReadyHandlers) w);
+      }
     }
+
     super.setWidget(w);
   }
 
@@ -127,13 +141,13 @@ public class GridPanel extends Simple implements HasEnabled, HasFosterParent,
 
       UiOption uiOption = child ? UiOption.CHILD : UiOption.EMBEDDED;
 
-      GridFactory.createGrid(getGridName(), GridFactory.getSupplierKey(getGridName()), gic,
+      GridFactory.createGrid(getGridName(), GridFactory.getSupplierKey(getGridName(), gic), gic,
           EnumSet.of(uiOption), getGridOptions(), new PresenterCallback() {
             @Override
             public void onCreate(Presenter gp) {
               if (gp != null) {
                 setPresenter(gp);
-                setWidget(gp.getWidget());
+                setWidget(gp.getMainView());
                 gp.setEventSource(getId());
               }
             }

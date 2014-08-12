@@ -11,22 +11,26 @@ import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
-import com.butent.bee.shared.utils.BeeUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class ItemForm extends AbstractFormInterceptor {
 
   @Override
   public void afterRefresh(FormView form, IsRow row) {
     if (DataUtils.isNewRow(row)) {
-      ItemsGrid gridHandler = getItemGridHandler(form);
+      Widget categoryWidget = form.getWidgetByName("Categories");
 
-      if (gridHandler != null && gridHandler.getSelectedCategory() != null) {
-        Widget categoryWidget = form.getWidgetByName("Categories");
+      if (categoryWidget instanceof MultiSelector) {
+        List<Long> categories = new ArrayList<>();
+        ItemsGrid gridHandler = getItemGridHandler(form);
 
-        if (categoryWidget instanceof MultiSelector) {
-          long categoryId = gridHandler.getSelectedCategory().getId();
-          ((MultiSelector) categoryWidget).render(BeeUtils.toString(categoryId));
+        if (gridHandler != null && gridHandler.getSelectedCategory() != null) {
+          categories.add(gridHandler.getSelectedCategory().getId());
         }
+
+        ((MultiSelector) categoryWidget).setIds(categories);
       }
     }
 

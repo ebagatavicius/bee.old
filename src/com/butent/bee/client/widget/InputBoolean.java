@@ -175,6 +175,11 @@ public class InputBoolean extends Composite implements Editor, HasValueChangeHan
   }
 
   @Override
+  public void render(String value) {
+    setValue(value);
+  }
+
+  @Override
   public void setAccessKey(char key) {
     getCheckBox().setAccessKey(key);
   }

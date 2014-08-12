@@ -35,12 +35,12 @@ public class InputRange extends InputInteger {
   public HandlerRegistration addEditChangeHandler(EditChangeHandler handler) {
     return addValueChangeHandler(handler);
   }
-  
+
   @Override
   public EditorAction getDefaultFocusAction() {
     return null;
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "slid";
@@ -50,7 +50,7 @@ public class InputRange extends InputInteger {
   public FormWidget getWidgetType() {
     return FormWidget.INPUT_RANGE;
   }
-  
+
   @Override
   public void setValue(String value) {
     if (BeeUtils.isEmpty(value) && BeeUtils.isInt(getMinValue())) {

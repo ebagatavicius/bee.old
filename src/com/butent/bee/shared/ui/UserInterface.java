@@ -306,7 +306,7 @@ public enum UserInterface implements HasCaption {
   public abstract List<String> getStyleSheets();
 
   public abstract String getTitle();
-  
+
   public boolean hasComponent(Component component) {
     return getComponents().contains(component);
   }

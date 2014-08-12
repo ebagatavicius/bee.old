@@ -34,7 +34,7 @@ import com.butent.bee.shared.State;
 public class Absolute extends AbsolutePanel implements DndWidget, ProvidesResize, RequiresResize {
 
   private State targetState;
-  
+
   public Absolute() {
     this(Position.ABSOLUTE);
   }
@@ -108,7 +108,7 @@ public class Absolute extends AbsolutePanel implements DndWidget, ProvidesResize
   public State getTargetState() {
     return targetState;
   }
-  
+
   @Override
   public void onResize() {
     for (Widget child : getChildren()) {

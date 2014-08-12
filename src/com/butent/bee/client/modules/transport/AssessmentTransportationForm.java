@@ -233,7 +233,7 @@ public class AssessmentTransportationForm extends PrintFormInterceptor {
         BeeUtils.joinWords(info.getFirstName(), info.getLastName());
     long forwarderId = BeeUtils.unbox(row.getLong(form.getDataIndex(COL_FORWARDER)));
     Filter filter = Filter.idIn(Lists.newArrayList(info.getCompany(), forwarderId));
-    
+
     Queries.getRowSet(ClassifierConstants.VIEW_COMPANIES, viewInfo.getColumnNames(false),
         filter, new RowSetCallback() {
 
@@ -241,7 +241,7 @@ public class AssessmentTransportationForm extends PrintFormInterceptor {
           public void onSuccess(BeeRowSet result) {
             String customerCompanySignature = "";
             String forwarderCompanySignature = "";
-            
+
             for (IsRow resutlRow : result) {
               long id = resutlRow.getId();
 
@@ -257,19 +257,19 @@ public class AssessmentTransportationForm extends PrintFormInterceptor {
               }
 
             }
-            
+
             String pText = BeeUtils.joinWords(customerCompanySignature + BeeConst.STRING_COMMA,
                 BeeUtils.join(BeeConst.STRING_SPACE, PARAGRAPH_TEXT.subList(0, 1)),
                 customerPersonSignature + BeeConst.STRING_COMMA,
-                    BeeUtils.join(BeeConst.STRING_SPACE, PARAGRAPH_TEXT.subList(1, 2)),
+                BeeUtils.join(BeeConst.STRING_SPACE, PARAGRAPH_TEXT.subList(1, 2)),
                 forwarderCompanySignature + BeeConst.STRING_COMMA,
-                    BeeUtils.join(BeeConst.STRING_SPACE, PARAGRAPH_TEXT.subList(2, PARAGRAPH_TEXT
-                        .size()))
-              );
+                BeeUtils.join(BeeConst.STRING_SPACE, PARAGRAPH_TEXT.subList(2, PARAGRAPH_TEXT
+                    .size()))
+                );
 
             widget.getElement().setInnerText(pText);
           }
-    });
-    
+        });
+
   }
 }

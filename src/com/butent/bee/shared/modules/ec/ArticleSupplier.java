@@ -26,7 +26,7 @@ public class ArticleSupplier implements BeeSerializable {
 
   private EcSupplier supplier;
   private String supplierId;
-  
+
   private int cost;
   private int price;
 
@@ -78,7 +78,7 @@ public class ArticleSupplier implements BeeSerializable {
         case PRICE:
           setPrice(BeeUtils.toInt(value));
           break;
-          
+
         case REMAINDERS:
           remainders.clear();
           remainders.putAll(Codec.deserializeMap(value));
@@ -170,7 +170,7 @@ public class ArticleSupplier implements BeeSerializable {
     }
     return Codec.beeSerialize(arr);
   }
-  
+
   public void setCost(Double cost) {
     setCost(BeeUtils.isDouble(cost) ? BeeUtils.round(cost * 100) : 0);
   }
@@ -186,7 +186,7 @@ public class ArticleSupplier implements BeeSerializable {
   public void setPrice(int price) {
     this.price = price;
   }
-  
+
   public int totalStock() {
     int stock = 0;
 

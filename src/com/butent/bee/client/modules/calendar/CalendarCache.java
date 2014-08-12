@@ -43,7 +43,7 @@ class CalendarCache implements HandlesAllDataEvents {
   }
 
   private static final BeeLogger logger = LogUtils.getLogger(CalendarCache.class);
-  
+
   private final Map<String, BeeRowSet> data = Maps.newHashMap();
 
   private final Map<String, State> states = Maps.newHashMap();
@@ -94,7 +94,7 @@ class CalendarCache implements HandlesAllDataEvents {
       }
     }
   }
-  
+
   @Override
   public void onRowInsert(RowInsertEvent event) {
     if (isEventRelevant(event)) {
@@ -120,7 +120,7 @@ class CalendarCache implements HandlesAllDataEvents {
     if (rowSet == null) {
       return false;
     }
-    
+
     for (BeeRow row : rowSet.getRows()) {
       if (filter.isMatch(rowSet.getColumns(), row)) {
         return true;
@@ -128,7 +128,7 @@ class CalendarCache implements HandlesAllDataEvents {
     }
     return false;
   }
-  
+
   void ensureData(String viewName) {
     getData(viewName, null);
   }
@@ -143,7 +143,7 @@ class CalendarCache implements HandlesAllDataEvents {
     }
     return appointmentViewInfo;
   }
-  
+
   Boolean getBoolean(String viewName, long rowId, String columnId) {
     BeeRow row = getRow(viewName, rowId);
     if (row == null) {
@@ -158,7 +158,7 @@ class CalendarCache implements HandlesAllDataEvents {
       for (String viewName : viewNames) {
         ensureData(viewName);
       }
-      
+
     } else if (Settings.minimizeNumberOfConcurrentRequests()) {
       List<String> notCached = Lists.newArrayList();
       for (String viewName : viewNames) {
@@ -166,7 +166,7 @@ class CalendarCache implements HandlesAllDataEvents {
           notCached.add(viewName);
         }
       }
-      
+
       if (notCached.isEmpty()) {
         multiCallback.onSuccess(viewNames.size());
       } else {
@@ -230,7 +230,7 @@ class CalendarCache implements HandlesAllDataEvents {
       loadData(viewName);
     }
   }
-  
+
   Integer getInteger(String viewName, long rowId, String columnId) {
     BeeRow row = getRow(viewName, rowId);
     if (row == null) {
@@ -239,7 +239,7 @@ class CalendarCache implements HandlesAllDataEvents {
       return Data.getInteger(viewName, row, columnId);
     }
   }
-  
+
   Long getLong(String viewName, long rowId, String columnId) {
     BeeRow row = getRow(viewName, rowId);
     if (row == null) {
@@ -248,7 +248,7 @@ class CalendarCache implements HandlesAllDataEvents {
       return Data.getLong(viewName, row, columnId);
     }
   }
-  
+
   BeeRow getRow(String viewName, long rowId) {
     BeeRowSet rowSet = getRowSet(viewName);
     if (rowSet == null) {
@@ -265,7 +265,7 @@ class CalendarCache implements HandlesAllDataEvents {
     }
     return rowSet;
   }
-  
+
   String getString(String viewName, long rowId, String columnId) {
     BeeRow row = getRow(viewName, rowId);
     if (row == null) {
@@ -274,7 +274,7 @@ class CalendarCache implements HandlesAllDataEvents {
       return Data.getString(viewName, row, columnId);
     }
   }
-  
+
   boolean isLoaded(String viewName) {
     return State.LOADED.equals(states.get(viewName));
   }
@@ -293,7 +293,7 @@ class CalendarCache implements HandlesAllDataEvents {
   private boolean isEventRelevant(DataEvent event) {
     return event != null && data.containsKey(event.getViewName());
   }
-  
+
   private void loadData(final String viewName) {
     if (State.PENDING.equals(states.get(viewName))) {
       return;
@@ -315,7 +315,7 @@ class CalendarCache implements HandlesAllDataEvents {
       }
     });
   }
-  
+
   private void put(String viewName, BeeRowSet rowSet) {
     data.put(viewName, rowSet);
     states.put(viewName, State.LOADED);

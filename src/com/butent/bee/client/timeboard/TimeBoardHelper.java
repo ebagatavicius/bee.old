@@ -223,6 +223,20 @@ public final class TimeBoardHelper {
     return BeeUtils.unbox(settings.getBoolean(0, index));
   }
 
+  public static JustDate getDate(BeeRowSet settings, String colName) {
+    if (DataUtils.isEmpty(settings)) {
+      return null;
+    }
+
+    int index = settings.getColumnIndex(colName);
+    if (BeeConst.isUndef(index)) {
+      logger.severe(settings.getViewName(), colName, "column not found");
+      return null;
+    }
+
+    return settings.getDate(0, index);
+  }
+
   public static List<HasDateRange> getInactivity(HasDateRange item, Range<JustDate> activeRange) {
     List<HasDateRange> result = Lists.newArrayList();
     if (activeRange == null || item == null || item.getRange() == null) {
@@ -258,7 +272,7 @@ public final class TimeBoardHelper {
       return settings.getInteger(0, index);
     }
   }
-  
+
   public static Long getLong(BeeRowSet settings, String colName) {
     if (DataUtils.isEmpty(settings)) {
       return null;
@@ -291,7 +305,7 @@ public final class TimeBoardHelper {
   public static int getPixels(BeeRowSet settings, String colName, int def, int min, int max) {
     return BeeUtils.clamp(getPixels(settings, colName, def), min, max);
   }
-  
+
   public static Range<JustDate> getRange(DateTime start, DateTime end) {
     if (start == null) {
       if (end == null) {
@@ -304,17 +318,17 @@ public final class TimeBoardHelper {
     } else if (end == null) {
       JustDate date = start.getDate();
       return Range.closed(date, date);
-    
+
     } else {
       JustDate lower = start.getDate();
-      
+
       JustDate upper;
       if (end.hasTimePart()) {
         upper = end.getDate();
       } else {
         upper = TimeUtils.previousDay(end);
       }
-      
+
       return Range.closed(lower, BeeUtils.max(lower, upper));
     }
   }
@@ -382,7 +396,7 @@ public final class TimeBoardHelper {
 
     return settings.getString(0, index);
   }
-  
+
   public static boolean hasRangeAndIsActive(HasDateRange item, Range<JustDate> activeRange) {
     if (item == null || item.getRange() == null) {
       return false;
@@ -402,7 +416,7 @@ public final class TimeBoardHelper {
       return activeRange.isConnected(item.getRange());
     }
   }
-  
+
   public static boolean isNormalized(Range<JustDate> range) {
     return range != null && !range.isEmpty() && range.hasLowerBound() && range.hasUpperBound()
         && range.lowerBoundType() == BoundType.CLOSED && range.upperBoundType() == BoundType.CLOSED;
@@ -571,7 +585,7 @@ public final class TimeBoardHelper {
     Integer value = settings.getInteger(0, index);
     return BeeUtils.isPositive(value) ? value : def;
   }
-  
+
   static int getPosition(JustDate start, JustDate date, double daySize) {
     return BeeUtils.round(TimeUtils.dayDiff(start, date) * daySize);
   }
@@ -648,7 +662,7 @@ public final class TimeBoardHelper {
       return null;
     }
   }
-  
+
   static Range<JustDate> normalizedIntersection(Range<JustDate> r1, Range<JustDate> r2,
       Range<JustDate> r3) {
     return normalizedIntersection(r1, normalizedIntersection(r2, r3));
@@ -1012,7 +1026,7 @@ public final class TimeBoardHelper {
     if (DAY_SEPARATOR_WIDTH > 0
         && dayWidth > DAY_SEPARATOR_WIDTH * 2
         && (index == count - 1 || date.getDom() == 1
-            || TimeUtils.isMore(date, TimeUtils.today()) 
+        || TimeUtils.isMore(date, TimeUtils.today())
             && dayWidth >= MIN_DAY_WIDTH_FOR_SEPARATOR)) {
       return DAY_SEPARATOR_WIDTH;
     } else {
@@ -1148,7 +1162,7 @@ public final class TimeBoardHelper {
       return Pair.of(startWidget, endWidget);
     }
   }
- 
+
   private TimeBoardHelper() {
   }
 }

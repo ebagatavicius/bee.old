@@ -17,18 +17,18 @@ public interface DataView extends View, NotificationListener, HasViewName, HasAc
   HandlerRegistration addCellValidationHandler(String columnId, CellValidateEvent.Handler handler);
 
   void finishNewRow(IsRow row);
-  
+
   boolean isFlushable();
 
   String getOptions();
-  
+
   Map<String, String> getProperties();
-  
+
   String getProperty(String key);
-  
+
   void refresh(boolean refreshChildren, boolean focus);
-  
+
   int refreshBySource(String source);
-  
+
   void startNewRow(boolean copy);
 }

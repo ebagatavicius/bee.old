@@ -36,8 +36,9 @@
             data="Relations" for="Person" module="Classifiers.Contacts">
           <Label text="=persons" style="&chlabel;" />
           <ChildSelector name="Person" class="flexible" viewName="Persons" childTable="Relations"
-              targetRelColumn="Document" sourceRelColumn="Person"
-              renderColumns="FirstName LastName" />
+              targetRelColumn="Document" sourceRelColumn="Person" 
+              renderColumns="FirstName LastName" choiceColumns="FirstName LastName CompanyNames"
+              searchableColumns="FirstName LastName" options="Company" />
         </FlowPanel>
 
         <FlowPanel class="flexBox-horizontal" style="&row;"

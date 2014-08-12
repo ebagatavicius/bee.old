@@ -59,7 +59,8 @@ public class DocumentTemplatesGrid extends AbstractGridInterceptor implements
             new StringCallback() {
               @Override
               public void onSuccess(final String value) {
-                DocumentsHandler.copyDocumentData(row.getLong(grid.getDataIndex(COL_DOCUMENT_DATA)),
+                DocumentsHandler.copyDocumentData(
+                    row.getLong(grid.getDataIndex(COL_DOCUMENT_DATA)),
                     new IdCallback() {
                       @Override
                       public void onSuccess(Long dataId) {
@@ -105,7 +106,7 @@ public class DocumentTemplatesGrid extends AbstractGridInterceptor implements
       return categoryTree.getPathLabels(categoryTree.getSelectedItem().getId(), ALS_CATEGORY_NAME);
     }
   }
-  
+
   @Override
   public void onSelection(SelectionEvent<IsRow> event) {
     if (event != null) {

@@ -10,7 +10,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 public final class CalendarFormat {
 
   private static final DateTimeFormat DAY_OF_WEEK_FORMAT = DateTimeFormat.getFormat("EEEE");
-  
+
   private static final String[] weekDayNames = new String[7];
   private static final String[] hours = new String[24];
 
@@ -25,7 +25,7 @@ public final class CalendarFormat {
       hours[i] = TimeUtils.padTwo(i) + ":00";
     }
   }
-  
+
   public static String formatWeekOfYear(JustDate date) {
     if (date == null) {
       return BeeConst.STRING_EMPTY;
@@ -34,7 +34,7 @@ public final class CalendarFormat {
           .unitWeekShort());
     }
   }
-  
+
   public static String[] getDayOfWeekNames() {
     return weekDayNames;
   }

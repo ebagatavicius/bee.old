@@ -20,10 +20,10 @@ class SelectorHandler implements SelectorEvent.Handler {
 
   private static void copyDocumentCriteria(Long docDataId, Long objId) {
     ParameterList params = ServiceKeeper.createArgs(SVC_COPY_DOCUMENT_CRITERIA);
-    
+
     params.addQueryItem(COL_DOCUMENT_DATA, docDataId);
     params.addQueryItem(COL_SERVICE_OBJECT, objId);
-    
+
     BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
@@ -33,19 +33,19 @@ class SelectorHandler implements SelectorEvent.Handler {
       }
     });
   }
-  
+
   SelectorHandler() {
   }
-  
+
   @Override
   public void onDataSelector(SelectorEvent event) {
-    if (event != null && event.isRowCreated() 
+    if (event != null && event.isRowCreated()
         && event.getNewRow() != null && DataUtils.isId(event.getNewRow().getId())
         && BeeUtils.same(event.getRelatedViewName(), VIEW_SERVICE_OBJECTS)) {
-      
+
       FormView form = UiHelper.getForm(event.getSelector());
       if (form != null && BeeUtils.same(form.getViewName(), VIEW_DOCUMENTS)) {
-        
+
         IsRow docRow = form.getActiveRow();
         int index = form.getDataIndex(COL_DOCUMENT_DATA);
 

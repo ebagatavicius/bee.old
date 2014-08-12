@@ -96,7 +96,7 @@ public class ResizeController implements MoveEvent.Handler {
         CalendarItem item = getItemWidget().getItem();
         DateTime newEnd = new DateTime(item.getStartMillis()
             + minutes * TimeUtils.MILLIS_PER_MINUTE);
-        
+
         switch (item.getItemType()) {
           case APPOINTMENT:
             calendarView.updateAppointment((Appointment) item, item.getStartTime(), newEnd,

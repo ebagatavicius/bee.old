@@ -20,6 +20,7 @@ public class MarkerOptions extends JavaScriptObject {
   protected MarkerOptions() {
   }
 
+//@formatter:off
   public final native boolean getClickable() /*-{
     return this.clickable;
   }-*/;
@@ -119,4 +120,5 @@ public class MarkerOptions extends JavaScriptObject {
   private native void setMap(MapImpl map) /*-{
     this.map = map;
   }-*/;
+//@formatter:on
 }

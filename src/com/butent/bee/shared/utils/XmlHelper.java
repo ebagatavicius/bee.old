@@ -21,7 +21,7 @@ public final class XmlHelper {
   public static String getAttribute(Map<String, String> attributes, String name) {
     return (attributes == null) ? null : attributes.get(name);
   }
-  
+
   public static String getList(Collection<String> items) {
     Assert.notNull(items);
     return LIST_JOINER.join(Iterables.filter(items, StringPredicate.NOT_EMPTY));
@@ -31,7 +31,7 @@ public final class XmlHelper {
     Assert.notNull(items);
     return LIST_JOINER.join(Collections2.transform(items, NameUtils.GET_NAME));
   }
-  
+
   private XmlHelper() {
   }
 }

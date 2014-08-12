@@ -51,13 +51,21 @@ public class Mobile extends ScreenImpl {
   public boolean activateDomainEntry(Domain domain, Long key) {
     return false;
   }
-  
+
   @Override
   public void activateWidget(IdentifiableWidget widget) {
   }
 
   @Override
   public void addDomainEntry(Domain domain, IdentifiableWidget widget, Long key, String caption) {
+  }
+
+  @Override
+  public void closeAll() {
+    IdentifiableWidget widget = getActiveWidget();
+    if (widget != null) {
+      getScreenPanel().remove(widget);
+    }
   }
 
   @Override
@@ -72,7 +80,7 @@ public class Mobile extends ScreenImpl {
       notifyWarning("closeWidget: widget not found");
     }
   }
-  
+
   @Override
   public boolean containsDomainEntry(Domain domain, Long key) {
     return false;
@@ -87,7 +95,7 @@ public class Mobile extends ScreenImpl {
   public int getActivePanelWidth() {
     return getScreenPanel().getCenterWidth();
   }
-  
+
   @Override
   public IdentifiableWidget getActiveWidget() {
     return getScreenPanel().getCenter();
@@ -99,10 +107,10 @@ public class Mobile extends ScreenImpl {
 
     info.add(new ExtendedProperty("Center Width", BeeUtils.toString(getActivePanelWidth())));
     info.add(new ExtendedProperty("Center Height", BeeUtils.toString(getActivePanelHeight())));
-    
+
     return info;
   }
-  
+
   @Override
   public List<IdentifiableWidget> getOpenWidgets() {
     List<IdentifiableWidget> result = Lists.newArrayList();
@@ -116,7 +124,7 @@ public class Mobile extends ScreenImpl {
   public UserInterface getUserInterface() {
     return UserInterface.MOBILE;
   }
-  
+
   @Override
   public void onWidgetChange(IdentifiableWidget widget) {
   }
@@ -160,19 +168,19 @@ public class Mobile extends ScreenImpl {
   protected IdentifiableWidget initCenter() {
     return new CustomDiv();
   }
-  
+
   @Override
   protected Pair<? extends IdentifiableWidget, Integer> initNorth() {
     Complex panel = new Complex();
     panel.addStyleName("bee-NorthContainer");
-    
+
     panel.addLeftTop(Global.getSearchWidget(), 40, 2);
-    
+
     Flow menuContainer = new Flow();
     menuContainer.addStyleName("bee-MainMenu");
     panel.addLeftTop(menuContainer, 10, 30);
     setMenuPanel(menuContainer);
-    
+
     setNotification(new Notification());
     panel.addRightTop(getNotification(), 1, 1);
 

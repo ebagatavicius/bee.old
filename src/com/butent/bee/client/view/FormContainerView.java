@@ -23,7 +23,7 @@ public interface FormContainerView extends View, Printable, HasWidgetSupplier, H
   void create(FormDescription formDescription, List<BeeColumn> dataColumns, int rowCount,
       FormInterceptor interceptor);
 
-  FormView getContent();
+  FormView getForm();
 
   HeaderView getHeader();
 }

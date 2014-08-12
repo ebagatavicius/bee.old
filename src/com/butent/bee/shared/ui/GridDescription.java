@@ -141,8 +141,8 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
   private final List<FilterDescription> predefinedFilters = new ArrayList<>();
 
   private String options;
-  private final Map<String, String> properties = new HashMap<>();  
-  
+  private final Map<String, String> properties = new HashMap<>();
+
   public GridDescription(String name) {
     this(name, null, null, null);
   }
@@ -400,7 +400,7 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
         case PREDEFINED_FILTERS:
           setPredefinedFilters(FilterDescription.restoreList(value));
           break;
-          
+
         case OPTIONS:
           setOptions(value);
           break;
@@ -430,7 +430,7 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
   public String getCaption() {
     return caption;
   }
-  
+
   public ColumnDescription getColumn(String id) {
     for (ColumnDescription column : getColumns()) {
       if (column.is(id)) {
@@ -1121,7 +1121,7 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
   public void setNewRowColumns(String newRowColumns) {
     this.newRowColumns = newRowColumns;
   }
-  
+
   public void setNewRowDefaults(String newRowDefaults) {
     this.newRowDefaults = newRowDefaults;
   }
@@ -1177,7 +1177,7 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
   public void setRowMessage(Calculation rowMessage) {
     this.rowMessage = rowMessage;
   }
-  
+
   public void setRowStyles(Collection<ConditionalStyleDeclaration> rowStyles) {
     this.rowStyles = rowStyles;
   }

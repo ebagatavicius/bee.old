@@ -52,7 +52,7 @@ public class ItemLayoutDescription {
     }
     return secondPart;
   }
-  
+
   private Range<Integer> getRange() {
     return Range.closed(getWeekStartDay(), getWeekEndDay());
   }

@@ -23,7 +23,7 @@ public class Subscription implements BeeSerializable, HasCaption {
     subscription.deserialize(s);
     return subscription;
   }
-  
+
   private long rowId;
 
   private Feed feed;
@@ -56,12 +56,12 @@ public class Subscription implements BeeSerializable, HasCaption {
   public boolean contains(long id) {
     for (Headline headline : headlines) {
       if (headline.getId() == id) {
-        return true; 
+        return true;
       }
     }
     return false;
   }
-  
+
   public int countNew() {
     int count = 0;
 
@@ -113,7 +113,7 @@ public class Subscription implements BeeSerializable, HasCaption {
   public String getCaption() {
     return caption;
   }
-  
+
   public DateTime getDate() {
     return date;
   }
@@ -125,21 +125,21 @@ public class Subscription implements BeeSerializable, HasCaption {
   public List<Headline> getHeadlines() {
     return headlines;
   }
-  
+
   public String getHeadlineView() {
     return (getFeed() == null) ? null : getFeed().getHeadlineView();
   }
 
   public Set<Long> getIdSet() {
     Set<Long> result = Sets.newHashSet();
-    
+
     for (Headline headline : headlines) {
       result.add(headline.getId());
     }
-    
+
     return result;
   }
-  
+
   public String getLabel() {
     if (getFeed() == null) {
       return getCaption();
@@ -155,7 +155,7 @@ public class Subscription implements BeeSerializable, HasCaption {
   public String getTable() {
     return (getFeed() == null) ? null : getFeed().getTable();
   }
-  
+
   public boolean isEmpty() {
     return headlines.isEmpty();
   }
@@ -169,7 +169,7 @@ public class Subscription implements BeeSerializable, HasCaption {
         break;
       }
     }
-    
+
     if (BeeConst.isUndef(index)) {
       return false;
     } else {

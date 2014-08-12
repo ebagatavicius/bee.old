@@ -99,21 +99,21 @@ public class IndexSelector extends Flow implements HasSelectionHandlers<Integer>
     hasSelectionHandler = true;
     return addHandler(handler, SelectionEvent.getType());
   }
-  
+
   public void enableAutocomplete(String key) {
     AutocompleteProvider.enableAutocomplete(searchBox, key);
   }
-  
+
   public void focus() {
     if (searchBox != null) {
       searchBox.setFocus(true);
     }
   }
-  
+
   public boolean hasSelectionHandler() {
     return hasSelectionHandler;
   }
-  
+
   @Override
   public boolean isEmpty() {
     return getItemCount() <= 0;
@@ -138,7 +138,7 @@ public class IndexSelector extends Flow implements HasSelectionHandlers<Integer>
   public void retainValue(String value) {
     AutocompleteProvider.retainValue(searchBox, value);
   }
-  
+
   private void addItem(String item, int index) {
     Element itemElement = Document.get().createDivElement();
 
@@ -173,12 +173,12 @@ public class IndexSelector extends Flow implements HasSelectionHandlers<Integer>
 
     int hideCnt = 0;
 
-    for (Element itemElement = itemContainer.getFirstChildElement(); itemElement != null;
-        itemElement = itemElement.getNextSiblingElement()) {
+    for (Element ie = itemContainer.getFirstChildElement(); ie != null; ie =
+        ie.getNextSiblingElement()) {
 
-      if (StyleUtils.hasClassName(itemElement, STYLE_ITEM)) {
-        boolean match = matches(itemElement, newQuery);
-        StyleUtils.setVisible(itemElement, match);
+      if (StyleUtils.hasClassName(ie, STYLE_ITEM)) {
+        boolean match = matches(ie, newQuery);
+        StyleUtils.setVisible(ie, match);
 
         if (!match) {
           hideCnt++;

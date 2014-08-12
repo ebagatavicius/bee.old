@@ -57,7 +57,7 @@ public class EcCostChangesHandler extends AbstractGridInterceptor {
           }
         }));
   }
-  
+
   @Override
   public GridInterceptor getInstance() {
     return new EcCostChangesHandler();

@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 
 public final class TradeUtils {
 
-  private static final String STYLE_ITEMS = "itemsInfo-";
+  private static final String STYLE_ITEMS = TradeKeeper.STYLE_PREFIX + "itemsInfo-";
   private static final String STYLE_ITEMS_TABLE = STYLE_ITEMS + "table";
   private static final String STYLE_ITEMS_HEADER = STYLE_ITEMS + "header";
   private static final String STYLE_ITEMS_DATA = STYLE_ITEMS + "data";

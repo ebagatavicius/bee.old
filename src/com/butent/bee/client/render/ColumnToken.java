@@ -17,22 +17,22 @@ import com.butent.bee.shared.ui.RenderableToken;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public class ColumnToken implements HasDateTimeFormat, HasNumberFormat, HasScale, HasValueType {
-  
+
   public static ColumnToken create(int dataIndex, ValueType valueType,
       RenderableToken renderableToken) {
     ColumnToken columnToken = new ColumnToken(dataIndex, valueType);
-    
+
     if (renderableToken != null) {
       columnToken.setPrefix(Localized.maybeTranslate(renderableToken.getPrefix()));
       columnToken.setSuffix(Localized.maybeTranslate(renderableToken.getSuffix()));
-      
+
       if (BeeUtils.isTrue(renderableToken.getAddPrefixWhenEmpty())) {
         columnToken.setAddPrefixWhenEmpty(true);
       }
       if (BeeUtils.isTrue(renderableToken.getAddSuffixWhenEmpty())) {
         columnToken.setAddSuffixWhenEmpty(true);
       }
-      
+
       if (!BeeUtils.isEmpty(renderableToken.getFormat())) {
         Format.setFormat(columnToken, valueType, renderableToken.getFormat());
       }
@@ -40,16 +40,16 @@ public class ColumnToken implements HasDateTimeFormat, HasNumberFormat, HasScale
         columnToken.setScale(renderableToken.getScale());
       }
     }
-    
+
     return columnToken;
   }
-  
+
   private final int dataIndex;
   private final ValueType valueType;
-  
+
   private String prefix;
   private String suffix;
-  
+
   private boolean addPrefixWhenEmpty;
   private boolean addSuffixWhenEmpty;
 
@@ -57,7 +57,7 @@ public class ColumnToken implements HasDateTimeFormat, HasNumberFormat, HasScale
   private NumberFormat numberFormat;
 
   private int scale = BeeConst.UNDEF;
-  
+
   public ColumnToken(int dataIndex, ValueType valueType) {
     super();
     this.dataIndex = dataIndex;
@@ -94,7 +94,7 @@ public class ColumnToken implements HasDateTimeFormat, HasNumberFormat, HasScale
   public int getScale() {
     return scale;
   }
-  
+
   public String getSuffix() {
     return suffix;
   }
@@ -120,7 +120,7 @@ public class ColumnToken implements HasDateTimeFormat, HasNumberFormat, HasScale
     String value = DataUtils.getString(row, getDataIndex());
     String formatted = Format.render(value, getValueType(), getDateTimeFormat(), getNumberFormat(),
         getScale());
-    
+
     return addPrefixAndSuffix(formatted);
   }
 
@@ -145,12 +145,12 @@ public class ColumnToken implements HasDateTimeFormat, HasNumberFormat, HasScale
   public void setPrefix(String prefix) {
     this.prefix = prefix;
   }
-  
+
   @Override
   public void setScale(int scale) {
     this.scale = scale;
   }
-  
+
   public void setSuffix(String suffix) {
     this.suffix = suffix;
   }
@@ -159,7 +159,7 @@ public class ColumnToken implements HasDateTimeFormat, HasNumberFormat, HasScale
     if (!hasPrefix() && !hasSuffix()) {
       return input;
     }
-    
+
     StringBuilder result = new StringBuilder();
     if (hasPrefix() && (!BeeUtils.isEmpty(input) || addPrefixWhenEmpty())) {
       result.append(getPrefix());
@@ -170,7 +170,7 @@ public class ColumnToken implements HasDateTimeFormat, HasNumberFormat, HasScale
     if (hasSuffix() && (!BeeUtils.isEmpty(input) || addSuffixWhenEmpty())) {
       result.append(getSuffix());
     }
-    
+
     return result.toString();
   }
 }

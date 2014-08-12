@@ -83,7 +83,7 @@ import com.butent.bee.shared.Assert;
 public final class Binder {
 
   private static boolean initialized;
-  
+
   private static JavaScriptObject dispatcher;
 
   public static HandlerRegistration addBlurHandler(Widget widget, BlurHandler handler) {
@@ -100,7 +100,7 @@ public final class Binder {
 
     return widget.addDomHandler(handler, CanPlayThroughEvent.getType());
   }
-  
+
   public static HandlerRegistration addChangeHandler(Widget widget, ChangeHandler handler) {
     Assert.notNull(widget, "addChangeHandler: widget is null");
     Assert.notNull(handler, "addChangeHandler: handler is null");
@@ -172,7 +172,7 @@ public final class Binder {
 
     return widget.addDomHandler(handler, DragStartEvent.getType());
   }
-  
+
   public static HandlerRegistration addDropHandler(Widget widget, DropHandler handler) {
     Assert.notNull(widget, "addDropHandler: widget is null");
     Assert.notNull(handler, "addDropHandler: handler is null");
@@ -193,7 +193,7 @@ public final class Binder {
 
     return widget.addDomHandler(handler, ErrorEvent.getType());
   }
-  
+
   public static HandlerRegistration addFocusHandler(Widget widget, FocusHandler handler) {
     Assert.notNull(widget, "addFocusHandler: widget is null");
     Assert.notNull(handler, "addFocusHandler: handler is null");
@@ -208,7 +208,7 @@ public final class Binder {
 
     return widget.addDomHandler(handler, GestureChangeEvent.getType());
   }
-  
+
   public static HandlerRegistration addGestureEndHandler(Widget widget, GestureEndHandler handler) {
     Assert.notNull(widget, "addGestureEndHandler: widget is null");
     Assert.notNull(handler, "addGestureEndHandler: handler is null");
@@ -223,10 +223,10 @@ public final class Binder {
 
     return widget.addDomHandler(handler, GestureStartEvent.getType());
   }
-  
+
   public static HandlerRegistration addInputHandler(Widget widget, InputHandler handler) {
     Assert.notNull(handler, "addInputHandler: handler is null");
-    
+
     sinkInput(widget);
     return widget.addHandler(handler, InputEvent.getType());
   }
@@ -244,7 +244,7 @@ public final class Binder {
 
     return widget.addDomHandler(handler, KeyPressEvent.getType());
   }
-  
+
   public static HandlerRegistration addKeyUpHandler(Widget widget, KeyUpHandler handler) {
     Assert.notNull(widget, "addKeyUpHandler: widget is null");
     Assert.notNull(handler, "addKeyUpHandler: handler is null");
@@ -280,28 +280,28 @@ public final class Binder {
 
     return widget.addDomHandler(handler, MouseMoveEvent.getType());
   }
-  
+
   public static HandlerRegistration addMouseOutHandler(Widget widget, MouseOutHandler handler) {
     Assert.notNull(widget, "addMouseOutHandler: widget is null");
     Assert.notNull(handler, "addMouseOutHandler: handler is null");
 
     return widget.addDomHandler(handler, MouseOutEvent.getType());
   }
-  
+
   public static HandlerRegistration addMouseOverHandler(Widget widget, MouseOverHandler handler) {
     Assert.notNull(widget, "addMouseOverHandler: widget is null");
     Assert.notNull(handler, "addMouseOverHandler: handler is null");
 
     return widget.addDomHandler(handler, MouseOverEvent.getType());
   }
-  
+
   public static HandlerRegistration addMouseUpHandler(Widget widget, MouseUpHandler handler) {
     Assert.notNull(widget, "addMouseUpHandler: widget is null");
     Assert.notNull(handler, "addMouseUpHandler: handler is null");
 
     return widget.addDomHandler(handler, MouseUpEvent.getType());
   }
-  
+
   public static HandlerRegistration addMouseWheelHandler(Widget widget, MouseWheelHandler handler) {
     Assert.notNull(widget, "addMouseWheelHandler: widget is null");
     Assert.notNull(handler, "addMouseWheelHandler: handler is null");
@@ -337,21 +337,21 @@ public final class Binder {
 
     return widget.addDomHandler(handler, TouchEndEvent.getType());
   }
-  
+
   public static HandlerRegistration addTouchMoveHandler(Widget widget, TouchMoveHandler handler) {
     Assert.notNull(widget, "addTouchMoveHandler: widget is null");
     Assert.notNull(handler, "addTouchMoveHandler: handler is null");
 
     return widget.addDomHandler(handler, TouchMoveEvent.getType());
   }
-  
+
   public static HandlerRegistration addTouchStartHandler(Widget widget, TouchStartHandler handler) {
     Assert.notNull(widget, "addTouchStartHandler: widget is null");
     Assert.notNull(handler, "addTouchStartHandler: handler is null");
 
     return widget.addDomHandler(handler, TouchStartEvent.getType());
   }
-  
+
   public static void sinkInput(Element elem) {
     Assert.notNull(elem, "sinkInput: element is null");
     maybeInitialize();
@@ -362,8 +362,9 @@ public final class Binder {
     Assert.notNull(obj, "sinkInput: object is null");
     sinkInput(obj.getElement());
   }
-  
-//CHECKSTYLE:OFF  
+
+//@formatter:off
+  // CHECKSTYLE:OFF
   private static native void initDispatcher() /*-{
     @com.butent.bee.client.event.Binder::dispatcher = $entry(function(evt) {
       var listener, curElem = this;
@@ -378,8 +379,9 @@ public final class Binder {
       }
     });
   }-*/;
-//CHECKSTYLE:ON
-  
+  // CHECKSTYLE:ON
+//@formatter:on
+
   private static void maybeInitialize() {
     if (!initialized) {
       initDispatcher();
@@ -387,9 +389,11 @@ public final class Binder {
     }
   }
 
+//@formatter:off
   private static native void sinkInputImpl(Element elem) /*-{
     elem.oninput = @com.butent.bee.client.event.Binder::dispatcher;
   }-*/;
+//@formatter:on
 
   private Binder() {
   }

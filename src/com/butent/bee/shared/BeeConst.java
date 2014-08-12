@@ -158,7 +158,7 @@ public final class BeeConst {
   public static final int MAX_SCALE = 20;
 
   public static final long LONG_UNDEF = -1L;
-  
+
   public static final double DOUBLE_UNDEF = -1.0d;
   public static final double DOUBLE_ZERO = 0.0d;
   public static final double DOUBLE_ONE = 1.0d;
@@ -166,15 +166,15 @@ public final class BeeConst {
 
   public static final String YEAR = "Year";
   public static final String MONTH = "Month";
-  
+
   public static final Set<String> EMPTY_IMMUTABLE_STRING_SET = Collections.emptySet();
   public static final List<String> EMPTY_IMMUTABLE_STRING_LIST = Collections.emptyList();
-  
+
   private static String home = SERVER;
 
   /**
    * Returns the state of client.
-   * 
+   *
    * @return {@code true} if state is client, {@code false} otherwise
    */
   public static boolean isClient() {
@@ -183,7 +183,7 @@ public final class BeeConst {
 
   /**
    * Returns if parameter {@code s} value equals {@code DEFAULT} constant.
-   * 
+   *
    * @return {@code true} if {@code s} is equals {@code DEFAULT} constant
    */
   public static boolean isDefault(String s) {
@@ -196,7 +196,7 @@ public final class BeeConst {
 
   /**
    * Returns is {@code x} the value of error code.
-   * 
+   *
    * @param x error code
    * @return {@code true} if {@code x} is value of error code.
    */
@@ -207,7 +207,7 @@ public final class BeeConst {
   /**
    * Returns is {@code c} the boolean value of {@code false}. There are {@code 'f', 'F', 'n',
    * 'N', '0'} values of character witch returns {@code true}
-   * 
+   *
    * @param c character of boolean value
    * @return {@code true} if character {@code c} is the boolean value of {@code false}
    */
@@ -230,14 +230,14 @@ public final class BeeConst {
     if (s == null) {
       return false;
     } else {
-      return STRING_MINUS.equals(s.trim()) 
+      return STRING_MINUS.equals(s.trim())
           || s.trim().toLowerCase().equals(STRING_FALSE.toLowerCase());
     }
   }
-  
+
   /**
    * Returns the state of server.
-   * 
+   *
    * @return {@code} if state is server
    */
   public static boolean isServer() {
@@ -247,7 +247,7 @@ public final class BeeConst {
   /**
    * Returns is (@code c} the boolean value od {@code true}. There are
    * {@code 't', 'T', 'y', 'Y', '1'} values of character witch returns {@code true}
-   * 
+   *
    * @param c character of boolean value
    * @return {@code true} if character {@code c} is the bolean value of {@code true}
    */
@@ -273,10 +273,10 @@ public final class BeeConst {
   public static boolean isUndef(long x) {
     return x == LONG_UNDEF;
   }
-  
+
   /**
    * Sets the state to client.
-   * 
+   *
    * @see #isClient
    */
   public static void setClient() {
@@ -285,7 +285,7 @@ public final class BeeConst {
 
   /**
    * Sets the state to server.
-   * 
+   *
    * @see #isServer
    */
   public static void setServer() {
@@ -294,7 +294,7 @@ public final class BeeConst {
 
   /**
    * Returns value of state.
-   * 
+   *
    * @return value of state
    * @see #isClient()
    * @see #isServer()

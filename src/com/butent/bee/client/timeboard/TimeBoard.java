@@ -1,6 +1,5 @@
 package com.butent.bee.client.timeboard;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
@@ -18,7 +17,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
@@ -27,6 +25,7 @@ import com.butent.bee.client.dom.Rectangle;
 import com.butent.bee.client.event.Binder;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.MoveEvent;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.event.logical.VisibilityChangeEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
@@ -35,13 +34,13 @@ import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasWidgetSupplier;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
+import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.Mover;
@@ -72,12 +71,15 @@ import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class TimeBoard extends Flow implements Presenter, View, Printable,
@@ -125,7 +127,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
 
   private static final String STYLE_SHEET_NAME = "timeboard";
   private static final JustDate STYLE_SHEET_VERSION = new JustDate(2014, 5, 4);
-  private static boolean styleSheetInjected; 
+  private static boolean styleSheetInjected;
 
   public static void ensureStyleSheet() {
     if (!styleSheetInjected) {
@@ -133,11 +135,11 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
       DomUtils.injectStyleSheet(Paths.getStyleSheetUrl(STYLE_SHEET_NAME, STYLE_SHEET_VERSION));
     }
   }
-  
+
   private static List<List<HasDateRange>> doStripLayout(
       Collection<? extends HasDateRange> chartItems, int maxRows) {
 
-    List<List<HasDateRange>> rows = Lists.newArrayList();
+    List<List<HasDateRange>> rows = new ArrayList<>();
 
     for (HasDateRange item : chartItems) {
       int row = BeeConst.UNDEF;
@@ -152,7 +154,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
         if (rows.size() < maxRows) {
           row = rows.size();
 
-          List<HasDateRange> rowItems = Lists.newArrayList();
+          List<HasDateRange> rowItems = new ArrayList<>();
           rows.add(rowItems);
 
         } else {
@@ -165,15 +167,15 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
 
     return rows;
   }
-  
+
   private final HeaderView headerView;
   private final Flow canvas;
 
-  private final List<HandlerRegistration> registry = Lists.newArrayList();
+  private final List<HandlerRegistration> registry = new ArrayList<>();
 
   private boolean enabled = true;
 
-  private final List<Color> colors = Lists.newArrayList();
+  private final List<Color> colors = new ArrayList<>();
 
   private BeeRowSet settings;
 
@@ -210,7 +212,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
 
   protected TimeBoard() {
     super();
-    
+
     ensureStyleSheet();
     addStyleName(STYLE_CONTAINER);
 
@@ -253,6 +255,12 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   }
 
   @Override
+  public com.google.gwt.event.shared.HandlerRegistration addReadyHandler(
+      ReadyEvent.Handler handler) {
+    return addHandler(handler, ReadyEvent.getType());
+  }
+
+  @Override
   public String getEventSource() {
     return null;
   }
@@ -290,11 +298,6 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   @Override
   public Range<JustDate> getVisibleRange() {
     return visibleRange;
-  }
-
-  @Override
-  public IdentifiableWidget getWidget() {
-    return this;
   }
 
   @Override
@@ -585,6 +588,19 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   }
 
   @Override
+  public boolean reactsTo(Action action) {
+    if (BeeUtils.contains(getEnabledActions(), action)) {
+      return true;
+    } else if (EnumUtils.in(action, Action.CANCEL, Action.CLOSE)) {
+      return true;
+    } else if (action == Action.REMOVE_FILTER) {
+      return BeeUtils.contains(getEnabledActions(), Action.FILTER);
+    } else {
+      return false;
+    }
+  }
+
+  @Override
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
@@ -660,6 +676,32 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     return BeeUtils.clamp(height, 1, BeeUtils.clamp(canvasHeight / 5, 1, 100));
   }
 
+  protected void clampMaxRange(JustDate min, JustDate max) {
+    if (min != null || max != null) {
+      JustDate lower;
+      JustDate upper;
+
+      if (getMaxRange() == null) {
+        lower = BeeUtils.min(min, max);
+        upper = BeeUtils.max(min, max);
+
+      } else {
+        lower = BeeUtils.nvl(min, getMaxRange().lowerEndpoint());
+        upper = BeeUtils.nvl(max, getMaxRange().upperEndpoint());
+
+        if (BeeUtils.isLess(upper, lower)) {
+          if (min == null) {
+            lower = JustDate.copyOf(upper);
+          } else {
+            upper = JustDate.copyOf(lower);
+          }
+        }
+      }
+
+      setMaxRange(Range.closed(lower, upper));
+    }
+  }
+
   protected int clampRowHeight(int height, int canvasHeight) {
     int defMax = (getScrollAreaHeight(canvasHeight) - TimeBoardHelper.DEFAULT_MOVER_HEIGHT) / 2;
     return BeeUtils.clamp(height, 2, BeeUtils.clamp(defMax, 2, 1000));
@@ -697,7 +739,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     }
 
     for (Color color : colors) {
-      if (Objects.equal(color.getId(), id)) {
+      if (Objects.equals(color.getId(), id)) {
         return color;
       }
     }
@@ -778,6 +820,10 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   }
 
   protected abstract String getFooterHeightColumnName();
+
+  protected Collection<? extends HasDateRange> getFooterItems() {
+    return getChartItems();
+  }
 
   protected int getFooterSplitterSize() {
     return TimeBoardHelper.DEFAULT_MOVER_HEIGHT;
@@ -879,7 +925,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   }
 
   protected abstract String getStripOpacityColumnName();
-  
+
   protected boolean hasContent() {
     return !BeeUtils.isEmpty(getContentId()) && getRowCount() > 0;
   }
@@ -904,7 +950,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     return filtered;
   }
 
-  protected void onCreate(ResponseObject response, Callback<IdentifiableWidget> callback) {
+  protected void onCreate(ResponseObject response, ViewCallback callback) {
     if (setData(response)) {
       callback.onSuccess(this);
     } else {
@@ -967,6 +1013,8 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     registry.addAll(register());
 
     render(true);
+
+    ReadyEvent.fire(this);
   }
 
   protected void onRowResizerMove(MoveEvent event) {
@@ -1024,7 +1072,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   protected abstract void refresh();
 
   protected List<HandlerRegistration> register() {
-    List<HandlerRegistration> result = Lists.newArrayList();
+    List<HandlerRegistration> result = new ArrayList<>();
 
     result.add(VisibilityChangeEvent.register(this));
     result.addAll(BeeKeeper.getBus().registerDataHandler(this, false));
@@ -1033,6 +1081,8 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   }
 
   protected void render(boolean updateRange) {
+    long startMillis = System.currentTimeMillis();
+
     canvas.clear();
     if (getMaxRange() == null) {
       return;
@@ -1062,6 +1112,8 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     renderHeader();
     renderHeaderSplitter();
 
+    long headerMillis = System.currentTimeMillis();
+
     Flow content = new Flow();
     content.addStyleName(STYLE_CONTENT);
 
@@ -1082,12 +1134,21 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
 
     canvas.add(scroll);
 
+    long contentMillis = System.currentTimeMillis();
+
     renderFooterSplitter();
 
     prepareFooter();
-    renderFooter(getChartItems());
+    renderFooter(getFooterItems());
 
     setRenderPending(false);
+
+    long endMillis = System.currentTimeMillis();
+
+    logger.debug(getVisibleRange(), headerMillis - startMillis,
+        BeeConst.STRING_PLUS, contentMillis - headerMillis,
+        BeeConst.STRING_PLUS, endMillis - contentMillis,
+        BeeConst.STRING_EQ, endMillis - startMillis);
   }
 
   protected abstract void renderContent(ComplexPanel panel);
@@ -1203,7 +1264,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   }
 
   protected void renderSelector(HasWidgets panel, Collection<? extends HasDateRange> chartItems) {
-    if (getMaxRange() == null || chartItems.isEmpty()) {
+    if (getMaxRange() == null) {
       return;
     }
 
@@ -1221,48 +1282,50 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
 
     double dayWidth = (double) itemAreaWidth / TimeBoardHelper.getSize(getMaxRange());
 
-    int itemAreaHeight = height;
+    if (!BeeUtils.isEmpty(chartItems)) {
+      int itemAreaHeight = height;
 
-    int maxRows;
-    if (itemAreaHeight <= 10) {
-      maxRows = itemAreaHeight;
-    } else if (itemAreaHeight <= 20) {
-      maxRows = itemAreaHeight / 2;
-    } else {
-      maxRows = itemAreaHeight / 3;
-    }
+      int maxRows;
+      if (itemAreaHeight <= 10) {
+        maxRows = itemAreaHeight;
+      } else if (itemAreaHeight <= 20) {
+        maxRows = itemAreaHeight / 2;
+      } else {
+        maxRows = itemAreaHeight / 3;
+      }
 
-    List<List<HasDateRange>> rows = doStripLayout(chartItems, maxRows);
+      List<List<HasDateRange>> rows = doStripLayout(chartItems, maxRows);
 
-    int rc = rows.size();
-    int itemHeight = itemAreaHeight / rc;
+      int rc = rows.size();
+      int itemHeight = itemAreaHeight / rc;
 
-    Double stripOpacity = BeeUtils.isEmpty(getStripOpacityColumnName())
-        ? null : TimeBoardHelper.getOpacity(getSettings(), getStripOpacityColumnName());
+      Double stripOpacity = BeeUtils.isEmpty(getStripOpacityColumnName())
+          ? null : TimeBoardHelper.getOpacity(getSettings(), getStripOpacityColumnName());
 
-    for (int row = 0; row < rc; row++) {
-      for (HasDateRange item : rows.get(row)) {
+      for (int row = 0; row < rc; row++) {
+        for (HasDateRange item : rows.get(row)) {
 
-        Widget itemStrip = new CustomDiv(STYLE_SELECTOR_STRIP);
-        setItemWidgetColor(item, itemStrip);
+          Widget itemStrip = new CustomDiv(STYLE_SELECTOR_STRIP);
+          setItemWidgetColor(item, itemStrip);
 
-        if (stripOpacity != null) {
-          StyleUtils.setOpacity(itemStrip, stripOpacity);
+          if (stripOpacity != null) {
+            StyleUtils.setOpacity(itemStrip, stripOpacity);
+          }
+
+          StyleUtils.setTop(itemStrip, row * itemHeight);
+          StyleUtils.setHeight(itemStrip, itemHeight);
+
+          JustDate start = TimeUtils.clamp(item.getRange().lowerEndpoint(), firstDate, lastDate);
+          JustDate end = TimeUtils.clamp(item.getRange().upperEndpoint(), firstDate, lastDate);
+
+          int left = BeeUtils.round(TimeUtils.dayDiff(firstDate, start) * dayWidth);
+          StyleUtils.setLeft(itemStrip, itemAreaLeft + BeeUtils.clamp(left, 0, itemAreaWidth - 1));
+
+          int w = BeeUtils.round((TimeUtils.dayDiff(start, end) + 1) * dayWidth);
+          StyleUtils.setWidth(itemStrip, BeeUtils.clamp(w, 1, itemAreaWidth - left));
+
+          panel.add(itemStrip);
         }
-
-        StyleUtils.setTop(itemStrip, row * itemHeight);
-        StyleUtils.setHeight(itemStrip, itemHeight);
-
-        JustDate start = TimeUtils.clamp(item.getRange().lowerEndpoint(), firstDate, lastDate);
-        JustDate end = TimeUtils.clamp(item.getRange().upperEndpoint(), firstDate, lastDate);
-
-        int left = BeeUtils.round(TimeUtils.dayDiff(firstDate, start) * dayWidth);
-        StyleUtils.setLeft(itemStrip, itemAreaLeft + BeeUtils.clamp(left, 0, itemAreaWidth - 1));
-
-        int w = BeeUtils.round((TimeUtils.dayDiff(start, end) + 1) * dayWidth);
-        StyleUtils.setWidth(itemStrip, BeeUtils.clamp(w, 1, itemAreaWidth - left));
-
-        panel.add(itemStrip);
       }
     }
 
@@ -1462,7 +1525,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
       return false;
     }
 
-    List<Integer> indexes = Lists.newArrayList();
+    List<Integer> indexes = new ArrayList<>();
 
     for (String colName : colNames) {
       int index = getSettings().getColumnIndex(colName);
@@ -1475,9 +1538,9 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
       }
     }
 
-    List<BeeColumn> columns = Lists.newArrayList();
-    List<String> oldValues = Lists.newArrayList();
-    List<String> newValues = Lists.newArrayList();
+    List<BeeColumn> columns = new ArrayList<>();
+    List<String> oldValues = new ArrayList<>();
+    List<String> newValues = new ArrayList<>();
 
     BeeRow row = getSettings().getRow(0);
 

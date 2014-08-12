@@ -29,7 +29,7 @@ public class MultiDeleteEvent extends ModificationEvent<MultiDeleteEvent.Handler
     void onMultiDelete(MultiDeleteEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static void fire(FiresModificationEvents em, String viewName, Collection<RowInfo> rows) {
     Assert.notNull(em);

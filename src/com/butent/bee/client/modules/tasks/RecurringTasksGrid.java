@@ -57,16 +57,16 @@ class RecurringTasksGrid extends AbstractGridInterceptor {
                     if (Queries.checkRowResponse(SVC_RT_COPY, VIEW_RECURRING_TASKS, response)) {
                       BeeRow row = BeeRow.restore(response.getResponseAsString());
                       GridView gridView = presenter.getGridView();
-                      
+
                       if (gridView != null && gridView.asWidget().isAttached()) {
                         gridView.getGrid().insertRow(row, false);
-                        
+
                         if (DomUtils.isVisible(gridView.getGrid())) {
                           gridView.onEditStart(new EditStartEvent(row, null, null,
                               EditStartEvent.CLICK, gridView.isReadOnly()));
                         }
                       }
-                      
+
                       RowInsertEvent.fire(BeeKeeper.getBus(), VIEW_RECURRING_TASKS, row,
                           (gridView == null) ? null : gridView.getId());
                     }
@@ -82,7 +82,7 @@ class RecurringTasksGrid extends AbstractGridInterceptor {
       return super.beforeAction(action, presenter);
     }
   }
-  
+
   @Override
   public List<String> getDeleteRowMessage(IsRow row) {
     String m1 = BeeUtils.joinWords(Localized.getConstants().crmRecurringTask(), row.getId());
@@ -90,7 +90,7 @@ class RecurringTasksGrid extends AbstractGridInterceptor {
 
     return Lists.newArrayList(m1, m2);
   }
-  
+
   @Override
   public GridInterceptor getInstance() {
     return new RecurringTasksGrid();

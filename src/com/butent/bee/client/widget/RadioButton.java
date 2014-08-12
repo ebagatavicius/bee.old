@@ -53,7 +53,7 @@ public class RadioButton extends CheckBox {
 
     super.onBrowserEvent(event);
   }
-  
+
   @Override
   public void sinkEvents(int eventBitsToAdd) {
     if (isOrWasAttached()) {
@@ -67,7 +67,7 @@ public class RadioButton extends CheckBox {
   @Override
   protected void ensureDomEventHandlers() {
   }
-  
+
   @Override
   protected String getDefaultStyleName() {
     return "bee-RadioButton";

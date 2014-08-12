@@ -7,11 +7,11 @@ public enum Orientation implements HasCaption {
   public String getCaption() {
     return name().toLowerCase();
   }
-  
+
   public boolean isVertical() {
     return this == VERTICAL;
   }
-  
+
   public Orientation invert() {
     return isVertical() ? HORIZONTAL : VERTICAL;
   }

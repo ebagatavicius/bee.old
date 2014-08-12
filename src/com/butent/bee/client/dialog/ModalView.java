@@ -21,8 +21,8 @@ public class ModalView extends Popup {
   public ModalView(Presenter presenter, String styleName, HasDimensions dimensions) {
     super(OutsideClick.IGNORE, styleName);
 
-    presenter.getWidget().addStyleName(styleName + "-content");
-    setWidget(presenter.getWidget());
+    presenter.getMainView().addStyleName(styleName + "-content");
+    setWidget(presenter.getMainView());
 
     if (dimensions != null) {
       setDimensions(dimensions);
@@ -47,7 +47,7 @@ public class ModalView extends Popup {
       return false;
     }
   }
-  
+
   private void setDimensions(HasDimensions dimensions) {
     double v;
     CssUnit u;

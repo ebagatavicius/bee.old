@@ -17,9 +17,9 @@ public final class Localized {
   private static LocalizableMessages messages;
 
   private static Map<String, String> dictionary;
-  
+
   private static final BeeLogger logger = LogUtils.getLogger(Localized.class);
-  
+
   public static LocalizableConstants getConstants() {
     return constants;
   }
@@ -31,7 +31,7 @@ public final class Localized {
   public static String getLabel(IsColumn column) {
     return maybeTranslate(column.getLabel());
   }
-  
+
   public static List<String> getLabels(List<? extends IsColumn> columns) {
     List<String> labels = Lists.newArrayList();
     for (IsColumn column : columns) {
@@ -39,7 +39,7 @@ public final class Localized {
     }
     return labels;
   }
-  
+
   public static LocalizableMessages getMessages() {
     return messages;
   }
@@ -52,7 +52,7 @@ public final class Localized {
     if (text == null || text.length() < 3 || text.charAt(0) != L10N_PREFIX) {
       return text;
     }
-    
+
     String localized = translate(text.substring(1), dict);
     if (localized == null) {
       logger.warning("cannot localize:", text);
@@ -61,7 +61,7 @@ public final class Localized {
       return localized;
     }
   }
-  
+
   public static void setConstants(LocalizableConstants constants) {
     Localized.constants = constants;
   }
@@ -73,7 +73,7 @@ public final class Localized {
   public static void setMessages(LocalizableMessages messages) {
     Localized.messages = messages;
   }
-  
+
   public static String translate(String key) {
     return translate(key, dictionary);
   }

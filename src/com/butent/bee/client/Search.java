@@ -1,6 +1,5 @@
 package com.butent.bee.client;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -20,6 +19,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.modules.ModuleManager;
@@ -28,6 +28,7 @@ import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.AutocompleteProvider;
+import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiOption;
@@ -35,10 +36,12 @@ import com.butent.bee.client.utils.Command;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
-import com.butent.bee.client.widget.Image;
-import com.butent.bee.client.widget.Label;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.widget.CustomWidget;
+import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InputText;
+import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
@@ -60,35 +63,47 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 public class Search {
 
   private static final class ResultPanel extends Flow implements HandlesDeleteEvents,
-      HandlesUpdateEvents, Presenter, View, Printable {
+      HandlesUpdateEvents, Presenter, View, Printable, HasWidgetSupplier {
 
-    private static final String STYLE_RESULT_CONTAINER = "bee-SearchResultContainer";
+    private static final String STYLE_RESULT_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "SearchResult";
 
-    private static final String STYLE_RESULT_CONTENT = "bee-SearchResultContent";
-    private static final String STYLE_RESULT_VIEW = "bee-SearchResultView";
+    private static final String STYLE_RESULT_CONTAINER = STYLE_RESULT_PREFIX + "Container";
+
+    private static final String STYLE_RESULT_CONTENT = STYLE_RESULT_PREFIX + "Content";
+    private static final String STYLE_RESULT_VIEW = STYLE_RESULT_PREFIX + "View";
+
+    private static boolean removeResultWidget(ResultWidget widget) {
+      Widget container = widget.getParent();
+      if (container instanceof HasWidgets) {
+        return ((HasWidgets) container).remove(widget);
+      } else {
+        return false;
+      }
+    }
 
     private final String query;
-
     private final HeaderView header;
+
     private int size;
 
-    private final List<HandlerRegistration> handlerRegistry = Lists.newArrayList();
+    private final List<HandlerRegistration> handlerRegistry = new ArrayList<>();
 
     private boolean enabled = true;
 
     private ResultPanel(String query, List<SearchResult> results) {
-      super();
+      super(STYLE_RESULT_CONTAINER);
+
       this.query = query;
       this.size = results.size();
-
-      this.addStyleName(STYLE_RESULT_CONTAINER);
 
       this.header = new HeaderImpl();
       header.create(query, false, true, null, EnumSet.of(UiOption.ROOT),
@@ -128,6 +143,12 @@ public class Search {
     }
 
     @Override
+    public com.google.gwt.event.shared.HandlerRegistration addReadyHandler(
+        ReadyEvent.Handler handler) {
+      return addHandler(handler, ReadyEvent.getType());
+    }
+
+    @Override
     public String getCaption() {
       return header.getCaption();
     }
@@ -158,12 +179,12 @@ public class Search {
     }
 
     @Override
-    public Presenter getViewPresenter() {
-      return this;
+    public String getSupplierKey() {
+      return ViewFactory.SupplierKind.SEARCH.getKey(query);
     }
 
     @Override
-    public IdentifiableWidget getWidget() {
+    public Presenter getViewPresenter() {
       return this;
     }
 
@@ -269,6 +290,11 @@ public class Search {
     }
 
     @Override
+    public boolean reactsTo(Action action) {
+      return EnumUtils.in(action, Action.CANCEL, Action.CLOSE, Action.PRINT);
+    }
+
+    @Override
     public void setEnabled(boolean enabled) {
       this.enabled = enabled;
     }
@@ -279,6 +305,13 @@ public class Search {
 
     @Override
     public void setViewPresenter(Presenter viewPresenter) {
+    }
+
+    @Override
+    protected void onLoad() {
+      super.onLoad();
+
+      ReadyEvent.fire(this);
     }
 
     @Override
@@ -317,15 +350,6 @@ public class Search {
       return size;
     }
 
-    private static boolean removeResultWidget(ResultWidget widget) {
-      Widget container = widget.getParent();
-      if (container instanceof HasWidgets) {
-        return ((HasWidgets) container).remove(widget);
-      } else {
-        return false;
-      }
-    }
-
     private void setSize(int size) {
       this.size = size;
     }
@@ -337,8 +361,8 @@ public class Search {
 
   private static final class ResultWidget extends CustomWidget implements HasViewName {
 
-    private static final String STYLE_RESULT_ROW = "bee-SearchResultRow";
-    private static final String STYLE_RESULT_MATCH = "bee-SearchResultMatch";
+    private static final String STYLE_RESULT_ROW = ResultPanel.STYLE_RESULT_PREFIX + "Row";
+    private static final String STYLE_RESULT_MATCH = ResultPanel.STYLE_RESULT_PREFIX + "Match";
 
     private final String viewName;
     private BeeRow row;
@@ -428,19 +452,88 @@ public class Search {
     }
   }
 
-  private static final String STYLE_SEARCH_PANEL = "bee-MainSearchContainer";
-  private static final String STYLE_INPUT = "bee-MainSearchBox";
+  private static final String STYLE_SEARCH_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "MainSearch";
 
-  private static final String STYLE_OPTIONS_CONTAINER = "bee-MainSearchOptionsContainer";
-  private static final String STYLE_OPTIONS = "bee-MainSearchOptions";
-  private static final String STYLE_SUBMIT_CONTAINER = "bee-MainSearchSubmitContainer";
-  private static final String STYLE_SUBMIT = "bee-MainSearchSubmit";
+  private static final String STYLE_SEARCH_PANEL = STYLE_SEARCH_PREFIX + "Container";
+  private static final String STYLE_INPUT = STYLE_SEARCH_PREFIX + "Box";
+
+  private static final String STYLE_OPTIONS_CONTAINER = STYLE_SEARCH_PREFIX + "OptionsContainer";
+  private static final String STYLE_OPTIONS = STYLE_SEARCH_PREFIX + "Options";
+  private static final String STYLE_SUBMIT_CONTAINER = STYLE_SEARCH_PREFIX + "SubmitContainer";
+  private static final String STYLE_SUBMIT = STYLE_SEARCH_PREFIX + "Submit";
 
   private static final String KEY_INPUT = "main-search";
-  
+
   private static final int MIN_SEARCH_PHRASE_LENGTH = 3;
 
+  public static void doQuery(String value, ViewCallback callback) {
+    if (!BeeUtils.isEmpty(value)) {
+      doSearch(null, value.trim(), callback);
+    }
+  }
+
+  private static void doSearch(final IdentifiableWidget inputWidget, final String value,
+      final ViewCallback callback) {
+
+    ParameterList params = BeeKeeper.getRpc().createParameters(Service.SEARCH);
+    params.addPositionalData(value);
+
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        String[] arr = Codec.beeDeserializeCollection((String) response.getResponse());
+        final List<SearchResult> results = new ArrayList<>();
+
+        if (arr != null) {
+          for (String s : arr) {
+            SearchResult result = SearchResult.restore(s);
+            if (result != null) {
+              results.add(result);
+            }
+          }
+        }
+
+        if (results.isEmpty() && callback == null) {
+          BeeKeeper.getScreen().notifyWarning(value, Localized.getConstants().nothingFound());
+
+        } else {
+          if (inputWidget != null) {
+            AutocompleteProvider.retainValue(inputWidget);
+          }
+
+          ModuleManager.maybeInitialize(new Command() {
+            @Override
+            public void execute() {
+              processResults(value, results, callback);
+            }
+          });
+        }
+      }
+    });
+  }
+
+  private static void processResults(String query, List<SearchResult> results,
+      ViewCallback callback) {
+
+    if (results.size() == 1 && callback == null) {
+      RowEditor.open(results.get(0).getViewName(), results.get(0).getRow(), Opener.modeless());
+    } else {
+      showResults(query, results, callback);
+    }
+  }
+
+  private static void showResults(String query, List<SearchResult> results, ViewCallback callback) {
+    ResultPanel resultPanel = new ResultPanel(query, results);
+
+    if (callback == null) {
+      BeeKeeper.getScreen().show(resultPanel);
+    } else {
+      callback.onSuccess(resultPanel);
+    }
+  }
+
   private Panel searchPanel;
+
   private InputText input;
 
   Search() {
@@ -516,14 +609,6 @@ public class Search {
     return searchPanel;
   }
 
-  private static void processResults(String query, List<SearchResult> results) {
-    if (results.size() == 1) {
-      RowEditor.open(results.get(0).getViewName(), results.get(0).getRow(), Opener.modeless());
-    } else {
-      showResults(query, results);
-    }
-  }
-
   private void setInput(InputText input) {
     this.input = input;
   }
@@ -532,54 +617,17 @@ public class Search {
     this.searchPanel = panel;
   }
 
-  private static void showResults(String query, List<SearchResult> results) {
-    ResultPanel resultPanel = new ResultPanel(query, results);
-    BeeKeeper.getScreen().showWidget(resultPanel);
-  }
-
   private void submit() {
-    final String value = getInput().getValue();
-    if (!BeeUtils.isEmpty(value)) {
+    String value = BeeUtils.trim(getInput().getValue());
 
-      if (value.trim().length() < MIN_SEARCH_PHRASE_LENGTH) {
+    if (!BeeUtils.isEmpty(value)) {
+      if (value.length() < MIN_SEARCH_PHRASE_LENGTH) {
         BeeKeeper.getScreen().notifyWarning(
             Localized.getMessages().minSearchQueryLength(MIN_SEARCH_PHRASE_LENGTH));
-        return;
+
+      } else {
+        doSearch(getInput(), value, null);
       }
-
-      ParameterList params = BeeKeeper.getRpc().createParameters(Service.SEARCH);
-      params.addPositionalData(value.trim());
-
-      BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
-        @Override
-        public void onResponse(ResponseObject response) {
-          String[] arr = Codec.beeDeserializeCollection((String) response.getResponse());
-          final List<SearchResult> results = Lists.newArrayList();
-
-          if (arr != null) {
-            for (String s : arr) {
-              SearchResult result = SearchResult.restore(s);
-              if (result != null) {
-                results.add(result);
-              }
-            }
-          }
-
-          if (results.isEmpty()) {
-            BeeKeeper.getScreen().notifyWarning(value, Localized.getConstants().nothingFound());
-
-          } else {
-            AutocompleteProvider.retainValue(getInput());
-            
-            ModuleManager.maybeInitialize(new Command() {
-              @Override
-              public void execute() {
-                processResults(value, results);
-              }
-            });
-          }
-        }
-      });
     }
   }
 }

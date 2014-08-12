@@ -61,7 +61,7 @@ class EcPictures {
     }
   }
 
-  private final Cache<Long, ImmutableList<String>> cache = 
+  private final Cache<Long, ImmutableList<String>> cache =
       CacheBuilder.newBuilder().maximumSize(2000).build();
   private final Set<Long> noPicture = Sets.newHashSet();
 
@@ -142,7 +142,7 @@ class EcPictures {
         setPictures(articleWidgets.get(article), pictures);
       }
     }
-    
+
     if (!articles.isEmpty()) {
       ParameterList params = EcKeeper.createArgs(EcConstants.SVC_GET_PICTURES);
       params.addDataItem(EcConstants.COL_TCD_ARTICLE, DataUtils.buildIdList(articles));
@@ -158,7 +158,7 @@ class EcPictures {
             if (arr != null) {
               Long lastArticle = null;
               List<String> pictures = Lists.newArrayList();
-    
+
               for (int i = 0; i < arr.length - 1; i += 2) {
                 Long article = BeeUtils.toLongOrNull(arr[i]);
                 String picture = arr[i + 1];
@@ -170,12 +170,12 @@ class EcPictures {
 
                   } else if (article.equals(lastArticle)) {
                     pictures.add(picture);
-                    
+
                   } else {
                     if (articleWidgets.containsKey(lastArticle)) {
                       setPictures(articleWidgets.get(lastArticle), pictures);
                     }
-                    
+
                     cache.put(lastArticle, ImmutableList.copyOf(pictures));
                     articles.remove(lastArticle);
 
@@ -185,12 +185,12 @@ class EcPictures {
                   }
                 }
               }
-              
+
               if (lastArticle != null && !pictures.isEmpty()) {
                 if (articleWidgets.containsKey(lastArticle)) {
                   setPictures(articleWidgets.get(lastArticle), pictures);
                 }
-                
+
                 cache.put(lastArticle, ImmutableList.copyOf(pictures));
                 articles.remove(lastArticle);
               }

@@ -122,7 +122,7 @@ public class LongValue extends Value {
   public boolean isEmpty() {
     return isNull() || value == 0L;
   }
-  
+
   @Override
   public boolean isNull() {
     return this == NULL_VALUE || getLong() == null;

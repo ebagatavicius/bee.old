@@ -29,7 +29,7 @@ public class RenderableColumn extends DataColumn<String> implements HasCellRende
   public String getStyleSuffix() {
     return (getRenderer() == null) ? "renderable" : NameUtils.getName(getRenderer());
   }
-  
+
   @Override
   public String getValue(IsRow row) {
     return renderer.render(row);

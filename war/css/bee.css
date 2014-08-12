@@ -386,12 +386,6 @@
   background-color: Snow;
 }
 
-.bee-form-PrintableContent {
-  max-width: 100%;
-  padding: 1em;
-  background-color: white !important;
-}
-
 .bee-ProgressBar-bar {
   background-color: SpringGreen;
 }
@@ -862,7 +856,7 @@
   cursor: wait;
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
-.bee-DataSelector-notFound {
+.bee-DataSelector-strict.bee-DataSelector-notFound {
   text-decoration: line-through;
 }
 .bee-DataSelector-empty {
@@ -1385,10 +1379,14 @@
   color: black;
 }
 
-.bee-workspace-expander {
+.bee-Workspace-expander {
   margin-left: auto;
+  visibility: hidden;
 }
-.bee-workspace-expander > div {
+.bee-Workspace-tabPanel:hover .bee-Workspace-expander {
+  visibility: visible;
+}
+.bee-Workspace-expander > div {
   display: inline-block;
   margin-top: 1px;
   margin-right: 6px;
@@ -1396,7 +1394,7 @@
   color: #999;
   cursor: pointer;
 }
-.bee-workspace-expander > div:hover {
+.bee-Workspace-expander > div:hover {
   background-color: white;
   color: black;
 }
@@ -3153,15 +3151,6 @@
   .bee-Header-control {
     display: none;
   }
-
-  .bee-form-PrintableContent {
-    display: block;
-    box-sizing: border-box; /* Don't render content out of margin */
-    width: 100%;
-    min-width: 17.5cm; /* B5 format width*/
-    padding: 0.5cm !important; /* Allow user set manual margins */
-    overflow: hidden !important; /* Hide all scrools */
-  }
 }
 
 .bee-GridMenu-popup {
@@ -3277,4 +3266,38 @@ textarea,
 }
 .bee-ChangePassword-table td {
   padding: 5px 10px;
+}
+
+.bee-output:not(:empty) {
+  background-color: whitesmoke;
+  padding: 1px 2px;
+  border: 1px solid silver;
+}
+
+.bee-ModalForm .bee-PrintableForm {
+  background-color: white;
+  padding: 1ex 1em 0 1em; 
+}
+.bee-Print .bee-PrintableForm {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  background-color: inherit;
+}
+
+.bee-Print-Window {
+  overflow: auto;
+}
+
+.bee-Form .bee-HtmlTable {
+  border-collapse: collapse;
+}
+.bee-Form .bee-HtmlTable td {
+  padding-top: 5px;
+}
+.bee-LabelCell {
+  text-align: right;
+  vertical-align: top;
+  padding-left: 10px;
+  padding-right: 6px;
 }

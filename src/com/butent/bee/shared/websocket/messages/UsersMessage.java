@@ -27,11 +27,11 @@ public class UsersMessage extends Message {
   public String brief() {
     return BeeUtils.toString(getData().size());
   }
-  
+
   public List<UserData> getData() {
     return data;
   }
-  
+
   @Override
   public boolean isValid() {
     return !BeeUtils.isEmpty(getData());

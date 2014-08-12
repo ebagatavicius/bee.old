@@ -74,6 +74,8 @@ public final class Endpoint {
   private static Map<String, Consumer<String>> progressQueue = new HashMap<>();
   private static Map<String, Function<ProgressMessage, Boolean>> progressHandlers = new HashMap<>();
 
+  private static Consumer<Boolean> onlineCallback;
+
   public static void cancelProgress(String progressId) {
     Assert.notEmpty(progressId);
 
@@ -181,20 +183,28 @@ public final class Endpoint {
     return socket != null && socket.getReadyState() == ReadyState.OPEN.value;
   }
 
-  public static void open(Long userId) {
-    if (isEnabled() && (socket == null || isClosed()) && userId != null) {
+  public static void open(Long userId, final Consumer<Boolean> callback) {
+    if (!isEnabled() || userId == null) {
+      if (callback != null) {
+        callback.accept(false);
+      }
 
+    } else if (socket == null || isClosed()) {
       try {
         socket = Browser.getWindow().newWebSocket(url(userId));
       } catch (JavaScriptException ex) {
         socket = null;
         logger.severe(ex, "cannot open websocket");
+        if (callback != null) {
+          callback.accept(false);
+        }
       }
 
       if (socket != null) {
         socket.setOnopen(new EventListener() {
           @Override
           public void handleEvent(Event evt) {
+            onlineCallback = callback;
             onOpen();
           }
         });
@@ -220,6 +230,9 @@ public final class Endpoint {
           }
         });
       }
+
+    } else if (callback != null) {
+      callback.accept(isOpen());
     }
   }
 
@@ -265,6 +278,13 @@ public final class Endpoint {
   public static void unregisterProgressHandler(String progressId) {
     if (progressHandlers.containsKey(progressId)) {
       progressHandlers.remove(progressId);
+    }
+  }
+
+  static void online() {
+    if (onlineCallback != null) {
+      onlineCallback.accept(true);
+      onlineCallback = null;
     }
   }
 

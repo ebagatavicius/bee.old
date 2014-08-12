@@ -287,6 +287,7 @@ public class Favorites implements HandlesDeleteEvents {
 
     display.setWidget(row, DELETE_COLUMN, delete);
   }
+
   private static HtmlTable createDisplay() {
     HtmlTable display = new HtmlTable();
     display.addStyleName(DISPLAY_STYLE);
@@ -297,6 +298,7 @@ public class Favorites implements HandlesDeleteEvents {
 
     return display;
   }
+
   private static boolean removeItem(Group group, String key, long id) {
     Item item = group.find(key, id);
     if (item == null) {
@@ -312,6 +314,7 @@ public class Favorites implements HandlesDeleteEvents {
     Queries.delete(VIEW_FAVORITES, filter, null);
     return group.remove(key, item);
   }
+
   private static boolean updateItem(Group group, String key, long id, String html) {
     Item item = group.find(key, id);
     if (item == null || BeeUtils.equalsTrim(item.getHtml(), html)) {
@@ -403,7 +406,7 @@ public class Favorites implements HandlesDeleteEvents {
     return !BeeUtils.isEmpty(viewName) && DataUtils.hasId(row)
         && Group.ROW.find(viewName, row.getId()) != null;
   }
-  
+
   public void load(String serialized) {
     Assert.notEmpty(serialized);
 
@@ -494,7 +497,7 @@ public class Favorites implements HandlesDeleteEvents {
     }
 
     for (Group group : Group.values()) {
-      Set<String> keys = new TreeSet<String>(group.displays.keySet());
+      Set<String> keys = new TreeSet<>(group.displays.keySet());
       for (String key : keys) {
         group.registerDomainEntry(key);
       }

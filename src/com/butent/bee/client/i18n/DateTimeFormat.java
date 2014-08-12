@@ -293,11 +293,11 @@ public class DateTimeFormat {
     StringBuffer toAppendTo = new StringBuffer(64);
     int j;
     int n = pattern.length();
-    
+
     int i = 0;
     while (i < n) {
       char ch = pattern.charAt(i);
-      
+
       if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
         j = i + 1;
         while (j < n && pattern.charAt(j) == ch) {
@@ -707,7 +707,7 @@ public class DateTimeFormat {
 
         return 0;
       }
-      
+
       i++;
     }
 
@@ -789,7 +789,7 @@ public class DateTimeFormat {
       } else {
         buf.append(ch);
       }
-      
+
       i++;
     }
 

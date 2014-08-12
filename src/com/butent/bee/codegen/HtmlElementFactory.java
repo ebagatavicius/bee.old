@@ -16,12 +16,12 @@ import java.util.List;
 public class HtmlElementFactory {
 
   private final Path elementPackage = Paths.get("src/com/butent/bee/shared/html/builder/elements");
-  private final Path elementFactory = 
+  private final Path elementFactory =
       Paths.get("src/com/butent/bee/shared/html/builder/Factory.java");
-  
+
   public void generate() throws IOException {
     final List<String> lines = new ArrayList<>();
-    
+
     lines.add("package com.butent.bee.shared.html.builder;");
     lines.add("import com.butent.bee.shared.html.builder.elements.*;");
     lines.add("public final class Factory {");
@@ -31,14 +31,14 @@ public class HtmlElementFactory {
       @Override
       public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         String name = BeeUtils.getPrefix(file.getFileName().toString(), '.');
-        
+
         lines.add("public static " + name + " " + name.toLowerCase() + "() {");
         lines.add("return new " + name + "();");
         lines.add("}");
-        
+
         return FileVisitResult.CONTINUE;
       }
-      
+
       @Override
       public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
         lines.add("private Factory() {");
@@ -51,7 +51,7 @@ public class HtmlElementFactory {
         } catch (IOException e) {
           System.out.println(e);
         }
-        
+
         return FileVisitResult.CONTINUE;
       }
     });

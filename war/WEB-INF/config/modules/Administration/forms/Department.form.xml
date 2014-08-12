@@ -6,7 +6,8 @@
   width="500" height="300"
   >
   <FlowPanel class="flexBox-vertical">
-    <Table style="border-spacing: 10px;">
+    <Table style="margin: 10px;">
+      <col index="0" kind="label" />
       <row for="DepartmentName">
         <Label for="DepartmentName" />
         <InputText source="DepartmentName" style="width: 200px;" />

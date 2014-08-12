@@ -142,7 +142,7 @@ public class DayMoveController implements MoveEvent.Handler {
   private void drop() {
     Range<DateTime> range = getRange(getSelectedColumn(), getSelectedMinutes());
     CalendarItem item = getItemWidget().getItem();
-    
+
     switch (item.getItemType()) {
       case APPOINTMENT:
         calendarView.updateAppointment((Appointment) item,

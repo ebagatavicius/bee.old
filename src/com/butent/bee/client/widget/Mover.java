@@ -21,7 +21,7 @@ public class Mover extends CustomDiv implements MoveEvent.HasMoveHandlers {
   public Mover() {
     this(null, null);
   }
-  
+
   public Mover(String styleName) {
     this(styleName, null);
   }
@@ -69,7 +69,7 @@ public class Mover extends CustomDiv implements MoveEvent.HasMoveHandlers {
 
         setStartX(x);
         setStartY(y);
-        
+
         setCurrentX(x);
         setCurrentY(y);
 
@@ -85,7 +85,7 @@ public class Mover extends CustomDiv implements MoveEvent.HasMoveHandlers {
 
           int dx = x - getCurrentX();
           int dy = y - getCurrentY();
-          
+
           setCurrentX(x);
           setCurrentY(y);
 
@@ -102,7 +102,7 @@ public class Mover extends CustomDiv implements MoveEvent.HasMoveHandlers {
         if (isMouseDown()) {
           int dx = x - getCurrentX();
           int dy = y - getCurrentY();
-          
+
           setCurrentX(x);
           setCurrentY(y);
 

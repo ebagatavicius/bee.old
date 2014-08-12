@@ -20,14 +20,14 @@ public class RendererDescription implements BeeSerializable, HasInfo, HasOptions
   private enum Serial {
     TYPE, VALUE_START_INDEX, SEPARATOR, OPTIONS, ITEMS
   }
-  
+
   public static final String TAG_RENDERER = "renderer";
   public static final String TAG_RENDER = "render";
 
   public static final String ATTR_RENDER_COLUMNS = "renderColumns";
-  
+
   public static final String ATTR_TYPE = "type";
-  
+
   private static final String ATTR_SEPARATOR = "separator";
 
   public static boolean canRestore(String[] arr) {
@@ -37,7 +37,7 @@ public class RendererDescription implements BeeSerializable, HasInfo, HasOptions
       return arr.length == Serial.values().length;
     }
   }
-  
+
   public static RendererDescription restore(String s) {
     if (BeeUtils.isEmpty(s)) {
       return null;
@@ -66,12 +66,12 @@ public class RendererDescription implements BeeSerializable, HasInfo, HasOptions
 
   protected RendererDescription() {
   }
-  
+
   @Override
   public void deserialize(String s) {
     deserializeMembers(Codec.beeDeserializeCollection(s));
   }
-  
+
   @Override
   public List<Property> getInfo() {
     List<Property> info = PropertyUtils.createProperties(

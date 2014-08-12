@@ -26,7 +26,7 @@ public class DecimalColumn extends NumberColumn<BigDecimal> {
   protected BigDecimal getNumber(IsRow row) {
     return getCellSource().getDecimal(row);
   }
-  
+
   @Override
   public String getStyleSuffix() {
     return "decimal";

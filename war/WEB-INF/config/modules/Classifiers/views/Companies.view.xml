@@ -3,6 +3,7 @@
   name="Companies" source="Companies" caption="=clients" module="Classifiers.Contacts"
   editForm="Company" newRowForm="Company" newRowCaption="=newClient" rowCaption="Name"
   >
+  <Relation renderColumns="Name" />
   <Columns>
     <SimpleColumn name="Name" />
     <SimpleColumn name="Code" />

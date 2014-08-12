@@ -7,13 +7,13 @@ import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.render.FileLinkRenderer;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.FileUtils;
-import com.butent.bee.client.utils.NewFileInfo;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -22,14 +22,14 @@ import java.util.Collection;
 import java.util.List;
 
 public class FileGridInterceptor extends AbstractGridInterceptor {
-  
+
   private final String parentColumn;
   private final String fileColumn;
   private final String captionColumn;
   private final String nameColumn;
 
   private FileCollector collector;
-  
+
   public FileGridInterceptor(String parentColumn, String fileColumn, String captionColumn,
       String nameColumn) {
     this.parentColumn = parentColumn;
@@ -79,9 +79,9 @@ public class FileGridInterceptor extends AbstractGridInterceptor {
   @Override
   public void onLoad(final GridView gridView) {
     if (collector == null) {
-      collector = FileCollector.headless(new Consumer<Collection<NewFileInfo>>() {
+      collector = FileCollector.headless(new Consumer<Collection<? extends FileInfo>>() {
         @Override
-        public void accept(final Collection<NewFileInfo> input) {
+        public void accept(final Collection<? extends FileInfo> input) {
           if (!BeeUtils.isEmpty(input)) {
             gridView.ensureRelId(new IdCallback() {
               @Override

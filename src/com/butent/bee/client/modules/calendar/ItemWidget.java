@@ -32,7 +32,7 @@ public class ItemWidget extends Flow {
   public ItemWidget(CalendarItem item, boolean multi) {
     this(item, multi, BeeConst.UNDEF, BeeConst.UNDEF, null);
   }
-  
+
   public ItemWidget(CalendarItem item, boolean multi, int columnIndex, double height,
       Orientation footerOrientation) {
 
@@ -52,7 +52,7 @@ public class ItemWidget extends Flow {
     }
 
     addStyleName(styleName);
-    
+
     if (item.getItemType() == ItemType.TASK) {
       addStyleName(CalendarStyleManager.TASK);
     }

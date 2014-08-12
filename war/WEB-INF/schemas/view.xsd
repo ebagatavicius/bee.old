@@ -2,15 +2,18 @@
 <xs:schema targetNamespace="http://www.butent.com/view" elementFormDefault="qualified"
   xmlns="http://www.butent.com/view"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:w="http://www.butent.com/widget"
   xmlns:type="http://www.butent.com/type"
   xmlns:expression="http://www.butent.com/expression">
 
+  <xs:import namespace="http://www.butent.com/widget" schemaLocation="widget.xsd" />
   <xs:import namespace="http://www.butent.com/type" schemaLocation="types.xsd" />
   <xs:import namespace="http://www.butent.com/expression" schemaLocation="expressions.xsd" />
 
   <xs:element name="View">
     <xs:complexType>
       <xs:sequence>
+        <xs:element name="Relation" type="w:selectorType" minOccurs="0" maxOccurs="1" />
         <xs:element name="Columns" minOccurs="1" maxOccurs="1">
           <xs:complexType>
             <xs:choice maxOccurs="unbounded">
@@ -28,7 +31,7 @@
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="module" type="type:module" />
+      <xs:attribute name="module" type="type:modules" />
       <xs:attribute name="name" type="type:dataView" use="required" />
       <xs:attribute name="source" type="type:tableNameType" use="required" />
       <xs:attribute name="filter" type="xs:string" />
@@ -103,6 +106,7 @@
           <xs:element ref="Join" />
         </xs:choice>
         <xs:attribute name="joinType" type="type:joinType" use="required" />
+        <xs:attribute name="filter" type="xs:string" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -123,8 +127,16 @@
     </xs:attribute>
   </xs:complexType>
 
+  <xs:simpleType name="nullOrdering">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="first" />
+      <xs:enumeration value="last" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:complexType name="order">
     <xs:attribute name="column" type="type:fieldNameType" use="required" />
     <xs:attribute name="descending" type="xs:boolean" />
+    <xs:attribute name="nulls" type="nullOrdering" />
   </xs:complexType>
 </xs:schema>

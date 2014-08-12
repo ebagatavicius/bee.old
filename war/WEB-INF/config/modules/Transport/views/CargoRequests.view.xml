@@ -6,6 +6,8 @@
   caption="=trRequests" newRowCaption="=trRequestNew"
   newRowForm="NewCargoRequest" editForm="CargoRequest"
   >
+  <Relation renderColumns="CustomerCompanyName LoadingDate"
+    choiceColumns="CustomerCompanyName LoadingDate LoadingCityName UnloadingCityName" />
   <Columns>
     <SimpleColumn name="Date" />
     <SimpleColumn name="Status" />

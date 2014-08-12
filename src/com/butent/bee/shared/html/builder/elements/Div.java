@@ -33,7 +33,7 @@ public class Div extends FertileElement {
     setBackgroundColor(backgroundColor);
     return this;
   }
-  
+
   public Div fontSize(FontSize fontSize) {
     setFontSize(fontSize);
     return this;
@@ -43,7 +43,7 @@ public class Div extends FertileElement {
     setFontWeight(fontWeight);
     return this;
   }
-  
+
   public Div id(String value) {
     setId(value);
     return this;
@@ -58,7 +58,7 @@ public class Div extends FertileElement {
     setLang(value);
     return this;
   }
-  
+
   public Div marginBottom(int value, CssUnit unit) {
     setMarginBottom(value, unit);
     return this;
@@ -68,7 +68,7 @@ public class Div extends FertileElement {
     setMarginLeft(value, unit);
     return this;
   }
-  
+
   public Div marginRight(int value, CssUnit unit) {
     setMarginRight(value, unit);
     return this;

@@ -42,7 +42,7 @@ public class ClientLogger implements BeeLogger {
   @Override
   public LogLevel getLevel() {
     LogLevel level = LogLevel.of(logger.getLevel());
-    
+
     if (level != null) {
       return level;
     } else if (isDebugEnabled()) {

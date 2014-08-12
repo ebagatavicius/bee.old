@@ -22,7 +22,7 @@ public class PropertiesData extends RowList<StringRow, TableColumn> {
   public PropertiesData(List<Property> data, String... columnLabels) {
     super();
     createColumns(columnLabels);
-    
+
     if (data != null) {
       long id = 0;
       for (Property property : data) {
@@ -34,7 +34,7 @@ public class PropertiesData extends RowList<StringRow, TableColumn> {
   public PropertiesData(Map<String, String> data, String... columnLabels) {
     super();
     createColumns(columnLabels);
-    
+
     if (data != null) {
       long id = 0;
       for (Map.Entry<String, String> entry : data.entrySet()) {
@@ -42,7 +42,7 @@ public class PropertiesData extends RowList<StringRow, TableColumn> {
       }
     }
   }
-  
+
   @Override
   public PropertiesData copy() {
     PropertiesData result = new PropertiesData();
@@ -65,13 +65,13 @@ public class PropertiesData extends RowList<StringRow, TableColumn> {
   public StringRow createRow(long id) {
     return new StringRow(id, BeeConst.EMPTY_IMMUTABLE_STRING_LIST);
   }
-  
+
   private void addRow(long id, String name, String value) {
     List<String> values = Lists.newArrayList(name, value);
     StringRow row = new StringRow(id, values);
     addRow(row);
   }
-  
+
   private void createColumns(String... columnLabels) {
     int pc = (columnLabels == null) ? 0 : columnLabels.length;
     String label;

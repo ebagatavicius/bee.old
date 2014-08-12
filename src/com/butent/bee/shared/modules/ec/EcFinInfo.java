@@ -168,7 +168,7 @@ public class EcFinInfo implements BeeSerializable {
         case INVOICES:
           arr[i++] = getInvoices();
           break;
-          
+
         case UNSUPPLIED_ITEMS:
           arr[i++] = getUnsuppliedItems();
           break;

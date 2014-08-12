@@ -570,7 +570,7 @@ public class Split extends ComplexPanel implements RequiresResize, ProvidesResiz
 
         if (ld != null) {
           data.add(ld);
-          
+
           if (size > 0) {
             child.removeStyleName(STYLE_HIDDEN);
           } else {
@@ -616,13 +616,13 @@ public class Split extends ComplexPanel implements RequiresResize, ProvidesResiz
 
     if (data != null && size != data.getSize()) {
       data.setSize(size);
-      
+
       if (size > 0) {
         widget.removeStyleName(STYLE_HIDDEN);
       } else {
         widget.addStyleName(STYLE_HIDDEN);
       }
-      
+
       doLayout();
     }
   }
@@ -681,7 +681,7 @@ public class Split extends ComplexPanel implements RequiresResize, ProvidesResiz
     int index = getWidgetIndex(splitter);
     return (index > 0) ? getWidget(index - 1) : null;
   }
-  
+
   protected List<Property> getChildInfo(Widget w) {
     List<Property> info = Lists.newArrayList();
 

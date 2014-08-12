@@ -249,6 +249,7 @@ public final class Selectors {
         + ATTRIBUTE_SELECTOR_SUFFIX;
   }
 
+//@formatter:off
   private static native Element querySelector(Element root, String selectors) /*-{
     return root.querySelector(selectors);
   }-*/;
@@ -264,6 +265,7 @@ public final class Selectors {
   private static native NodeList<Element> querySelectorAll(String selectors) /*-{
     return $doc.querySelectorAll(selectors);
   }-*/;
+//@formatter:on
 
   private static String transformAttributeValue(String value) {
     Assert.notNull(value);

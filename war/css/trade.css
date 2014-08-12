@@ -1,23 +1,163 @@
-.itemsInfo-table {
-  border-collapse:collapse;
+.bee-trade-itemsInfo-table {
+  border-collapse: collapse;
 }
-.itemsInfo-table td {
-  padding:2px 5px 2px 5px;
+
+.bee-trade-itemsInfo-table td {
+  padding: 2px 5px 2px 5px;
 }
-.itemsInfo-header {
-  font-weight:bold;
-  border:1px solid black;
+
+.bee-trade-itemsInfo-header {
+  font-weight: bold;
+  border: 1px solid black;
 }
-.itemsInfo-data {
-  border-bottom:1px solid silver;
+
+.bee-trade-itemsInfo-data {
+  border-bottom: 1px solid silver;
 }
-.itemsInfo-Quantity, .itemsInfo-Price, .itemsInfo-Vat, .itemsInfo-Amount, .itemsInfo-RateAmount,
-  .itemsInfo-QuantityTotal, .itemsInfo-AmountTotal, .itemsInfo-VatTotal, .itemsInfo-Total,
-  .itemsInfo-RateAmountTotal, .itemsInfo-RateVatTotal, .itemsInfo-RateTotal,
-  .itemsInfo-AmountTotal-caption, .itemsInfo-VatTotal-caption, .itemsInfo-Total-caption {
-  text-align:right;
+
+.bee-trade-itemsInfo-Quantity,
+.bee-trade-itemsInfo-Price,
+.bee-trade-itemsInfo-Vat,
+.bee-trade-itemsInfo-Amount,
+.bee-trade-itemsInfo-RateAmount,
+.bee-trade-itemsInfo-QuantityTotal,
+.bee-trade-itemsInfo-AmountTotal,
+.bee-trade-itemsInfo-VatTotal,
+.bee-trade-itemsInfo-Total,
+.bee-trade-itemsInfo-RateAmountTotal,
+.bee-trade-itemsInfo-RateVatTotal,
+.bee-trade-itemsInfo-RateTotal,
+.bee-trade-itemsInfo-AmountTotal-caption,
+.bee-trade-itemsInfo-VatTotal-caption,
+.bee-trade-itemsInfo-Total-caption {
+  text-align: right;
   white-space: nowrap;
 }
-.itemsInfo-AmountTotal-caption:after, .itemsInfo-VatTotal-caption:after, .itemsInfo-Total-caption:after {
+
+.bee-trade-itemsInfo-AmountTotal-caption:after,
+.bee-trade-itemsInfo-VatTotal-caption:after,
+.bee-trade-itemsInfo-Total-caption:after {
   content: ":";
+}
+
+.bee-trade-print-document-title {
+  font-family: Tahoma;
+  font-size: 16pt;
+  font-style: italic;
+  text-align: center;
+}
+.bee-trade-print-document-number {
+  font-family: Tahoma;
+  font-size: 12pt;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}
+.bee-trade-print-document-id {
+  text-align: right;
+  margin-top: 3px;
+}
+
+.bee-trade-print-document table {
+  border-collapse: collapse;
+}
+
+.bee-trade-print-companies td {
+  vertical-align: top;
+  padding-left: 15px;
+}
+.bee-trade-print-company-name {
+  font-size: 11pt;
+  font-weight: bolder;
+}
+.bee-trade-print-company-code,
+.bee-trade-print-company-vat-code {
+  white-space: nowrap;
+}
+.bee-trade-print-company-bank {
+  white-space: pre-line;
+}
+.bee-trade-print-company-separator {
+  height: 5px;
+}
+
+.bee-trade-print-items {
+  margin-top: 5px;
+}
+
+.bee-trade-print-items-header td {
+  font-weight: bolder;
+  text-align: center;
+  padding: 5px 5px;
+  border: 1px solid #ccc;
+}
+
+.bee-trade-print-item-ordinal,
+.bee-trade-print-item-name,
+.bee-trade-print-item-article,
+.bee-trade-print-item-quantity,
+.bee-trade-print-item-unit,
+.bee-trade-print-item-price,
+.bee-trade-print-item-amount,
+.bee-trade-print-items-total-label,
+.bee-trade-print-items-total-value {
+  padding: 2px 5px;
+  border: 1px solid #ccc;
+}
+
+.bee-trade-print-item-ordinal,
+.bee-trade-print-item-unit {
+  text-align: center
+}
+.bee-trade-print-item-quantity,
+.bee-trade-print-item-price,
+.bee-trade-print-item-amount,
+.bee-trade-print-items-total-label,
+.bee-trade-print-items-total-value {
+  text-align: right;
+}
+.bee-trade-print-items-total-label,
+.bee-trade-print-items-total-value {
+  font-size: 11pt;
+}
+
+.bee-trade-print-document-footer {
+  page-break-inside: avoid;
+}
+
+.bee-trade-print-words td,
+.bee-trade-print-term td {
+  padding-right: 7px;
+}
+.bee-trade-print-words-value {
+  font-size: 11pt;
+  font-style: italic;
+  text-decoration: underline;
+}
+
+.bee-trade-print-term {
+  margin-top: 10px;
+  font-size: 11pt;
+  font-weight: bold;
+}
+
+.bee-trade-print-notes {
+  margin-top: 10px;
+  white-space: pre-wrap;
+}
+
+.bee-trade-print-dispenser {
+  margin-right: 10px;
+}
+.bee-trade-print-receiver {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.bee-trade-print-signature {
+  margin-top: 15px;
+}
+.bee-trade-print-signature-label {
+  text-align: center;
+  font-size: 8pt;
+  margin-top: -5px;
 }

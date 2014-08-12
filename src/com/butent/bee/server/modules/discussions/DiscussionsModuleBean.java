@@ -13,6 +13,7 @@ import static com.butent.bee.shared.modules.administration.AdministrationConstan
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.discussions.DiscussionsConstants.*;
 
+import com.butent.bee.server.Config;
 import com.butent.bee.server.Invocation;
 import com.butent.bee.server.data.DataEditorBean;
 import com.butent.bee.server.data.DataEvent.ViewQueryEvent;
@@ -58,7 +59,7 @@ import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.html.builder.elements.H2;
 import com.butent.bee.shared.html.builder.elements.Tbody;
 import com.butent.bee.shared.i18n.LocalizableConstants;
-import com.butent.bee.shared.io.StoredFile;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
@@ -70,6 +71,7 @@ import com.butent.bee.shared.modules.discussions.DiscussionsUtils;
 import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.news.NewsConstants;
 import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -141,7 +143,7 @@ public class DiscussionsModuleBean implements BeeModule {
   public List<SearchResult> doSearch(String query) {
     List<SearchResult> result = Lists.newArrayList();
 
-    if (usr.isModuleVisible(Module.DISCUSSIONS.getName())) {
+    if (usr.isModuleVisible(ModuleAndSub.of(Module.DISCUSSIONS))) {
       result.addAll(qs.getSearchResults(VIEW_DISCUSSIONS,
           Filter.anyContains(Sets.newHashSet(COL_SUBJECT, COL_DESCRIPTION, ALS_OWNER_FIRST_NAME,
               ALS_OWNER_LAST_NAME), query)));
@@ -415,7 +417,7 @@ public class DiscussionsModuleBean implements BeeModule {
       row.setProperty(property, DataUtils.buildIdList(discussionRelations.get(property)));
     }
 
-    List<StoredFile> files = getDiscussionFiles(discussionId);
+    List<FileInfo> files = getDiscussionFiles(discussionId);
     if (!files.isEmpty()) {
       row.setProperty(PROP_FILES, Codec.beeSerialize(files));
     }
@@ -793,6 +795,9 @@ public class DiscussionsModuleBean implements BeeModule {
 
   @Timeout
   private void doInactiveDiscussions() {
+    if (!Config.isInitialized()) {
+      return;
+    }
     Long days = prm.getLong(PRM_DISCUSS_INACTIVE_TIME_IN_DAYS);
 
     if (!BeeUtils.isPositive(days)) {
@@ -1082,8 +1087,8 @@ public class DiscussionsModuleBean implements BeeModule {
     return ResponseObject.response(data);
   }
 
-  private List<StoredFile> getDiscussionFiles(long discussionId) {
-    List<StoredFile> result = Lists.newArrayList();
+  private List<FileInfo> getDiscussionFiles(long discussionId) {
+    List<FileInfo> result = Lists.newArrayList();
 
     BeeRowSet rowSet =
         qs.getViewData(VIEW_DISCUSSIONS_FILES, Filter.equals(COL_DISCUSSION, discussionId));
@@ -1093,8 +1098,8 @@ public class DiscussionsModuleBean implements BeeModule {
     }
 
     for (BeeRow row : rowSet.getRows()) {
-      StoredFile sf =
-          new StoredFile(DataUtils.getLong(rowSet, row, AdministrationConstants.COL_FILE),
+      FileInfo sf =
+          new FileInfo(DataUtils.getLong(rowSet, row, AdministrationConstants.COL_FILE),
               DataUtils.getString(rowSet, row, ALS_FILE_NAME),
               DataUtils.getLong(rowSet, row, ALS_FILE_SIZE),
               DataUtils.getString(rowSet, row, ALS_FILE_TYPE));
@@ -1445,55 +1450,73 @@ public class DiscussionsModuleBean implements BeeModule {
       return response;
     }
 
-    HasConditions where =
-        SqlUtils.and(SqlUtils.equals(TBL_DISCUSSIONS, COL_DISCUSSION_ID, discussionId));
-
-    boolean checkUserSettings;
-
-    if (!notifyEmailPreference && typeAnnoucement) {
-      where.add(SqlUtils.notNull(TBL_USER_SETTINGS, COL_MAIL_NEW_ANNOUNCEMENTS));
-      checkUserSettings = true;
-    } else if (!notifyEmailPreference) {
-      where.add(SqlUtils.notNull(TBL_USER_SETTINGS, COL_MAIL_NEW_DISCUSSIONS));
-      checkUserSettings = true;
-    } else {
-      checkUserSettings = false;
-    }
-
-    if (sendAll) {
-      where.add(SqlUtils.notEqual(TBL_DISCUSSIONS, COL_OWNER,
-          SqlUtils.field(TBL_USERS, sys.getIdName(TBL_USERS))));
-    } else {
-      where.add(SqlUtils.notEqual(TBL_DISCUSSIONS, COL_OWNER,
-          SqlUtils.field(TBL_DISCUSSIONS_USERS, DiscussionsConstants.COL_USER)));
-    }
-
     SqlSelect discussMailList =
         new SqlSelect()
             .addFields(TBL_DISCUSSIONS, COL_SUBJECT, COL_DESCRIPTION, COL_OWNER,
                 COL_CREATED, COL_TOPIC, COL_IMPORTANT)
-            .addField(TBL_USERS, sys.getIdName(TBL_USERS), DiscussionsConstants.COL_USER)
             .addFrom(TBL_DISCUSSIONS)
-            .setDistinctMode(true)
-            .setWhere(where);
+            .setDistinctMode(true);
 
-    if (sendAll) {
-      /* Using Cartesian product for sending all mails */
+    HasConditions where =
+        SqlUtils.and(SqlUtils.equals(TBL_DISCUSSIONS, COL_DISCUSSION_ID, discussionId));
+
+    if (notifyEmailPreference && sendAll) {
+      discussMailList.addField(TBL_USERS, sys.getIdName(TBL_USERS), DiscussionsConstants.COL_USER);
+
+      /* Using Cartesian product force sending all mails */
       discussMailList.addFrom(TBL_USERS);
-    } else {
+
+      where.add(SqlUtils.notEqual(TBL_DISCUSSIONS, COL_OWNER,
+          SqlUtils.field(TBL_USERS, sys.getIdName(TBL_USERS))));
+
+    } else if (!notifyEmailPreference && sendAll) {
+      discussMailList.addField(TBL_USER_SETTINGS, AdministrationConstants.COL_USER,
+          DiscussionsConstants.COL_USER);
+
+      /* Using Cartesian product for sending all mails by settings */
+      discussMailList.addFrom(TBL_USER_SETTINGS);
+
+      where.add(SqlUtils.notEqual(TBL_DISCUSSIONS, COL_OWNER,
+          SqlUtils.field(TBL_USER_SETTINGS, AdministrationConstants.COL_USER)));
+
+      where.add(typeAnnoucement ? SqlUtils.notNull(TBL_USER_SETTINGS, COL_MAIL_NEW_ANNOUNCEMENTS)
+          : SqlUtils.notNull(TBL_USER_SETTINGS, COL_MAIL_NEW_DISCUSSIONS));
+
+    } else if (notifyEmailPreference && !sendAll) {
+      discussMailList.addField(TBL_USERS, sys.getIdName(TBL_USERS), DiscussionsConstants.COL_USER);
+
       discussMailList
           .addFromInner(TBL_DISCUSSIONS_USERS,
               sys.joinTables(TBL_DISCUSSIONS, TBL_DISCUSSIONS_USERS, COL_DISCUSSION))
           .addFromInner(TBL_USERS,
               sys.joinTables(TBL_USERS, TBL_DISCUSSIONS_USERS, DiscussionsConstants.COL_USER));
+
+      where.add(SqlUtils.notEqual(TBL_DISCUSSIONS, COL_OWNER,
+          SqlUtils.field(TBL_DISCUSSIONS_USERS, DiscussionsConstants.COL_USER)));
+
+    } else if (!notifyEmailPreference && !sendAll) {
+      discussMailList.addField(TBL_USERS, sys.getIdName(TBL_USERS), DiscussionsConstants.COL_USER);
+
+      discussMailList
+          .addFromInner(TBL_DISCUSSIONS_USERS,
+              sys.joinTables(TBL_DISCUSSIONS, TBL_DISCUSSIONS_USERS, COL_DISCUSSION))
+          .addFromInner(TBL_USERS,
+              sys.joinTables(TBL_USERS, TBL_DISCUSSIONS_USERS, DiscussionsConstants.COL_USER))
+          .addFromInner(TBL_USER_SETTINGS,
+              sys.joinTables(TBL_USERS, TBL_USER_SETTINGS,
+                  AdministrationConstants.COL_USER));
+
+      where.add(SqlUtils.notEqual(TBL_DISCUSSIONS, COL_OWNER,
+          SqlUtils.field(TBL_DISCUSSIONS_USERS, DiscussionsConstants.COL_USER)));
+
+      where.add(typeAnnoucement ? SqlUtils.notNull(TBL_USER_SETTINGS, COL_MAIL_NEW_ANNOUNCEMENTS)
+          : SqlUtils.notNull(TBL_USER_SETTINGS, COL_MAIL_NEW_DISCUSSIONS));
+
     }
 
-    if (checkUserSettings) {
-      discussMailList.addFromInner(TBL_USER_SETTINGS,
-          sys.joinTables(TBL_USERS, TBL_USER_SETTINGS, AdministrationConstants.COL_USER));
-    }
+    discussMailList.setWhere(where);
 
-    logger.debug(typeAnnoucement ? LOG_CREATE_ANNOUNCEMENT_LABEL : LOG_CREATE_DISCUSSION_LABEL,
+    logger.warning(typeAnnoucement ? LOG_CREATE_ANNOUNCEMENT_LABEL : LOG_CREATE_DISCUSSION_LABEL,
         "query:",
         discussMailList.getQuery());
 

@@ -10,7 +10,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.ui.FormFactory;
-import com.butent.bee.client.ui.WidgetFactory;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.event.RowTransformEvent;
@@ -54,7 +54,7 @@ public final class ClassifierKeeper {
       @Override
       public void onSelection(String parameters) {
         String key = ItemsGrid.getSupplierKey(BeeUtils.startsSame(parameters, "s"));
-        WidgetFactory.createAndShow(key);
+        ViewFactory.createAndShow(key);
       }
     });
 

@@ -72,9 +72,9 @@ public final class TimeUtils {
   public static final char DATE_TIME_SEPARATOR = ' ';
   public static final char TIME_FIELD_SEPARATOR = ':';
   public static final char MILLIS_SEPARATOR = '.';
-  
+
   public static final String PERIOD_SEPARATOR = "..";
-  
+
   private static final String[] FIELD_NAME = {
       "ERA", "YEAR", "MONTH", "WEEK_OF_YEAR", "WEEK_OF_MONTH",
       "DAY_OF_MONTH", "DAY_OF_YEAR", "DAY_OF_WEEK",
@@ -87,14 +87,13 @@ public final class TimeUtils {
   private static final Splitter FIELD_SPLITTER =
       Splitter.on(CharMatcher.inRange(BeeConst.CHAR_ZERO, BeeConst.CHAR_NINE).negate())
           .omitEmptyStrings().trimResults();
-  
+
   private static final int MINIMAL_DAYS_IN_FIRST_WEEK = 4;
 
   private static final String MS = "ms";
 
   /**
    * Adds an amount of field type data to the date.
-   * 
    * @param date the initial date to add to
    * @param field the field type to add
    * @param amount the amount to add
@@ -210,7 +209,6 @@ public final class TimeUtils {
 
   /**
    * Gets the difference between {@code start} and {@code end}.
-   * 
    * @param start the start time
    * @param end the end time
    * @return the difference between {@code start} and {@code end} in days.
@@ -228,7 +226,7 @@ public final class TimeUtils {
   }
 
   public static String dateToString(int year, int month, int dom) {
-    return yearToString(year) + DATE_FIELD_SEPARATOR + monthToString(month) 
+    return yearToString(year) + DATE_FIELD_SEPARATOR + monthToString(month)
         + DATE_FIELD_SEPARATOR + dayOfMonthToString(dom);
   }
 
@@ -250,10 +248,9 @@ public final class TimeUtils {
   public static String elapsedMillis(long start) {
     return BeeUtils.bracket(System.currentTimeMillis() - start);
   }
-  
+
   /**
    * Returns the elapsed time in seconds.
-   * 
    * @param start the start time
    * @return the elapsed time in seconds from the specified start in brackets.
    */
@@ -302,7 +299,6 @@ public final class TimeUtils {
 
   /**
    * Gets the specified field's difference between {@code start} and {@code end}.
-   * 
    * @param start the start time
    * @param end the end time
    * @param field the used field. E.g 1(years),2(months),5(days) etc.
@@ -393,14 +389,14 @@ public final class TimeUtils {
       return combine(goMonth(ref.getDate(), increment), ref);
     }
   }
-  
+
   public static boolean isBetween(HasDateValue dt, HasDateValue min, HasDateValue max,
       RangeOptions options) {
     Assert.notNull(options);
- 
+
     if (dt == null) {
       return !options.isLowerRequired() && min == null;
-    
+
     } else if (min == null && max == null) {
       return !options.isLowerRequired() && !options.isUpperRequired();
 
@@ -409,7 +405,7 @@ public final class TimeUtils {
 
     } else if (dt instanceof JustDate || min instanceof JustDate || max instanceof JustDate) {
       return options.contains(JustDate.get(min), JustDate.get(max), JustDate.get(dt));
-    
+
     } else {
       return false;
     }
@@ -441,14 +437,13 @@ public final class TimeUtils {
 
   /**
    * Checks if {@code x} is and instance of HasDateValue or Date.
-   * 
    * @param x the Object to check
    * @return true if {@code x} is an instance of any of these types, false otherwise.
    */
   public static boolean isDateOrDateTime(Object x) {
     return x instanceof HasDateValue || x instanceof Date;
   }
-  
+
   public static boolean isDow(int dow) {
     return dow >= 1 && dow <= DAYS_PER_WEEK;
   }
@@ -525,14 +520,14 @@ public final class TimeUtils {
   public static int month() {
     return today().getMonth();
   }
-  
+
   public static int monthDiff(HasYearMonth start, HasYearMonth end) {
     Assert.notNull(start);
     Assert.notNull(end);
 
     return end.getYear() * 12 + end.getMonth() - start.getYear() * 12 - start.getMonth();
   }
-  
+
   public static int monthLength(HasYearMonth ym) {
     Assert.notNull(ym);
     return Grego.monthLength(ym.getYear(), ym.getMonth());
@@ -618,7 +613,6 @@ public final class TimeUtils {
 
   /**
    * Left pads and integer {@code number} by adding "0" to size of two.
-   * 
    * @param number the value to pad
    * @return a String representation of the padded value {@code number} if
    *         {@code number >=0 and number < 10}, otherwise a non-padded value String.
@@ -630,7 +624,7 @@ public final class TimeUtils {
       return String.valueOf(number);
     }
   }
-  
+
   public static JustDate parseDate(String input) {
     if (BeeUtils.isEmpty(input)) {
       return null;
@@ -652,7 +646,7 @@ public final class TimeUtils {
     if (BeeUtils.isEmpty(input)) {
       return null;
     }
-    
+
     if (BeeUtils.isSuffix(input, MS)) {
       return new DateTime(BeeUtils.toLong(BeeUtils.removeSuffix(input, MS)));
     }
@@ -678,7 +672,7 @@ public final class TimeUtils {
         } else {
           return parseDateTime(splitDigits(digits, BeeConst.STRING_SPACE, 4, 2, 2, 2, 2, 2));
         }
-        
+
       case 2:
       case 3:
         return DateTime.get(parseDate(input, fields));
@@ -728,7 +722,7 @@ public final class TimeUtils {
         case 3:
           slices = Lists.newArrayList(1, 2);
           break;
-        
+
         case 4:
           slices = Lists.newArrayList(2, 2);
           break;
@@ -756,7 +750,6 @@ public final class TimeUtils {
 
   /**
    * Generates a random JustDate between {@code min} and {@code max}.
-   * 
    * @param min the minimum JustDate
    * @param max the maximum JustDate
    * @return a JustDate between specified {@code min} and {@code max}.
@@ -766,10 +759,9 @@ public final class TimeUtils {
     Assert.notNull(max);
     return new JustDate(BeeUtils.randomInt(min.getDays(), max.getDays()));
   }
-  
+
   /**
    * Generates a random DateTime between {@code min} and {@code max}.
-   * 
    * @param min the minimum DateTime
    * @param max the maximum DateTime
    * @return a DateTime between specified {@code min} and {@code max}.
@@ -800,26 +792,26 @@ public final class TimeUtils {
       if (dropCurrentYear && isCurrentYear(dt)) {
         String ds = renderMonthDay(dt);
         String ts = ((DateTime) dt).toCompactTimeString();
-        return BeeUtils.isEmpty(ts) ? ds : (ds + DATE_TIME_SEPARATOR + ts); 
+        return BeeUtils.isEmpty(ts) ? ds : (ds + DATE_TIME_SEPARATOR + ts);
       } else {
         return ((DateTime) dt).toCompactString();
       }
-    
+
     } else if (dropCurrentYear && isCurrentYear(dt)) {
       return renderMonthDay(dt);
     } else {
       return dt.toString();
     }
   }
-  
+
   public static String renderDateTime(long time) {
     return renderDateTime(time, false);
   }
-  
+
   public static String renderDateTime(long time, boolean showMillis) {
     return new DateTime(showMillis ? time : (time - time % MILLIS_PER_SECOND)).toString();
   }
-  
+
   public static String renderMinutes(int minutes, boolean leadingZero) {
     int hours = minutes / MINUTES_PER_HOUR;
     return (leadingZero ? padTwo(hours) : BeeUtils.toString(hours)) + TIME_FIELD_SEPARATOR
@@ -839,9 +831,9 @@ public final class TimeUtils {
   }
 
   public static String renderPeriod(DateTime start, DateTime end) {
-    return renderPeriod(start, end, false); 
+    return renderPeriod(start, end, false);
   }
-  
+
   public static String renderPeriod(DateTime start, DateTime end, boolean dropCurrentYear) {
     if (start == null) {
       if (end == null) {
@@ -857,11 +849,11 @@ public final class TimeUtils {
       return renderCompact(start, dropCurrentYear) + PERIOD_SEPARATOR + end.toCompactTimeString();
 
     } else {
-      return renderCompact(start, dropCurrentYear) + PERIOD_SEPARATOR 
+      return renderCompact(start, dropCurrentYear) + PERIOD_SEPARATOR
           + renderCompact(end, dropCurrentYear);
     }
   }
-  
+
   public static String renderTime(int hour, int minute, int second, int millis,
       boolean leadingZero) {
     StringBuilder sb = new StringBuilder();
@@ -1001,7 +993,7 @@ public final class TimeUtils {
   public static JustDate startOfWeekYear(int year, int minimalDaysInFirstWeek) {
     JustDate date = new JustDate(year, 1, 1);
     int dow = date.getDow();
-    
+
     if (dow == 1) {
       return date;
     } else if (DAYS_PER_WEEK - dow + 1 < minimalDaysInFirstWeek) {
@@ -1018,7 +1010,7 @@ public final class TimeUtils {
   public static JustDate startOfYear(HasYearMonth ref) {
     return startOfYear(ref, 0);
   }
-  
+
   public static JustDate startOfYear(HasYearMonth ref, int increment) {
     Assert.notNull(ref);
     int year = ref.getYear();
@@ -1027,14 +1019,13 @@ public final class TimeUtils {
     }
     return new JustDate(year, 1, 1);
   }
-  
+
   public static JustDate startOfYear(int year) {
     return new JustDate(year, 1, 1);
   }
 
   /**
    * Converts {@code x} to a JustDate format.
-   * 
    * @param x the Object to convert
    * @return a JustDate type date.
    */
@@ -1071,7 +1062,6 @@ public final class TimeUtils {
 
   /**
    * Converts {@code x} to a DateTime format.
-   * 
    * @param x the Object to convert
    * @return a DateTime type date.
    */
@@ -1128,7 +1118,6 @@ public final class TimeUtils {
 
   /**
    * Converts {@code x} to a Date format.
-   * 
    * @param x the Object to convert
    * @return a Date type date.
    */
@@ -1146,7 +1135,6 @@ public final class TimeUtils {
 
   /**
    * Converts milliseconds {@code millis} to seconds. E.g 6010 is converted to 6.010.
-   * 
    * @param millis value to convert
    * @return seconds.
    */
@@ -1165,7 +1153,7 @@ public final class TimeUtils {
 
   public static int weekOfYear(HasDateValue ref, int minimalDaysInFirstWeek) {
     Assert.notNull(ref);
-    
+
     JustDate start = startOfWeekYear(ref.getYear() + 1, minimalDaysInFirstWeek);
     if (isLess(ref, start)) {
       start = startOfWeekYear(ref.getYear(), minimalDaysInFirstWeek);
@@ -1173,7 +1161,7 @@ public final class TimeUtils {
     if (isLess(ref, start)) {
       start = startOfWeekYear(ref.getYear() - 1, minimalDaysInFirstWeek);
     }
-    
+
     return dayDiff(start, ref) / DAYS_PER_WEEK + 1;
   }
 
@@ -1268,7 +1256,7 @@ public final class TimeUtils {
     }
     return delta;
   }
-  
+
   private static JustDate parseDate(String input, List<Integer> fields) {
     int count = fields.size();
 

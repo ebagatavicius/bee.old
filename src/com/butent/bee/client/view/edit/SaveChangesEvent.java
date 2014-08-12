@@ -23,7 +23,7 @@ public final class SaveChangesEvent extends GwtEvent<SaveChangesEvent.Handler> i
     void onSaveChanges(SaveChangesEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static SaveChangesEvent create(IsRow oldRow, IsRow newRow, List<BeeColumn> dataColumns,
       Collection<RowChildren> children, RowCallback callback) {

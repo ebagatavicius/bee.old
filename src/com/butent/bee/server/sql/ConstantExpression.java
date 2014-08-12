@@ -4,7 +4,6 @@ import com.butent.bee.shared.data.value.Value;
 
 /**
  * Transforms given constant expressions for compliance to specific SQL server requirements.
- * 
  */
 
 class ConstantExpression implements IsExpression {

@@ -51,7 +51,7 @@ public class Flow extends FlowPanel implements DndWidget, HasIndexedWidgets, Pro
       setStyleName(styleName);
     }
   }
-  
+
   @Override
   public HandlerRegistration addClickHandler(ClickHandler handler) {
     return addDomHandler(handler, ClickEvent.getType());
@@ -116,7 +116,7 @@ public class Flow extends FlowPanel implements DndWidget, HasIndexedWidgets, Pro
   public boolean isEmpty() {
     return getWidgetCount() <= 0;
   }
-  
+
   public boolean isWidgetIndex(int index) {
     return index >= 0 && index < getWidgetCount();
   }

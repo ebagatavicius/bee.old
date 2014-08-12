@@ -13,7 +13,7 @@ public class FieldSet extends CustomComplex {
   public FieldSet(String styleName) {
     super(Document.get().createFieldSetElement(), styleName);
   }
-  
+
   public FieldSet(String styleName, Legend legend) {
     this(styleName);
     if (legend != null) {

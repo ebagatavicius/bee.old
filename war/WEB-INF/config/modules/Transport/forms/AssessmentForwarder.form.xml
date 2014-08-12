@@ -36,7 +36,7 @@
       <Label for="Number" style="&labelLeft;" />
       <InputText source="Number" style="&input;" />
       <Label for="Amount" style="&labelRight;" />
-      <InputCurrency source="Amount" style="&input; width:70px;" />
+      <InputMoney source="Amount" style="&input; width:70px;" />
       <DataSelector source="Currency" style="&inline; width:40px; margin-left:5px;" 
         editEnabled="false" placeholder="=currencyShort" />
     </FlowPanel>

@@ -67,7 +67,7 @@ public class TestBeeUtilsIntersects extends TestCase {
     testc2.add(b.INTEGER);
 
     testc3.add(a.TEXT);
-    
+
     testc4.add(a.DECIMAL);
   }
 

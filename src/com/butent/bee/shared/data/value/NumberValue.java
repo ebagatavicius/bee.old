@@ -9,13 +9,12 @@ import java.math.BigDecimal;
 
 /**
  * The {@code NumberValue} class represents number values. The value is set
- * using {@link com.butent.bee.shared.data.value.NumberValue#NumberValue(Double)}
- * constructor.
+ * using {@link com.butent.bee.shared.data.value.NumberValue#NumberValue(Double)} constructor.
  */
 public class NumberValue extends Value {
 
   public static final int MAX_SCALE = 7;
-  
+
   private static final NumberValue NULL_VALUE = new NumberValue(null);
 
   public static NumberValue getNullValue() {
@@ -36,7 +35,7 @@ public class NumberValue extends Value {
     }
     return diff;
   }
-  
+
   @Override
   public Boolean getBoolean() {
     if (isNull()) {
@@ -123,7 +122,7 @@ public class NumberValue extends Value {
   public boolean isEmpty() {
     return isNull() || BeeUtils.isZero(value);
   }
-  
+
   @Override
   public boolean isNull() {
     return this == NULL_VALUE || getDouble() == null;

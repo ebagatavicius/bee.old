@@ -6,6 +6,9 @@
   <Columns>
     <SimpleColumn name="User" />
 
+    <SimpleColumn name="CalendarMinDate" />
+    <SimpleColumn name="CalendarMaxDate" />
+
     <SimpleColumn name="CalendarCompanyKind" />
 
     <SimpleColumn name="CalendarPixelsPerCompany" />
@@ -18,6 +21,8 @@
 
     <SimpleColumn name="CalendarHeaderHeight" />
     <SimpleColumn name="CalendarFooterHeight" />
+
+    <SimpleColumn name="CalendarFooterMap" />
 
     <SimpleColumn name="CalendarItemOpacity" />
     <SimpleColumn name="CalendarStripOpacity" />

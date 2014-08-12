@@ -103,7 +103,7 @@ public final class EditorAssistant {
         if (element != null) {
           element.setInnerHTML(BeeConst.STRING_EMPTY);
         }
-        
+
         if (updater != null) {
           updater.accept(null);
         }
@@ -170,10 +170,10 @@ public final class EditorAssistant {
 
     event.consume();
   }
-  
+
   public static Dimensions getDefaultDimensions(EditorDescription editorDescription) {
     Assert.notNull(editorDescription);
-    
+
     Dimensions dimensions = new Dimensions();
 
     EditorType editorType = editorDescription.getType();
@@ -204,10 +204,10 @@ public final class EditorAssistant {
     if (BeeUtils.isPositive(editorDescription.getMinHeight())) {
       dimensions.setMinHeight(editorDescription.getMinHeight());
     }
-    
+
     return dimensions;
   }
-  
+
   public static String getValue(Widget widget) {
     if (widget instanceof Editor) {
       return ((Editor) widget).getValue();
@@ -217,7 +217,7 @@ public final class EditorAssistant {
       return null;
     }
   }
-  
+
   private EditorAssistant() {
   }
 }

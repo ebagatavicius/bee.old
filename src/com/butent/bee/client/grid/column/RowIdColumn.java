@@ -17,7 +17,7 @@ import com.butent.bee.shared.utils.BeeUtils;
  */
 
 public class RowIdColumn extends AbstractColumn<Long> implements HasNumberFormat {
-  
+
   public RowIdColumn() {
     this(Format.getDefaultLongFormat());
   }
@@ -26,12 +26,12 @@ public class RowIdColumn extends AbstractColumn<Long> implements HasNumberFormat
     super(new NumberCell<Long>(format));
     setTextAlign(TextAlign.RIGHT);
   }
-  
+
   @Override
   public ColType getColType() {
     return ColType.ID;
   }
-  
+
   @Override
   public NumberFormat getNumberFormat() {
     if (getCell() instanceof HasNumberFormat) {
@@ -52,7 +52,7 @@ public class RowIdColumn extends AbstractColumn<Long> implements HasNumberFormat
   public String getStyleSuffix() {
     return "id";
   }
-  
+
   @Override
   public Long getValue(IsRow row) {
     if (row == null) {

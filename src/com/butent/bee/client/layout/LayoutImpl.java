@@ -40,7 +40,7 @@ class LayoutImpl {
   void fillParent(Element elem) {
     Style style = elem.getStyle();
     style.setPosition(Position.ABSOLUTE);
-    
+
     StyleUtils.setLeft(style, 0);
     StyleUtils.setTop(style, 0);
     StyleUtils.setRight(style, 0);
@@ -61,7 +61,7 @@ class LayoutImpl {
     } else {
       style.setDisplay(Display.NONE);
     }
-    
+
     if (layer.setLeft) {
       StyleUtils.setLeft(style, layer.left, layer.leftUnit);
     } else {
@@ -91,7 +91,7 @@ class LayoutImpl {
     } else {
       style.clearWidth();
     }
-    
+
     if (layer.setHeight) {
       StyleUtils.setHeight(style, layer.height, layer.heightUnit);
     } else {

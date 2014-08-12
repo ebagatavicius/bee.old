@@ -30,7 +30,7 @@ import java.util.Map;
 class GridConfig {
 
   private static final BeeLogger logger = LogUtils.getLogger(GridConfig.class);
-  
+
   private static final List<BeeColumn> dataColumns = Lists.newArrayList();
 
   private static int userIndex;
@@ -152,7 +152,7 @@ class GridConfig {
     ensureFields();
     return rowHeightIndex;
   }
-  
+
   static int getUserIndex() {
     ensureFields();
     return userIndex;
@@ -205,7 +205,7 @@ class GridConfig {
   GridConfig(BeeRow row) {
     this.row = row;
   }
-  
+
   void applyTo(GridDescription gridDescription) {
     String caption = getCaption();
     if (!BeeUtils.isEmpty(caption)) {
@@ -323,11 +323,11 @@ class GridConfig {
       }
     }
   }
-  
+
   boolean hasVisibleColumns() {
     return !BeeUtils.isEmpty(row.getString(columnsIndex));
   }
-  
+
   boolean isEmpty() {
     if (!columnSettings.isEmpty()) {
       for (ColumnConfig columnConfig : columnSettings.values()) {
@@ -357,11 +357,11 @@ class GridConfig {
   void saveColumnSetting(String name, int index, String value) {
     Assert.notEmpty(name);
     Assert.isIndex(ColumnConfig.getDataColumns(), index);
-    
+
     final String columnName = name.trim();
     final BeeColumn dataColumn = ColumnConfig.getDataColumns().get(index);
     final String newValue = GridUtils.normalizeValue(value);
-    
+
     ColumnConfig columnConfig = columnSettings.get(columnName);
 
     if (columnConfig == null) {

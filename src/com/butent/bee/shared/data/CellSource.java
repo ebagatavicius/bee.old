@@ -25,7 +25,7 @@ public final class CellSource extends AbstractRenderer<IsRow> implements HasPrec
   private enum Serial {
     SOURCE_TYPE, NAME, INDEX, VALUE_TYPE, PRECISION, SCALE, IS_TEXT
   }
-  
+
   private enum SourceType {
     COLUMN, PROPERTY, ID, VERSION;
   }
@@ -60,10 +60,10 @@ public final class CellSource extends AbstractRenderer<IsRow> implements HasPrec
     return new CellSource(SourceType.VERSION, name, DataUtils.VERSION_INDEX,
         DataUtils.VERSION_TYPE);
   }
-  
+
   public static CellSource restore(String s) {
     Assert.notEmpty(s);
-    
+
     CellSource cellSource = new CellSource();
     cellSource.deserialize(s);
     return cellSource;
@@ -84,7 +84,7 @@ public final class CellSource extends AbstractRenderer<IsRow> implements HasPrec
   private CellSource() {
     super();
   }
-  
+
   private CellSource(SourceType sourceType, String name, Integer index, ValueType valueType) {
     super();
 
@@ -134,23 +134,23 @@ public final class CellSource extends AbstractRenderer<IsRow> implements HasPrec
         case IS_TEXT:
           setIsText(Codec.unpack(value));
           break;
-        
+
         case NAME:
           this.name = value;
           break;
-        
+
         case PRECISION:
           setPrecision(BeeUtils.toInt(value));
           break;
-        
+
         case SCALE:
           setScale(BeeUtils.toInt(value));
           break;
-        
+
         case SOURCE_TYPE:
           this.sourceType = Codec.unpack(SourceType.class, value);
           break;
-        
+
         case VALUE_TYPE:
           this.valueType = Codec.unpack(ValueType.class, value);
           break;
@@ -420,9 +420,9 @@ public final class CellSource extends AbstractRenderer<IsRow> implements HasPrec
         case IS_TEXT:
           arr[i++] = Codec.pack(isText());
           break;
-        
+
         case NAME:
-          arr[i++] = getName(); 
+          arr[i++] = getName();
           break;
 
         case PRECISION:

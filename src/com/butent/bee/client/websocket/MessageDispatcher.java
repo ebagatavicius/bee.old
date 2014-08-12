@@ -293,7 +293,7 @@ class MessageDispatcher {
           WsUtils.onEmptyMessage(message);
         }
         break;
-        
+
       case CONFIG:
         ConfigMessage configMessage = (ConfigMessage) message;
 
@@ -410,7 +410,9 @@ class MessageDispatcher {
         break;
 
       case ONLINE:
-        List<SessionUser> sessionUsers = ((OnlineMessage) message).getSessionUsers();
+        OnlineMessage om = (OnlineMessage) message;
+
+        List<SessionUser> sessionUsers = om.getSessionUsers();
         if (sessionUsers.size() > 1) {
           for (int i = 0; i < sessionUsers.size() - 1; i++) {
             SessionUser sessionUser = sessionUsers.get(i);
@@ -420,8 +422,15 @@ class MessageDispatcher {
 
         if (sessionUsers.isEmpty()) {
           WsUtils.onEmptyMessage(message);
+
         } else {
           Endpoint.setSessionId(sessionUsers.get(sessionUsers.size() - 1).getSessionId());
+
+          if (!om.getChatRooms().isEmpty()) {
+            Global.getRooms().setRoomData(om.getChatRooms());
+          }
+
+          Endpoint.online();
         }
         break;
 

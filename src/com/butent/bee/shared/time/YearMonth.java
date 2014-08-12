@@ -26,7 +26,7 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
       return new YearMonth(ref);
     }
   }
-  
+
   public static YearMonth parse(String s) {
     if (BeeUtils.isEmpty(s)) {
       return null;
@@ -54,7 +54,7 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
     this.year = year;
     this.month = month;
   }
-  
+
   @Override
   public int compareTo(YearMonth other) {
     int result = BeeUtils.compareNullsFirst(getYear(), other.getYear());
@@ -102,7 +102,7 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
   public int getYear() {
     return year;
   }
-  
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -111,7 +111,7 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
     result = prime * result + year;
     return result;
   }
-  
+
   public YearMonth nextMonth() {
     return nextMonth(1);
   }
@@ -127,11 +127,11 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
   public YearMonth nextYear(int increment) {
     return copyOf(this).shiftYear(increment);
   }
-  
+
   public YearMonth previousMonth() {
     return nextMonth(-1);
   }
-  
+
   public YearMonth previousMonth(int increment) {
     return nextMonth(-increment);
   }
@@ -169,7 +169,7 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
     Assert.notNull(source);
     setYearMonth(source.getYear(), source.getMonth());
   }
-  
+
   public YearMonth shiftMonth(int deltaMonths) {
     increment(deltaMonths);
     return this;
@@ -179,7 +179,7 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
     setYear(getYear() + deltaYears);
     return this;
   }
-  
+
   public YearMonth shiftYearMonth(int deltaYears, int deltaMonths) {
     return shiftYear(deltaYears).shiftMonth(deltaMonths);
   }

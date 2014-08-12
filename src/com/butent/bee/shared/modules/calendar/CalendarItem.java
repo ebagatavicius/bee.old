@@ -12,10 +12,10 @@ import com.butent.bee.shared.time.TimeUtils;
 import java.util.Map;
 
 public abstract class CalendarItem implements Comparable<CalendarItem> {
-  
+
   private DateTime partStart;
   private DateTime partEnd;
-  
+
   @Override
   public int compareTo(CalendarItem other) {
     int result = Longs.compare(getStartMillis(), other.getStartMillis());
@@ -24,21 +24,21 @@ public abstract class CalendarItem implements Comparable<CalendarItem> {
     }
     return result;
   }
-  
+
   public abstract CalendarItem copy();
 
   public abstract String getBackground();
 
   public abstract String getCompactTemplate();
-  
+
   public abstract String getCompanyName();
-  
+
   public abstract String getDescription();
-  
+
   public long getDuration() {
     return getEndMillis() - getStartMillis();
   }
-  
+
   public long getEndMillis() {
     return getEndTime().getTime();
   }
@@ -46,54 +46,54 @@ public abstract class CalendarItem implements Comparable<CalendarItem> {
   public DateTime getEndTime() {
     return (getPartEnd() == null) ? getEnd() : getPartEnd();
   }
-  
+
   public abstract String getForeground();
 
   public abstract long getId();
-  
+
   public abstract ItemType getItemType();
-  
+
   public abstract String getMultiBodyTemplate();
-  
+
   public abstract String getMultiHeaderTemplate();
-  
+
   public abstract String getPartialBodyTemplate();
-  
+
   public abstract String getPartialHeaderTemplate();
-  
+
   public Range<DateTime> getRange() {
     return Range.closedOpen(getStartTime(), getEndTime());
   }
 
   public abstract Long getSeparatedAttendee();
-  
+
   public abstract String getSimpleBodyTemplate();
 
   public abstract String getSimpleHeaderTemplate();
-  
+
   public long getStartMillis() {
     return getStartTime().getTime();
   }
-  
+
   public DateTime getStartTime() {
     return (getPartStart() == null) ? getStart() : getPartStart();
   }
 
   public abstract String getStringTemplate();
-  
+
   public abstract Long getStyle();
-  
+
   public abstract Map<String, String> getSubstitutes(long calendarId, Map<Long, UserData> users,
       boolean addLabels);
 
   public abstract String getSummary();
-  
+
   public abstract String getTitleTemplate();
-  
+
   public abstract boolean isEditable(Long userId);
-  
+
   public abstract boolean isMovable(Long userId);
-  
+
   public boolean isMultiDay() {
     return TimeUtils.isMore(getEndTime(), TimeUtils.startOfDay(getStartTime(), 1));
   }
@@ -101,7 +101,7 @@ public abstract class CalendarItem implements Comparable<CalendarItem> {
   public boolean isPartial() {
     return getPartStart() != null;
   }
-  
+
   public abstract boolean isRemovable(Long userId);
 
   public abstract boolean isResizable(Long userId);
@@ -111,7 +111,7 @@ public abstract class CalendarItem implements Comparable<CalendarItem> {
   }
 
   public abstract boolean isVisible(Long userId);
-  
+
   public boolean isWhole() {
     return getPartStart() == null;
   }
@@ -121,10 +121,10 @@ public abstract class CalendarItem implements Comparable<CalendarItem> {
 
     result.setPartStart(DateTime.copyOf(from));
     result.setPartEnd(DateTime.copyOf(until));
-    
+
     return result;
   }
-  
+
   protected abstract DateTime getEnd();
 
   protected abstract DateTime getStart();
@@ -140,7 +140,7 @@ public abstract class CalendarItem implements Comparable<CalendarItem> {
   private void setPartEnd(DateTime partEnd) {
     this.partEnd = partEnd;
   }
-  
+
   private void setPartStart(DateTime partStart) {
     this.partStart = partStart;
   }

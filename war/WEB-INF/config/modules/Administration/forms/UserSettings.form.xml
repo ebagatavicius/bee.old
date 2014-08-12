@@ -6,23 +6,31 @@
   width="700" height="80" heightUnit="%"
   >
   <FlowPanel class="flexBox-vertical">
-    <Table style="border-collapse: collapse; margin: 2ex 0 2ex 2em;" 
-        cellStyle="padding: 1ex 1em; border: 1px solid #ccc;">
+    <Table style="border-collapse: collapse; margin: 2ex 0 3ex 1em;"
+       cellStyle="padding-top: 1ex; padding-left: 1em;">
       <col index="0" cellStyle="text-align: right;" />
       <col index="2" cellStyle="text-align: right;" />
 
       <row>
         <Label for="Login" />
-        <TextLabel source="Login" />
+        <TextLabel source="Login" class="bee-output" style="min-width: 150px;" />
         <Label text="=company" for="CompanyName" />
-        <TextLabel source="CompanyName" />
+        <TextLabel source="CompanyName" class="bee-output" style="min-width: 150px;" />
       </row>
 
       <row>
         <Label text="=personFullName" for="CompanyPerson" />
-        <TextLabel source="CompanyPerson" renderColumns="FirstName Lastname" />
+        <TextLabel source="CompanyPerson" renderColumns="FirstName Lastname" class="bee-output"
+          style="min-width: 150px;" />
         <Label text="=personPosition" for="PositionName" />
-        <TextLabel source="PositionName" />
+        <TextLabel source="PositionName" class="bee-output" style="min-width: 150px;" />
+      </row>
+
+      <row data="UserRoles">
+        <Label text="=roles" />
+        <cell colSpan="3">
+          <Label name="UserRoles" class="bee-output" />
+        </cell>
       </row>
     </Table>
 
@@ -58,7 +66,7 @@
       <page>
         <text>=style</text>
         <SimplePanel>
-          <InputArea source="Style" class="occupy-1" />
+          <InputArea source="Style" class="occupy-1" style="font-family: monospace;" />
         </SimplePanel>
       </page>
     </TabbedPages>     

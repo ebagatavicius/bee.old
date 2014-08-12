@@ -89,7 +89,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
   public HandlerRegistration addEditChangeHandler(EditChangeHandler handler) {
     return addKeyDownHandler(handler);
   }
-  
+
   @Override
   public HandlerRegistration addEditStopHandler(EditStopEvent.Handler handler) {
     return addHandler(handler, EditStopEvent.getType());
@@ -104,12 +104,12 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
   public void addItem(String item) {
     addItem(item, item);
   }
-  
+
   public void addItem(String item, String value) {
     OptionElement option = Document.get().createOptionElement();
     option.setText(item);
     option.setValue(value);
-    
+
     getSelectElement().add(option, null);
     updateSize();
   }
@@ -150,7 +150,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
   public String getIdPrefix() {
     return "list";
   }
-  
+
   public int getIndex(String text) {
     int index = BeeConst.UNDEF;
     if (BeeUtils.isEmpty(text)) {
@@ -211,7 +211,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
       return BeeUtils.trimRight(v);
     }
   }
-  
+
   public OptionElement getOptionElement(int index) {
     if (isIndex(index)) {
       return getSelectElement().getOptions().getItem(index);
@@ -219,7 +219,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
       return null;
     }
   }
-  
+
   @Override
   public String getOptions() {
     return options;
@@ -228,7 +228,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
   public int getSelectedIndex() {
     return getSelectElement().getSelectedIndex();
   }
-  
+
   @Override
   public int getTabIndex() {
     return getElement().getTabIndex();
@@ -245,7 +245,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
       return getValue(index);
     }
   }
-  
+
   public String getValue(int index) {
     checkIndex(index);
     return getSelectElement().getOptions().getItem(index).getValue();
@@ -308,7 +308,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
   public boolean isValueNumeric() {
     return valueNumeric;
   }
-  
+
   @Override
   public void normalizeDisplay(String normalizedValue) {
   }
@@ -327,7 +327,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
         setChangePending(false);
         fireEvent(new EditStopEvent(State.CHANGED));
       }
-    
+
     } else if (EventUtils.isKeyDown(type)) {
       if (isNullable() && event.getKeyCode() == KeyCodes.KEY_DELETE) {
         clearValue();
@@ -344,8 +344,13 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
   }
 
   @Override
+  public void render(String value) {
+    setValue(value);
+  }
+
+  @Override
   public void setAccessKey(char key) {
-    ((JsElement) getElement().cast()).setAccessKey(String.valueOf(key)); 
+    ((JsElement) getElement().cast()).setAccessKey(String.valueOf(key));
   }
 
   public void setAllVisible() {
@@ -427,7 +432,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
   public void setOptions(String options) {
     this.options = options;
   }
-  
+
   public void setSelectedIndex(int index) {
     getSelectElement().setSelectedIndex(index);
     if (!isAttached()) {

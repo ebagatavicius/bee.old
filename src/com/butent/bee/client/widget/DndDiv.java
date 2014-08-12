@@ -22,7 +22,7 @@ import com.butent.bee.shared.State;
 public class DndDiv extends CustomDiv implements DndWidget {
 
   private State targetState;
-  
+
   public DndDiv() {
     super();
   }

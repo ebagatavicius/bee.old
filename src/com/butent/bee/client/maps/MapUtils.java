@@ -9,13 +9,44 @@ import com.google.gwt.geolocation.client.Position;
 import com.google.gwt.geolocation.client.PositionError;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class MapUtils {
+
+  private static final class MarkerData {
+    private final double lat;
+    private final double lng;
+
+    private final String title;
+
+    private MarkerData(double lat, double lng, String title) {
+      this.lat = lat;
+      this.lng = lng;
+      this.title = title;
+    }
+
+    private double getLat() {
+      return lat;
+    }
+
+    private double getLng() {
+      return lng;
+    }
+
+    private String getTitle() {
+      return title;
+    }
+  }
 
   private static final BeeLogger logger = LogUtils.getLogger(MapUtils.class);
 
@@ -24,7 +55,7 @@ public final class MapUtils {
   private static final int DEFAULT_POSITION_TIMEOUT = 10000;
 
   private static final int DEFAULT_POSITION_ZOOM = 14;
-  
+
   public static PositionOptions defaultPositionOptions() {
     return new PositionOptions()
         .setHighAccuracyEnabled(DEFAULT_POSITION_HIGH_ACCURACY)
@@ -83,6 +114,64 @@ public final class MapUtils {
     };
   }
 
+  public static void open(String key, final ViewCallback callback) {
+    Assert.notEmpty(key);
+    Assert.notNull(callback);
+
+    String[] arr = Codec.beeDeserializeCollection(key);
+    int length = ArrayUtils.length(arr);
+    Assert.minLength(length, 4);
+
+    int i = 0;
+
+    final String caption = arr[i++];
+
+    final double latitude = BeeUtils.toDouble(arr[i++]);
+    final double longitude = BeeUtils.toDouble(arr[i++]);
+
+    final int zoom = BeeUtils.toInt(arr[i++]);
+
+    final List<MarkerData> markerData = new ArrayList<>();
+
+    while (i + 2 < length) {
+      markerData.add(new MarkerData(BeeUtils.toDouble(arr[i]), BeeUtils.toDouble(arr[i + 1]),
+          arr[i + 2]));
+      i += 3;
+    }
+
+    ApiLoader.ensureApi(new Scheduler.ScheduledCommand() {
+      @Override
+      public void execute() {
+        LatLng latLng = LatLng.create(latitude, longitude);
+        MapOptions mapOptions = (zoom >= 0) ? MapOptions.create(latLng, zoom)
+            : MapOptions.create(latLng);
+
+        final MapWidget widget = MapWidget.create(mapOptions);
+
+        if (widget != null) {
+          if (!markerData.isEmpty()) {
+            widget.addAttachHandler(new AttachEvent.Handler() {
+              @Override
+              public void onAttachOrDetach(AttachEvent event) {
+                if (event.isAttached() && widget.getMapImpl() != null) {
+                  for (MarkerData md : markerData) {
+                    widget.addMarker(md.getLat(), md.getLng(), md.getTitle());
+                  }
+                }
+              }
+            });
+          }
+
+          MapContainer container = new MapContainer(caption, widget);
+          callback.onSuccess(container);
+
+        } else {
+          callback.onFailure("cannot create map");
+        }
+      }
+    });
+  }
+
   public static void showPosition(String caption, double latitude, double longitude, String title) {
     showPosition(caption, latitude, longitude, DEFAULT_POSITION_ZOOM, title);
   }
@@ -104,23 +193,20 @@ public final class MapUtils {
             @Override
             public void onAttachOrDetach(AttachEvent event) {
               if (event.isAttached() && widget.getMapImpl() != null) {
-                LatLng position = LatLng.create(latitude, longitude);
-                MarkerOptions markerOptions = MarkerOptions.create(position, widget.getMapImpl());
-                
-                if (!BeeUtils.isEmpty(title)) {
-                  markerOptions.setTitle(title);
-                }
-
-                Marker.create(markerOptions);
+                widget.addMarker(latitude, longitude, title);
               }
             }
           });
-          
+
           MapContainer container = new MapContainer(caption, widget);
-          BeeKeeper.getScreen().showWidget(container);
+          BeeKeeper.getScreen().show(container);
         }
       }
     });
+  }
+
+  public static String toString(double d) {
+    return BeeUtils.toString(d, 7);
   }
 
   private MapUtils() {

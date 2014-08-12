@@ -121,6 +121,14 @@ public class EcScreen extends ScreenImpl {
   }
 
   @Override
+  public void closeAll() {
+    IdentifiableWidget widget = getActiveWidget();
+    if (widget != null) {
+      getScreenPanel().remove(widget);
+    }
+  }
+
+  @Override
   public void closeWidget(IdentifiableWidget widget) {
     if (widget != null) {
       if (UiHelper.isModal(widget.asWidget())) {
@@ -157,7 +165,7 @@ public class EcScreen extends ScreenImpl {
 
     info.add(new ExtendedProperty("Center Width", BeeUtils.toString(getActivePanelWidth())));
     info.add(new ExtendedProperty("Center Height", BeeUtils.toString(getActivePanelHeight())));
-    
+
     return info;
   }
 
@@ -198,7 +206,7 @@ public class EcScreen extends ScreenImpl {
   public void showInNewPlace(IdentifiableWidget widget) {
     updateActivePanel(widget);
   }
-  
+
   @Override
   public void updateActivePanel(IdentifiableWidget widget) {
     getScreenPanel().updateCenter(widget);

@@ -31,7 +31,7 @@ import java.util.Map;
 public final class ClassUtils {
 
   private static BeeLogger logger = LogUtils.getLogger(ClassUtils.class);
-  
+
   @SuppressWarnings("unchecked")
   public static <T extends Annotation> T findAnnotation(Annotation[] arr, Class<T> search) {
     for (Annotation ann : arr) {
@@ -56,7 +56,7 @@ public final class ClassUtils {
     Assert.notNull(cls);
 
     List<ExtendedProperty> lst = new ArrayList<>();
-    
+
     PropertyUtils.addProperties(lst, false,
         "Location", getLocation(cls),
         "Package", transformPackage(cls.getPackage()),
@@ -235,7 +235,7 @@ public final class ClassUtils {
 
   public static Field[] getDeclaredFields(Class<?> cls) {
     Assert.notNull(cls);
-    
+
     Field[] fields;
     try {
       fields = cls.getDeclaredFields();
@@ -249,14 +249,14 @@ public final class ClassUtils {
 
   public static Method[] getDeclaredMethods(Class<?> cls) {
     Assert.notNull(cls);
-    
+
     Method[] methods;
     try {
       methods = cls.getDeclaredMethods();
     } catch (NoClassDefFoundError err) {
       logger.warning(err);
       methods = null;
-    } 
+    }
 
     return methods;
   }
@@ -274,18 +274,18 @@ public final class ClassUtils {
 
     return constructor;
   }
-  
+
   public static Method getEnclosingMethod(Class<?> cls) {
     Assert.notNull(cls);
-    
+
     Method method;
     try {
       method = cls.getEnclosingMethod();
     } catch (NoClassDefFoundError | Exception err) {
       logger.warning(err);
       method = null;
-    } 
-    
+    }
+
     return method;
   }
 
@@ -320,14 +320,15 @@ public final class ClassUtils {
 
   public static String getLocation(Class<?> cls) {
     Assert.notNull(cls);
-    
+
     ProtectionDomain protectionDomain = cls.getProtectionDomain();
     CodeSource codeSource = (protectionDomain == null) ? null : protectionDomain.getCodeSource();
     URL location = (codeSource == null) ? null : codeSource.getLocation();
-    
+
     return (location == null) ? null : location.toString();
-    
+
   }
+
   public static Method[] getMethods(Class<?> cls) {
     Assert.notNull(cls);
 
@@ -337,8 +338,8 @@ public final class ClassUtils {
     } catch (NoClassDefFoundError err) {
       logger.warning(err);
       methods = null;
-    } 
-    
+    }
+
     return methods;
   }
 

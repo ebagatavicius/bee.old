@@ -153,6 +153,7 @@ public final class DiscussionsConstants {
   public static final String FORM_ANNOUNCEMENTS_BOARD = "AnnouncementsBoard";
 
   public static final String GRID_DISCUSSIONS = "Discussions";
+  public static final String GRID_DISCUSSION_FILES = "DiscussionFiles";
 
   public static final String PROP_COMMENTS = "Comments";
   public static final String PROP_DESCRIPTION = "Description";

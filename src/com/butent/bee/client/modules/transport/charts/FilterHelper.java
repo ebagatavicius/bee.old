@@ -78,7 +78,7 @@ final class FilterHelper {
         }
       }
     }
-    
+
     FilterDataWidget dataWidget = null;
 
     for (ChartData data : allData) {

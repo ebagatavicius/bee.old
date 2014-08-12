@@ -14,10 +14,10 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.time.YearMonth;
 
 class MonthSelector extends Component {
-  
+
   private final class Navigation implements Scheduler.ScheduledCommand {
     private final int months;
-    
+
     private Navigation(int months) {
       super();
       this.months = months;
@@ -34,27 +34,27 @@ class MonthSelector extends Component {
   private final Image prevMonth;
   private final Image nextMonth;
   private final Image nextYear;
-  
+
   private final CustomDiv monthName;
-  
+
   private final Horizontal table;
-  
+
   MonthSelector(CssClasses cssClasses) {
-    String styleDisabled = cssClasses.monthNavigationDisabled(); 
+    String styleDisabled = cssClasses.monthNavigationDisabled();
 
     this.prevYear = new Image(Global.getImages().rewind(), new Navigation(-12), styleDisabled);
     this.prevMonth = new Image(Global.getImages().previous(), new Navigation(-1), styleDisabled);
     this.nextMonth = new Image(Global.getImages().next(), new Navigation(1), styleDisabled);
     this.nextYear = new Image(Global.getImages().forward(), new Navigation(12), styleDisabled);
-    
+
     this.monthName = new CustomDiv();
-    
+
     this.table = new Horizontal();
     table.add(prevYear);
     table.add(prevMonth);
 
     table.add(monthName);
-    
+
     table.add(nextMonth);
     table.add(nextYear);
 
@@ -71,15 +71,15 @@ class MonthSelector extends Component {
     table.addStyleName(cssClasses.monthSelector());
     initWidget(table);
   }
- 
+
   @Override
   protected void refresh() {
     YearMonth current = getModel().getCurrentMonth();
     monthName.setHtml(getModel().format(current));
-    
+
     refresh(prevYear, current.previousYear());
     refresh(prevMonth, current.previousMonth());
-    
+
     refresh(nextMonth, current.nextMonth());
     refresh(nextYear, current.nextYear());
   }
@@ -87,7 +87,7 @@ class MonthSelector extends Component {
   @Override
   protected void setUp() {
   }
-  
+
   private boolean isEnabled(YearMonth ym) {
     JustDate minDate = getDatePicker().getMinDate();
     if (minDate != null && TimeUtils.isMore(minDate, ym.getLast())) {
@@ -100,11 +100,11 @@ class MonthSelector extends Component {
     }
     return true;
   }
-  
+
   private void refresh(Image widget, YearMonth ym) {
     boolean enabled = isEnabled(ym);
     widget.setEnabled(enabled);
-    
+
     if (enabled) {
       widget.setTitle(getModel().format(ym));
     } else {

@@ -6,7 +6,7 @@ public enum ValidationOrigin {
   public boolean isCell() {
     return this == CELL;
   }
-  
+
   public boolean isForm() {
     return this == FORM;
   }

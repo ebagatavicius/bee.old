@@ -32,7 +32,19 @@
 
       <page data="Relations" for="RecurringTask">
         <text>=relatedTo</text>
-        <xi:include href="widgets/RTRelations.widget.xml" />
+        <Relations relColumn="RecurringTask" inline="true">
+          <Relation viewName="Companies" renderColumns="Name" newRowEnabled="false" editPopup="true" />
+          <Relation viewName="Persons" renderColumns="FirstName LastName" newRowEnabled="false" editPopup="true" />
+          <Relation viewName="Documents" renderColumns="Name" newRowEnabled="false" editPopup="true" />
+          <Relation viewName="Appointments" renderColumns="Summary" editPopup="true"
+            choiceColumns="Summary StartDateTime EndDateTime" />
+          <Relation viewName="Discussions" renderColumns="Subject" newRowEnabled="false" editPopup="true" />
+          <Relation viewName="ServiceObjects" renderColumns="Address" newRowEnabled="false" editPopup="true"
+            choiceColumns="Address CustomerName" />
+          <Relation viewName="Tasks" renderColumns="Summary ExecutorFirstName ExecutorLastName"
+            newRowEnabled="false" editPopup="true"
+            choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime" />
+        </Relations>
       </page>
       
       <page>

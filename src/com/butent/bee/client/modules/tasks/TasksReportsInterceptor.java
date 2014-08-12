@@ -7,14 +7,21 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
+import com.butent.bee.client.ui.FormDescription;
+import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.HeaderView;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.ViewSupplier;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -31,28 +38,30 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 public class TasksReportsInterceptor extends AbstractFormInterceptor {
 
-  public static enum ReportType {
-    TYPE_HOURS, COMPANY_TIMES, USERS_HOURS
+  public enum ReportType implements HasWidgetSupplier {
+    TYPE_HOURS, COMPANY_TIMES, USERS_HOURS;
+
+    @Override
+    public String getSupplierKey() {
+      return "tasks_report_" + name().toLowerCase();
+    }
+
+    void register() {
+      ViewFactory.registerSupplier(getSupplierKey(), new ViewSupplier() {
+        @Override
+        public void create(final ViewCallback callback) {
+          FormFactory.getFormDescription(TaskConstants.FORM_TASKS_REPORT,
+              new Callback<FormDescription>() {
+                @Override
+                public void onSuccess(FormDescription result) {
+                  FormFactory.openForm(result, new TasksReportsInterceptor(ReportType.this),
+                      ViewFactory.getPresenterCallback(callback));
+                }
+              });
+        }
+      });
+    }
   }
-
-  public static final ReportType DEFAULT_REPORT_TYPE = ReportType.TYPE_HOURS;
-  private static final String WIDGET_DATE_FROM_NAME = "dateFrom";
-  private static final String WIDGET_DATE_TILL_NAME = "dateTill";
-  private static final String WIDGET_FILTER_NAME = "Filter";
-  private static final String WIDGET_CLEAR_FILTER_NAME = "ClearFilter";
-  private static final String WIDGET_REPORT_TABLE_NAME = "reportTable";
-  private static final String WIDGET_USER_NAME = "User";
-  private static final String WIDGET_COMPANY_NAME = "Company";
-  private static final String WIDGET_DURATION_TYPE_NAME = "DurationType";
-
-  private static final int FIRST_DAY_OF_MONTH = 1;
-  private static final int MIDNIGHT_HOUR = 0;
-  private static final int START_MINUTE_OF_HOUR = 0;
-  private static final int LAST_HOUR_OF_DAY = 23;
-  private static final int LAST_MINUTE_OF_HOUR = 59;
-  private static final int MIN_ROW_SET = 3;
-
-  private ReportType reportType;
 
   private static class ClearReportsFilter implements ClickHandler {
 
@@ -91,7 +100,6 @@ public class TasksReportsInterceptor extends AbstractFormInterceptor {
       }
     }
   }
-
   private static final class ReportsFilter implements ClickHandler {
 
     private ReportType reportType;
@@ -226,13 +234,27 @@ public class TasksReportsInterceptor extends AbstractFormInterceptor {
     }
   }
 
-  public TasksReportsInterceptor() {
-    super();
-    this.reportType = DEFAULT_REPORT_TYPE;
-  }
+  private static final String WIDGET_DATE_FROM_NAME = "dateFrom";
+  private static final String WIDGET_DATE_TILL_NAME = "dateTill";
+  private static final String WIDGET_FILTER_NAME = "Filter";
+  private static final String WIDGET_CLEAR_FILTER_NAME = "ClearFilter";
+  private static final String WIDGET_REPORT_TABLE_NAME = "reportTable";
+  private static final String WIDGET_USER_NAME = "User";
 
-  public TasksReportsInterceptor(ReportType rt) {
-    this();
+  private static final String WIDGET_COMPANY_NAME = "Company";
+  private static final String WIDGET_DURATION_TYPE_NAME = "DurationType";
+  private static final int FIRST_DAY_OF_MONTH = 1;
+  private static final int MIDNIGHT_HOUR = 0;
+  private static final int START_MINUTE_OF_HOUR = 0;
+  private static final int LAST_HOUR_OF_DAY = 23;
+
+  private static final int LAST_MINUTE_OF_HOUR = 59;
+
+  private static final int MIN_ROW_SET = 3;
+
+  private final ReportType reportType;
+
+  TasksReportsInterceptor(ReportType rt) {
     this.reportType = rt;
   }
 
@@ -263,7 +285,12 @@ public class TasksReportsInterceptor extends AbstractFormInterceptor {
 
   @Override
   public FormInterceptor getInstance() {
-    return new TasksReportsInterceptor();
+    return new TasksReportsInterceptor(reportType);
+  }
+
+  @Override
+  public String getSupplierKey() {
+    return reportType.getSupplierKey();
   }
 
   @Override

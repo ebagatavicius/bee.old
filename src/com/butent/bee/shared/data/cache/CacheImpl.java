@@ -6,9 +6,9 @@ enum CacheImpl {
   public <K, V> AbstractCache<K, V> create(int maxSize, ReplacementPolicy replacementPolicy) {
     switch (this) {
       case LIST:
-        return new ListImpl<K, V>(maxSize, replacementPolicy);
+        return new ListImpl<>(maxSize, replacementPolicy);
       case MAP:
-        return new MapImpl<K, V>(maxSize, replacementPolicy);
+        return new MapImpl<>(maxSize, replacementPolicy);
     }
     return null;
   }

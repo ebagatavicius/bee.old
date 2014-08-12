@@ -8,7 +8,7 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 
 public class BeeVideo extends Video implements IdentifiableWidget {
-  
+
   public BeeVideo() {
     this(Document.get().createVideoElement());
   }

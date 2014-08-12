@@ -15,7 +15,7 @@ public class ItemAdapter {
   private final int dayMinutesEnd;
 
   private final List<TimeBlock> intersectingBlocks = Lists.newArrayList();
-  
+
   private int cellStart;
   private int cellSpan;
   private int columnStart = -1;
@@ -30,7 +30,7 @@ public class ItemAdapter {
 
   public ItemAdapter(CalendarItem item) {
     this.item = item;
-    
+
     DateTime start = item.getStartTime();
     DateTime end = item.getEndTime();
 

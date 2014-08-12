@@ -9,7 +9,7 @@ import com.butent.bee.shared.utils.NameUtils;
 public class EvalRenderer extends AbstractCellRenderer {
 
   private final Evaluator evaluator;
-  
+
   public EvalRenderer(CellSource cellSource, Evaluator evaluator) {
     super(cellSource);
 
@@ -22,7 +22,7 @@ public class EvalRenderer extends AbstractCellRenderer {
     if (row == null) {
       return null;
     }
-    
+
     if (getCellSource() != null) {
       evaluator.update(row, getValueType(), getString(row));
     } else {

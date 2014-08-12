@@ -76,7 +76,9 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
 
   private final Evaluator editable;
   private final Evaluator validation;
-  private final Evaluator carry;
+
+  private final Evaluator carryEval;
+  private final boolean carryOn;
 
   private final String minValue;
   private final String maxValue;
@@ -114,7 +116,9 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
     String source = this.dataColumn.getId();
     this.editable = Evaluator.create(columnDescr.getEditable(), source, dataColumns);
     this.validation = Evaluator.create(columnDescr.getValidation(), source, dataColumns);
-    this.carry = Evaluator.create(columnDescr.getCarry(), source, dataColumns);
+
+    this.carryEval = Evaluator.create(columnDescr.getCarryCalc(), source, dataColumns);
+    this.carryOn = BeeUtils.isTrue(columnDescr.getCarryOn());
 
     String value = columnDescr.getMinValue();
     if (BeeUtils.isEmpty(value) && columnDescr.getRelation() == null) {
@@ -187,11 +191,11 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
     if (result instanceof HasBounds) {
       UiHelper.setBounds((HasBounds) result, getMinValue(), getMaxValue());
     }
-    
+
     if (consumer != null) {
       consumer.afterCreateEditor(getColumnId(), result, embedded);
     }
-    
+
     return result;
   }
 
@@ -217,49 +221,57 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
   }
 
   public String getCarryValue(IsRow row) {
-    if (row == null || getCarry() == null) {
+    if (row == null) {
+      return null;
+
+    } else if (carryEval != null) {
+      carryEval.update(row, BeeConst.UNDEF, getColIndex(), getDataType(),
+          row.getString(getColIndex()));
+
+      String value = carryEval.evaluate();
+      if (BeeUtils.isEmpty(value)) {
+        return null;
+      }
+
+      switch (getDataType()) {
+        case BOOLEAN:
+          return BooleanValue.pack(BeeUtils.toBooleanOrNull(value));
+
+        case DATE:
+          if (BeeUtils.isLong(value)) {
+            return BeeUtils.toString(new JustDate(TimeUtils.toDateTimeOrNull(value)).getDays());
+          } else {
+            return null;
+          }
+
+        case DATE_TIME:
+          return BeeUtils.isLong(value) ? value.trim() : null;
+
+        case DECIMAL:
+          return BeeUtils.isDecimal(value) ? value.trim() : null;
+
+        case INTEGER:
+          return BeeUtils.isInt(value) ? value.trim() : null;
+
+        case LONG:
+          return BeeUtils.isLong(value) ? value.trim() : null;
+
+        case NUMBER:
+          return BeeUtils.isDouble(value) ? value.trim() : null;
+
+        case TEXT:
+        case BLOB:
+        case TIME_OF_DAY:
+          return BeeUtils.trimRight(value);
+      }
+      return null;
+
+    } else if (carryOn) {
+      return row.getString(getColIndex());
+
+    } else {
       return null;
     }
-
-    getCarry().update(row, BeeConst.UNDEF, getColIndex(), getDataType(),
-        row.getString(getColIndex()));
-    String value = getCarry().evaluate();
-    if (BeeUtils.isEmpty(value)) {
-      return null;
-    }
-
-    switch (getDataType()) {
-      case BOOLEAN:
-        return BooleanValue.pack(BeeUtils.toBooleanOrNull(value));
-
-      case DATE:
-        if (BeeUtils.isLong(value)) {
-          return BeeUtils.toString(new JustDate(TimeUtils.toDateTimeOrNull(value)).getDays());
-        } else {
-          return null;
-        }
-
-      case DATE_TIME:
-        return BeeUtils.isLong(value) ? value.trim() : null;
-
-      case DECIMAL:
-        return BeeUtils.isDecimal(value) ? value.trim() : null;
-
-      case INTEGER:
-        return BeeUtils.isInt(value) ? value.trim() : null;
-
-      case LONG:
-        return BeeUtils.isLong(value) ? value.trim() : null;
-
-      case NUMBER:
-        return BeeUtils.isDouble(value) ? value.trim() : null;
-
-      case TEXT:
-      case BLOB:
-      case TIME_OF_DAY:
-        return BeeUtils.trimRight(value);
-    }
-    return null;
   }
 
   public int getColIndex() {
@@ -336,7 +348,7 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
   }
 
   public boolean hasCarry() {
-    return getCarry() != null;
+    return carryEval != null || carryOn;
   }
 
   public boolean hasDefaults() {
@@ -434,7 +446,7 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
     endEdit(null, false);
   }
 
-  public void openEditor(HasWidgets editorContainer, EditorConsumer editorConsumer, 
+  public void openEditor(HasWidgets editorContainer, EditorConsumer editorConsumer,
       Element sourceElement, Element adjustElement, int zIndex, IsRow row, char charCode,
       EditEndEvent.Handler handler) {
     Assert.notNull(handler);
@@ -644,10 +656,6 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
     bindEditor();
 
     editorContainer.add(getEditor().asWidget());
-  }
-
-  private Evaluator getCarry() {
-    return carry;
   }
 
   private EditEndEvent.Handler getCloseHandler() {

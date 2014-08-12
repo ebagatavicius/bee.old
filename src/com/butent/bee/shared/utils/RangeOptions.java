@@ -84,7 +84,7 @@ public class RangeOptions {
   public RangeOptions(boolean lowerOpen, boolean upperOpen, boolean required) {
     this(lowerOpen, upperOpen, required, required);
   }
-  
+
   public RangeOptions(boolean lowerOpen, boolean upperOpen, boolean lowerRequired,
       boolean upperRequired) {
     super();

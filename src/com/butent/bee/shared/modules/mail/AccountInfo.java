@@ -2,6 +2,7 @@ package com.butent.bee.shared.modules.mail;
 
 import static com.butent.bee.shared.modules.mail.MailConstants.*;
 
+import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.mail.MailConstants.SystemFolder;
@@ -34,7 +35,10 @@ public class AccountInfo {
   }
 
   public MailFolder findFolder(Long folderId) {
-    return getRootFolder().findFolder(folderId);
+    if (DataUtils.isId(folderId)) {
+      return getRootFolder().findFolder(folderId);
+    }
+    return null;
   }
 
   public long getAccountId() {

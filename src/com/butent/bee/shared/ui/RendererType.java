@@ -18,7 +18,8 @@ public enum RendererType {
   MAIL("mail", false),
   URL("url", true),
   IMAGE("image", true),
-  TOTAL("total", false);
+  TOTAL("total", false),
+  VAT("vat", false);
 
   public static RendererType getByTypeCode(String code) {
     if (code == null || code.isEmpty()) {
@@ -34,7 +35,7 @@ public enum RendererType {
 
   private final String typeCode;
   private final boolean requiresSource;
-  
+
   private RendererType(String typeCode, boolean requiresSource) {
     this.typeCode = typeCode;
     this.requiresSource = requiresSource;

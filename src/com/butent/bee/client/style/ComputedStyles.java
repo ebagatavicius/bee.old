@@ -35,7 +35,7 @@ public class ComputedStyles implements HasLength, HasInfo {
     Assert.notNull(obj);
     return get(obj.getElement(), p);
   }
-  
+
   public static Map<String, String> getNormalized(Element el) {
     Assert.notNull(el);
     Map<String, String> result = Maps.newHashMap();
@@ -63,22 +63,23 @@ public class ComputedStyles implements HasLength, HasInfo {
 
     } else if (BeeUtils.isInt(value)) {
       return BeeUtils.toInt(value);
-    
+
     } else if (BeeUtils.isDouble(value)) {
       return BeeUtils.toInt(BeeUtils.toDouble(value));
-    
+
     } else {
       return DEFAULT_PIXEL_VALUE;
     }
   }
-  
+
   public static String normalize(String s) {
     if (s == null) {
       return null;
     }
     return BeeUtils.remove(s, NAME_SEPARATOR).trim().toLowerCase();
   }
-  
+
+//@formatter:off
   private static native String getComputedStyle(Element el, String p, String c) /*-{
     if ("getComputedStyle" in $wnd) {
       return $wnd.getComputedStyle(el, null).getPropertyValue(p);
@@ -87,7 +88,7 @@ public class ComputedStyles implements HasLength, HasInfo {
     } else {
       return null;
     }
-  }-*/; 
+  }-*/;
 
   private static native JsArrayString getComputedStyles(Element el) /*-{
     var arr = [];
@@ -95,7 +96,7 @@ public class ComputedStyles implements HasLength, HasInfo {
     if ("getComputedStyle" in $wnd) {
       var cs = $wnd.getComputedStyle(el, null);
       if (cs.length) {
-        for ( var i = 0; i < cs.length; i++) {
+        for (var i = 0; i < cs.length; i++) {
           arr.push(cs.item(i), cs.getPropertyValue(cs.item(i)));
         }
       } else {
@@ -115,9 +116,10 @@ public class ComputedStyles implements HasLength, HasInfo {
 
     return arr;
   }-*/;
+//@formatter:on
 
   private final JsArrayString styles;
-  
+
   public ComputedStyles(Element el) {
     Assert.notNull(el);
     styles = getComputedStyles(el);

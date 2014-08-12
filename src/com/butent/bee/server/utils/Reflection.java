@@ -35,14 +35,14 @@ public final class Reflection {
     if (!method.isAccessible()) {
       method.setAccessible(true);
     }
-    
+
     return doMethod(obj, method, req);
   }
 
   private static ResponseObject doMethod(Object obj, Method method, RequestInfo req) {
     Class<?>[] parameterTypes = method.getParameterTypes();
     boolean hasReq = ArrayUtils.contains(parameterTypes, RequestInfo.class);
-    
+
     ResponseObject response;
 
     try {
@@ -52,7 +52,7 @@ public final class Reflection {
       } else {
         result = method.invoke(obj);
       }
-      
+
       if (result instanceof ResponseObject) {
         response = (ResponseObject) result;
       } else {
@@ -67,12 +67,12 @@ public final class Reflection {
     } catch (IllegalAccessException ex) {
       logger.error(ex, method);
       response = ResponseObject.error(method, ex);
-    
+
     } catch (InvocationTargetException ex) {
       logger.error(ex, method);
       response = ResponseObject.error(method, ex);
     }
-    
+
     return response;
   }
 

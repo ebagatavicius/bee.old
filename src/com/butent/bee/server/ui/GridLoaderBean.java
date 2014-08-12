@@ -156,6 +156,8 @@ public class GridLoaderBean {
   private static final String ATTR_EXPORTABLE = "exportable";
   private static final String ATTR_EXPORT_WIDTH_FACTOR = "exportWidthFactor";
 
+  private static final String ATTR_CARRY = "carry";
+
   private static GridComponentDescription getComponent(Element parent, String tagName) {
     Assert.notNull(parent);
     Assert.notEmpty(tagName);
@@ -424,6 +426,9 @@ public class GridLoaderBean {
         } else if (BeeUtils.same(key, ATTR_EXPORT_WIDTH_FACTOR)) {
           dst.setExportWidthFactor(BeeUtils.toDoubleOrNull(value));
 
+        } else if (BeeUtils.same(key, ATTR_CARRY)) {
+          dst.setCarryOn(BeeUtils.toBooleanOrNull(value));
+
         } else if (Flexibility.isAttributeRelevant(key)) {
           hasFlexibility = true;
         }
@@ -473,9 +478,9 @@ public class GridLoaderBean {
     if (editable != null) {
       dst.setEditable(editable);
     }
-    Calculation carry = XmlUtils.getCalculation(src, TAG_CARRY);
-    if (carry != null) {
-      dst.setCarry(carry);
+    Calculation carryCalc = XmlUtils.getCalculation(src, TAG_CARRY);
+    if (carryCalc != null) {
+      dst.setCarryCalc(carryCalc);
     }
 
     EditorDescription editor = getEditor(src);
@@ -680,7 +685,7 @@ public class GridLoaderBean {
     }
 
     if (element.hasAttribute(UiConstants.ATTR_MODULE)
-        && !usr.isModuleVisible(element.getAttribute(UiConstants.ATTR_MODULE))) {
+        && !usr.isAnyModuleVisible(element.getAttribute(UiConstants.ATTR_MODULE))) {
       return false;
     }
 

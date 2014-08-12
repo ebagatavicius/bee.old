@@ -72,7 +72,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://soap.wsbridge.ws.loctracker.msc/", name = "getSummarizedReport")
     public JAXBElement<GetSummarizedReport> createGetSummarizedReport(GetSummarizedReport value) {
-        return new JAXBElement<GetSummarizedReport>(_GetSummarizedReport_QNAME, GetSummarizedReport.class, null, value);
+        return new JAXBElement<>(_GetSummarizedReport_QNAME, GetSummarizedReport.class, null, value);
     }
 
     /**
@@ -81,7 +81,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://soap.wsbridge.ws.loctracker.msc/", name = "getSummarizedReportResponse")
     public JAXBElement<GetSummarizedReportResponse> createGetSummarizedReportResponse(GetSummarizedReportResponse value) {
-        return new JAXBElement<GetSummarizedReportResponse>(_GetSummarizedReportResponse_QNAME, GetSummarizedReportResponse.class, null, value);
+        return new JAXBElement<>(_GetSummarizedReportResponse_QNAME, GetSummarizedReportResponse.class, null, value);
     }
 
 }

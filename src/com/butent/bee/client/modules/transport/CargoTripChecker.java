@@ -75,7 +75,7 @@ public class CargoTripChecker extends AbstractGridInterceptor {
     });
     return DeleteMode.CANCEL;
   }
-  
+
   @Override
   public GridInterceptor getInstance() {
     return new CargoTripChecker();

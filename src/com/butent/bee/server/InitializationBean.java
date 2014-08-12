@@ -45,6 +45,8 @@ public class InitializationBean {
     usr.initRights();
     usr.initUsers();
     usr.initIpFilters();
+
+    Config.setInitialized(true);
   }
 
   @PreDestroy

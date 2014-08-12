@@ -31,7 +31,6 @@ import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.FileUtils;
-import com.butent.bee.client.utils.NewFileInfo;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.form.FormView;
@@ -52,6 +51,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -167,8 +167,10 @@ public final class DocumentsHandler {
 
   private static final class FileGridHandler extends AbstractGridInterceptor {
 
-    private static List<NewFileInfo> sanitize(GridView gridView, Collection<NewFileInfo> input) {
-      List<NewFileInfo> result = Lists.newArrayList();
+    private static Collection<FileInfo> sanitize(GridView gridView,
+        Collection<? extends FileInfo> input) {
+
+      Collection<FileInfo> result = Lists.newArrayList();
       if (BeeUtils.isEmpty(input)) {
         return result;
       }
@@ -179,25 +181,26 @@ public final class DocumentsHandler {
         return result;
       }
 
+      int fileIndex = gridView.getDataIndex(AdministrationConstants.COL_FILE);
       int nameIndex = gridView.getDataIndex(AdministrationConstants.ALS_FILE_NAME);
       int sizeIndex = gridView.getDataIndex(AdministrationConstants.ALS_FILE_SIZE);
-      int dateIndex = gridView.getDataIndex(COL_FILE_DATE);
+      int typeIndex = gridView.getDataIndex(AdministrationConstants.ALS_FILE_TYPE);
 
-      Set<NewFileInfo> oldFiles = Sets.newHashSet();
+      Set<FileInfo> oldFiles = Sets.newHashSet();
       for (IsRow row : data) {
-        oldFiles.add(new NewFileInfo(row.getString(nameIndex),
-            BeeUtils.unbox(row.getLong(sizeIndex)), row.getDateTime(dateIndex)));
+        oldFiles.add(new FileInfo(row.getLong(fileIndex), row.getString(nameIndex),
+            row.getLong(sizeIndex), row.getString(typeIndex)));
       }
 
       List<String> messages = Lists.newArrayList();
 
-      for (NewFileInfo nfi : input) {
-        if (oldFiles.contains(nfi)) {
-          messages.add(BeeUtils.join(BeeConst.DEFAULT_LIST_SEPARATOR, nfi.getName(),
-              FileUtils.sizeToText(nfi.getSize()),
-              TimeUtils.renderCompact(nfi.getLastModified())));
+      for (FileInfo fi : input) {
+        if (oldFiles.contains(fi)) {
+          messages.add(BeeUtils.join(BeeConst.DEFAULT_LIST_SEPARATOR, fi.getName(),
+              FileUtils.sizeToText(fi.getSize()),
+              TimeUtils.renderCompact(fi.getFileDate())));
         } else {
-          result.add(nfi);
+          result.add(fi);
         }
       }
 
@@ -252,10 +255,10 @@ public final class DocumentsHandler {
     @Override
     public void onLoad(final GridView gridView) {
       if (collector == null) {
-        collector = FileCollector.headless(new Consumer<Collection<NewFileInfo>>() {
+        collector = FileCollector.headless(new Consumer<Collection<? extends FileInfo>>() {
           @Override
-          public void accept(Collection<NewFileInfo> input) {
-            final Collection<NewFileInfo> files = sanitize(gridView, input);
+          public void accept(Collection<? extends FileInfo> input) {
+            final Collection<FileInfo> files = sanitize(gridView, input);
 
             if (!files.isEmpty()) {
               gridView.ensureRelId(new IdCallback() {
@@ -394,7 +397,7 @@ public final class DocumentsHandler {
     return args;
   }
 
-  private static void sendFiles(final Long docId, Collection<NewFileInfo> files,
+  private static void sendFiles(final Long docId, Collection<FileInfo> files,
       final ScheduledCommand onComplete) {
 
     final String viewName = VIEW_DOCUMENT_FILES;
@@ -402,7 +405,7 @@ public final class DocumentsHandler {
 
     final Holder<Integer> latch = Holder.of(files.size());
 
-    for (final NewFileInfo fileInfo : files) {
+    for (final FileInfo fileInfo : files) {
       FileUtils.uploadFile(fileInfo, new Callback<Long>() {
         @Override
         public void onSuccess(Long result) {
@@ -411,8 +414,7 @@ public final class DocumentsHandler {
           Data.setValue(viewName, row, COL_DOCUMENT, docId);
           Data.setValue(viewName, row, AdministrationConstants.COL_FILE, result);
 
-          Data.setValue(viewName, row, COL_FILE_DATE,
-              BeeUtils.nvl(fileInfo.getFileDate(), fileInfo.getLastModified()));
+          Data.setValue(viewName, row, COL_FILE_DATE, fileInfo.getFileDate());
           Data.setValue(viewName, row, COL_FILE_VERSION, fileInfo.getFileVersion());
 
           Data.setValue(viewName, row, COL_FILE_CAPTION,

@@ -23,7 +23,7 @@ public class SqlUpdate extends SqlQuery<SqlUpdate> implements HasTarget {
 
   /**
    * Creates an SqlUpdate statement with a specified target {@code target}.
-   * 
+   *
    * @param target the String target
    */
   public SqlUpdate(String target) {
@@ -33,7 +33,7 @@ public class SqlUpdate extends SqlQuery<SqlUpdate> implements HasTarget {
 
   /**
    * Adds a constant value expression in a field for an SqlUpdate statement.
-   * 
+   *
    * @param field the field's name
    * @param value the field's value
    * @return object's SqlInsert instance.
@@ -44,7 +44,7 @@ public class SqlUpdate extends SqlQuery<SqlUpdate> implements HasTarget {
 
   /**
    * Adds an expression for an SqlUpdate statement.
-   * 
+   *
    * @param field the field to add
    * @param value the expression to add
    * @return object's SqlInsert instance.
@@ -52,6 +52,7 @@ public class SqlUpdate extends SqlQuery<SqlUpdate> implements HasTarget {
   public SqlUpdate addExpression(String field, IsSql value) {
     Assert.notEmpty(field);
     Assert.notNull(value);
+    Assert.state(!hasField(field), "Field " + field + " already exists");
 
     updates.put(field, value);
     return getReference();
@@ -97,6 +98,11 @@ public class SqlUpdate extends SqlQuery<SqlUpdate> implements HasTarget {
     return updates;
   }
 
+  public IsSql getValue(String field) {
+    Assert.state(hasField(field));
+    return updates.get(field);
+  }
+
   /**
    * @return a Where clause.
    */
@@ -104,10 +110,15 @@ public class SqlUpdate extends SqlQuery<SqlUpdate> implements HasTarget {
     return whereClause;
   }
 
+  public boolean hasField(String field) {
+    Assert.notEmpty(field);
+    return updates.containsKey(field);
+  }
+
   /**
    * Checks if the current instance of SqlUpdate is empty. Checks if the target and {@code updates}
    * list are empty.
-   * 
+   *
    * @returns true if it is empty, otherwise false.
    */
   @Override
@@ -117,7 +128,7 @@ public class SqlUpdate extends SqlQuery<SqlUpdate> implements HasTarget {
 
   /**
    * Clears the update {@code updates} list and the Where clause.
-   * 
+   *
    * @return object's SqlUpdate instance
    */
   @Override
@@ -149,13 +160,22 @@ public class SqlUpdate extends SqlQuery<SqlUpdate> implements HasTarget {
 
   /**
    * Sets the Where clause to the specified clause {@code clause}.
-   * 
+   *
    * @param clause a clause to set Where to.
-   * 
+   *
    * @return object's SqlUpdate instance
    */
   public SqlUpdate setWhere(IsCondition clause) {
     whereClause = clause;
+    return getReference();
+  }
+
+  public SqlUpdate updExpression(String field, IsSql value) {
+    Assert.notEmpty(field);
+    Assert.notNull(value);
+    Assert.state(hasField(field), "Field " + field + " does not exist");
+
+    updates.put(field, value);
     return getReference();
   }
 }

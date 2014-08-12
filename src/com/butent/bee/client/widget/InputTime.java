@@ -52,7 +52,7 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
 
   public InputTime() {
     super();
-    
+
     setMaxLength(getDefaultMaxLength());
     sinkEvents(Event.ONCLICK | Event.ONKEYPRESS | Event.ONFOCUS | Event.ONBLUR);
   }
@@ -226,11 +226,11 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
       messages.add(BeeUtils.joinWords(Localized.getConstants().invalidTime(), v));
       return messages;
     }
-    
+
     messages.addAll(validateBounds(getMillis()));
     return messages;
   }
-  
+
   @Override
   public List<String> validate(String normalizedValue, boolean checkForNull) {
     List<String> messages = Lists.newArrayList();
@@ -256,11 +256,11 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
         .or(CharMatcher.is(TimeUtils.TIME_FIELD_SEPARATOR))
         .or(CharMatcher.is(TimeUtils.MILLIS_SEPARATOR));
   }
-  
+
   protected int getDefaultMaxLength() {
     return 8;
   }
-  
+
   protected long getDefaultMaxMillis() {
     return TimeUtils.MILLIS_PER_HOUR * 999;
   }
@@ -319,7 +319,7 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
     }
     return true;
   }
-  
+
   protected void pickTime() {
     Integer minutes = getMinutes();
 
@@ -390,7 +390,7 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
             setPickerState(State.CLOSED);
             DomEvent.fireNativeEvent(Document.get().createBlurEvent(), InputTime.this);
           }
-        
+
         } else if (event.keyboardEvent()) {
           setPickerState(State.CLOSING);
           setFocus(true);
@@ -399,14 +399,14 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
         } else {
           setPickerState(State.CLOSED);
         }
-        
+
         InputTime.this.removeStyleName(STYLE_ACTIVE);
       }
     });
 
     setPickerState(State.OPEN);
     addStyleName(STYLE_ACTIVE);
-    
+
     popup.setWidget(widget);
     popup.showRelativeTo(getElement());
 
@@ -492,13 +492,13 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
   private boolean isPickerOpen() {
     return State.OPEN.equals(getPickerState());
   }
-  
+
   private void onPick(Popup popup, ListBox widget) {
     if (widget.getSelectedIndex() >= 0) {
       String text = widget.getItemText(widget.getSelectedIndex());
       popup.close();
       setValue(text);
-      
+
       fireEvent(new EditStopEvent(State.CHANGED));
     }
   }
@@ -506,7 +506,7 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
   private static String renderMinutes(int minutes) {
     return TimeUtils.renderMinutes(minutes, true);
   }
-  
+
   private void setPickerState(State pickerState) {
     this.pickerState = pickerState;
   }
@@ -514,7 +514,7 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
   private static Integer toMinutes(Long millis) {
     return (millis == null) ? null : (int) (millis / TimeUtils.MILLIS_PER_MINUTE);
   }
-  
+
   private List<String> validateBounds(Long millis) {
     List<String> result = Lists.newArrayList();
 

@@ -6,9 +6,7 @@
   >
   <g:columns>
     <DataColumn name="Date" source="Date" visible="true" />
-    <DataColumn name="Quantity" source="Quantity" visible="true">
-      <carry><ui:expression>row.Quantity</ui:expression></carry>
-    </DataColumn>
+    <DataColumn name="Quantity" source="Quantity" visible="true" carry="true" />
     <DataColumn name="Rate" source="Rate" visible="true" />
   </g:columns>
 </g:Grid>

@@ -55,7 +55,7 @@ class TodoListInterceptor extends AbstractGridInterceptor {
       getGridPresenter().refresh(false);
     }
   }
-  
+
   private boolean isRelevant(BeeRow row) {
     return BeeKeeper.getUser().is(row.getLong(getDataIndex(TaskConstants.COL_EXECUTOR)));
   }

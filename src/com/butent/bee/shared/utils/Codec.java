@@ -147,7 +147,6 @@ public final class Codec {
   /**
    * Encodes a Byte array with an Adler32 checksum algorithm (<b>{@code arr} must be a double byte
    * array </b>).
-   * 
    * @param arr the value to encode
    * @return an encoded String
    */
@@ -167,7 +166,6 @@ public final class Codec {
 
   /**
    * Encodes {@code input} with an Adler32 checksum algorithm.
-   * 
    * @param input the String to encode
    * @return an encoded String
    */
@@ -177,7 +175,6 @@ public final class Codec {
 
   /**
    * Deserializes the string {@code s}.
-   * 
    * @param data a value to deserialize
    * @return a deserialized String.
    */
@@ -212,7 +209,6 @@ public final class Codec {
 
   /**
    * Deserializes the collection string {@code ser}.
-   * 
    * @param data a value to deserialize
    * @return a deserialized String array.
    */
@@ -260,7 +256,6 @@ public final class Codec {
    * <br>
    * beeSerialize(new String[]{"hello", "ab", "abc"}) = "c2181315hello12ab13abc"
    * </code>
-   * 
    * @param obj an Object to serialize
    * @return a String representation of the serialized Object for deserialization.
    */
@@ -324,7 +319,6 @@ public final class Codec {
   /**
    * Encodes a Byte array with an Crc16 algorithm using a CRC-16 table (<b>{@code arr} must be a
    * double byte array </b>).
-   * 
    * @param arr the array to encode
    * @return an encoded String
    */
@@ -340,7 +334,6 @@ public final class Codec {
 
   /**
    * Encodes {@code input} with a Crc16 algorithm using a CRC-16 table.
-   * 
    * @param input the String to encode
    * @return an encoded String
    */
@@ -351,7 +344,6 @@ public final class Codec {
   /**
    * Encodes a Byte array with an Crc32 algorithm using CRC-32 table (<b>{@code arr} must be a
    * double byte array </b>).
-   * 
    * @param arr the array to encode
    * @return an encoded String
    */
@@ -368,7 +360,6 @@ public final class Codec {
 
   /**
    * Encodes {@code input} with a Crc32 algorithm using CRC-32 table.
-   * 
    * @param input the String to encode
    * @return an encoded String
    */
@@ -378,7 +369,6 @@ public final class Codec {
 
   /**
    * Encodes a Byte array with an Crc32 algorithm (<b>{@code arr} must be a double byte array </b>).
-   * 
    * @param arr the array to encode
    * @return an encoded String
    */
@@ -405,7 +395,6 @@ public final class Codec {
 
   /**
    * Encodes {@code input} using Crc32 algorithm.
-   * 
    * @param input the String to encode
    * @return an encoded String
    */
@@ -415,7 +404,6 @@ public final class Codec {
 
   /**
    * Decodes {@code s} using Base64 algorithm.
-   * 
    * @param s a String to decode
    * @return a decoded String.
    */
@@ -443,7 +431,6 @@ public final class Codec {
 
   /**
    * Deserializes the length of the String {@code src} starting at {@code start}.
-   * 
    * @param src the String's length to deserialize
    * @param start the starting position
    * @return a deserialized pair
@@ -483,7 +470,6 @@ public final class Codec {
 
   /**
    * Encodes {@code s} using Base64 algorithm.
-   * 
    * @param s a String to encode
    * @return encoded String.
    */
@@ -501,7 +487,6 @@ public final class Codec {
 
   /**
    * Escapes HTML symbols.
-   * 
    * @param src value to escape HTML symbols
    * @return a safe String.
    */
@@ -515,7 +500,6 @@ public final class Codec {
 
   /**
    * Escapes Unicode characters.
-   * 
    * @param src a value to check
    * @return a String without unicode characters
    */
@@ -559,7 +543,6 @@ public final class Codec {
 
   /**
    * Decodes {@code data} using Base64 algorithm.
-   * 
    * @param data the encoded value
    * @return encoded value as a Byte array (single byte)
    */
@@ -606,7 +589,6 @@ public final class Codec {
 
   /**
    * Converts a Byte array to a String.
-   * 
    * @param bytes the array to convert
    * @return a String representation of the Byte array.
    */
@@ -625,7 +607,6 @@ public final class Codec {
 
   /**
    * Checks is {@code ch} is a valid Unicode character.
-   * 
    * @param ch value to check
    * @return true if the value is valid, otherwise false.
    */
@@ -636,7 +617,6 @@ public final class Codec {
 
   /**
    * Encodes {@code s} using md5 algorithm.
-   * 
    * @param s a String to encode
    * @return encoded value
    */
@@ -695,7 +675,6 @@ public final class Codec {
 
   /**
    * Serializes the input length {@code len}.
-   * 
    * @param len length to serialize
    * @return a serialized length String
    */
@@ -716,7 +695,6 @@ public final class Codec {
 
   /**
    * Serializes an Object {@code obj} and appends it to a StringBuilder.
-   * 
    * @param sb a StringBuilder to append to
    * @param obj the Object to serialize
    */
@@ -745,7 +723,6 @@ public final class Codec {
 
   /**
    * Encodes {@code data} using Base64 algorithm.
-   * 
    * @param data the data to encode
    * @return an encoded String.
    */
@@ -783,7 +760,6 @@ public final class Codec {
 
   /**
    * Converts {@code s} to Byte array.
-   * 
    * @param s the value to convert
    * @return a representing <b>Byte</b> array
    */
@@ -793,7 +769,6 @@ public final class Codec {
 
   /**
    * Converts {@code s} to Byte array from a specified index {@code start}.
-   * 
    * @param s the value to convert
    * @param start the start index where from to start converting
    * @return a representing <b>Byte</b> array
@@ -805,7 +780,6 @@ public final class Codec {
   /**
    * Converts {@code s} to Byte array from a specified start index {@code start} to and end index
    * {@code end}.
-   * 
    * @param s the value to convert
    * @param start the start index where from to start converting
    * @param end the last index to convert to
@@ -833,7 +807,6 @@ public final class Codec {
 
   /**
    * Converts a <b>double Byte</b> array into a corresponding Hex.
-   * 
    * @param bytes the array to convert
    * @return a Hex representation of the {@code bytes} array
    */
@@ -853,7 +826,6 @@ public final class Codec {
 
   /**
    * Converts a character {@code c} to a corresponding Hex.
-   * 
    * @param c the character to convert
    * @return a Hex representation of the character {@code c}
    */
@@ -863,7 +835,6 @@ public final class Codec {
 
   /**
    * Converts a character array {@code arr} to a corresponding Hex.
-   * 
    * @param arr the array to convert
    * @return a Hex representation of the character array {@code arr}
    */

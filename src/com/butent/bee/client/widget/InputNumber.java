@@ -1,7 +1,6 @@
 package com.butent.bee.client.widget;
 
 import com.google.common.base.CharMatcher;
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.i18n.client.NumberFormat;
 
@@ -14,11 +13,12 @@ import com.butent.bee.shared.HasBounds;
 import com.butent.bee.shared.HasIntStep;
 import com.butent.bee.shared.HasPrecision;
 import com.butent.bee.shared.HasScale;
-import com.butent.bee.shared.data.value.NumberValue;
+import com.butent.bee.shared.data.HasRelatedCurrency;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,8 +26,8 @@ import java.util.List;
  */
 
 public class InputNumber extends InputText implements HasBounds, HasIntStep,
-    HasNumberFormat, HasPrecision, HasScale {
-  
+    HasNumberFormat, HasPrecision, HasScale, HasRelatedCurrency {
+
   public static final CharMatcher INT_CHAR_MATCHER =
       CharMatcher.inRange(BeeConst.CHAR_ZERO, BeeConst.CHAR_NINE)
           .or(CharMatcher.is(BeeConst.CHAR_SPACE))
@@ -36,7 +36,7 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
   public static final CharMatcher NUM_CHAR_MATCHER = INT_CHAR_MATCHER
       .or(CharMatcher.is(BeeConst.CHAR_POINT))
       .or(CharMatcher.is(BeeConst.CHAR_COMMA));
-  
+
   private int precision = BeeConst.UNDEF;
   private int scale = BeeConst.UNDEF;
 
@@ -47,12 +47,19 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
 
   private NumberFormat format;
 
+  private String currencySource;
+
   public InputNumber() {
     super();
   }
 
   public InputNumber(Element element) {
     super(element);
+  }
+
+  @Override
+  public String getCurrencySource() {
+    return currencySource;
   }
 
   @Override
@@ -77,19 +84,16 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
       return null;
     }
 
-    if (getNumberFormat() != null) {
-      String s = sanitize(v);
-      Double d = Format.parseQuietly(getNumberFormat(), s);
-      if (d == null) {
-        return null;
-      }
-      v = BeeUtils.toString(d, BeeUtils.getDecimals(s));
+    Double d = parse(v);
+    if (d == null) {
+      return isNullable() ? null : BeeConst.STRING_ZERO;
+    } else {
+      return BeeUtils.toString(d, getDecimals(sanitize(v)));
     }
-    return normalize(v);
   }
 
   public Double getNumber() {
-    return BeeUtils.toDoubleOrNull(getNormalizedValue());
+    return parse(BeeUtils.trim(getValue()));
   }
 
   @Override
@@ -115,6 +119,23 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
   @Override
   public FormWidget getWidgetType() {
     return FormWidget.INPUT_DECIMAL;
+  }
+
+  @Override
+  public void normalizeDisplay(String normalizedValue) {
+    if (getNumberFormat() != null || getScale() >= 0) {
+      render(normalizedValue);
+    }
+  }
+
+  @Override
+  public void render(String value) {
+    setValue(parse(BeeUtils.trim(value)));
+  }
+
+  @Override
+  public void setCurrencySource(String currencySource) {
+    this.currencySource = currencySource;
   }
 
   @Override
@@ -147,23 +168,18 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
     this.stepValue = stepValue;
   }
 
-  public void setValue(Double value) {
-    if (value == null) {
-      setValue(BeeConst.STRING_EMPTY);
-    } else if (getNumberFormat() != null) {
-      setValue(getNumberFormat().format(value));
-    } else {
-      setValue(BeeUtils.toString(value, NumberValue.MAX_SCALE));
-    }
+  public void setValue(Double v) {
+    setValue(format(v));
   }
 
   @Override
   public void startEdit(String oldValue, char charCode, EditorAction onEntry,
       Element sourceElement) {
+
     if (BeeUtils.isEmpty(oldValue) || acceptChar(charCode) || getNumberFormat() == null) {
       super.startEdit(oldValue, charCode, onEntry, sourceElement);
     } else {
-      setValue(getNumberFormat().format(BeeUtils.toDouble(oldValue)));
+      setValue(BeeUtils.toDouble(oldValue));
       if (onEntry != null) {
         super.startEdit(getValue(), charCode, onEntry, sourceElement);
       }
@@ -172,7 +188,7 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
 
   @Override
   public List<String> validate(boolean checkForNull) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     messages.addAll(super.validate(checkForNull));
     if (!messages.isEmpty()) {
       return messages;
@@ -195,7 +211,7 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
         return messages;
       }
 
-      v = BeeUtils.toString(d, BeeUtils.getDecimals(s));
+      v = BeeUtils.toString(d, getDecimals(s));
     }
 
     if (!checkType(sanitize(v))) {
@@ -211,7 +227,7 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
 
   @Override
   public List<String> validate(String normalizedValue, boolean checkForNull) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     messages.addAll(super.validate(normalizedValue, checkForNull));
     if (!messages.isEmpty()) {
       return messages;
@@ -236,17 +252,12 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
 
   @Override
   protected CharMatcher getDefaultCharMatcher() {
-    return InputNumber.NUM_CHAR_MATCHER;
+    return NUM_CHAR_MATCHER;
   }
 
   @Override
   protected String getDefaultStyleName() {
     return "bee-InputNumber";
-  }
-
-  protected String normalize(String v) {
-    String input = sanitize(v);
-    return BeeUtils.toString(BeeUtils.toDouble(input), BeeUtils.getDecimals(input));
   }
 
   protected String sanitize(String v) {
@@ -272,5 +283,40 @@ public class InputNumber extends InputText implements HasBounds, HasIntStep,
       return false;
     }
     return true;
+  }
+
+  private String format(Double v) {
+    if (v == null) {
+      return BeeConst.STRING_EMPTY;
+    } else if (getNumberFormat() != null) {
+      return getNumberFormat().format(v);
+    } else {
+      return BeeUtils.toString(v, getScale());
+    }
+  }
+
+  private int getDecimals(String s) {
+    int decimals = BeeUtils.getDecimals(s);
+    if (decimals < 0 || getScale() < 0) {
+      return decimals;
+    } else {
+      return Math.min(decimals, getScale());
+    }
+  }
+
+  private Double parse(String input) {
+    String s = sanitize(input);
+
+    if (BeeUtils.isEmpty(s)) {
+      return null;
+
+    } else if (getNumberFormat() != null) {
+      Double d = Format.parseQuietly(getNumberFormat(), s);
+      if (d != null) {
+        return d;
+      }
+    }
+
+    return BeeUtils.toDoubleOrNull(BeeUtils.removeWhiteSpace(s));
   }
 }

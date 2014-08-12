@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.layout.Flow;
@@ -16,6 +15,7 @@ import com.butent.bee.client.modules.transport.TransportHandler;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.client.timeboard.TimeBoardRowLayout;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Size;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -43,7 +43,7 @@ final class ShippingSchedule extends VehicleTimeBoard {
   private static final String STYLE_TRIP_GROUP_OVERLAP = STYLE_TRIP_GROUP_PREFIX + "overlap";
   private static final String STYLE_TRIP_GROUP_DRAG_OVER = STYLE_TRIP_GROUP_PREFIX + "dragOver";
 
-  static void open(final Callback<IdentifiableWidget> callback) {
+  static void open(final ViewCallback callback) {
     BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(DATA_SERVICE),
         new ResponseCallback() {
           @Override
@@ -269,7 +269,7 @@ final class ShippingSchedule extends VehicleTimeBoard {
     if (hasOverlap) {
       panel.addStyleName(STYLE_TRIP_GROUP_OVERLAP);
     }
-    
+
     if (trip.isEditable()) {
       trip.makeTarget(panel, STYLE_TRIP_GROUP_DRAG_OVER);
     }

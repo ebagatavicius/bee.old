@@ -123,7 +123,7 @@ public class FilterDescription implements BeeSerializable, HasInfo {
 
   public static FilterDescription userDefined(String label,
       Collection<FilterComponent> components) {
-    
+
     Assert.notEmpty(label);
     Assert.notEmpty(components);
 

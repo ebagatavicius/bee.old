@@ -258,7 +258,7 @@ class SearchByGroup extends EcView implements HasCaption {
               child.removeStyleName(STYLE_VALUE_SELECTED);
             }
           }
-          
+
           refreshItems(group, null);
         }
       }
@@ -374,7 +374,7 @@ class SearchByGroup extends EcView implements HasCaption {
 
             if (response.hasResponse(EcGroupFilters.class)) {
               EcGroupFilters groupFilters = EcGroupFilters.restore(response.getResponseAsString());
-              
+
               if (groupFilters.isEmpty()) {
                 refreshItems(group, null);
               } else {

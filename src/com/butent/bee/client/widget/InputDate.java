@@ -39,7 +39,7 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
 
   private static final String STYLE_INPUT = "bee-InputDate";
   private static final String STYLE_ACTIVE = STYLE_INPUT + "-active";
-  
+
   private static final String STYLE_POPUP = "bee-DateBox-popup";
 
   private DateTimeFormat format;
@@ -260,7 +260,7 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
     }
     return messages;
   }
-  
+
   protected boolean checkBounds(HasDateValue value) {
     JustDate date = JustDate.get(value);
     if (date == null) {
@@ -497,7 +497,7 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
         } else {
           setPickerState(State.CLOSED);
         }
-        
+
         InputDate.this.removeStyleName(STYLE_ACTIVE);
       }
     });

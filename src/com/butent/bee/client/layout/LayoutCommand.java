@@ -15,7 +15,7 @@ public class LayoutCommand implements ScheduledCommand {
 
   private int duration;
   private Layout.AnimationCallback callback;
-  
+
   private final Layout layout;
 
   public LayoutCommand(Layout layout) {

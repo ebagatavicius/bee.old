@@ -156,7 +156,7 @@ public interface IsTable<R extends IsRow, C extends IsColumn> extends Iterable<R
   void removeRow(int rowIndex);
 
   boolean removeRowById(long rowId);
-  
+
   void removeRows(int rowIndex, int rowCount);
 
   void setCell(int rowIndex, int colIndex, IsCell cell);
@@ -183,11 +183,11 @@ public interface IsTable<R extends IsRow, C extends IsColumn> extends Iterable<R
   void setProperty(int rowIndex, int colIndex, String name, String value);
 
   void setRowProperties(int rowIndex, CustomProperties properties);
-  
+
   void setRowProperty(int rowIndex, String name, String value);
-  
+
   void setRows(Collection<R> rows);
-  
+
   void setTableProperties(CustomProperties properterties);
 
   void setTableProperty(String propertyKey, String propertyValue);

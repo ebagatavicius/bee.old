@@ -5,16 +5,20 @@ import com.google.common.primitives.Ints;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.view.View;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.HasInfo;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.Property;
@@ -159,16 +163,35 @@ public final class Previewer implements NativePreviewHandler, HasInfo {
 
   @Override
   public void onPreviewNativeEvent(NativePreviewEvent event) {
-    if (modalCount == 0) {
-      String type = event.getNativeEvent().getType();
+    String type = event.getNativeEvent().getType();
 
-      if (EventUtils.EVENT_TYPE_MOUSE_DOWN.equals(type)) {
-        for (int i = 0; i < mouseDownPriorHandlers.size(); i++) {
-          mouseDownPriorHandlers.get(i).onEventPreview(event, getTargetNode(event));
-          if (event.isCanceled() || event.isConsumed()) {
-            return;
-          }
+    if (modalCount == 0 && EventUtils.EVENT_TYPE_MOUSE_DOWN.equals(type)) {
+      for (int i = 0; i < mouseDownPriorHandlers.size(); i++) {
+        mouseDownPriorHandlers.get(i).onEventPreview(event, getTargetNode(event));
+        if (event.isCanceled() || event.isConsumed()) {
+          return;
         }
+      }
+
+    } else if (EventUtils.EVENT_TYPE_KEY_DOWN.equals(type)) {
+      int keyCode = event.getNativeEvent().getKeyCode();
+
+      switch (keyCode) {
+        case KeyCodes.KEY_F8:
+          if (EventUtils.hasModifierKey(event.getNativeEvent())) {
+            tryAction(event, Action.DELETE);
+          }
+          break;
+
+        case KeyCodes.KEY_F9:
+          Action action = EventUtils.hasModifierKey(event.getNativeEvent())
+              ? Action.COPY : Action.ADD;
+          tryAction(event, action);
+          break;
+      }
+
+      if (event.isCanceled() || event.isConsumed()) {
+        return;
       }
     }
 
@@ -262,5 +285,17 @@ public final class Previewer implements NativePreviewHandler, HasInfo {
 
   private void setTargetNode(Node targetNode) {
     this.targetNode = targetNode;
+  }
+
+  private void tryAction(NativePreviewEvent event, Action action) {
+    Node node = getTargetNode(event);
+    Element element = Element.is(node) ? Element.as(node) : null;
+
+    View view = ViewHelper.getActiveView(element, action);
+
+    if (view != null) {
+      event.consume();
+      view.getViewPresenter().handleAction(action);
+    }
   }
 }

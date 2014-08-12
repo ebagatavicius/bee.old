@@ -16,7 +16,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public class BooleanFilterSupplier extends AbstractFilterSupplier {
-  
+
   private Boolean value;
 
   public BooleanFilterSupplier(String viewName, BeeColumn column, String label, String options) {
@@ -54,7 +54,7 @@ public class BooleanFilterSupplier extends AbstractFilterSupplier {
     if (b == null) {
       return null;
     } else {
-      return b ? Filter.notNull(getColumnId()) : Filter.isNull(getColumnId()); 
+      return b ? Filter.notNull(getColumnId()) : Filter.isNull(getColumnId());
     }
   }
 
@@ -67,7 +67,7 @@ public class BooleanFilterSupplier extends AbstractFilterSupplier {
   protected String getStylePrefix() {
     return DEFAULT_STYLE_PREFIX + "boolean-";
   }
-  
+
   private Widget createWidget() {
     HtmlTable container = new HtmlTable();
     container.addStyleName(getStylePrefix() + "container");
@@ -85,7 +85,7 @@ public class BooleanFilterSupplier extends AbstractFilterSupplier {
     });
 
     container.setWidget(0, 0, notEmpty);
-    
+
     Button empty = new Button(getLabelForEmpty());
     empty.addStyleName(getStylePrefix() + "empty");
 
@@ -128,7 +128,7 @@ public class BooleanFilterSupplier extends AbstractFilterSupplier {
 
     return container;
   }
-  
+
   private static Boolean getBoolean(FilterValue filterValue) {
     if (filterValue == null) {
       return null;
@@ -142,10 +142,10 @@ public class BooleanFilterSupplier extends AbstractFilterSupplier {
   }
 
   private String getLabelForEmpty() {
-    return BeeUtils.isEmpty(getColumnLabel()) 
+    return BeeUtils.isEmpty(getColumnLabel())
         ? NULL_VALUE_LABEL : Localized.getMessages().not(getColumnLabel());
   }
-  
+
   private String getLabelForNotEmpty() {
     return BeeUtils.isEmpty(getColumnLabel()) ? NOT_NULL_VALUE_LABEL : getColumnLabel();
   }

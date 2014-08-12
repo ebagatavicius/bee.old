@@ -12,19 +12,19 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 class ServiceDateWrapper implements HasDateRange {
-  
+
   private final Long objectId;
-  
+
   private final DateTime from;
   private final DateTime until;
 
   private final Range<JustDate> range;
-  
+
   private final String color;
   private final String note;
-  
+
   private final String title;
-  
+
   ServiceDateWrapper(SimpleRow row) {
     this.objectId = row.getLong(ServiceConstants.COL_SERVICE_OBJECT);
 
@@ -33,12 +33,12 @@ class ServiceDateWrapper implements HasDateRange {
 
     this.color = row.getValue(ServiceConstants.COL_SERVICE_DATE_COLOR);
     this.note = row.getValue(ServiceConstants.COL_SERVICE_DATE_NOTE);
-    
+
     this.range = TimeBoardHelper.getRange(from, until);
-    
-    String period = BeeUtils.isMore(until, from) 
+
+    String period = BeeUtils.isMore(until, from)
         ? TimeUtils.renderPeriod(from, until) : TimeUtils.renderCompact(from);
-    
+
     this.title = BeeUtils.buildLines(period, note);
   }
 

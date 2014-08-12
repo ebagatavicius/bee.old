@@ -154,10 +154,10 @@ public class UiHolderBean {
     }
 
     Element formElement = doc.getDocumentElement();
-    
+
     String viewName = formElement.getAttribute(UiConstants.ATTR_VIEW_NAME);
     BeeView view = sys.isView(viewName) ? sys.getView(viewName) : null;
-    
+
     checkWidgetChildrenVisibility(formElement, view);
 
     return ResponseObject.response(XmlUtils.toString(doc, false));
@@ -187,7 +187,7 @@ public class UiHolderBean {
     if (doc == null) {
       return ResponseObject.error("Cannot parse xml:", resource);
     }
-   
+
     GridDescription grid = gridBean.getGridDescription(doc.getDocumentElement());
     if (grid == null) {
       return ResponseObject.error("Cannot create grid description:", resource);
@@ -299,14 +299,14 @@ public class UiHolderBean {
   private void checkWidgetChildrenVisibility(Element parent, BeeView view) {
     List<Element> elements = XmlUtils.getAllDescendantElements(parent);
     boolean visible;
-    
+
     for (Element element : elements) {
       if (element.hasAttribute(UiConstants.ATTR_VISIBLE)) {
         visible = !BeeConst.isFalse(element.getAttribute(UiConstants.ATTR_VISIBLE));
       } else {
         visible = isWidgetVisible(element, view);
       }
-      
+
       if (!visible && isHidable(XmlUtils.getParentElement(element))) {
         XmlUtils.removeFromParent(element);
       }
@@ -359,7 +359,7 @@ public class UiHolderBean {
       visible = usr.isMenuVisible(ref);
 
       if (visible && !BeeUtils.isEmpty(entry.getModule())) {
-        visible = usr.isModuleVisible(entry.getModule());
+        visible = usr.isAnyModuleVisible(entry.getModule());
       }
       if (visible && !BeeUtils.isEmpty(entry.getData())) {
         visible = usr.isDataVisible(entry.getData());
@@ -370,7 +370,7 @@ public class UiHolderBean {
       }
 
     } else {
-      visible = Module.isEnabled(entry.getModule());
+      visible = Module.isAnyEnabled(entry.getModule());
     }
 
     if (visible) {
@@ -548,7 +548,7 @@ public class UiHolderBean {
 
   private boolean isWidgetVisible(Element element, BeeView view) {
     if (element.hasAttribute(UiConstants.ATTR_MODULE)
-        && !usr.isModuleVisible(element.getAttribute(UiConstants.ATTR_MODULE))) {
+        && !usr.isAnyModuleVisible(element.getAttribute(UiConstants.ATTR_MODULE))) {
       return false;
     }
 

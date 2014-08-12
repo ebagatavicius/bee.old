@@ -40,7 +40,7 @@ public class InputInteger extends InputNumber {
   public String getIdPrefix() {
     return "int";
   }
-  
+
   public int getIntValue() {
     return BeeUtils.toInt(getValue());
   }
@@ -49,7 +49,7 @@ public class InputInteger extends InputNumber {
   public FormWidget getWidgetType() {
     return FormWidget.INPUT_INTEGER;
   }
-  
+
   @Override
   public void setMaxValue(String maxValue) {
     super.setMaxValue(maxValue);
@@ -69,7 +69,7 @@ public class InputInteger extends InputNumber {
   @Override
   public void setStepValue(int stepValue) {
     super.setStepValue(stepValue);
-    
+
     if (stepValue > 0) {
       DomUtils.setStep(this, stepValue);
     } else {
@@ -90,7 +90,7 @@ public class InputInteger extends InputNumber {
   protected CharMatcher getDefaultCharMatcher() {
     return InputNumber.INT_CHAR_MATCHER;
   }
-  
+
   protected void initAttributes(Input.Type type, int min, int max, int step) {
     if (type != null) {
       DomUtils.setInputType(this, type);

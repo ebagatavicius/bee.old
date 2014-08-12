@@ -28,23 +28,23 @@ public class CellValidateEvent {
   public CellValidation getCellValidation() {
     return cellValidation;
   }
-  
+
   public String getColumnId() {
     return (cellValidation.getColumn() == null) ? null : cellValidation.getColumn().getId();
   }
 
   public String getNewValue() {
-    return cellValidation.getNewValue();    
+    return cellValidation.getNewValue();
   }
-  
+
   public long getRowId() {
     return cellValidation.getRow().getId();
   }
-  
+
   public ValidationOrigin getValidationOrigin() {
     return validationOrigin;
   }
-  
+
   public ValidationPhase getValidationPhase() {
     return validationPhase;
   }
@@ -64,11 +64,11 @@ public class CellValidateEvent {
   public boolean isGridValidation() {
     return validationOrigin != null && validationOrigin.isGrid();
   }
-  
+
   public boolean isNewRow() {
     return DataUtils.isNewRow(cellValidation.getRow());
   }
-  
+
   public boolean isPostValidation() {
     return validationPhase != null && validationPhase.isPostValidation();
   }
@@ -76,7 +76,7 @@ public class CellValidateEvent {
   public boolean isPreValidation() {
     return validationPhase != null && validationPhase.isPreValidation();
   }
-  
+
   public boolean sameValue() {
     return BeeUtils.equalsTrimRight(cellValidation.getOldValue(), cellValidation.getNewValue());
   }

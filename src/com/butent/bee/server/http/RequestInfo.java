@@ -32,7 +32,7 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
   private static int counter;
 
   private final HttpServletRequest request;
-  
+
   private final String method;
   private final String query;
 
@@ -78,7 +78,7 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
         setRpcInfo(el.getKey(), el.getValue());
       }
     }
-    
+
     this.contentLen = req.getContentLength();
     if (contentLen > 0) {
       this.contentTypeHeader = req.getContentType();
@@ -120,7 +120,7 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
     List<ExtendedProperty> reqInfo = new ArrayList<>();
 
     if (request.isAsyncStarted()) {
-      PropertyUtils.appendExtended(reqInfo, 
+      PropertyUtils.appendExtended(reqInfo,
           HttpUtils.getAsyncContextInfo(request.getAsyncContext()));
     }
 
@@ -169,9 +169,9 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
         "Servlet Path", request.getServletPath(),
         "User Agent", getUserAgent());
 
-    PropertyUtils.appendExtended(reqInfo, 
+    PropertyUtils.appendExtended(reqInfo,
         HttpUtils.getServletContextInfo(request.getServletContext()));
-    PropertyUtils.appendExtended(reqInfo, 
+    PropertyUtils.appendExtended(reqInfo,
         HttpUtils.getSessionInfo(request.getSession(false)));
 
     Principal principal = request.getUserPrincipal();
@@ -240,7 +240,7 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
   public Long getParameterLong(String name) {
     return BeeUtils.toLongOrNull(getParameter(name));
   }
-  
+
   public Map<String, String> getParams() {
     return params;
   }
@@ -248,7 +248,7 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
   public String getQuery() {
     return query;
   }
-  
+
   public String getRemoteAddr() {
     return request.getRemoteAddr();
   }

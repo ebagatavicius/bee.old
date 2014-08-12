@@ -1,9 +1,9 @@
 package com.butent.bee.client.view;
 
-import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
@@ -13,6 +13,7 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.Settings;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.Binder;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.presenter.Presenter;
@@ -32,6 +33,7 @@ import com.butent.bee.shared.ui.Captions;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -109,7 +111,7 @@ public class HeaderImpl extends Flow implements HeaderView {
 
   private boolean enabled = true;
 
-  private final Map<Action, String> actionControls = Maps.newHashMap();
+  private final Map<Action, String> actionControls = new HashMap<>();
 
   private final Horizontal commandPanel = new Horizontal();
 
@@ -133,6 +135,11 @@ public class HeaderImpl extends Flow implements HeaderView {
   @Override
   public void addCommandItem(IdentifiableWidget widget) {
     getCommandPanel().add(widget);
+  }
+
+  @Override
+  public HandlerRegistration addReadyHandler(ReadyEvent.Handler handler) {
+    return addHandler(handler, ReadyEvent.getType());
   }
 
   @Override
@@ -214,7 +221,7 @@ public class HeaderImpl extends Flow implements HeaderView {
     if (hasAction(Action.MENU, false, enabledActions, disabledActions)) {
       add(createFa(FontAwesome.NAVICON, Action.MENU, hiddenActions));
     }
-    
+
     if (hasAction(Action.CLOSE, UiOption.isWindow(options), enabledActions, disabledActions)) {
       add(createImage(Global.getImages().silverClose(), Action.CLOSE, hiddenActions));
     }
@@ -264,7 +271,10 @@ public class HeaderImpl extends Flow implements HeaderView {
     if (action == null || !isEnabled()) {
       return false;
     }
-    String id = getActionControls().get(action);
+
+    Action a = (action == Action.CANCEL) ? Action.CLOSE : action;
+
+    String id = getActionControls().get(a);
     if (BeeUtils.isEmpty(id)) {
       return false;
     }
@@ -302,6 +312,11 @@ public class HeaderImpl extends Flow implements HeaderView {
       String id = source.getId();
       return BeeUtils.isEmpty(id) ? true : !actionControls.containsValue(id);
     }
+  }
+
+  @Override
+  public boolean reactsTo(Action action) {
+    return false;
   }
 
   @Override
@@ -371,6 +386,12 @@ public class HeaderImpl extends Flow implements HeaderView {
     } else {
       controlElement.addClassName(STYLE_CONTROL_HIDDEN);
     }
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+    ReadyEvent.fire(this);
   }
 
   private Widget createFa(FontAwesome fa, Action action, Set<Action> hiddenActions) {

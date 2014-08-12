@@ -66,14 +66,14 @@ public class GridComponentDescription implements BeeSerializable, HasInfo {
 
   private GridComponentDescription() {
   }
-  
+
   public GridComponentDescription copy() {
     GridComponentDescription result = new GridComponentDescription();
-    
+
     if (getStyle() != null) {
       result.setStyle(getStyle().copy());
     }
-    
+
     result.setHeight(getHeight());
     result.setMinHeight(getMinHeight());
     result.setMaxHeight(getMaxHeight());
@@ -81,7 +81,7 @@ public class GridComponentDescription implements BeeSerializable, HasInfo {
     result.setPadding(getPadding());
     result.setBorderWidth(getBorderWidth());
     result.setMargin(getMargin());
-    
+
     return result;
   }
 
@@ -166,7 +166,7 @@ public class GridComponentDescription implements BeeSerializable, HasInfo {
         && getHeight() == null && getMinHeight() == null && getMaxHeight() == null
         && BeeUtils.allEmpty(getPadding(), getBorderWidth(), getMargin());
   }
-  
+
   @Override
   public String serialize() {
     Serial[] members = Serial.values();

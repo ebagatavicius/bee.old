@@ -11,7 +11,7 @@ import com.butent.bee.client.ui.IdentifiableWidget;
  */
 
 public class Focus extends FocusPanel implements IdentifiableWidget {
-  
+
   public Focus() {
     DomUtils.createId(this, getIdPrefix());
   }

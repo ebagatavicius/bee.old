@@ -14,7 +14,7 @@ import javax.ejb.Stateless;
 @Stateless
 @LocalBean
 public class SearchBean {
-  
+
   @EJB
   SystemBean sys;
   @EJB
@@ -26,7 +26,7 @@ public class SearchBean {
     if (BeeUtils.isEmpty(query)) {
       return ResponseObject.error("search query not specified");
     }
-    
+
     List<SearchResult> results = mh.doSearch(query);
     return ResponseObject.response(results);
   }

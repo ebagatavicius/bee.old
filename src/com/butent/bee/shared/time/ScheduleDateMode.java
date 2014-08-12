@@ -8,13 +8,13 @@ public enum ScheduleDateMode implements HasCaption {
   EXCLUDE(Localized.getConstants().scheduleDateExclude()),
   WORK(Localized.getConstants().scheduleDateWork()),
   NON_WORK(Localized.getConstants().scheduleDateNonWork());
-  
+
   private final String caption;
-  
+
   private ScheduleDateMode(String caption) {
     this.caption = caption;
   }
- 
+
   @Override
   public String getCaption() {
     return caption;

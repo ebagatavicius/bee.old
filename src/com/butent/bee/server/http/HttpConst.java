@@ -14,7 +14,7 @@ public final class HttpConst {
 
   public static final String PARAM_REGISTER = "register";
   public static final String PARAM_QUERY = "query";
-  
+
   private HttpConst() {
   }
 }

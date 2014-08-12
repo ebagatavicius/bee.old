@@ -23,18 +23,18 @@ public class ExtendedPropertiesData extends RowList<TableRow, TableColumn> {
     for (int i = 0; i < c; i++) {
       addColumn(ValueType.TEXT, ExtendedProperty.COLUMN_HEADERS[i]);
     }
-    
+
     long rowId = 0;
     for (ExtendedProperty property : data) {
       TableRow row = new TableRow(++rowId);
       row.addCell(new TextValue(property.getName()));
       row.addCell(new TextValue(property.getSub()));
       row.addCell(new TextValue(property.getValue()));
-      
+
       if (addTime) {
         row.addCell(new TextValue(property.getDate().toTimeString()));
       }
-      
+
       addRow(row);
     }
   }

@@ -83,7 +83,7 @@ class RelatedRecurringTasksGrid extends AbstractGridInterceptor {
           DataInfo dataInfo = Data.getDataInfo(VIEW_RECURRING_TASKS);
 
           BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
-          RowActionEvent.fireCreateRow(VIEW_RECURRING_TASKS, row, presenter.getWidget().getId());
+          RowActionEvent.fireCreateRow(VIEW_RECURRING_TASKS, row, presenter.getMainView().getId());
 
           String relColumn = presenter.getGridView().getRelColumn();
           String property = TaskUtils.translateRelationToTaskProperty(relColumn);

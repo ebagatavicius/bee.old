@@ -22,6 +22,7 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormWidget;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.edit.AdjustmentListener;
 import com.butent.bee.client.view.edit.EditChangeHandler;
 import com.butent.bee.client.view.edit.EditStopEvent;
@@ -101,7 +102,7 @@ public class RichTextEditor extends Flow implements Editor, AdjustmentListener, 
   public HandlerRegistration addEditChangeHandler(EditChangeHandler handler) {
     return addKeyDownHandler(handler);
   }
-  
+
   @Override
   public HandlerRegistration addEditStopHandler(Handler handler) {
     return addHandler(handler, EditStopEvent.getType());
@@ -222,6 +223,11 @@ public class RichTextEditor extends Flow implements Editor, AdjustmentListener, 
   }
 
   @Override
+  public void render(String value) {
+    setValue(value);
+  }
+
+  @Override
   public void setAccessKey(char key) {
     ((JsElement) getElement().cast()).setAccessKey(String.valueOf(key));
   }
@@ -242,7 +248,7 @@ public class RichTextEditor extends Flow implements Editor, AdjustmentListener, 
 
   @Override
   public void setEnabled(boolean enabled) {
-    DomUtils.enableChildren(this, enabled);
+    UiHelper.enableChildren(this, enabled);
   }
 
   @Override

@@ -1,7 +1,6 @@
 package com.butent.bee.client.grid;
 
 import com.google.common.base.Objects;
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -10,9 +9,12 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.event.logical.ParentRowEvent;
+import com.butent.bee.client.event.logical.ReadyEvent;
+import com.butent.bee.client.event.logical.ReadyEvent.HasReadyHandlers;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.HasFosterParent;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HasGridView;
@@ -40,9 +42,9 @@ import java.util.Map;
  * Enables using data grids with data related to another source.
  */
 
-public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFosterParent,
-    ParentRowEvent.Handler, HasGridView {
-  
+public class ChildGrid extends Simple implements EnablableWidget, Launchable, HasFosterParent,
+    ParentRowEvent.Handler, HasGridView, ReadyEvent.HasReadyHandlers {
+
   private static final Collection<UiOption> uiOptions = EnumSet.of(UiOption.CHILD);
 
   private final String gridName;
@@ -80,6 +82,13 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
   }
 
   @Override
+  public com.google.gwt.event.shared.HandlerRegistration addReadyHandler(
+      ReadyEvent.Handler handler) {
+
+    return addHandler(handler, ReadyEvent.getType());
+  }
+
+  @Override
   public GridView getGridView() {
     return getPresenter() == null ? null : getPresenter().getGridView();
   }
@@ -114,7 +123,7 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
         if (getGridInterceptor() != null && !getGridInterceptor().initDescription(result)) {
           return;
         }
-        
+
         setGridDescription(GridSettings.apply(getGridKey(), result));
         resolveState();
       }
@@ -162,7 +171,12 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
   public void setWidget(Widget w) {
     if (w != null) {
       StyleUtils.makeAbsolute(w);
+
+      if (w instanceof HasReadyHandlers) {
+        ReadyEvent.maybeDelegate(this, (HasReadyHandlers) w);
+      }
     }
+
     super.setWidget(w);
   }
 
@@ -189,9 +203,9 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
     gp.getGridView().getGrid().setPageSize(BeeConst.UNDEF, false);
     gp.setEventSource(getId());
 
-    setWidget(gp.getWidget());
+    setWidget(gp.getMainView());
     setPresenter(gp);
-    
+
     if (getGridInterceptor() != null) {
       getGridInterceptor().afterCreatePresenter(gp);
     }
@@ -208,7 +222,7 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
   }
 
   private CachingPolicy getCachingPolicy() {
-    return BeeUtils.isTrue(getGridDescription().getCacheData()) 
+    return BeeUtils.isTrue(getGridDescription().getCacheData())
         ? CachingPolicy.FULL : CachingPolicy.NONE;
   }
 
@@ -225,7 +239,7 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
   }
 
   private String getGridKey() {
-    return GridFactory.getSupplierKey(gridName);
+    return GridFactory.getSupplierKey(gridName, getGridInterceptor());
   }
 
   private GridFactory.GridOptions getGridOptions() {
@@ -247,7 +261,7 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
 
     final GridView gridView = GridFactory.createGridView(getGridDescription(), getGridKey(),
         dataInfo.getColumns(), getRelSource(), getGridInterceptor(), order);
-    
+
     if (!hasParentValue(row)) {
       BeeRowSet rowSet = new BeeRowSet(dataInfo.getViewName(), dataInfo.getColumns());
       gridView.initData(rowSet.getNumberOfRows(), rowSet);
@@ -361,7 +375,7 @@ public class ChildGrid extends Simple implements HasEnabled, Launchable, HasFost
   private void setPendingRow(IsRow pendingRow) {
     this.pendingRow = pendingRow;
   }
-  
+
   private void setPresenter(GridPresenter presenter) {
     this.presenter = presenter;
   }

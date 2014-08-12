@@ -135,7 +135,7 @@ public class MessageBoxes {
     Flow container = new Flow();
     container.addStyleName(STYLE_CHOICE_CONTAINER);
     container.addStyleName(STYLE_CHOICE_CONTAINER + BeeConst.STRING_MINUS
-        + (vertical ? StyleUtils.NAME_VERTICAL : StyleUtils.NAME_HORIZONTAL));
+        + (vertical ? StyleUtils.SUFFIX_VERTICAL : StyleUtils.SUFFIX_HORIZONTAL));
 
     UiHelper.add(container, group, initializer, DialogConstants.WIDGET_COMMAND_GROUP);
     panel.add(container);
@@ -373,7 +373,7 @@ public class MessageBoxes {
     UiHelper.setWidget(popup, table, initializer, DialogConstants.WIDGET_PANEL);
 
     popup.setAnimationEnabled(true);
-    
+
     if (target == null) {
       popup.center();
     } else {
@@ -449,7 +449,7 @@ public class MessageBoxes {
         }
       }
     });
-    
+
     popup.setWidget(cluster);
 
     popup.setAnimationEnabled(true);
@@ -567,7 +567,7 @@ public class MessageBoxes {
     } else {
       popup = DialogBox.create(caption);
     }
-    
+
     popup.setAnimationEnabled(true);
     popup.setHideOnEscape(true);
 

@@ -17,7 +17,7 @@ import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public class RequestsGridInterceptor extends AbstractGridInterceptor {
-  
+
   private static final String REGISTRED_WIDGET_NAME = "Registred";
   private static final String FINISHED_WIDGET_NAME = "Finished";
 
@@ -72,7 +72,7 @@ public class RequestsGridInterceptor extends AbstractGridInterceptor {
     }
     if (finished == null || !BooleanValue.unpack(finished.getValue())) {
       filter = Filter.and(filter, Filter.isNull(TaskConstants.COL_REQUEST_FINISHED));
-    }    
+    }
     if (finished != null && BooleanValue.unpack(finished.getValue())) {
       filter = Filter.or(filter, Filter.isNot(Filter.isNull(TaskConstants.COL_REQUEST_FINISHED)));
     }

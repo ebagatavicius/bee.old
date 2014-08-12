@@ -24,5 +24,9 @@ public interface LocalizableDocumentsConstants {
 
   String newDocumentTemplate();
 
+  String newEditorTemplate();
+
+  String saveAsEditorTemplate();
+
   String selectDocumentTemplate();
 }

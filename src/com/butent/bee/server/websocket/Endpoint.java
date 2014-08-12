@@ -26,7 +26,6 @@ import com.butent.bee.shared.websocket.messages.OnlineMessage;
 import com.butent.bee.shared.websocket.messages.ProgressMessage;
 import com.butent.bee.shared.websocket.messages.RoomStateMessage;
 import com.butent.bee.shared.websocket.messages.RoomUserMessage;
-import com.butent.bee.shared.websocket.messages.RoomsMessage;
 import com.butent.bee.shared.websocket.messages.SessionMessage;
 import com.butent.bee.shared.websocket.messages.ShowMessage;
 import com.butent.bee.shared.websocket.messages.ShowMessage.Subject;
@@ -757,7 +756,6 @@ public class Endpoint {
 
     sessionUsers.add(sessionUser);
 
-    send(session, new OnlineMessage(sessionUsers));
-    send(session, new RoomsMessage(Rooms.getRoomDataWithoutMessagess(userId)));
+    send(session, new OnlineMessage(sessionUsers, Rooms.getRoomDataWithoutMessagess(userId)));
   }
 }

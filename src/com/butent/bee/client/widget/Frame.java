@@ -29,7 +29,7 @@ public class Frame extends Widget implements IdentifiableWidget {
     this();
     setUrl(url);
   }
-  
+
   public void clear() {
     if (!isEmpty()) {
       setBodyHtml(BeeConst.STRING_EMPTY);
@@ -39,7 +39,7 @@ public class Frame extends Widget implements IdentifiableWidget {
   public void focus() {
     getContentWindow().focus();
   }
-  
+
   public Element getBody() {
     return ((JsElement) getContentDocument().getBody()).cast();
   }
@@ -47,12 +47,12 @@ public class Frame extends Widget implements IdentifiableWidget {
   public Document getContentDocument() {
     return getIFrameElement().getContentDocument();
   }
-  
+
   @Override
   public String getId() {
     return DomUtils.getId(this);
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "frame";
@@ -61,22 +61,22 @@ public class Frame extends Widget implements IdentifiableWidget {
   public IFrameElement getIFrameElement() {
     return (JsIFrameElement) getElement().cast();
   }
-  
+
   public void injectStyleSheet(String css) {
     Assert.notEmpty(css);
-    
+
     Document document = getContentDocument();
     Assert.notNull(document);
     HeadElement head = document.getHead();
     Assert.notNull(head);
-    
+
     StyleElement style = document.createStyleElement();
     style.setType("text/css");
     style.setInnerText(css);
-    
+
     head.appendChild(style);
   }
-  
+
   public boolean isEmpty() {
     if (getContentDocument() == null) {
       return true;
@@ -89,19 +89,19 @@ public class Frame extends Widget implements IdentifiableWidget {
   public void print() {
     getContentWindow().print();
   }
-  
+
   public void setBodyHtml(String html) {
     getContentDocument().getBody().setInnerHTML(html);
   }
 
   public void setHtml(String html) {
     Document document = getContentDocument();
-    
+
     document.open();
     document.write(html);
     document.close();
   }
-  
+
   @Override
   public void setId(String id) {
     DomUtils.setId(this, id);
@@ -110,11 +110,11 @@ public class Frame extends Widget implements IdentifiableWidget {
   public void setUrl(String url) {
     getIFrameElement().setSrc(url);
   }
-  
+
   private Window getContentWindow() {
-    return getIFrameElement().getContentWindow(); 
+    return getIFrameElement().getContentWindow();
   }
-  
+
   private void init() {
     DomUtils.createId(this, getIdPrefix());
     setStyleName("bee-Frame");

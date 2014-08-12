@@ -35,10 +35,10 @@ public final class DateRange implements HasDateRange {
     if (range.upperBoundType() == BoundType.OPEN) {
       max--;
     }
-    
+
     return max;
   }
-  
+
   public JustDate getMinDate() {
     return new JustDate(getMinDays());
   }
@@ -48,7 +48,7 @@ public final class DateRange implements HasDateRange {
     if (range.lowerBoundType() == BoundType.OPEN) {
       min++;
     }
-    
+
     return min;
   }
 
@@ -69,7 +69,7 @@ public final class DateRange implements HasDateRange {
 
     return values;
   }
-  
+
   public int size() {
     return getMaxDays() - getMinDays() + 1;
   }

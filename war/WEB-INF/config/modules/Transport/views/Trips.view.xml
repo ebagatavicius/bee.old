@@ -8,6 +8,7 @@
   editForm="Trip" newRowForm="Trip"
   caption="=trips" newRowCaption="=trNewTrip"
   >
+  <Relation renderColumns="TripNo" choiceColumns="Date PlannedEndDate TripNo VehicleNumber" />
   <Columns>
     <HiddenColumn name="Expedition" />
     <SimpleColumn name="Status" />

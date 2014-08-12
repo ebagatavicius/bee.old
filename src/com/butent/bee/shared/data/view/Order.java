@@ -1,6 +1,5 @@
 package com.butent.bee.shared.data.view;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
@@ -12,10 +11,12 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
-import com.butent.bee.shared.utils.NameUtils;
+import com.butent.bee.shared.utils.NullOrdering;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Implements sorting functionality in data objects.
@@ -25,14 +26,23 @@ public class Order implements BeeSerializable {
 
   public static final class Column implements BeeSerializable {
 
-    private final String name;
-    private final List<String> sources;
-    private boolean ascending;
+    private String name;
+    private final List<String> sources = new ArrayList<>();
 
-    private Column(String name, List<String> sources, boolean ascending) {
+    private boolean ascending;
+    private NullOrdering nullOrdering;
+
+    private Column(String name, List<String> sources, boolean ascending,
+        NullOrdering nullOrdering) {
+
       this.name = name;
-      this.sources = sources;
+      this.sources.addAll(sources);
       this.ascending = ascending;
+      this.nullOrdering = nullOrdering;
+    }
+
+    private Column() {
+      super();
     }
 
     private Column(String name, String source) {
@@ -40,28 +50,51 @@ public class Order implements BeeSerializable {
     }
 
     private Column(String name, String source, boolean ascending) {
-      this(name, Lists.newArrayList(source), ascending);
+      this(name, source, ascending, null);
+    }
+
+    private Column(String name, String source, boolean ascending, NullOrdering nullOrdering) {
+      this(name, Lists.newArrayList(source), ascending, nullOrdering);
     }
 
     @Override
     public void deserialize(String s) {
-      Assert.untouchable();
+      String[] arr = Codec.beeDeserializeCollection(s);
+      Assert.minLength(ArrayUtils.length(arr), 4);
+
+      int i = 0;
+      name = arr[i++];
+      setAscending(Codec.unpack(arr[i++]));
+      setNullOrdering(Codec.unpack(NullOrdering.class, arr[i++]));
+
+      if (!sources.isEmpty()) {
+        sources.clear();
+      }
+      sources.addAll(Lists.newArrayList(ArrayUtils.slice(arr, i)));
     }
 
     @Override
     public boolean equals(Object obj) {
       if (this == obj) {
         return true;
-      }
-      if (!(obj instanceof Column)) {
+
+      } else if (obj instanceof Column) {
+        Column other = (Column) obj;
+        return BeeUtils.same(getName(), other.getName())
+            && isAscending() == other.isAscending()
+            && getNullOrdering() == other.getNullOrdering();
+
+      } else {
         return false;
       }
-      return BeeUtils.same(getName(), ((Column) obj).getName())
-          && isAscending() == ((Column) obj).isAscending();
     }
 
     public String getName() {
       return name;
+    }
+
+    public NullOrdering getNullOrdering() {
+      return nullOrdering;
     }
 
     public List<String> getSources() {
@@ -70,7 +103,7 @@ public class Order implements BeeSerializable {
 
     @Override
     public int hashCode() {
-      return Objects.hashCode(getName(), isAscending());
+      return Objects.hash(getName(), isAscending());
     }
 
     public boolean isAscending() {
@@ -79,28 +112,40 @@ public class Order implements BeeSerializable {
 
     @Override
     public String serialize() {
-      Object[] arr = new Object[getSources().size() + 2];
-      arr[0] = getName();
-      arr[1] = isAscending();
-      for (int i = 0; i < getSources().size(); i++) {
-        arr[i + 2] = getSources().get(i);
-      }
-      return Codec.beeSerialize(arr);
+      List<String> values = new ArrayList<>();
+
+      values.add(getName());
+      values.add(Codec.pack(isAscending()));
+      values.add(Codec.pack(getNullOrdering()));
+
+      values.addAll(getSources());
+
+      return Codec.beeSerialize(values);
     }
 
     public void setAscending(boolean ascending) {
       this.ascending = ascending;
     }
 
+    public void setNullOrdering(NullOrdering nullOrdering) {
+      this.nullOrdering = nullOrdering;
+    }
+
     @Override
     public String toString() {
       StringBuilder sb = new StringBuilder(getName());
+
       if (getSources().size() != 1 || !BeeUtils.same(getName(), getSources().get(0))) {
         sb.append(BeeConst.CHAR_EQ).append(getSources());
       }
+
       if (!isAscending()) {
         sb.append(BeeConst.CHAR_SPACE).append(SORT_DESCENDING);
       }
+      if (getNullOrdering() != null) {
+        sb.append(BeeConst.CHAR_SPACE).append(getNullOrdering().name());
+      }
+
       return sb.toString();
     }
 
@@ -113,17 +158,17 @@ public class Order implements BeeSerializable {
   public static final String SORT_DESCENDING = "descending";
 
   private static BeeLogger logger = LogUtils.getLogger(Order.class);
-  
+
   public static Order ascending(String source) {
     return new Order(source, true);
   }
 
   public static Order ascending(String first, String second) {
     Order order = new Order();
-    
+
     order.add(first, true);
     order.add(second, true);
-    
+
     return order;
   }
 
@@ -136,6 +181,16 @@ public class Order implements BeeSerializable {
 
   private static final Splitter ITEM_SPLITTER =
       Splitter.on(BeeConst.CHAR_COMMA).omitEmptyStrings().trimResults();
+  private static final Splitter FIELD_SPLITTER =
+      Splitter.on(BeeConst.CHAR_SPACE).omitEmptyStrings().trimResults();
+
+  public static boolean isNullsFirst(String s) {
+    return BeeUtils.same(s, NullOrdering.NULLS_FIRST.name());
+  }
+
+  public static boolean isNullsLast(String s) {
+    return BeeUtils.same(s, NullOrdering.NULLS_LAST.name());
+  }
 
   public static boolean isSortAscending(String s) {
     return BeeUtils.inListSame(s, SORT_ASCENDING, BeeConst.STRING_PLUS)
@@ -152,43 +207,43 @@ public class Order implements BeeSerializable {
     Assert.notEmpty(colNames);
 
     Order order = new Order();
+
     String name;
     boolean asc;
-    String w1;
-    String w2;
+    NullOrdering nulls;
 
     for (String item : ITEM_SPLITTER.split(input)) {
-      if (item.indexOf(BeeConst.CHAR_SPACE) > 0) {
-        w1 = BeeUtils.getPrefix(item, BeeConst.CHAR_SPACE);
-        w2 = BeeUtils.getSuffix(item, BeeConst.CHAR_SPACE);
+      asc = true;
+      nulls = null;
 
-        if (isSortAscending(w2)) {
-          name = w1;
-          asc = true;
-        } else if (isSortDescending(w2)) {
-          name = w1;
-          asc = false;
-        } else if (isSortAscending(w1) && NameUtils.isIdentifier(w2)) {
-          name = w2;
-          asc = true;
-        } else if (isSortDescending(w1) && NameUtils.isIdentifier(w2)) {
-          name = w2;
-          asc = false;
-        } else {
-          name = null;
-          asc = false;
+      if (item.indexOf(BeeConst.CHAR_SPACE) > 0) {
+        name = null;
+
+        for (String v : FIELD_SPLITTER.split(item)) {
+          if (isSortAscending(v)) {
+            asc = true;
+          } else if (isSortDescending(v)) {
+            asc = false;
+
+          } else if (isNullsFirst(v)) {
+            nulls = NullOrdering.NULLS_FIRST;
+          } else if (isNullsLast(v)) {
+            nulls = NullOrdering.NULLS_LAST;
+
+          } else {
+            name = v;
+          }
         }
 
       } else if (BeeUtils.isPrefixOrSuffix(item, BeeConst.CHAR_PLUS)) {
         name = BeeUtils.removePrefixAndSuffix(item, BeeConst.CHAR_PLUS);
-        asc = true;
+
       } else if (BeeUtils.isPrefixOrSuffix(item, BeeConst.CHAR_MINUS)) {
         name = BeeUtils.removePrefixAndSuffix(item, BeeConst.CHAR_MINUS);
         asc = false;
 
       } else {
         name = item;
-        asc = true;
       }
 
       String colName = BeeUtils.getSame(colNames, name);
@@ -197,7 +252,7 @@ public class Order implements BeeSerializable {
         continue;
       }
 
-      order.add(colName, asc);
+      order.add(colName, asc, nulls);
     }
 
     if (order.isEmpty()) {
@@ -215,7 +270,7 @@ public class Order implements BeeSerializable {
     return order;
   }
 
-  private final List<Column> columns = Lists.newArrayList();
+  private final List<Column> columns = new ArrayList<>();
 
   public Order() {
     super();
@@ -227,17 +282,25 @@ public class Order implements BeeSerializable {
   }
 
   public void add(String name, boolean ascending) {
-    add(name, Lists.newArrayList(name), ascending);
+    add(name, ascending, null);
+  }
+
+  public void add(String name, boolean ascending, NullOrdering nullOrdering) {
+    add(name, Lists.newArrayList(name), ascending, nullOrdering);
   }
 
   public void add(String name, List<String> sources, boolean ascending) {
+    add(name, sources, ascending, null);
+  }
+
+  public void add(String name, List<String> sources, boolean ascending, NullOrdering nullOrdering) {
     Assert.notEmpty(name);
 
     Column found = find(name);
     if (found != null) {
       columns.remove(found);
     }
-    columns.add(new Column(name.trim(), sources, ascending));
+    columns.add(new Column(name.trim(), sources, ascending, nullOrdering));
   }
 
   public void clear() {
@@ -249,17 +312,17 @@ public class Order implements BeeSerializable {
     if (!columns.isEmpty()) {
       columns.clear();
     }
-    String[] cols = Codec.beeDeserializeCollection(s);
-    if (ArrayUtils.isEmpty(cols)) {
+
+    String[] arr = Codec.beeDeserializeCollection(s);
+    if (ArrayUtils.isEmpty(arr)) {
       return;
     }
 
-    for (String col : cols) {
-      String[] arr = Codec.beeDeserializeCollection(col);
-      Assert.minLength(ArrayUtils.length(arr), 3);
+    for (String cs : arr) {
+      Column column = new Column();
+      column.deserialize(cs);
 
-      List<String> lst = Lists.newArrayList(ArrayUtils.slice(arr, 2));
-      add(arr[0], lst, BeeUtils.toBoolean(arr[1]));
+      columns.add(column);
     }
   }
 
@@ -286,6 +349,17 @@ public class Order implements BeeSerializable {
       }
     }
     return BeeConst.UNDEF;
+  }
+
+  public NullOrdering getNullOrdering(String name) {
+    Assert.notNull(name);
+
+    for (Column col : columns) {
+      if (col.is(name)) {
+        return col.getNullOrdering();
+      }
+    }
+    return null;
   }
 
   public int getSize() {
@@ -330,10 +404,17 @@ public class Order implements BeeSerializable {
   }
 
   public void setAscending(String name, boolean ascending) {
-    Assert.notNull(name);
     Column col = find(name);
     Assert.notNull(col);
+
     col.setAscending(ascending);
+  }
+
+  public void setNullOrdering(String name, NullOrdering nullOrdering) {
+    Column col = find(name);
+    Assert.notNull(col);
+
+    col.setNullOrdering(nullOrdering);
   }
 
   @Override

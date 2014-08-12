@@ -24,7 +24,7 @@ public class Complex extends CustomComplex {
   public Complex(Position position) {
     this(position, Overflow.HIDDEN);
   }
-  
+
   public Complex(Position position, Overflow overflow) {
     super(Document.get().createDivElement());
     initStyle(position, overflow);

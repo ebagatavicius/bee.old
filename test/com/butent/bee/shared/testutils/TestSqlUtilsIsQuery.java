@@ -119,7 +119,7 @@ public class TestSqlUtilsIsQuery {
         + "ON c.unique_constraint_name = r.constraint_name WHERE c.constraint_catalog = 'MyDB' "
         + "AND t.table_catalog = 'MyDB'",
         SqlUtils.dbForeignKeys("MyDB", null, null, null).getQuery());
-    
+
     assertEquals("SELECT t.table_name AS tblName, c.constraint_name AS keyName, r.table_name "
         + "AS fkRefTable FROM information_schema.referential_constraints c "
         + "INNER JOIN information_schema.table_constraints t "
@@ -154,14 +154,14 @@ public class TestSqlUtilsIsQuery {
         + "WHERE \"c\".\"CONSTRAINT_TYPE\" = 'R' AND \"c\".\"OWNER\" = 'MyDbSchema' "
         + "AND \"r\".\"OWNER\" = 'MyDbSchema'",
         SqlUtils.dbForeignKeys("MyDB", "MyDbSchema", null, null).getQuery());
-    
+
     assertEquals("SELECT \"c\".\"TABLE_NAME\" AS \"tblName\", \"c\".\"CONSTRAINT_NAME\" "
         + "AS \"keyName\", \"r\".\"TABLE_NAME\" AS \"fkRefTable\" FROM \"ALL_CONSTRAINTS\" \"c\" "
         + "INNER JOIN \"ALL_CONSTRAINTS\" \"r\" "
         + "ON \"c\".\"R_CONSTRAINT_NAME\" = \"r\".\"CONSTRAINT_NAME\" "
         + "WHERE \"c\".\"CONSTRAINT_TYPE\" = 'R'",
         SqlUtils.dbForeignKeys("MyDB", null, null, null).getQuery());
-    
+
     assertEquals("SELECT \"c\".\"TABLE_NAME\" AS \"tblName\", \"c\".\"CONSTRAINT_NAME\" "
         + "AS \"keyName\", \"r\".\"TABLE_NAME\" AS \"fkRefTable\" FROM \"ALL_CONSTRAINTS\" \"c\" "
         + "INNER JOIN \"ALL_CONSTRAINTS\" \"r\" "
@@ -206,34 +206,38 @@ public class TestSqlUtilsIsQuery {
         + "FROM information_schema.tables t WHERE t.table_catalog = 'MyDB' "
         + "AND t.table_schema = 'MyDBSchema'",
         SqlUtils.dbTables("MyDB", "MyDBSchema", null).getQuery());
-    
+
     assertEquals("SELECT t.table_name AS tblName, t.table_rows AS rowCount "
         + "FROM information_schema.tables t WHERE t.table_catalog = 'MyDB'",
         SqlUtils.dbTables("MyDB", null, null).getQuery());
-    
+
     assertEquals("SELECT t.table_name AS tblName, t.table_rows AS rowCount "
         + "FROM information_schema.tables t",
         SqlUtils.dbTables(null, null, null).getQuery());
-    
+
     // tarp PostgreSqlBuilder DB_TABLES
     SqlBuilderFactory.setDefaultBuilder(SqlEngine.POSTGRESQL);
-    assertEquals("SELECT \"t\".\"relname\" AS \"tblName\", \"t\".\"reltuples\" AS \"rowCount\" FROM"
+    assertEquals(
+        "SELECT \"t\".\"relname\" AS \"tblName\", \"t\".\"reltuples\" AS \"rowCount\" FROM"
             + " \"pg_class\" \"t\" INNER JOIN \"pg_namespace\" \"s\" ON \"t\".\"relnamespace\" = "
             + "\"s\".\"oid\" WHERE \"s\".\"nspname\" = \'MyDBSchema\' AND "
             + "\"t\".\"relname\" = \'table1\'",
         SqlUtils.dbTables("MyDB", "MyDBSchema", "table1").getQuery());
 
-    assertEquals("SELECT \"t\".\"relname\" AS \"tblName\", \"t\".\"reltuples\" AS \"rowCount\" FROM"
+    assertEquals(
+        "SELECT \"t\".\"relname\" AS \"tblName\", \"t\".\"reltuples\" AS \"rowCount\" FROM"
             + " \"pg_class\" \"t\" INNER JOIN \"pg_namespace\" \"s\" ON \"t\".\"relnamespace\" = "
             + "\"s\".\"oid\" WHERE \"s\".\"nspname\" = \'MyDBSchema\'",
         SqlUtils.dbTables("MyDB", "MyDBSchema", null).getQuery());
 
-    assertEquals("SELECT \"t\".\"relname\" AS \"tblName\", \"t\".\"reltuples\" AS \"rowCount\" FROM"
-        + " \"pg_class\" \"t\" INNER JOIN \"pg_namespace\" \"s\" ON \"t\".\"relnamespace\" = "
+    assertEquals(
+        "SELECT \"t\".\"relname\" AS \"tblName\", \"t\".\"reltuples\" AS \"rowCount\" FROM"
+            + " \"pg_class\" \"t\" INNER JOIN \"pg_namespace\" \"s\" ON \"t\".\"relnamespace\" = "
             + "\"s\".\"oid\"",
         SqlUtils.dbTables("MyDB", null, null).getQuery());
-    
-    assertEquals("SELECT \"t\".\"relname\" AS \"tblName\", \"t\".\"reltuples\" AS \"rowCount\" FROM"
+
+    assertEquals(
+        "SELECT \"t\".\"relname\" AS \"tblName\", \"t\".\"reltuples\" AS \"rowCount\" FROM"
             + " \"pg_class\" \"t\" INNER JOIN \"pg_namespace\" \"s\" ON \"t\".\"relnamespace\" = "
             + "\"s\".\"oid\"",
         SqlUtils.dbTables(null, null, null).getQuery());

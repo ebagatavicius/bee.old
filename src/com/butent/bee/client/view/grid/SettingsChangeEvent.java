@@ -13,13 +13,13 @@ public final class SettingsChangeEvent extends GwtEvent<SettingsChangeEvent.Hand
   public interface Handler extends EventHandler {
     void onSettingsChange(SettingsChangeEvent event);
   }
-  
+
   public interface HasSettingsChangeHandlers extends HasHandlers {
     HandlerRegistration addSettingsChangeHandler(Handler handler);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static void fireHeight(HasSettingsChangeHandlers source, ComponentType componentType,
       int height) {
     source.fireEvent(new SettingsChangeEvent(componentType, null, HasDimensions.ATTR_HEIGHT,
@@ -30,17 +30,17 @@ public final class SettingsChangeEvent extends GwtEvent<SettingsChangeEvent.Hand
     source.fireEvent(new SettingsChangeEvent(null, columnName, HasDimensions.ATTR_WIDTH,
         BeeUtils.toString(width)));
   }
-  
+
   public static Type<Handler> getType() {
     return TYPE;
   }
-  
-  private final ComponentType componentType; 
+
+  private final ComponentType componentType;
   private final String columnName;
 
   private final String attribute;
   private final String value;
-  
+
   private SettingsChangeEvent(ComponentType componentType, String columnName, String attribute,
       String value) {
     super();
@@ -49,7 +49,7 @@ public final class SettingsChangeEvent extends GwtEvent<SettingsChangeEvent.Hand
     this.attribute = attribute;
     this.value = value;
   }
-  
+
   @Override
   public Type<Handler> getAssociatedType() {
     return TYPE;

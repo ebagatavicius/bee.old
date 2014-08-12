@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Set;
 
 public class EcGroupFilters implements BeeSerializable {
-  
+
   public static EcGroupFilters restore(String s) {
     EcGroupFilters groupFilters = new EcGroupFilters();
     groupFilters.deserialize(s);
     return groupFilters;
   }
-  
+
   private final List<EcBrand> brands = Lists.newArrayList();
 
   private final List<EcCriterion> criteria = Lists.newArrayList();
@@ -28,7 +28,7 @@ public class EcGroupFilters implements BeeSerializable {
   public EcGroupFilters() {
     super();
   }
-  
+
   public boolean clearSelection() {
     boolean changed = false;
 
@@ -36,22 +36,22 @@ public class EcGroupFilters implements BeeSerializable {
       changed |= brand.isSelected();
       brand.setSelected(false);
     }
-    
+
     for (EcCriterion criterion : criteria) {
       changed |= criterion.clearSelection();
     }
-    
+
     return changed;
   }
-  
+
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
-    
+
     brands.clear();
     criteria.clear();
-    
+
     String[] values = Codec.beeDeserializeCollection(arr[0]);
     if (values != null) {
       for (String v : values) {
@@ -74,7 +74,7 @@ public class EcGroupFilters implements BeeSerializable {
   public List<EcCriterion> getCriteria() {
     return criteria;
   }
-  
+
   public Set<Long> getSelectedBrands() {
     Set<Long> selectedBrands = Sets.newHashSet();
 
@@ -83,10 +83,10 @@ public class EcGroupFilters implements BeeSerializable {
         selectedBrands.add(brand.getId());
       }
     }
-    
+
     return selectedBrands;
   }
-  
+
   public Multimap<Long, String> getSelectedCriteria() {
     Multimap<Long, String> selectedCriteria = ArrayListMultimap.create();
 
@@ -97,7 +97,7 @@ public class EcGroupFilters implements BeeSerializable {
         }
       }
     }
-    
+
     return selectedCriteria;
   }
 
@@ -108,7 +108,7 @@ public class EcGroupFilters implements BeeSerializable {
     }
     return size;
   }
-  
+
   public boolean isEmpty() {
     return brands.isEmpty() && criteria.isEmpty();
   }

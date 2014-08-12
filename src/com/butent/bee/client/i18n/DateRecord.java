@@ -48,7 +48,7 @@ public class DateRecord {
     if (this.dayOfMonth > 0) {
       date.setDom(this.dayOfMonth);
     }
-    
+
     int h = this.hours;
     if (h < 0) {
       h = date.getHour();

@@ -12,12 +12,12 @@ public class Legend extends CustomHasHtml {
     this();
     setHtml(text);
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "legend";
   }
-  
+
   @Override
   protected void init() {
     super.init();

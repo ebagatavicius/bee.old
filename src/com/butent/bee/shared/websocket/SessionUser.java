@@ -10,15 +10,15 @@ import com.butent.bee.shared.utils.Codec;
 import java.util.List;
 
 public class SessionUser implements BeeSerializable {
-  
+
   public static SessionUser restore(String s) {
     Assert.notEmpty(s);
-    
+
     SessionUser sessionUser = new SessionUser();
     sessionUser.deserialize(s);
     return sessionUser;
   }
-  
+
   private String sessionId;
   private long userId;
 
@@ -34,11 +34,11 @@ public class SessionUser implements BeeSerializable {
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
-    
+
     setSessionId(arr[0]);
     setUserId(BeeUtils.toLong(arr[1]));
   }
-  
+
   public String getSessionId() {
     return sessionId;
   }
@@ -62,7 +62,7 @@ public class SessionUser implements BeeSerializable {
   private void setSessionId(String sessionId) {
     this.sessionId = sessionId;
   }
-  
+
   private void setUserId(long userId) {
     this.userId = userId;
   }

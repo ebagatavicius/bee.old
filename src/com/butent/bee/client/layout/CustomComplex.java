@@ -99,7 +99,7 @@ public class CustomComplex extends ComplexPanel implements IdentifiableWidget, P
   public void insert(Widget w, int beforeIndex) {
     insert(w, Element.as(getElement()), beforeIndex, true);
   }
-  
+
   @Override
   public boolean isEmpty() {
     return getWidgetCount() <= 0;
@@ -118,7 +118,7 @@ public class CustomComplex extends ComplexPanel implements IdentifiableWidget, P
   public void setId(String id) {
     DomUtils.setId(this, id);
   }
-  
+
   protected void init() {
     DomUtils.createId(this, getIdPrefix());
   }

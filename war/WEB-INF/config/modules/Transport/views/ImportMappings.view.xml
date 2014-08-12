@@ -10,9 +10,6 @@
     <SimpleColumn name="Property" />
     <SimpleColumn name="Value" />
     <SimpleColumn name="Mapping" />
-    <SimpleColumn name="MappingValue"  label="=trImportMapping">
-      <x:string>''</x:string>
-    </SimpleColumn>
   </Columns>
   <Order>
     <OrderBy column="Property" />

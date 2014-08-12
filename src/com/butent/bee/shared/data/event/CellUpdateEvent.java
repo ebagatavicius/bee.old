@@ -28,7 +28,7 @@ public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
     void onCellUpdate(CellUpdateEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static void fire(FiresModificationEvents em, String viewName, long rowId, long version,
       CellSource source, String value) {

@@ -7,15 +7,14 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.ParentRowCreator;
 import com.butent.bee.client.dom.ElementSize;
-import com.butent.bee.client.layout.Complex;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.HasGridView;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
 import com.butent.bee.client.view.form.CloseCallback;
+import com.butent.bee.client.view.form.FormAndHeader;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.GridView;
@@ -43,7 +42,7 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
   private final GridView gridView;
 
   private final HeaderView header;
-  private final Complex container;
+  private final FormAndHeader container;
 
   private final boolean editSave;
 
@@ -54,7 +53,7 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
     this.header = createHeader(caption, actions, edit);
     this.container = createContainer(this.header, formView, edit);
 
-    this.header.setViewPresenter(this);
+    this.container.setViewPresenter(this);
 
     this.editSave = editSave;
   }
@@ -106,17 +105,12 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
 
   @Override
   public View getMainView() {
-    return getForm();
+    return container;
   }
 
   @Override
   public Element getPrintElement() {
-    return getWidget().asWidget().getElement();
-  }
-
-  @Override
-  public IdentifiableWidget getWidget() {
-    return container;
+    return getMainView().getElement();
   }
 
   @Override
@@ -124,7 +118,7 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
     if (action == null) {
       return;
     }
-    
+
     FormInterceptor interceptor = getForm().getFormInterceptor();
     if (interceptor != null && !interceptor.beforeAction(action, this)) {
       return;
@@ -134,7 +128,7 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
       case CANCEL:
         gridView.formCancel();
         break;
-        
+
       case CLOSE:
         getForm().onClose(new CloseCallback() {
           @Override
@@ -228,8 +222,10 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
     header.addCaptionStyle(getFormStyle(STYLE_FORM_CAPTION, edit));
   }
 
-  private static Complex createContainer(HeaderView headerView, FormView formView, boolean edit) {
-    Complex formContainer = new Complex();
+  private static FormAndHeader createContainer(HeaderView headerView, FormView formView,
+      boolean edit) {
+
+    FormAndHeader formContainer = new FormAndHeader();
     formContainer.addStyleName(STYLE_FORM_CONTAINER);
     formContainer.addStyleName(getFormStyle(STYLE_FORM_CONTAINER, edit));
 

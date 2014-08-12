@@ -11,7 +11,7 @@ public class EditFormEvent extends GwtEvent<EditFormEvent.Handler> {
     void onEditForm(EditFormEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static Type<Handler> getType() {
     return TYPE;
@@ -38,7 +38,7 @@ public class EditFormEvent extends GwtEvent<EditFormEvent.Handler> {
   public boolean isCanceled() {
     return State.CANCELED.equals(getState());
   }
-  
+
   public boolean isChanged() {
     return State.CHANGED.equals(getState());
   }

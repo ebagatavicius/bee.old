@@ -30,13 +30,13 @@ public class WidgetDescription implements HasInfo {
   private static final String ATTR_REQUIRED = "required";
 
   private static final String ATTR_ON_FOCUS = "onFocus";
-  
+
   private final FormWidget widgetType;
   private final String widgetId;
   private final String widgetName;
 
   private String parentName;
-  
+
   private Collection<ConditionalStyleDeclaration> dynStyles;
 
   private String source;
@@ -52,7 +52,7 @@ public class WidgetDescription implements HasInfo {
 
   private String caption;
   private Boolean readOnly;
-  
+
   private Calculation validation;
   private Calculation editable;
   private Calculation carry;
@@ -60,12 +60,12 @@ public class WidgetDescription implements HasInfo {
   private Boolean required;
   private Boolean nullable;
   private Boolean hasDefaults;
-  
+
   private boolean disablable;
-  
+
   private EditorAction onFocus;
   private RefreshType updateMode;
-  
+
   public WidgetDescription(FormWidget widgetType, String widgetId, String widgetName) {
     this.widgetType = widgetType;
     this.widgetId = widgetId;
@@ -137,7 +137,7 @@ public class WidgetDescription implements HasInfo {
     if (getRelation() != null) {
       PropertyUtils.appendChildrenToProperties(info, "Relation", getRelation().getInfo());
     }
-    
+
     if (getValidation() != null) {
       PropertyUtils.appendChildrenToProperties(info, "Validation", getValidation().getInfo());
     }
@@ -183,7 +183,7 @@ public class WidgetDescription implements HasInfo {
   public EditorAction getOnFocus() {
     return onFocus;
   }
-  
+
   public String getParentName() {
     return parentName;
   }
@@ -364,7 +364,7 @@ public class WidgetDescription implements HasInfo {
   public void setSource(String source) {
     this.source = source;
   }
-  
+
   public void setUpdateMode(RefreshType updateMode) {
     this.updateMode = updateMode;
   }

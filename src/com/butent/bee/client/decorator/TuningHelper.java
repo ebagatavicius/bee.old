@@ -20,7 +20,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.List;
 
 public final class TuningHelper {
-  
+
   private static final BeeLogger logger = LogUtils.getLogger(TuningHelper.class);
 
   private static final String CLASS_NAME = "className";
@@ -31,11 +31,11 @@ public final class TuningHelper {
   public static List<Element> getActors(Element root, String role) {
     return getActors(root, role, null, null);
   }
-  
+
   public static List<Element> getActors(Element root, String role, Element excl, Element cut) {
     return DomUtils.getElementsByAttributeValue(root, DomUtils.ATTRIBUTE_ROLE, role, excl, cut);
   }
-  
+
   public static void updateActor(JavaScriptObject obj, String role, String name, String value) {
     Element root = null;
     if (Element.is(obj)) {
@@ -43,7 +43,7 @@ public final class TuningHelper {
     } else if (Node.is(obj)) {
       root = Node.as(obj).getParentElement();
     }
-    
+
     if (root == null) {
       logger.warning("updateActor: not an element", obj);
       return;
@@ -56,7 +56,7 @@ public final class TuningHelper {
       logger.severe("updateActor: property not specified");
       return;
     }
-    
+
     if (BeeUtils.same(role, DecoratorConstants.ROLE_ROOT)) {
       updateElement(root, name, value);
       return;
@@ -75,7 +75,7 @@ public final class TuningHelper {
       updateElement(actor, name, value);
     }
   }
-  
+
   public static void updateRoleClasses(Element root, String classes) {
     Assert.notNull(root);
     if (BeeUtils.isEmpty(classes)) {
@@ -121,13 +121,13 @@ public final class TuningHelper {
       }
     }
   }
-  
+
   private static void incrementFontSize(Element element, int increment) {
     String oldSize = element.getStyle().getFontSize();
     if (BeeUtils.isEmpty(oldSize)) {
       oldSize = ComputedStyles.get(element, StyleUtils.STYLE_FONT_SIZE);
     }
-    
+
     Double value = null;
     CssUnit unit = null;
     if (!BeeUtils.isEmpty(oldSize)) {
@@ -135,18 +135,18 @@ public final class TuningHelper {
       value = cssLength.getA();
       unit = cssLength.getB();
     }
-    
+
     if (!BeeUtils.isPositive(value)) {
       value = 13.0;
     }
     if (unit == null) {
       unit = CssUnit.PX;
     }
-    
+
     value = Math.max(value + increment, 1.0);
     StyleUtils.setFontSize(element, value, unit);
   }
-  
+
   private static void updateElement(Element element, String name, String value) {
     if (BeeUtils.same(name, CLASS_NAME)) {
       if (!BeeUtils.isEmpty(value)) {
@@ -161,12 +161,12 @@ public final class TuningHelper {
       }
       return;
     }
-    
+
     if (BeeUtils.same(name, VALUE)) {
       element.setPropertyString(VALUE, BeeUtils.trim(value));
       return;
     }
-    
+
     if (BeeUtils.same(name, StyleUtils.STYLE_FONT_SIZE)) {
       if (BeeUtils.same(value, BeeConst.STRING_PLUS)) {
         incrementFontSize(element, 1);
@@ -177,7 +177,7 @@ public final class TuningHelper {
       }
       return;
     }
-    
+
     if (!BeeUtils.isEmpty(value)) {
       element.setPropertyString(BeeUtils.trim(name), BeeUtils.trim(value));
     }

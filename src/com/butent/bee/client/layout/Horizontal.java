@@ -26,7 +26,7 @@ public class Horizontal extends CellVector {
     DOM.appendChild(tableRow, td);
     add(w, td);
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "hor";

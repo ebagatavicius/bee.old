@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="ActivityTypes" viewName="ActivityTypes" caption="=activityTypes" flexGrow="1"
+  >
+  <g:columns>
+    <DataColumn name="ActivityTypeName" visible="true" />
+    <DataColumn name="Description" />
+  </g:columns>
+</g:Grid>

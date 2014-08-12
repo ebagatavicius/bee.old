@@ -27,7 +27,7 @@ public class Td extends FertileElement {
     super.appendChildren(nodes);
     return this;
   }
-  
+
   public Td alignRight() {
     return textAlign(TextAlign.RIGHT);
   }
@@ -36,7 +36,7 @@ public class Td extends FertileElement {
     super.appendChildren(nodes);
     return this;
   }
-  
+
   public Td backgroundColor(String backgroundColor) {
     setBackgroundColor(backgroundColor);
     return this;
@@ -46,7 +46,7 @@ public class Td extends FertileElement {
     setAttribute(Attributes.COL_SPAN, value);
     return this;
   }
-  
+
   public Td color(String color) {
     setColor(color);
     return this;
@@ -61,7 +61,7 @@ public class Td extends FertileElement {
     setFontWeight(fontWeight);
     return this;
   }
-  
+
   public Td headers(String value) {
     setAttribute(Attributes.HEADERS, value);
     return this;
@@ -131,7 +131,7 @@ public class Td extends FertileElement {
     setVerticalAlign(verticalAlign);
     return this;
   }
-  
+
   public Td whiteSpace(WhiteSpace whiteSpace) {
     setWhiteSpace(whiteSpace);
     return this;

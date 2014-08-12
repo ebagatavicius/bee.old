@@ -59,7 +59,7 @@ public class Element extends Node {
   public String getId() {
     return getAttribute(Attributes.ID);
   }
-  
+
   public String getStyle(String name) {
     Style style = findStyle(name);
     return (style == null) ? null : style.getValue();

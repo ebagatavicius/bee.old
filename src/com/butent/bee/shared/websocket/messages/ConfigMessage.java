@@ -10,9 +10,9 @@ import com.butent.bee.shared.utils.NameUtils;
 import java.util.List;
 
 public class ConfigMessage extends Message {
-  
+
   public static final String KEY_REMOTE_ENDPOINT = "RemoteEndpoint";
-  
+
   public static ConfigMessage switchRemoteEndpointType(String type) {
     return new ConfigMessage(KEY_REMOTE_ENDPOINT, type);
   }

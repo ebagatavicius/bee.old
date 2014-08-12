@@ -12,8 +12,8 @@ import com.butent.bee.shared.export.XSheet;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public class FlagRenderer extends AbstractCellRenderer {
-  
-  private static final ImageElement imageElement = Document.get().createImageElement(); 
+
+  private static final ImageElement imageElement = Document.get().createImageElement();
 
   public FlagRenderer(CellSource cellSource) {
     super(cellSource);
@@ -25,12 +25,12 @@ public class FlagRenderer extends AbstractCellRenderer {
     if (BeeUtils.isEmpty(uri) || sheet == null) {
       return null;
     }
-    
+
     XPicture picture = XPicture.create(uri);
     if (picture == null) {
       return new XCell(cellIndex, getString(row), styleRef);
     }
-    
+
     int ref = sheet.registerPicture(picture);
     return XCell.forPicture(cellIndex, ref);
   }
@@ -41,13 +41,13 @@ public class FlagRenderer extends AbstractCellRenderer {
     if (BeeUtils.isEmpty(uri)) {
       return null;
     }
-    
+
     imageElement.setSrc(uri);
     imageElement.setAlt(getString(row));
-    
+
     return imageElement.getString();
   }
-  
+
   private String getUri(IsRow row) {
     String key = getString(row);
 

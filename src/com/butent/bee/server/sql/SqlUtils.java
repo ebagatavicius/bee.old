@@ -336,6 +336,14 @@ public final class SqlUtils {
     return list;
   }
 
+  public static IsCondition fullText(IsExpression expr, String value) {
+    return new FullTextCondition(expr, value);
+  }
+
+  public static IsCondition fullText(String source, String field, String value) {
+    return fullText(field(source, field), value);
+  }
+
   public static IsCondition in(String src, String fld, SqlSelect query) {
     Assert.notNull(query);
     return new ComparisonCondition(Operator.IN, field(src, fld), query);

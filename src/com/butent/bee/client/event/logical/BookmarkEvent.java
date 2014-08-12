@@ -15,14 +15,14 @@ public class BookmarkEvent extends Event<BookmarkEvent.Handler> {
     void onBookmark(BookmarkEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static HandlerRegistration register(EventBus eventBus, Handler handler) {
     Assert.notNull(eventBus);
     Assert.notNull(handler);
     return eventBus.addHandler(TYPE, handler);
   }
-  
+
   private final Favorites.Group group;
   private final long rowId;
 

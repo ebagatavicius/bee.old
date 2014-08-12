@@ -33,7 +33,7 @@ public final class Data {
   private static final DataInfoProvider DATA_INFO_PROVIDER = new DataInfoProvider();
 
   private static final ColumnMapper COLUMN_MAPPER = new ColumnMapper(DATA_INFO_PROVIDER);
-  
+
   private static final Set<String> visibleViews = Sets.newHashSet();
   private static final Set<String> hiddenViews = Sets.newHashSet();
 
@@ -59,6 +59,11 @@ public final class Data {
 
   public static void clearCell(String viewName, IsRow row, String colName) {
     COLUMN_MAPPER.clearCell(viewName, row, colName);
+  }
+
+  public static boolean containsColumn(String viewName, String colName) {
+    DataInfo dataInfo = getDataInfo(viewName);
+    return (dataInfo == null) ? false : dataInfo.containsColumn(colName);
   }
 
   public static BeeRowSet createRowSet(String viewName) {
@@ -102,7 +107,7 @@ public final class Data {
   public static Integer getColumnPrecision(String viewName, String colName) {
     return getDataInfo(viewName).getColumnPrecision(colName);
   }
-  
+
   public static String getColumnRelation(String viewName, String colName) {
     return getDataInfo(viewName).getRelation(colName);
   }
@@ -188,7 +193,7 @@ public final class Data {
     return column.isReadOnly() || readOnlyColumns.containsEntry(viewName, column.getId())
         || !BeeKeeper.getUser().canEditColumn(viewName, column.getId());
   }
-  
+
   public static boolean isNull(String viewName, IsRow row, String colName) {
     return COLUMN_MAPPER.isNull(viewName, row, colName);
   }
@@ -240,10 +245,10 @@ public final class Data {
   public static void setColumnReadOnly(String viewName, String colName) {
     Assert.notEmpty(viewName);
     Assert.notEmpty(colName);
-    
+
     readOnlyColumns.put(viewName, colName);
   }
-  
+
   public static void setEditableViews(Collection<String> views) {
     BeeUtils.overwrite(editableViews, views);
   }

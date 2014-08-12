@@ -6,6 +6,7 @@
   editForm="Vehicle" newRowForm="Vehicle" newRowCaption="=trNewVehicle"
   rowCaption="Number"
   >
+  <Relation renderColumns="Number" choiceColumns="Number ParentModelName ModelName" />
   <Columns>
     <SimpleColumn name="Type" />
     <SimpleJoin name="Type" joinType="LEFT">

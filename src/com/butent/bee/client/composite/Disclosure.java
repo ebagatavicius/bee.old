@@ -43,7 +43,7 @@ public class Disclosure extends Vertical implements HasOpenHandlers<Disclosure>,
         if (panel.isOpen()) {
           panel.getContentWidget().setVisible(true);
         }
-        
+
         UiHelper.maybeResizeForm(panel);
       }
     }
@@ -56,7 +56,7 @@ public class Disclosure extends Vertical implements HasOpenHandlers<Disclosure>,
         curPanel.contentWrapper.setVisible(false);
       }
       StyleUtils.autoHeight(curPanel.contentWrapper);
-      
+
       UiHelper.maybeResizeForm(curPanel);
       curPanel = null;
     }

@@ -1,5 +1,7 @@
 package com.butent.bee.client.modules.discussions;
 
+import com.google.common.collect.Lists;
+
 import static com.butent.bee.shared.modules.discussions.DiscussionsConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -7,9 +9,10 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
-import com.butent.bee.client.modules.discussions.DiscussionsList.ListType;
+import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.ui.FormFactory;
-import com.butent.bee.shared.Consumer;
+import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.shared.BiConsumer;
 import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -26,11 +29,27 @@ public final class DiscussionsKeeper {
     FormFactory.registerFormInterceptor(FORM_ANNOUNCEMENTS_BOARD,
         new AnnouncementsBoardInterceptor());
 
+    for (DiscussionsListType type : DiscussionsListType.values()) {
+      GridFactory.registerGridSupplier(type.getSupplierKey(), GRID_DISCUSSIONS,
+          new DiscussionsGridHandler(type));
+    }
+
+    /* Grid handlers */
+
+    GridFactory.registerGridInterceptor(GRID_DISCUSSION_FILES, new DiscussionFilesGrid());
+
     /* Menu */
     MenuService.DISCUSS_LIST.setHandler(new MenuHandler() {
       @Override
       public void onSelection(String parameters) {
-        DiscussionsList.open(parameters);
+        DiscussionsListType type = DiscussionsListType.getByPrefix(parameters);
+
+        if (type == null) {
+          Global.showError(Lists.newArrayList(GRID_DISCUSSIONS, "Type not recognized:",
+              parameters));
+        } else {
+          ViewFactory.createAndShow(type.getSupplierKey());
+        }
       }
     });
 
@@ -51,19 +70,20 @@ public final class DiscussionsKeeper {
     return createArgs(DISCUSSIONS_PREFIX + event.name());
   }
 
-  static Consumer<GridOptions> getAnnouncementsFilterHandler() {
-    Consumer<GridOptions> consumer = new Consumer<GridOptions>() {
-
-      @Override
-      public void accept(GridOptions input) {
-        GridFactory.openGrid(GRID_DISCUSSIONS, new DiscussionsGridHandler(ListType.ALL), input);
-      }
-    };
+  static BiConsumer<GridOptions, PresenterCallback> getAnnouncementsFilterHandler() {
+    BiConsumer<GridOptions, PresenterCallback> consumer =
+        new BiConsumer<GridFactory.GridOptions, PresenterCallback>() {
+          @Override
+          public void accept(GridOptions gridOptions, PresenterCallback callback) {
+            GridFactory.openGrid(GRID_DISCUSSIONS,
+                new DiscussionsGridHandler(DiscussionsListType.ALL),
+                gridOptions, callback);
+          }
+        };
 
     return consumer;
   }
 
   private DiscussionsKeeper() {
-
   }
 }

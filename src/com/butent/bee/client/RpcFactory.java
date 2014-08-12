@@ -1,6 +1,5 @@
 package com.butent.bee.client;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
@@ -21,13 +20,12 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 /**
  * enables to generate and manage remote procedure calls, GET and POST statements.
- * 
- * 
  */
 
 public class RpcFactory {
@@ -64,7 +62,7 @@ public class RpcFactory {
 
     return ok;
   }
-  
+
   public ParameterList createParameters(String svc) {
     Assert.notEmpty(svc);
     return new ParameterList(svc);
@@ -77,10 +75,10 @@ public class RpcFactory {
       return BeeConst.STRING_EMPTY;
     }
   }
-  
+
   public List<RpcInfo> getPendingRequests() {
-    List<RpcInfo> result = Lists.newArrayList();
-    
+    List<RpcInfo> result = new ArrayList<>();
+
     for (RpcInfo info : rpcList.values()) {
       if (info != null && info.isPending()) {
         result.add(info);
@@ -128,7 +126,7 @@ public class RpcFactory {
   }
 
   public int invoke(String method, String data, ResponseCallback callback) {
-    return invoke(method, null, data, callback);
+    return invoke(method, ContentType.TEXT, data, callback);
   }
 
   public int makeGetRequest(ParameterList params) {
@@ -222,10 +220,10 @@ public class RpcFactory {
   }
 
   public int makeRequest(ParameterList params, ResponseCallback callback) {
-    RequestBuilder.Method meth = params.hasData() ? RequestBuilder.POST : RequestBuilder.GET; 
+    RequestBuilder.Method meth = params.hasData() ? RequestBuilder.POST : RequestBuilder.GET;
     return makeRequest(meth, params, null, null, callback, BeeConst.UNDEF);
   }
-  
+
   public int sendText(ParameterList params, String data, ResponseCallback callback) {
     return makePostRequest(params, ContentType.TEXT, data, callback);
   }

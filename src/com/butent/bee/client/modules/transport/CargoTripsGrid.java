@@ -41,7 +41,7 @@ class CargoTripsGrid extends AbstractGridInterceptor {
   public GridInterceptor getInstance() {
     return new CargoTripsGrid();
   }
-  
+
   @Override
   public String getRowCaption(IsRow row, boolean edit) {
     return Localized.getConstants().trCargoActualPlaces();

@@ -21,6 +21,11 @@ class NegationCondition implements IsCondition {
   }
 
   @Override
+  public NegationCondition copyOf() {
+    return new NegationCondition(condition.copyOf());
+  }
+
+  @Override
   public Collection<String> getSources() {
     return condition.getSources();
   }

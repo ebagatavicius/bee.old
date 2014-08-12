@@ -71,7 +71,7 @@ public class FileLinkRenderer extends AbstractCellRenderer {
     if (BeeUtils.isEmpty(text) && BeeUtils.isNonNegative(nameIndex)) {
       text = row.getString(nameIndex);
     }
-    
+
     return text;
   }
 }

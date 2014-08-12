@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 public class MapRenderer extends AbstractCellRenderer implements HasItems {
-  
+
   private static final BeeLogger logger = LogUtils.getLogger(MapRenderer.class);
 
-  public static final String DEFAULT_SEPARATOR = "="; 
-  
+  public static final String DEFAULT_SEPARATOR = "=";
+
   private final Map<String, String> map = Maps.newHashMap();
 
   private final String separator;
@@ -31,7 +31,7 @@ public class MapRenderer extends AbstractCellRenderer implements HasItems {
 
   public MapRenderer(CellSource cellSource, String sep) {
     super(cellSource);
-    
+
     this.separator = BeeUtils.notEmpty(sep, DEFAULT_SEPARATOR).trim();
     this.splitter = Splitter.on(this.separator).omitEmptyStrings().trimResults().limit(2);
   }
@@ -54,7 +54,7 @@ public class MapRenderer extends AbstractCellRenderer implements HasItems {
       }
       index++;
     }
-    
+
     if (key == null || BeeUtils.isEmpty(value)) {
       logger.warning(NameUtils.getName(this), "cannot add item:", item);
     } else {
@@ -91,12 +91,12 @@ public class MapRenderer extends AbstractCellRenderer implements HasItems {
   public boolean isEmpty() {
     return getItemCount() <= 0;
   }
-  
+
   @Override
   public boolean isIndex(int index) {
     return index >= 0 && index < getItemCount();
   }
-  
+
   @Override
   public String render(IsRow row) {
     String key = getString(row);

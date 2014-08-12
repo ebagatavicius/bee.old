@@ -25,7 +25,7 @@ public final class CalendarStyleManager {
 
   public static final String TIMELINE_EMPTY_CELL = "leftEmptyCell";
   public static final String SCROLLBAR_EMPTY_CELL = "rightEmptyCell";
-  
+
   public static final String SCROLL_AREA = "scroll-area";
   public static final String APPOINTMENT_PANEL = "appointment-panel";
   public static final String TIME_STRIP = "time-strip";
@@ -43,7 +43,7 @@ public final class CalendarStyleManager {
 
   public static final String RESOURCE_CAPTION_CONTAINER = "caption-container";
   public static final String RESOURCE_CAPTION_CELL = "caption-cell";
-  
+
   public static final String COLUMN_SEPARATOR = "column-separator";
 
   public static final String HEADER = "header";
@@ -63,7 +63,7 @@ public final class CalendarStyleManager {
 
   public static final String MONTH_GRID = "grid";
   public static final String MONTH_CANVAS = "canvas";
-  
+
   public static final String WEEKDAY_LABEL = "weekDayLabel";
 
   public static final String MONTH_CELL = "dayCell";
@@ -86,13 +86,13 @@ public final class CalendarStyleManager {
 
   public static final String DRAG = "drag";
   public static final String POSITIONER = "positioner";
-  
+
   static void applyStyle(Widget widget, String styles) {
     if (!BeeUtils.isEmpty(styles)) {
       StyleUtils.updateStyle(widget, styles);
     }
   }
-  
+
   static void applyStyle(ItemWidget widget, String panelStyle,
       String headerStyle, String bodyStyle, String footerStyle) {
     if (!BeeUtils.isEmpty(panelStyle)) {
@@ -109,7 +109,7 @@ public final class CalendarStyleManager {
       StyleUtils.updateStyle(widget.getFooterPanel(), footerStyle);
     }
   }
-  
+
   private CalendarStyleManager() {
   }
 }

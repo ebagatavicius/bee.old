@@ -47,7 +47,7 @@ class RelatedTasksGrid extends TasksGrid {
         DataInfo dataInfo = Data.getDataInfo(VIEW_TASKS);
 
         BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
-        RowActionEvent.fireCreateRow(VIEW_TASKS, row, presenter.getWidget().getId());
+        RowActionEvent.fireCreateRow(VIEW_TASKS, row, presenter.getMainView().getId());
 
         String relColumn = presenter.getGridView().getRelColumn();
         String property = TaskUtils.translateRelationToTaskProperty(relColumn);
@@ -97,7 +97,7 @@ class RelatedTasksGrid extends TasksGrid {
 
   @Override
   public void onEditStart(EditStartEvent event) {
-    if (!maybeEditStar(event)) { 
+    if (!maybeEditStar(event)) {
       event.consume();
 
       int index = getDataIndex(COL_TASK);

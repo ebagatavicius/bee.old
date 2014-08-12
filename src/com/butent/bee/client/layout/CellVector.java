@@ -48,7 +48,7 @@ public abstract class CellVector extends ComplexPanel implements IdentifiableWid
   public HandlerRegistration addClickHandler(ClickHandler handler) {
     return addDomHandler(handler, ClickEvent.getType());
   }
-  
+
   public void addStyleToCell(Widget w, String styleName) {
     Element td = getWidgetTd(w);
     if (td != null) {

@@ -140,31 +140,6 @@ public final class Format {
     }
   }
 
-  public static final String DEFAULT_CURRENCY_PATTERN = "#,##0.00;(#)";
-  private static final String DEFAULT_DECIMAL_PATTERN_INTEGER = "#,##0";
-
-  private static final NumberConstants DEFAULT_NUMBER_CONSTANTS =
-      LocaleInfo.getCurrentLocale().getNumberConstants();
-
-  private static final NumberConstants NUMBER_CONSTANTS = new Format.NumberConstantsImpl();
-
-  private static final String DEFAULT_DECIMAL_SEPARATOR = BeeConst.STRING_POINT;
-  private static final String DEFAULT_GROUPING_SEPARATOR = BeeConst.STRING_SPACE;
-
-  private static NumberFormat defaultDoubleFormat = getNumberFormat("#.#######");
-  private static NumberFormat defaultIntegerFormat = getNumberFormat("#");
-  private static NumberFormat defaultLongFormat = getNumberFormat("#,###");
-  private static NumberFormat defaultCurrencyFormat = getNumberFormat(DEFAULT_CURRENCY_PATTERN);
-
-  private static NumberFormat defaultPercentFormat = getNumberFormat("0.0%");
-
-  private static DateTimeFormat defaultDateFormat =
-      DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
-  private static DateTimeFormat defaultDateTimeFormat =
-      DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT);
-  private static DateTimeFormat defaultTimeFormat =
-      DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT);
-
   public static DateTimeFormat getDateTimeFormat(String pattern) {
     Assert.notEmpty(pattern);
     DateTimeFormat format = getPredefinedFormat(pattern);
@@ -197,6 +172,10 @@ public final class Format {
 
   public static NumberFormat getDefaultCurrencyFormat() {
     return defaultCurrencyFormat;
+  }
+
+  public static int getDefaultCurrencyScale() {
+    return DEFAULT_CURRENCY_SCALE;
   }
 
   public static DateTimeFormat getDefaultDateFormat() {
@@ -430,6 +409,10 @@ public final class Format {
         ? null : LocaleUtils.monthsFull(LocaleInfo.getCurrentLocale())[date.getMonth() - 1];
   }
 
+  public static String renderMonthFullStandalone(HasYearMonth date) {
+    return (date == null) ? null : renderMonthFullStandalone(date.getMonth());
+  }
+
   public static String renderMonthFullStandalone(int month) {
     if (TimeUtils.isMonth(month)) {
       return LocaleInfo.getCurrentLocale().getDateTimeFormatInfo()
@@ -437,10 +420,6 @@ public final class Format {
     } else {
       return null;
     }
-  }
-
-  public static String renderMonthFullStandalone(HasYearMonth date) {
-    return (date == null) ? null : renderMonthFullStandalone(date.getMonth());
   }
 
   public static String renderPeriod(DateTime start, DateTime end) {
@@ -495,6 +474,40 @@ public final class Format {
       ((HasNumberFormat) target).setNumberFormat(new NumberFormatter(pattern));
     }
   }
+
+  private static final int DEFAULT_CURRENCY_SCALE = 2;
+
+  private static final String DEFAULT_CURRENCY_PATTERN = "#,##0.00;(#)";
+
+  private static final String DEFAULT_DECIMAL_PATTERN_INTEGER = "#,##0";
+
+  private static final NumberConstants DEFAULT_NUMBER_CONSTANTS =
+      LocaleInfo.getCurrentLocale().getNumberConstants();
+
+  private static final NumberConstants NUMBER_CONSTANTS = new Format.NumberConstantsImpl();
+
+  private static final String DEFAULT_DECIMAL_SEPARATOR = BeeConst.STRING_POINT;
+
+  private static final String DEFAULT_GROUPING_SEPARATOR = BeeConst.STRING_SPACE;
+
+  private static NumberFormat defaultDoubleFormat = getNumberFormat("#.#######");
+
+  private static NumberFormat defaultIntegerFormat = getNumberFormat("#");
+
+  private static NumberFormat defaultLongFormat = getNumberFormat("#,###");
+
+  private static NumberFormat defaultCurrencyFormat = getNumberFormat(DEFAULT_CURRENCY_PATTERN);
+
+  private static NumberFormat defaultPercentFormat = getNumberFormat("0.0%");
+
+  private static DateTimeFormat defaultDateFormat =
+      DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
+
+  private static DateTimeFormat defaultDateTimeFormat =
+      DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT);
+
+  private static DateTimeFormat defaultTimeFormat =
+      DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT);
 
   private Format() {
   }

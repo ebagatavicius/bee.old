@@ -89,7 +89,7 @@ public class Shell extends InputArea {
   }
 
   public void save() {
-    if (!BeeUtils.isEmpty(getValue())) {    
+    if (!BeeUtils.isEmpty(getValue())) {
       BeeKeeper.getStorage().set(STORAGE_KEY, getValue().trim());
     }
   }

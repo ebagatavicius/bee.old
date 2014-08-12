@@ -29,7 +29,7 @@ public class MenuItem extends Menu {
   public MenuService getService() {
     return service;
   }
-  
+
   @Override
   public int getSize() {
     return 1;

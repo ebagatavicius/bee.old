@@ -56,6 +56,7 @@ public class CartList extends HtmlTable implements ValueChangeHandler<Boolean> {
   private static String renderInfo(Cart cart) {
     return BeeUtils.parenthesize(cart.totalQuantity());
   }
+
   private static String renderTitle(Cart cart) {
     if (cart == null || cart.isEmpty()) {
       return BeeConst.STRING_EMPTY;
@@ -244,7 +245,7 @@ public class CartList extends HtmlTable implements ValueChangeHandler<Boolean> {
 
     Collection<CartAccumulator> accumulators =
         UiHelper.getChildren(BodyPanel.get(), CartAccumulator.class);
-    
+
     if (!BeeUtils.isEmpty(accumulators)) {
       for (CartAccumulator accumulator : accumulators) {
         long id = accumulator.getArticleId();

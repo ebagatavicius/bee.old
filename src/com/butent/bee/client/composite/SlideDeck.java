@@ -130,13 +130,13 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
       if (stepValue > stepTransitionStartValue()) {
         if (!isTransition()) {
           setTransition(true);
-          
+
           setNextPosition(BeeUtils.rotateForwardExclusive(getPrevPosition(), 0, slides.size()));
           updatePassiveWrapper(getNextPosition());
 
           getEffect().start(getPrevStyle(), getNextStyle(), getSize());
         }
-        
+
         applyTransition(getEffect(), stepValue);
 
       } else if (isTransition()) {
@@ -175,7 +175,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
     private double getCycleValue() {
       return cycleValue;
     }
-    
+
     private double getCut() {
       return cut;
     }
@@ -183,7 +183,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
     private int getNextPosition() {
       return nextPosition;
     }
-    
+
     private Style getNextStyle() {
       return nextStyle;
     }
@@ -191,11 +191,11 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
     private Double getPausedAt() {
       return pausedAt;
     }
-    
+
     private int getPrevPosition() {
       return prevPosition;
     }
-    
+
     private Style getPrevStyle() {
       return prevStyle;
     }
@@ -248,7 +248,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
     private void setCut(double cut) {
       this.cut = cut;
     }
-    
+
     private void setNextPosition(int nextPosition) {
       this.nextPosition = nextPosition;
     }
@@ -508,7 +508,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
       eff = 0;
     }
     this.effect = Effect.values()[eff];
-    
+
     Integer millis = BeeKeeper.getStorage().getInteger(IDLE_MILLIS_KEY);
     this.idleMillis = BeeUtils.isPositive(millis) ? millis : IDLE_MILLIS_DEFAULT;
 
@@ -700,7 +700,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
   private Widget getActiveWrapper() {
     return wrappers[getActiveWrapperIndex()];
   }
-  
+
   private int getActiveWrapperIndex() {
     return activeWrapperIndex;
   }
@@ -801,12 +801,12 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
         updateRepeat(EventUtils.getEventTargetElement(event));
       }
     });
-    
+
     controls.add(cycle);
 
     FaLabel backward = new FaLabel(FontAwesome.BACKWARD);
     backward.addStyleName(STYLE_PREFIX + "backward");
-    
+
     backward.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -862,7 +862,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
 
     HtmlTable table = new HtmlTable(STYLE_SETTINGS_PREFIX + "table");
     int row = 0;
-    
+
     Label effLabel = new Label("Effect");
     table.setWidgetAndStyle(row, 0, effLabel, STYLE_SETTINGS_LABEL);
 
@@ -888,7 +888,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
 
     Label idleLabel = new Label("Idle");
     table.setWidgetAndStyle(row, 0, idleLabel, STYLE_SETTINGS_LABEL);
-    
+
     InputRange idleWidget = new InputRange(IDLE_MILLIS_MIN, IDLE_MILLIS_MAX, IDLE_MILLIS_STEP);
     idleWidget.setValue(getIdleMillis());
 
@@ -908,7 +908,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
 
     Label transitionLabel = new Label("Transition");
     table.setWidgetAndStyle(row, 0, transitionLabel, STYLE_SETTINGS_LABEL);
-    
+
     InputRange transitionWidget = new InputRange(TRANSITION_MILLIS_MIN, TRANSITION_MILLIS_MAX,
         TRANSITION_MILLIS_STEP);
     transitionWidget.setValue(getTransitionMillis());
@@ -941,7 +941,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
     });
 
     panel.add(close);
-    
+
     return panel;
   }
 
@@ -1074,7 +1074,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
           ? FontAwesome.PAUSE : FontAwesome.PLAY);
     }
   }
-  
+
   private void updateProgressControl(double value) {
     Widget progress = DomUtils.getChildById(controls, getProgressId());
     if (progress instanceof Progress) {

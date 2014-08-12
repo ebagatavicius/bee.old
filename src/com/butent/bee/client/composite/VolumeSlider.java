@@ -269,6 +269,11 @@ public class VolumeSlider extends Absolute implements Editor, HasValueChangeHand
   }
 
   @Override
+  public void render(String value) {
+    setValue(value);
+  }
+
+  @Override
   public void setAccessKey(char key) {
     progressBar.setAccessKey(key);
   }

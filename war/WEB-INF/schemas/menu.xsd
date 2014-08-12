@@ -71,7 +71,7 @@
     <xs:attribute name="separator" type="xs:boolean" />
     <xs:attribute name="order" type="xs:int" />
     <xs:attribute name="parent" type="xs:string" />
-    <xs:attribute name="module" type="type:module" />
+    <xs:attribute name="module" type="type:modules" />
     <xs:attribute name="data" type="type:dataView" />
   </xs:complexType>
 </xs:schema>

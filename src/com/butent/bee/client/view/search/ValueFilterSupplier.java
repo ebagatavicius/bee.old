@@ -69,7 +69,7 @@ public class ValueFilterSupplier extends AbstractFilterSupplier {
     } else {
       searchBy.addAll(searchColumns);
     }
-    
+
     for (BeeColumn by : searchBy) {
       if (!DataUtils.contains(columns, by.getId())) {
         this.columns.add(by);

@@ -3,10 +3,37 @@
 
   name="Parts"
   idName="PartID"
+  audit="false"
   >
   <Fields>
     <Relation name="Message" relation="Messages" notNull="true" cascade="DELETE" label="=mailMessage" />
     <Text name="Content" />
     <Text name="HtmlContent" />
+    <Text name="ContentFTS">
+      <PostgreSql>tsvector</PostgreSql>
+      <MsSql></MsSql>
+      <Oracle></Oracle>
+    </Text>
   </Fields>
+  <Indexes>
+    <Index>
+      <PostgreSql>USING gin("ContentFTS")</PostgreSql>
+      <MsSql></MsSql>
+      <Oracle></Oracle>
+    </Index>
+  </Indexes>
+  <Triggers>
+    <Trigger events="INSERT UPDATE" scope="ROW" timing="BEFORE">
+      <PostgreSql>
+        <![CDATA[
+BEGIN
+  NEW."ContentFTS" = to_tsvector('simple', NEW."Content");
+  RETURN NEW;
+END;
+        ]]>
+      </PostgreSql>
+      <MsSql></MsSql>
+      <Oracle></Oracle>
+    </Trigger>
+  </Triggers>
 </Table>

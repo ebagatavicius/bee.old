@@ -4,7 +4,7 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public abstract class Node {
-  
+
   protected static String indent(int indent, String string) {
     if (string == null) {
       return BeeConst.STRING_EMPTY;
@@ -25,9 +25,9 @@ public abstract class Node {
   public String build() {
     return build(BeeConst.UNDEF, BeeConst.UNDEF);
   }
-  
+
   public abstract String build(int indentStart, int indentStep);
-  
+
   public int index() {
     if (getParent() instanceof FertileElement) {
       return ((FertileElement) getParent()).indexOf(this);
@@ -43,7 +43,7 @@ public abstract class Node {
   public Node getParent() {
     return parent;
   }
-  
+
   public void setParent(Node parent) {
     this.parent = parent;
   }

@@ -67,7 +67,7 @@ public class Canvas extends FocusWidget implements IdentifiableWidget {
   public String toDataUrl() {
     return getCanvasElement().toDataUrl();
   }
-  
+
   public String toDataUrl(String type) {
     return getCanvasElement().toDataUrl(type);
   }

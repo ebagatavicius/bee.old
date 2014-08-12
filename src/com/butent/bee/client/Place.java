@@ -5,13 +5,13 @@ import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.Assert;
 
 public abstract class Place implements HandlesHistory {
-  
+
   private final String id;
 
   public Place(IdentifiableWidget widget) {
     this(Assert.notNull(widget).getId());
   }
-  
+
   public Place(String id) {
     super();
     this.id = Assert.notEmpty(id);

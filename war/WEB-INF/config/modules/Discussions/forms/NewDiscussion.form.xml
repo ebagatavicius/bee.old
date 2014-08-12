@@ -20,18 +20,18 @@
 
   <FlowPanel style="padding: 10px 2px 2px 10px; min-width: 660px; min-height: 590px">
     
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel for="Subject" style="&section;" class="flexBox-horizontal">
       <Label text="=discussSubject" class="bee-required" style="&lbl1; min-width:80px;" />
       <InputText source="Subject" style="&inp2x; width: 541px" />
     </FlowPanel>
 
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel for="Description" style="&section;" class="flexBox-horizontal">
       <Label text="=discussDescription" style="&top1; padding-right: 18px; min-width:80px;" />
       <RichTextEditor name="Description" style="width: 540px; height: 200px;" />
     </FlowPanel>
 
     &separator;
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel data="DiscussionsFiles" style="&section;" class="flexBox-horizontal">
       <Label text="=discussFiles" style="&top1; min-width:70px;" />
       <FileCollector name="Files" editableColumns="name">
         <face resource="attachment" />
@@ -41,41 +41,45 @@
     &separator; 
     
     <FlowPanel style="&section;" class="flexBox-horizontal">
-      <CheckBox name="Accessibility" source="Accessibility" text="=discussPublic" style="&top1; min-width:70px; padding-right:18px;" />
-      <CheckBox name="Mail" text="=mailNotify" />
+      <CheckBox data="Users" name="Accessibility" source="Accessibility" text="=discussPublic" style="&top1; min-width:70px; padding-right:18px;" />
+      <CheckBox module="Mail.Administration" name="Mail" text="=mailNotify" />
     </FlowPanel>
     
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel data="Users" style="&section;" class="flexBox-horizontal">
       <Label name="membersLabel" text="=discussMembers" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector name="Members" viewName="Users" property="Members" renderColumns="FirstName LastName"
         editPopup="true" editSource="CompanyPerson" disablable="true" style="&inp2x;" label="=discussMembers" />
     </FlowPanel>
 
     &separator;
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel data="Relations" for="Discussion" style="&section;" class="flexBox-horizontal">
       <Label text="=relatedTo" style="&header;" />
     </FlowPanel>
 
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel data="Relations" for="Company" module="Classifiers.Contacts" 
+    style="&section;" class="flexBox-horizontal">
       <Label text="=companies" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector viewName="Companies" property="Companies" renderColumns="Name"
         editPopup="true" style="&inp2x;" />
     </FlowPanel>
 
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel data="Relations" for="Person" module="Classifiers.Contacts"
+      style="&section;" class="flexBox-horizontal">
       <Label text="=persons" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector viewName="Persons" property="Persons" renderColumns="FirstName LastName"
         editPopup="true" style="&inp2x;" />
     </FlowPanel>
 
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel data="Relations" for="Appointment" module="Calendar"
+    style="&section;" class="flexBox-horizontal">
       <Label text="=calAppointments" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector viewName="Appointments" property="Appointments"
         renderColumns="Summary" choiceColumns="Summary StartDateTime EndDateTime"
         newRowEnabled="false" editPopup="true" style="&inp2x;" />
     </FlowPanel>
 
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel data="Relations" for="Task" module="Tasks" 
+    style="&section;" class="flexBox-horizontal">
       <Label text="=crmTasks" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector viewName="Tasks" property="Tasks" 
         renderColumns="Summary ExecutorFirstName ExecutorLastName"
@@ -83,7 +87,8 @@
         newRowEnabled="false" editPopup="true" style="&inp2x;" />
     </FlowPanel>
     
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel data="Relations" for="Document" module="Documents"
+      style="&section;" class="flexBox-horizontal">
       <Label text="=documents" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector viewName="Documents" property="Documents" 
         renderColumns="Name DocumentDate Number"
@@ -92,21 +97,21 @@
     </FlowPanel>
     
     &separator;
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel for="Topic" style="&section;" class="flexBox-horizontal">
       <Label text="=announcement" style="&header;" />
     </FlowPanel>
     
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel for="Topic" style="&section;" class="flexBox-horizontal">
       <Label text="=adTopic" style="&lbl1; min-width:150px;" />
       <DataSelector name="Topic" source="Topic" style="&inp2x; width: 250px" 
         choiceColumns="Name" filter="Visible" />
     </FlowPanel>
     
-    <FlowPanel style="&section;" class="flexBox-horizontal">
-      <Label name="DisplayInBoard" text="=displayInBoard" style="&lbl1; min-width:150px;" />
-      <Label text="=dateFromShort" style="text-transform: lowercase; margin-right:4px"/>
+    <FlowPanel for="Topic" style="&section;" class="flexBox-horizontal">
+      <Label for="Topic" name="DisplayInBoard" text="=displayInBoard" style="&lbl1; min-width:150px;" />
+      <Label for="VisibleFrom" text="=dateFromShort" style="text-transform: lowercase; margin-right:4px"/>
       <InputDateTime source="VisibleFrom" style="&inp2x; width: 100px; margin-right:8px"/>
-      <Label text="=dateToShort" style="text-transform: lowercase; margin-right:4px"/>
+      <Label for="VisibleTo" text="=dateToShort" style="text-transform: lowercase; margin-right:4px"/>
       <InputDateTime source="VisibleTo" style="&inp2x; width: 100px" />
     </FlowPanel>  
     

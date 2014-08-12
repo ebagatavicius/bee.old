@@ -20,7 +20,7 @@ public enum CellType {
     return null;
   }
 
-  private String code;
+  private final String code;
 
   private CellType(String code) {
     this.code = code;

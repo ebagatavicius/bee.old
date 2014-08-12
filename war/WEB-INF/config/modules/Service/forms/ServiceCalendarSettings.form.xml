@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Form [
   <!ENTITY tbl "border-collapse: collapse; margin-top: 2ex; margin-left: 1em;">
-  <!ENTITY cell "padding: 3px 1em;">
+  <!ENTITY cell "padding: 3px 0 3px 1em;">
   <!ENTITY lbl "text-align: right; max-width: 180px;">
   <!ENTITY spin "width: 50px;">
   <!ENTITY color "width: 120px;">
   <!ENTITY slider_inp "width: 100px;">
   <!ENTITY cb_inp "margin: 0;">
+  <!ENTITY dt_inp "width: 80px;">
 ]>
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
  
   name="ServiceCalendarSettings" viewName="ServiceSettings" caption="=settings"
-  width="760" height="400"
+  width="800" height="500"
   >
 
   <FlowPanel style="background-color: WhiteSmoke;" class="flexBox-horizontal">
@@ -27,6 +28,7 @@
         <Radio source="CalendarCompanyKind" vertical="false" />
       </row>
 
+      <br/>
       <row>
         <Label for="CalendarPixelsPerCompany" style="&lbl;" />
         <InputSpinner source="CalendarPixelsPerCompany" minValue="4" maxValue="300" style="&spin;" />
@@ -60,14 +62,18 @@
       </row>
     
       <row>
-        <Label for="CalendarItemOpacity" style="&lbl;" />
-        <InputRange source="CalendarItemOpacity" minValue="0" maxValue="100" step="5"
-          style="&slider_inp;" />
+        <Label for="CalendarFooterMap" style="&lbl;" />
+        <CheckBox source="CalendarFooterMap" html="-" style="&cb_inp;" />
+      </row>
+      
+      <br/>
+      <row>
+        <Label for="CalendarMinDate" style="&lbl;" />
+        <InputDate source="CalendarMinDate" style="&dt_inp;" />
       </row>
       <row>
-        <Label for="CalendarStripOpacity" style="&lbl;" />
-        <InputRange source="CalendarStripOpacity" minValue="0" maxValue="100" step="5"
-          style="&slider_inp;" />
+        <Label for="CalendarMaxDate" style="&lbl;" />
+        <InputDate source="CalendarMaxDate" style="&dt_inp;" />
       </row>
     </Table>
     
@@ -116,6 +122,18 @@
       <row>
         <Label for="CalendarTaskColor6" style="&lbl;" />
         <ColorEditor source="CalendarTaskColor6" style="&color;" />
+      </row>
+      
+      <br/>
+      <row>
+        <Label for="CalendarItemOpacity" style="&lbl;" />
+        <InputRange source="CalendarItemOpacity" minValue="0" maxValue="100" step="5"
+          style="&slider_inp;" />
+      </row>
+      <row>
+        <Label for="CalendarStripOpacity" style="&lbl;" />
+        <InputRange source="CalendarStripOpacity" minValue="0" maxValue="100" step="5"
+          style="&slider_inp;" />
       </row>
     </Table>
   </FlowPanel>

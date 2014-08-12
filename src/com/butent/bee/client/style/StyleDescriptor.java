@@ -29,7 +29,7 @@ public class StyleDescriptor extends StyleDeclaration {
       return sd;
     }
   }
-  
+
   private Font font;
   private SafeStyles safeStyles;
 

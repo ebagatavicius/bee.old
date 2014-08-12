@@ -87,7 +87,7 @@ public class ItemList extends Flow implements KeyDownHandler {
 
   private static Widget renderClientAndFeaturedPrice(int clientPrice, int featuredPrice) {
     Flow panel = new Flow(STYLE_CLIENT_AND_FEATURED_PRICE_PANEL);
-    
+
     Flow clientPanel = new Flow(STYLE_CLIENT_PRICE_PREFIX + "panel");
 
     InlineLabel clientValue = new InlineLabel(EcUtils.formatCents(clientPrice));
@@ -97,19 +97,19 @@ public class ItemList extends Flow implements KeyDownHandler {
     InlineLabel clientCurrency = new InlineLabel(EcConstants.CURRENCY);
     clientCurrency.addStyleName(STYLE_CLIENT_PRICE_PREFIX + "currency");
     clientPanel.add(clientCurrency);
-    
+
     panel.add(clientPanel);
 
     Flow featuredPanel = new Flow(STYLE_FEATURED_PRICE_PREFIX + "panel");
-    
+
     InlineLabel featuredValue = new InlineLabel(EcUtils.formatCents(featuredPrice));
     featuredValue.addStyleName(STYLE_FEATURED_PRICE_PREFIX + "value");
     featuredPanel.add(featuredValue);
-    
+
     InlineLabel featuredCurrency = new InlineLabel(EcConstants.CURRENCY);
     featuredCurrency.addStyleName(STYLE_FEATURED_PRICE_PREFIX + "currency");
     featuredPanel.add(featuredCurrency);
-    
+
     panel.add(featuredPanel);
 
     return panel;

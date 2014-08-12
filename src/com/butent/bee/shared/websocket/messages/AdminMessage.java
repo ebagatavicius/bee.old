@@ -9,7 +9,7 @@ import com.butent.bee.shared.utils.Codec;
 import java.util.List;
 
 public class AdminMessage extends Message implements HasRecipient {
-  
+
   public static AdminMessage command(String from, String to, String command) {
     AdminMessage adminMessage = new AdminMessage(from, to);
     adminMessage.setCommand(command);
@@ -55,7 +55,7 @@ public class AdminMessage extends Message implements HasRecipient {
   public String getResponse() {
     return response;
   }
-  
+
   @Override
   public String getTo() {
     return to;
@@ -63,8 +63,8 @@ public class AdminMessage extends Message implements HasRecipient {
 
   @Override
   public boolean isValid() {
-    return !BeeUtils.anyEmpty(getFrom(), getTo()) 
-        && BeeUtils.isEmpty(getCommand()) != BeeUtils.isEmpty(getResponse()); 
+    return !BeeUtils.anyEmpty(getFrom(), getTo())
+        && BeeUtils.isEmpty(getCommand()) != BeeUtils.isEmpty(getResponse());
   }
 
   @Override

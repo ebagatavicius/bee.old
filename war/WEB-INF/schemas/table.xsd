@@ -76,14 +76,18 @@
   <xs:element name="Enum" type="enumType" substitutionGroup="field" />
 
   <xs:complexType name="fieldType" abstract="true">
-    <xs:attribute name="name" type="type:fieldNameType" use="required" />
-    <xs:attribute name="notNull" type="xs:boolean" />
-    <xs:attribute name="unique" type="xs:boolean" />
-    <xs:attribute name="defExpr" type="defaultType" />          
-    <xs:attribute name="defValue" type="type:notEmptyString" />          
-    <xs:attribute name="translatable" type="xs:boolean" />
-    <xs:attribute name="label" type="xs:string" />
-    <xs:attribute name="audit" type="xs:boolean" default="true" />
+    <xs:complexContent>
+      <xs:extension base="checkType">
+        <xs:attribute name="name" type="type:fieldNameType" use="required" />
+        <xs:attribute name="notNull" type="xs:boolean" />
+        <xs:attribute name="unique" type="xs:boolean" />
+        <xs:attribute name="defExpr" type="defaultType" />          
+        <xs:attribute name="defValue" type="type:notEmptyString" />          
+        <xs:attribute name="translatable" type="xs:boolean" />
+        <xs:attribute name="label" type="xs:string" />
+        <xs:attribute name="audit" type="xs:boolean" default="true" />
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="hasPrecisionType" abstract="true">

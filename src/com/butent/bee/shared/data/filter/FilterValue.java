@@ -16,7 +16,7 @@ public final class FilterValue implements BeeSerializable {
   public static FilterValue of(String value, Boolean emptyValues) {
     return new FilterValue(value, emptyValues);
   }
-  
+
   public static FilterValue restore(String s) {
     Assert.notEmpty(s);
 
@@ -28,7 +28,7 @@ public final class FilterValue implements BeeSerializable {
 
   private String value;
   private Boolean emptyValues;
-  
+
   private FilterValue() {
   }
 
@@ -36,7 +36,7 @@ public final class FilterValue implements BeeSerializable {
     this.value = value;
     this.emptyValues = emptyValues;
   }
-  
+
   public FilterValue copy() {
     return new FilterValue(getValue(), getEmptyValues());
   }
@@ -66,7 +66,7 @@ public final class FilterValue implements BeeSerializable {
   public Boolean getEmptyValues() {
     return emptyValues;
   }
-  
+
   public String getValue() {
     return value;
   }
@@ -74,7 +74,7 @@ public final class FilterValue implements BeeSerializable {
   public boolean hasEmptiness() {
     return getEmptyValues() != null;
   }
-  
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -83,7 +83,7 @@ public final class FilterValue implements BeeSerializable {
     result = prime * result + ((emptyValues == null) ? 0 : emptyValues.hashCode());
     return result;
   }
-  
+
   public boolean hasValue() {
     return !BeeUtils.isEmpty(getValue());
   }

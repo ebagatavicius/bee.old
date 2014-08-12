@@ -7,8 +7,8 @@
     <DataColumn name="Code" visible="true" />
     <DataColumn name="Name" />
 
-    <RelColumn name="Branch" />
-    <DataColumn name="SupplierCode" />
+    <RelColumn name="Branch" module="Ec" />
+    <DataColumn name="SupplierCode" module="Ec" />
 
     <DataColumn name="Phone" />
     <DataColumn name="Mobile" />

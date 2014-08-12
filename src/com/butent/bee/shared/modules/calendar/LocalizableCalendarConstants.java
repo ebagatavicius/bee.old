@@ -5,11 +5,11 @@ public interface LocalizableCalendarConstants {
   String calAddAttendees();
 
   String calAddExecutorGroups();
-  
+
   String calAddExecutors();
 
   String calAddOwners();
-  
+
   String calAddParameters();
 
   String calAppointmentEnd();
@@ -63,13 +63,13 @@ public interface LocalizableCalendarConstants {
   String calInvalidDateInterval();
 
   String calInvalidHoursInterval();
-  
+
   String calMonthView();
-  
+
   String calMultidayLayoutHorizontal();
-  
+
   String calMultidayLayoutLastDay();
-  
+
   String calMultidayLayoutVertical();
 
   String calMultidayLayoutWorkingHours();
@@ -79,7 +79,7 @@ public interface LocalizableCalendarConstants {
   String calOpaque();
 
   String calOverlappingAppointments();
-  
+
   String calParameters();
 
   String calPlannedEndDateMustBeGreater();

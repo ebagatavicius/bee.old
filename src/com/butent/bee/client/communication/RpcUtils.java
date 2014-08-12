@@ -40,7 +40,7 @@ public final class RpcUtils {
       xhr.setRequestHeader(Service.RPC_VAR_SID, sid);
     }
   }
-  
+
   public static XMLHttpRequest createXhr() {
     return Browser.getWindow().newXMLHttpRequest();
   }

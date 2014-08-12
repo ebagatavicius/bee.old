@@ -17,11 +17,11 @@ import java.util.Set;
 public final class XPicture implements BeeSerializable {
 
   private static BeeLogger logger = LogUtils.getLogger(XPicture.class);
-  
+
   public enum Layout {
     RESIZE, REPAEAT
   }
-  
+
   public enum Type {
     DIB("dib"),
     EMF("emf"),
@@ -29,12 +29,12 @@ public final class XPicture implements BeeSerializable {
     PNG("png"),
     JPEG("jpg", "jpeg"),
     WMF("wmf");
-    
+
     private static Type find(String ext) {
       if (BeeUtils.isEmpty(ext)) {
         return null;
       }
-      
+
       for (Type type : values()) {
         if (type.extensions.contains(ext.toLowerCase())) {
           return type;
@@ -55,23 +55,23 @@ public final class XPicture implements BeeSerializable {
   private enum Serial {
     TYPE, SRC, IS_DATA_URI
   }
-  
+
   private static final String DATA_PREFIX = "data:image/";
   private static final String DATA_BASE64 = ";base64,";
-  
+
   public static XPicture create(String url) {
     if (url == null || url.isEmpty()) {
       return null;
     }
-    
+
     String src;
     boolean isData;
 
     String ext;
-    
+
     if (url.startsWith(DATA_PREFIX)) {
       isData = true;
-      
+
       int p = url.indexOf(DATA_BASE64);
       if (p > 0) {
         src = url.substring(p + DATA_BASE64.length());
@@ -92,7 +92,7 @@ public final class XPicture implements BeeSerializable {
       logger.warning("picture type not available", url);
       return null;
     }
-    
+
     Type type = Type.find(ext);
     if (type == null) {
       logger.warning("picture type", ext, "not supported");
@@ -104,7 +104,7 @@ public final class XPicture implements BeeSerializable {
       picture.setType(type);
       picture.setSrc(src);
       picture.setDataUri(isData);
-      
+
       return picture;
     }
   }

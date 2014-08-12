@@ -29,7 +29,7 @@ public class InputLong extends InputNumber {
   public FormWidget getWidgetType() {
     return FormWidget.INPUT_LONG;
   }
-  
+
   @Override
   protected boolean checkType(String v) {
     return BeeUtils.isLong(v);

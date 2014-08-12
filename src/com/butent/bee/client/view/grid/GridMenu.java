@@ -312,7 +312,7 @@ public class GridMenu {
         }
       });
     }
-    
+
     private static boolean isEditable(GridDescription gridDescription) {
       return !BeeUtils.isTrue(gridDescription.isReadOnly())
           && Data.isViewEditable(gridDescription.getViewName());
@@ -354,7 +354,7 @@ public class GridMenu {
     }
   }
 
-  public static final List<RightsState> ALL_STATES = 
+  public static final List<RightsState> ALL_STATES =
       Lists.newArrayList(RightsState.VIEW, RightsState.EDIT, RightsState.DELETE);
 
   private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "GridMenu-";
@@ -384,6 +384,15 @@ public class GridMenu {
         enabledItems.add(item);
       }
     }
+  }
+
+  public boolean isActionVisible(GridPresenter presenter, Action action) {
+    for (Item item : enabledItems) {
+      if (item.action == action) {
+        return item.isVisible(presenter);
+      }
+    }
+    return false;
   }
 
   public void open(final GridPresenter presenter) {

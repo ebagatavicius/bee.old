@@ -21,13 +21,13 @@ public abstract class AbstractCellRenderer extends AbstractRenderer<IsRow> imple
   public AbstractCellRenderer(CellSource cellSource) {
     this.cellSource = cellSource;
   }
-  
+
   /**
-   * @param sheet used by subclasses 
+   * @param sheet used by subclasses
    */
   public XCell export(IsRow row, int cellIndex, Integer styleRef, XSheet sheet) {
     String text = render(row);
-    
+
     if (BeeUtils.isEmpty(text)) {
       return null;
 
@@ -40,7 +40,7 @@ public abstract class AbstractCellRenderer extends AbstractRenderer<IsRow> imple
       return cell;
     }
   }
-  
+
   @Override
   public ValueType getValueType() {
     return (cellSource == null) ? null : cellSource.getValueType();
@@ -51,7 +51,7 @@ public abstract class AbstractCellRenderer extends AbstractRenderer<IsRow> imple
 
     if (type != null && sheet != null) {
       TextAlign textAlign = UiHelper.getDefaultHorizontalAlignment(type);
-    
+
       if (textAlign != null) {
         XStyle style = new XStyle();
         style.setTextAlign(textAlign);
@@ -80,7 +80,7 @@ public abstract class AbstractCellRenderer extends AbstractRenderer<IsRow> imple
       return cellSource.getLong(row);
     }
   }
-  
+
   protected String getString(IsRow row) {
     if (row == null || cellSource == null) {
       return null;

@@ -333,7 +333,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
       widget = form.getWidgetByName(selectorName);
       String idList = parameters.get(selectorName);
       if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
-        ((MultiSelector) widget).render(idList);
+        ((MultiSelector) widget).setIds(idList);
       }
     }
 
@@ -1334,8 +1334,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
           int dataIndex = DomUtils.getDataIndexInt(rowElement);
 
           if (!BeeConst.isUndef(dataIndex)) {
-            boolean modal = drillModal(event.getNativeEvent());
-            showDetails(data.getRow(dataIndex), cellElement, modal);
+            showDetails(data.getRow(dataIndex), cellElement);
           }
         }
       }
@@ -1344,7 +1343,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
     container.add(table);
   }
 
-  private void showDetails(SimpleRow dataRow, TableCellElement cellElement, boolean modal) {
+  private void showDetails(SimpleRow dataRow, TableCellElement cellElement) {
     CompoundFilter filter = Filter.and();
 
     filter.add(Filter.isEqual(ALS_ORDER_STATUS, new IntegerValue(OrderStatus.COMPLETED.ordinal())));
@@ -1444,6 +1443,6 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
     String caption = BeeUtils.notEmpty(BeeUtils.joinItems(captions),
         Localized.getConstants().trAssessmentRequests());
 
-    drillDown(DRILL_DOWN_GRID_NAME, caption, filter, modal);
+    drillDown(DRILL_DOWN_GRID_NAME, caption, filter);
   }
 }

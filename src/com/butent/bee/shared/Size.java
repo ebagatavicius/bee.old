@@ -64,7 +64,7 @@ public class Size {
     Assert.notNull(size);
     return new Size(width + size.width, height + size.height);
   }
-  
+
   public Size rotate() {
     return new Size(height, width);
   }

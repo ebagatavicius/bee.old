@@ -45,7 +45,7 @@ public class Span extends ComplexPanel implements HasIndexedWidgets, Identifiabl
   public boolean isEmpty() {
     return getWidgetCount() <= 0;
   }
-  
+
   @Override
   public void setId(String id) {
     DomUtils.setId(this, id);

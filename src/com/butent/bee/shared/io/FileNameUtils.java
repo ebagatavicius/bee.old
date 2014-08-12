@@ -317,7 +317,7 @@ public final class FileNameUtils {
     for (int i = 0; i < input.length(); i++) {
       char c = input.charAt(i);
 
-      if (c < BeeConst.CHAR_SPACE || BeeUtils.contains(ILLEGAL_NAME_CHARS, c) 
+      if (c < BeeConst.CHAR_SPACE || BeeUtils.contains(ILLEGAL_NAME_CHARS, c)
           || BeeUtils.contains(illegalChars, c)) {
 
         if (last != replacement) {

@@ -2,12 +2,14 @@ package com.butent.bee.client.view;
 
 import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.Global;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.ElementSize;
 import com.butent.bee.client.event.logical.ActiveRowChangeEvent;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Absolute;
 import com.butent.bee.client.layout.Split;
 import com.butent.bee.client.presenter.Presenter;
@@ -15,6 +17,7 @@ import com.butent.bee.client.screen.Domain;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.utils.Command;
 import com.butent.bee.client.utils.Evaluator;
@@ -72,17 +75,26 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
   }
 
   @Override
+  public HandlerRegistration addReadyHandler(ReadyEvent.Handler handler) {
+    if (ReadyEvent.maybeDelegate(this, getForm())) {
+      return addHandler(handler, ReadyEvent.getType());
+    } else {
+      return null;
+    }
+  }
+
+  @Override
   public void bind() {
     if (hasFooter()) {
-      getContent().getDisplay().addSelectionCountChangeHandler(getFooter());
+      getForm().getDisplay().addSelectionCountChangeHandler(getFooter());
     }
 
     if (getRowMessage() != null) {
-      getContent().getDisplay().addActiveRowChangeHandler(this);
+      getForm().getDisplay().addActiveRowChangeHandler(this);
     }
 
-    getContent().addAddStartHandler(this);
-    getContent().addAddEndHandler(this);
+    getForm().addAddStartHandler(this);
+    getForm().addAddEndHandler(this);
   }
 
   @Override
@@ -94,10 +106,10 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
     setInitialRowCount(rowCount);
 
     setHasSearch(hasData());
-    
+
     Set<Action> enabledActions = formDescription.getEnabledActions();
     Set<Action> disabledActions = formDescription.getDisabledActions();
-    
+
     if (!disabledActions.contains(Action.PRINT)) {
       enabledActions.add(Action.PRINT);
     }
@@ -130,14 +142,14 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
       Image confirm = new Image(Global.getImages().ok(), new Command() {
         @Override
         public void execute() {
-          getContent().prepareForInsert();
+          getForm().prepareForInsert();
         }
       });
 
       Image cancel = new Image(Global.getImages().cancel(), new Command() {
         @Override
         public void execute() {
-          getContent().finishNewRow(null);
+          getForm().finishNewRow(null);
         }
       });
 
@@ -187,16 +199,8 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
   }
 
   @Override
-  public FormView getContent() {
-    if (getCenter() == null) {
-      return null;
-    }
-    return (FormView) getCenter();
-  }
-
-  @Override
   public Domain getDomain() {
-    FormInterceptor interceptor = getContent().getFormInterceptor();
+    FormInterceptor interceptor = getForm().getFormInterceptor();
     return (interceptor == null) ? null : interceptor.getDomain();
   }
 
@@ -210,6 +214,15 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
       }
     }
     return null;
+  }
+
+  @Override
+  public FormView getForm() {
+    if (getCenter() instanceof FormView) {
+      return (FormView) getCenter();
+    } else {
+      return null;
+    }
   }
 
   @Override
@@ -255,7 +268,14 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
 
   @Override
   public String getSupplierKey() {
-    return FormFactory.getSupplierKey(getContent().getFormName());
+    FormInterceptor interceptor = getForm().getFormInterceptor();
+    String key = (interceptor == null) ? null : interceptor.getSupplierKey();
+
+    if (BeeUtils.isEmpty(key)) {
+      return FormFactory.getSupplierKey(getForm().getFormName());
+    } else {
+      return key;
+    }
   }
 
   @Override
@@ -338,14 +358,14 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
     boolean ok;
 
     if (getId().equals(source.getId())) {
-      ElementSize.copyWithAdjustment(source, target, getContent().getPrintElement());
+      ElementSize.copyWithAdjustment(source, target, getForm().getPrintElement());
       ok = true;
-      
+
     } else if (hasHeader() && getHeader().asWidget().getElement().isOrHasChild(source)) {
-      ok = getContent().printHeader() && getHeader().onPrint(source, target);
+      ok = getForm().printHeader() && getHeader().onPrint(source, target);
 
     } else if (hasFooter() && getFooter().asWidget().getElement().isOrHasChild(source)) {
-      ok = getContent().printFooter() && getFooter().onPrint(source, target);
+      ok = getForm().printFooter() && getFooter().onPrint(source, target);
 
     } else {
       ok = true;
@@ -355,11 +375,17 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
 
   @Override
   public void onStateChange(State state) {
-    FormInterceptor interceptor = getContent().getFormInterceptor();
+    FormInterceptor interceptor = getForm().getFormInterceptor();
 
     if (interceptor != null) {
       interceptor.onStateChange(state);
     }
+  }
+
+  @Override
+  public boolean reactsTo(Action action) {
+    FormView form = getForm();
+    return form != null && form.reactsTo(action);
   }
 
   public void setCommandHeight(int commandHeight) {
@@ -368,17 +394,17 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
 
   @Override
   public void setEnabled(boolean enabled) {
-    if (enabled == isEnabled()) {
-      return;
+    if (enabled != isEnabled()) {
+      this.enabled = enabled;
+      UiHelper.enableChildren(this, enabled);
     }
-    this.enabled = enabled;
-    DomUtils.enableChildren(this, enabled);
   }
 
   @Override
   public void setViewPresenter(Presenter viewPresenter) {
     this.viewPresenter = viewPresenter;
-    for (Widget child : getChildren()) {
+
+    for (Widget child : this) {
       if (child instanceof View && ((View) child).getViewPresenter() == null) {
         ((View) child).setViewPresenter(viewPresenter);
       }
@@ -386,17 +412,17 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
   }
 
   public void start(int rowCount) {
-    if (getContent() != null && hasData() && rowCount >= 0) {
+    if (getForm() != null && hasData() && rowCount >= 0) {
       Collection<PagerView> pagers = getPagers();
       if (pagers != null) {
         for (PagerView pager : pagers) {
-          pager.start(getContent().getDisplay());
+          pager.start(getForm().getDisplay());
         }
       }
-      getContent().start(rowCount);
+      getForm().start(rowCount);
 
     } else {
-      getContent().start(null);
+      getForm().start(null);
     }
   }
 

@@ -9,7 +9,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.EnumSet;
 
 public class DataChangeCallback extends IntCallback {
-  
+
   private final String viewName;
   private final EnumSet<Effect> effects;
 
@@ -19,7 +19,7 @@ public class DataChangeCallback extends IntCallback {
 
   public DataChangeCallback(String viewName, EnumSet<Effect> effects) {
     super();
-    
+
     this.viewName = viewName;
     this.effects = effects;
   }

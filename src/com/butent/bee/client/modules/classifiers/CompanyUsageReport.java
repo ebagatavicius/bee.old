@@ -37,12 +37,12 @@ import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.modules.transport.TransportConstants;
-import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.HasStringValue;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CompanyUsageReport extends ReportInterceptor {
@@ -54,8 +54,8 @@ public class CompanyUsageReport extends ReportInterceptor {
   private static final String NAME_START_DATE = "StartDate";
   private static final String NAME_END_DATE = "EndDate";
 
-  private static final List<String> RELATIONS = Lists.newArrayList();
-  private static final List<String> SELECTOR_NAMES = Lists.newArrayList();
+  private static final List<String> RELATIONS = new ArrayList<>();
+  private static final List<String> SELECTOR_NAMES = new ArrayList<>();
 
   private static void initRelations() {
     if (!RELATIONS.isEmpty()) {
@@ -133,12 +133,13 @@ public class CompanyUsageReport extends ReportInterceptor {
 
   private static boolean isDataVisible(String viewName) {
     DataInfo dataInfo = Data.getDataInfo(viewName);
+
     if (dataInfo == null) {
       return false;
+    } else {
+      return BeeKeeper.getUser().isAnyModuleVisible(dataInfo.getModule())
+          && BeeKeeper.getUser().isDataVisible(viewName);
     }
-
-    ModuleAndSub ms = ModuleAndSub.parse(dataInfo.getModule());
-    return BeeKeeper.getUser().isModuleVisible(ms) && BeeKeeper.getUser().isDataVisible(viewName);
   }
 
   public CompanyUsageReport() {
@@ -220,7 +221,7 @@ public class CompanyUsageReport extends ReportInterceptor {
       widget = form.getWidgetByName(name);
       String idList = parameters.get(name);
       if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
-        ((MultiSelector) widget).render(idList);
+        ((MultiSelector) widget).setIds(idList);
       }
     }
 
@@ -246,8 +247,8 @@ public class CompanyUsageReport extends ReportInterceptor {
 
   @Override
   protected void doReport() {
-    List<String> args = Lists.newArrayList();
-    final List<String> labels = Lists.newArrayList();
+    List<String> args = new ArrayList<>();
+    final List<String> labels = new ArrayList<>();
 
     String relationIndex = getEditorValue(NAME_RELATION);
     if (BeeUtils.isPositiveInt(relationIndex)) {
@@ -337,7 +338,7 @@ public class CompanyUsageReport extends ReportInterceptor {
       labels.add(Format.renderPeriod(getDateTime(NAME_START_DATE), getDateTime(NAME_END_DATE)));
     }
 
-    List<String> selectorLabels = Lists.newArrayList();
+    List<String> selectorLabels = new ArrayList<>();
 
     for (String name : SELECTOR_NAMES) {
       String label = getFilterLabel(name);
@@ -404,7 +405,7 @@ public class CompanyUsageReport extends ReportInterceptor {
         new PresenterCallback() {
           @Override
           public void onCreate(Presenter presenter) {
-            Widget widget = presenter.getWidget().asWidget();
+            Widget widget = presenter.getMainView().asWidget();
             StyleUtils.occupy(widget);
 
             getDataContainer().add(widget);

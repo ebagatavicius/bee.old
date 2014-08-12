@@ -17,15 +17,15 @@ import java.util.List;
 public class TableColumn implements HasInfo, IsColumn {
 
   private ValueType type;
-  
+
   private String label;
-  
+
   private String id;
-  
+
   private String pattern;
-  
+
   private CustomProperties properties;
-  
+
   private int precision = BeeConst.UNDEF;
   private int scale = BeeConst.UNDEF;
 
@@ -49,7 +49,7 @@ public class TableColumn implements HasInfo, IsColumn {
       properties.remove(key);
     }
   }
-  
+
   @Override
   public TableColumn copy() {
     TableColumn result = new TableColumn(type, label, id);
@@ -64,7 +64,7 @@ public class TableColumn implements HasInfo, IsColumn {
   public String getEnumKey() {
     return enumKey;
   }
-  
+
   @Override
   public String getId() {
     return id;
@@ -99,7 +99,7 @@ public class TableColumn implements HasInfo, IsColumn {
   public CustomProperties getProperties() {
     return properties;
   }
-  
+
   @Override
   public String getProperty(String key) {
     Assert.notEmpty(key);
@@ -123,7 +123,7 @@ public class TableColumn implements HasInfo, IsColumn {
   public boolean isCharacter() {
     return ValueType.TEXT.equals(getType()) && getPrecision() > 0;
   }
-  
+
   @Override
   public boolean isText() {
     return ValueType.TEXT.equals(getType()) && getPrecision() <= 0;
@@ -133,7 +133,7 @@ public class TableColumn implements HasInfo, IsColumn {
   public void setEnumKey(String enumKey) {
     this.enumKey = enumKey;
   }
-  
+
   @Override
   public void setId(String id) {
     this.id = id;
@@ -153,7 +153,7 @@ public class TableColumn implements HasInfo, IsColumn {
   public void setPrecision(int precision) {
     this.precision = precision;
   }
-  
+
   @Override
   public void setProperties(CustomProperties properties) {
     this.properties = properties;
@@ -177,7 +177,7 @@ public class TableColumn implements HasInfo, IsColumn {
   public void setScale(int scale) {
     this.scale = scale;
   }
-  
+
   @Override
   public void setType(ValueType type) {
     this.type = type;

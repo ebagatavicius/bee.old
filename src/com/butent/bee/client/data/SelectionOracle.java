@@ -1,8 +1,5 @@
 package com.butent.bee.client.data;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.BeeKeeper;
@@ -34,8 +31,11 @@ import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -79,7 +79,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
       }
       Request r = (Request) obj;
       return BeeUtils.equalsTrim(getQuery(), r.getQuery())
-          && Objects.equal(getSearchType(), r.getSearchType())
+          && Objects.equals(getSearchType(), r.getSearchType())
           && getOffset() == r.getOffset() && getLimit() == r.getLimit();
     }
 
@@ -101,7 +101,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
 
     @Override
     public int hashCode() {
-      return Objects.hashCode(BeeUtils.trim(getQuery()), getSearchType(), getOffset(), getLimit());
+      return Objects.hash(BeeUtils.trim(getQuery()), getSearchType(), getOffset(), getLimit());
     }
 
     public boolean isEmpty() {
@@ -181,7 +181,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
 
   private final DataInfo dataInfo;
 
-  private final List<IsColumn> searchColumns = Lists.newArrayList();
+  private final List<IsColumn> searchColumns = new ArrayList<>();
 
   private final Filter immutableFilter;
   private final Order viewOrder;
@@ -194,16 +194,16 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
   private Request lastRequest;
   private PendingRequest pendingRequest;
 
-  private final List<HandlerRegistration> handlerRegistry = Lists.newArrayList();
-  private final Set<Consumer<Integer>> rowCountChangeHandlers = Sets.newHashSet();
-  private final Set<Consumer<BeeRowSet>> dataReceivedHandlers = Sets.newHashSet();
+  private final List<HandlerRegistration> handlerRegistry = new ArrayList<>();
+  private final Set<Consumer<Integer>> rowCountChangeHandlers = new HashSet<>();
+  private final Set<Consumer<BeeRowSet>> dataReceivedHandlers = new HashSet<>();
 
   private boolean dataInitialized;
 
   private BeeRowSet translator;
 
   private Filter additionalFilter;
-  private final Set<Long> exclusions = Sets.newHashSet();
+  private final Set<Long> exclusions = new HashSet<>();
 
   public SelectionOracle(Relation relation, DataInfo dataInfo) {
     Assert.notNull(relation);
@@ -217,9 +217,9 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
         this.searchColumns.add(column);
       }
     }
-    
+
     String cuf = relation.getCurrentUserFilter();
-    this.immutableFilter = BeeUtils.isEmpty(cuf) ? relation.getFilter() 
+    this.immutableFilter = BeeUtils.isEmpty(cuf) ? relation.getFilter()
         : Filter.and(relation.getFilter(), BeeKeeper.getUser().getFilter(cuf));
 
     this.viewOrder = relation.getOrder();
@@ -234,13 +234,13 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
       dataReceivedHandlers.add(handler);
     }
   }
- 
+
   public void addRowCountChangeHandler(Consumer<Integer> handler) {
     if (handler != null) {
       rowCountChangeHandlers.add(handler);
     }
   }
-  
+
   public void clearData() {
     if (isFullCaching()) {
       setViewData(null);
@@ -249,7 +249,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
 
     resetState();
   }
-  
+
   public void clearExclusions() {
     if (!exclusions.isEmpty()) {
       exclusions.clear();
@@ -269,7 +269,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
   public Filter getAdditionalFilter() {
     return additionalFilter;
   }
-  
+
   public BeeRow getCachedRow(long rowId) {
     if (getViewData() == null) {
       return null;
@@ -367,7 +367,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
     rowCountChangeHandlers.clear();
     dataReceivedHandlers.clear();
   }
-  
+
   public void requestSuggestions(Request request, Callback callback) {
     Assert.notNull(request);
     Assert.notNull(callback);
@@ -386,11 +386,11 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
   }
 
   public void setAdditionalFilter(Filter additionalFilter) {
-    if (Objects.equal(additionalFilter, this.additionalFilter)) {
+    if (Objects.equals(additionalFilter, this.additionalFilter)) {
       return;
     }
     this.additionalFilter = additionalFilter;
-    
+
     clearData();
   }
 
@@ -420,11 +420,11 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
     result.add(immutableFilter);
     result.add(getAdditionalFilter());
     result.add(queryFilter);
-    
+
     if (checkExclusions && !exclusions.isEmpty()) {
       result.add(Filter.idNotIn(exclusions));
     }
-    
+
     return result;
   }
 
@@ -599,7 +599,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
     int offset = request.getOffset();
     int limit = request.getLimit();
 
-    List<Suggestion> suggestions = Lists.newArrayList();
+    List<Suggestion> suggestions = new ArrayList<>();
     boolean hasMore = false;
 
     if (getRequestData() != null && !getRequestData().isEmpty()) {

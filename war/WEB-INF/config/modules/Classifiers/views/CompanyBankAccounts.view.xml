@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="CompanyBankAccounts" source="CompanyBankAccounts" module="Classifiers"
-  caption="=companyRelationTypes"
+  name="CompanyBankAccounts" source="CompanyBankAccounts" module="Classifiers.Contacts"
+  caption="=bankAccounts"
   >
   <Columns>
     <SimpleColumn name="Company" />
@@ -11,6 +11,7 @@
     <SimpleJoin joinType="LEFT" name="Bank">
       <SimpleColumn name="Name" alias="BankName" />
       <SimpleColumn name="BankCode" />
+      <SimpleColumn name="SWIFTCode" />
     </SimpleJoin>
       
     <ExternalJoin source="Companies" joinType="LEFT" name="DefaultBankAccount">
@@ -20,8 +21,6 @@
     <SimpleColumn name="BankAccount"/>
     <SimpleColumn name="IBANcode" />
     <SimpleColumn name="Notes" />
- </Columns>
- 
-   
+  </Columns>
 </View>
  

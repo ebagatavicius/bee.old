@@ -1,17 +1,16 @@
 package com.butent.bee.shared.websocket.messages;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.communication.ChatRoom;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class RoomsMessage extends Message {
 
-  private final List<ChatRoom> data = Lists.newArrayList();
+  private final List<ChatRoom> data = new ArrayList<>();
 
   public RoomsMessage(Collection<ChatRoom> data) {
     this();
@@ -26,11 +25,11 @@ public class RoomsMessage extends Message {
   public String brief() {
     return BeeUtils.toString(getData().size());
   }
-  
+
   public List<ChatRoom> getData() {
     return data;
   }
-  
+
   @Override
   public boolean isValid() {
     return !BeeUtils.isEmpty(getData());

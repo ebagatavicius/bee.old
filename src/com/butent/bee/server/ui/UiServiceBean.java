@@ -460,7 +460,7 @@ public class UiServiceBean {
     Filter filter = Filter.restore(where);
 
     SqlDelete delete = new SqlDelete(tblName)
-        .setWhere(view.getCondition(filter, sys.getViewFinder()));
+        .setWhere(view.getCondition(filter));
     return qs.updateDataWithResponse(delete);
   }
 

@@ -117,7 +117,7 @@ public class CellValidation {
     return getEditor() != null && getEditorValidation() != null
         && getEditorValidation().validateNewValue();
   }
-  
+
   public boolean shouldValidateEditorInput() {
     return getEditor() != null && getEditorValidation() != null
         && getEditorValidation().validateInput();

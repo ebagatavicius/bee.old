@@ -10,7 +10,7 @@ import java.util.Date;
  */
 
 public interface HasDateValue extends BeeSerializable, HasYearMonth {
-  
+
   HasDateValue fromDate(JustDate justDate);
 
   HasDateValue fromDateTime(DateTime dateTime);
@@ -18,30 +18,30 @@ public interface HasDateValue extends BeeSerializable, HasYearMonth {
   HasDateValue fromJava(Date date);
 
   DateTime getDateTime();
-  
+
   int getDom();
-  
+
   int getDow();
-  
+
   int getDoy();
-  
+
   int getHour();
 
   Date getJava();
-  
+
   int getMillis();
-  
+
   int getMinute();
-  
+
   int getSecond();
-  
+
   long getTime();
-  
+
   int getTimezoneOffset();
-  
+
   void setDom(int dom);
 
   boolean supportsTimezoneOffset();
-  
+
   String toTimeStamp();
 }

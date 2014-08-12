@@ -174,7 +174,9 @@ public final class UnboundSelector extends DataSelector implements HandlesRender
     addBlurHandler(new BlurHandler() {
       @Override
       public void onBlur(BlurEvent event) {
-        updateDisplay(getRenderedValue());
+        if (isStrict()) {
+          updateDisplay(getRenderedValue());
+        }
         if (!isHandledByForm()) {
           setEditing(false);
         }

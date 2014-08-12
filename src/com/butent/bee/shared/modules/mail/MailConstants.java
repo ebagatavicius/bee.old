@@ -145,7 +145,7 @@ public final class MailConstants {
   public static final String SVC_REMOVE_MESSAGES = "remove_messages";
   public static final String SVC_CHECK_MAIL = "check_mail";
   public static final String SVC_SEND_MAIL = "send_mail";
-  public static final String SVC_GET_USABLE_CONTENT = "get_usable_content";
+  public static final String SVC_STRIP_HTML = "strip_html";
 
   public static final String TBL_SIGNATURES = "Signatures";
   public static final String TBL_ACCOUNTS = "Accounts";
@@ -220,8 +220,6 @@ public final class MailConstants {
   public static final String FORM_MAIL = "Mail";
   public static final String FORM_MAIL_MESSAGE = "MailMessage";
   public static final String FORM_NEW_MAIL_MESSAGE = "NewMailMessage";
-
-  public static final String FILTER_SEARCH = "SearchFilter";
 
   public static final String DATA_TYPE_MESSAGE = "Message";
 

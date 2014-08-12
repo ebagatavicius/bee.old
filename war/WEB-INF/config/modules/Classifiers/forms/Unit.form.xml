@@ -1,30 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Form [
-<!ENTITY lbl1 "width: 95px; text-align: right; padding-right: 9px;">
-]>
-<f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  
-  name="Unit" viewName="Units" caption="=newUnit" height="225" width="475"
-  >
-	<FlowPanel class="flexBox-vertical" style="padding: 15px 1em 45px 1em;">
-		<Table style="border-spacing: 5px;">
-			<row>
-				<Label text="=unitName" class="bee-required" horizontalAlignment="right" style="&lbl1;"/>
-				<InputText source="Name"/>
-			</row>
-			<row>
-				<Label text="=unitFactor" horizontalAlignment="right" style="&lbl1;"/>
-				<InputText source="Factor"/>
-			</row>
-			<row>
-				<Label text="=baseUnit" horizontalAlignment="right" style="&lbl1;"/>
-				<DataSelector source="BaseUnit"/>
-			</row>
-			<row>
-				<Label text="=caption" horizontalAlignment="right" style="&lbl1;"/>
-				<InputText source="Caption"/>
-			</row>
-		</Table>
-	</FlowPanel>
+<!DOCTYPE Form>
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
+
+  name="Unit" viewName="Units" caption="=newUnit" width="320" height="160" >
+
+  <Table style="margin-left: 1em; margin-top: 1ex;">
+    <col index="0" kind="label" />
+    
+    <row>
+      <Label for="Name" />
+      <InputText source="Name" />
+    </row>
+    <row>
+      <Label for="Factor" />
+      <InputText source="Factor" />
+    </row>
+    <row>
+      <Label for="BaseUnit" />
+      <DataSelector source="BaseUnit" />
+    </row>
+    <row>
+      <Label for="Caption" />
+      <InputText source="Caption" />
+    </row>
+  </Table>
 </f:Form> 	

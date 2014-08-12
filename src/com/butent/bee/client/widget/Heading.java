@@ -7,7 +7,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 public class Heading extends CustomHasHtml {
 
   public static final String ATTR_RANK = "rank";
-  
+
   public Heading(int n) {
     super(Document.get().createHElement(n));
   }

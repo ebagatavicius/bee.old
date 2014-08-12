@@ -1,7 +1,6 @@
 package com.butent.bee.client.utils;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.xml.client.Attr;
 import com.google.gwt.xml.client.CDATASection;
 import com.google.gwt.xml.client.Comment;
@@ -40,6 +39,8 @@ import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 import com.butent.bee.shared.utils.XmlHelper;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public final class XmlUtils {
 
   private static final BeeLogger logger = LogUtils.getLogger(XmlUtils.class);
 
-  private static final Map<Short, String> NODE_TYPES = Maps.newHashMap();
+  private static final Map<Short, String> NODE_TYPES = new HashMap<>();
 
   static {
     NODE_TYPES.put(Node.ELEMENT_NODE, "Element");
@@ -117,7 +118,7 @@ public final class XmlUtils {
 
   public static Map<String, String> getAttributes(Element element, boolean includeNSDeclaration) {
     Assert.notNull(element);
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
 
     NamedNodeMap attributes = element.getAttributes();
     if (attributes == null || attributes.getLength() <= 0) {
@@ -203,7 +204,7 @@ public final class XmlUtils {
     Assert.notNull(parent);
     Assert.notEmpty(tagName);
 
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
     List<Element> children = getElementsByLocalName(parent, tagName);
 
     for (Element child : children) {
@@ -214,7 +215,7 @@ public final class XmlUtils {
 
   public static List<Element> getChildrenElements(Element parent) {
     Assert.notNull(parent);
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
 
     NodeList nodes = parent.getChildNodes();
     if (nodes == null || nodes.getLength() <= 0) {
@@ -233,7 +234,7 @@ public final class XmlUtils {
   public static List<String> getChildrenText(Element parent, String tagName) {
     Assert.notNull(parent);
     Assert.notEmpty(tagName);
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     List<Element> children = getElementsByLocalName(parent, tagName);
     if (children.isEmpty()) {
@@ -287,7 +288,7 @@ public final class XmlUtils {
 
   public static List<Property> getDocumentInfo(Document doc) {
     Assert.notNull(doc);
-    List<Property> lst = Lists.newArrayList();
+    List<Property> lst = new ArrayList<>();
 
     Element el = doc.getDocumentElement();
     if (el != null) {
@@ -329,7 +330,7 @@ public final class XmlUtils {
 
   public static List<Element> getElementsByLocalName(Element parent, String tagName, int max) {
     Assert.notEmpty(tagName);
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
 
     for (Element child : getChildrenElements(parent)) {
       if (BeeUtils.same(getLocalName(child), tagName)) {
@@ -410,7 +411,7 @@ public final class XmlUtils {
     Calculation rowRender = null;
     List<RenderableToken> rowRenderTokens = null;
 
-    List<SelectorColumn> selectorColumns = Lists.newArrayList();
+    List<SelectorColumn> selectorColumns = new ArrayList<>();
 
     for (Element child : children) {
       String tagName = getLocalName(child);
@@ -488,7 +489,7 @@ public final class XmlUtils {
       return null;
     }
 
-    List<RenderableToken> result = Lists.newArrayList();
+    List<RenderableToken> result = new ArrayList<>();
     for (Element token : tokens) {
       RenderableToken renderableToken = RenderableToken.create(getAttributes(token, false));
       if (renderableToken != null) {
@@ -538,7 +539,7 @@ public final class XmlUtils {
 
   public static List<ExtendedProperty> getTreeInfo(Node nd, String root, boolean detailed) {
     Assert.notNull(nd);
-    List<ExtendedProperty> lst = Lists.newArrayList();
+    List<ExtendedProperty> lst = new ArrayList<>();
 
     List<Property> tpInf = null;
     short tp = nd.getNodeType();

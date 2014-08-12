@@ -20,7 +20,7 @@ import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
 final class DiscussStarFilterSupplier extends AbstractFilterSupplier {
-  
+
   private boolean starred;
 
   public DiscussStarFilterSupplier(String options) {
@@ -45,7 +45,7 @@ final class DiscussStarFilterSupplier extends AbstractFilterSupplier {
   @Override
   public Filter parse(FilterValue input) {
     if (input != null && BeeUtils.isFalse(input.getEmptyValues())) {
-      return Filter.in(Data.getIdColumn(VIEW_DISCUSSIONS), VIEW_DISCUSSIONS_USERS, COL_DISCUSSION, 
+      return Filter.in(Data.getIdColumn(VIEW_DISCUSSIONS), VIEW_DISCUSSIONS_USERS, COL_DISCUSSION,
           Filter.and(BeeKeeper.getUser().getFilter(AdministrationConstants.COL_USER), Filter
               .notNull(COL_STAR)));
     } else {

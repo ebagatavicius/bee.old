@@ -8,11 +8,11 @@ import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 
-import com.butent.bee.client.utils.NewFileInfo;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.NotificationListener;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -543,24 +543,24 @@ public final class Images {
     map.put(key("silverTruck"), resources.silverTruck());
   }
 
-  public static List<NewFileInfo> sanitizeInput(Collection<NewFileInfo> input,
+  public static List<FileInfo> sanitizeInput(Collection<? extends FileInfo> input,
       NotificationListener notificationListener) {
 
-    List<NewFileInfo> result = Lists.newArrayList();
+    List<FileInfo> result = Lists.newArrayList();
     if (BeeUtils.isEmpty(input)) {
       return result;
     }
 
     List<String> errors = Lists.newArrayList();
 
-    for (NewFileInfo nfi : input) {
-      long size = nfi.getSize();
+    for (FileInfo fileInfo : input) {
+      long size = fileInfo.getSize();
 
       if (size > MAX_SIZE_FOR_DATA_URL) {
-        errors.add(BeeUtils.join(BeeConst.STRING_COLON + BeeConst.STRING_SPACE, nfi.getName(),
+        errors.add(BeeUtils.join(BeeConst.STRING_COLON + BeeConst.STRING_SPACE, fileInfo.getName(),
             Localized.getMessages().fileSizeExceeded(size, MAX_SIZE_FOR_DATA_URL)));
       } else {
-        result.add(nfi);
+        result.add(fileInfo);
       }
     }
 

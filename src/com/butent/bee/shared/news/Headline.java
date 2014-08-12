@@ -25,7 +25,7 @@ public final class Headline implements BeeSerializable, HasCaption {
       return forUpdate(id, caption);
     }
   }
-  
+
   public static Headline create(long id, String caption, String subtitle, boolean isNew) {
     if (isNew) {
       return forInsert(id, caption, subtitle);

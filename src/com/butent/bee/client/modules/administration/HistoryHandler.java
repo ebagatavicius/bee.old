@@ -83,7 +83,7 @@ public class HistoryHandler extends AbstractGridInterceptor implements ClickHand
   public GridInterceptor getInstance() {
     return new HistoryHandler(viewName, ids);
   }
-  
+
   @Override
   public void onClick(ClickEvent event) {
     if (event.getSource() instanceof AbstractCell<?>) {

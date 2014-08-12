@@ -114,7 +114,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   public void clearNotifications() {
     getNotificationDelegate().clearNotifications();
   }
-  
+
   public void ensureData() {
   }
 
@@ -176,7 +176,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   public abstract void onRequest(Element target, Scheduler.ScheduledCommand onChange);
 
   public abstract Filter parse(FilterValue input);
-  
+
   public boolean retainInput() {
     return AutocompleteProvider.retainValues(getAutocompletableWidgets());
   }
@@ -297,7 +297,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   protected List<SupplierAction> getActions() {
     return Lists.newArrayList();
   }
-  
+
   protected List<? extends IdentifiableWidget> getAutocompletableWidgets() {
     return Lists.newArrayList();
   }
@@ -471,7 +471,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   protected boolean isColumnNullable() {
     return (getColumn() == null) ? false : getColumn().isNullable();
   }
-  
+
   protected boolean isSelected(Integer item) {
     return selectedItems.contains(item);
   }
@@ -487,7 +487,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   protected String messageOneValue(String value, String count) {
     return Localized.getMessages().allValuesIdentical(getColumnLabel(), value, count);
   }
-  
+
   protected void onDialogCancel() {
   }
 
@@ -583,11 +583,11 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   private String getStyleSelected() {
     return getStylePrefix() + "selected";
   }
-  
+
   private void setCounterId(String counterId) {
     this.counterId = counterId;
   }
-  
+
   private void setCounterValue(int counterValue) {
     this.counterValue = counterValue;
   }
@@ -595,7 +595,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   private void setDialog(Popup dialog) {
     this.dialog = dialog;
   }
-  
+
   private void setFilterChanged(boolean filterChanged) {
     this.filterChanged = filterChanged;
   }

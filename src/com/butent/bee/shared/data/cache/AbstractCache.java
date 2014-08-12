@@ -8,7 +8,7 @@ abstract class AbstractCache<K, V> {
 
   private final int maxSize;
   private final ReplacementPolicy replacementPolicy;
-  
+
   AbstractCache(int maxSize, ReplacementPolicy replacementPolicy) {
     this.maxSize = maxSize;
     this.replacementPolicy = Assert.notNull(replacementPolicy);
@@ -27,7 +27,7 @@ abstract class AbstractCache<K, V> {
   public abstract void evict(Multimap<K, Long> history);
 
   public abstract V get(K key);
-  
+
   public double getFillRatio() {
     if (maxSize <= 0) {
       return -1.0;
@@ -39,7 +39,7 @@ abstract class AbstractCache<K, V> {
       return 0.0;
     }
   }
-  
+
   public int getMaxSize() {
     return maxSize;
   }
@@ -53,7 +53,7 @@ abstract class AbstractCache<K, V> {
   public boolean isEmpty() {
     return getSize() <= 0;
   }
-  
+
   public boolean isFull() {
     if (maxSize > 0) {
       return getSize() >= maxSize;
@@ -63,6 +63,6 @@ abstract class AbstractCache<K, V> {
   }
 
   public abstract void onAccess(K key);
-  
+
   public abstract boolean update(K key, V value);
 }

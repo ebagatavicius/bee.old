@@ -55,9 +55,9 @@ public interface LocalizableTaskConstants {
   String crmNewRequest();
 
   String crmNewTask();
-  
+
   String crmRecurringTask();
-  
+
   String crmReminderMailSubject();
 
   String crmReminderTimeMustBeGreaterThan();
@@ -201,7 +201,7 @@ public interface LocalizableTaskConstants {
   String crmTasksObservedTasks();
 
   String crmTasksRelated();
-  
+
   String crmTaskStatus();
 
   String crmTaskStatusActive();

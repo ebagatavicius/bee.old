@@ -149,7 +149,7 @@ public final class Colors {
   public static final String WHITESMOKE = "whitesmoke";
   public static final String YELLOW = "yellow";
   public static final String YELLOWGREEN = "yellowgreen";
-  
+
   private Colors() {
   }
 }

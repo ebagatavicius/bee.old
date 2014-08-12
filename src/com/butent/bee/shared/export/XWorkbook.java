@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XWorkbook implements BeeSerializable {
-  
+
   public static XWorkbook restore(String s) {
     Assert.notEmpty(s);
     XWorkbook workbook = new XWorkbook();
@@ -40,7 +40,7 @@ public class XWorkbook implements BeeSerializable {
     Assert.lengthEquals(arr, 2);
 
     setName(arr[0]);
-    
+
     if (!sheets.isEmpty()) {
       sheets.clear();
     }
@@ -64,7 +64,7 @@ public class XWorkbook implements BeeSerializable {
   public boolean isEmpty() {
     return sheets.isEmpty();
   }
-  
+
   @Override
   public String serialize() {
     List<String> values = new ArrayList<>();

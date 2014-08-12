@@ -29,7 +29,7 @@ import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.io.StoredFile;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -119,10 +119,10 @@ public class RequestEditor extends AbstractFormInterceptor {
           if (response.hasErrors()) {
             return;
           }
-          List<StoredFile> files = StoredFile.restoreCollection((String) response.getResponse());
+          List<FileInfo> files = FileInfo.restoreCollection((String) response.getResponse());
 
           if (!files.isEmpty()) {
-            for (StoredFile file : files) {
+            for (FileInfo file : files) {
               ((FileGroup) fileWidget).addFile(file);
             }
           }

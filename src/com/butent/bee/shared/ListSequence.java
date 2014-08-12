@@ -9,7 +9,6 @@ import java.util.List;
 
 /**
  * Implements operations of list.
- * 
  * @param <T> type of object
  */
 public class ListSequence<T> extends AbstractSequence<T> {
@@ -36,7 +35,7 @@ public class ListSequence<T> extends AbstractSequence<T> {
   /**
    * Returns the value of the list by {@code index}. The value {@code index} are between 0 and
    * {@code length() - 1}
-   * 
+   *
    * @param index index of the list field
    * @return the value of the list by index
    */
@@ -47,7 +46,7 @@ public class ListSequence<T> extends AbstractSequence<T> {
 
   /**
    * Converts list to array.
-   * 
+   *
    * @return converted array of list
    */
   @Override
@@ -63,7 +62,7 @@ public class ListSequence<T> extends AbstractSequence<T> {
 
   /**
    * Returns list of {@code java.util.List} type.
-   * 
+   *
    * @return list of {@code java.util.List} type
    */
   @Override
@@ -74,7 +73,7 @@ public class ListSequence<T> extends AbstractSequence<T> {
   /**
    * Inserts a new {@code value} into list by {@code index}. The value of {@code index} are between
    * 0 and {@code length()}
-   * 
+   *
    * @param index index of value in the list;
    * @param value value there will be insert
    */
@@ -86,7 +85,7 @@ public class ListSequence<T> extends AbstractSequence<T> {
 
   /**
    * Removes the value of the list by index.
-   * 
+   *
    * @param index index of value of the list;
    */
   @Override
@@ -97,7 +96,7 @@ public class ListSequence<T> extends AbstractSequence<T> {
 
   /**
    * Replaces the list values to other {@code value} by {@code index}.
-   * 
+   *
    * @param index index of value in the list
    * @param value a new value
    */
@@ -109,7 +108,7 @@ public class ListSequence<T> extends AbstractSequence<T> {
 
   /**
    * Sets a values in the list of other {@code lst}.
-   * 
+   *
    * @param lst the list of new values
    */
   @Override
@@ -119,7 +118,7 @@ public class ListSequence<T> extends AbstractSequence<T> {
 
   /**
    * Sets a value in the list of the array.
-   * 
+   *
    * @param arr the array of values
    */
   @Override

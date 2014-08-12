@@ -55,7 +55,7 @@ public class LocationMessage extends Message implements HasRecipient {
   public String brief() {
     return BeeUtils.joinWords(string(getLatitude()), string(getLongitude()));
   }
-  
+
   public Double getAccuracy() {
     return accuracy;
   }
@@ -93,14 +93,14 @@ public class LocationMessage extends Message implements HasRecipient {
   public boolean isValid() {
     return !BeeUtils.anyEmpty(getFrom(), getTo());
   }
-  
+
   @Override
   public String toString() {
     return BeeUtils.joinOptions("type", string(getType()), "from", getFrom(), "to", getTo(),
         "latitude", string(getLatitude()), "longitude", string(getLongitude()),
         "accuracy", string(getAccuracy()), "response", getResponse());
   }
-  
+
   @Override
   protected void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
@@ -109,18 +109,18 @@ public class LocationMessage extends Message implements HasRecipient {
     int i = 0;
     setFrom(arr[i++]);
     setTo(arr[i++]);
-    
+
     setLatitude(BeeUtils.toDoubleOrNull(arr[i++]));
     setLongitude(BeeUtils.toDoubleOrNull(arr[i++]));
     setAccuracy(BeeUtils.toDoubleOrNull(arr[i++]));
-    
+
     setResponse(arr[i++]);
   }
 
   @Override
   protected String serialize() {
     List<Object> values = Lists.newArrayList();
-    
+
     values.add(getFrom());
     values.add(getTo());
 
@@ -129,7 +129,7 @@ public class LocationMessage extends Message implements HasRecipient {
     values.add(getAccuracy());
 
     values.add(getResponse());
-    
+
     return Codec.beeSerialize(values);
   }
 

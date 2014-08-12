@@ -1,10 +1,10 @@
 package com.butent.bee.shared.time;
 
 public class ScheduleDateRange {
-  
+
   public static ScheduleDateRange maybeCreate(JustDate from, JustDate until,
       ScheduleDateMode mode) {
-    
+
     if (from != null && mode != null) {
       DateRange range;
       if (until == null || from.equals(until)) {
@@ -19,7 +19,7 @@ public class ScheduleDateRange {
         return new ScheduleDateRange(range, mode);
       }
     }
-    
+
     return null;
   }
 

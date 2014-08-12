@@ -24,7 +24,6 @@ import com.butent.bee.client.modules.administration.HistoryHandler;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.GridContainerImpl;
@@ -32,6 +31,7 @@ import com.butent.bee.client.view.GridContainerView;
 import com.butent.bee.client.view.HasGridView;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.ReadyForUpdateEvent;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
@@ -74,6 +74,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
+import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.GridDescription;
@@ -185,7 +186,11 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
       int rowCount, Filter userFilter, GridInterceptor gridInterceptor,
       Collection<UiOption> uiOptions, GridFactory.GridOptions gridOptions) {
 
-    GridContainerView view = new GridContainerImpl(gridDescription.getName());
+    Feed feed = (gridOptions == null) ? null : gridOptions.getFeed();
+    String key = (feed == null)
+        ? gridView.getGridKey() : ViewFactory.SupplierKind.NEWS.getKey(feed.name().toLowerCase());
+
+    GridContainerView view = new GridContainerImpl(gridDescription.getName(), key);
     view.create(gridDescription, gridView, rowCount, userFilter, gridInterceptor, uiOptions,
         gridOptions);
 
@@ -357,7 +362,7 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
     }
 
     if (getGridView().isChild()) {
-      FormView form = UiHelper.getForm(getWidget().asWidget());
+      FormView form = UiHelper.getForm(getMainView().asWidget());
 
       if (form != null && !BeeUtils.isEmpty(form.getViewName()) && form.getActiveRow() != null) {
         DataInfo dataInfo = Data.getDataInfo(form.getViewName());
@@ -386,11 +391,6 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
   @Override
   public String getViewName() {
     return getDataProvider().getViewName();
-  }
-
-  @Override
-  public IdentifiableWidget getWidget() {
-    return getMainView();
   }
 
   @Override
@@ -545,6 +545,17 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
 
   public boolean hasFilter() {
     return getDataProvider().hasFilter();
+  }
+
+  public boolean isActionEnabled(Action action) {
+    if (action == null) {
+      return false;
+    } else if (menu.isActionVisible(this, action)) {
+      return true;
+    } else {
+      HeaderView header = getHeader();
+      return header != null && header.isActionEnabled(action);
+    }
   }
 
   @Override
@@ -704,7 +715,7 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
   }
 
   public boolean validateParent() {
-    FormView form = UiHelper.getForm(getWidget().asWidget());
+    FormView form = UiHelper.getForm(getMainView().asWidget());
     if (form == null) {
       return true;
     }

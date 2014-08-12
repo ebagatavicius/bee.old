@@ -1,21 +1,20 @@
 package com.butent.bee.client.presenter;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.ElementSize;
-import com.butent.bee.client.layout.Complex;
 import com.butent.bee.client.output.Printable;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasWidgetSupplier;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
+import com.butent.bee.client.view.form.FormAndHeader;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -31,7 +30,8 @@ import java.util.Set;
 
 public class RowPresenter extends AbstractPresenter implements Printable, SaveChangesEvent.Handler {
 
-  private static final class Container extends Complex implements HasCaption, HasWidgetSupplier {
+  private static final class Container extends FormAndHeader implements HasCaption,
+      HasWidgetSupplier {
 
     private final DataInfo dataInfo;
     private final long rowId;
@@ -63,29 +63,11 @@ public class RowPresenter extends AbstractPresenter implements Printable, SaveCh
     public String getSupplierKey() {
       return RowEditor.getSupplierKey(dataInfo.getViewName(), rowId);
     }
-
-    private FormView getForm() {
-      for (Widget child : getChildren()) {
-        if (child instanceof FormView) {
-          return (FormView) child;
-        }
-      }
-      return null;
-    }
-
-    private HeaderView getHeader() {
-      for (Widget child : getChildren()) {
-        if (child instanceof HeaderView) {
-          return (HeaderView) child;
-        }
-      }
-      return null;
-    }
   }
 
-  public static final String STYLE_CONTAINER = "bee-RowContainer";
-  public static final String STYLE_HEADER = "bee-RowHeader";
-  public static final String STYLE_CAPTION = "bee-RowCaption";
+  public static final String STYLE_CONTAINER = StyleUtils.CLASS_NAME_PREFIX + "RowContainer";
+  public static final String STYLE_HEADER = StyleUtils.CLASS_NAME_PREFIX + "RowHeader";
+  public static final String STYLE_CAPTION = StyleUtils.CLASS_NAME_PREFIX + "RowCaption";
 
   private static HeaderView createHeader(String caption, Set<Action> enabledActions,
       Set<Action> disabledActions) {
@@ -121,8 +103,7 @@ public class RowPresenter extends AbstractPresenter implements Printable, SaveCh
     container.addTopHeightFillHorizontal(headerView.asWidget(), 0, headerView.getHeight());
     container.addTopBottomFillHorizontal(formView.asWidget(), headerView.getHeight(), 0);
 
-    headerView.setViewPresenter(this);
-    formView.setViewPresenter(this);
+    container.setViewPresenter(this);
 
     formView.addSaveChangesHandler(this);
   }
@@ -139,17 +120,12 @@ public class RowPresenter extends AbstractPresenter implements Printable, SaveCh
 
   @Override
   public View getMainView() {
-    return container.getForm();
+    return container;
   }
 
   @Override
   public Element getPrintElement() {
-    return getWidget().asWidget().getElement();
-  }
-
-  @Override
-  public IdentifiableWidget getWidget() {
-    return container;
+    return getMainView().getElement();
   }
 
   @Override

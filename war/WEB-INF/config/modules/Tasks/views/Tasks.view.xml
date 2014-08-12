@@ -4,6 +4,8 @@
   name="Tasks" source="Tasks" caption="=crmTasks"
   newRowForm="NewTask" editForm="Task" rowCaption="Summary" 
   >
+  <Relation renderColumns="Summary ExecutorFirstName ExecutorLastName"
+    choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime" />
   <Columns>
     <SimpleColumn name="Summary" />
     <SimpleColumn name="Description" />

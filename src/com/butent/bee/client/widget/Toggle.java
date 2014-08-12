@@ -36,7 +36,7 @@ import elemental.js.dom.JsElement;
 
 public class Toggle extends CustomWidget implements Editor, HasValueChangeHandlers<String>,
     HasCheckedness {
-  
+
   private static final String STYLE_SUFFIX_CHECKED = "checked";
   private static final String STYLE_SUFFIX_UNCHECKED = "unchecked";
 
@@ -74,12 +74,12 @@ public class Toggle extends CustomWidget implements Editor, HasValueChangeHandle
 
     super(element, BeeUtils.notEmpty(styleName, "bee-Toggle"));
     addStyleDependentName(STYLE_SUFFIX_UNCHECKED);
-    
+
     this.upFace = upFace;
     this.downFace = downFace;
-    
+
     this.checked = checked;
-    
+
     getElement().setInnerHTML(checked ? downFace : upFace);
     sinkEvents(Event.ONCLICK);
   }
@@ -93,7 +93,7 @@ public class Toggle extends CustomWidget implements Editor, HasValueChangeHandle
     this(element, String.valueOf(up.getCode()), String.valueOf(down.getCode()), styleName, checked);
     StyleUtils.setFontFamily(this, FontAwesome.FAMILY);
   }
-  
+
   @Override
   public HandlerRegistration addBlurHandler(BlurHandler handler) {
     return addDomHandler(handler, BlurEvent.getType());
@@ -223,6 +223,11 @@ public class Toggle extends CustomWidget implements Editor, HasValueChangeHandle
     }
 
     super.onBrowserEvent(event);
+  }
+
+  @Override
+  public void render(String value) {
+    setValue(value);
   }
 
   @Override

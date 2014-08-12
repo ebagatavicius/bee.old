@@ -2,12 +2,13 @@ package com.butent.bee.client.modules.transport;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -54,6 +55,7 @@ import com.butent.bee.client.grid.column.AbstractColumn;
 import com.butent.bee.client.layout.TabbedPages;
 import com.butent.bee.client.layout.TabbedPages.SelectionOrigin;
 import com.butent.bee.client.modules.mail.NewMailMessage;
+import com.butent.bee.client.modules.trade.TotalRenderer;
 import com.butent.bee.client.output.PrintFormInterceptor;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.presenter.Presenter;
@@ -78,7 +80,7 @@ import com.butent.bee.client.widget.InputBoolean;
 import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
-import com.butent.bee.shared.css.values.WhiteSpace;
+import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -88,6 +90,7 @@ import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.event.DataChangeEvent;
+import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.IntegerValue;
 import com.butent.bee.shared.data.value.LongValue;
@@ -106,6 +109,7 @@ import com.butent.bee.shared.ui.Relation.Caching;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -262,7 +266,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
                 Data.getInteger(view, row, COL_ASSESSMENT_STATUS));
 
             if (isRevocable(status)) {
-              Global.inputString(loc.trAssessmentRejection(), loc.trAssessmentRejectionReason(),
+              Global.inputString(loc.trAssessmentRejection(), loc.trAssessmentReason(),
                   new StringCallback() {
                     @Override
                     public void onSuccess(String value) {
@@ -430,21 +434,40 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
     public void process() {
       if (Objects.equal(orderStatus, OrderStatus.CANCELED)
           || Objects.equal(status, AssessmentStatus.LOST)) {
-        Global.inputString(confirmationQuestion,
-            loc.trAssessmentRejectionReason(), new StringCallback() {
-              @Override
-              public void onSuccess(String value) {
-                update(value);
-              }
-            });
+        Global.inputString(confirmationQuestion, loc.trAssessmentReason(), new StringCallback() {
+          @Override
+          public void onSuccess(String value) {
+            save(value);
+          }
+        });
       } else {
         Global.confirm(confirmationQuestion, new ConfirmationCallback() {
           @Override
           public void onConfirm() {
-            update(null);
+            save(null);
           }
         });
       }
+    }
+
+    public void save(final String notes) {
+      confirmUpdates(new ScheduledCommand() {
+        @Override
+        public void execute() {
+          int updateSize = Queries.update(getViewName(), form.getDataColumns(),
+              form.getOldRow(), form.getActiveRow(), form.getChildrenForUpdate(),
+              new RowCallback() {
+                @Override
+                public void onSuccess(BeeRow result) {
+                  RowUpdateEvent.fire(BeeKeeper.getBus(), getViewName(), result);
+                  update(notes);
+                }
+              });
+          if (updateSize == 0) {
+            update(notes);
+          }
+        }
+      });
     }
 
     public void update(String notes) {
@@ -718,23 +741,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
       header.addCommandItem(new Button(loc.trWriteEmail(), new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          Element div = Document.get().createDivElement();
-          StyleUtils.setWhiteSpace(div, WhiteSpace.PRE_WRAP);
-          IsRow activeRow = form.getActiveRow();
-          div.setInnerHTML("\n\n---\n"
-              + BeeUtils.joinWords(activeRow.getString(form.getDataIndex("FirstName")),
-                  activeRow.getString(form.getDataIndex("LastName"))));
-
-          Set<String> recipient = null;
-          String addr = activeRow.getString(form.getDataIndex("PersonEmail"));
-
-          if (addr == null) {
-            addr = activeRow.getString(form.getDataIndex("CustomerEmail"));
-          }
-          if (addr != null) {
-            recipient = Sets.newHashSet(addr);
-          }
-          NewMailMessage.create(recipient, null, null, null, div.getString(), null, null);
+          sendMail();
         }
       }));
       if (request) {
@@ -787,41 +794,13 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
   @Override
   public boolean beforeAction(final Action action, final Presenter presenter) {
     if (action == Action.SAVE && !isNewRow()) {
-      final int logIdx = form.getDataIndex(COL_ASSESSMENT_LOG);
-      final String oldLog = form.getOldRow().getString(logIdx);
-      String newLog = form.getActiveRow().getString(logIdx);
-
-      if (Objects.equal(oldLog, newLog)) {
-        final Map<String, DateTime> dates = Maps.newLinkedHashMap();
-
-        for (String col : new String[] {COL_DATE, "LoadingDate", "UnloadingDate"}) {
-          int idx = form.getDataIndex(col);
-          DateTime oldValue = form.getOldRow().getDateTime(idx);
-          DateTime value = form.getActiveRow().getDateTime(idx);
-
-          if (!Objects.equal(oldValue, value)) {
-            dates.put(Localized.maybeTranslate(form.getDataColumns().get(idx).getLabel()), value);
-          }
+      confirmUpdates(new ScheduledCommand() {
+        @Override
+        public void execute() {
+          presenter.handleAction(action);
         }
-        if (!BeeUtils.isEmpty(dates)) {
-          Global.inputString(BeeUtils.join("/", dates.keySet()), loc.trAssessmentRejectionReason(),
-              new StringCallback() {
-                @Override
-                public void onSuccess(String value) {
-                  String log = oldLog;
-
-                  for (Entry<String, DateTime> entry : dates.entrySet()) {
-                    log = buildLog(BeeUtils.joinWords(entry.getKey(),
-                        entry.getValue() != null ? entry.getValue().toCompactString()
-                            : loc.filterNullLabel()), value, log);
-                  }
-                  form.getActiveRow().setValue(logIdx, log);
-                  presenter.handleAction(action);
-                }
-              });
-          return false;
-        }
-      }
+      });
+      return false;
     }
     return super.beforeAction(action, presenter);
   }
@@ -933,6 +912,45 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
     }
   }
 
+  private void confirmUpdates(final ScheduledCommand action) {
+    final int logIdx = form.getDataIndex(COL_ASSESSMENT_LOG);
+    final String oldLog = form.getOldRow().getString(logIdx);
+    String newLog = form.getActiveRow().getString(logIdx);
+
+    if (Objects.equal(oldLog, newLog)) {
+      final Map<String, DateTime> dates = Maps.newLinkedHashMap();
+
+      for (String col : new String[] {COL_DATE, "LoadingDate", "UnloadingDate"}) {
+        int idx = form.getDataIndex(col);
+        DateTime oldValue = form.getOldRow().getDateTime(idx);
+        DateTime value = form.getActiveRow().getDateTime(idx);
+
+        if (!Objects.equal(oldValue, value)) {
+          dates.put(Localized.maybeTranslate(form.getDataColumns().get(idx).getLabel()), value);
+        }
+      }
+      if (!BeeUtils.isEmpty(dates)) {
+        Global.inputString(BeeUtils.join("/", dates.keySet()), loc.trAssessmentReason(),
+            new StringCallback() {
+              @Override
+              public void onSuccess(String value) {
+                String log = oldLog;
+
+                for (Entry<String, DateTime> entry : dates.entrySet()) {
+                  log = buildLog(BeeUtils.joinWords(entry.getKey(),
+                      entry.getValue() != null ? entry.getValue().toCompactString()
+                          : loc.filterNullLabel()), value, log);
+                }
+                form.getActiveRow().setValue(logIdx, log);
+                action.execute();
+              }
+            });
+        return;
+      }
+    }
+    action.execute();
+  }
+
   private boolean isExecutor() {
     return Objects.equal(form.getLongValue(COL_COMPANY_PERSON), userPerson)
         || Objects.equal(departments.get(form.getLongValue(COL_DEPARTMENT)), userPerson);
@@ -954,5 +972,114 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
     updateTotals(form, form.getActiveRow(), form.getWidgetByName(VAR_INCOME + VAR_TOTAL),
         form.getWidgetByName(VAR_EXPENSE + VAR_TOTAL), form.getWidgetByName("Profit"),
         form.getWidgetByName(VAR_INCOME), form.getWidgetByName(VAR_EXPENSE));
+  }
+
+  private void sendMail() {
+    final String cellStyle = "border:1px solid black;padding:3px;";
+
+    final HtmlTable table = new HtmlTable();
+    table.getElement().getStyle().setProperty("border-collapse", "collapse");
+    table.setDefaultCellStyles(cellStyle);
+    table.setColumnCellStyles(0, cellStyle + "text-align:right; font-weight:bold;");
+    int c = 0;
+
+    Multimap<String, String> flds = LinkedListMultimap.create();
+    flds.put("CustomerName", null);
+    flds.put("Date", null);
+    flds.put("Number", null);
+    flds.put("OrderNotes", null);
+    flds.put("LoadingDate", null);
+    flds.put("UnloadingDate", null);
+    flds.put("LoadingAddress", "LoadingPostIndex");
+    flds.put("LoadingAddress", "LoadingCountryName");
+    flds.put("UnloadingAddress", "UnloadingPostIndex");
+    flds.put("UnloadingAddress", "UnloadingCountryName");
+    flds.put("CargoNotes", null);
+    flds.put("Description", null);
+    flds.put("Quantity", "QuantityUnitName");
+    flds.put("Weight", "WeightUnitName");
+
+    for (String fld : flds.keySet()) {
+      String value = form.getStringValue(fld);
+
+      if (!BeeUtils.isEmpty(value)) {
+        table.setText(c, 0, Data.getColumnLabel(form.getViewName(), fld));
+        String value2 = null;
+
+        for (String val : flds.get(fld)) {
+          if (!BeeUtils.isEmpty(val)) {
+            value2 = BeeUtils.joinItems(value2, form.getStringValue(val));
+          }
+        }
+        table.setText(c, 1, BeeUtils.joinWords(fld.contains("Date")
+            ? TimeUtils.renderCompact(DateTime.restore(value)) : value, value2));
+        c++;
+      }
+    }
+    String total = form.getWidgetByName(VAR_INCOME + VAR_TOTAL).getElement().getInnerText();
+    table.setText(c, 0, Localized.maybeTranslate("=customerPrice"));
+    table.setText(c, 1, BeeUtils.joinWords(total, form.getStringValue("CurrencyName")));
+    c++;
+
+    Queries.getRowSet(VIEW_ASSESSMENTS, Lists.newArrayList(COL_CARGO),
+        Filter.equals(COL_ASSESSMENT, getActiveRowId()), new RowSetCallback() {
+          @Override
+          public void onSuccess(BeeRowSet cargos) {
+            Set<Long> cargoIds = new HashSet<>();
+            cargoIds.add(form.getLongValue(COL_CARGO));
+
+            for (IsRow row : cargos) {
+              cargoIds.add(row.getLong(0));
+            }
+            Queries.getRowSet(VIEW_CARGO_INCOMES, null,
+                Filter.any(COL_CARGO, cargoIds), new RowSetCallback() {
+                  @Override
+                  public void onSuccess(BeeRowSet incomes) {
+                    if (!DataUtils.isEmpty(incomes)) {
+                      int r = table.getRowCount();
+
+                      table.getCellFormatter().setColSpan(r, 0, 2);
+                      table.getCellFormatter().setHorizontalAlignment(r, 0, TextAlign.CENTER);
+                      table.setText(r, 0, Localized.maybeTranslate("=trOrderCargoServices"));
+                      r++;
+
+                      TotalRenderer totalRenderer = new TotalRenderer(incomes.getColumns());
+                      table.setColumnCellStyles(0, cellStyle);
+
+                      for (IsRow row : incomes) {
+                        table.setText(r, 0,
+                            Data.getString(VIEW_CARGO_INCOMES, row, COL_SERVICE_NAME));
+
+                        String currency = Data.getString(VIEW_CARGO_INCOMES, row, "CurrencyName");
+                        String amount = BeeUtils.joinWords(totalRenderer.render(row), currency);
+
+                        String vat = Data.getString(VIEW_CARGO_INCOMES, row, "Vat");
+
+                        if (!BeeUtils.isEmpty(vat)) {
+                          boolean percent = BeeUtils.unbox(Data.getBoolean(VIEW_CARGO_INCOMES, row,
+                              "VatPercent"));
+                          amount += " (" + Localized.getConstants().vat() + " " + vat
+                              + (percent ? "%" : " " + currency) + ")";
+                        }
+                        table.setText(r, 1, amount);
+                        r++;
+                      }
+                    }
+                    Set<String> to = null;
+                    String addr = form.getStringValue("PersonEmail");
+
+                    if (addr == null) {
+                      addr = form.getStringValue("CustomerEmail");
+                    }
+                    if (addr != null) {
+                      to = Sets.newHashSet(addr);
+                    }
+                    NewMailMessage.create(to, null, null, null,
+                        Document.get().createBRElement().getString() + table.toString(),
+                        null, null);
+                  }
+                });
+          }
+        });
   }
 }

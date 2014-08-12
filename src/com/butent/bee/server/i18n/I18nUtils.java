@@ -191,7 +191,7 @@ public final class I18nUtils {
     }
     return null;
   }
-  
+
   public static String toString(Locale locale) {
     if (locale == null) {
       return BeeConst.NULL;

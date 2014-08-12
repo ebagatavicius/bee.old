@@ -11,13 +11,16 @@ public class MapImpl extends JavaScriptObject {
     return createJso(element, options);
   }
 
+//@formatter:off
   private static native MapImpl createJso(Element element, MapOptions options) /*-{
     return new $wnd.google.maps.Map(element, options);
   }-*/;
+//@formatter:on
 
   protected MapImpl() {
   }
 
+//@formatter:off
   public final native void fitBounds(LatLngBounds bounds) /*-{
     this.fitBounds(bounds);
   }-*/;
@@ -37,11 +40,13 @@ public class MapImpl extends JavaScriptObject {
   public final native int getHeading() /*-{
     return this.getHeading() || 0;
   }-*/;
+//@formatter:on
 
   public final MapTypeId getMapTypeId() {
     return EnumUtils.getEnumByName(MapTypeId.class, getMapTypeIdImpl());
   }
 
+//@formatter:off
   public final native int getTilt() /*-{
     return this.getTilt();
   }-*/;
@@ -69,10 +74,20 @@ public class MapImpl extends JavaScriptObject {
   public final native void setHeading(int heading) /*-{
     this.setHeading(heading);
   }-*/;
+//@formatter:on
 
   public final void setMapTypeId(MapTypeId mapTypeId) {
     setMapTypeIdImpl(mapTypeId.name());
   }
+
+//@formatter:off
+  public final native void setOnLoad(Runnable callback) /*-{
+    var fnc = $entry(function() {
+      callback.@java.lang.Runnable::run()();
+    });
+
+    $wnd.google.maps.event.addListenerOnce(this, 'idle', fnc);
+  }-*/;
 
   public final native void setOptions(MapOptions options) /*-{
     this.setOptions(options);
@@ -97,4 +112,5 @@ public class MapImpl extends JavaScriptObject {
   private native void setMapTypeIdImpl(String mapTypeId) /*-{
     this.setMapTypeId(mapTypeId);
   }-*/;
+//@formatter:on
 }

@@ -77,7 +77,7 @@ class ColumnConfig {
       footerFontIndex = GridUtils.getIndex(names, "FooterFont");
     }
   }
-  
+
   static List<BeeColumn> getDataColumns() {
     ensureFields();
     return dataColumns;
@@ -87,7 +87,7 @@ class ColumnConfig {
     ensureFields();
     return gridIndex;
   }
-  
+
   static int getNameIndex() {
     ensureFields();
     return nameIndex;

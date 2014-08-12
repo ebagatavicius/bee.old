@@ -29,6 +29,7 @@ import com.butent.bee.client.event.Binder;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.HasInputHandlers;
 import com.butent.bee.client.event.InputHandler;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.edit.EditChangeHandler;
@@ -74,9 +75,9 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   private boolean handlesTabulation;
 
   private boolean valueChangeHandlerInitialized;
-  
+
   private String suggestionSource;
-  
+
   public InputText() {
     super(Document.get().createTextInputElement());
   }
@@ -103,7 +104,7 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   public HandlerRegistration addChangeHandler(ChangeHandler handler) {
     return addDomHandler(handler, ChangeEvent.getType());
   }
-  
+
   @Override
   public HandlerRegistration addEditChangeHandler(EditChangeHandler handler) {
     return addKeyDownHandler(handler);
@@ -146,10 +147,10 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
         }
       });
     }
-    
+
     return addHandler(handler, ValueChangeEvent.getType());
   }
-  
+
   @Override
   public void clearValue() {
     setValue(BeeConst.STRING_EMPTY);
@@ -288,7 +289,7 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   public boolean isEnabled() {
     return !getInputElement().isDisabled();
   }
-  
+
   @Override
   public boolean isMultiline() {
     return false;
@@ -331,6 +332,11 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
     }
 
     super.onBrowserEvent(event);
+  }
+
+  @Override
+  public void render(String value) {
+    setValue(value);
   }
 
   @Override
@@ -392,7 +398,7 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   public void setId(String id) {
     DomUtils.setId(this, id);
   }
-  
+
   @Override
   public void setMaxLength(int maxLength) {
     getInputElement().setMaxLength(maxLength);
@@ -477,7 +483,7 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
     super.init();
 
     if (isTextBox()) {
-      addStyleName("bee-TextBox");
+      addStyleName(StyleUtils.NAME_TEXT_BOX);
     }
     addStyleName(getDefaultStyleName());
 

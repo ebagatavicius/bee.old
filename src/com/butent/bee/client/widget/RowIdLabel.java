@@ -14,7 +14,7 @@ public class RowIdLabel extends Label implements HandlesRendering, HasNumberForm
 
   private NumberFormat numberFormat;
   private AbstractCellRenderer renderer;
-  
+
   public RowIdLabel(boolean inline) {
     this(Format.getDefaultLongFormat(), inline);
   }
@@ -41,7 +41,7 @@ public class RowIdLabel extends Label implements HandlesRendering, HasNumberForm
   @Override
   public void render(IsRow row) {
     String text;
-    
+
     if (getRenderer() != null) {
       text = getRenderer().render(row);
     } else if (row == null) {
@@ -51,7 +51,7 @@ public class RowIdLabel extends Label implements HandlesRendering, HasNumberForm
     } else {
       text = BeeUtils.toString(row.getId());
     }
-    
+
     setHtml(text);
   }
 

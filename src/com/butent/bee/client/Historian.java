@@ -14,17 +14,13 @@ import com.butent.bee.shared.utils.PropertyUtils;
 
 import java.util.List;
 
-import elemental.util.Timer;
-
-import elemental.html.History;
-
 import elemental.events.Event;
 import elemental.events.EventListener;
-
+import elemental.html.History;
 import elemental.js.JsBrowser;
 
 public final class Historian implements HasInfo {
-  
+
   private enum BrowserHistoryState implements HasCaption {
     FIRST("-") {
       @Override
@@ -54,6 +50,7 @@ public final class Historian implements HasInfo {
       int navigate(int pos, int size) {
         return BeeUtils.rotateForwardExclusive(pos, 0, size);
       }
+
       @Override
       void reset() {
         getHistory().back();
@@ -70,26 +67,26 @@ public final class Historian implements HasInfo {
     public String getCaption() {
       return caption;
     }
-    
+
     abstract int navigate(int pos, int size);
-    
+
     abstract void reset();
   }
 
   private static final Historian INSTANCE = new Historian();
-  
+
   private static final BeeLogger logger = LogUtils.getLogger(Historian.class);
-  
+
   public static void add(Place place) {
     if (place != null) {
       getInstance().addItem(place);
     }
   }
-  
+
   public static Historian getInstance() {
     return INSTANCE;
   }
-  
+
   public static int getSize() {
     return getInstance().places.size();
   }
@@ -102,13 +99,13 @@ public final class Historian implements HasInfo {
       }
     }
   }
-  
+
   public static void remove(String id) {
     if (!BeeUtils.isEmpty(id)) {
       getInstance().removeItem(id);
     }
   }
-  
+
   static void start() {
     getInstance().init();
   }
@@ -118,7 +115,7 @@ public final class Historian implements HasInfo {
   }
 
   private final int initialHistoryLength;
-  
+
   private final List<Place> places = Lists.newArrayList();
 
   private int position = BeeConst.UNDEF;
@@ -127,12 +124,12 @@ public final class Historian implements HasInfo {
     super();
     this.initialHistoryLength = getHistory().getLength();
   }
-  
+
   public void clear() {
     places.clear();
     setPosition(BeeConst.UNDEF);
   }
-  
+
   @Override
   public List<Property> getInfo() {
     List<Property> info = PropertyUtils.createProperties(
@@ -141,24 +138,24 @@ public final class Historian implements HasInfo {
         "Browser History State", getHistory().getState(),
         "Places Size", places.size(),
         "Position", getPosition());
-    
+
     for (int i = 0; i < places.size(); i++) {
       info.add(new Property("Place " + i, places.get(i).getId()));
     }
     return info;
   }
-  
+
   public int getPosition() {
     return position;
   }
-  
+
   public boolean isEmpty() {
     return places.isEmpty();
   }
 
   private void addItem(Place place) {
     int index = getIndex(place.getId());
-    
+
     if (!isLast(index)) {
       if (index >= 0) {
         places.remove(index);
@@ -167,7 +164,7 @@ public final class Historian implements HasInfo {
     }
     setPosition(places.size() - 1);
   }
-  
+
   private int getIndex(String id) {
     for (int i = 0; i < places.size(); i++) {
       if (BeeUtils.same(places.get(i).getId(), id)) {
@@ -182,7 +179,7 @@ public final class Historian implements HasInfo {
     if (obj == null) {
       return null;
     }
-    
+
     String s = obj.toString().trim();
     for (BrowserHistoryState state : BrowserHistoryState.values()) {
       if (state.getCaption().equals(s)) {
@@ -191,64 +188,35 @@ public final class Historian implements HasInfo {
     }
     return null;
   }
-  
+
   private void init() {
-    Timer timer = new Timer() {
-      private int counter;
+    getHistory().replaceState(BrowserHistoryState.FIRST.getCaption(), null);
 
+    getHistory().pushState(BrowserHistoryState.REST.getCaption(), null);
+    getHistory().pushState(BrowserHistoryState.LAST.getCaption(), null);
+
+    getHistory().back();
+
+    JsBrowser.getWindow().setOnpopstate(new EventListener() {
       @Override
-      public void run() {
-        switch (counter) {
-          case 0:
-            getHistory().replaceState(BrowserHistoryState.FIRST.getCaption(), null);
-            break;
-
-          case 1:
-            getHistory().pushState(BrowserHistoryState.REST.getCaption(), null);
-            break;
-
-          case 2:
-            getHistory().pushState(BrowserHistoryState.LAST.getCaption(), null);
-            break;
-            
-          case 3:
-            getHistory().back();
-            break;
-          
-          case 4:
-            cancel();
-
-            JsBrowser.getWindow().setOnpopstate(new EventListener() {
-              @Override
-              public void handleEvent(Event evt) {
-                Historian.this.onPop();
-              }
-            });
-
-            logger.info("history initialized");
-            break;
-
-          default:
-            cancel();
-        }
-        
-        counter++;
+      public void handleEvent(Event evt) {
+        Historian.this.onPop();
       }
-    };
-    
-    timer.scheduleRepeating(100);
+    });
+
+    logger.info("history initialized");
   }
-  
+
   private boolean isLast(int index) {
     return index >= 0 && index == places.size() - 1;
   }
-  
+
   private static boolean maybeClosePopup() {
     Popup popup = Popup.getActivePopup();
     if (popup == null) {
       return false;
     }
-    
+
     if (popup.getOnEscape() == null) {
       popup.close();
     } else {
@@ -266,23 +234,23 @@ public final class Historian implements HasInfo {
       return;
     }
     state.reset();
-    
+
     if (maybeClosePopup()) {
       return;
     }
-    
+
     if (BeeUtils.isIndex(places, getPosition())) {
       Place place = places.get(getPosition());
       if (place.onHistory(place, BrowserHistoryState.LAST.equals(state))) {
         return;
       }
     }
-    
+
     if (places.size() > 1) {
       int size = places.size();
       int oldPos = getPosition();
       int newPos = state.navigate(oldPos, size);
-      
+
       if (newPos != oldPos) {
         boolean ok = places.get(newPos).activate();
         if (ok) {
@@ -304,10 +272,10 @@ public final class Historian implements HasInfo {
       }
     }
   }
-  
+
   private boolean removeItem(String id) {
     int index = getIndex(id);
-    
+
     if (index >= 0) {
       if (isLast(index)) {
         setPosition(index - 1);
@@ -319,7 +287,7 @@ public final class Historian implements HasInfo {
       return false;
     }
   }
-  
+
   private void setPosition(int position) {
     this.position = position;
   }

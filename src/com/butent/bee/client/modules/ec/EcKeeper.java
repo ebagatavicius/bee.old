@@ -40,6 +40,9 @@ import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.HtmlEditor;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.ViewSupplier;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InputText;
 import com.butent.bee.shared.Assert;
@@ -91,6 +94,10 @@ public final class EcKeeper {
   private static final CartList cartList = new CartList();
 
   private static final EcEventHandler eventHandler = new EcEventHandler();
+
+  private static final String KEY_EC_CONTACTS = MenuService.EDIT_EC_CONTACTS.name().toLowerCase();
+  private static final String KEY_TERMS_OF_DELIVERY =
+      MenuService.EDIT_TERMS_OF_DELIVERY.name().toLowerCase();
 
   private static EcCommandWidget activeCommand;
 
@@ -172,7 +179,7 @@ public final class EcKeeper {
       response.notify(BeeKeeper.getScreen());
     }
   }
-  
+
   public static void doGlobalSearch(String query, final IdentifiableWidget inputWidget) {
     if (!checkSearchQuery(query)) {
       return;
@@ -188,7 +195,7 @@ public final class EcKeeper {
         resetActiveCommand();
 
         ItemPanel widget = new ItemPanel();
-        BeeKeeper.getScreen().showWidget(widget);
+        BeeKeeper.getScreen().show(widget);
         renderItems(widget, items);
       }
     });
@@ -387,7 +394,7 @@ public final class EcKeeper {
             resetActiveCommand();
             searchBox.clearValue();
 
-            BeeKeeper.getScreen().showWidget(widget);
+            BeeKeeper.getScreen().show(widget);
           }
         });
       }
@@ -462,16 +469,26 @@ public final class EcKeeper {
     MenuService.EDIT_TERMS_OF_DELIVERY.setHandler(new MenuHandler() {
       @Override
       public void onSelection(String parameters) {
-        editConfigurationHtml(Localized.getConstants().ecTermsOfDelivery(), COL_CONFIG_TOD_URL,
-            COL_CONFIG_TOD_HTML);
+        editTermsOfDelivery(null);
       }
     });
-
     MenuService.EDIT_EC_CONTACTS.setHandler(new MenuHandler() {
       @Override
       public void onSelection(String parameters) {
-        editConfigurationHtml(Localized.getConstants().ecContacts(), COL_CONFIG_CONTACTS_URL,
-            COL_CONFIG_CONTACTS_HTML);
+        editEcContacts(null);
+      }
+    });
+
+    ViewFactory.registerSupplier(KEY_TERMS_OF_DELIVERY, new ViewSupplier() {
+      @Override
+      public void create(ViewCallback callback) {
+        editTermsOfDelivery(callback);
+      }
+    });
+    ViewFactory.registerSupplier(KEY_EC_CONTACTS, new ViewSupplier() {
+      @Override
+      public void create(ViewCallback callback) {
+        editEcContacts(callback);
       }
     });
 
@@ -630,11 +647,11 @@ public final class EcKeeper {
   }
 
   public static boolean showGlobalSearch() {
-    return Settings.getPropertyBoolean("showGlobalSearch");
+    return Settings.getBoolean("showGlobalSearch");
   }
 
   public static boolean showItemSuppliers() {
-    return Settings.getPropertyBoolean("showItemSuppliers");
+    return Settings.getBoolean("showItemSuppliers");
   }
 
   public static void showPromo(final boolean checkView) {
@@ -677,7 +694,7 @@ public final class EcKeeper {
         }
         Promo widget = new Promo(pictures.getBanners(), items);
 
-        BeeKeeper.getScreen().showWidget(widget);
+        BeeKeeper.getScreen().show(widget);
       }
     });
   }
@@ -716,7 +733,7 @@ public final class EcKeeper {
     EcView ecView = EcView.create(commandWidget.getService());
     if (ecView != null) {
       searchBox.clearValue();
-      BeeKeeper.getScreen().showWidget(ecView);
+      BeeKeeper.getScreen().show(ecView);
     }
 
     if (activeCommand == null || !activeCommand.getService().equals(commandWidget.getService())) {
@@ -732,7 +749,7 @@ public final class EcKeeper {
   static void ensureClientStyleSheet() {
     if (!clientStyleSheetInjected) {
       clientStyleSheetInjected = true;
-     
+
       UserInterface ui = BeeKeeper.getScreen().getUserInterface();
       if (!ui.getStyleSheets().contains(CLIENT_STYLE_SHEET)) {
         DomUtils.injectStyleSheet(Paths.getStyleSheetUrl(CLIENT_STYLE_SHEET,
@@ -785,8 +802,8 @@ public final class EcKeeper {
     return items;
   }
 
-  private static void editConfigurationHtml(final String caption, final String urlColumn,
-      final String htmlColumn) {
+  private static void editConfigurationHtml(final String supplierKey, final String caption,
+      final String urlColumn, final String htmlColumn, final ViewCallback callback) {
 
     data.getConfiguration(new Consumer<Map<String, String>>() {
       @Override
@@ -794,21 +811,36 @@ public final class EcKeeper {
         final String url = input.get(urlColumn);
         final String html = input.get(htmlColumn);
 
-        HtmlEditor editor = new HtmlEditor(caption, url, html, new BiConsumer<String, String>() {
-          @Override
-          public void accept(String newUrl, String newHtml) {
-            if (!BeeUtils.equalsTrim(url, newUrl)) {
-              data.saveConfiguration(urlColumn, newUrl);
-            }
-            if (!BeeUtils.equalsTrim(html, newHtml)) {
-              data.saveConfiguration(htmlColumn, newHtml);
-            }
-          }
-        });
+        HtmlEditor editor =
+            new HtmlEditor(supplierKey, caption, url, html, new BiConsumer<String, String>() {
+              @Override
+              public void accept(String newUrl, String newHtml) {
+                if (!BeeUtils.equalsTrim(url, newUrl)) {
+                  data.saveConfiguration(urlColumn, newUrl);
+                }
+                if (!BeeUtils.equalsTrim(html, newHtml)) {
+                  data.saveConfiguration(htmlColumn, newHtml);
+                }
+              }
+            });
 
-        BeeKeeper.getScreen().showWidget(editor);
+        if (callback == null) {
+          BeeKeeper.getScreen().show(editor);
+        } else {
+          callback.onSuccess(editor);
+        }
       }
     });
+  }
+
+  private static void editEcContacts(ViewCallback callback) {
+    editConfigurationHtml(KEY_EC_CONTACTS, Localized.getConstants().ecContacts(),
+        COL_CONFIG_CONTACTS_URL, COL_CONFIG_CONTACTS_HTML, callback);
+  }
+
+  private static void editTermsOfDelivery(ViewCallback callback) {
+    editConfigurationHtml(KEY_TERMS_OF_DELIVERY, Localized.getConstants().ecTermsOfDelivery(),
+        COL_CONFIG_TOD_URL, COL_CONFIG_TOD_HTML, callback);
   }
 
   private static String getActiveViewId() {

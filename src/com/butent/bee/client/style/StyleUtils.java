@@ -150,11 +150,10 @@ public final class StyleUtils {
   public static final String VALUE_HIDDEN = "hidden";
   public static final String VALUE_INHERIT = "inherit";
 
-  public static final String NAME_HORIZONTAL = "horizontal";
-  public static final String NAME_VERTICAL = "vertical";
-  public static final String NAME_DISABLED = "disabled";
-  public static final String NAME_ENABLED = "enabled";
-  public static final String NAME_FOCUSED = "focused";
+  public static final String SUFFIX_HORIZONTAL = "horizontal";
+  public static final String SUFFIX_VERTICAL = "vertical";
+  public static final String SUFFIX_FOCUSED = "focused";
+  public static final String SUFFIX_DISABLED = "disabled";
 
   public static final String NAME_UNSELECTABLE = "unselectable";
 
@@ -162,13 +161,15 @@ public final class StyleUtils {
   public static final String NAME_FLEX_BOX_VERTICAL = "flexBox-vertical";
   public static final String NAME_FLEX_BOX_CENTER = "flexBox-center";
   public static final String NAME_FLEXIBLE = "flexible";
-  public static final String NAME_OCCUPY = "occupy";
 
   public static final String NAME_ERROR = CLASS_NAME_PREFIX + "error";
   public static final String NAME_REQUIRED = CLASS_NAME_PREFIX + "required";
   public static final String NAME_HAS_DEFAULTS = CLASS_NAME_PREFIX + "hasDefaults";
   public static final String NAME_RESIZABLE = CLASS_NAME_PREFIX + "resizable";
   public static final String NAME_FOCUSABLE = CLASS_NAME_PREFIX + "focusable";
+  public static final String NAME_DISABLED = CLASS_NAME_PREFIX + SUFFIX_DISABLED;
+
+  public static final String NAME_TEXT_BOX = CLASS_NAME_PREFIX + "TextBox";
 
   public static final String TRANSFORM_ROTATE = "rotate";
   public static final String TRANSFORM_SCALE = "scale";
@@ -221,7 +222,7 @@ public final class StyleUtils {
   public static int addClassName(NodeList<Element> nodes, String className) {
     Assert.notNull(nodes);
     Assert.notEmpty(className);
-    
+
     int cnt = nodes.getLength();
     for (int i = 0; i < cnt; i++) {
       nodes.getItem(i).addClassName(className);
@@ -475,7 +476,7 @@ public final class StyleUtils {
     Assert.notNull(textTransform);
     return buildStyle(CssProperties.TEXT_TRANSFORM, textTransform.getCssName());
   }
-  
+
   public static SafeStyles buildTop(double value, CssUnit unit) {
     return buildStyle(STYLE_TOP, toCssLength(value, unit));
   }
@@ -1272,7 +1273,7 @@ public final class StyleUtils {
   public static int removeClassName(Collection<? extends Element> elements, String className) {
     Assert.notNull(elements);
     Assert.notEmpty(className);
-    
+
     int cnt = 0;
     for (Element el : elements) {
       if (el != null) {

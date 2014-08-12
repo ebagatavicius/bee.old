@@ -18,7 +18,7 @@ public class StarRenderer extends AbstractCellRenderer {
     if (index == null || sheet == null) {
       return null;
     }
-    
+
     Integer ref = Stars.export(index, sheet);
     if (ref == null) {
       return null;

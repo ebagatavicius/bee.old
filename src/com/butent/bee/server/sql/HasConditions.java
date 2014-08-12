@@ -7,6 +7,8 @@ package com.butent.bee.server.sql;
 public interface HasConditions extends IsCondition {
 
   HasConditions add(IsCondition... conditions);
-  
+
+  void clear();
+
   boolean isEmpty();
 }

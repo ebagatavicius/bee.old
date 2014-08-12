@@ -60,7 +60,7 @@ public class XRow implements BeeSerializable {
           if (!cells.isEmpty()) {
             cells.clear();
           }
-          
+
           String[] carr = Codec.beeDeserializeCollection(value);
           if (carr != null) {
             for (String cv : carr) {
@@ -89,7 +89,7 @@ public class XRow implements BeeSerializable {
   public Double getHeightFactor() {
     return heightFactor;
   }
-  
+
   public int getIndex() {
     return index;
   }
@@ -101,7 +101,7 @@ public class XRow implements BeeSerializable {
     }
     return result;
   }
-  
+
   public Integer getStyleRef() {
     return styleRef;
   }
@@ -114,7 +114,7 @@ public class XRow implements BeeSerializable {
     }
     return false;
   }
-  
+
   public boolean isEmpty() {
     return cells.isEmpty();
   }
@@ -129,7 +129,7 @@ public class XRow implements BeeSerializable {
           values.add(cells.isEmpty() ? null : Codec.beeSerialize(cells));
           break;
         case HEIGHT_FACTOR:
-          values.add(BeeUtils.isDouble(getHeightFactor()) 
+          values.add(BeeUtils.isDouble(getHeightFactor())
               ? BeeUtils.toString(getHeightFactor()) : null);
           break;
         case INDEX:
@@ -147,7 +147,7 @@ public class XRow implements BeeSerializable {
   public void setHeightFactor(Double heightFactor) {
     this.heightFactor = heightFactor;
   }
-  
+
   public void setIndex(int index) {
     this.index = index;
   }

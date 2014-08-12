@@ -13,7 +13,6 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.RowFactory;
@@ -29,6 +28,7 @@ import com.butent.bee.client.modules.transport.charts.Filterable.FilterType;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.Mover;
 import com.butent.bee.shared.BeeConst;
@@ -75,7 +75,7 @@ final class FreightExchange extends ChartBase {
 
   private static final String STYLE_ITEM_DRAG = STYLE_ITEM_PREFIX + "drag";
 
-  static void open(final Callback<IdentifiableWidget> callback) {
+  static void open(final ViewCallback callback) {
     BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(DATA_SERVICE),
         new ResponseCallback() {
           @Override
@@ -137,13 +137,13 @@ final class FreightExchange extends ChartBase {
       resetFilter(filterType);
       return filtered;
     }
-    
+
     CargoMatcher cargoMatcher = CargoMatcher.maybeCreate(selectedData);
     PlaceMatcher placeMatcher = PlaceMatcher.maybeCreate(selectedData);
-    
+
     for (OrderCargo item : items) {
       boolean match = (cargoMatcher == null) ? true : cargoMatcher.matches(item);
-      
+
       if (match && placeMatcher != null) {
         boolean ok = placeMatcher.matches(item);
         if (!ok && hasCargoHandling(item.getCargoId())) {
@@ -154,13 +154,13 @@ final class FreightExchange extends ChartBase {
           match = false;
         }
       }
-      
+
       item.setMatch(filterType, match);
       if (!match) {
         filtered = true;
       }
     }
-    
+
     return filtered;
   }
 
@@ -207,7 +207,7 @@ final class FreightExchange extends ChartBase {
   protected String getShowPlaceInfoColumnName() {
     return COL_FX_PLACE_INFO;
   }
-  
+
   @Override
   protected String getShowPlaceCitiesColumnName() {
     return COL_FX_PLACE_CITIES;
@@ -422,7 +422,8 @@ final class FreightExchange extends ChartBase {
           TimeBoardHelper.addRowSeparator(panel, STYLE_CUSTOMER_ROW_SEPARATOR, top, 0,
               getCustomerWidth() + getOrderWidth() + calendarWidth);
         } else if (orderChanged) {
-          TimeBoardHelper.addRowSeparator(panel, STYLE_ORDER_ROW_SEPARATOR, top, getCustomerWidth(),
+          TimeBoardHelper.addRowSeparator(panel, STYLE_ORDER_ROW_SEPARATOR, top,
+              getCustomerWidth(),
               getOrderWidth() + calendarWidth);
         } else {
           TimeBoardHelper.addRowSeparator(panel, top, getChartLeft(), calendarWidth);
@@ -434,7 +435,7 @@ final class FreightExchange extends ChartBase {
 
         Rectangle rectangle = getRectangle(item.getRange(), row);
         TimeBoardHelper.apply(itemWidget, rectangle, margins);
-        
+
         styleItemWidget(item, itemWidget);
         if (itemOpacity != null) {
           StyleUtils.setOpacity(itemWidget, itemOpacity);
@@ -654,7 +655,7 @@ final class FreightExchange extends ChartBase {
       }
     }
   }
-  
+
   private void onOrderResize(MoveEvent event) {
     int delta = event.getDeltaX();
 
@@ -682,11 +683,11 @@ final class FreightExchange extends ChartBase {
       }
     }
   }
-  
+
   private void setCustomerWidth(int customerWidth) {
     this.customerWidth = customerWidth;
   }
-  
+
   private void setOrderWidth(int orderWidth) {
     this.orderWidth = orderWidth;
   }

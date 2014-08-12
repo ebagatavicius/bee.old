@@ -27,10 +27,12 @@ import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.io.FileNameUtils;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,8 +56,8 @@ public final class FileUtils {
   private static final String UPLOAD_URL = "upload";
 
   private static final long MIN_FILE_SIZE_FOR_PROGRESS = 100000;
-  
-  public static void commitFiles(Collection<NewFileInfo> files, final String viewName,
+
+  public static void commitFiles(Collection<? extends FileInfo> files, final String viewName,
       final String parentColumn, final Long parentId, final String fileColumn,
       final String captionColumn) {
 
@@ -69,7 +71,7 @@ public final class FileUtils {
 
     final Holder<Integer> latch = Holder.of(files.size());
 
-    for (final NewFileInfo fileInfo : files) {
+    for (final FileInfo fileInfo : files) {
       uploadFile(fileInfo, new Callback<Long>() {
         @Override
         public void onSuccess(Long result) {
@@ -221,37 +223,45 @@ public final class FileUtils {
     return Math.round(sz * 10d / c) / 10d + prfx;
   }
 
-  public static void uploadFile(NewFileInfo fileInfo, final Callback<Long> callback) {
-    final String fileName = BeeUtils.notEmpty(fileInfo.getCaption(), fileInfo.getName());
-    final String fileType = fileInfo.getType();
-    final long fileSize = fileInfo.getSize();
+  public static void uploadFile(FileInfo fileInfo, final Callback<Long> callback) {
+    if (DataUtils.isId(fileInfo.getId())) {
+      callback.onSuccess(fileInfo.getId());
 
-    final long start = System.currentTimeMillis();
+    } else if (!(fileInfo instanceof NewFileInfo)) {
+      callback.onFailure("File is not an instance of " + NameUtils.getClassName(NewFileInfo.class));
 
-    upload(Service.UPLOAD_FILE, fileInfo, new Callback<String>() {
-      @Override
-      public void onSuccess(String response) {
-        if (BeeUtils.isLong(response)) {
-          long fileId = BeeUtils.toLong(response);
+    } else {
+      final String fileName = BeeUtils.notEmpty(fileInfo.getCaption(), fileInfo.getName());
+      final String fileType = fileInfo.getType();
+      final long fileSize = fileInfo.getSize();
 
-          logger.info(TimeUtils.elapsedSeconds(start), "uploaded", fileName);
-          logger.info("type:", fileType, "size:", fileSize, "id:", fileId);
-          logger.addSeparator();
+      final long start = System.currentTimeMillis();
 
-          callback.onSuccess(fileId);
+      upload(Service.UPLOAD_FILE, (NewFileInfo) fileInfo, new Callback<String>() {
+        @Override
+        public void onSuccess(String response) {
+          if (BeeUtils.isLong(response)) {
+            long fileId = BeeUtils.toLong(response);
 
-        } else {
-          String msg = BeeUtils.joinWords("upload", fileName, "response:", response);
-          logger.warning(msg);
-          callback.onFailure(msg);
+            logger.info(TimeUtils.elapsedSeconds(start), "uploaded", fileName);
+            logger.info("type:", fileType, "size:", fileSize, "id:", fileId);
+            logger.addSeparator();
+
+            callback.onSuccess(fileId);
+
+          } else {
+            String msg = BeeUtils.joinWords("upload", fileName, "response:", response);
+            logger.warning(msg);
+            callback.onFailure(msg);
+          }
         }
-      }
 
-      @Override
-      public void onFailure(String... reason) {
-        callback.onFailure(reason);
-      }
-    });
+        @Override
+        public void onFailure(String... reason) {
+          callback.onFailure(reason);
+        }
+      });
+    }
   }
 
   public static void uploadPhoto(NewFileInfo fileInfo, final String photoFileName, String oldPhoto,
@@ -340,9 +350,11 @@ public final class FileUtils {
     });
   }
 
+//@formatter:off
   static native double getLastModifiedMillis(File file) /*-{
     return file.lastModifiedDate.getTime();
   }-*/;
+//@formatter:on
 
   private static void addProgressListener(XMLHttpRequest xhr, final String progressId) {
     if (progressId != null) {

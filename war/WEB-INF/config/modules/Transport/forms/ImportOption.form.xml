@@ -9,7 +9,8 @@
     
     <FlowPanel class="flexBox-horizontal flexible">
       <ChildGrid name="ImportProperties" relColumn="Option" class="flexible" />
-      <GridPanel name="ImportMappings" class="flexible" style="margin-top:30px;" parent="ImportProperties" />
+      <ChildGrid name="ImportMappings" relColumn="Property" parent="ImportProperties"
+        class="flexible" style="margin-top:30px;" />
     </FlowPanel>
   </FlowPanel>
 </f:Form>

@@ -2,12 +2,22 @@ package com.butent.bee.client.maps;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.RequiresResize;
 
+import com.butent.bee.client.event.logical.ReadyEvent;
+import com.butent.bee.client.event.logical.ReadyEvent.Handler;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.CustomWidget;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.utils.BeeUtils;
 
-public final class MapWidget extends CustomWidget implements RequiresResize {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public final class MapWidget extends CustomWidget implements RequiresResize,
+    ReadyEvent.HasReadyHandlers {
 
   public static MapWidget create(MapOptions options) {
     if (options == null) {
@@ -19,10 +29,35 @@ public final class MapWidget extends CustomWidget implements RequiresResize {
 
   private MapOptions mapOptions;
   private MapImpl impl;
-  
+
+  private final Collection<Marker> markers = new ArrayList<>();
+
   private MapWidget(MapOptions options) {
-    super(Document.get().createDivElement(), "bee-Map");
+    super(Document.get().createDivElement(), StyleUtils.CLASS_NAME_PREFIX + "Map");
     this.mapOptions = options;
+  }
+
+  public boolean addMarker(double lat, double lng, String title) {
+    if (impl != null) {
+      LatLng position = LatLng.create(lat, lng);
+      MarkerOptions markerOptions = MarkerOptions.create(position, getMapImpl());
+
+      if (!BeeUtils.isEmpty(title)) {
+        markerOptions.setTitle(title);
+      }
+
+      Marker marker = Marker.create(markerOptions);
+      markers.add(marker);
+      return true;
+
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public HandlerRegistration addReadyHandler(Handler handler) {
+    return addHandler(handler, ReadyEvent.getType());
   }
 
   public void fitBounds(LatLngBounds bounds) {
@@ -51,7 +86,7 @@ public final class MapWidget extends CustomWidget implements RequiresResize {
   public String getIdPrefix() {
     return "map";
   }
-  
+
   public MapImpl getMapImpl() {
     return impl;
   }
@@ -62,6 +97,30 @@ public final class MapWidget extends CustomWidget implements RequiresResize {
 
   public int getTilt() {
     return (impl == null) ? BeeConst.UNDEF : impl.getTilt();
+  }
+
+  public List<String> getValues() {
+    List<String> values = new ArrayList<>();
+    LatLng center = getCenter();
+
+    if (center != null) {
+      values.add(MapUtils.toString(center.getLatitude()));
+      values.add(MapUtils.toString(center.getLongitude()));
+
+      values.add(BeeUtils.toString(getZoom()));
+
+      for (Marker marker : markers) {
+        LatLng position = marker.getPosition();
+
+        if (position != null) {
+          values.add(MapUtils.toString(position.getLatitude()));
+          values.add(MapUtils.toString(position.getLongitude()));
+
+          values.add(marker.getTitle());
+        }
+      }
+    }
+    return values;
   }
 
   public int getZoom() {
@@ -139,6 +198,14 @@ public final class MapWidget extends CustomWidget implements RequiresResize {
   @Override
   protected void onLoad() {
     super.onLoad();
+
     this.impl = MapImpl.create(getElement(), mapOptions);
+
+    impl.setOnLoad(new Runnable() {
+      @Override
+      public void run() {
+        ReadyEvent.fire(MapWidget.this);
+      }
+    });
   }
 }

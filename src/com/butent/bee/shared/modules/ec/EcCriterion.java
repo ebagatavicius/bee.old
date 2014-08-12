@@ -34,15 +34,15 @@ public class EcCriterion implements BeeSerializable {
 
   private EcCriterion() {
   }
-  
+
   public boolean clearSelection() {
     boolean changed = false;
-    
+
     for (SelectableValue selectableValue : values) {
       changed |= selectableValue.isSelected();
       selectableValue.setSelected(false);
     }
-    
+
     return changed;
   }
 
@@ -86,7 +86,7 @@ public class EcCriterion implements BeeSerializable {
   public String getName() {
     return name;
   }
-  
+
   public int getSize() {
     return getValues().size();
   }

@@ -11,7 +11,7 @@ import com.butent.bee.shared.utils.Codec;
 import java.util.List;
 
 public class RoomStateMessage extends Message {
-  
+
   public static RoomStateMessage add(ChatRoom room) {
     return (room == null) ? null : new RoomStateMessage(room, State.NEW);
   }
@@ -41,12 +41,12 @@ public class RoomStateMessage extends Message {
   RoomStateMessage() {
     super(Type.ROOM_STATE);
   }
-  
+
   @Override
   public String brief() {
     return string(getState());
   }
-  
+
   public ChatRoom getRoom() {
     return room;
   }
@@ -54,7 +54,7 @@ public class RoomStateMessage extends Message {
   public State getState() {
     return state;
   }
-  
+
   public boolean isLoading() {
     return getState() == State.LOADING;
   }
@@ -86,7 +86,7 @@ public class RoomStateMessage extends Message {
   protected void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
-    
+
     setRoom(ChatRoom.restore(arr[0]));
     setState(Codec.unpack(State.class, arr[1]));
   }
@@ -94,10 +94,10 @@ public class RoomStateMessage extends Message {
   @Override
   protected String serialize() {
     List<Object> values = Lists.newArrayList();
-    
+
     values.add(getRoom());
     values.add(Codec.pack(getState()));
-    
+
     return Codec.beeSerialize(values);
   }
 

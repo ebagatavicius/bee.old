@@ -127,10 +127,10 @@ public class TestIsExpression {
     /*
      * try { sql = new SqlSelect(); sql.addFields("Table1", "field11", "field12");
      * sql.addFrom("Table1");
-     * 
+     *
      * sql.addExpr(SqlUtils.sqlCase(SqlUtils.name("field21"), "pair1", "pair2",
      * SqlUtils.constant("field22"), "pair4", "pair5"), "Name1");
-     * 
+     *
      * fail("Exception not works: " + sql.getQuery()); } catch (BeeRuntimeException e) {
      * assertTrue(true); } catch (Exception e) { e.printStackTrace();
      * fail("java.lang.Exception need BeeRumtimeException: " + e.getMessage()); }
@@ -203,7 +203,7 @@ public class TestIsExpression {
     select.addFields("Table1", "field1", "field2", "field3");
     select.addFrom("Table1");
 
-    IsExpression clause = SqlUtils.bitAnd("Table1", "field1", "val1"); 
+    IsExpression clause = SqlUtils.bitAnd("Table1", "field1", "val1");
     // SqlUtils.and(SqlUtils.equal(SqlUtils.name("field1"),
     // "Something val"));
 
@@ -225,8 +225,7 @@ public class TestIsExpression {
 
     select.addExpr(clause, "expr1");
 
-    assertEquals(
-        "SELECT \"Table1\".\"field1\", \"Table1\".\"field2\", \"Table1\".\"field3\", "
+    assertEquals("SELECT \"Table1\".\"field1\", \"Table1\".\"field2\", \"Table1\".\"field3\", "
         + "BITAND(\"Table1\".\"field1\", val1) AS \"expr1\" FROM \"Table1\"", select.getQuery());
   }
 
@@ -429,8 +428,9 @@ public class TestIsExpression {
     s.addExpr(SqlUtils.cast(SqlUtils.field("Table1", "field2"),
         SqlDataType.CHAR, 5, 10), "TB1");
 
-    assertEquals("SELECT \"Table1\".\"field1\", CAST(\"Table1\".\"field2\" AS NCHAR(5)) AS \"TB1\" "
-        + "FROM \"Table1\"", s.getQuery());
+    assertEquals(
+        "SELECT \"Table1\".\"field1\", CAST(\"Table1\".\"field2\" AS NCHAR(5)) AS \"TB1\" "
+            + "FROM \"Table1\"", s.getQuery());
 
     s = new SqlSelect();
     s.addFields("Table1", "field1");

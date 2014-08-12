@@ -82,7 +82,7 @@ public class EcGroup implements BeeSerializable {
   public boolean hasBrandSelection() {
     return brandSelection;
   }
-  
+
   public boolean hasFilters() {
     return hasBrandSelection() || !getCriteria().isEmpty();
   }

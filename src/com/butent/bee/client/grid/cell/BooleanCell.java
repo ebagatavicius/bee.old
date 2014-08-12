@@ -57,7 +57,7 @@ public class BooleanCell extends AbstractCell<Boolean> implements HandlesFormat 
     if (!BeeUtils.isEmpty(format)) {
       String[] arr = BeeUtils.split(format, BeeConst.CHAR_SPACE);
       int length = ArrayUtils.length(arr);
-      
+
       if (length > 0) {
         setTrueText(arr[0]);
       }

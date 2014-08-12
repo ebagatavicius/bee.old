@@ -38,12 +38,12 @@ public class TotalRenderer extends AbstractCellRenderer implements HasRowValue {
   }
 
   private static final String[] COL_NAMES = new String[] {
-    COL_TRADE_AMOUNT,
-    COL_TRADE_ITEM_QUANTITY,
-    COL_TRADE_ITEM_PRICE,
-    COL_TRADE_VAT_PLUS,
-    COL_TRADE_VAT,
-    COL_TRADE_VAT_PERC};
+      COL_TRADE_AMOUNT,
+      COL_TRADE_ITEM_QUANTITY,
+      COL_TRADE_ITEM_PRICE,
+      COL_TRADE_VAT_PLUS,
+      COL_TRADE_VAT,
+      COL_TRADE_VAT_PERC};
 
   private final Map<String, Integer> data = new HashMap<>();
 
@@ -61,7 +61,7 @@ public class TotalRenderer extends AbstractCellRenderer implements HasRowValue {
 
   @Override
   public boolean dependsOnSource(String source) {
-    return !BeeUtils.isEmpty(source) && data.containsKey(source); 
+    return !BeeUtils.isEmpty(source) && data.containsKey(source);
   }
 
   @Override

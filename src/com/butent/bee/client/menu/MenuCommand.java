@@ -14,7 +14,7 @@ import com.butent.bee.shared.menu.MenuService;
 public class MenuCommand implements Scheduler.ScheduledCommand {
 
   private static final BeeLogger logger = LogUtils.getLogger(MenuCommand.class);
-  
+
   private final MenuService service;
   private final String parameters;
 
@@ -33,19 +33,19 @@ public class MenuCommand implements Scheduler.ScheduledCommand {
       case GRID:
         GridFactory.openGrid(parameters);
         break;
-      
+
       case NEW:
         RowFactory.createRow(parameters);
         break;
-      
+
       case PARAMETERS:
-        GridFactory.openGrid("Parameters", new ParametersGrid(parameters));
+        ParametersGrid.open(parameters);
         break;
 
       case REPORT:
         Report.open(parameters);
         break;
-        
+
       default:
         if (service.getHandler() == null) {
           logger.warning("menu handler not available for", service);
@@ -53,5 +53,13 @@ public class MenuCommand implements Scheduler.ScheduledCommand {
           service.getHandler().onSelection(parameters);
         }
     }
+  }
+
+  public String getParameters() {
+    return parameters;
+  }
+
+  public MenuService getService() {
+    return service;
   }
 }

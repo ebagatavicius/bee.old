@@ -23,9 +23,9 @@ public abstract class CalendarView {
   public enum Type {
     DAY, MONTH, RESOURCE
   }
-  
+
   private final List<ItemWidget> itemWidgets = Lists.newArrayList();
-  
+
   private CalendarWidget calendarWidget;
 
   public void attach(CalendarWidget widget) {
@@ -43,11 +43,11 @@ public abstract class CalendarView {
   public abstract void doScroll();
 
   public abstract void doSizing();
-  
+
   public List<ItemWidget> getItemWidgets() {
     return itemWidgets;
   }
-  
+
   public CalendarWidget getCalendarWidget() {
     return calendarWidget;
   }
@@ -57,15 +57,15 @@ public abstract class CalendarView {
   public CalendarSettings getSettings() {
     return getCalendarWidget().getSettings();
   }
-  
+
   public abstract String getStyleName();
 
   public abstract Type getType();
-  
+
   public abstract Range<DateTime> getVisibleRange();
 
   public abstract boolean onClick(long calendarId, Element element, Event event);
-  
+
   public abstract void onClock();
 
   public void openItem(CalendarItem item) {
@@ -87,7 +87,7 @@ public abstract class CalendarView {
   protected List<CalendarItem> getItems() {
     return getCalendarWidget().getItems();
   }
-  
+
   protected JustDate getDate() {
     return getCalendarWidget().getDate();
   }

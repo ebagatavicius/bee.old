@@ -15,7 +15,7 @@ public class TransportActionHandler implements Handler {
 
   @Override
   public void onRowAction(RowActionEvent event) {
-    if (event.isCellClick() 
+    if (event.isCellClick()
         && BeeUtils.inListSame(event.getViewName(), VIEW_CARGO_TRIPS, VIEW_ALL_CARGO)) {
 
       event.consume();

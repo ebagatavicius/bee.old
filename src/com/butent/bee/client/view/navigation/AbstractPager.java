@@ -12,6 +12,7 @@ import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.NavigationOrigin;
 
 /**
@@ -79,6 +80,11 @@ public abstract class AbstractPager extends Composite implements PagerView {
     return enabled;
   }
 
+  @Override
+  public boolean reactsTo(Action action) {
+    return false;
+  }
+
   public void setDisplay(HasDataTable display) {
     if (changeHandler != null) {
       changeHandler.removeHandler();
@@ -96,7 +102,7 @@ public abstract class AbstractPager extends Composite implements PagerView {
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
-  
+
   @Override
   public void setId(String id) {
     getIdentifiableWidget().setId(id);
@@ -151,7 +157,7 @@ public abstract class AbstractPager extends Composite implements PagerView {
       Assert.unsupported("only IdentifiableWidget can be used as Pager");
     }
   }
-  
+
   protected void nextPage() {
     if (getPageSize() > 0) {
       setPageStart(getPageStart() + getPageSize());
@@ -170,7 +176,7 @@ public abstract class AbstractPager extends Composite implements PagerView {
       if (getPageSize() > 0) {
         start = Math.min(index, getRowCount() - getPageSize());
       } else {
-        start = Math.min(index,  getRowCount() - 1);
+        start = Math.min(index, getRowCount() - 1);
       }
 
       if (start != getPageStart()) {

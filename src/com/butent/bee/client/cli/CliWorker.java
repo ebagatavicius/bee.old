@@ -25,7 +25,6 @@ import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.geolocation.client.Position;
 import com.google.gwt.geolocation.client.Position.Coordinates;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.storage.client.Storage;
@@ -42,11 +41,7 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.Historian;
 import com.butent.bee.client.Settings;
-import com.butent.bee.client.ajaxloader.AjaxKeyRepository;
-import com.butent.bee.client.ajaxloader.AjaxLoader;
-import com.butent.bee.client.ajaxloader.ClientLocation;
 import com.butent.bee.client.animation.RafCallback;
-import com.butent.bee.client.canvas.CanvasDemo;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.communication.RpcInfo;
@@ -84,11 +79,6 @@ import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.i18n.LocaleUtils;
 import com.butent.bee.client.images.Flags;
 import com.butent.bee.client.images.Images;
-import com.butent.bee.client.language.DetectionCallback;
-import com.butent.bee.client.language.DetectionResult;
-import com.butent.bee.client.language.Language;
-import com.butent.bee.client.language.Translation;
-import com.butent.bee.client.language.TranslationCallback;
 import com.butent.bee.client.layout.Direction;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Horizontal;
@@ -104,8 +94,7 @@ import com.butent.bee.client.maps.MapContainer;
 import com.butent.bee.client.maps.MapOptions;
 import com.butent.bee.client.maps.MapUtils;
 import com.butent.bee.client.maps.MapWidget;
-import com.butent.bee.client.maps.Marker;
-import com.butent.bee.client.maps.MarkerOptions;
+import com.butent.bee.client.menu.MenuCommand;
 import com.butent.bee.client.modules.administration.AdministrationKeeper;
 import com.butent.bee.client.modules.ec.EcKeeper;
 import com.butent.bee.client.modules.tasks.TasksKeeper;
@@ -118,15 +107,14 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
-import com.butent.bee.client.ui.WidgetFactory;
 import com.butent.bee.client.ui.WidgetInitializer;
 import com.butent.bee.client.utils.BrowsingContext;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.utils.JsUtils;
 import com.butent.bee.client.utils.NewFileInfo;
 import com.butent.bee.client.utils.XmlUtils;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.view.ViewHelper;
-import com.butent.bee.client.visualization.showcase.Showcase;
 import com.butent.bee.client.websocket.Endpoint;
 import com.butent.bee.client.widget.BeeAudio;
 import com.butent.bee.client.widget.BeeVideo;
@@ -171,10 +159,9 @@ import com.butent.bee.shared.data.value.BooleanValue;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.html.Attributes;
-import com.butent.bee.shared.html.Tags;
 import com.butent.bee.shared.html.builder.elements.Input;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.io.StoredFile;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogLevel;
 import com.butent.bee.shared.logging.LogUtils;
@@ -239,15 +226,12 @@ public final class CliWorker {
 
     if ("?".equals(z)) {
       whereAmI();
-      
+
     } else if (BeeUtils.isDigit(v.charAt(0)) || v.charAt(0) == '(' || v.charAt(0) == '-') {
       doEval(v);
 
     } else if (z.startsWith("adm") && !args.isEmpty()) {
       doAdmin(z.substring(3), args, errorPopup);
-
-    } else if (z.startsWith("ajaxk") || z.startsWith("apik") || z.startsWith("gook")) {
-      doAjaxKeys(arr);
 
     } else if ("audio".equals(z)) {
       playAudio(args);
@@ -264,9 +248,6 @@ public final class CliWorker {
     } else if (z.startsWith("cap")) {
       showCaptions();
 
-    } else if ("canvas".equals(z)) {
-      new CanvasDemo().start();
-
     } else if (BeeUtils.inList(z, "center", "east", "north", "south", "screen", "west")) {
       doScreen(arr, errorPopup);
 
@@ -281,9 +262,6 @@ public final class CliWorker {
 
     } else if ("clear".equals(z)) {
       clear(args);
-
-    } else if (z.startsWith("client")) {
-      showClientLocation();
 
     } else if (z.startsWith("collect")) {
       doCollections(arr);
@@ -305,6 +283,9 @@ public final class CliWorker {
 
     } else if ("cornify".equals(z)) {
       cornify(arr);
+
+    } else if ("create".equals(z)) {
+      createResource(args, errorPopup);
 
     } else if (z.startsWith("dbinf")) {
       getDbInfo(args);
@@ -400,7 +381,7 @@ public final class CliWorker {
     } else if ("gwt".equals(z)) {
       showGwt();
 
-    } else if (BeeUtils.inList(z, "h5", "html5") || z.startsWith("supp") || z.startsWith("feat")) {
+    } else if (BeeUtils.inList(z, "h5", "html5") || z.startsWith("feat")) {
       showSupport(args, errorPopup);
 
     } else if (z.startsWith("hist")) {
@@ -449,7 +430,7 @@ public final class CliWorker {
       showMap(arr, errorPopup);
 
     } else if ("menu".equals(z)) {
-      doMenu(args);
+      doMenu(args, errorPopup);
 
     } else if ("meter".equals(z)) {
       showMeter(arr, errorPopup);
@@ -496,6 +477,9 @@ public final class CliWorker {
     } else if ("rts".equals(z)) {
       scheduleTasks(arr, errorPopup);
 
+    } else if ("run".equals(z)) {
+      BeeKeeper.getRpc().sendText(Service.RUN, args);
+
     } else if (z.startsWith("selector") && arr.length >= 2) {
       querySelector(z, args, errorPopup);
 
@@ -510,6 +494,9 @@ public final class CliWorker {
 
     } else if ("size".equals(z) && arr.length >= 2) {
       showSize(arr);
+
+    } else if ("sleep".equals(z) && arr.length >= 2) {
+      sleep(arr);
 
     } else if ("slider".equals(z)) {
       showSlider(arr);
@@ -526,6 +513,9 @@ public final class CliWorker {
     } else if ("style".equals(z)) {
       style(v, arr, errorPopup);
 
+    } else if (z.startsWith("suppl")) {
+      showViewSuppliers();
+
     } else if ("svg".equals(z)) {
       showSvg(arr);
 
@@ -534,9 +524,6 @@ public final class CliWorker {
 
     } else if (z.startsWith("tile")) {
       doTiles(args);
-
-    } else if (z.startsWith("tran") || z.startsWith("detec")) {
-      translate(arr, z.startsWith("detec"));
 
     } else if ("uc".equals(z) || "unicode".startsWith(z)) {
       unicode(arr);
@@ -556,14 +543,8 @@ public final class CliWorker {
     } else if (z.startsWith("view")) {
       showViewInfo(v, args);
 
-    } else if (z.startsWith("viz")) {
-      Showcase.open();
-
     } else if ("vm".equals(z)) {
       BeeKeeper.getRpc().invoke("vmInfo", ResponseHandler.callback(z));
-
-    } else if ("wf".equals(z) || z.startsWith("suppl")) {
-      showWidgetSuppliers();
 
     } else if ("widget".equals(z) && arr.length >= 2) {
       showWidgetInfo(arr, errorPopup);
@@ -807,7 +788,7 @@ public final class CliWorker {
       debugWithSeparator("history cleared");
 
     } else if (BeeUtils.startsSame(args, "widget")) {
-      WidgetFactory.clear();
+      ViewFactory.clear();
       debugWithSeparator("widget factory cleared");
     }
   }
@@ -836,12 +817,26 @@ public final class CliWorker {
     }, delay);
   }
 
+//@formatter:off
   private static native void cornifyAdd() /*-{
     try {
       $wnd.cornify_add();
     } catch (err) {
     }
   }-*/;
+//@formatter:on
+
+  private static void createResource(String args, boolean errorPopup) {
+    if (BeeUtils.isEmpty(args)) {
+      showError(errorPopup, "path not specified");
+
+    } else {
+      Resource resource = new Resource(args, BeeConst.STRING_EMPTY);
+      ResourceEditor resourceEditor = new ResourceEditor(resource);
+
+      BeeKeeper.getScreen().show(resourceEditor);
+    }
+  }
 
   private static void debugWithSeparator(String message) {
     logger.debug(message);
@@ -971,30 +966,6 @@ public final class CliWorker {
         Endpoint.send(notificationMessage);
       }
     }
-  }
-
-  private static void doAjaxKeys(String[] arr) {
-    if (ArrayUtils.length(arr) == 3) {
-      String loc = arr[1];
-      String key = arr[2];
-
-      if (Global.nativeConfirm("add api key", loc, key)) {
-        AjaxKeyRepository.putKey(loc, key);
-      }
-    }
-
-    Map<String, String> keyMap = AjaxKeyRepository.getKeys();
-    if (BeeUtils.isEmpty(keyMap)) {
-      logger.warning("api key repository is empty");
-      return;
-    }
-
-    List<Property> lst = new ArrayList<>();
-    for (Map.Entry<String, String> entry : keyMap.entrySet()) {
-      lst.add(new Property(entry.getKey(), entry.getValue()));
-    }
-
-    showPropData("Ajax", lst, "Location", "Api Key");
   }
 
   private static void doCollections(String[] arr) {
@@ -1230,7 +1201,7 @@ public final class CliWorker {
       }
     });
   }
-  
+
   private static void doEval(String args) {
     String result;
     if (BeeUtils.isDigit(args)) {
@@ -1352,7 +1323,7 @@ public final class CliWorker {
       showExtData("Locale info", LocaleUtils.getInfo());
 
     } else if (BeeUtils.contains(arr[0], 's')) {
-      BeeKeeper.getRpc().invoke("localeInfo", ContentType.TEXT, args,
+      BeeKeeper.getRpc().invoke("localeInfo", args,
           ResponseHandler.callback(ArrayUtils.joinWords(arr)));
 
     } else {
@@ -1408,11 +1379,93 @@ public final class CliWorker {
     }
   }
 
-  private static void doMenu(String args) {
+  private static void doMenu(String args, boolean errorPopup) {
     if (BeeUtils.isEmpty(args)) {
       BeeKeeper.getMenu().showMenuInfo();
-    } else {
+
+    } else if (BeeUtils.same(args, "load")) {
       BeeKeeper.getMenu().loadMenu();
+
+    } else if (BeeUtils.isDigit(args)) {
+      BeeKeeper.getScreen().closeAll();
+
+      final List<MenuCommand> commands = new ArrayList<>();
+
+      List<MenuCommand> menuCommands = BeeKeeper.getMenu().getCommands();
+      for (MenuCommand command : menuCommands) {
+        switch (command.getService()) {
+          case ASSESSMENTS_GRID:
+          case DISCUSS_LIST:
+          case DRIVER_TIME_BOARD:
+          case EDIT_EC_CONTACTS:
+          case EDIT_TERMS_OF_DELIVERY:
+          case ENSURE_CATEGORIES_AND_OPEN_GRID:
+          case FORM:
+          case FREIGHT_EXCHANGE:
+          case GRID:
+          case ITEMS:
+          case OPEN_MAIL:
+          case PARAMETERS:
+          case REPORT:
+          case SERVICE_CALENDAR:
+          case SHIPPING_SCHEDULE:
+          case TASK_LIST:
+          case TASK_REPORTS:
+          case TRAILER_TIME_BOARD:
+          case TRUCK_TIME_BOARD:
+            commands.add(command);
+            break;
+
+          default:
+            logger.debug("skip", command.getService(), command.getParameters());
+            break;
+        }
+      }
+
+      final Holder<Integer> position = Holder.of(0);
+      final Holder<String> progId = Holder.of(null);
+
+      InlineLabel close = new InlineLabel(String.valueOf(BeeConst.CHAR_TIMES));
+      close.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          BeeKeeper.getScreen().removeProgress(progId.get());
+          progId.set(null);
+        }
+      });
+
+      Thermometer thermometer = new Thermometer(args, (double) commands.size(), close);
+      progId.set(BeeKeeper.getScreen().addProgress(thermometer));
+
+      final Timer timer = new Timer() {
+        @Override
+        public void run() {
+          int index = position.get();
+
+          if (index < commands.size()
+              && BeeKeeper.getScreen().updateProgress(progId.get(), index + 0.5)) {
+
+            position.set(index + 1);
+
+            MenuCommand command = commands.get(index);
+            logger.debug(index, command.getService(), command.getParameters());
+
+            command.execute();
+
+          } else {
+            cancel();
+            if (progId.isNotNull()) {
+              BeeKeeper.getScreen().removeProgress(progId.get());
+            }
+          }
+        }
+      };
+
+      int period = Math.max(BeeUtils.toInt(args), 1);
+      timer.scheduleRepeating(period);
+
+    } else {
+      showError(errorPopup, args);
     }
   }
 
@@ -1502,7 +1555,12 @@ public final class CliWorker {
         inform("endpoint already open");
       } else {
         logger.debug("opening endpoint");
-        Endpoint.open(BeeKeeper.getUser().getUserId());
+        Endpoint.open(BeeKeeper.getUser().getUserId(), new Consumer<Boolean>() {
+          @Override
+          public void accept(Boolean input) {
+            logger.debug("endpoint open", input);
+          }
+        });
       }
 
     } else if (BeeUtils.same(args, "close")) {
@@ -1552,22 +1610,14 @@ public final class CliWorker {
   }
 
   private static void getClassInfo(String args, boolean errorPopup) {
-    Pair<String, String> params = Pair.split(args);
-
-    String cls = (params == null) ? null : params.getA();
-    String pck = (params == null) ? null : params.getB();
-
-    if (BeeUtils.isEmpty(cls)) {
+    if (BeeUtils.isEmpty(args)) {
       showError(errorPopup, "Class name not specified");
 
-    } else if (cls.length() < 2) {
-      showError(errorPopup, "Class name", cls, "too short");
+    } else if (args.length() < 2) {
+      showError(errorPopup, "Class name", args, "too short");
 
     } else {
-      BeeKeeper.getRpc().makePostRequest(Service.GET_CLASS_INFO,
-          XmlUtils.createString(Service.VAR_DATA,
-              Service.VAR_CLASS_NAME, cls, Service.VAR_PACKAGE_LIST, pck),
-          ResponseHandler.callback(args));
+      BeeKeeper.getRpc().sendText(Service.GET_CLASS_INFO, args, ResponseHandler.callback(args));
     }
   }
 
@@ -1594,12 +1644,12 @@ public final class CliWorker {
           }
 
           long totSize = 0;
-          for (StoredFile sf : fileGroup.getFiles()) {
+          for (FileInfo sf : fileGroup.getFiles()) {
             totSize += sf.getSize();
           }
 
           fileGroup.setCaption("Files: " + fileGroup.getFiles().size() + " size: " + totSize);
-          BeeKeeper.getScreen().showWidget(fileGroup);
+          BeeKeeper.getScreen().show(fileGroup);
         }
       }
     });
@@ -1641,17 +1691,17 @@ public final class CliWorker {
 
     ParameterList params = BeeKeeper.getRpc().createParameters(Service.GET_RESOURCE);
     for (String v : arr) {
-      params.addPositionalHeader(v);
+      params.addPositionalData(v);
     }
 
-    BeeKeeper.getRpc().makeGetRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
         if (response.hasResponse(Resource.class)) {
           Resource resource = Resource.restore(response.getResponseAsString());
           ResourceEditor resourceEditor = new ResourceEditor(resource);
 
-          BeeKeeper.getScreen().showWidget(resourceEditor);
+          BeeKeeper.getScreen().show(resourceEditor);
 
         } else {
           ResponseHandler.dispatch(ArrayUtils.joinWords(arr), response);
@@ -1792,7 +1842,7 @@ public final class CliWorker {
       }
     }, ErrorEvent.getType());
 
-    BeeKeeper.getScreen().showWidget(widget);
+    BeeKeeper.getScreen().show(widget);
   }
 
   private static void playVideo(String args) {
@@ -1810,7 +1860,7 @@ public final class CliWorker {
       }
     }, ErrorEvent.getType());
 
-    BeeKeeper.getScreen().showWidget(widget);
+    BeeKeeper.getScreen().show(widget);
   }
 
   private static void print(String args, boolean errorPopup) {
@@ -2012,7 +2062,7 @@ public final class CliWorker {
           Storage stor = Storage.getSessionStorageIfSupported();
 
           if (stor == null) {
-            BeeKeeper.getScreen().showWidget(p);
+            BeeKeeper.getScreen().show(p);
           } else {
             final String tmpKey = BeeUtils.randomString(5, 5, 'a', 'z');
             stor.setItem(tmpKey, area.getValue());
@@ -2071,6 +2121,7 @@ public final class CliWorker {
     }
   }
 
+//@formatter:off
   // CHECKSTYLE:OFF
   private static native void sampleCanvas(Element el) /*-{
     var ctx = el.getContext("2d");
@@ -2083,6 +2134,7 @@ public final class CliWorker {
     }
   }-*/;
   // CHECKSTYLE:ON
+//@formatter:on
 
   private static void scheduleTasks(String[] arr, boolean errorPopup) {
     JustDate from = (arr.length > 1) ? TimeUtils.parseDate(arr[1]) : TimeUtils.today();
@@ -2220,7 +2272,7 @@ public final class CliWorker {
     int timeout = BeeConst.UNDEF;
     String cancelHtml = null;
 
-    final Holder<String> widgetName = new Holder<String>(null);
+    final Holder<String> widgetName = new Holder<>(null);
     final Holder<String> widgetStyle = Holder.of("background-color:green");
 
     String v;
@@ -2298,20 +2350,6 @@ public final class CliWorker {
     });
   }
 
-  private static void showClientLocation() {
-    AjaxLoader.load(new Runnable() {
-      @Override
-      public void run() {
-        ClientLocation location = AjaxLoader.getClientLocation();
-
-        showPropData("Client Location", PropertyUtils.createProperties("City", location.getCity(),
-            "Country", location.getCountry(), "Country Code", location.getCountryCode(),
-            "Latitude", location.getLatitude(), "Longitude", location.getLongitude(),
-            "Region", location.getRegion()));
-      }
-    });
-  }
-
   private static void showColor(String[] arr) {
     Map<String, String> output = Maps.newHashMap();
 
@@ -2379,7 +2417,7 @@ public final class CliWorker {
       table.setHtml(row, col, value);
     }
 
-    BeeKeeper.getScreen().showWidget(table);
+    BeeKeeper.getScreen().show(table);
   }
 
   private static void showCurrentExchangeRate(String currency) {
@@ -2717,7 +2755,7 @@ public final class CliWorker {
           int row = 0;
           int col = 0;
 
-          Map<String, String> flags = new TreeMap<String, String>(Flags.getFlags());
+          Map<String, String> flags = new TreeMap<>(Flags.getFlags());
 
           for (Map.Entry<String, String> entry : flags.entrySet()) {
             table.setHtml(row, col, entry.getKey());
@@ -2737,7 +2775,7 @@ public final class CliWorker {
           }
 
           if (!table.isEmpty()) {
-            BeeKeeper.getScreen().showWidget(table);
+            BeeKeeper.getScreen().show(table);
           }
         }
       };
@@ -2771,7 +2809,7 @@ public final class CliWorker {
         context.add(s);
       }
     }
-    
+
     Range<Character> range = null;
 
     List<Property> styles = PropertyUtils.createProperties(
@@ -2817,7 +2855,7 @@ public final class CliWorker {
 
     if (count > 0) {
       logger.debug(FontAwesome.FAMILY, names, count);
-      BeeKeeper.getScreen().showWidget(panel);
+      BeeKeeper.getScreen().show(panel);
     } else {
       showError(errorPopup, FontAwesome.FAMILY, names, "not found");
     }
@@ -2920,7 +2958,7 @@ public final class CliWorker {
       int row = 0;
       int col = 0;
 
-      Map<String, ImageResource> map = new TreeMap<String, ImageResource>(Images.getMap());
+      Map<String, ImageResource> map = new TreeMap<>(Images.getMap());
 
       for (Map.Entry<String, ImageResource> entry : map.entrySet()) {
         table.setHtml(row, col, entry.getKey());
@@ -2936,7 +2974,7 @@ public final class CliWorker {
       }
 
       if (!table.isEmpty()) {
-        BeeKeeper.getScreen().showWidget(table);
+        BeeKeeper.getScreen().show(table);
       }
     }
   }
@@ -2954,7 +2992,7 @@ public final class CliWorker {
 
     boolean required = true;
 
-    final Holder<String> widgetName = new Holder<String>(null);
+    final Holder<String> widgetName = new Holder<>(null);
     final Holder<String> widgetStyle = Holder.of("background-color:green");
 
     String v;
@@ -3092,7 +3130,7 @@ public final class CliWorker {
       row++;
     }
 
-    BeeKeeper.getScreen().showWidget(table);
+    BeeKeeper.getScreen().show(table);
   }
 
   private static void showListOfCurrencies() {
@@ -3142,12 +3180,7 @@ public final class CliWorker {
                     Double lng = BeeUtils.toDoubleOrNull(arr[i + 2]);
 
                     if (lat != null && lng != null) {
-                      LatLng position = LatLng.create(lat, lng);
-                      MarkerOptions markerOptions = MarkerOptions.create(position,
-                          widget.getMapImpl());
-                      markerOptions.setTitle(BeeUtils.joinWords(arr[i], position.getString()));
-
-                      Marker.create(markerOptions);
+                      widget.addMarker(lat, lng, BeeUtils.joinWords(lat, lng, arr[i]));
                     }
                   }
                 }
@@ -3156,7 +3189,7 @@ public final class CliWorker {
           }
 
           MapContainer container = new MapContainer(caption, widget);
-          BeeKeeper.getScreen().showWidget(container);
+          BeeKeeper.getScreen().show(container);
         }
       }
     });
@@ -3259,7 +3292,7 @@ public final class CliWorker {
       table.setHtml(r, 0, BeeUtils.toString(i));
       table.setWidget(r, 1, new Meter(min, max, i, low, high, optimum));
     }
-    BeeKeeper.getScreen().showWidget(table);
+    BeeKeeper.getScreen().show(table);
   }
 
   private static boolean showModal(int rowCount) {
@@ -3697,7 +3730,7 @@ public final class CliWorker {
       value = max;
     }
 
-    BeeKeeper.getScreen().showWidget(new SliderBar(value, min, max, step, labels, ticks));
+    BeeKeeper.getScreen().show(new SliderBar(value, min, max, step, labels, ticks));
   }
 
   private static void showSupport(String args, boolean errorPopup) {
@@ -3869,13 +3902,13 @@ public final class CliWorker {
       child.setAttribute("fill", "rgb(" + r + "," + g + "," + b + ")");
       child.setAttribute("opacity", BeeUtils.toString((minOpacity == maxOpacity)
           ? minOpacity : BeeUtils.randomDouble(minOpacity, maxOpacity)));
-      
+
       DomUtils.createId(child, child.getTagName());
 
       parent.appendChild(child);
     }
 
-    BeeKeeper.getScreen().showWidget(new Simple(widget, Overflow.HIDDEN));
+    BeeKeeper.getScreen().show(new Simple(widget, Overflow.HIDDEN));
   }
 
   private static void showTable(String caption, IsTable<?, ?> table) {
@@ -3959,6 +3992,25 @@ public final class CliWorker {
     }
 
     BeeKeeper.getRpc().makeGetRequest(params, ResponseHandler.callback(input));
+  }
+
+  private static void showViewSuppliers() {
+    Collection<String> keys = ViewFactory.getKeys();
+
+    if (keys.isEmpty()) {
+      logger.info("view suppliers not registered");
+
+    } else {
+      HtmlTable table = new HtmlTable(StyleUtils.CLASS_NAME_PREFIX + "info-table");
+      table.setCaption("Suppliers");
+
+      int row = 0;
+      for (String key : keys) {
+        table.setText(row++, 0, key);
+      }
+
+      BeeKeeper.getScreen().show(table);
+    }
   }
 
   private static void showWebNote(String[] arr) {
@@ -4060,27 +4112,21 @@ public final class CliWorker {
     showExtData(BeeUtils.joinWords("Widget", id, z), info);
   }
 
-  private static void showWidgetSuppliers() {
-    Collection<String> keys = WidgetFactory.getKeys();
-    if (keys.isEmpty()) {
-      logger.info("widget factory is empty");
-      return;
-    }
+  private static void sleep(String[] arr) {
+    for (int i = 1; i < arr.length; i++) {
+      String millis = arr[i];
 
-    HtmlTable table = new HtmlTable();
-    table.setBorderSpacing(10);
-
-    int row = 0;
-    int col = 0;
-
-    for (String key : keys) {
-      table.setHtml(row, col++, key);
-      if (col >= 5) {
-        row++;
-        col = 0;
+      if (BeeUtils.isPositiveInt(millis)) {
+        BeeKeeper.getRpc().invoke("sleep", millis, new ResponseCallback() {
+          @Override
+          public void onResponse(ResponseObject response) {
+            if (response.hasResponse()) {
+              logger.debug(response.getResponseAsString());
+            }
+          }
+        });
       }
     }
-    BeeKeeper.getScreen().showWidget(table);
   }
 
   private static void sortTable(IsTable<?, ?> table, int col) {
@@ -4249,118 +4295,6 @@ public final class CliWorker {
     }
   }
 
-  private static void translate(final String[] arr, boolean detect) {
-    int len = ArrayUtils.length(arr);
-    if (len < 2) {
-      Global.sayHuh(arr);
-      return;
-    }
-
-    if (detect) {
-      final String detText = ArrayUtils.join(BeeConst.STRING_SPACE, arr, 1, len);
-      Translation.detect(detText, new DetectionCallback() {
-        @Override
-        protected void onCallback(DetectionResult result) {
-          Global.showModalGrid("Language Detection",
-              new PropertiesData(PropertyUtils.createProperties("Text", detText,
-                  "Language Code", result.getLanguage(),
-                  "Language", Language.getByCode(result.getLanguage()),
-                  "Confidence", result.getConfidence(),
-                  "Reliable", result.isReliable())));
-        }
-      });
-      return;
-    }
-
-    final String text;
-    final String codeFrom;
-    final String codeTo;
-
-    Language dst = Language.getByCode(arr[len - 1]);
-
-    if (dst == null) {
-      text = ArrayUtils.join(BeeConst.STRING_SPACE, arr, 1, len);
-      codeFrom = BeeConst.STRING_EMPTY;
-      codeTo = LocaleUtils.getLanguageCode(LocaleInfo.getCurrentLocale());
-    } else {
-      codeTo = dst.getLangCode();
-      if (len <= 2) {
-        text = BeeConst.STRING_EMPTY;
-        codeFrom = BeeConst.STRING_EMPTY;
-      } else if (len <= 3) {
-        text = arr[len - 2];
-        codeFrom = BeeConst.STRING_EMPTY;
-      } else {
-        Language src = Language.getByCode(arr[len - 2]);
-        if (src == null) {
-          text = ArrayUtils.join(BeeConst.STRING_SPACE, arr, 1, len - 1);
-          codeFrom = BeeConst.STRING_EMPTY;
-        } else {
-          text = ArrayUtils.join(BeeConst.STRING_SPACE, arr, 1, len - 2);
-          codeFrom = src.getLangCode();
-        }
-      }
-    }
-
-    if (BeeUtils.isEmpty(text) || BeeUtils.same(text, BeeConst.STRING_ASTERISK)) {
-      logger.info("Translate", codeFrom, codeTo);
-      List<Element> elements = Lists.newArrayList();
-
-      NodeList<Element> nodes = Document.get().getElementsByTagName(Tags.BUTTON);
-      for (int i = 0; i < nodes.getLength(); i++) {
-        elements.add(nodes.getItem(i));
-      }
-      nodes = Document.get().getElementsByTagName(Tags.TH);
-      for (int i = 0; i < nodes.getLength(); i++) {
-        elements.add(nodes.getItem(i));
-      }
-      nodes = Document.get().getElementsByTagName(Tags.LABEL);
-      for (int i = 0; i < nodes.getLength(); i++) {
-        elements.add(nodes.getItem(i));
-      }
-      nodes = Document.get().getElementsByTagName(Tags.OPTION);
-      for (int i = 0; i < nodes.getLength(); i++) {
-        elements.add(nodes.getItem(i));
-      }
-
-      for (final Element elem : elements) {
-        String elTxt = elem.getInnerText();
-        if (!BeeUtils.hasLength(elTxt, 3)) {
-          continue;
-        }
-
-        TranslationCallback elBack = new TranslationCallback() {
-          @Override
-          protected void onCallback(String translation) {
-            elem.setInnerText(translation);
-          }
-        };
-
-        if (BeeUtils.isEmpty(codeFrom)) {
-          Translation.detectAndTranslate(elTxt, codeTo, elBack);
-        } else {
-          Translation.translate(elTxt, codeFrom, codeTo, elBack);
-        }
-      }
-      return;
-    }
-
-    final String info = ArrayUtils.join(BeeConst.STRING_SPACE, arr, 1, len);
-
-    TranslationCallback callback = new TranslationCallback() {
-      @Override
-      protected void onCallback(String translation) {
-        inform(info, translation);
-      }
-    };
-
-    if (BeeUtils.isEmpty(codeFrom)) {
-      Translation.detectAndTranslate(text, codeTo, callback);
-    } else {
-      Translation.translate(text, codeFrom, codeTo, callback);
-    }
-  }
-
   private static void unicode(String[] arr) {
     StringBuilder sb = new StringBuilder();
     int len = ArrayUtils.length(arr);
@@ -4400,7 +4334,7 @@ public final class CliWorker {
 
     final String input = sb.toString();
 
-    BeeKeeper.getRpc().invoke("stringInfo", ContentType.TEXT, input, new ResponseCallback() {
+    BeeKeeper.getRpc().invoke("stringInfo", input, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
         ResponseHandler.unicodeTest(input, response);

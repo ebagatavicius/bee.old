@@ -81,7 +81,7 @@ public class AssesmentRequestsUsageQueryProvider implements UsageQueryProvider {
       selectFromChild.setWhere(SqlUtils.and(selectFromChild.getWhere(),
           SqlUtils.equals(TBL_ORDERS, COL_ORDER_MANAGER, userId)));
     }
-    
+
     if (orderMode) {
       selectFromChild.setWhere(SqlUtils.and(selectFromChild.getWhere(),
           SqlUtils.notEqual(TBL_ORDERS, COL_STATUS, OrderStatus.REQUEST.ordinal())));

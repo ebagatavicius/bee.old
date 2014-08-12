@@ -11,7 +11,6 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.menu.Menu;
 import com.butent.bee.shared.menu.MenuEntry;
-import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.RightsObjectType;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.utils.Codec;
@@ -66,13 +65,12 @@ final class MenuRightsHandler extends MultiRoleForm {
   }
 
   private boolean addMenuObject(List<RightsObject> result, int level, String parent, Menu menu) {
-    ModuleAndSub ms = ModuleAndSub.parse(menu.getModule());
-    if (ms != null && !ms.isEnabled()) {
+    if (!BeeKeeper.getUser().isAnyModuleVisible(menu.getModule())) {
       return false;
     }
 
     RightsObject object = new RightsObject(menu.getName(),
-        Localized.maybeTranslate(menu.getLabel()), ms, level, parent);
+        Localized.maybeTranslate(menu.getLabel()), null, level, parent);
 
     result.add(object);
 

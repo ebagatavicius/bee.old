@@ -17,8 +17,13 @@ import com.butent.bee.client.data.LocalProvider;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dialog.Popup.OutsideClick;
 import com.butent.bee.client.event.logical.CloseEvent;
+import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.edit.EditChangeHandler;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.edit.EditStopEvent;
@@ -46,6 +51,7 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.BeeParameter;
+import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -61,19 +67,36 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class ParametersGrid extends AbstractGridInterceptor {
+public final class ParametersGrid extends AbstractGridInterceptor {
+
+  private static final String GRID_NAME = "Parameters";
 
   private static final String NAME = "Name";
-
   private static final String VALUE = "Value";
   private static final String DESCRIPTION = "Description";
+
   private static final List<BeeColumn> columns = Lists.newArrayList(
       new BeeColumn(ValueType.TEXT, NAME, false),
       new BeeColumn(ValueType.TEXT, VALUE, true),
       new BeeColumn(ValueType.TEXT, DESCRIPTION, true));
 
+  public static void open(String module) {
+    Assert.notEmpty(module);
+    openGrid(module, ViewHelper.getPresenterCallback());
+  }
+
+  public static void open(String module, ViewCallback callback) {
+    Assert.notEmpty(module);
+    Assert.notNull(callback);
+    openGrid(module, ViewFactory.getPresenterCallback(callback));
+  }
+
   private static int indexOf(String colName) {
     return DataUtils.getColumnIndex(colName, columns);
+  }
+
+  private static void openGrid(String module, PresenterCallback callback) {
+    GridFactory.openGrid(GRID_NAME, new ParametersGrid(module), null, callback);
   }
 
   private final String module;
@@ -81,8 +104,7 @@ public class ParametersGrid extends AbstractGridInterceptor {
   private final List<BeeParameter> params = Lists.newArrayList();
   private final Long userId;
 
-  public ParametersGrid(String module) {
-    Assert.notEmpty(module);
+  private ParametersGrid(String module) {
     this.module = module;
     this.userId = BeeKeeper.getUser().getUserId();
   }
@@ -105,6 +127,22 @@ public class ParametersGrid extends AbstractGridInterceptor {
   }
 
   @Override
+  public String getCaption() {
+    ModuleAndSub ms = ModuleAndSub.parse(module);
+
+    String message;
+    if (ms == null) {
+      message = module;
+    } else {
+      message = BeeUtils.joinWords(ms.getModule().getCaption(),
+          (ms.getSubModule() == null) ? null : ms.getSubModule().getCaption());
+    }
+
+    return BeeUtils.joinWords(Localized.getConstants().parameters(),
+        BeeUtils.parenthesize(message));
+  }
+
+  @Override
   public BeeRowSet getInitialRowSet(GridDescription gridDescription) {
     return new BeeRowSet(columns);
   }
@@ -112,6 +150,11 @@ public class ParametersGrid extends AbstractGridInterceptor {
   @Override
   public GridInterceptor getInstance() {
     return new ParametersGrid(module);
+  }
+
+  @Override
+  public String getSupplierKey() {
+    return ViewFactory.SupplierKind.PARAMETERS.getKey(module);
   }
 
   @Override

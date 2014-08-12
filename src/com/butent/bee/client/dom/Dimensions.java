@@ -134,7 +134,7 @@ public class Dimensions implements HasInfo, HasDimensions {
     Assert.notNull(obj);
     applyTo(obj.getElement());
   }
-  
+
   public String getCssHeight() {
     if (hasHeight()) {
       return toCssLength(getHeightValue(), normalizeUnit(getHeightUnit()));
@@ -191,7 +191,7 @@ public class Dimensions implements HasInfo, HasDimensions {
       info.add(new Property(StyleUtils.STYLE_MAX_HEIGHT,
           toCssLength(getMaxHeightValue(), getMaxHeightUnit())));
     }
-    
+
     PropertyUtils.addWhenEmpty(info, getClass());
     return info;
   }
@@ -231,7 +231,7 @@ public class Dimensions implements HasInfo, HasDimensions {
   public CssUnit getMaxWidthUnit() {
     return maxWidthUnit;
   }
-  
+
   public Double getMaxWidthValue() {
     return maxWidthValue;
   }
@@ -243,11 +243,11 @@ public class Dimensions implements HasInfo, HasDimensions {
   public Double getMinHeightValue() {
     return minHeightValue;
   }
-  
+
   public CssUnit getMinWidthUnit() {
     return minWidthUnit;
   }
-  
+
   public Double getMinWidthValue() {
     return minWidthValue;
   }
@@ -265,7 +265,7 @@ public class Dimensions implements HasInfo, HasDimensions {
   public boolean hasHeight() {
     return BeeUtils.isPositive(getHeightValue());
   }
-  
+
   public boolean hasMaxHeight() {
     return BeeUtils.isPositive(getMaxHeightValue());
   }
@@ -281,13 +281,13 @@ public class Dimensions implements HasInfo, HasDimensions {
   public boolean hasMinWidth() {
     return BeeUtils.isPositive(getMinWidthValue());
   }
-  
+
   public boolean hasWidth() {
     return BeeUtils.isPositive(getWidthValue());
   }
-  
+
   public boolean isEmpty() {
-    return getWidthValue() == null && getHeightValue() == null 
+    return getWidthValue() == null && getHeightValue() == null
         && getMinWidthValue() == null && getMinHeightValue() == null
         && getMaxWidthValue() == null && getMaxHeightValue() == null;
   }
@@ -331,11 +331,11 @@ public class Dimensions implements HasInfo, HasDimensions {
     setHeightValue(value);
     setHeightUnit(unit);
   }
-  
+
   public void setHeight(int value) {
     setHeight((double) value, DEFAULT_UNIT);
   }
-  
+
   @Override
   public void setHeightUnit(CssUnit heightUnit) {
     this.heightUnit = heightUnit;
@@ -350,11 +350,11 @@ public class Dimensions implements HasInfo, HasDimensions {
     setMaxHeightValue(value);
     setMaxHeightUnit(unit);
   }
-  
+
   public void setMaxHeight(int value) {
     setMaxHeight((double) value, DEFAULT_UNIT);
   }
-  
+
   public void setMaxHeightUnit(CssUnit maxHeightUnit) {
     this.maxHeightUnit = maxHeightUnit;
   }
@@ -375,11 +375,11 @@ public class Dimensions implements HasInfo, HasDimensions {
   public void setMaxWidthUnit(CssUnit maxWidthUnit) {
     this.maxWidthUnit = maxWidthUnit;
   }
-  
+
   public void setMaxWidthValue(Double maxWidthValue) {
     this.maxWidthValue = maxWidthValue;
   }
-  
+
   public void setMinHeight(Double value, CssUnit unit) {
     setMinHeightValue(value);
     setMinHeightUnit(unit);
@@ -401,7 +401,7 @@ public class Dimensions implements HasInfo, HasDimensions {
     setMinWidthValue(value);
     setMinWidthUnit(unit);
   }
-  
+
   public void setMinWidth(int value) {
     setMinWidth((double) value, DEFAULT_UNIT);
   }
@@ -409,20 +409,20 @@ public class Dimensions implements HasInfo, HasDimensions {
   public void setMinWidthUnit(CssUnit minWidthUnit) {
     this.minWidthUnit = minWidthUnit;
   }
-  
+
   public void setMinWidthValue(Double minWidthValue) {
     this.minWidthValue = minWidthValue;
   }
-  
+
   public void setWidth(Double value, CssUnit unit) {
     setWidthValue(value);
     setWidthUnit(unit);
   }
-  
+
   public void setWidth(int value) {
     setWidth((double) value, DEFAULT_UNIT);
   }
-  
+
   @Override
   public void setWidthUnit(CssUnit widthUnit) {
     this.widthUnit = widthUnit;
@@ -432,7 +432,7 @@ public class Dimensions implements HasInfo, HasDimensions {
   public void setWidthValue(Double widthValue) {
     this.widthValue = widthValue;
   }
-  
+
   private void setFromStyle(Style style) {
     Assert.notNull(style);
 

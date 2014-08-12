@@ -103,13 +103,13 @@ public class Filters implements HasExtendedInfo {
     public List<Property> getInfo() {
       List<Property> info = PropertyUtils.createProperties("Id", getId(),
           "Ordinal", getOrdinal(), "Predefined", isPredefined());
-      
+
       if (filterDescription != null) {
         info.addAll(filterDescription.getInfo());
       }
       return info;
     }
-    
+
     @Override
     public int hashCode() {
       return Longs.hashCode(getId());
@@ -508,26 +508,26 @@ public class Filters implements HasExtendedInfo {
     if (itemsByKey.isEmpty()) {
       return info;
     }
-    
+
     List<String> keys = Lists.newArrayList(itemsByKey.keySet());
     if (keys.size() > 1) {
       Collections.sort(keys);
     }
-    
+
     for (int i = 0; i < keys.size(); i++) {
       String key = keys.get(i);
       String prefix = BeeUtils.joinWords(BeeUtils.progress(i + 1, keys.size()), key);
 
       Collection<Item> items = itemsByKey.get(key);
       info.add(new ExtendedProperty(prefix, "items", BeeUtils.bracket(items.size())));
-      
+
       int j = 0;
       for (Item item : items) {
         String root = BeeUtils.joinWords(prefix, BeeUtils.progress(++j, items.size()));
         PropertyUtils.appendChildrenToExtended(info, root, item.getInfo());
       }
     }
-    
+
     return info;
   }
 
@@ -544,7 +544,7 @@ public class Filters implements HasExtendedInfo {
 
     return initialValues;
   }
-  
+
   public void load(String serialized) {
     Assert.notEmpty(serialized);
 
@@ -580,7 +580,7 @@ public class Filters implements HasExtendedInfo {
     if (row == null) {
       return null;
     }
-    
+
     ensureIndexes();
 
     String name = BeeUtils.trim(row.getString(nameColumnIndex));

@@ -23,16 +23,16 @@ import java.util.Map;
 public class CustomProperties extends HashMap<String, String> implements HasInfo, BeeSerializable {
 
   public static final String TAG_PROPERTIES = "properties";
-  
+
   public static CustomProperties create() {
     return new CustomProperties();
   }
-  
+
   public static CustomProperties restore(String s) {
     if (BeeUtils.isEmpty(s)) {
       return null;
     }
-    
+
     CustomProperties customProperties = new CustomProperties();
     customProperties.deserialize(s);
 
@@ -53,11 +53,11 @@ public class CustomProperties extends HashMap<String, String> implements HasInfo
     if (BeeUtils.isEmpty(s)) {
       return;
     }
-    
+
     String[] arr = Codec.beeDeserializeCollection(s);
     int c = ArrayUtils.length(arr);
     Assert.isEven(c);
-    
+
     for (int i = 0; i < c; i += 2) {
       put(arr[i], arr[i + 1]);
     }

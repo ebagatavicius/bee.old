@@ -9,7 +9,7 @@ public class DialogTimer extends Timer {
 
   private final Popup dialog;
   private final Holder<State> state;
-  
+
   public DialogTimer(Popup dialog, Holder<State> state) {
     super();
     this.dialog = dialog;

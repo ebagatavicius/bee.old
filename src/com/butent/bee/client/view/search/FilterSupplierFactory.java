@@ -20,12 +20,12 @@ public final class FilterSupplierFactory {
       String enumKey, Relation relation, String options) {
 
     BeeColumn sourceColumn = BeeUtils.getQuietly(dataColumns, sourceIndex);
-    
+
     List<BeeColumn> searchColumns = Lists.newArrayList();
     if (!BeeUtils.isEmpty(searchBy)) {
       for (String by : searchBy) {
         BeeColumn column = DataUtils.getColumn(by, dataColumns);
-        
+
         if (column != null) {
           searchColumns.add(column);
         } else if (BeeUtils.same(by, idColumnName)) {

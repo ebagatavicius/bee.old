@@ -6,6 +6,7 @@ import com.google.common.collect.Table;
 
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.modules.trade.TotalRenderer;
+import com.butent.bee.client.modules.trade.VatRenderer;
 import com.butent.bee.client.utils.Evaluator;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -72,8 +73,7 @@ public final class RendererFactory {
       if (renderColumns.size() == 1) {
         int index = DataUtils.getColumnIndex(renderColumns.get(0), dataColumns);
         if (BeeConst.isUndef(index)) {
-          logger.severe("render column not found", renderColumns);
-          return null;
+          return new SimpleRenderer(CellSource.forProperty(renderColumns.get(0), ValueType.TEXT));
         } else {
           return new SimpleRenderer(CellSource.forColumn(dataColumns.get(index), index));
         }
@@ -249,9 +249,13 @@ public final class RendererFactory {
       case URL:
         renderer = new UrlRenderer(source);
         break;
-        
+
       case TOTAL:
         renderer = new TotalRenderer(dataColumns);
+        break;
+
+      case VAT:
+        renderer = new VatRenderer(dataColumns);
         break;
 
       case TOKEN:

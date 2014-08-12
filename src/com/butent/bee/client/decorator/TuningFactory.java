@@ -106,17 +106,17 @@ public final class TuningFactory {
       if (!BeeUtils.isEmpty(caption) && !result.containsKey(DecoratorConstants.OPTION_CAPTION)) {
         result.put(DecoratorConstants.OPTION_CAPTION, caption);
       }
-      
-      if ((BeeUtils.isTrue(wd.getRequired()) || BeeUtils.isFalse(wd.getNullable())) 
+
+      if ((BeeUtils.isTrue(wd.getRequired()) || BeeUtils.isFalse(wd.getNullable()))
           && !result.containsKey(DecoratorConstants.OPTION_VALUE_REQUIRED)) {
         result.put(DecoratorConstants.OPTION_VALUE_REQUIRED, BeeConst.STRING_TRUE);
       }
-      if (BeeUtils.isTrue(wd.getHasDefaults()) 
+      if (BeeUtils.isTrue(wd.getHasDefaults())
           && !result.containsKey(DecoratorConstants.OPTION_HAS_DEFAULTS)) {
         result.put(DecoratorConstants.OPTION_HAS_DEFAULTS, BeeConst.STRING_TRUE);
       }
     }
-    
+
     return result;
   }
 

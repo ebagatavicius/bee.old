@@ -11,7 +11,7 @@ public class WeekLayoutDescription {
   public enum WidgetPart {
     FIRST_WEEK, IN_BETWEEN, LAST_WEEK
   }
-  
+
   public static final int FIRST_DAY = 0;
   public static final int LAST_DAY = 6;
 
@@ -23,9 +23,9 @@ public class WeekLayoutDescription {
 
   public WeekLayoutDescription(JustDate firstDate, int maxLayer) {
     this.firstDate = firstDate;
-    
+
     this.days = new DayLayoutDescription[7];
-    
+
     this.stackingManager = new ItemStackingManager(maxLayer);
   }
 

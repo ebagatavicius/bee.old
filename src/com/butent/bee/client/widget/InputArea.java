@@ -303,6 +303,11 @@ public class InputArea extends CustomWidget implements Editor, TextBox, HandlesA
   }
 
   @Override
+  public void render(String value) {
+    setValue(value);
+  }
+
+  @Override
   public void selectAll() {
     if (BeeUtils.hasLength(getText(), 1)) {
       getTextAreaElement().select();

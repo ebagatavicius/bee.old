@@ -4,7 +4,7 @@
   xmlns:w="http://www.butent.com/widget"
   
   name="Items" viewName="Items"
-  newRowForm="Item" editForm="Item" editShowId="true" editInPlace="ExternalCode"
+  newRowForm="Item" editForm="Item" editShowId="true"
   newRowPopup="true" editPopup="true"
   >
   <g:west size="200" splitterSize="2">
@@ -17,17 +17,42 @@
   </g:west>
   
   <g:columns>
-    <DataColumn name="Name" flexGrow="2" visible="true" />
-    <RelColumn name="UnitName" />
-    <DataColumn name="Article" flexGrow="1" />
-    <DataColumn name="Barcode" flexGrow="1" />
-    <DataColumn name="Price" />
-    <RelColumn name="CurrencyName" />
-    <DataColumn name="Vat" width="40">
-      <carry><ui:expression>row.Vat</ui:expression></carry>
-    </DataColumn>
-    <DataColumn name="VatPercent" />
+    <DataColumn name="Ordinal" visible="false" />
+    <IdColumn name="Id" visible="false" />
 
-    <DataColumn name="ExternalCode" />
+    <RelColumn name="Type" carry="true" />
+    <RelColumn name="Group" carry="true" />
+
+    <DataColumn name="Name" visible="true" />
+    <DataColumn name="Name2" visible="false" />
+    <DataColumn name="Article" />
+    <DataColumn name="Article2" visible="false" />
+    <DataColumn name="Barcode" />
+
+    <RelColumn name="Unit" caption="=unitShort" carry="true" />
+    <DataColumn name="Weight" visible="false" />
+
+    <DataColumn name="Price" />
+    <RelColumn name="Currency" caption="=currencyShort" />
+
+    <DataColumn name="Cost" visible="false" />
+    <RelColumn name="CostCurrency" caption="=currencyShort" visible="false" />
+
+    <DataColumn name="Price1" visible="false" />
+    <RelColumn name="Currency1" caption="=currencyShort" visible="false" />
+    <DataColumn name="Price2" visible="false" />
+    <RelColumn name="Currency2" caption="=currencyShort" visible="false" />
+
+    <DataColumn name="Vat" carry="true" />
+    <DataColumn name="VatPercent" carry="true" />
+
+    <RelColumn name="Department" visible="false" />
+    <RelColumn name="ActivityType" visible="false" />
+    <RelColumn name="CostCenter" visible="false" />
+
+    <DataColumn name="ExternalCode" visible="false" />
+
+    <DataColumn name="Description" visible="false" />
+    <DataColumn name="Notes" visible="false" />
   </g:columns>
 </g:Grid>

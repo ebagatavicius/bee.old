@@ -19,7 +19,7 @@ public class IntegerValue extends Value {
   public static IntegerValue getNullValue() {
     return NULL_VALUE;
   }
-  
+
   public static IntegerValue of(Enum<?> e) {
     return (e == null) ? NULL_VALUE : new IntegerValue(e.ordinal());
   }

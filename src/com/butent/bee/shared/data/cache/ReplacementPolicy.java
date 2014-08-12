@@ -31,15 +31,15 @@ public enum ReplacementPolicy {
   private final boolean requiresHistory;
   private final boolean addFirst;
   private final boolean accessOrder;
-  
+
   private final CacheImpl defaultImpl;
-  
+
   private ReplacementPolicy(boolean requiresHistory, boolean addFirst, boolean accessOrder,
       CacheImpl defaultImpl) {
     this.requiresHistory = requiresHistory;
     this.addFirst = addFirst;
     this.accessOrder = accessOrder;
-    
+
     this.defaultImpl = defaultImpl;
   }
 
@@ -119,7 +119,7 @@ public enum ReplacementPolicy {
       case RANDOM:
         idx = BeeUtils.randomInt(0, size);
         break;
-        
+
       case LEAST_FREQUENTLY_USED:
         int minIdx = 0;
         Collection<Long> hits = history.get(keys.get(minIdx));

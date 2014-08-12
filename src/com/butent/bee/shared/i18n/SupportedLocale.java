@@ -19,8 +19,8 @@ public enum SupportedLocale implements HasCaption {
     public String getLanguage() {
       return "lt";
     }
-  }, 
-  
+  },
+
   EN {
     @Override
     public String getCaption() {
@@ -31,7 +31,7 @@ public enum SupportedLocale implements HasCaption {
     public String getIconName() {
       return "english";
     }
-    
+
     @Override
     public String getLanguage() {
       return "en";
@@ -71,10 +71,9 @@ public enum SupportedLocale implements HasCaption {
       return "fi";
     }
   };
-  
 
   public static final SupportedLocale DEFAULT = LT;
-  
+
   public static SupportedLocale getByLanguage(String language) {
     for (SupportedLocale locale : values()) {
       if (BeeUtils.same(locale.getLanguage(), language)) {
@@ -83,7 +82,7 @@ public enum SupportedLocale implements HasCaption {
     }
     return null;
   }
-  
+
   public static String normalizeLanguage(String language) {
     return BeeUtils.nvl(getByLanguage(language), DEFAULT).getLanguage();
   }

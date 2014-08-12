@@ -10,7 +10,7 @@ import com.google.gwt.event.shared.HasHandlers;
 import com.butent.bee.shared.Assert;
 
 public class CloseEvent extends GwtEvent<CloseEvent.Handler> {
-  
+
   public enum Cause {
     KEYBOARD_ESCAPE, KEYBOARD_SAVE, MOUSE_CLOSE_BOX, MOUSE_OUTSIDE, SCRIPT
   }
@@ -18,13 +18,13 @@ public class CloseEvent extends GwtEvent<CloseEvent.Handler> {
   public interface Handler extends EventHandler {
     void onClose(CloseEvent event);
   }
-  
+
   public interface HasCloseHandlers extends HasHandlers {
     HandlerRegistration addCloseHandler(Handler handler);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static void fire(HasCloseHandlers source, Cause cause, Node target) {
     Assert.notNull(source);
     source.fireEvent(new CloseEvent(cause, target));
@@ -33,7 +33,7 @@ public class CloseEvent extends GwtEvent<CloseEvent.Handler> {
   public static Type<Handler> getType() {
     return TYPE;
   }
-  
+
   private final Cause cause;
   private final Node target;
 
@@ -67,7 +67,7 @@ public class CloseEvent extends GwtEvent<CloseEvent.Handler> {
       return element.isOrHasChild(target);
     }
   }
-  
+
   public boolean keyboardEscape() {
     return Cause.KEYBOARD_ESCAPE.equals(cause);
   }
@@ -83,7 +83,7 @@ public class CloseEvent extends GwtEvent<CloseEvent.Handler> {
   public boolean mouseCloseBox() {
     return Cause.MOUSE_CLOSE_BOX.equals(cause);
   }
-  
+
   public boolean mouseEvent() {
     return mouseCloseBox() || mouseOutside();
   }
@@ -99,7 +99,7 @@ public class CloseEvent extends GwtEvent<CloseEvent.Handler> {
   public boolean userCaused() {
     return keyboardEvent() || mouseEvent();
   }
-  
+
   @Override
   protected void dispatch(Handler handler) {
     handler.onClose(this);

@@ -34,6 +34,14 @@ class FromSource implements IsFrom {
   }
 
   @Override
+  public FromSource copyOf() {
+    if (source instanceof SqlSelect) {
+      return new FromSource(((SqlSelect) source).copyOf(true), alias);
+    }
+    return new FromSource((String) source, alias);
+  }
+
+  @Override
   public String getAlias() {
     return alias;
   }

@@ -196,7 +196,7 @@ class FinancialInformation extends EcView {
     stylePrefix = STYLE_PREFIX_ORDER_DETAILS + "status-";
     label = renderOrderDetailLabel(Localized.getConstants().ecOrderStatus());
     orderTable.setWidgetAndStyle(row, col++, label, stylePrefix + STYLE_SUFFIX_LABEL);
-    
+
     EcOrderStatus status = EcOrderStatus.get(order.getStatus());
     value = renderOrderDetailValue((status == null) ? null : status.getCaption());
     orderTable.setWidgetAndStyle(row, col++, value, stylePrefix + STYLE_SUFFIX_VALUE);
@@ -209,12 +209,12 @@ class FinancialInformation extends EcView {
       value = renderOrderDetailValue(order.getRejectionReason());
       orderTable.setWidgetAndStyle(row, col++, value, stylePrefix + STYLE_SUFFIX_VALUE);
     }
-    
+
     if (!order.getEvents().isEmpty()) {
       for (EcOrderEvent event : order.getEvents()) {
         EcOrderStatus eventStatus = EcOrderStatus.get(event.getStatus());
         DateTime eventDate = event.getDate();
-        
+
         if (eventStatus != null && eventDate != null) {
           row++;
           col = 0;
@@ -228,7 +228,7 @@ class FinancialInformation extends EcView {
         }
       }
     }
-    
+
     row++;
     col = 0;
 
@@ -259,7 +259,7 @@ class FinancialInformation extends EcView {
     stylePrefix = STYLE_PREFIX_ORDER_DETAILS + "comment-";
     label = renderOrderDetailLabel(Localized.getConstants().comment());
     orderTable.setWidgetAndStyle(row, col++, label, stylePrefix + STYLE_SUFFIX_LABEL);
-    
+
     value = renderOrderDetailValue(order.getComment());
     orderTable.setWidgetAndStyle(row, col++, value, stylePrefix + STYLE_SUFFIX_VALUE);
 
@@ -331,15 +331,15 @@ class FinancialInformation extends EcView {
         widget = new Label(item.getCode());
         itemTable.setWidgetAndStyle(row, ORDER_ITEM_CODE_COL, widget, STYLE_ORDER_ITEM_CODE);
       }
-      
+
       int ordered = BeeUtils.unbox(item.getQuantityOrdered());
       widget = new Label(BeeUtils.toString(ordered));
       itemTable.setWidgetAndStyle(row, ORDER_ITEM_ORDERER_COL, widget, STYLE_ORDER_ITEM_ORDERED);
-      
+
       int quantity = BeeUtils.unbox(item.getQuantitySubmit());
       widget = new Label(BeeUtils.toString(quantity));
       itemTable.setWidgetAndStyle(row, ORDER_ITEM_QUANTITY_COL, widget, STYLE_ORDER_ITEM_QUANTITY);
-      
+
       if (quantity > ordered) {
         widget.addStyleName(STYLE_QUANTITY_INCR);
       } else if (quantity < ordered) {
@@ -575,7 +575,7 @@ class FinancialInformation extends EcView {
     CustomDiv widget = new CustomDiv(STYLE_PREFIX_ORDER_DETAILS + STYLE_SUFFIX_VALUE);
     if (BeeUtils.isEmpty(value)) {
       widget.addStyleName(STYLE_PREFIX_ORDER_DETAILS + STYLE_SUFFIX_EMPTY);
-    } else { 
+    } else {
       widget.getElement().setInnerText(value);
     }
     return widget;

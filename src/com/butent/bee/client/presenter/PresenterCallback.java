@@ -8,7 +8,7 @@ public interface PresenterCallback {
     @Override
     public void onCreate(Presenter presenter) {
       if (presenter != null) {
-        BeeKeeper.getScreen().updateActivePanel(presenter.getWidget());
+        BeeKeeper.getScreen().updateActivePanel(presenter.getMainView());
       }
     }
   };
@@ -17,7 +17,7 @@ public interface PresenterCallback {
     @Override
     public void onCreate(Presenter presenter) {
       if (presenter != null) {
-        BeeKeeper.getScreen().showInNewPlace(presenter.getWidget());
+        BeeKeeper.getScreen().showInNewPlace(presenter.getMainView());
       }
     }
   };

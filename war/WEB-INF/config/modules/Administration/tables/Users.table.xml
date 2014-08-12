@@ -18,9 +18,9 @@
 
   <Indexes>
     <Index unique="true">
-      <PostgreSql>LOWER("Login")</PostgreSql>
-      <MsSql>LOWER([Login])</MsSql>
-      <Oracle>LOWER("Login")</Oracle>
+      <PostgreSql>(LOWER("Login"))</PostgreSql>
+      <MsSql>(LOWER([Login]))</MsSql>
+      <Oracle>(LOWER("Login"))</Oracle>
     </Index>
   </Indexes>
 </Table>

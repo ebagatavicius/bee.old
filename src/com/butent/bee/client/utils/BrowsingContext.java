@@ -239,7 +239,7 @@ public final class BrowsingContext {
   public static boolean isChrome() {
     return BeeUtils.containsSame(JsBrowser.getWindow().getNavigator().getUserAgent(), "chrome");
   }
-  
+
   public static Window open(String url) {
     return JsBrowser.getWindow().open(url, Keywords.BROWSING_CONTEXT_BLANK);
   }

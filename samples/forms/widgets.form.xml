@@ -116,8 +116,8 @@
               </row>
 
               <row>
-                <html>Currency</html>
-                <InputCurrency />
+                <html>Money</html>
+                <InputMoney />
               </row>
 
               <row>

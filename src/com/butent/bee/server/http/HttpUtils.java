@@ -496,7 +496,7 @@ public final class HttpUtils {
 
     return sb.toString();
   }
-  
+
   public static String readPart(HttpServletRequest req, String name) {
     Assert.notNull(req);
     Assert.notEmpty(name);

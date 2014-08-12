@@ -73,15 +73,13 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
   private enum Serial {
     COL_TYPE, ID, CAPTION, LABEL, READ_ONLY, WIDTH, SOURCE, PROPERTY, RELATION,
     MIN_WIDTH, MAX_WIDTH, SORTABLE, VISIBLE, FORMAT, HOR_ALIGN, WHITE_SPACE,
-    VALIDATION, EDITABLE, CARRY, EDITOR, MIN_VALUE, MAX_VALUE, REQUIRED, ENUM_KEY,
+    VALIDATION, EDITABLE, CARRY_CALC, CARRY_ON, EDITOR, MIN_VALUE, MAX_VALUE, REQUIRED, ENUM_KEY,
     RENDERER_DESCR, RENDER, RENDER_TOKENS, VALUE_TYPE, PRECISION, SCALE, RENDER_COLUMNS,
     SEARCH_BY, FILTER_SUPPLIER, FILTER_OPTIONS, SORT_BY,
     HEADER_STYLE, BODY_STYLE, FOOTER_STYLE, DYN_STYLES, CELL_TYPE, CELL_RESIZABLE, UPDATE_MODE,
     AUTO_FIT, FLEXIBILITY, OPTIONS, ELEMENT_TYPE, FOOTER_DESCRIPTION, DYNAMIC,
     EXPORTABLE, EXPORT_WIDTH_FACTOR
   }
-
-  public static final String VIEW_COLUMN_SETTINGS = "GridColumnSettings";
 
   public static ColumnDescription restore(String s) {
     if (BeeUtils.isEmpty(s)) {
@@ -91,6 +89,8 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     column.deserialize(s);
     return column;
   }
+
+  public static final String VIEW_COLUMN_SETTINGS = "GridColumnSettings";
 
   private ColType colType;
 
@@ -119,7 +119,9 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
 
   private Calculation validation;
   private Calculation editable;
-  private Calculation carry;
+
+  private Calculation carryCalc;
+  private Boolean carryOn;
 
   private RendererDescription rendererDescription;
   private Calculation render;
@@ -246,8 +248,11 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
         case SORT_BY:
           setSortBy(value);
           break;
-        case CARRY:
-          setCarry(Calculation.restore(value));
+        case CARRY_CALC:
+          setCarryCalc(Calculation.restore(value));
+          break;
+        case CARRY_ON:
+          setCarryOn(BeeUtils.toBooleanOrNull(value));
           break;
         case EDITABLE:
           setEditable(Calculation.restore(value));
@@ -378,8 +383,12 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     return caption;
   }
 
-  public Calculation getCarry() {
-    return carry;
+  public Calculation getCarryCalc() {
+    return carryCalc;
+  }
+
+  public Boolean getCarryOn() {
+    return carryOn;
   }
 
   public Boolean getCellResizable() {
@@ -500,7 +509,8 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
         "Options", getOptions(),
         "Dynamic", getDynamic(),
         "Exportable", getExportable(),
-        "Export Width Factor", getExportWidthFactor());
+        "Export Width Factor", getExportWidthFactor(),
+        "Carry On", getCarryOn());
 
     if (getFlexibility() != null) {
       info.addAll(getFlexibility().getInfo());
@@ -520,8 +530,8 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     if (getEditor() != null) {
       PropertyUtils.appendChildrenToProperties(info, "Editor", getEditor().getInfo());
     }
-    if (getCarry() != null) {
-      PropertyUtils.appendChildrenToProperties(info, "Carry", getCarry().getInfo());
+    if (getCarryCalc() != null) {
+      PropertyUtils.appendChildrenToProperties(info, "Carry Calc", getCarryCalc().getInfo());
     }
 
     if (getRendererDescription() != null) {
@@ -704,8 +714,8 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
       if (getEditable() != null) {
         getEditable().replaceColumn(oldId, newId);
       }
-      if (getCarry() != null) {
-        getCarry().replaceColumn(oldId, newId);
+      if (getCarryCalc() != null) {
+        getCarryCalc().replaceColumn(oldId, newId);
       }
 
       if (getRender() != null) {
@@ -797,8 +807,11 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
         case SORT_BY:
           arr[i++] = getSortBy();
           break;
-        case CARRY:
-          arr[i++] = getCarry();
+        case CARRY_CALC:
+          arr[i++] = getCarryCalc();
+          break;
+        case CARRY_ON:
+          arr[i++] = getCarryOn();
           break;
         case EDITABLE:
           arr[i++] = getEditable();
@@ -916,8 +929,12 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     this.caption = caption;
   }
 
-  public void setCarry(Calculation carry) {
-    this.carry = carry;
+  public void setCarryCalc(Calculation carryCalc) {
+    this.carryCalc = carryCalc;
+  }
+
+  public void setCarryOn(Boolean carryOn) {
+    this.carryOn = carryOn;
   }
 
   public void setCellResizable(Boolean cellResizable) {

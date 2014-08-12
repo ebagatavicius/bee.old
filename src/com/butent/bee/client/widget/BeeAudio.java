@@ -8,7 +8,7 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 
 public class BeeAudio extends Audio implements IdentifiableWidget {
-  
+
   public BeeAudio() {
     this(Document.get().createAudioElement());
   }

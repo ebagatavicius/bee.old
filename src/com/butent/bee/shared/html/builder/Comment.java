@@ -5,7 +5,7 @@ import com.butent.bee.shared.BeeConst;
 public class Comment extends Node {
 
   private final String text;
-  
+
   public Comment(String text) {
     super();
     this.text = text;

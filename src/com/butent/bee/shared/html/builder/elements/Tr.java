@@ -32,12 +32,12 @@ public class Tr extends FertileElement {
     setBackgroundColor(backgroundColor);
     return this;
   }
-  
+
   public Tr fontWeight(FontWeight fontWeight) {
     setFontWeight(fontWeight);
     return this;
   }
-  
+
   public Tr id(String value) {
     setId(value);
     return this;
@@ -67,7 +67,7 @@ public class Tr extends FertileElement {
     setTextAlign(textAlign);
     return this;
   }
-  
+
   public Tr title(String value) {
     setTitle(value);
     return this;

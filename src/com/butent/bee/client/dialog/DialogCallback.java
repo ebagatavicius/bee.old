@@ -3,7 +3,7 @@ package com.butent.bee.client.dialog;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
 public abstract class DialogCallback {
-  
+
   public static ScheduledCommand getCancelCommand(final Popup popup,
       final DialogCallback callback) {
 
@@ -31,7 +31,7 @@ public abstract class DialogCallback {
       }
     };
   }
-  
+
   public void onCancel(Popup popup) {
     popup.close();
   }

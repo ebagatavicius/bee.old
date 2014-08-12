@@ -16,12 +16,12 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
     void onMotion(MotionEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static HandlerRegistration register(Handler handler) {
     return BeeKeeper.getBus().addHandler(TYPE, handler, false);
   }
-  
+
   private final String dataType;
   private final String sourceId;
 
@@ -30,16 +30,16 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
 
   private final int sourceWidth;
   private final int sourceHeight;
-  
+
   private final int startX;
   private final int startY;
 
   private int currentX;
   private int currentY;
-  
+
   private Direction directionX;
   private Direction directionY;
-  
+
   private int changePositionX;
   private int changePositionY;
 
@@ -48,19 +48,19 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
 
   public MotionEvent(String dataType, IdentifiableWidget widget, int startX, int startY) {
     super();
-    
+
     Assert.notNull(widget);
     Assert.isTrue(widget.asWidget().isAttached(), "MotionEvent: widget must be attached");
-    
+
     this.dataType = dataType;
     this.sourceId = widget.getId();
-    
+
     this.sourceLeft = widget.asWidget().getAbsoluteLeft();
     this.sourceTop = widget.asWidget().getAbsoluteTop();
 
     this.sourceWidth = widget.asWidget().getOffsetWidth();
     this.sourceHeight = widget.asWidget().getOffsetHeight();
-    
+
     this.startX = startX;
     this.startY = startY;
 
@@ -80,11 +80,11 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
   public long getChangeMillisX() {
     return changeMillisX;
   }
-  
+
   public long getChangeMillisY() {
     return changeMillisY;
   }
-  
+
   public int getChangePositionX() {
     return changePositionX;
   }
@@ -92,7 +92,7 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
   public int getChangePositionY() {
     return changePositionY;
   }
-  
+
   public int getCurrentX() {
     return currentX;
   }
@@ -124,7 +124,7 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
   public int getSourceHeight() {
     return sourceHeight;
   }
-  
+
   public String getSourceId() {
     return sourceId;
   }
@@ -132,7 +132,7 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
   public int getSourceLeft() {
     return sourceLeft;
   }
-  
+
   public int getSourceTop() {
     return sourceTop;
   }
@@ -174,25 +174,25 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
   public void moveTo(int x, int y) {
     if (x != getCurrentX()) {
       Direction direction = (x < getCurrentX()) ? Direction.WEST : Direction.EAST;
-      
+
       if (direction != getDirectionX()) {
         setDirectionX(direction);
         setChangePositionX(x);
         setChangeMillisX(System.currentTimeMillis());
       }
-      
+
       setCurrentX(x);
     }
 
     if (y != getCurrentY()) {
       Direction direction = (y < getCurrentY()) ? Direction.NORTH : Direction.SOUTH;
-      
+
       if (direction != getDirectionY()) {
         setDirectionY(direction);
         setChangePositionY(y);
         setChangeMillisY(System.currentTimeMillis());
       }
-      
+
       setCurrentY(y);
     }
   }
@@ -221,7 +221,7 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
   private void setCurrentX(int currentX) {
     this.currentX = currentX;
   }
-  
+
   private void setCurrentY(int currentY) {
     this.currentY = currentY;
   }
@@ -229,7 +229,7 @@ public class MotionEvent extends Event<MotionEvent.Handler> {
   private void setDirectionX(Direction directionX) {
     this.directionX = directionX;
   }
-  
+
   private void setDirectionY(Direction directionY) {
     this.directionY = directionY;
   }

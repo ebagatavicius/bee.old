@@ -23,7 +23,7 @@ public enum Axis {
   }
 
   public String skew(int value, CssAngle angle) {
-    return StyleUtils.TRANSFORM_SKEW + suffix 
+    return StyleUtils.TRANSFORM_SKEW + suffix
         + BeeUtils.parenthesize(CssAngle.format(value, angle));
   }
 

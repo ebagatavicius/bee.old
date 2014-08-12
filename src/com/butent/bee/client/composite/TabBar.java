@@ -14,7 +14,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.dom.DomUtils;
@@ -25,6 +24,7 @@ import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.layout.Vertical;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.AcceptsCaptions;
+import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
@@ -41,7 +41,7 @@ import java.util.List;
 public class TabBar extends Composite implements HasBeforeSelectionHandlers<Integer>,
     HasSelectionHandlers<Integer>, IdentifiableWidget, HasItems, AcceptsCaptions, IsHtmlTable {
 
-  private final class Tab extends Simple implements HasEnabled {
+  private final class Tab extends Simple implements EnablableWidget {
     private boolean enabled = true;
 
     private Tab(Widget widget) {
@@ -164,7 +164,7 @@ public class TabBar extends Composite implements HasBeforeSelectionHandlers<Inte
   public HandlerRegistration addClickHandler(ClickHandler handler) {
     return addDomHandler(handler, ClickEvent.getType());
   }
-  
+
   @Override
   public void addItem(String text) {
     addItem(text, null);

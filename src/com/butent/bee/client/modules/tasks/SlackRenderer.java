@@ -27,23 +27,23 @@ class SlackRenderer extends AbstractCellRenderer {
 
   private enum Kind {
     LATE, OPENING, ENDGAME, SCHEDULED;
-    
+
     private String getStyleName() {
       return STYLE_PREFIX + name().toLowerCase();
     }
   }
-  
-  private static final String STYLE_PREFIX = TaskConstants.CRM_STYLE_PREFIX + "Slack-"; 
 
-  private static final String STYLE_BAR = STYLE_PREFIX + "bar"; 
-  private static final String STYLE_LABEl = STYLE_PREFIX + "label"; 
-  
+  private static final String STYLE_PREFIX = TaskConstants.CRM_STYLE_PREFIX + "Slack-";
+
+  private static final String STYLE_BAR = STYLE_PREFIX + "bar";
+  private static final String STYLE_LABEl = STYLE_PREFIX + "label";
+
   private static String format(Kind kind, String label) {
     Div bar = new Div().addClass(STYLE_BAR).addClass(kind.getStyleName());
     if (!BeeUtils.isEmpty(label)) {
       bar.appendChild(new Div().addClass(STYLE_LABEl).text(label));
     }
-    
+
     return bar.toString();
   }
 
@@ -60,7 +60,7 @@ class SlackRenderer extends AbstractCellRenderer {
 
     } else if (TaskUtils.isScheduled(start)) {
       return Kind.SCHEDULED;
-    
+
     } else if (start != null && TimeUtils.isMore(finish, start) && TimeUtils.isMeq(now, start)
         && TimeUtils.isLess(now, finish)) {
       if (now.getTime() - start.getTime() < (finish.getTime() - start.getTime()) / 2) {
@@ -68,7 +68,7 @@ class SlackRenderer extends AbstractCellRenderer {
       } else {
         return Kind.ENDGAME;
       }
-      
+
     } else {
       return null;
     }
@@ -80,7 +80,7 @@ class SlackRenderer extends AbstractCellRenderer {
 
     } else if (minutes < TimeUtils.MINUTES_PER_DAY) {
       return TimeUtils.renderMinutes(BeeUtils.toInt(minutes), false);
-    
+
     } else {
       return BeeUtils.toString(minutes / TimeUtils.MINUTES_PER_DAY);
     }
@@ -88,7 +88,7 @@ class SlackRenderer extends AbstractCellRenderer {
 
   private static long getMinutes(Kind kind, DateTime start, DateTime finish) {
     DateTime now = TimeUtils.nowMinutes();
-    
+
     switch (kind) {
       case LATE:
         return (now.getTime() - finish.getTime()) / TimeUtils.MILLIS_PER_MINUTE;
@@ -99,7 +99,7 @@ class SlackRenderer extends AbstractCellRenderer {
 
       case SCHEDULED:
         return TimeUtils.dayDiff(now, start) * TimeUtils.MINUTES_PER_DAY;
-        
+
       default:
         Assert.untouchable();
         return 0L;
@@ -129,7 +129,7 @@ class SlackRenderer extends AbstractCellRenderer {
 
     DateTime start = row.getDateTime(startIndex);
     DateTime finish = row.getDateTime(finishIndex);
-    
+
     Kind kind = getKind(status, start, finish);
     if (kind == null) {
       return null;
@@ -137,10 +137,10 @@ class SlackRenderer extends AbstractCellRenderer {
 
     long minutes = getMinutes(kind, start, finish);
     String text = (minutes == 0L) ? BeeConst.STRING_EMPTY : getLabel(minutes);
-    
+
     XStyle style = new XStyle();
     XFont font;
-    
+
     switch (kind) {
       case LATE:
         style.setColor(Colors.RED);
@@ -153,7 +153,7 @@ class SlackRenderer extends AbstractCellRenderer {
       case OPENING:
         style.setColor(Colors.GREEN);
         style.setTextAlign(TextAlign.CENTER);
-        
+
         font = XFont.bold();
         font.setColor(Colors.WHITE);
         style.setFontRef(sheet.registerFont(font));
@@ -173,8 +173,8 @@ class SlackRenderer extends AbstractCellRenderer {
         style.setTextAlign(TextAlign.RIGHT);
         break;
     }
-    
-    return new XCell(cellIndex, text, sheet.registerStyle(style)); 
+
+    return new XCell(cellIndex, text, sheet.registerStyle(style));
   }
 
   @Override
@@ -187,7 +187,7 @@ class SlackRenderer extends AbstractCellRenderer {
 
     DateTime start = row.getDateTime(startIndex);
     DateTime finish = row.getDateTime(finishIndex);
-    
+
     Kind kind = getKind(status, start, finish);
     if (kind == null) {
       return BeeConst.STRING_EMPTY;

@@ -60,7 +60,7 @@ abstract class MultiStateForm extends RightsForm {
   private static final String STYLE_SUB_MODULE = STYLE_PREFIX + "sub-module";
   private static final String STYLE_MODULE_CELL = STYLE_MODULE + STYLE_SUFFIX_CELL;
   private static final String STYLE_MODULE_SELECTED = STYLE_MODULE + "-selected";
-//  private static final String STYLE_MODULE_CHANGED = STYLE_MODULE + "-changed";
+  // private static final String STYLE_MODULE_CHANGED = STYLE_MODULE + "-changed";
 
   private static final String STYLE_MSO = STYLE_PREFIX + "mso";
   private static final String STYLE_MSO_COL_PREFIX = STYLE_MSO + "-col-";
@@ -70,7 +70,7 @@ abstract class MultiStateForm extends RightsForm {
   private static final String STYLE_MSO_LEAF = STYLE_MSO + "-leaf";
   private static final String STYLE_MSO_LEAF_CELL = STYLE_MSO_LEAF + STYLE_SUFFIX_CELL;
   private static final String STYLE_MSO_SELECTED = STYLE_MSO + "-selected";
-//  private static final String STYLE_MSO_CHANGED = STYLE_MSO + "-changed";
+  // private static final String STYLE_MSO_CHANGED = STYLE_MSO + "-changed";
 
   private static final String DATA_KEY_STATE = "rights-state";
   private static final String DATA_KEY_MODULE = "rights-module";
@@ -588,7 +588,7 @@ abstract class MultiStateForm extends RightsForm {
 
   private Map<String, Integer> getLeaves() {
     Map<String, Integer> leaves = Maps.newHashMap();
-    
+
     int col = getValueStartCol() - 2;
 
     for (int row = getValueStartRow(); row < getTable().getRowCount(); row++) {

@@ -35,7 +35,7 @@ public class StringMatrix<C extends IsColumn> extends AbstractTable<StringRow, C
       rows.set(i, new StringRow(i + 1, data[i]));
     }
   }
-  
+
   protected StringMatrix() {
     super();
     this.rows = new StringRowArray(new StringRow[0]);
@@ -61,14 +61,14 @@ public class StringMatrix<C extends IsColumn> extends AbstractTable<StringRow, C
 
   @Override
   public StringMatrix<C> copy() {
-    StringMatrix<C> result = new StringMatrix<C>(rows);
+    StringMatrix<C> result = new StringMatrix<>(rows);
     copyTableDescription(result);
     return result;
   }
 
   @Override
   public IsTable<StringRow, C> create() {
-    return new StringMatrix<C>();
+    return new StringMatrix<>();
   }
 
   @SuppressWarnings("unchecked")

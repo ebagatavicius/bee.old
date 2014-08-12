@@ -3,7 +3,6 @@ package com.butent.bee.client.modules.transport;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.grid.ChildGrid;
-import com.butent.bee.client.grid.GridPanel;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.form.FormView;
@@ -26,12 +25,19 @@ public class ImportOptionForm extends AbstractFormInterceptor {
   public void afterCreateWidget(String name, IdentifiableWidget widget,
       WidgetDescriptionCallback callback) {
 
-    if (widget instanceof ChildGrid && BeeUtils.same(name, TBL_IMPORT_PROPERTIES)) {
-      this.properties = new ImportPropertiesGrid(this);
-      ((ChildGrid) widget).setGridInterceptor(this.properties);
+    if (widget instanceof ChildGrid) {
+      GridInterceptor interceptor = null;
 
-    } else if (widget instanceof GridPanel && BeeUtils.same(name, TBL_IMPORT_MAPPINGS)) {
-      ((GridPanel) widget).setGridInterceptor(new ImportMappingsGrid(this));
+      if (BeeUtils.same(name, TBL_IMPORT_PROPERTIES)) {
+        interceptor = new ImportPropertiesGrid(this);
+        this.properties = interceptor;
+
+      } else if (BeeUtils.same(name, TBL_IMPORT_MAPPINGS)) {
+        interceptor = new ImportMappingsGrid(this);
+      }
+      if (interceptor != null) {
+        ((ChildGrid) widget).setGridInterceptor(interceptor);
+      }
     }
   }
 

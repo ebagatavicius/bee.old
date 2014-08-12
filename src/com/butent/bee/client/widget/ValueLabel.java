@@ -11,14 +11,14 @@ public class ValueLabel<T> extends Label implements TakesValue<T> {
 
   private T value;
   private final Renderer<? super T> renderer;
-  
+
   private boolean textOnly;
 
   public ValueLabel(Renderer<? super T> renderer, boolean inline) {
     super(inline);
     this.renderer = renderer;
   }
-  
+
   @Override
   public T getValue() {
     return value;
@@ -31,11 +31,11 @@ public class ValueLabel<T> extends Label implements TakesValue<T> {
   public void setTextOnly(boolean textOnly) {
     this.textOnly = textOnly;
   }
-  
+
   @Override
   public void setValue(T value) {
     this.value = value;
-    
+
     if (isTextOnly()) {
       getElement().setInnerText(render(value));
     } else {

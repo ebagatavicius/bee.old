@@ -418,7 +418,7 @@ public final class Queries {
 
               callback.onSuccess(rs);
 
-              if (cachingPolicy != null && cachingPolicy.doWrite() 
+              if (cachingPolicy != null && cachingPolicy.doWrite()
                   && BeeUtils.isEmpty(columnNames) && isCacheable(options)) {
                 Global.getCache().add(Data.getDataInfo(viewName), rs, filter, order, offset, limit);
               }
@@ -426,7 +426,7 @@ public final class Queries {
           }
         });
   }
-  
+
   private static boolean isCacheable(Collection<Property> options) {
     if (BeeUtils.isEmpty(options)) {
       return true;
@@ -437,7 +437,7 @@ public final class Queries {
           return false;
         }
       }
-      
+
       return true;
     }
   }

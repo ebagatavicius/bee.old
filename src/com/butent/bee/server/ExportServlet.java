@@ -254,7 +254,7 @@ public class ExportServlet extends LoginServlet {
       return color;
     }
   }
-  
+
   private static Picture createPicture(CreationHelper creationHelper, Drawing drawing,
       int pictureIndex, int rowIndex, int colIndex) {
 
@@ -267,7 +267,7 @@ public class ExportServlet extends LoginServlet {
 
     Picture picture = drawing.createPicture(anchor, pictureIndex);
     picture.resize();
-    
+
     return picture;
   }
 
@@ -289,12 +289,12 @@ public class ExportServlet extends LoginServlet {
         sheet.setDefaultRowHeightInPoints(defaultRowHeightInPoints
             * inputSheet.getRowHeightFactor().floatValue());
       }
-      
+
       if (!inputSheet.getColumnWidthFactors().isEmpty()) {
         for (Map.Entry<Integer, Double> entry : inputSheet.getColumnWidthFactors().entrySet()) {
           Integer columnIndex = entry.getKey();
           Double widthFactor = entry.getValue();
-          
+
           if (BeeUtils.isNonNegative(columnIndex) && BeeUtils.isPositive(widthFactor)) {
             int width = BeeUtils.round(sheet.getColumnWidth(columnIndex) * widthFactor);
             if (width > 0) {
@@ -332,7 +332,7 @@ public class ExportServlet extends LoginServlet {
 
       for (XRow inputRow : inputSheet.getRows()) {
         Row row = sheet.createRow(inputRow.getIndex());
-        
+
         Double heightFactor = inputRow.getHeightFactor();
         if (!BeeUtils.isPositive(heightFactor)) {
           heightFactor = inputSheet.getRowHeightFactor();
@@ -426,10 +426,10 @@ public class ExportServlet extends LoginServlet {
               if (drawing == null) {
                 drawing = sheet.createDrawingPatriarch();
               }
-              
+
               int pr = inputRow.getIndex();
               int pc = inputCell.getIndex();
-              
+
               Picture picture = createPicture(creationHelper, drawing, pictureIndex, pr, pc);
 
               if (inputCell.getPictureLayout() != null) {
@@ -438,7 +438,7 @@ public class ExportServlet extends LoginServlet {
                     if (inputCell.getRowSpan() > 1 || inputCell.getColSpan() > 1) {
                       int rowSpan = Math.max(inputCell.getRowSpan(), 1);
                       int colSpan = Math.max(inputCell.getColSpan(), 1);
-                      
+
                       for (int pi = 0; pi < rowSpan; pi++) {
                         for (int pj = 0; pj < colSpan; pj++) {
                           if (pi > 0 || pj > 0) {
@@ -453,7 +453,7 @@ public class ExportServlet extends LoginServlet {
                     ClientAnchor preferred = picture.getPreferredSize();
                     int scale = Math.max(preferred.getRow2() - preferred.getRow1(),
                         preferred.getCol2() - preferred.getCol1());
-                    
+
                     if (scale > 0) {
                       picture.resize(1d / (scale + 0.5));
                     }

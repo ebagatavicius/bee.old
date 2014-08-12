@@ -35,7 +35,7 @@ public class WebNotification extends JavaScriptObject {
 
     void onSuccess();
   }
-  
+
   private static final int PERMISSION_TIMEOUT = 5000;
 
   public static void create(final String title, final NotificationOptions options,
@@ -58,7 +58,7 @@ public class WebNotification extends JavaScriptObject {
         }
       };
       timer.schedule(PERMISSION_TIMEOUT);
-      
+
       PermissionCallback permissionCallback = new PermissionCallback() {
         @Override
         public void onSuccess() {
@@ -88,7 +88,7 @@ public class WebNotification extends JavaScriptObject {
           }
         }
       };
-      
+
       requestPermission(permissionCallback);
     }
   }
@@ -110,6 +110,7 @@ public class WebNotification extends JavaScriptObject {
     }
   }
 
+//@formatter:off
   private static native WebNotification createImpl(String title, JavaScriptObject options) /*-{
     return new Notification(title, options);
   }-*/;
@@ -117,6 +118,7 @@ public class WebNotification extends JavaScriptObject {
   private static native WebNotification createImpl(String title) /*-{
     return new Notification(title);
   }-*/;
+//@formatter:on
 
   private static void fallback(String title, NotificationOptions options) {
     if (options == null) {
@@ -135,7 +137,8 @@ public class WebNotification extends JavaScriptObject {
       BeeKeeper.getScreen().notifyWarning(title, body);
     }
   }
-  
+
+//@formatter:off
   private static native boolean isDeniedImpl() /*-{
     return Notification.permission === "denied";
   }-*/;
@@ -165,10 +168,12 @@ public class WebNotification extends JavaScriptObject {
       }
     });
   }-*/;
+//@formatter:on
 
   protected WebNotification() {
   }
 
+//@formatter:off
   public final native void close() /*-{
     this.close();
   }-*/;
@@ -229,4 +234,5 @@ public class WebNotification extends JavaScriptObject {
     this.onshow = @elemental.js.dom.JsElementalMixinBase::getHandlerFor(Lelemental/events/EventListener;)(listener);
   }-*/;
   // CHECKSTYLE:ON
+//@formatter:on
 }

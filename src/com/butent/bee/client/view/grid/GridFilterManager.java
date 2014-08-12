@@ -113,6 +113,7 @@ public class GridFilterManager {
 
     return components;
   }
+
   private static Map<String, FilterValue> asValues(Collection<FilterComponent> components) {
     Map<String, FilterValue> values = Maps.newHashMap();
 
@@ -121,9 +122,10 @@ public class GridFilterManager {
         values.put(component.getName(), component.getFilterValue());
       }
     }
-    
+
     return values;
   }
+
   private final String gridKey;
 
   private final CellGrid grid;
@@ -242,7 +244,7 @@ public class GridFilterManager {
     supplierPanel.addStyleName(STYLE_SUPPLIER_PANEL);
     contentPanel.add(supplierPanel);
 
-    if (!valuesByColumn.isEmpty() 
+    if (!valuesByColumn.isEmpty()
         && !Global.getFilters().contains(gridKey, asComponents(valuesByColumn))) {
       Widget saveWidget = createSaveWidget();
       contentPanel.add(saveWidget);
@@ -455,7 +457,7 @@ public class GridFilterManager {
       }
     }, false);
   }
-  
+
   private void retainValues() {
     valuesByColumn.clear();
 

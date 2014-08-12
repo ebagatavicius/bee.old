@@ -19,14 +19,43 @@
   color: teal;
 }
 
-.bee-mail-SenderLabel, .bee-mail-RecipientLabel {
-  color: black;
-  font-weight: bold;
-  display: inline-block;
+.bee-mail-Sender, .bee-mail-Recipients, .bee-mail-Subject, .bee-mail-HeaderAddress, .bee-mail-HeaderSubject {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.bee-mail-SenderEmail, .bee-mail-RecipientEmail {
-  margin-left: 5px;
+.bee-mail-Sender {
+  font-weight: bold;
+}
+
+.bee-mail-Recipients {
+  color: gray;
+  cursor: pointer;
+}
+
+.bee-mail-Subject {
+  padding-top: 5px;
+}
+
+.bee-mail-Attachments {
+  cursor: pointer;
+  color: #0A8DE9;
+}
+
+.bee-mail-RecipientsType {
+  color: gray;
+  text-align: right;
+  vertical-align: top;
+}
+
+.bee-mail-RecipientLabel {
+  font-weight: bold;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.bee-mail-RecipientEmail {
   display: inline-block;
 }
 
@@ -39,13 +68,10 @@
 }
 
 .bee-mail-HeaderAddress {
-  color: black;
   position: absolute;
   top: 0;
   left: 0;
   right: 75px;
-  white-space: nowrap;
-  overflow: hidden;
   resize: none;
 }
 
@@ -71,13 +97,10 @@
 }
 
 .bee-mail-HeaderSubject {
-  color: black;  
   position: absolute;
   top: 20px;
   left: 0;
   right: 40px;
-  white-space: nowrap;
-  overflow: hidden;
   resize: none;
 }
 
@@ -86,37 +109,13 @@
   color: gray;
 }
 
-.bee-mail-Subject {
-  color: black;
-  display: inline-block;
-}
-
-.bee-mail-Recipients {
-  color: gray;
-  cursor: pointer;
-  display: inline-block;
-}
-
-.bee-mail-Recipients:hover {
-  background-color: WhiteSmoke;
-}  
-
-.bee-mail-RecipientsType {
-  color: gray;
-  float: right;
-}
-
-.bee-mail-Attachments {
-  float: right;
-  cursor: pointer;
-  color: #0A8DE9;
-}
-
 .bee-mail-RecipientsPopup, .bee-mail-AttachmentsPopup {
   background-color: white;
   border: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   padding: 2px;
+  max-height: 400px;
+  overflow: auto;
 }
 
 .bee-mail-AttachmentsMenu-item a {

@@ -74,11 +74,11 @@ public class NewsBean {
     if (!DataUtils.isId(userId)) {
       return ResponseObject.error("user id not available");
     }
-    
+
     String idName = sys.getIdName(NewsConstants.TBL_USER_FEEDS);
 
     SqlSelect query = new SqlSelect()
-        .addFields(NewsConstants.TBL_USER_FEEDS, idName, NewsConstants.COL_UF_FEED, 
+        .addFields(NewsConstants.TBL_USER_FEEDS, idName, NewsConstants.COL_UF_FEED,
             NewsConstants.COL_UF_CAPTION, NewsConstants.COL_UF_SUBSCRIPTION_DATE)
         .addFrom(NewsConstants.TBL_USER_FEEDS)
         .setWhere(SqlUtils.equals(NewsConstants.TBL_USER_FEEDS, NewsConstants.COL_UF_USER, userId))
@@ -104,7 +104,7 @@ public class NewsBean {
         logger.severe("invalid user feed name", row.getValue(NewsConstants.COL_UF_FEED));
         continue;
       }
-      
+
       if (!usr.isModuleVisible(feed.getModuleAndSub())) {
         logger.warning("user", userId, "is subscribed to invisible feed", feed);
         continue;
@@ -134,13 +134,13 @@ public class NewsBean {
   }
 
   public String getUsageRelationColumn(String table) {
-    return getUsageRelationColumn(table, NewsConstants.getUsageTable(table)); 
+    return getUsageRelationColumn(table, NewsConstants.getUsageTable(table));
   }
 
   public IsCondition joinUsage(String table) {
     String usageTable = NewsConstants.getUsageTable(table);
     String relationColumn = getUsageRelationColumn(table, usageTable);
-    
+
     return sys.joinTables(table, usageTable, relationColumn);
   }
 
@@ -175,7 +175,7 @@ public class NewsBean {
 
     IsCondition where = SqlUtils.equals(usageTable, relationColumn, dataId,
         NewsConstants.COL_USAGE_USER, userId);
-    
+
     ResponseObject response;
     if (qs.sqlExists(usageTable, where)) {
       response = qs.updateDataWithResponse(new SqlUpdate(usageTable)
@@ -187,11 +187,11 @@ public class NewsBean {
           .addFields(relationColumn, NewsConstants.COL_USAGE_USER, NewsConstants.COL_USAGE_ACCESS)
           .addValues(dataId, userId, System.currentTimeMillis()));
     }
-    
+
     logger.debug("news on access", userId, table, dataId, usageTable);
     return response;
   }
-  
+
   public void maybeRecordUpdate(String viewName, Long rowId) {
     maybeRecordUpdate(viewName, rowId, null);
   }
@@ -200,15 +200,15 @@ public class NewsBean {
     if (!sys.isView(viewName)) {
       return;
     }
-    
+
     BeeView view = sys.getView(viewName);
     String table = view.getSourceName();
-    
+
     String usageTable = NewsConstants.getUsageTable(table);
     if (BeeUtils.isEmpty(usageTable)) {
       return;
     }
-    
+
     if (!BeeUtils.isEmpty(checkColumns) && !NewsConstants.anyObserved(table, checkColumns)) {
       return;
     }
@@ -244,7 +244,7 @@ public class NewsBean {
               NewsConstants.COL_USAGE_UPDATE)
           .addValues(rowId, userId, now, now));
     }
-    
+
     logger.debug("news on update", userId, table, rowId, usageTable);
   }
 
@@ -261,7 +261,7 @@ public class NewsBean {
 
     NewsHelper.registerHeadlineProducer(feed, headlineProducer);
   }
-  
+
   public void registerUsageQueryProvider(Feed feed, UsageQueryProvider usageQueryProvider) {
     Assert.notNull(feed);
     Assert.notNull(usageQueryProvider);
@@ -300,14 +300,14 @@ public class NewsBean {
         return response;
       }
     }
-    
+
     FiresModificationEvents commando = new FiresModificationEvents() {
       @Override
       public void fireModificationEvent(ModificationEvent<?> event, Locality locality) {
         Endpoint.sendToUser(userId, new ModificationMessage(event));
       }
     };
-    
+
     DataChangeEvent.fireRefresh(commando, NewsConstants.VIEW_USER_FEEDS);
 
     logger.info(reqInfo.getService(), "user", userId, "subscribed to", feeds);
@@ -324,7 +324,7 @@ public class NewsBean {
 
     if (query == null) {
       logger.warning("news access query is null for feed", feed);
-    
+
     } else {
       SimpleRowSet data = qs.getData(query);
       if (!DataUtils.isEmpty(data)) {
@@ -467,12 +467,12 @@ public class NewsBean {
 
     List<String> labelColumns = feed.getLabelColumns();
     List<String> titleColumns = feed.getTitleColumns();
-    
+
     if (!hasProducer && BeeUtils.isEmpty(labelColumns)) {
       logger.severe("feed", feed, "label columns not specified");
       return headlines;
     }
-    
+
     List<String> headlineColumns;
     if (BeeUtils.isEmpty(labelColumns) && BeeUtils.isEmpty(titleColumns)) {
       headlineColumns = null;
@@ -504,7 +504,7 @@ public class NewsBean {
         for (String column : labelColumns) {
           labelIndexes.add(rowSet.getColumnIndex(column));
         }
-        
+
         if (!BeeUtils.isEmpty(titleColumns)) {
           for (String column : titleColumns) {
             titleIndexes.add(rowSet.getColumnIndex(column));
@@ -522,16 +522,16 @@ public class NewsBean {
           }
 
         } else {
-          String caption = DataUtils.join(rowSet.getColumns(), row, labelIndexes, 
+          String caption = DataUtils.join(rowSet.getColumns(), row, labelIndexes,
               Headline.SEPARATOR);
-          
+
           String title;
           if (titleIndexes.isEmpty()) {
             title = null;
           } else {
             title = DataUtils.join(rowSet.getColumns(), row, titleIndexes, Headline.SEPARATOR);
           }
-          
+
           if (BeeUtils.isEmpty(caption)) {
             if (BeeUtils.isEmpty(title)) {
               caption = BeeUtils.bracket(row.getId());

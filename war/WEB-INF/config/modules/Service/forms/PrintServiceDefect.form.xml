@@ -10,12 +10,12 @@
   name="PrintServiceDefect" viewName="ServiceDefects" caption="=svcDefect" disabledActions="save"
   width="70" widthUnit="%" height="90" heightUnit="%">
 
-  <FlowPanel class="bee-form-PrintableContent">
+  <FlowPanel class="bee-PrintableForm">
     <FlowPanel class="flexBox-horizontal-top">
       <Image url="images/logo.png" />
       <Label text="=svcDefectSupplier" style="&lbl; &bold;" class="flexible bee-Label-withColon"
         horizontalAlignment="right" />
-      <div name="Supplier" style="max-width: 45%"/>
+      <div name="Supplier" style="max-width: 45%" />
     </FlowPanel>
     
     <br/>

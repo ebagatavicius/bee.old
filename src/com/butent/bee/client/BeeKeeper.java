@@ -38,12 +38,12 @@ public final class BeeKeeper {
   public static UserInfo getUser() {
     return user;
   }
-  
+
   public static void onRightsChange() {
     if (getScreen().getUserInterface().hasMenu()) {
       getMenu().loadMenu();
     }
-    
+
     GridFactory.clearDescriptionCache();
     FormFactory.clearDescriptionCache();
   }

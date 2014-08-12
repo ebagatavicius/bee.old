@@ -9,7 +9,7 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.modules.ec.EcUtils;
 
-public class PictureRenderer  extends AbstractCellRenderer {
+public class PictureRenderer extends AbstractCellRenderer {
 
   private static final ImageElement imageElement;
 
@@ -39,7 +39,7 @@ public class PictureRenderer  extends AbstractCellRenderer {
     if (row == null) {
       return null;
     }
-    
+
     String type = BeeConst.isUndef(typeIdx) ? null : row.getString(typeIdx);
     String picture = EcUtils.picture(type, row.getString(resourceIdx));
 

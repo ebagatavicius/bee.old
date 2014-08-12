@@ -176,7 +176,7 @@ public class XSheet implements BeeSerializable {
       switch (members[i]) {
         case COLUMN_WIDTH_FACTORS:
           Map<String, String> map = Codec.deserializeMap(value);
-          
+
           for (Map.Entry<String, String> entry : map.entrySet()) {
             if (BeeUtils.isDigit(entry.getKey()) && BeeUtils.isPositiveDouble(entry.getValue())) {
               columnWidthFactors.put(BeeUtils.toInt(entry.getKey()),
@@ -233,14 +233,14 @@ public class XSheet implements BeeSerializable {
       }
     }
   }
-  
+
   public XRow ensureRow(int index) {
     for (XRow row : rows) {
       if (row.getIndex() == index) {
         return row;
       }
     }
-    
+
     XRow row = new XRow(index);
     add(row);
 
@@ -370,7 +370,7 @@ public class XSheet implements BeeSerializable {
           values.add(pictures.isEmpty() ? null : Codec.beeSerialize(pictures));
           break;
         case ROW_HEIGHT_FACTOR:
-          values.add((getRowHeightFactor() == null) 
+          values.add((getRowHeightFactor() == null)
               ? null : BeeUtils.toString(getRowHeightFactor()));
           break;
         case ROWS:

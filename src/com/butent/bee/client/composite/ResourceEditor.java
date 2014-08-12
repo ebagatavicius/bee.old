@@ -3,6 +3,7 @@ package com.butent.bee.client.composite;
 import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
@@ -10,17 +11,22 @@ import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.dialog.ConfirmationCallback;
 import com.butent.bee.client.dialog.Icon;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
-import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.widget.InputArea;
+import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Resource;
 import com.butent.bee.shared.Service;
@@ -32,18 +38,39 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.EnumSet;
 
-/**
- * Implements a text area editor user interface component.
- */
-public class ResourceEditor extends Flow implements Presenter, View, Printable {
+public class ResourceEditor extends Flow implements Presenter, View, Printable, HasWidgetSupplier {
 
   private static final BeeLogger logger = LogUtils.getLogger(ResourceEditor.class);
 
-  private static final String STYLE_PREFIX = "bee-ResourceEditor-";
+  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "ResourceEditor-";
+
+  public static void open(final String item, final ViewCallback callback) {
+    Assert.notEmpty(item);
+    Assert.notNull(callback);
+
+    ParameterList params = BeeKeeper.getRpc().createParameters(Service.GET_RESOURCE);
+    params.addPositionalData("get", item);
+
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        if (response.hasResponse(Resource.class)) {
+          Resource resource = Resource.restore(response.getResponseAsString());
+          ResourceEditor resourceEditor = new ResourceEditor(resource);
+
+          callback.onSuccess(resourceEditor);
+
+        } else {
+          logger.warning(item, "response type", response.getType());
+        }
+      }
+    });
+  }
 
   private final String uri;
 
@@ -53,8 +80,7 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable {
   private boolean enabled = true;
 
   public ResourceEditor(Resource resource) {
-    super();
-    addStyleName(STYLE_PREFIX + "view");
+    super(STYLE_PREFIX + "view");
 
     this.uri = resource.getUri();
 
@@ -84,6 +110,11 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable {
     wrapper.addStyleName(STYLE_PREFIX + "wrapper");
 
     add(wrapper);
+  }
+
+  @Override
+  public HandlerRegistration addReadyHandler(ReadyEvent.Handler handler) {
+    return addHandler(handler, ReadyEvent.getType());
   }
 
   @Override
@@ -120,12 +151,16 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable {
   }
 
   @Override
-  public Presenter getViewPresenter() {
-    return this;
+  public String getSupplierKey() {
+    if (BeeUtils.isEmpty(uri)) {
+      return null;
+    } else {
+      return ViewFactory.SupplierKind.RESOURCE.getKey(uri);
+    }
   }
 
   @Override
-  public IdentifiableWidget getWidget() {
+  public Presenter getViewPresenter() {
     return this;
   }
 
@@ -170,6 +205,11 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable {
   }
 
   @Override
+  public boolean reactsTo(Action action) {
+    return EnumUtils.in(action, Action.CANCEL, Action.CLOSE) || getHeader().isActionEnabled(action);
+  }
+
+  @Override
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
@@ -180,6 +220,13 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable {
 
   @Override
   public void setViewPresenter(Presenter viewPresenter) {
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+
+    ReadyEvent.fire(this);
   }
 
   private void save() {
@@ -205,11 +252,11 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable {
       @Override
       public void onConfirm() {
         final String digest = Codec.md5(v);
-        
+
         ParameterList params = new ParameterList(Service.SAVE_RESOURCE);
         params.addQueryItem(Service.RPC_VAR_URI, Codec.encodeBase64(uri));
         params.addQueryItem(Service.RPC_VAR_MD5, digest);
-        
+
         BeeKeeper.getRpc().makePostRequest(params, ContentType.RESOURCE, v, new ResponseCallback() {
           @Override
           public void onResponse(ResponseObject response) {

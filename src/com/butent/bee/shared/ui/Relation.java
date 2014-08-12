@@ -270,7 +270,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
   private RenderMode renderMode;
 
   private String targetViewName;
-  
+
   private String valueSource;
   private Boolean strict;
 
@@ -572,7 +572,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     if (BeeUtils.isPositiveInt(lines)) {
       setVisibleLines(BeeUtils.toInt(lines));
     }
-    
+
     String minQuery = getAttribute(ATTR_MIN_QUERY_LENGTH);
     if (BeeUtils.isPositiveInt(minQuery)) {
       setMinQueryLength(BeeUtils.toInt(minQuery));
@@ -595,7 +595,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     if (strictRel != null) {
       setStrict(BeeUtils.toBooleanOrNull(strictRel));
     }
-    
+
     String flt = getAttribute(UiConstants.ATTR_FILTER);
     String cuf = getAttribute(UiConstants.ATTR_CURRENT_USER_FILTER);
     String ord = getAttribute(UiConstants.ATTR_ORDER);
@@ -647,11 +647,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     }
 
     if (!BeeUtils.isEmpty(displCols)) {
-      if (sourceInfo == null) {
-        setChoiceColumns(displCols);
-      } else {
-        setChoiceColumns(sourceInfo.parseColumns(displCols));
-      }
+      setChoiceColumns(displCols);
     }
 
     if (!BeeUtils.isEmpty(searchCols)) {
@@ -739,7 +735,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
   }
 
   public boolean isNewRowEnabled() {
-    return BeeUtils.isEmpty(getValueSource()) 
+    return BeeUtils.isEmpty(getValueSource())
         && !BeeConst.isFalse(getAttribute(UiConstants.ATTR_NEW_ROW_ENABLED));
   }
 

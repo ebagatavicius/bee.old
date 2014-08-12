@@ -4,6 +4,7 @@
   name="Appointments" source="Appointments" newRowForm="Appointment"
   caption="=calAppointments" newRowCaption="=calNewAppointment"
   >
+  <Relation renderColumns="Summary" choiceColumns="Summary StartDateTime EndDateTime" />
   <Columns>
     <SimpleColumn name="AppointmentType" />
     <SimpleJoin joinType="LEFT" name="AppointmentType">

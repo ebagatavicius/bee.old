@@ -3,6 +3,7 @@ package com.butent.bee.shared.data.view;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -76,11 +77,13 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
 
   private final List<ViewColumn> viewColumns = Lists.newArrayList();
 
+  private String relationInfo;
+
   public DataInfo(String module, String viewName, String tableName,
-      String idColumn, String versionColumn, String caption, String editForm, String rowCaption,
-      String newRowForm, String newRowColumns, String newRowCaption,
+      String idColumn, String versionColumn, String caption, String editForm,
+      String rowCaption, String newRowForm, String newRowColumns, String newRowCaption,
       Integer cacheMaximumSize, String cacheEviction,
-      List<BeeColumn> columns, List<ViewColumn> viewColumns) {
+      List<BeeColumn> columns, List<ViewColumn> viewColumns, String relationInfo) {
 
     setModule(module);
 
@@ -108,6 +111,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
     if (viewColumns != null) {
       this.viewColumns.addAll(viewColumns);
     }
+    setRelationInfo(relationInfo);
   }
 
   private DataInfo() {
@@ -153,7 +157,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
-    Assert.lengthEquals(arr, 15);
+    Assert.lengthEquals(arr, 16);
     int index = 0;
 
     setModule(arr[index++]);
@@ -191,6 +195,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
         getViewColumns().add(ViewColumn.restore(col));
       }
     }
+    setRelationInfo(arr[index++]);
   }
 
   @Override
@@ -412,7 +417,9 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
         "New Row Caption", getNewRowCaption(),
         "Cache Maximum Size", getCacheMaximumSize(),
         "Cache Eviction", getCacheEviction(),
-        "Column Count", getColumnCount());
+        "Column Count", getColumnCount(),
+        "Relation Info", !BeeUtils.isEmpty(getRelationInfo())
+            ? SafeHtmlUtils.htmlEscape(getRelationInfo()) : null);
 
     int cc = getColumnCount();
     for (int i = 0; i < cc; i++) {
@@ -518,12 +525,16 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
     return (fields.size() == 1) ? BeeUtils.peek(fields) : null;
   }
 
+  public String getRelationInfo() {
+    return relationInfo;
+  }
+
   public String getRootField(String colName) {
     ViewColumn viewColumn = getViewColumn(colName);
     if (viewColumn == null) {
       return null;
     }
-    
+
     if (!BeeUtils.isEmpty(viewColumn.getParent()) && viewColumn.getLevel() > 0) {
       return getRootField(viewColumn.getParent());
     } else {
@@ -616,12 +627,12 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
   @Override
   public String serialize() {
     return Codec.beeSerialize(new Object[] {getModule(), getViewName(), getTableName(),
-        getIdColumn(), getVersionColumn(), getCaption(), getEditForm(), getRowCaption(),
-        getNewRowForm(), getNewRowColumns(), getNewRowCaption(),
-        getCacheMaximumSize(), getCacheEviction(),
-        getColumns(), getViewColumns()});
+        getIdColumn(), getVersionColumn(), getCaption(), getEditForm(),
+        getRowCaption(), getNewRowForm(), getNewRowColumns(), getNewRowCaption(),
+        getCacheMaximumSize(), getCacheEviction(), getColumns(), getViewColumns(),
+        getRelationInfo()});
   }
-  
+
   private String getCacheEviction() {
     return cacheEviction;
   }
@@ -660,6 +671,10 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
 
   private void setNewRowForm(String newRowForm) {
     this.newRowForm = newRowForm;
+  }
+
+  public void setRelationInfo(String relationInfo) {
+    this.relationInfo = relationInfo;
   }
 
   private void setRowCaption(String rowCaption) {

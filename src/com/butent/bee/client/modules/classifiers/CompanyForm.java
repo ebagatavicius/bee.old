@@ -87,7 +87,7 @@ public class CompanyForm extends AbstractFormInterceptor {
         public GridInterceptor getInstance() {
           return null;
         }
-        
+
         private void setAsPrimaryAccount(Long companyBankAccount) {
           setAsPrimaryAccount(companyBankAccount, false);
         }

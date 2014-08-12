@@ -36,7 +36,7 @@ public class ClientLogManager implements BeeLoggerFactory {
   public void setEnabled(boolean enabled) {
     getPanelHandler().setEnabled(enabled);
   }
-  
+
   public static void setPanelSize(int size) {
     getPanelHandler().resize(size);
   }

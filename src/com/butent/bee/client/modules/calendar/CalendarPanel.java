@@ -27,6 +27,7 @@ import com.butent.bee.client.datepicker.DatePicker;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dialog.Popup.OutsideClick;
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.event.logical.VisibilityChangeEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.i18n.DateTimeFormat;
@@ -50,7 +51,6 @@ import com.butent.bee.client.screen.HandlesStateChange;
 import com.butent.bee.client.screen.HasDomain;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasWidgetSupplier;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
@@ -89,6 +89,7 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.EnumSet;
@@ -313,6 +314,13 @@ public class CalendarPanel extends Split implements AppointmentEvent.Handler, Pr
     activateView(views.get(viewIndex));
   }
 
+  @Override
+  public com.google.gwt.event.shared.HandlerRegistration addReadyHandler(
+      ReadyEvent.Handler handler) {
+    ReadyEvent.maybeDelegate(this);
+    return addHandler(handler, ReadyEvent.getType());
+  }
+
   public long getCalendarId() {
     return calendarId;
   }
@@ -354,11 +362,6 @@ public class CalendarPanel extends Split implements AppointmentEvent.Handler, Pr
 
   @Override
   public Presenter getViewPresenter() {
-    return this;
-  }
-
-  @Override
-  public IdentifiableWidget getWidget() {
     return this;
   }
 
@@ -539,6 +542,12 @@ public class CalendarPanel extends Split implements AppointmentEvent.Handler, Pr
     if (event.isVisible() && DomUtils.isOrHasAncestor(getElement(), event.getId())) {
       calendar.resumeLayout();
     }
+  }
+
+  @Override
+  public boolean reactsTo(Action action) {
+    return EnumUtils.in(action,
+        Action.REFRESH, Action.CONFIGURE, Action.CANCEL, Action.CLOSE, Action.PRINT);
   }
 
   @Override
@@ -803,10 +812,10 @@ public class CalendarPanel extends Split implements AppointmentEvent.Handler, Pr
               if (!todoContainer.isEmpty()) {
                 todoContainer.clear();
               }
-             
+
               int size = Math.min(getOffsetWidth() / 3, 320);
               setWidgetSize(todoContainer, size);
-              todoContainer.add(presenter.getWidget());
+              todoContainer.add(presenter.getMainView());
 
               removeStyleName(STYLE_TODO_HIDDEN);
             }

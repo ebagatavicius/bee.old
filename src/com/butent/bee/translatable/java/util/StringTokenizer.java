@@ -12,7 +12,6 @@ public class StringTokenizer implements Enumeration<Object> {
   /**
    * maxDelimCodePoint stores the value of the delimiter character with the highest value. It is
    * used to optimize the detection of delimiter characters.
-   * 
    * It is unlikely to provide any optimization benefit in the hasSurrogates case because most
    * string characters will be smaller than the limit, but we keep it so that the two code paths
    * remain similar.
@@ -37,7 +36,6 @@ public class StringTokenizer implements Enumeration<Object> {
    * delimiter set, which is <code>"&nbsp;&#92;t&#92;n&#92;r&#92;f"</code>: the space character, the
    * tab character, the newline character, the carriage-return character, and the form-feed
    * character. Delimiter characters themselves will not be treated as tokens.
-   * 
    * @param str a string to be parsed.
    * @exception NullPointerException if str is <CODE>null</CODE>
    */
@@ -53,7 +51,6 @@ public class StringTokenizer implements Enumeration<Object> {
    * Note that if <tt>delim</tt> is <tt>null</tt>, this constructor does not throw an exception.
    * However, trying to invoke other methods on the resulting <tt>StringTokenizer</tt> may result in
    * a <tt>NullPointerException</tt>.
-   * 
    * @param str a string to be parsed.
    * @param delim the delimiters.
    * @exception NullPointerException if str is <CODE>null</CODE>
@@ -74,7 +71,6 @@ public class StringTokenizer implements Enumeration<Object> {
    * Note that if <tt>delim</tt> is <tt>null</tt>, this constructor does not throw an exception.
    * However, trying to invoke other methods on the resulting <tt>StringTokenizer</tt> may result in
    * a <tt>NullPointerException</tt>.
-   * 
    * @param str a string to be parsed.
    * @param delim the delimiters.
    * @param returnDelims flag indicating whether to return the delimiters as tokens.
@@ -94,7 +90,6 @@ public class StringTokenizer implements Enumeration<Object> {
   /**
    * Calculates the number of times that this tokenizer's <code>nextToken</code> method can be
    * called before it generates an exception. The current position is not advanced.
-   * 
    * @return the number of tokens remaining in the string using the current delimiter set.
    * @see java.util.StringTokenizer#nextToken()
    */
@@ -115,7 +110,6 @@ public class StringTokenizer implements Enumeration<Object> {
   /**
    * Returns the same value as the <code>hasMoreTokens</code> method. It exists so that this class
    * can implement the <code>Enumeration</code> interface.
-   * 
    * @return <code>true</code> if there are more tokens; <code>false</code> otherwise.
    * @see java.util.Enumeration
    * @see java.util.StringTokenizer#hasMoreTokens()
@@ -128,7 +122,6 @@ public class StringTokenizer implements Enumeration<Object> {
    * Tests if there are more tokens available from this tokenizer's string. If this method returns
    * <tt>true</tt>, then a subsequent call to <tt>nextToken</tt> with no argument will successfully
    * return a token.
-   * 
    * @return <code>true</code> if and only if there is at least one token in the string after the
    *         current position; <code>false</code> otherwise.
    */
@@ -145,7 +138,6 @@ public class StringTokenizer implements Enumeration<Object> {
    * Returns the same value as the <code>nextToken</code> method, except that its declared return
    * value is <code>Object</code> rather than <code>String</code>. It exists so that this class can
    * implement the <code>Enumeration</code> interface.
-   * 
    * @return the next token in the string.
    * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
    * @see java.util.Enumeration
@@ -157,7 +149,6 @@ public class StringTokenizer implements Enumeration<Object> {
 
   /**
    * Returns the next token from this string tokenizer.
-   * 
    * @return the next token from this string tokenizer.
    * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
    */
@@ -167,7 +158,7 @@ public class StringTokenizer implements Enumeration<Object> {
      * the computation and this invocation, then use the computed value.
      */
 
-    currentPosition = (newPosition >= 0 && !delimsChanged) 
+    currentPosition = (newPosition >= 0 && !delimsChanged)
         ? newPosition : skipDelimiters(currentPosition);
 
     /* Reset these anyway */
@@ -188,7 +179,6 @@ public class StringTokenizer implements Enumeration<Object> {
    * characters in the string <tt>delim</tt>. Then the next token in the string after the current
    * position is returned. The current position is advanced beyond the recognized token. The new
    * delimiter set remains the default after this call.
-   * 
    * @param delim the new delimiters.
    * @return the next token, after switching to the new delimiter set.
    * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.

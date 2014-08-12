@@ -5,13 +5,13 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public abstract class StringCallback implements Validator<String> {
-  
+
   private boolean required;
 
   public StringCallback() {
     this(true);
   }
-  
+
   public StringCallback(boolean required) {
     this.required = required;
   }
@@ -31,7 +31,7 @@ public abstract class StringCallback implements Validator<String> {
   public boolean isRequired() {
     return required;
   }
-  
+
   public void onCancel() {
   }
 

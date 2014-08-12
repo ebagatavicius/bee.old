@@ -237,7 +237,7 @@ public class TestBeeUtilsTransform extends TestCase implements ILogger {
     assertEquals(5, BeeUtils.getDecimals("0.12345"));
     assertEquals(4, BeeUtils.getDecimals("1.0E17"));
   }
-  
+
   @Test
   public final void testGetClassName() {
     assertEquals("TestBeeUtilsTransform", NameUtils.getClassName(this.getClass()));
@@ -705,7 +705,7 @@ public class TestBeeUtilsTransform extends TestCase implements ILogger {
     assertEquals("5", BeeUtils.toString(5));
     assertEquals("Infinity", BeeUtils.toString(Double.POSITIVE_INFINITY));
     assertEquals("9", BeeUtils.toString((long) 9));
-    
+
     assertEquals("0", BeeUtils.toString(0.0));
     assertEquals("0.123", BeeUtils.toString(0.123));
     assertEquals("1000000", BeeUtils.toString(1e6));

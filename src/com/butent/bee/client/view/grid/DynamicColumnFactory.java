@@ -118,13 +118,13 @@ public final class DynamicColumnFactory {
       if (roleNames.size() > 1) {
         Collections.sort(roleNames, Collator.DEFAULT);
       }
-      
+
       String viewName = gridView.getViewName();
 
       ColumnInfo columnInfo = createRoleColumnInfo(viewName, 0L,
           Localized.getConstants().rightsDefault());
       gridView.getGrid().addColumn(columnInfo);
-      
+
       for (String roleName : roleNames) {
         Long roleId = roles.inverse().get(roleName);
 
@@ -163,7 +163,7 @@ public final class DynamicColumnFactory {
     ColumnHeader header = new ColumnHeader(columnId, roleName, roleName);
 
     ColumnInfo columnInfo = new ColumnInfo(columnId, roleName, null, column, header);
-    
+
     columnInfo.setCellResizable(false);
     columnInfo.setExportable(false);
 

@@ -25,7 +25,7 @@ public class Link extends FocusWidget implements IdentifiableWidget, HasHtml {
 
   public Link(String text, String href) {
     this();
-    
+
     if (!BeeUtils.isEmpty(text)) {
       setHtml(text);
     }
@@ -56,7 +56,7 @@ public class Link extends FocusWidget implements IdentifiableWidget, HasHtml {
   public String getTarget() {
     return getAnchorElement().getTarget();
   }
-  
+
   @Override
   public String getText() {
     return getElement().getInnerText();
@@ -65,7 +65,7 @@ public class Link extends FocusWidget implements IdentifiableWidget, HasHtml {
   public void setHref(String href) {
     getAnchorElement().setHref(href);
   }
-  
+
   @Override
   public void setHtml(String html) {
     getElement().setInnerHTML(html);
@@ -75,20 +75,20 @@ public class Link extends FocusWidget implements IdentifiableWidget, HasHtml {
   public void setId(String id) {
     DomUtils.setId(this, id);
   }
-  
+
   public void setTarget(String target) {
     getAnchorElement().setTarget(target);
   }
-  
+
   @Override
   public void setText(String text) {
     getElement().setInnerText(text);
   }
-  
+
   public void update(String value) {
     update(value, BeeConst.DEFAULT_VALUE_SEPARATOR);
   }
-  
+
   public void update(String value, String separator) {
     Assert.notEmpty(value);
     String sep = BeeUtils.notEmpty(separator, BeeConst.DEFAULT_VALUE_SEPARATOR);
@@ -109,7 +109,7 @@ public class Link extends FocusWidget implements IdentifiableWidget, HasHtml {
   private AnchorElement getAnchorElement() {
     return AnchorElement.as(getElement());
   }
-  
+
   private void init() {
     DomUtils.createId(this, getIdPrefix());
     setStyleName("bee-Link");

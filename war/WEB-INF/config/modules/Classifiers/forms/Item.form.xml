@@ -1,55 +1,152 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Form [
-  <!ENTITY separator '<div style="height: 5px; visibility: hidden;"/>'>
-  <!ENTITY lbl1 "width: 73px; margin-right: 1em; text-align: right; padding-right: 9px;">
-  <!ENTITY lbl2 "width: 130px; margin-right: 1em; text-align: right; padding-right: 9px;">
-]>
+<!DOCTYPE Form>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   
   name="Item" viewName="Items" caption="=item"
-  width="650" height="250"
+  width="700" height="450"
   >
-  <FlowPanel style="padding: 2ex 1em 0 1em;">
-    <FlowPanel class="flexBox-horizontal">
-      <Label text="=name" class="bee-required" style="&lbl1;" />
-      <InputText source="Name" style="width: 500px;" autocomplete="true" visible="true" />
-    </FlowPanel>
-    &separator;
+  <FlowPanel class="flexBox-vertical">
+    <Table style="margin-top: 1ex;">
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+      
+      <row>
+        <Label for="Type" />
+        <DataSelector source="Type" />
 
-    <FlowPanel class="flexBox-horizontal">
-      <Label for="Article" text="=article" style="&lbl1;" />
-      <InputText source="Article" />
+        <Label for="Group" />
+        <DataSelector source="Group" />
+      </row>
 
-      <Label text="=itemUnits" horizontalAlignment="right" class="bee-required"
-        style="&lbl2;" />
-      <DataSelector source="Unit" style="width: 100px;" visible="true" />
-    </FlowPanel>
-    &separator;
+      <row>
+        <Label for="Name" />
+        <cell colSpan="5">
+          <InputText source="Name" autocomplete="true" visible="true" style="width: 100%;" />
+        </cell>
+      </row>
 
-    <FlowPanel class="flexBox-horizontal">
-      <Label for="Barcode" text="=barcode" style="&lbl1;" />
-      <InputText source="Barcode" />
+      <row>
+        <Label for="Article" />
+        <InputText source="Article" />
 
-      <Label for="Price" text="=sellingPrice" horizontalAlignment="right"
-        style="&lbl2;" />
-      <InputCurrency source="Price" style="width: 100px;" />
-      <DataSelector source="Currency" for="Price" style="width: 50px; margin-left: 1em;" />
-    </FlowPanel>
-    &separator;
+        <Label for="Unit" text="=unitShort" />
+        <DataSelector source="Unit" visible="true" newRowEnabled="false" style="width: 80px;" />
 
-    <FlowPanel class="flexBox-horizontal">
-      <CheckBox source="Vat" text="=vat" style="margin-right:13px; margin-left:20px;" />
-      <InputDecimal source="VatPercent" caption="%" decorator="caption-right" 
-        style="width: 30px; margin-left: 4px; border-left-width: 1px; border-right-width: 1px;" />
-    </FlowPanel>
-    &separator;
+        <CheckBox source="Vat" text="=vat" />
+        <cell style="padding-left: 6px;">
+          <FlowPanel>
+            <InputDecimal source="VatPercent" style="width: 40px;" />
+            <InlineLabel html="%" style="padding-left: 3px;"/>
+          </FlowPanel>
+        </cell>
+      </row>
 
-    <FlowPanel class="flexBox-horizontal">
-      <Label text="=itemCategories" style="&lbl1;" />
-      <ChildSelector name="Categories" childTable="ItemCategories" viewName="CategoryTree" 
-        targetRelColumn="Item" sourceRelColumn="Category" newRowEnabled="false"
-        renderColumns="ParentName Name" style="width: 500px;" label="=categories" />
-    </FlowPanel>
+      <row>
+        <Label for="Barcode" />
+        <InputText source="Barcode" />
+    
+        <Label for="Weight" />
+        <InputDecimal source="Weight" style="width: 80px;" />
+      </row>
+
+      <row data="ItemCategories">
+        <Label text="=itemCategories" />
+        <cell colSpan="5">
+          <ChildSelector name="Categories" childTable="ItemCategories" viewName="CategoryTree" 
+            targetRelColumn="Item" sourceRelColumn="Category" newRowEnabled="false"
+            renderColumns="ParentName Name" label="=categories" style="width: 100%;" />
+        </cell>
+      </row>
+    </Table>
+    
+    <br/>
+    <TabbedPages class="flexible">
+      <page>
+        <text>=prices</text>
+        <Table style="margin-top: 1ex;">
+          <col index="0" kind="label" />
+          <col index="2" cellStyle="padding-left: 6px;" />
+
+          <row>
+            <Label for="Price" />
+            <InputDecimal source="Price" currencySource="Currency" />
+            <DataSelector source="Currency" for="Price" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" />
+          </row>
+          <row>
+            <Label for="Cost" />
+            <InputDecimal source="Cost" currencySource="CostCurrency" />
+            <DataSelector source="CostCurrency" for="Cost" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" />
+          </row>
+          <row>
+            <Label for="Price1" />
+            <InputDecimal source="Price1" currencySource="Currency1" />
+            <DataSelector source="Currency1" for="Price1" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" />
+          </row>
+          <row>
+            <Label for="Price2" />
+            <InputDecimal source="Price2" currencySource="Currency2" />
+            <DataSelector source="Currency2" for="Price2" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" />
+          </row>
+        </Table>
+      </page>
+
+      <page>
+        <text>=additionalInfo</text>
+        <Table style="margin-top: 1ex;">
+          <col index="0" kind="label" />
+          <col index="2" kind="label" />
+      
+          <row>
+            <Label for="Name2" />
+            <cell colSpan="3">
+              <InputText source="Name2" autocomplete="true" visible="true" style="width: 100%;" />
+            </cell>
+          </row>
+
+          <row>
+            <Label for="Article2" />
+            <InputText source="Article2" />
+
+            <Label for="Ordinal" />
+            <InputInteger source="Ordinal" />
+          </row>
+
+          <row>
+            <Label for="Department" />
+            <DataSelector source="Department" />
+
+            <Label for="ExternalCode" />
+            <InputText source="ExternalCode" />
+          </row>
+
+          <row>
+            <Label for="ActivityType" />
+            <DataSelector source="ActivityType" />
+
+            <Label for="CostCenter" />
+            <DataSelector source="CostCenter" />
+          </row>
+        </Table>
+      </page>  
+
+      <page for="Description">
+        <text>=description</text>
+        <SimplePanel>
+          <InputArea source="Description" class="occupy-1" />
+        </SimplePanel>
+      </page>
+
+      <page for="Notes">
+        <text>=notes</text>
+        <SimplePanel>
+          <InputArea source="Notes" class="occupy-1" />
+        </SimplePanel>
+      </page>  
+    </TabbedPages>
   </FlowPanel>
 </f:Form>  

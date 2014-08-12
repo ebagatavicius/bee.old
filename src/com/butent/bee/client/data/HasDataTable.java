@@ -23,29 +23,29 @@ public interface HasDataTable extends HasSortHandlers, HandlesDeleteEvents, Hand
     HasSelectionCountChangeHandlers, HasEditState, HasActiveRowChangeHandlers, HasDataRows {
 
   HandlerRegistration addDataRequestHandler(DataRequestEvent.Handler handler);
-  
+
   HandlerRegistration addScopeChangeHandler(ScopeChangeEvent.Handler handler);
-  
+
   int getPageSize();
-  
+
   int getPageStart();
 
   int getRowCount();
-  
+
   void preserveActiveRow(List<? extends IsRow> rows);
 
   void refresh();
-  
+
   boolean removeRowById(long rowId);
 
   void reset();
-  
+
   void setPageSize(int pageSize, boolean fireScopeChange);
 
   void setPageStart(int pageStart, boolean fireScopeChange, boolean fireDataRequest,
       NavigationOrigin origin);
 
   void setRowCount(int count, boolean fireScopeChange);
-  
+
   void setRowData(List<? extends IsRow> rows, boolean refresh);
 }

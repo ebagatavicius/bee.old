@@ -118,7 +118,7 @@ public class EcOrder implements BeeSerializable {
     }
     return total;
   }
-  
+
   public String getComment() {
     return comment;
   }
@@ -166,7 +166,7 @@ public class EcOrder implements BeeSerializable {
     }
     return total;
   }
-  
+
   @Override
   public String serialize() {
     Serial[] members = Serial.values();

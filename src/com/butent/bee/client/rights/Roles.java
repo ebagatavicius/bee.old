@@ -35,12 +35,12 @@ import java.util.Map;
 public final class Roles implements HandlesAllDataEvents {
 
   private static BeeLogger logger = LogUtils.getLogger(Roles.class);
-  
+
   private static final Roles INSTANCE = new Roles();
 
   public static void ensureData(final Consumer<Boolean> consumer) {
     Assert.notNull(consumer);
-    
+
     if (INSTANCE.data.isEmpty()) {
       getData(new Consumer<Map<Long, String>>() {
         @Override
@@ -48,12 +48,12 @@ public final class Roles implements HandlesAllDataEvents {
           consumer.accept(!input.isEmpty());
         }
       });
-      
+
     } else {
       consumer.accept(true);
     }
   }
-  
+
   public static void getData(Consumer<Map<Long, String>> consumer) {
     Assert.notNull(consumer);
 
@@ -66,10 +66,10 @@ public final class Roles implements HandlesAllDataEvents {
 
   public static void getName(final Long id, final Consumer<String> consumer) {
     Assert.notNull(consumer);
-    
+
     if (!DataUtils.isId(id)) {
       consumer.accept(null);
-    
+
     } else if (INSTANCE.data.containsKey(id)) {
       consumer.accept(INSTANCE.data.get(id));
 
@@ -82,10 +82,10 @@ public final class Roles implements HandlesAllDataEvents {
       });
     }
   }
-  
+
   public static void getNames(final Consumer<List<String>> consumer) {
     Assert.notNull(consumer);
-    
+
     getData(new Consumer<Map<Long, String>>() {
       @Override
       public void accept(Map<Long, String> input) {
@@ -93,7 +93,7 @@ public final class Roles implements HandlesAllDataEvents {
         if (names.size() > 1) {
           Collections.sort(names, Collator.DEFAULT);
         }
-        
+
         consumer.accept(names);
       }
     });
@@ -179,11 +179,11 @@ public final class Roles implements HandlesAllDataEvents {
       }
     }
   }
-  
+
   private boolean isEventRelevant(DataEvent event) {
     return !data.isEmpty() && event != null && event.hasView(VIEW_ROLES);
   }
-  
+
   private void load(final Consumer<Map<Long, String>> consumer) {
     Queries.getRowSet(VIEW_ROLES, Lists.newArrayList(COL_ROLE_NAME), new Queries.RowSetCallback() {
       @Override
@@ -200,7 +200,7 @@ public final class Roles implements HandlesAllDataEvents {
           for (BeeRow row : result) {
             data.put(row.getId(), row.getString(index));
           }
-          
+
           logger.info(result.getViewName(), data.size());
         }
 

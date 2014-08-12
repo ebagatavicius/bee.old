@@ -6,6 +6,7 @@
   caption="=trTransportationOrders" newRowCaption="=newTransportationOrder"
   editForm="TransportationOrder" newRowForm="TransportationOrder"
   >
+  <Relation renderColumns="OrderNo" choiceColumns="CustomerName Date OrderNo" />
   <Columns>
     <SimpleColumn name="Status" />
     <SimpleColumn name="Date" />

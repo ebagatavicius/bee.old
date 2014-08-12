@@ -5,6 +5,7 @@
   editForm="Person" rowCaption="FirstName LastName"
   newRowForm="Person" newRowCaption="=newPerson"
   >
+  <Relation renderColumns="FirstName LastName" />
   <Columns>
     <SimpleColumn name="FirstName" />
     <SimpleColumn name="LastName" />

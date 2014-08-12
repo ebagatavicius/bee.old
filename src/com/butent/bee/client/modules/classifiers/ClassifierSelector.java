@@ -1,32 +1,40 @@
 package com.butent.bee.client.modules.classifiers;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 
+import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.DataView;
+import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
+import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class ClassifierSelector implements SelectorEvent.Handler {
 
-  private final Map<String, Long> companyPersonSelectors = Maps.newHashMap();
+  private final Map<String, Long> companyPersonSelectors = new HashMap<>();
+  private final Map<String, String> personSelectors = new HashMap<>();
 
   ClassifierSelector() {
     super();
@@ -37,7 +45,7 @@ public class ClassifierSelector implements SelectorEvent.Handler {
     if (BeeUtils.same(event.getRelatedViewName(), TBL_EMAILS)) {
       handleEmails(event);
 
-    } else if (BeeUtils.same(event.getRelatedViewName(), TBL_CITIES)) {
+    } else if (BeeUtils.same(event.getRelatedViewName(), VIEW_CITIES)) {
       handleCities(event);
 
     } else if (event.isNewRow()
@@ -47,6 +55,11 @@ public class ClassifierSelector implements SelectorEvent.Handler {
     } else if (BeeUtils.same(event.getRelatedViewName(), VIEW_COMPANY_PERSONS)) {
       if (event.isOpened() || event.isDataLoaded() || event.isUnloading()) {
         handleCompanyPersons(event);
+      }
+
+    } else if (BeeUtils.same(event.getRelatedViewName(), VIEW_PERSONS)) {
+      if (event.isOpened() || event.isDataLoaded() || event.isUnloading()) {
+        handlePersons(event);
       }
     }
   }
@@ -134,7 +147,7 @@ public class ClassifierSelector implements SelectorEvent.Handler {
     }
 
     Long company = targetRow.getLong(targetCompanyIndex);
-    if (Objects.equal(company, companyPersonSelectors.get(selectorId))) {
+    if (Objects.equals(company, companyPersonSelectors.get(selectorId))) {
       return;
     }
 
@@ -161,7 +174,7 @@ public class ClassifierSelector implements SelectorEvent.Handler {
         return;
       }
 
-      List<BeeRow> companyRows = Lists.newArrayList();
+      List<BeeRow> companyRows = new ArrayList<>();
 
       for (Iterator<BeeRow> it = rowSet.getRows().iterator(); it.hasNext();) {
         BeeRow row = it.next();
@@ -215,9 +228,105 @@ public class ClassifierSelector implements SelectorEvent.Handler {
     }
   }
 
+  private void handlePersons(SelectorEvent event) {
+    String companySelectorName = event.getSelector().getOptions();
+    if (BeeUtils.isEmpty(companySelectorName)) {
+      return;
+    }
+
+    String selectorId = event.getSelector().getId();
+    if (BeeUtils.isEmpty(selectorId)) {
+      return;
+    }
+
+    if (event.isUnloading()) {
+      removePersonSelector(selectorId);
+      return;
+    }
+
+    FormView form = UiHelper.getForm(event.getSelector());
+    if (form == null) {
+      removePersonSelector(selectorId);
+      return;
+    }
+
+    Widget companySelector = form.getWidgetByName(companySelectorName);
+    if (!(companySelector instanceof DataSelector)) {
+      removePersonSelector(selectorId);
+      return;
+    }
+
+    String companyValue = ((DataSelector) companySelector).getValue();
+
+    if (Objects.equals(companyValue, personSelectors.get(selectorId))) {
+      return;
+    }
+
+    if (event.isOpened()) {
+      event.getSelector().getOracle().clearData();
+      return;
+    }
+
+    if (event.isDataLoaded()) {
+      List<Long> companyIds = DataUtils.parseIdList(companyValue);
+      if (companyIds.isEmpty()) {
+        removePersonSelector(selectorId);
+        return;
+      }
+
+      personSelectors.put(selectorId, companyValue);
+
+      BeeRowSet rowSet = event.getSelector().getOracle().getViewData();
+      if (rowSet == null || rowSet.getNumberOfRows() <= 1) {
+        return;
+      }
+
+      Multimap<Long, BeeRow> filteredRows = ArrayListMultimap.create();
+
+      for (Iterator<BeeRow> it = rowSet.iterator(); it.hasNext();) {
+        BeeRow row = it.next();
+
+        String value = row.getProperty(PROP_COMPANY_IDS);
+        if (!BeeUtils.isEmpty(value)) {
+          Set<Long> values = DataUtils.parseIdSet(value);
+
+          for (Long id : companyIds) {
+            if (values.contains(id)) {
+              filteredRows.put(id, row);
+              it.remove();
+              break;
+            }
+          }
+        }
+      }
+
+      if (!filteredRows.isEmpty()) {
+        List<BeeRow> rows = new ArrayList<>();
+        for (Long id : companyIds) {
+          if (filteredRows.containsKey(id)) {
+            rows.addAll(filteredRows.get(id));
+          }
+        }
+
+        if (rowSet.isEmpty()) {
+          rowSet.addRows(rows);
+        } else {
+          rows.addAll(rowSet.getRows());
+          rowSet.setRows(rows);
+        }
+      }
+    }
+  }
+
   private void removeCompanyPersonSelector(String id) {
     if (companyPersonSelectors.containsKey(id)) {
       companyPersonSelectors.remove(id);
+    }
+  }
+
+  private void removePersonSelector(String id) {
+    if (personSelectors.containsKey(id)) {
+      personSelectors.remove(id);
     }
   }
 }

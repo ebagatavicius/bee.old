@@ -460,7 +460,7 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
   public GridInterceptor getInstance() {
     return new TripCargoGrid(tripForm);
   }
-  
+
   @Override
   public String getRowCaption(IsRow row, boolean edit) {
     return Localized.getConstants().trCargoActualPlaces();

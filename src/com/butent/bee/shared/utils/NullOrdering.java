@@ -1,7 +1,12 @@
 package com.butent.bee.shared.utils;
 
+import javax.xml.bind.annotation.XmlEnumValue;
+
 public enum NullOrdering {
-  NULLS_FIRST, NULLS_LAST;
-  
+  @XmlEnumValue("first")
+  NULLS_FIRST,
+  @XmlEnumValue("last")
+  NULLS_LAST;
+
   public static final NullOrdering DEFAULT = NULLS_LAST;
 }

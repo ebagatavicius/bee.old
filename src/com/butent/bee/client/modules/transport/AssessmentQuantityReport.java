@@ -100,7 +100,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
   private static final String DRILL_DOWN_GRID_NAME = "AssessmentReportDrillDown";
 
   private final XSheet sheet = new XSheet();
-  
+
   public AssessmentQuantityReport() {
   }
 
@@ -131,13 +131,13 @@ public class AssessmentQuantityReport extends ReportInterceptor {
     widget = form.getWidgetByName(NAME_DEPARTMENTS);
     String idList = parameters.get(NAME_DEPARTMENTS);
     if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
-      ((MultiSelector) widget).render(idList);
+      ((MultiSelector) widget).setIds(idList);
     }
 
     widget = form.getWidgetByName(NAME_MANAGERS);
     idList = parameters.get(NAME_MANAGERS);
     if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
-      ((MultiSelector) widget).render(idList);
+      ((MultiSelector) widget).setIds(idList);
     }
 
     for (String groupName : NAME_GROUP_BY) {
@@ -186,7 +186,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
 
     ParameterList params = TransportHandler.createArgs(SVC_GET_ASSESSMENT_QUANTITY_REPORT);
     final List<String> headers = Lists.newArrayList(getCaption());
-    
+
     if (start != null) {
       params.addDataItem(Service.VAR_FROM, start.getTime());
     }
@@ -263,7 +263,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
 
         if (response.hasResponse(SimpleRowSet.class)) {
           renderData(SimpleRowSet.restore(response.getResponseAsString()));
-        
+
           sheet.addHeaders(headers);
           sheet.autoSizeAll();
 
@@ -280,7 +280,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
       Exporter.maybeExport(sheet, getCaption());
     }
   }
-  
+
   @Override
   protected String getBookmarkLabel() {
     List<String> labels = Lists.newArrayList(getCaption(),
@@ -336,7 +336,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
     }
 
     sheet.clear();
-    
+
     if (!container.isEmpty()) {
       container.clear();
     }
@@ -362,28 +362,28 @@ public class AssessmentQuantityReport extends ReportInterceptor {
     XRow xr2 = new XRow(row + 1);
 
     Integer boldRef = sheet.registerFont(XFont.bold());
-    
+
     XStyle xs = XStyle.center();
     xs.setVerticalAlign(VerticalAlign.MIDDLE);
     xs.setColor(Colors.LIGHTGRAY);
     xs.setFontRef(boldRef);
-    
+
     int styleRef = sheet.registerStyle(xs);
-    
+
     XCell xc;
     String text;
-    
+
     for (int j = 0; j < data.getNumberOfColumns(); j++) {
       String colName = data.getColumnName(j);
 
       switch (colName) {
         case BeeConst.YEAR:
           colYear = col;
-          
+
           text = Localized.getConstants().year();
           table.setText(row, c1, text, STYLE_HEADER);
           table.getCellFormatter().setRowSpan(row, c1, 2);
-          
+
           xc = new XCell(col, text, styleRef);
           xc.setRowSpan(2);
           xr1.add(xc);
@@ -427,7 +427,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
 
         case ClassifierConstants.COL_COMPANY_PERSON:
           colManager = col;
-          
+
           text = Localized.getConstants().manager();
           table.setText(row, c1, text, STYLE_HEADER);
           table.getCellFormatter().setRowSpan(row, c1, 2);
@@ -454,7 +454,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
           xc = new XCell(col, text, styleRef);
           xc.setRowSpan(2);
           xr1.add(xc);
-          
+
           c1++;
           col++;
           break;
@@ -493,7 +493,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
           xc = new XCell(col, text, styleRef);
           xc.setColSpan(2);
           xr1.add(xc);
-          
+
           text = Localized.getConstants().trAssessmentReportQuantity();
           table.setText(row + 1, c2, text, STYLE_HEADER_2);
           xr2.add(new XCell(col, text, styleRef));
@@ -501,7 +501,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
           text = Localized.getConstants().trAssessmentReportPercent();
           table.setText(row + 1, c2 + 1, text, STYLE_HEADER_2);
           xr2.add(new XCell(col + 1, text, styleRef));
-          
+
           c1++;
           c2 += 2;
           col += 2;
@@ -529,7 +529,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
           text = Localized.getConstants().trAssessmentReportApprovedToAnswered();
           table.setText(row + 1, c2 + 2, text, STYLE_HEADER_2);
           xr2.add(new XCell(col + 2, text, styleRef));
-          
+
           c1++;
           c2 += 3;
           col += 3;
@@ -545,7 +545,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
           xc = new XCell(col, text, styleRef);
           xc.setColSpan(2);
           xr1.add(xc);
-          
+
           text = Localized.getConstants().trAssessmentReportQuantity();
           table.setText(row + 1, c2, text, STYLE_HEADER_2);
           xr2.add(new XCell(col, text, styleRef));
@@ -553,7 +553,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
           text = Localized.getConstants().trAssessmentReportPercent();
           table.setText(row + 1, c2 + 1, text, STYLE_HEADER_2);
           xr2.add(new XCell(col + 1, text, styleRef));
-          
+
           c1++;
           c2 += 2;
           col += 2;
@@ -563,7 +563,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
           logger.warning("column not recognized", colName);
       }
     }
-    
+
     sheet.add(xr1);
     sheet.add(xr2);
 
@@ -575,7 +575,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
 
     row = 2;
     XRow xr;
-    
+
     xs = XStyle.right();
     xs.setFormat(QUANTITY_PATTERN);
     int csQty = sheet.registerStyle(xs);
@@ -583,7 +583,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
     xs = XStyle.right();
     xs.setFormat(PERCENT_PATTERN);
     int csPct = sheet.registerStyle(xs);
-    
+
     Double p;
 
     for (int i = 0; i < data.getNumberOfRows(); i++) {
@@ -638,7 +638,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
             if (answered > 0) {
               xr.add(new XCell(colAnswered, answered, csQty));
             }
-            
+
             p = percent(answered, received);
             table.setText(row, colAnswered + 1, renderPercent(p), STYLE_ANSWERED, STYLE_PERCENT);
             if (p != null) {
@@ -651,7 +651,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
             if (lost > 0) {
               xr.add(new XCell(colLost, lost, csQty));
             }
-            
+
             p = percent(lost, received);
             table.setText(row, colLost + 1, renderPercent(p), STYLE_LOST, STYLE_PERCENT);
             if (p != null) {
@@ -665,13 +665,13 @@ public class AssessmentQuantityReport extends ReportInterceptor {
             if (approved > 0) {
               xr.add(new XCell(colApproved, approved, csQty));
             }
-            
+
             p = percent(approved, received);
             table.setText(row, colApproved + 1, renderPercent(p), STYLE_APPROVED, STYLE_PERCENT);
             if (p != null) {
               xr.add(new XCell(colApproved + 1, p, csPct));
             }
-            
+
             p = percent(approved, answered + approved);
             table.setText(row, colApproved + 2, renderPercent(p), STYLE_APPROVED, STYLE_PERCENT);
             if (p != null) {
@@ -710,7 +710,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
 
     if (data.getNumberOfRows() > 1) {
       xr = new XRow(row);
-      
+
       XFont xf = XFont.bold();
       xf.setFactor(1.2);
       int fontRef = sheet.registerFont(xf);
@@ -783,8 +783,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
           int dataIndex = DomUtils.getDataIndexInt(rowElement);
 
           if (!BeeConst.isUndef(dataIndex)) {
-            boolean modal = drillModal(event.getNativeEvent());
-            showDetails(data.getRow(dataIndex), cellElement, modal);
+            showDetails(data.getRow(dataIndex), cellElement);
           }
         }
       }
@@ -793,7 +792,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
     container.add(table);
   }
 
-  private void showDetails(SimpleRow dataRow, TableCellElement cellElement, boolean modal) {
+  private void showDetails(SimpleRow dataRow, TableCellElement cellElement) {
     CompoundFilter filter = Filter.and();
     List<String> captions = Lists.newArrayList();
 
@@ -892,6 +891,6 @@ public class AssessmentQuantityReport extends ReportInterceptor {
     String caption = BeeUtils.notEmpty(BeeUtils.joinItems(captions),
         Localized.getConstants().trAssessmentRequests());
 
-    drillDown(DRILL_DOWN_GRID_NAME, caption, filter, modal);
+    drillDown(DRILL_DOWN_GRID_NAME, caption, filter);
   }
 }

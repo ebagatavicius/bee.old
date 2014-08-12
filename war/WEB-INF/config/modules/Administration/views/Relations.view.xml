@@ -20,6 +20,7 @@
     <SimpleColumn name="CargoRequest" />
     <SimpleColumn name="Discussion" />
     <SimpleColumn name="ServiceObject" />
+    <SimpleColumn name="Message" />
  </Columns>
 </View>
  

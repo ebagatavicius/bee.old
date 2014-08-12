@@ -85,9 +85,9 @@ public final class ConditionalStyle {
   }
 
   private static final String STYLE_INTERPRETER_PREFIX = "=";
-  
+
   private static final Map<String, StyleProvider> gridRowStyleProviders = Maps.newHashMap();
-  private static final Table<String, String, StyleProvider> gridColumnStyleProviders = 
+  private static final Table<String, String, StyleProvider> gridColumnStyleProviders =
       HashBasedTable.create();
 
   public static ConditionalStyle create(Collection<ConditionalStyleDeclaration> declarations,
@@ -104,7 +104,7 @@ public final class ConditionalStyle {
       if (conditionalStyle == null) {
         conditionalStyle = new ConditionalStyle(null);
       }
-      
+
       Evaluator evaluator;
       if (csd.getCondition() == null) {
         evaluator = Evaluator.createEmpty(colName, dataColumns);
@@ -116,7 +116,7 @@ public final class ConditionalStyle {
     }
     return conditionalStyle;
   }
-  
+
   public static ConditionalStyle create(StyleProvider provider) {
     if (provider == null) {
       return null;
@@ -124,7 +124,7 @@ public final class ConditionalStyle {
       return new ConditionalStyle(provider);
     }
   }
-  
+
   public static StyleProvider getGridColumnStyleProvider(String gridName, String columnName) {
     return gridColumnStyleProviders.get(gridName, columnName);
   }
@@ -138,28 +138,28 @@ public final class ConditionalStyle {
     Assert.notEmpty(gridName);
     Assert.notEmpty(columnName);
     Assert.notNull(styleProvider);
-  
+
     gridColumnStyleProviders.put(gridName, columnName, styleProvider);
   }
 
   public static void registerGridRowStyleProvider(String gridName, StyleProvider styleProvider) {
     Assert.notEmpty(gridName);
     Assert.notNull(styleProvider);
-    
+
     gridRowStyleProviders.put(gridName, styleProvider);
   }
-  
+
   private final List<Entry> entries = Lists.newArrayList();
   private final StyleProvider provider;
 
   private ConditionalStyle(StyleProvider provider) {
     this.provider = provider;
   }
-  
+
   public Integer getExportStyleRef(IsRow row, XSheet sheet) {
     return (provider == null) ? null : provider.getExportStyleRef(row, sheet);
   }
-  
+
   public StyleDescriptor getStyleDescriptor(IsRow rowValue, int rowIndex, int colIndex) {
     return getStyleDescriptor(rowValue, rowIndex, colIndex, false, null, null);
   }
@@ -168,7 +168,7 @@ public final class ConditionalStyle {
       ValueType cellType, String cellValue) {
     return getStyleDescriptor(rowValue, rowIndex, colIndex, true, cellType, cellValue);
   }
-  
+
   private void addEntry(Entry entry) {
     if (entry != null) {
       entries.add(entry);
@@ -180,13 +180,13 @@ public final class ConditionalStyle {
       addEntry(new Entry(sd, ev));
     }
   }
-  
+
   private StyleDescriptor getStyleDescriptor(IsRow rowValue, int rowIndex, int colIndex,
       boolean updateCell, ValueType cellType, String cellValue) {
     if (rowValue == null) {
       return null;
     }
-    
+
     if (provider != null) {
       return provider.getStyleDescriptor(rowValue);
     }

@@ -8,14 +8,14 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.ParentRowCreator;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
-import com.butent.bee.client.layout.Complex;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.AutocompleteProvider;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
 import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
+import com.butent.bee.client.view.form.FormAndHeader;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.NotificationListener;
 import com.butent.bee.shared.data.BeeColumn;
@@ -37,9 +37,9 @@ import java.util.List;
 
 public class NewRowPresenter extends AbstractPresenter implements ParentRowCreator {
 
-  public static final String STYLE_CONTAINER = "bee-NewRowContainer";
-  public static final String STYLE_HEADER = "bee-NewRowHeader";
-  public static final String STYLE_CAPTION = "bee-NewRowCaption";
+  public static final String STYLE_CONTAINER = StyleUtils.CLASS_NAME_PREFIX + "NewRowContainer";
+  public static final String STYLE_HEADER = StyleUtils.CLASS_NAME_PREFIX + "NewRowHeader";
+  public static final String STYLE_CAPTION = StyleUtils.CLASS_NAME_PREFIX + "NewRowCaption";
 
   private static HeaderView createHeader(String caption) {
     HeaderView formHeader = new HeaderImpl();
@@ -54,8 +54,8 @@ public class NewRowPresenter extends AbstractPresenter implements ParentRowCreat
 
   private final DataInfo dataInfo;
 
+  private final FormAndHeader container;
   private final FormView formView;
-  private final Complex container;
 
   private HandlesActions actionDelegate;
 
@@ -66,8 +66,7 @@ public class NewRowPresenter extends AbstractPresenter implements ParentRowCreat
     HeaderView header = createHeader(caption);
     this.container = createContainer(header);
 
-    header.setViewPresenter(this);
-    formView.setViewPresenter(this);
+    container.setViewPresenter(this);
   }
 
   @Override
@@ -115,16 +114,11 @@ public class NewRowPresenter extends AbstractPresenter implements ParentRowCreat
 
   @Override
   public HeaderView getHeader() {
-    return ViewHelper.getHeader(getWidget().asWidget());
+    return ViewHelper.getHeader(getMainView().asWidget());
   }
 
   @Override
   public View getMainView() {
-    return formView;
-  }
-
-  @Override
-  public IdentifiableWidget getWidget() {
     return container;
   }
 
@@ -183,8 +177,8 @@ public class NewRowPresenter extends AbstractPresenter implements ParentRowCreat
     this.actionDelegate = actionDelegate;
   }
 
-  private Complex createContainer(HeaderView headerView) {
-    Complex formContainer = new Complex();
+  private FormAndHeader createContainer(HeaderView headerView) {
+    FormAndHeader formContainer = new FormAndHeader();
     formContainer.addStyleName(STYLE_CONTAINER);
 
     formContainer.addTopHeightFillHorizontal(headerView.asWidget(), 0, headerView.getHeight());
@@ -204,16 +198,16 @@ public class NewRowPresenter extends AbstractPresenter implements ParentRowCreat
               event.getCallback().onFailure(reason);
             }
           }
-  
+
           @Override
           public void onSuccess(BeeRow result) {
             RowInsertEvent.fire(BeeKeeper.getBus(), dataInfo.getViewName(), result,
                 event.getSourceId());
-  
+
             if (formView.getFormInterceptor() != null) {
               formView.getFormInterceptor().afterInsertRow(result, forced);
             }
-  
+
             if (event.getCallback() != null) {
               event.getCallback().onSuccess(result);
             }

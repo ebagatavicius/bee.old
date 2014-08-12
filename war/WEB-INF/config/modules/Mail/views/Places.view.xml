@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="Places" source="Places"
+  name="Places" source="Places" caption="=mails"
   >
   <Columns>
     <HiddenColumn name="Folder" />
@@ -16,23 +16,13 @@
 
       <SimpleJoin name="Sender" joinType="LEFT">
         <SimpleColumn name="Email" alias="SenderEmail" />
-        <ExternalJoin name="Email" source="Addressbook" joinType="LEFT">
+        <ExternalJoin name="Email" source="Addressbook" joinType="LEFT" filter="SenderUser={u}">
+          <HiddenColumn name="User" alias="SenderUser" />
           <SimpleColumn name="Label" alias="SenderLabel" />
         </ExternalJoin>
       </SimpleJoin>
-
-      <ExternalJoin name="Message" source="Recipients" joinType="LEFT">
-        <AggregateColumn name="Address" alias="RecipientCount" aggregate="COUNT" />
-
-        <SimpleJoin name="Address" joinType="LEFT">
-          <AggregateColumn name="Email" alias="RecipientEmail" aggregate="MAX" />
-          <ExternalJoin name="Email" source="Addressbook" joinType="LEFT">
-            <AggregateColumn name="Label" alias="RecipientLabel" aggregate="MAX" />
-          </ExternalJoin>
-        </SimpleJoin>
-      </ExternalJoin>
     </SimpleJoin>
-    </Columns>
+  </Columns>
   <Order>
     <OrderBy column="Date" descending="true" />
   </Order>

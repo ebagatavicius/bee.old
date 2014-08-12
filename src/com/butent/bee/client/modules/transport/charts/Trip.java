@@ -226,7 +226,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
     this.tripId = row.getLong(COL_TRIP_ID);
     this.tripVersion = row.getLong(ALS_TRIP_VERSION);
     this.tripNo = row.getValue(COL_TRIP_NO);
-  
+
     this.status = EnumUtils.getEnumByIndex(TripStatus.class, row.getInt(COL_TRIP_STATUS));
 
     this.date = row.getDateTime(COL_TRIP_DATE);
@@ -350,7 +350,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
   boolean hasDrivers() {
     return !BeeUtils.isEmpty(drivers);
   }
-  
+
   boolean isEditable() {
     return status != null && status.isEditable();
   }

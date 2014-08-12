@@ -1,49 +1,33 @@
 package com.butent.bee.client.render;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasItems;
 import com.butent.bee.shared.data.BeeColumn;
+import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
-import com.butent.bee.shared.logging.BeeLogger;
-import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.utils.BeeUtils;
-import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class JoinRenderer extends AbstractCellRenderer implements HasItems {
-  
-  private final class Item {
-    private final int index;
 
-    private Item(int index) {
-      this.index = index;
-    }
-    
-    private String getValue(IsRow row) {
-      return DataUtils.render(dataColumns.get(index), row, index);
-    }
-  }
-
-  private static final BeeLogger logger = LogUtils.getLogger(JoinRenderer.class);
-  
   public static final String DEFAULT_SEPARATOR = BeeConst.STRING_SPACE;
-  
+
   private final List<BeeColumn> dataColumns;
-  
-  private final List<Item> list = Lists.newArrayList();
+
+  private final List<CellSource> sources = new ArrayList<>();
 
   private final String separator;
 
   public JoinRenderer(List<BeeColumn> dataColumns, String sep, List<String> items) {
     super(null);
     this.dataColumns = dataColumns;
-    
+
     if (BeeUtils.isDigit(sep)) {
       this.separator = BeeUtils.space(BeeUtils.toInt(sep));
     } else if (BeeUtils.hasLength(sep, 1)) {
@@ -51,7 +35,7 @@ public class JoinRenderer extends AbstractCellRenderer implements HasItems {
     } else {
       this.separator = DEFAULT_SEPARATOR;
     }
-    
+
     if (!BeeUtils.isEmpty(items)) {
       addItems(items);
     }
@@ -60,14 +44,17 @@ public class JoinRenderer extends AbstractCellRenderer implements HasItems {
   @Override
   public void addItem(String item) {
     Assert.notEmpty(item);
-    
+
+    CellSource source;
+
     int index = DataUtils.getColumnIndex(item, dataColumns);
     if (BeeConst.isUndef(index)) {
-      logger.severe(NameUtils.getName(this), "column not found:", item);
-      return;
+      source = CellSource.forProperty(item, ValueType.TEXT);
+    } else {
+      source = CellSource.forColumn(dataColumns.get(index), index);
     }
-    
-    list.add(new Item(index));
+
+    sources.add(source);
   }
 
   @Override
@@ -80,14 +67,14 @@ public class JoinRenderer extends AbstractCellRenderer implements HasItems {
 
   @Override
   public int getItemCount() {
-    return list.size();
+    return sources.size();
   }
 
   @Override
   public List<String> getItems() {
-    List<String> result = Lists.newArrayList();
-    for (Item item : list) {
-      result.add(dataColumns.get(item.index).getId());
+    List<String> result = new ArrayList<>();
+    for (CellSource source : sources) {
+      result.add(source.getName());
     }
     return result;
   }
@@ -96,21 +83,21 @@ public class JoinRenderer extends AbstractCellRenderer implements HasItems {
   public boolean isEmpty() {
     return getItemCount() <= 0;
   }
-  
+
   @Override
   public boolean isIndex(int index) {
     return index >= 0 && index < getItemCount();
   }
-  
+
   @Override
   public String render(IsRow row) {
     if (row == null) {
       return null;
     }
-    
+
     StringBuilder sb = new StringBuilder();
-    for (Item item : list) {
-      String value = item.getValue(row);
+    for (CellSource source : sources) {
+      String value = source.render(row);
       if (!BeeUtils.isEmpty(value)) {
         if (sb.length() > 0) {
           sb.append(separator);
@@ -123,8 +110,8 @@ public class JoinRenderer extends AbstractCellRenderer implements HasItems {
 
   @Override
   public void setItems(Collection<String> items) {
-    if (!list.isEmpty()) {
-      list.clear();
+    if (!sources.isEmpty()) {
+      sources.clear();
     }
     addItems(items);
   }

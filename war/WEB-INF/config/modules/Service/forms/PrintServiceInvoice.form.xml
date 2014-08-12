@@ -1,175 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Form [
-  <!ENTITY section "margin-top: 5px;">
-  <!ENTITY bold "font-weight: bold;">
-  <!ENTITY form "PrintServiceInvoice">
-]>
-<f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  xmlns:ui="http://www.butent.com/ui" 
-  
-  name="&form;" caption="=trdInvoice" disabledActions="save"
-  width="70" widthUnit="%" height="90" heightUnit="%"
-  >
-  <FlowPanel class="bee-form-PrintableContent">
-    <HorizontalPanel>
-      <Image  url="images/logo.png" />
-      <cell width="100" widthUnit="%">
-        <Table style="text-align:right; margin-left: auto;">
-          <row>
-            <Label html="PVM sąskaita faktūra" style="&bold; margin-right: 1ex;" />
-            <TextLabel source="InvoiceNo">
-              <renderToken source="InvoicePrefix" prefix="Serija " suffix=" " />
-              <renderToken source="InvoiceNo" prefix="Nr. " />
-            </TextLabel>
-          </row>
-          <row>
-            <cell colSpan="2">
-               <DateTimeLabel source="Date" format="DATE_LONG" horizontalAlignment="right" />
-            </cell>
-          </row>
-        </Table>
-      </cell>
-    </HorizontalPanel>
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form" name="PrintServiceInvoice"
+  caption="=trdInvoice" disabledActions="save" width="75" widthUnit="%" height="75" heightUnit="%">
+  <f:properties currencies="EUR, Lt" />
 
-    <FlowPanel style="&section;">
-      <Table style="width: 100%;">
-        <row>
-          <cell rowSpan="2" style="vertical-align: top;">
-            <Label html="Pardavėjas:" />
-          </cell>
-          <cell rowSpan="2" style="vertical-align: top; width: 50%;">
-            <FlowPanel name="Supplier" />
-          </cell>
-          <cell style="vertical-align:top;">
-            <Label html="Pirkėjas:" horizontalAlignment="right" />
-          </cell>
-          <cell style="vertical-align:top; width:50%;">
-            <FlowPanel name="Customer" />
-          </cell>
-        </row>
-
-        <row>
-          <cell style="vertical-align:top;">
-            <TextLabel horizontalAlignment="right">
-              <render>
-                <ui:expression>row.Payer ? "Mokėtojas:" : null</ui:expression>
-              </render>
-            </TextLabel>
-          </cell>
-          <cell style="vertical-align:top;">
-            <FlowPanel name="Payer" />
-          </cell>
-        </row>
-      </Table>
+  <FlowPanel class="bee-PrintableForm bee-trade-print-document">
+    <br/>
+    <FlowPanel class="bee-trade-print-document-header flexBox-horizontal">
+      <FlowPanel class="flexible">
+        <Label name="DocTitle" class="bee-trade-print-document-title" />
+        <Label name="DocNumber" class="bee-trade-print-document-number" />
+      </FlowPanel>
+      <FlowPanel>
+        <DateTimeLabel source="Date" format="DATE_LONG" class="bee-trade-print-document-date" />
+        <Label name="DocId" class="bee-trade-print-document-id" />
+      </FlowPanel>
     </FlowPanel>
 
-    <Table name="InvoiceDetails" style="&section; width: 100%;">
-      <properties rateCurrency="EUR" />
-      <row>
-       <Label text="=ordinal" style="text-align:center;">
-          <properties name="Ordinal" />
-        </Label>
-        <Label text="=itemName">
-          <properties name="Name" />
-        </Label>
-        <Label text="=article">
-          <properties name="Article" />
-        </Label>
-        <Label text="=trdQuantity">
-          <properties name="Quantity" />
-        </Label>
-        <Label text="=unit">
-          <properties name="Unit" />
-        </Label>
-        <Label text="=trdPrice">
-          <properties name="Price" />
-        </Label>
-        <Label text="=trdAmountWoVat">
-          <properties name="Amount" />
-        </Label>
-        <Label text="=trdVat" horizontalAlignment="right">
-          <properties name="Vat" />
-        </Label>
-        <FlowPanel>
-          <properties name="RateAmount" />
-          <InlineLabel text="=trdAmount" />
-          <InlineLabel html="EUR" style="padding-left: 3px;" />
-        </FlowPanel>
+    <br/>
+    <Table class="bee-trade-print-companies">
+      <row class="bee-trade-print-supplier" >
+        <Label text="=printInvoiceSeller" class="bee-trade-print-company-label" />
+        <Label name="SupplierName" class="bee-trade-print-company-name" />
+        <Label name="SupplierCode" class="bee-trade-print-company-code" />
       </row>
 
       <row>
-        <cell colSpan="5">
-          <FlowPanel style="text-align: right;">
-            <Label text="Bendra suma:" />
-            <Label text="PVM suma:" />
-            <Label text="VISO:" />
-          </FlowPanel>
+        <text/>
+        <Label name="SupplierAddress" class="bee-trade-print-company-address" />
+        <Label name="SupplierVatCode" class="bee-trade-print-company-vat-code" />
+      </row>
+          
+      <row>
+        <text/>
+        <cell colSpan="2">
+          <Label name="SupplierPhone" class="bee-trade-print-company-phone" />
         </cell>
-        <FlowPanel>
-          <Label>
-            <properties name="AmountTotal" />
-          </Label>
-          <Label>
-            <properties name="VatTotal" />
-          </Label>
-          <Label>
-            <properties name="Total" />
-          </Label>
-         </FlowPanel>
-        <FlowPanel>
-          <Label>
-            <properties name="Currency" />
-          </Label>
-          <Label>
-            <properties name="Currency" />
-          </Label>
-          <Label>
-            <properties name="Currency" />
-          </Label>
-        </FlowPanel>
-        <FlowPanel>
-          <Label>
-            <properties name="RateAmountTotal" />
-          </Label>
-          <Label>
-            <properties name="RateVatTotal" />
-          </Label>
-          <Label>
-            <properties name="RateTotal" />
-          </Label>
-        </FlowPanel>
+      </row>
+
+      <row>
+        <text/>
+        <cell colSpan="2">
+          <Label name="SupplierBank" class="bee-trade-print-company-bank" />
+        </cell>
+      </row>
+
+      <row>
+        <text/>
+        <cell colSpan="2">
+          <Label name="SupplierWebsite" class="bee-trade-print-" />
+        </cell>
+      </row>
+      
+      <div class="bee-trade-print-company-separator"/>
+      <row class="bee-trade-print-customer">
+        <Label text="=printInvoiceBuyer" class="bee-trade-print-company-label" />
+        <Label name="CustomerName" class="bee-trade-print-company-name" />
+        <Label name="CustomerCode" class="bee-trade-print-company-code" />
+      </row>
+
+      <row>
+        <text/>
+        <Label name="CustomerAddress" class="bee-trade-print-company-address" />
+        <Label name="CustomerVatCode" class="bee-trade-print-company-vat-code" />
+      </row>
+
+      <row>
+        <text/>
+        <Label name="CustomerPhone" class="bee-trade-print-company-phone" />
+        <Label name="CustomerLicence" class="bee-trade-print-company-licence" />
+      </row>
+
+      <row>
+        <text/>
+        <cell colSpan="2">
+          <Label name="CustomerBank" class="bee-trade-print-company-bank" />
+        </cell>
+      </row>
+      
+      <div class="bee-trade-print-company-separator"/>
+      <row class="bee-trade-print-payer">
+        <Label text="=payer" class="bee-trade-print-company-label" />
+        <Label name="PayerName" class="bee-trade-print-company-name" />
+        <Label name="PayerCode" class="bee-trade-print-company-code" />
+      </row>
+
+      <row>
+        <text/>
+        <Label name="PayerAddress" class="bee-trade-print-company-address" />
+        <Label name="PayerVatCode" class="bee-trade-print-company-vat-code" />
+      </row>
+
+      <row>
+        <text/>
+        <cell colSpan="2">
+          <Label name="PayerPhone" class="bee-trade-print-company-phone" />
+        </cell>
+      </row>
+
+      <row>
+        <text/>
+        <cell colSpan="2">
+          <Label name="PayerBank" class="bee-trade-print-company-bank" />
+        </cell>
       </row>
     </Table>
 
-    <HorizontalPanel style="&section;">
-      <Label html="Suma žodžiais:" />
-      <Label name="TotalInWords" />
-    </HorizontalPanel>
-
-    <TextLabel source="Term" style="&section; &bold; white-space: pre-wrap;">
-      <renderToken source="Term" prefix="Sąskaitą apmokėti iki: " />
-    </TextLabel>
-
-    <TextLabel source="Notes" style="white-space: pre-wrap;" />
-
-    <Table style="width: 100%; margin-top: 10px;">
-      <row style="&bold;">
-        <Label html="Išdavė" />
-        <Label html="Priėmė" />
-      </row>
-
-      <row style="min-height: 1em;">
-        <TextLabel source="Manager" style="margin-top: 5px;">
-          <renderToken source="ManagerFirstName" />
-          <renderToken source="ManagerLastName" />
-        </TextLabel>
-      </row>
-
-      <row style="font-size: xx-small;">
-        <Label html="(vardas, pavardė, pareigos ir parašas)" />
-        <Label html="(vardas, pavardė, pareigos ir parašas)" />
-      </row>  
+    <Table name="Items" class="bee-trade-print-items">
+      <properties columns="Ordinal, Name, Article, Quantity, Unit, Price, Amount" />
     </Table>
+
+    <FlowPanel class="bee-trade-print-document-footer">
+      <HorizontalPanel class="bee-trade-print-words">
+        <Label text="=printTotalInWords" class="bee-trade-print-words-label" />
+        <Label name="TotalInWords" class="bee-trade-print-words-value" />
+      </HorizontalPanel>
+
+      <HorizontalPanel class="bee-trade-print-term">
+        <Label text="=printDueDate" class="bee-trade-print-words-label" />
+        <DateLabel source="Term" format="DATE_LONG" class="bee-trade-print-term-value" />
+      </HorizontalPanel>
+
+      <TextLabel source="Notes" class="bee-trade-print-notes" />
+
+      <br/>
+      <FlowPanel class="bee-trade-print-dispenser-receiver flexBox-horizontal" >
+        <Label text="=printDocumentDispenser" class="bee-trade-print-dispenser" />
+        <FlowPanel class="bee-trade-print-signature flexible">
+          <hr/>
+          <Label text="=printSignature" class="bee-trade-print-signature-label" />
+        </FlowPanel>
+
+        <Label text="=printDocumentReceiver" class="bee-trade-print-receiver" />
+        <FlowPanel class="bee-trade-print-signature flexible">
+          <hr/>
+          <Label text="=printSignature" class="bee-trade-print-signature-label" />
+        </FlowPanel>
+      </FlowPanel>
+    </FlowPanel>
   </FlowPanel>
 </f:Form>

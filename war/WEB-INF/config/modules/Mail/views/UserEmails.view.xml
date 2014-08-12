@@ -11,7 +11,8 @@
       <IdColumn name="Contact" aggregate="MAX" />
     </ExternalJoin>
 
-    <ExternalJoin source="Addressbook" name="Email" joinType="LEFT">
+    <ExternalJoin source="Addressbook" name="Email" joinType="LEFT" filter="User={u}">
+      <HiddenColumn name="User" />
       <IdColumn name="Addressbook" aggregate="MAX" />
       <AggregateColumn name="Label" aggregate="MAX" />
     </ExternalJoin>

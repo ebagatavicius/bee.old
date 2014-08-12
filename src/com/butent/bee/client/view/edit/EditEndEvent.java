@@ -16,7 +16,7 @@ public class EditEndEvent {
   public interface Handler {
     void onEditEnd(EditEndEvent event, HasEditEndHandler source);
   }
-  
+
   public interface HasEditEndHandler {
   }
 
@@ -28,16 +28,16 @@ public class EditEndEvent {
 
   private final boolean rowMode;
   private final boolean hasRelation;
-  
+
   private final Integer keyCode;
   private final boolean hasModifiers;
-  
+
   private final String widgetId;
 
   public EditEndEvent(Integer keyCode, boolean hasModifiers, String widgetId) {
     this(null, null, null, null, false, false, keyCode, hasModifiers, widgetId);
   }
-  
+
   public EditEndEvent(IsRow rowValue, IsColumn column, String oldValue, String newValue,
       boolean rowMode, boolean hasRelation, Integer keyCode, boolean hasModifiers,
       String widgetId) {
@@ -48,7 +48,7 @@ public class EditEndEvent {
 
     this.rowMode = rowMode;
     this.hasRelation = hasRelation;
-    
+
     this.keyCode = keyCode;
     this.hasModifiers = hasModifiers;
     this.widgetId = widgetId;

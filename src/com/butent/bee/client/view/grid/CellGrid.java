@@ -23,7 +23,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -56,6 +55,7 @@ import com.butent.bee.client.style.ConditionalStyle;
 import com.butent.bee.client.style.Font;
 import com.butent.bee.client.style.StyleDescriptor;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.edit.HasEditStartHandlers;
@@ -100,8 +100,9 @@ import java.util.Set;
  */
 
 public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable, HasCaption,
-    HasEditStartHandlers, HasEnabled, HasActiveRow, RequiresResize, VisibilityChangeEvent.Handler,
-    SettingsChangeEvent.HasSettingsChangeHandlers, RenderingEvent.HasRenderingHandlers {
+    HasEditStartHandlers, EnablableWidget, HasActiveRow, RequiresResize,
+    VisibilityChangeEvent.Handler, SettingsChangeEvent.HasSettingsChangeHandlers,
+    RenderingEvent.HasRenderingHandlers {
 
   /**
    * Contains templates which facilitates compile-time binding of HTML templates to generate
@@ -656,15 +657,18 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
   private static final Template template = GWT.create(Template.class);
 
   public static int getDefaultBodyCellHeight() {
-    return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1500, 14, 25);
+    int h = Math.max(DomUtils.getTextBoxClientHeight(), 10);
+    return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1300, h - 2, h + 2);
   }
 
   public static int getDefaultFooterCellHeight() {
-    return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1500, 16, 21);
+    int h = Math.max(DomUtils.getTextBoxClientHeight(), 10);
+    return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1300, h, h + 2);
   }
 
   public static int getDefaultHeaderCellHeight() {
-    return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 800, 16, 28);
+    int h = Math.max(DomUtils.getTextBoxClientHeight(), 10);
+    return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1300, h, h + 10);
   }
 
   public static boolean isBodyRow(String rowIdx) {
@@ -1151,9 +1155,9 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
 
     if (width > 0) {
       width += LINE_WIDTH_RESERVE;
-        if (columnInfo.getColumn().isSortable()) {
-          width += HeaderCell.SORT_INFO_WIDTH;
-        }
+      if (columnInfo.getColumn().isSortable()) {
+        width += HeaderCell.SORT_INFO_WIDTH;
+      }
       columnInfo.setHeaderWidth(width);
     }
     return width;
@@ -2188,7 +2192,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     this.pageSize = size;
 
     if (fireScopeChange) {
-      fireScopeChange();
+      fireScopeChange(NavigationOrigin.SYSTEM);
     }
   }
 
@@ -2203,7 +2207,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     this.pageStart = start;
 
     if (fireScopeChange) {
-      fireScopeChange();
+      fireScopeChange(origin);
     }
     if (fireDataRequest) {
       fireDataRequest(origin);
@@ -2247,7 +2251,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     if (start != getPageStart()) {
       setPageStart(start, true, false, NavigationOrigin.SYSTEM);
     } else if (fireScopeChange) {
-      fireScopeChange();
+      fireScopeChange(NavigationOrigin.SYSTEM);
     }
   }
 
@@ -2660,8 +2664,8 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     }
   }
 
-  private void fireScopeChange() {
-    fireEvent(new ScopeChangeEvent(getPageStart(), getPageSize(), getRowCount()));
+  private void fireScopeChange(NavigationOrigin origin) {
+    fireEvent(new ScopeChangeEvent(getPageStart(), getPageSize(), getRowCount(), origin));
   }
 
   private void fireSelectionCountChange() {
@@ -3769,7 +3773,9 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
           Element cellElement = getActiveCellElement();
           if (cellElement != null) {
             cellElement.getStyle().setZIndex(incrementZIndex());
-            cellElement.focus();
+            if (DomUtils.isVisible(cellElement)) {
+              cellElement.focus();
+            }
           }
         }
       });

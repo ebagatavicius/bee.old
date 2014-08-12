@@ -56,7 +56,7 @@ public class ItemPanel extends Composite {
       getScrollArea().getElement().setScrollTop(newPos);
     }
   }
-  
+
   public int getColumnIndex(int x, int columnCount) {
     int left = getGrid().getAbsoluteLeft();
     int relativeX = x - left;
@@ -64,7 +64,7 @@ public class ItemPanel extends Composite {
     int index = relativeX / CalendarUtils.getColumnWidth(getGrid(), columnCount);
     return BeeUtils.clamp(index, 0, columnCount - 1);
   }
-  
+
   public DateTime getCoordinatesDate(int x, int y, CalendarSettings settings,
       JustDate date, int days) {
     int top = getScrollArea().getAbsoluteTop();
@@ -73,12 +73,12 @@ public class ItemPanel extends Composite {
     int relativeY = y - top + scrollTop;
 
     DateTime result = date.getDateTime();
-    
+
     int day = getColumnIndex(x, days);
     if (day > 0) {
       result.setDom(result.getDom() + day);
     }
-    
+
     int minutes = CalendarUtils.getMinutes(relativeY, settings);
     if (minutes > 0) {
       result.setMinute(minutes);
@@ -93,7 +93,7 @@ public class ItemPanel extends Composite {
   public Simple getScrollArea() {
     return (Simple) getWidget();
   }
-  
+
   public Timeline getTimeline() {
     return (Timeline) getLayoutPanel().getWidget(0);
   }
@@ -101,13 +101,13 @@ public class ItemPanel extends Composite {
   public boolean isGrid(Element element) {
     return getGrid().getElement().isOrHasChild(element);
   }
-  
+
   public void onClock(CalendarSettings settings) {
     getTimeline().onClock(settings);
     getGrid().onClock(settings);
   }
-  
+
   private Flow getLayoutPanel() {
-    return (Flow) getScrollArea().getWidget(); 
+    return (Flow) getScrollArea().getWidget();
   }
 }

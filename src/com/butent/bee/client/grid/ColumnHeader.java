@@ -9,7 +9,7 @@ import com.butent.bee.shared.ui.HasCaption;
  */
 
 public class ColumnHeader extends Header<String> implements HasCaption {
-  
+
   private final String columnId;
   private final String exportLabel;
 

@@ -18,7 +18,7 @@ import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.exceptions.BeeRuntimeException;
 import com.butent.bee.shared.io.Paths;
-import com.butent.bee.shared.io.StoredFile;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.DateTime;
@@ -72,7 +72,7 @@ public class FileStorageBean {
     return file.exists() && file.delete();
   }
 
-  public StoredFile getFile(Long fileId) throws IOException {
+  public FileInfo getFile(Long fileId) throws IOException {
     Assert.notNull(fileId);
 
     SimpleRow row = qs.getRow(new SqlSelect()
@@ -83,7 +83,7 @@ public class FileStorageBean {
     if (row == null) {
       throw new IOException("File not found: id =" + fileId);
     }
-    StoredFile storedFile = new StoredFile(fileId, row.getValue(COL_FILE_NAME),
+    FileInfo storedFile = new FileInfo(fileId, row.getValue(COL_FILE_NAME),
         row.getLong(COL_FILE_SIZE), row.getValue(COL_FILE_TYPE));
 
     String repo = row.getValue(COL_FILE_REPO);
@@ -144,8 +144,8 @@ public class FileStorageBean {
     return storedFile;
   }
 
-  public List<StoredFile> getFiles() {
-    List<StoredFile> files = Lists.newArrayList();
+  public List<FileInfo> getFiles() {
+    List<FileInfo> files = Lists.newArrayList();
 
     String idName = sys.getIdName(TBL_FILES);
     String versionName = sys.getVersionName(TBL_FILES);
@@ -156,7 +156,7 @@ public class FileStorageBean {
         .addOrder(TBL_FILES, versionName));
 
     for (SimpleRow row : data) {
-      StoredFile sf = new StoredFile(row.getLong(idName),
+      FileInfo sf = new FileInfo(row.getLong(idName),
           row.getValue(COL_FILE_NAME), row.getLong(COL_FILE_SIZE), row.getValue(COL_FILE_TYPE));
 
       sf.setFileDate(DateTime.restore(row.getValue(versionName)));

@@ -142,12 +142,12 @@ public final class GridSettings {
       }
     }, STYLE_DIALOG, target);
   }
-  
+
   public static boolean hasVisibleColumns(String key) {
     GridConfig gridConfig = grids.get(key);
     return gridConfig != null && gridConfig.hasVisibleColumns();
   }
-  
+
   public static void load(String serializedGridSettings, String serializedColumnSettings) {
     grids.clear();
 
@@ -184,7 +184,7 @@ public final class GridSettings {
       }
     }
   }
-  
+
   public static void onSettingsChange(String key, SettingsChangeEvent event) {
     if (HasDimensions.ATTR_HEIGHT.equals(event.getAttribute())) {
       int index = BeeConst.UNDEF;
@@ -251,10 +251,10 @@ public final class GridSettings {
   }
 
   private static int getDataIndex(HtmlTable table, int row) {
-    return DomUtils.getDataIndexInt(table.getWidget(row, LABEL_COL).getElement());    
+    return DomUtils.getDataIndexInt(table.getWidget(row, LABEL_COL).getElement());
   }
 
-  private static List<Integer> getSelectedColumns(HtmlTable table, 
+  private static List<Integer> getSelectedColumns(HtmlTable table,
       List<ColumnInfo> predefinedColumns) {
 
     List<Integer> selectedColumns = new ArrayList<>();
@@ -277,7 +277,7 @@ public final class GridSettings {
         selectedColumns.add(index);
       }
     }
-    
+
     return selectedColumns;
   }
 
@@ -285,7 +285,7 @@ public final class GridSettings {
       List<ColumnInfo> predefinedColumns) {
 
     int y = event.getNativeEvent().getClientY();
-    
+
     int sourceRow = BeeConst.UNDEF;
     int targetRow = BeeConst.UNDEF;
 
@@ -295,13 +295,13 @@ public final class GridSettings {
       if (sourceRow == BeeConst.UNDEF && getDataIndex(table, i) == sourceIndex) {
         sourceRow = i;
       }
-      
+
       if (targetRow == BeeConst.UNDEF) {
         Element rowElement = table.getRow(i);
-      
+
         int top = rowElement.getAbsoluteTop();
         int height = rowElement.getOffsetHeight();
-        
+
         if (y < top + height / 2) {
           targetRow = i;
         } else if (i >= rowCount - 1) {
@@ -309,30 +309,30 @@ public final class GridSettings {
         }
       }
     }
-    
+
     if (sourceRow == BeeConst.UNDEF || targetRow == BeeConst.UNDEF
         || sourceRow == targetRow || targetRow == rowCount && sourceRow >= rowCount - 1) {
       return;
     }
-    
+
     List<Integer> indexes = new ArrayList<>();
     for (int i = 0; i < rowCount; i++) {
       if (i == targetRow) {
         indexes.add(sourceIndex);
-      } 
+      }
       if (i != sourceRow) {
         indexes.add(getDataIndex(table, i));
       }
     }
-    
+
     if (targetRow == rowCount) {
       indexes.add(sourceIndex);
     }
-    
+
     List<Integer> selectedColumns = getSelectedColumns(table, predefinedColumns);
-    
+
     table.clear();
-    
+
     int row = 0;
 
     for (int index : indexes) {

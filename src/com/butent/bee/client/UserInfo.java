@@ -27,7 +27,6 @@ import java.util.List;
 
 /**
  * gets user login status, session ID and stores them.
- * 
  */
 
 public class UserInfo implements HasInfo {
@@ -150,6 +149,10 @@ public class UserInfo implements HasInfo {
     return isModuleVisible(ModuleAndSub.of(Module.ADMINISTRATION));
   }
 
+  public boolean isAnyModuleVisible(String input) {
+    return isLoggedIn() && userData.isAnyModuleVisible(input);
+  }
+
   public boolean isColumnVisible(DataInfo dataInfo, String column) {
     if (!isLoggedIn()) {
       return false;
@@ -187,10 +190,6 @@ public class UserInfo implements HasInfo {
     return isLoggedIn() && userData.isModuleVisible(moduleAndSub);
   }
 
-  public boolean isModuleVisible(String object) {
-    return isLoggedIn() && userData.isModuleVisible(object);
-  }
-
   public boolean isWidgetVisible(RegulatedWidget widget) {
     return isLoggedIn() && userData.isWidgetVisible(widget);
   }
@@ -211,7 +210,7 @@ public class UserInfo implements HasInfo {
       setOpenInNewTab(false);
     }
   }
-  
+
   public boolean openInNewTab() {
     return openInNewTab;
   }
@@ -233,7 +232,7 @@ public class UserInfo implements HasInfo {
       settings.addRow(row);
 
       setOpenInNewTab(getBooleanSetting(COL_OPEN_IN_NEW_TAB));
-      
+
       String css = getStyle();
 
       if (BeeUtils.isEmpty(css)) {
@@ -251,7 +250,7 @@ public class UserInfo implements HasInfo {
   public boolean workspaceContinue() {
     return getBooleanSetting(COL_WORKSPACE_CONTINUE);
   }
-  
+
   private void createStyle(String css) {
     StyleElement element = Document.get().createStyleElement();
 

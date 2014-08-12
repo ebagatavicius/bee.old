@@ -93,7 +93,7 @@ public abstract class AbstractCell<C> implements HasClickHandlers, HasAllKeyHand
       handlerManager.fireEvent(event);
     }
   }
-  
+
   public Set<String> getConsumedEvents() {
     return consumedEvents;
   }
@@ -114,14 +114,14 @@ public abstract class AbstractCell<C> implements HasClickHandlers, HasAllKeyHand
     if (consumesEvent(event.getType()) && handlerManager != null) {
       setEventContext(context);
       setEventValue(value);
-      
+
       setEventCanceled(false);
 
       DomEvent.fireNativeEvent(event, handlerManager, parent);
 
       setEventContext(null);
       setEventValue(null);
-      
+
       boolean canceled = isEventCanceled();
       if (canceled) {
         setEventCanceled(false);

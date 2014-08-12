@@ -223,6 +223,10 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
     return getRow(rowIndex).getBoolean(colIndex);
   }
 
+  public Boolean getBoolean(int rowIndex, String columnId) {
+    return getBoolean(rowIndex, getColumnIndex(columnId));
+  }
+
   @Override
   public IsCell getCell(int rowIndex, int colIndex) {
     return getRow(rowIndex).getCell(colIndex);
@@ -345,9 +349,17 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
     return getRow(rowIndex).getDate(colIndex);
   }
 
+  public JustDate getDate(int rowIndex, String columnId) {
+    return getDate(rowIndex, getColumnIndex(columnId));
+  }
+
   @Override
   public DateTime getDateTime(int rowIndex, int colIndex) {
     return getRow(rowIndex).getDateTime(colIndex);
+  }
+
+  public DateTime getDateTime(int rowIndex, String columnId) {
+    return getDateTime(rowIndex, getColumnIndex(columnId));
   }
 
   @Override
@@ -374,6 +386,10 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
     return getRow(rowIndex).getDouble(colIndex);
   }
 
+  public Double getDouble(int rowIndex, String columnId) {
+    return getDouble(rowIndex, getColumnIndex(columnId));
+  }
+
   @Override
   public R findRow(RowFilter filter) {
     Assert.notNull(filter);
@@ -396,9 +412,17 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
     return getRow(rowIndex).getInteger(colIndex);
   }
 
+  public Integer getInteger(int rowIndex, String columnId) {
+    return getInteger(rowIndex, getColumnIndex(columnId));
+  }
+
   @Override
   public Long getLong(int rowIndex, int colIndex) {
     return getRow(rowIndex).getLong(colIndex);
+  }
+
+  public Long getLong(int rowIndex, String columnId) {
+    return getLong(rowIndex, getColumnIndex(columnId));
   }
 
   @Override
@@ -480,6 +504,10 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
   @Override
   public String getString(int rowIndex, int colIndex) {
     return getRow(rowIndex).getString(colIndex);
+  }
+
+  public String getString(int rowIndex, String columnId) {
+    return getString(rowIndex, getColumnIndex(columnId));
   }
 
   @Override

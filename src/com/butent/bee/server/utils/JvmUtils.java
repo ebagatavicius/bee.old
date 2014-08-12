@@ -2,23 +2,20 @@ package com.butent.bee.server.utils;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.exceptions.BeeException;
-import com.butent.bee.shared.logging.BeeLogger;
-import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
+import com.butent.bee.shared.utils.Wildcards;
+import com.butent.bee.shared.utils.Wildcards.Pattern;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * Finds out whether a particular class is loaded in Java Virtual Machine.
@@ -26,14 +23,10 @@ import java.util.regex.PatternSyntaxException;
 
 public final class JvmUtils {
 
-  private static BeeLogger logger = LogUtils.getLogger(JvmUtils.class);
-
   private static Throwable cvfFailure;
   private static final Field CLASSES_VECTOR_FIELD;
 
   private static final Map<String, Class<?>> PRIMITIVES;
-
-  private static final String CLASS_NAME_SEPARATOR = ".";
 
   static {
     PRIMITIVES = new HashMap<>(9);
@@ -68,78 +61,31 @@ public final class JvmUtils {
     CLASSES_VECTOR_FIELD = fld;
   }
 
-  public static Set<Class<?>> findClass(String name, Collection<String> packageNames) {
+  public static Set<Class<?>> findClass(String name) {
     Assert.notEmpty(name);
     String nm = name.trim();
 
     Set<Class<?>> found = new HashSet<>();
-    Class<?> exact = null;
-
     if (PRIMITIVES.containsKey(nm)) {
       found.add(PRIMITIVES.get(nm));
-      return found;
-    }
 
-    Set<Class<?>> loaded = getAllLoadedClasses();
-    String z;
+    } else if (Wildcards.hasDefaultWildcards(nm)) {
+      Pattern pattern = Wildcards.getDefaultPattern(nm);
 
-    if (!loaded.isEmpty()) {
-      Pattern p = null;
-      boolean rx = false;
-
-      try {
-        p = Pattern.compile(nm, Pattern.CASE_INSENSITIVE);
-        rx = true;
-      } catch (PatternSyntaxException ex) {
-        logger.warning(ex, nm);
-      }
-
+      Set<Class<?>> loaded = getAllLoadedClasses();
       for (Class<?> cls : loaded) {
-        z = cls.getName();
-
-        if (z.equalsIgnoreCase(nm)) {
-          exact = cls;
-          break;
-        } else if (BeeUtils.containsSame(z, nm)) {
-          found.add(cls);
-        } else if (rx && p.matcher(z).matches()) {
+        if (Wildcards.isLike(cls.getName(), pattern)) {
           found.add(cls);
         }
       }
-    }
 
-    if (exact == null && !nm.startsWith(CLASS_NAME_SEPARATOR)) {
-      exact = forName(nm);
-    }
-
-    if (exact == null && !BeeUtils.isEmpty(packageNames)) {
-      String s;
-      if (nm.startsWith(CLASS_NAME_SEPARATOR)) {
-        s = nm;
-      } else {
-        s = CLASS_NAME_SEPARATOR + nm;
-      }
-
-      for (String p : packageNames) {
-        if (p.trim().endsWith(CLASS_NAME_SEPARATOR)) {
-          z = p.trim() + nm;
-        } else {
-          z = p.trim() + s;
-        }
-
-        exact = forName(z);
-        if (exact != null) {
-          break;
-        }
+    } else {
+      Class<?> cls = forName(nm);
+      if (cls != null) {
+        found.add(cls);
       }
     }
 
-    if (exact != null) {
-      if (!found.isEmpty()) {
-        found.clear();
-      }
-      found.add(exact);
-    }
     return found;
   }
 

@@ -12,7 +12,6 @@ import java.util.Map;
 /**
  * Generates comparison condition parts for SQL statements depending on specific SQL server
  * requirements.
- * 
  */
 
 class ComparisonCondition implements IsCondition {
@@ -27,6 +26,18 @@ class ComparisonCondition implements IsCondition {
     this.operator = operator;
     this.expression = expression;
     this.values = values;
+  }
+
+  @Override
+  public ComparisonCondition copyOf() {
+    int c = values.length;
+    IsSql[] vals = new IsSql[c];
+
+    for (int i = 0; i < c; i++) {
+      IsSql val = values[i];
+      vals[i] = val instanceof IsCloneable<?> ? ((IsCloneable<?>) val).copyOf() : val;
+    }
+    return new ComparisonCondition(operator, expression, vals);
   }
 
   @Override

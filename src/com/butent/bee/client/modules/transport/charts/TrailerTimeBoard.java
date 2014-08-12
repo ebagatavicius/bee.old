@@ -3,10 +3,9 @@ package com.butent.bee.client.modules.transport.charts;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.modules.transport.TransportHandler;
-import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.i18n.Localized;
 
@@ -15,7 +14,7 @@ final class TrailerTimeBoard extends VehicleTimeBoard {
   static final String SUPPLIER_KEY = "trailer_time_board";
   private static final String DATA_SERVICE = SVC_GET_TRAILER_TB_DATA;
 
-  static void open(final Callback<IdentifiableWidget> callback) {
+  static void open(final ViewCallback callback) {
     BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(DATA_SERVICE),
         new ResponseCallback() {
           @Override
@@ -25,16 +24,16 @@ final class TrailerTimeBoard extends VehicleTimeBoard {
           }
         });
   }
-  
+
   private TrailerTimeBoard() {
     super();
   }
-  
+
   @Override
   public String getCaption() {
     return Localized.getConstants().trailerTimeBoard();
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "trailer-park";
@@ -79,7 +78,7 @@ final class TrailerTimeBoard extends VehicleTimeBoard {
   protected String getItemOpacityColumnName() {
     return COL_TRAILER_ITEM_OPACITY;
   }
-  
+
   @Override
   protected String getNumberWidthColumnName() {
     return COL_TRAILER_PIXELS_PER_NUMBER;
@@ -109,7 +108,7 @@ final class TrailerTimeBoard extends VehicleTimeBoard {
   protected String getShowPlaceInfoColumnName() {
     return COL_TRAILER_PLACE_INFO;
   }
-  
+
   @Override
   protected String getShowPlaceCitiesColumnName() {
     return COL_TRAILER_PLACE_CITIES;

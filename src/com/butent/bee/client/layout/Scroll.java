@@ -21,7 +21,7 @@ public class Scroll extends ScrollPanel implements IdentifiableWidget {
     super(child);
     init();
   }
-  
+
   @Override
   public String getId() {
     return DomUtils.getId(this);
@@ -36,7 +36,7 @@ public class Scroll extends ScrollPanel implements IdentifiableWidget {
   public void setId(String id) {
     DomUtils.setId(this, id);
   }
-  
+
   private void init() {
     DomUtils.createId(this, getIdPrefix());
   }

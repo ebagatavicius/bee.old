@@ -22,7 +22,7 @@ public final class RowActionEvent extends Event<RowActionEvent.Handler> implemen
     CELL_CLICK, CREATE_ROW, EDIT_ROW, OPEN_FAVORITE;
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static boolean fireCellClick(String viewName, IsRow row, String options) {
     RowActionEvent event = new RowActionEvent(Kind.CELL_CLICK, viewName, row, options);
@@ -117,7 +117,7 @@ public final class RowActionEvent extends Event<RowActionEvent.Handler> implemen
     }
     return false;
   }
-  
+
   public boolean hasRow() {
     return row != null;
   }

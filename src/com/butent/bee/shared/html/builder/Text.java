@@ -19,7 +19,7 @@ public class Text extends Node {
   public String getText() {
     return text;
   }
-  
+
   public boolean isEmpty() {
     return BeeUtils.isEmpty(getText());
   }

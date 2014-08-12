@@ -2,6 +2,7 @@ package com.butent.bee.shared.modules.tasks;
 
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
+import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.LongValue;
@@ -11,7 +12,7 @@ import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 
-public enum TaskType implements HasCaption {
+public enum TaskType implements HasCaption, HasWidgetSupplier {
   ASSIGNED(Localized.getConstants().crmTasksAssignedTasks(), Feed.TASKS_ASSIGNED) {
     @Override
     public Filter getFilter(LongValue userValue) {
@@ -87,7 +88,8 @@ public enum TaskType implements HasCaption {
   }
 
   public abstract Filter getFilter(LongValue userValue);
-  
+
+  @Override
   public String getSupplierKey() {
     return GRID_TASKS + BeeConst.STRING_UNDER + name().toLowerCase();
   }

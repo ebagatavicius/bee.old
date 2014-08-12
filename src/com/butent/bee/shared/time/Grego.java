@@ -21,18 +21,19 @@ public final class Grego {
   private static final int JULIAN_1_CE = 1721426;
   private static final int JULIAN_1970_CE = 2440588;
 
-  private static final int[] MONTH_LENGTH = new int[]{
+  private static final int[] MONTH_LENGTH = new int[] {
       31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
       31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-  private static final int[] DAYS_BEFORE = new int[]{
+  private static final int[] DAYS_BEFORE = new int[] {
       0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334,
       0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
 
   private static final int THURSDAY = 5;
 
   /**
-   * @param day the day in year
+   * @param day
+   *          the day in year
    * @return the day of week
    */
   public static int dayOfWeek(int day) {
@@ -49,7 +50,8 @@ public final class Grego {
    * Converts the day {@code day} to an integer array representation of the day(
    * year,month,dayOfMonth, dayOfWeek,dayOfYear).
    * 
-   * @param day the day to convert
+   * @param day
+   *          the day to convert
    * @return an integer array representation of the day.
    */
   public static int[] dayToFields(long day) {
@@ -97,14 +99,17 @@ public final class Grego {
   /**
    * Calculates how many days passed since 1970 January 1.
    * 
-   * @param year the year to calculate to
-   * @param month the month to calculate to
-   * @param dom the dom to calculate to
+   * @param year
+   *          the year to calculate to
+   * @param month
+   *          the month to calculate to
+   * @param dom
+   *          the dom to calculate to
    * @return days passed since 1970 January 1.
    */
   public static int fieldsToDay(int year, int month, int dom) {
     int y = year - 1;
-    int julian = 365 * y + floorDivide(y, 4) + (JULIAN_1_CE - 3) 
+    int julian = 365 * y + floorDivide(y, 4) + (JULIAN_1_CE - 3)
         + floorDivide(y, 400) - floorDivide(y, 100) + 2;
     if (month > 1 && month <= 12) {
       julian += DAYS_BEFORE[month + (isLeapYear(year) ? 11 : -1)];
@@ -124,7 +129,8 @@ public final class Grego {
   /**
    * Checks if {@code year} is a leap year.
    * 
-   * @param year the value to check
+   * @param year
+   *          the value to check
    * @return true if {@code year} is a leap year, otherwise false.
    */
   public static boolean isLeapYear(int year) {
@@ -134,8 +140,10 @@ public final class Grego {
   /**
    * Gets the length of the specified month.
    * 
-   * @param year the year to check
-   * @param month the month to check
+   * @param year
+   *          the year to check
+   * @param month
+   *          the month to check
    * @return the length of the specified year and month.
    */
   public static int monthLength(int year, int month) {
@@ -150,7 +158,8 @@ public final class Grego {
    * Converts the time {@code time} to an integer array representation of the time
    * (hour,minute,second,millis).
    * 
-   * @param time the time to convert
+   * @param time
+   *          the time to convert
    * @return an integer array representation of the time.
    */
   public static int[] timeToFields(long time) {

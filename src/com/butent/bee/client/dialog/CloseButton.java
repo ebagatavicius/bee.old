@@ -14,7 +14,7 @@ public class CloseButton extends Button {
   public CloseButton(String html) {
     super(html);
     addStyleName("bee-CloseButton");
-    
+
     addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {

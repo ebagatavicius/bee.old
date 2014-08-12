@@ -7,24 +7,24 @@ import com.butent.bee.shared.ui.DecoratorConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
 class Handler {
-  
+
   static Handler getHandler(Element element) {
     if (element == null) {
       return null;
     }
-    
+
     String event = element.getAttribute(DecoratorConstants.ATTR_EVENT);
     String text = XmlUtils.getText(element);
     String target = element.getAttribute(DecoratorConstants.ATTR_TARGET);
     Boolean deep = XmlUtils.getAttributeBoolean(element, DecoratorConstants.ATTR_DEEP);
-    
+
     if (BeeUtils.isEmpty(event) || BeeUtils.isEmpty(text)) {
       return null;
     } else {
       return new Handler(event.trim(), text.trim(), BeeUtils.trim(target), BeeUtils.unbox(deep));
     }
   }
-  
+
   private final String type;
   private final String body;
 
@@ -38,7 +38,7 @@ class Handler {
     this.target = target;
     this.deep = deep;
   }
-  
+
   Handler copyOf() {
     return new Handler(type, body, target, deep);
   }

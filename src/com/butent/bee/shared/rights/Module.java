@@ -1,15 +1,13 @@
 package com.butent.bee.shared.rights;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.i18n.LocalizableConstants;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
 import com.butent.bee.shared.utils.BeeUtils;
-import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -87,31 +85,26 @@ public enum Module implements HasLocalizedCaption {
     }
   };
 
-  static final Set<ModuleAndSub> ENABLED_MODULES = Sets.newHashSet();
+  static final Set<ModuleAndSub> ENABLED_MODULES = new HashSet<>();
 
   public static String getEnabledModulesAsString() {
     return BeeUtils.joinItems(ENABLED_MODULES);
   }
 
-  public static boolean isEnabled(String input) {
+  public static boolean isAnyEnabled(String input) {
     if (BeeUtils.isEmpty(input)) {
       return true;
-    }
-
-    ModuleAndSub ms = ModuleAndSub.parse(input);
-    if (ms == null) {
-      return false;
     } else {
-      return ENABLED_MODULES.contains(ms);
+      return BeeUtils.intersects(ENABLED_MODULES, ModuleAndSub.parseList(input));
     }
   }
 
-  public static void setEnabledModules(String moduleList) {
+  public static void setEnabledModules(String input) {
     if (!ENABLED_MODULES.isEmpty()) {
       ENABLED_MODULES.clear();
     }
 
-    if (BeeUtils.isEmpty(moduleList) || BeeUtils.same(moduleList, BeeConst.ALL)) {
+    if (BeeUtils.isEmpty(input) || BeeUtils.same(input, BeeConst.ALL)) {
       for (Module module : Module.values()) {
         ENABLED_MODULES.add(ModuleAndSub.of(module));
 
@@ -123,11 +116,9 @@ public enum Module implements HasLocalizedCaption {
       }
 
     } else {
-      Set<String> modules = NameUtils.toSet(moduleList);
+      List<ModuleAndSub> list = ModuleAndSub.parseList(input);
 
-      for (String input : modules) {
-        ModuleAndSub ms = ModuleAndSub.parse(input);
-
+      for (ModuleAndSub ms : list) {
         if (ms != null) {
           if (ms.getSubModule() != null) {
             ModuleAndSub parent = ModuleAndSub.of(ms.getModule());
@@ -142,7 +133,7 @@ public enum Module implements HasLocalizedCaption {
     }
   }
 
-  private final List<SubModule> subModules = Lists.newArrayList();
+  private final List<SubModule> subModules = new ArrayList<>();
 
   private Module(SubModule... subModules) {
     if (subModules != null) {

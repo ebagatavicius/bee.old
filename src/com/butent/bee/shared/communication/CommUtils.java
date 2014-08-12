@@ -31,9 +31,9 @@ public final class CommUtils {
   public static final ContentType DEFAULT_RESPONSE_CONTENT_TYPE = ContentType.TEXT;
 
   public static final ContentType FORM_RESPONSE_CONTENT_TYPE = ContentType.HTML;
-  
+
   public static String getPath(String url, Map<String, String> parameters, boolean encode) {
-    return addQueryString(url, buildQueryString(parameters, encode)); 
+    return addQueryString(url, buildQueryString(parameters, encode));
   }
 
   public static String addQueryString(String url, String qs) {
@@ -45,27 +45,27 @@ public final class CommUtils {
       return url.trim() + QUERY_STRING_SEPARATOR + qs.trim();
     }
   }
-  
+
   public static String addTimeStamp(String url, HasDateValue dt) {
     Assert.notEmpty(url);
-    
+
     if (dt == null) {
       return url;
 
     } else {
       StringBuilder sb = new StringBuilder();
       sb.append(url.trim());
-      
+
       if (url.contains(QUERY_STRING_SEPARATOR)) {
         sb.append(QUERY_STRING_PAIR_SEPARATOR);
       } else {
         sb.append(QUERY_STRING_SEPARATOR);
       }
-      
+
       sb.append("v");
       sb.append(QUERY_STRING_VALUE_SEPARATOR);
       sb.append(dt.toTimeStamp());
-      
+
       return sb.toString();
     }
   }
@@ -82,7 +82,7 @@ public final class CommUtils {
       return type.trim() + ";charset=" + encoding.trim();
     }
   }
-  
+
   public static String buildQueryString(Map<String, String> parameters, boolean encode) {
     if (BeeUtils.isEmpty(parameters)) {
       return BeeConst.STRING_EMPTY;

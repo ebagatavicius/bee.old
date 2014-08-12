@@ -60,7 +60,7 @@ public abstract class Provider implements SortEvent.Handler, HandlesAllDataEvent
   private Filter userFilter;
 
   private Order order;
-  
+
   private final Set<RightsState> rightsStates = new HashSet<>();
 
   protected Provider(HasDataTable display, HandlesActions actionHandler,
@@ -79,7 +79,7 @@ public abstract class Provider implements SortEvent.Handler, HandlesAllDataEvent
     this.versionColumnName = versionColumnName;
 
     this.immutableFilter = immutableFilter;
-    
+
     if (parentFilters != null) {
       for (Map.Entry<String, Filter> entry : parentFilters.entrySet()) {
         String key = entry.getKey();
@@ -89,7 +89,7 @@ public abstract class Provider implements SortEvent.Handler, HandlesAllDataEvent
         }
       }
     }
-    
+
     this.userFilter = userFilter;
 
     this.handlerRegistry.add(display.addDataRequestHandler(this));
@@ -128,7 +128,7 @@ public abstract class Provider implements SortEvent.Handler, HandlesAllDataEvent
   public Order getOrder() {
     return order;
   }
-  
+
   public Filter getQueryFilter(Filter filter) {
     List<Filter> lst = new ArrayList<>();
 
@@ -160,7 +160,7 @@ public abstract class Provider implements SortEvent.Handler, HandlesAllDataEvent
   public String getVersionColumnName() {
     return versionColumnName;
   }
-  
+
   @Override
   public String getViewName() {
     return viewName;
@@ -244,7 +244,7 @@ public abstract class Provider implements SortEvent.Handler, HandlesAllDataEvent
       rightsStates.add(rightsState);
     }
   }
-  
+
   protected HasDataTable getDisplay() {
     return display;
   }
@@ -256,7 +256,7 @@ public abstract class Provider implements SortEvent.Handler, HandlesAllDataEvent
   protected int getPageStart() {
     return getDisplay().getPageStart();
   }
-  
+
   protected Collection<Property> getQueryOptions() {
     Collection<Property> result = new HashSet<>();
     if (!rightsStates.isEmpty()) {

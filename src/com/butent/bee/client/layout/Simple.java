@@ -32,7 +32,7 @@ import com.butent.bee.shared.State;
 public class Simple extends SimplePanel implements DndWidget, RequiresResize, ProvidesResize {
 
   private State targetState;
-  
+
   public Simple() {
     super();
     init();
@@ -85,7 +85,7 @@ public class Simple extends SimplePanel implements DndWidget, RequiresResize, Pr
   public HandlerRegistration addDropHandler(DropHandler handler) {
     return addBitlessDomHandler(handler, DropEvent.getType());
   }
-  
+
   @Override
   public String getId() {
     return DomUtils.getId(this);
@@ -117,7 +117,7 @@ public class Simple extends SimplePanel implements DndWidget, RequiresResize, Pr
   public void setTargetState(State targetState) {
     this.targetState = targetState;
   }
-  
+
   protected void init() {
     DomUtils.createId(this, getIdPrefix());
   }

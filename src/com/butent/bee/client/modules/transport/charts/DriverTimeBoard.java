@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.RowFactory;
@@ -31,8 +30,8 @@ import com.butent.bee.client.modules.transport.charts.Filterable.FilterType;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.client.timeboard.TimeBoardRowLayout;
-import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiHelper;
+import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.DndDiv;
 import com.butent.bee.client.widget.Mover;
@@ -121,7 +120,7 @@ final class DriverTimeBoard extends ChartBase {
 
       this.range = TimeBoardHelper.getActivity(JustDate.get(dateFrom), JustDate.get(dateTo));
     }
-    
+
     @Override
     public Range<JustDate> getRange() {
       return range;
@@ -164,7 +163,7 @@ final class DriverTimeBoard extends ChartBase {
   private static final String STYLE_INACTIVE = STYLE_PREFIX + "Inactive";
   private static final String STYLE_OVERLAP = STYLE_PREFIX + "Overlap";
 
-  static void open(final Callback<IdentifiableWidget> callback) {
+  static void open(final ViewCallback callback) {
     BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(DATA_SERVICE),
         new ResponseCallback() {
           @Override
@@ -409,7 +408,7 @@ final class DriverTimeBoard extends ChartBase {
     if (BeeUtils.isEmpty(properties)) {
       return;
     }
-    
+
     BeeRowSet brs = BeeRowSet.getIfPresent(properties, PROP_DRIVERS);
     if (!DataUtils.isEmpty(brs)) {
       int firstNameIndex = brs.getColumnIndex(ClassifierConstants.COL_FIRST_NAME);
@@ -420,7 +419,7 @@ final class DriverTimeBoard extends ChartBase {
 
       int experienceIndex = brs.getColumnIndex(COL_DRIVER_EXPERIENCE);
       int notesIndex = brs.getColumnIndex(COL_DRIVER_NOTES);
-      
+
       for (BeeRow row : brs.getRows()) {
         drivers.add(new Driver(row.getId(),
             row.getString(firstNameIndex), row.getString(lastNameIndex),
@@ -428,7 +427,7 @@ final class DriverTimeBoard extends ChartBase {
             row.getDate(experienceIndex), row.getString(notesIndex)));
       }
     }
-    
+
     if (drivers.isEmpty()) {
       return;
     }
@@ -459,7 +458,7 @@ final class DriverTimeBoard extends ChartBase {
         }
       }
     }
-    
+
     SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_FREIGHTS);
     if (!DataUtils.isEmpty(srs)) {
       for (SimpleRow row : srs) {
@@ -476,15 +475,15 @@ final class DriverTimeBoard extends ChartBase {
       for (SimpleRow row : srs) {
         Long driverId = row.getLong(COL_DRIVER);
         Long tripId = row.getLong(COL_TRIP);
-        
+
         DateTime dateFrom = row.getDateTime(COL_TRIP_DRIVER_FROM);
         DateTime dateTo = row.getDateTime(COL_TRIP_DRIVER_TO);
-        
+
         String note = row.getValue(COL_TRIP_DRIVER_NOTE);
-        
+
         if (DataUtils.isId(driverId) && DataUtils.isId(tripId)) {
           driverTrips.put(driverId, new DriverTrip(tripId, dateFrom, dateTo, note));
-       
+
           tripDrivers.put(tripId, new Driver(driverId,
               row.getValue(ClassifierConstants.COL_FIRST_NAME),
               row.getValue(ClassifierConstants.COL_LAST_NAME),
@@ -492,7 +491,7 @@ final class DriverTimeBoard extends ChartBase {
         }
       }
     }
-    
+
     srs = SimpleRowSet.getIfPresent(properties, PROP_TRIPS);
     if (!DataUtils.isEmpty(srs)) {
       for (SimpleRow row : srs) {
@@ -504,7 +503,7 @@ final class DriverTimeBoard extends ChartBase {
         if (freights.containsKey(tripId)) {
           JustDate minDate = null;
           JustDate maxDate = null;
- 
+
           for (Freight freight : freights.get(tripId)) {
             minDate = BeeUtils.min(minDate, freight.getMinDate());
             maxDate = BeeUtils.max(maxDate, freight.getMaxDate());
@@ -526,7 +525,7 @@ final class DriverTimeBoard extends ChartBase {
         }
       }
     }
-    
+
     for (DriverTrip driverTrip : driverTrips.values()) {
       Trip trip = trips.get(driverTrip.tripId);
       if (trip != null) {
@@ -552,7 +551,7 @@ final class DriverTimeBoard extends ChartBase {
 
     setDayColumnWidth(TimeBoardHelper.getPixels(getSettings(), COL_DTB_PIXELS_PER_DAY, 20,
         1, getChartWidth()));
-    
+
     Long colorId = TimeBoardHelper.getLong(getSettings(), COL_DTB_COLOR);
     setItemColor((colorId == null) ? null : findColor(colorId));
   }
@@ -579,7 +578,7 @@ final class DriverTimeBoard extends ChartBase {
     ChartData loadData = new ChartData(ChartData.Type.LOADING);
     ChartData unloadData = new ChartData(ChartData.Type.UNLOADING);
     ChartData placeData = new ChartData(ChartData.Type.PLACE);
-    
+
     Set<Long> processedTrips = Sets.newHashSet();
 
     for (Driver driver : drivers) {
@@ -588,18 +587,18 @@ final class DriverTimeBoard extends ChartBase {
       }
 
       driverData.add(driver.getItemName());
-      
+
       if (!driverTrips.containsKey(driver.getId())) {
         continue;
       }
-      
+
       for (DriverTrip driverTrip : driverTrips.get(driver.getId())) {
         Long tripId = driverTrip.tripId;
         if (processedTrips.contains(tripId)) {
           continue;
         }
         processedTrips.add(tripId);
-        
+
         Trip trip = trips.get(tripId);
         if (trip == null) {
           continue;
@@ -607,7 +606,7 @@ final class DriverTimeBoard extends ChartBase {
         if (!trip.matched(filterType)) {
           continue;
         }
-        
+
         if (DataUtils.isId(trip.getTruckId())) {
           truckData.add(trip.getTruckNumber(), trip.getTruckId());
         }
@@ -715,7 +714,7 @@ final class DriverTimeBoard extends ChartBase {
         TimeBoardHelper.addRowSeparator(panel, STYLE_DRIVER_ROW_SEPARATOR, top, 0,
             getChartLeft() + calendarWidth);
       }
-      
+
       Driver driver = drivers.get(layout.getDataIndex());
       String driverName = driver.getItemName();
 
@@ -883,10 +882,10 @@ final class DriverTimeBoard extends ChartBase {
     if (hasOverlap) {
       panel.addStyleName(STYLE_DRIVER_OVERLAP);
     }
-    
+
     DndDiv widget = new DndDiv(STYLE_DRIVER_LABEL);
     widget.setHtml(driver.getItemName());
-    
+
     UiHelper.maybeSetTitle(widget, driver.getTitle());
 
     bindOpener(widget, VIEW_DRIVERS, driver.getId());
@@ -902,15 +901,15 @@ final class DriverTimeBoard extends ChartBase {
     Flow panel = new Flow();
     panel.addStyleName(STYLE_TRIP_PANEL);
     setItemWidgetColor(item, panel);
-    
+
     Long tripId = item.tripId;
     Trip trip = trips.get(tripId);
-    
+
     List<String> titleLines = Lists.newArrayList();
     if (trip != null) {
       titleLines.add(trip.getTitle());
     }
-    
+
     if (!BeeUtils.isEmpty(item.title)) {
       titleLines.add(BeeConst.STRING_NBSP);
       titleLines.add(driverName);
@@ -929,7 +928,7 @@ final class DriverTimeBoard extends ChartBase {
     }
 
     renderTrip(panel, title, BeeUtils.getIfContains(freights, tripId), range, STYLE_TRIP_VOID);
-    
+
     return panel;
   }
 
@@ -971,12 +970,12 @@ final class DriverTimeBoard extends ChartBase {
     if (driverTrips.containsKey(driverId)) {
       if (isFiltered()) {
         for (DriverTrip driverTrip : driverTrips.get(driverId)) {
-          if (TimeBoardHelper.hasRangeAndIsActive(driverTrip, range) 
+          if (TimeBoardHelper.hasRangeAndIsActive(driverTrip, range)
               && isItemVisible(trips.get(driverTrip.tripId))) {
             dts.add(driverTrip);
           }
         }
-        
+
       } else {
         dts.addAll(TimeBoardHelper.getActiveItems(driverTrips.get(driverId), range));
       }
@@ -987,11 +986,11 @@ final class DriverTimeBoard extends ChartBase {
   private int getDriverWidth() {
     return driverWidth;
   }
-  
+
   private Color getItemColor() {
     return itemColor;
   }
-  
+
   private void onDriverResize(MoveEvent event) {
     int delta = event.getDeltaX();
 
@@ -1013,11 +1012,11 @@ final class DriverTimeBoard extends ChartBase {
       }
     }
   }
-  
+
   private void setDriverWidth(int driverWidth) {
     this.driverWidth = driverWidth;
   }
-  
+
   private void setItemColor(Color itemColor) {
     this.itemColor = itemColor;
   }

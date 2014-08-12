@@ -22,7 +22,7 @@ public class BooleanColumn extends DataColumn<Boolean> implements HandlesFormat 
   public String getStyleSuffix() {
     return "boolean";
   }
-  
+
   @Override
   public Boolean getValue(IsRow row) {
     if (row == null) {

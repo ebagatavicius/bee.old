@@ -10,7 +10,7 @@ import com.butent.bee.shared.utils.Codec;
 import java.util.List;
 
 public class LogMessage extends Message {
-  
+
   public static LogMessage level(LogLevel level) {
     return new LogMessage(level);
   }
@@ -20,7 +20,7 @@ public class LogMessage extends Message {
     logMessage.setText(text);
     return logMessage;
   }
-  
+
   private LogLevel level;
   private String text;
 
@@ -37,7 +37,7 @@ public class LogMessage extends Message {
   public String brief() {
     return getText();
   }
-  
+
   public LogLevel getLevel() {
     return level;
   }
@@ -46,7 +46,7 @@ public class LogMessage extends Message {
   public boolean isValid() {
     return getLevel() != null;
   }
-  
+
   private void setLevel(LogLevel level) {
     this.level = level;
   }
@@ -64,7 +64,7 @@ public class LogMessage extends Message {
     return BeeUtils.joinOptions("type", string(getType()), "level", string(getLevel()),
         "text", getText());
   }
-  
+
   @Override
   protected void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);

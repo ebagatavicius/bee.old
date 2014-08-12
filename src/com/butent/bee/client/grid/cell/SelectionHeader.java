@@ -46,10 +46,10 @@ public class SelectionHeader extends AbstractCell<String> {
           }
         }
       }
-      
+
       state = EventState.CONSUMED;
     }
-    
+
     return state;
   }
 

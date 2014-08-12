@@ -5,6 +5,7 @@
   name="Requests" source="Requests" caption="=crmRequests"
   newRowForm="NewRequest" editForm="Request"
   >
+  <Relation renderColumns="Date CustomerName" />
   <Columns>
     <SimpleColumn name="Date" />
     <SimpleColumn name="Content" />

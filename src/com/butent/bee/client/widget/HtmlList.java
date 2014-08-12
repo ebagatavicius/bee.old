@@ -80,7 +80,7 @@ public class HtmlList extends Widget implements IdentifiableWidget, HasItems {
   public int getItemCount() {
     return items.size();
   }
-  
+
   public String getItemHtml(int index) {
     checkIndex(index);
     return getItem(index).getInnerHTML();
@@ -117,12 +117,12 @@ public class HtmlList extends Widget implements IdentifiableWidget, HasItems {
   public boolean isEmpty() {
     return getItemCount() <= 0;
   }
-  
+
   @Override
   public boolean isIndex(int index) {
     return index >= 0 && index < getItemCount();
   }
-  
+
   public boolean isOrdered() {
     return ordered;
   }

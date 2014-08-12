@@ -23,20 +23,20 @@ public interface HeaderView extends View, IndexedPanel, Printable {
 
   void addCaptionStyle(String style);
 
-  void addCommandItem(IdentifiableWidget widget);  
+  void addCommandItem(IdentifiableWidget widget);
 
-  void clearCommandPanel();  
-  
+  void clearCommandPanel();
+
   int getHeight();
 
   boolean hasAction(Action action);
-  
+
   boolean hasCommands();
 
   boolean isActionEnabled(Action action);
 
   boolean isActionOrCommand(Element target);
-  
+
   void removeCaptionStyle(String style);
 
   void setCaption(String caption);

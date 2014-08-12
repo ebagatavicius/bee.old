@@ -24,8 +24,8 @@ public interface GridContainerView extends View, HasAllDragAndDropHandlers, HasG
       GridFactory.GridOptions gridOptions);
 
   FooterView getFooter();
-  
+
   HeaderView getHeader();
-  
+
   boolean hasSearch();
 }

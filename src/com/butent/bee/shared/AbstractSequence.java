@@ -39,7 +39,7 @@ public abstract class AbstractSequence<T> implements Sequence<T> {
   public void add(T value) {
     insert(getLength(), value);
   }
-  
+
   /**
    * @return a new SequenceIterator
    */

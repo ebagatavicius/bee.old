@@ -531,7 +531,7 @@ public final class Global {
     }
 
     if (widget != null) {
-      BeeKeeper.getScreen().showWidget(widget);
+      BeeKeeper.getScreen().show(widget);
     }
   }
 
@@ -544,6 +544,7 @@ public final class Global {
     exportMethods();
   }
 
+//@formatter:off
   // CHECKSTYLE:OFF
   private static native void exportMethods() /*-{
     $wnd.Bee_updateForm = $entry(@com.butent.bee.client.ui.UiHelper::updateForm(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
@@ -551,8 +552,8 @@ public final class Global {
     $wnd.Bee_updateActor = $entry(@com.butent.bee.client.decorator.TuningHelper::updateActor(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     $wnd.Bee_maybeTranslate = $entry(@com.butent.bee.shared.i18n.Localized::maybeTranslate(Ljava/lang/String;));
   }-*/;
-
   // CHECKSTYLE:ON
+//@formatter:on
 
   private static void initCache() {
     BeeKeeper.getBus().registerDataHandler(getCache(), true);

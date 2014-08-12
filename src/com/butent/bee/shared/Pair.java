@@ -29,7 +29,7 @@ public final class Pair<A, B> implements BeeSerializable {
    * @param b object to pair the object {@code a}
    */
   public static <A, B> Pair<A, B> of(A a, B b) {
-    return new Pair<A, B>(a, b);
+    return new Pair<>(a, b);
   }
 
   public static Pair<String, String> restore(String s) {

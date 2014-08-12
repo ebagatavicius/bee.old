@@ -8,17 +8,17 @@ import com.google.gwt.event.shared.HasHandlers;
 import com.butent.bee.shared.Assert;
 
 public final class OpenEvent extends GwtEvent<OpenEvent.Handler> {
-  
+
   public interface HasOpenHandlers extends HasHandlers {
     HandlerRegistration addOpenHandler(Handler handler);
   }
-  
+
   public interface Handler extends EventHandler {
     void onOpen(OpenEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static void fire(HasOpenHandlers source) {
     Assert.notNull(source);
     source.fireEvent(new OpenEvent());
@@ -27,7 +27,7 @@ public final class OpenEvent extends GwtEvent<OpenEvent.Handler> {
   public static Type<Handler> getType() {
     return TYPE;
   }
-  
+
   private OpenEvent() {
     super();
   }

@@ -8,9 +8,9 @@ public enum CssAngle implements HasCaption {
   GRAD("grad"),
   RAD("rad"),
   TURN("turn");
-  
-  public static final CssAngle DEFAULT = DEG; 
-  
+
+  public static final CssAngle DEFAULT = DEG;
+
   public static String format(double value, CssAngle angle) {
     return BeeUtils.toString(value) + normalize(angle).getCaption();
   }
@@ -18,11 +18,11 @@ public enum CssAngle implements HasCaption {
   public static String format(int value, CssAngle angle) {
     return BeeUtils.toString(value) + normalize(angle).getCaption();
   }
-  
+
   public static CssAngle normalize(CssAngle angle) {
     return (angle == null) ? DEFAULT : angle;
   }
-  
+
   public static CssAngle parse(String input) {
     if (BeeUtils.isEmpty(input)) {
       return null;
@@ -35,11 +35,11 @@ public enum CssAngle implements HasCaption {
     }
     return null;
   }
-  
+
   public static CssAngle parse(String input, CssAngle defAngle) {
     return BeeUtils.nvl(parse(input), defAngle);
   }
-  
+
   private final String caption;
 
   private CssAngle(String caption) {

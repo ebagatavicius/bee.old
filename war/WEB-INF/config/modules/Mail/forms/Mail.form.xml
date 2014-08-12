@@ -9,7 +9,7 @@
     <west size="300">
       <FlowPanel class="flexBox-vertical">
         <InputText name="Search" placeholder="=search" style="width: 295px" />
-        <GridPanel name="Messages" class="bee-mail-Headers flexible" />
+        <GridPanel name="Places" class="bee-mail-Headers flexible" />
       </FlowPanel>
     </west>
       

@@ -4,5 +4,5 @@ import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.data.filter.Filter;
 
 public interface FilterConsumer {
-  void tryFilter(Filter filter, Consumer<Boolean> callback, boolean notify);  
+  void tryFilter(Filter filter, Consumer<Boolean> callback, boolean notify);
 }

@@ -5,7 +5,9 @@ import com.google.common.collect.Lists;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class ModuleAndSub implements Comparable<ModuleAndSub> {
@@ -48,6 +50,20 @@ public final class ModuleAndSub implements Comparable<ModuleAndSub> {
     } else {
       return of(module, subModule);
     }
+  }
+
+  public static List<ModuleAndSub> parseList(String input) {
+    List<ModuleAndSub> result = new ArrayList<>();
+
+    List<String> list = NameUtils.toList(input);
+    for (String s : list) {
+      ModuleAndSub ms = parse(s);
+      if (ms != null) {
+        result.add(ms);
+      }
+    }
+
+    return result;
   }
 
   private final Module module;

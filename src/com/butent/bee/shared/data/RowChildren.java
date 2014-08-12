@@ -10,39 +10,39 @@ public final class RowChildren implements BeeSerializable {
   private enum Serial {
     REPOSITORY, PARENT_COLUMN, ROW_ID, CHILD_COLUMN, CHILDREN_IDS
   }
-  
+
   public static RowChildren create(String repository, String parentColumn, Long rowId,
       String childColumn, String childrenIds) {
     Assert.notEmpty(repository);
     Assert.notEmpty(parentColumn);
     Assert.notEmpty(childColumn);
-    
+
     RowChildren result = new RowChildren();
-    
+
     result.setRepository(repository);
     result.setParentColumn(parentColumn);
     result.setRowId(rowId);
     result.setChildColumn(childColumn);
     result.setChildrenIds(childrenIds);
-    
+
     return result;
   }
-  
+
   public static RowChildren restore(String s) {
     Assert.notEmpty(s, "cannot restore row children");
-    
+
     RowChildren result = new RowChildren();
     result.deserialize(s);
 
     return result;
   }
 
-  private String repository; 
+  private String repository;
 
-  private String parentColumn; 
-  private Long rowId; 
+  private String parentColumn;
+  private Long rowId;
 
-  private String childColumn; 
+  private String childColumn;
   private String childrenIds;
 
   private RowChildren() {
@@ -62,7 +62,7 @@ public final class RowChildren implements BeeSerializable {
         case REPOSITORY:
           setRepository(value);
           break;
-          
+
         case PARENT_COLUMN:
           setParentColumn(value);
           break;
@@ -70,11 +70,11 @@ public final class RowChildren implements BeeSerializable {
         case ROW_ID:
           setRowId(BeeUtils.toLongOrNull(value));
           break;
-          
+
         case CHILD_COLUMN:
           setChildColumn(value);
           break;
-          
+
         case CHILDREN_IDS:
           setChildrenIds(value);
           break;

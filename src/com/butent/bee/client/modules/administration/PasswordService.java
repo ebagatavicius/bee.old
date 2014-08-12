@@ -33,7 +33,7 @@ public final class PasswordService {
 
   private static final String STYLE_LABEL = STYLE_PREFIX + "label";
   private static final String STYLE_INPUT = STYLE_PREFIX + "input";
-  
+
   public static void change() {
     final Long userId = BeeKeeper.getUser().getUserId();
     if (userId == null) {

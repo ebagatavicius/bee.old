@@ -9,7 +9,7 @@ import elemental.html.DetailsElement;
 import elemental.js.html.JsDetailsElement;
 
 public class Details extends CustomComplex {
-  
+
   private static Element createElement(boolean open) {
     DetailsElement detailsElement = Browser.getDocument().createDetailsElement();
     detailsElement.setOpen(open);
@@ -23,7 +23,7 @@ public class Details extends CustomComplex {
   public Details(boolean open, String styleName) {
     super(createElement(open), styleName);
   }
-  
+
   public Details(boolean open, String styleName, Summary summary) {
     this(open, styleName);
     if (summary != null) {
@@ -43,7 +43,7 @@ public class Details extends CustomComplex {
   public void setOpen(boolean open) {
     getDetailsElement().setOpen(open);
   }
-  
+
   private DetailsElement getDetailsElement() {
     return (JsDetailsElement) getElement().cast();
   }

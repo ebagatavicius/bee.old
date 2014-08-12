@@ -4,9 +4,9 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.dom.client.HasAllFocusHandlers;
 import com.google.gwt.user.client.ui.Focusable;
-import com.google.gwt.user.client.ui.HasEnabled;
 
 import com.butent.bee.client.dialog.TabulationHandler;
+import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.HasOptions;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public interface Editor extends IdentifiableWidget, HasStringValue, Focusable,
     HasAllFocusHandlers, HasEditChangeHandlers, HasEditState, HasEditStopHandlers,
-    HasEnabled, HasOptions, TabulationHandler {
+    EnablableWidget, HasOptions, TabulationHandler {
 
   void clearValue();
 
@@ -36,8 +36,10 @@ public interface Editor extends IdentifiableWidget, HasStringValue, Focusable,
   boolean isNullable();
 
   boolean isOrHasPartner(Node node);
-  
+
   void normalizeDisplay(String normalizedValue);
+
+  void render(String value);
 
   void setNullable(boolean nullable);
 

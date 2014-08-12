@@ -19,17 +19,17 @@ public class Style {
     if (BeeUtils.isEmpty(values)) {
       return null;
     }
-    
+
     List<String> names = Lists.newArrayList();
     for (HasCssName value : values) {
       if (value != null && !names.contains(value.getCssName())) {
         names.add(value.getCssName());
       }
     }
-    
+
     return names.isEmpty() ? null : BeeUtils.join(separator, names);
   }
-  
+
   private final String name;
   private String value;
 

@@ -26,7 +26,7 @@ import elemental.client.Browser;
 class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
 
   private static final BeeLogger logger = LogUtils.getLogger(RichTextAreaImpl.class);
-      
+
   private static final String DESIGN_MODE_OFF = "off";
   private static final String DESIGN_MODE_ON = "on";
 
@@ -67,7 +67,7 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
   public String getText() {
     return isReady ? getBody().getInnerText() : textOrHtml;
   }
-  
+
   @Override
   public void insertHorizontalRule() {
     execCommand("InsertHorizontalRule");
@@ -190,7 +190,7 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
       textOrHtml = html;
     }
   }
-  
+
   @Override
   public void setJustification(Justification justification) {
     if (justification != null) {
@@ -241,12 +241,12 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
   public void undo() {
     execCommand("Undo");
   }
-  
+
   boolean contains(Node node) {
     if (node == null) {
       return false;
     }
-    
+
     JsNode jsNode = node.cast();
     if (element.contains(jsNode)) {
       return true;
@@ -261,7 +261,7 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
 
   void initElement() {
     initializing = true;
-    
+
     element.addEventListener(BrowserEvents.LOAD, new EventListener() {
       @Override
       public void handleEvent(Event evt) {
@@ -316,7 +316,7 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
       unhookEvents();
     }
   }
-  
+
   private void execCommand(String cmd) {
     execCommand(cmd, null);
   }
@@ -339,7 +339,8 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
     }
   }
 
-//CHECKSTYLE:OFF
+//@formatter:off
+  // CHECKSTYLE:OFF
   private native void hookEvents() /*-{
     var elem = this.@com.butent.bee.client.richtext.RichTextAreaImpl::element;
     var wnd = elem.contentWindow;
@@ -379,8 +380,9 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
     wnd.addEventListener('focus', elem.__gwt_focusHandler, true);
     wnd.addEventListener('blur', elem.__gwt_blurHandler, true);
   }-*/;
-//CHECKSTYLE:ON
-  
+  // CHECKSTYLE:ON
+//@formatter:on
+
   private void onElementInitialized() {
     if (!initializing) {
       return;
@@ -412,7 +414,7 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
     }
     return false;
   }
-  
+
   private String queryCommandValue(String cmd) {
     if (isReady) {
       try {
@@ -445,6 +447,7 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
     getBody().setInnerText(text);
   }
 
+//@formatter:off
   private native void unhookEvents() /*-{
     var elem = this.@com.butent.bee.client.richtext.RichTextAreaImpl::element;
     var wnd = elem.contentWindow;
@@ -466,4 +469,5 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
     elem.__gwt_focusHandler = null;
     elem.__gwt_blurHandler = null;
   }-*/;
+//@formatter:on
 }

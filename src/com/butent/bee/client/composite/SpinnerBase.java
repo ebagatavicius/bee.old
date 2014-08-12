@@ -73,11 +73,11 @@ public class SpinnerBase {
     @Source("arrowUpPressed.png")
     ImageResource arrowUpPressed();
   }
-  
+
   public static final int INITIAL_SPEED = 7;
 
   protected static final Resources IMAGES = GWT.create(Resources.class);
-  
+
   private final Image decrementArrow;
   private final Image incrementArrow;
 
@@ -189,12 +189,12 @@ public class SpinnerBase {
   }
 
   public SpinnerBase(SpinnerListener spinner, long value, long min, long max,
-        int minStep, int maxStep) {
+      int minStep, int maxStep) {
     this(spinner, value, min, max, minStep, maxStep, true);
   }
 
   public SpinnerBase(SpinnerListener spinner, long value, long min, long max,
-        int minStep, int maxStep, boolean constrained) {
+      int minStep, int maxStep, boolean constrained) {
     super();
     spinnerListeners.add(spinner);
 
@@ -282,7 +282,7 @@ public class SpinnerBase {
         }
       }
     }
-    
+
     updateValue(v);
   }
 

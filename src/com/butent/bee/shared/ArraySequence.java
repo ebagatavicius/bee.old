@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Enables operations with arrays.
- * 
+ *
  * @param <T> the object type of array
  */
 public abstract class ArraySequence<T> extends AbstractSequence<T> {
@@ -16,7 +16,7 @@ public abstract class ArraySequence<T> extends AbstractSequence<T> {
 
   /**
    * Creates object with array sequence. All operations changes {@code values} array in this object.
-   * 
+   *
    * @param values the array of objects
    */
   public ArraySequence(T[] values) {
@@ -35,7 +35,7 @@ public abstract class ArraySequence<T> extends AbstractSequence<T> {
 
   /**
    * Returns the object of array contains of the index.
-   * 
+   *
    * @param index the object index of array
    * @return the object of array contains of the index.
    */
@@ -47,7 +47,7 @@ public abstract class ArraySequence<T> extends AbstractSequence<T> {
 
   /**
    * Returns the array of objects.
-   * 
+   *
    * @return the array of objects
    */
   @Override
@@ -62,7 +62,7 @@ public abstract class ArraySequence<T> extends AbstractSequence<T> {
 
   /**
    * Returns the {@code List} of objects.
-   * 
+   *
    * @return the list of objects
    */
   @Override
@@ -78,7 +78,7 @@ public abstract class ArraySequence<T> extends AbstractSequence<T> {
 
   /**
    * Insert object to array specified index of array.
-   * 
+   *
    * @param index index of object array
    * @param value the object inserts to array
    */
@@ -92,7 +92,7 @@ public abstract class ArraySequence<T> extends AbstractSequence<T> {
 
   /**
    * Removes the object of array specified by index.
-   * 
+   *
    * @param index the index of object array
    */
   @Override
@@ -105,7 +105,7 @@ public abstract class ArraySequence<T> extends AbstractSequence<T> {
 
   /**
    * Change object to other object of array specified by index.
-   * 
+   *
    * @param index the index of object array.
    */
   @Override
@@ -117,7 +117,7 @@ public abstract class ArraySequence<T> extends AbstractSequence<T> {
   /**
    * Converts a list {@code lst} to an array and sets it to {@code values} using.
    * {@link #setValues(T[])}
-   * 
+   *
    * @param lst the new value to set
    */
   @Override
@@ -129,7 +129,7 @@ public abstract class ArraySequence<T> extends AbstractSequence<T> {
 
   /**
    * Sets {@code values} to a specified array {@code arr}.
-   * 
+   *
    * @param arr the new value to set
    */
   @Override

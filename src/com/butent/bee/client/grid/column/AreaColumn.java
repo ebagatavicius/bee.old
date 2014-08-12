@@ -32,13 +32,13 @@ public class AreaColumn extends DataColumn<String> {
   public String getStyleSuffix() {
     return "area";
   }
-  
+
   @Override
   public String getValue(IsRow row) {
     if (row == null) {
       return null;
     }
-    
+
     String v = getCellSource().getString(row);
     if (v == null) {
       return null;

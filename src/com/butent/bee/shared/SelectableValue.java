@@ -3,7 +3,7 @@ package com.butent.bee.shared;
 import com.butent.bee.shared.utils.Codec;
 
 public class SelectableValue implements BeeSerializable {
-  
+
   public static SelectableValue restore(String s) {
     SelectableValue sv = new SelectableValue();
     sv.deserialize(s);
@@ -24,7 +24,7 @@ public class SelectableValue implements BeeSerializable {
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
-    
+
     setValue(arr[0]);
     setSelected(Codec.unpack(arr[1]));
   }

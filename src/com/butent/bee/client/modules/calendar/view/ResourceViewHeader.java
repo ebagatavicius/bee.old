@@ -29,18 +29,18 @@ public class ResourceViewHeader extends Horizontal {
     Label dateLabel = new Label();
     add(dateLabel);
     addStyleToCell(dateLabel, CalendarStyleManager.DATE_CELL);
-    
+
     Flow captionPanel = new Flow();
     captionPanel.addStyleName(CalendarStyleManager.RESOURCE_CAPTION_CONTAINER);
     add(captionPanel);
-    
+
     CustomDiv filler = new CustomDiv();
     add(filler);
     setCellWidth(filler, DomUtils.getScrollBarWidth());
   }
 
   public void setAttendees(long calendarId, List<Long> attendees) {
-    HasWidgets panel = (HasWidgets) getWidget(CAPTION_CONTAINER_INDEX); 
+    HasWidgets panel = (HasWidgets) getWidget(CAPTION_CONTAINER_INDEX);
     panel.clear();
     if (attendees.isEmpty()) {
       return;

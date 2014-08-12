@@ -5,13 +5,13 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 public class ShowMessage extends Message {
-  
+
   public enum Subject implements HasCaption {
     SESSION("Session"),
     OPEN_SESSIONS("Open Sessions"),
     ENDPOINT("Server Endpoint"),
     ROOMS("Server Rooms");
-    
+
     private final String caption;
 
     private Subject(String caption) {
@@ -23,7 +23,7 @@ public class ShowMessage extends Message {
       return caption;
     }
   }
-  
+
   public static ShowMessage showEndpoint() {
     return new ShowMessage(Subject.ENDPOINT);
   }
@@ -39,7 +39,7 @@ public class ShowMessage extends Message {
   public static ShowMessage showSessionInfo() {
     return new ShowMessage(Subject.SESSION);
   }
-  
+
   private Subject subject;
 
   ShowMessage() {
@@ -55,7 +55,7 @@ public class ShowMessage extends Message {
   public String brief() {
     return string(getSubject());
   }
-  
+
   public Subject getSubject() {
     return subject;
   }
@@ -64,12 +64,12 @@ public class ShowMessage extends Message {
   public boolean isValid() {
     return getSubject() != null;
   }
-  
+
   @Override
   public String toString() {
     return BeeUtils.joinOptions("type", string(getType()), "subject", string(getSubject()));
   }
-  
+
   @Override
   protected void deserialize(String s) {
     this.subject = Codec.unpack(Subject.class, s);

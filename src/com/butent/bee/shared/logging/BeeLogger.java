@@ -7,7 +7,7 @@ public interface BeeLogger {
   void debug(Object... messages);
 
   void error(Throwable ex, Object... messages);
-  
+
   LogLevel getLevel();
 
   void info(Object... messages);

@@ -25,10 +25,10 @@ public class DayViewHeader extends Horizontal {
   private static final int DAY_PANEL_INDEX = 1;
 
   private static final RangeMap<Integer, DateTimeFormat> labelFormats;
-  
+
   static {
     labelFormats = RangeMap.create();
-    
+
     labelFormats.put(Range.lessThan(35), DateTimeFormat.getFormat("d"));
     labelFormats.put(Range.closedOpen(35, 45),
         DateTimeFormat.getFormat("M" + TimeUtils.DATE_FIELD_SEPARATOR + "d"));
@@ -48,23 +48,23 @@ public class DayViewHeader extends Horizontal {
     Label dateLabel = new Label();
     add(dateLabel);
     addStyleToCell(dateLabel, CalendarStyleManager.DATE_CELL);
-    
+
     Flow dayPanel = new Flow();
     dayPanel.addStyleName(CalendarStyleManager.DAY_CELL_CONTAINER);
     add(dayPanel);
-    
+
     CustomDiv filler = new CustomDiv();
     add(filler);
     setCellWidth(filler, DomUtils.getScrollBarWidth());
   }
 
   public void setDays(JustDate date, int days) {
-    Widget dayPanel = getWidget(DAY_PANEL_INDEX); 
+    Widget dayPanel = getWidget(DAY_PANEL_INDEX);
     ((HasWidgets) dayPanel).clear();
 
     int dayWidthPct = 100 / days;
     int columnWidthPx = CalendarUtils.getColumnWidth(dayPanel, days);
-    
+
     DateTimeFormat format = labelFormats.get(columnWidthPx);
 
     JustDate tmp = JustDate.copyOf(date);

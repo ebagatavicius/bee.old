@@ -731,7 +731,7 @@ public final class EventUtils {
       return null;
     }
   }
-  
+
   public static String getTargetTagName(EventTarget et) {
     if (Element.is(et)) {
       return Element.as(et).getTagName();
@@ -1222,6 +1222,7 @@ public final class EventUtils {
     return body;
   }
 
+//@formatter:off
   private static native String evalDomHandler(JsFunction handler, NativeEvent event,
       JavaScriptObject target, JavaScriptObject row, double rowId, double rowVersion) /*-{
     try {
@@ -1231,6 +1232,7 @@ public final class EventUtils {
       return String(err);
     }
   }-*/;
+//@formatter:on
 
   private static JsFunction getDomHandler(String body) {
     String key = domHandlerKey(body);

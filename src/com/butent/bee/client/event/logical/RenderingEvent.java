@@ -10,17 +10,17 @@ import com.butent.bee.shared.Consumable;
 import com.butent.bee.shared.State;
 
 public final class RenderingEvent extends GwtEvent<RenderingEvent.Handler> implements Consumable {
-  
+
   public interface Handler extends EventHandler {
     void onRender(RenderingEvent event);
   }
-  
+
   public interface HasRenderingHandlers extends HasHandlers {
     HandlerRegistration addRenderingHandler(Handler handler);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static RenderingEvent after() {
     return new RenderingEvent(true);
   }
@@ -28,7 +28,7 @@ public final class RenderingEvent extends GwtEvent<RenderingEvent.Handler> imple
   public static RenderingEvent before() {
     return new RenderingEvent(false);
   }
-  
+
   public static void fireAfter(HasRenderingHandlers source) {
     Assert.notNull(source);
     source.fireEvent(after());
@@ -42,12 +42,12 @@ public final class RenderingEvent extends GwtEvent<RenderingEvent.Handler> imple
   public static Type<Handler> getType() {
     return TYPE;
   }
-  
+
   private final boolean after;
 
   private State state;
   private boolean consumed;
-  
+
   private RenderingEvent(boolean after) {
     super();
     this.after = after;
@@ -56,7 +56,7 @@ public final class RenderingEvent extends GwtEvent<RenderingEvent.Handler> imple
   public void cancel() {
     setState(State.CANCELED);
   }
-  
+
   public boolean canceled() {
     return getState() == State.CANCELED;
   }
@@ -65,7 +65,7 @@ public final class RenderingEvent extends GwtEvent<RenderingEvent.Handler> imple
   public void consume() {
     setConsumed(true);
   }
-  
+
   public boolean dataChanged() {
     return getState() == State.CHANGED;
   }
@@ -104,7 +104,7 @@ public final class RenderingEvent extends GwtEvent<RenderingEvent.Handler> imple
   public void setState(State state) {
     this.state = state;
   }
-  
+
   @Override
   protected void dispatch(Handler handler) {
     handler.onRender(this);

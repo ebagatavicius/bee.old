@@ -19,7 +19,7 @@ public class ObjectDefectsGrid extends AbstractGridInterceptor {
       return super.beforeAction(action, presenter);
     }
   }
-  
+
   @Override
   public GridInterceptor getInstance() {
     return new ObjectDefectsGrid();

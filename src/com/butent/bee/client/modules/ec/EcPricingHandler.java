@@ -102,7 +102,7 @@ class EcPricingHandler extends AbstractGridInterceptor {
       }
     });
   }
-  
+
   @Override
   public GridInterceptor getInstance() {
     return new EcPricingHandler();

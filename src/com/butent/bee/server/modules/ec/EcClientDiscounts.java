@@ -265,7 +265,7 @@ public class EcClientDiscounts {
       ecItem.setClientPrice(ecItem.getListPrice());
     }
   }
-  
+
   public boolean hasCategories() {
     return !categoryDiscounts.isEmpty() || !brandAndCategoryDiscounts.isEmpty();
   }

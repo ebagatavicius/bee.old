@@ -255,6 +255,11 @@ public class ColorEditor extends Flow implements Editor, HasTextBox, HasKeyDownH
   }
 
   @Override
+  public void render(String value) {
+    setValue(value);
+  }
+
+  @Override
   public void setAccessKey(char key) {
     textBox.setAccessKey(key);
   }

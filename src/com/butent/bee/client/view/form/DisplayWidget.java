@@ -123,12 +123,6 @@ public class DisplayWidget {
         }
         break;
 
-      case CURRENCY_LABEL:
-        if (widget instanceof DecimalLabel) {
-          ((DecimalLabel) widget).setValue(BeeUtils.toDecimalOrNull(value));
-        }
-        break;
-
       case DATA_SELECTOR:
         if (widget instanceof DataSelector) {
           ((DataSelector) widget).setDisplayValue(BeeUtils.trim(value));
@@ -149,6 +143,7 @@ public class DisplayWidget {
         break;
 
       case DECIMAL_LABEL:
+      case MONEY_LABEL:
         if (widget instanceof DecimalLabel) {
           ((DecimalLabel) widget).setValue(BeeUtils.toDecimalOrNull(value));
         }

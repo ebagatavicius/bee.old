@@ -6,25 +6,93 @@
   >
   <Columns>
     <SimpleColumn name="Name" />
+    <SimpleColumn name="Name2" />
+
+    <SimpleColumn name="Article" />
+    <SimpleColumn name="Article2" />
+    <SimpleColumn name="Barcode" />
+
     <SimpleColumn name="Unit" />
     <SimpleJoin joinType="LEFT" name="Unit">
       <SimpleColumn name="Name" alias="UnitName" />
     </SimpleJoin>
-    <SimpleColumn name="Article" />
-    <SimpleColumn name="Barcode" />
+
+    <SimpleColumn name="Weight" />
+
     <SimpleColumn name="Price" />
     <SimpleColumn name="Currency" />
     <SimpleJoin joinType="LEFT" name="Currency">
       <SimpleColumn name="Name" alias="CurrencyName" />
     </SimpleJoin>
+
+    <SimpleColumn name="Cost" />
+    <SimpleColumn name="CostCurrency" />
+    <SimpleJoin joinType="LEFT" name="CostCurrency">
+      <SimpleColumn name="Name" alias="CostCurrencyName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Price1" />
+    <SimpleColumn name="Currency1" />
+    <SimpleJoin joinType="LEFT" name="Currency1">
+      <SimpleColumn name="Name" alias="Currency1Name" />
+    </SimpleJoin>
+    <SimpleColumn name="Price2" />
+    <SimpleColumn name="Currency2" />
+    <SimpleJoin joinType="LEFT" name="Currency2">
+      <SimpleColumn name="Name" alias="Currency2Name" />
+    </SimpleJoin>
+
     <SimpleColumn name="Vat" />
     <SimpleColumn name="VatPercent" />
+
     <SimpleColumn name="IsService"/>
 
-    <SimpleColumn name="ExternalCode"/>
+    <SimpleColumn name="Type" />
+    <SimpleJoin joinType="LEFT" name="Type">
+      <SimpleColumn name="Parent" alias="ParentType" />
+      <SimpleJoin name="Parent" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ParentTypeName" />
+      </SimpleJoin>
+      <SimpleColumn name="Name" alias="ItemTypeName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Group" />
+    <SimpleJoin joinType="LEFT" name="Group">
+      <SimpleColumn name="Parent" alias="ParentGroup" />
+      <SimpleJoin name="Parent" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ParentGroupName" />
+      </SimpleJoin>
+      <SimpleColumn name="Name" alias="ItemGroupName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Department" />
+    <SimpleJoin joinType="LEFT" name="Department">
+      <SimpleColumn name="DepartmentName" />
+    </SimpleJoin>
+    <SimpleColumn name="ActivityType" />
+    <SimpleJoin joinType="LEFT" name="ActivityType">
+      <SimpleColumn name="ActivityTypeName" />
+    </SimpleJoin>
+    <SimpleColumn name="CostCenter" />
+    <SimpleJoin joinType="LEFT" name="CostCenter">
+      <SimpleColumn name="CostCenterName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Ordinal" />
+    <SimpleColumn name="ExternalCode" />
+
+    <SimpleColumn name="Description" />
+    <SimpleColumn name="Notes" />
   </Columns>
+
   <Order>
+    <OrderBy column="Ordinal" />
+    <OrderBy column="ParentTypeName" />
+    <OrderBy column="ItemTypeName" />
+    <OrderBy column="ParentGroupName" />
+    <OrderBy column="ItemGroupName" />
     <OrderBy column="Name" />
+    <OrderBy column="Article" />
   </Order>
 </View>
  

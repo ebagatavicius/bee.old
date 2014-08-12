@@ -12,7 +12,7 @@ public class InputPassword extends InputText {
     super(Document.get().createPasswordInputElement());
     setMaxLength(maxLength);
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "pswd";

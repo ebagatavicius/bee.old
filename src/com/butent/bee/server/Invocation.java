@@ -13,6 +13,7 @@ import com.butent.bee.server.utils.XmlUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -39,6 +40,8 @@ import javax.naming.NamingException;
 @Stateless
 public class Invocation {
 
+  private static BeeLogger logger = LogUtils.getLogger(Invocation.class);
+
   @SuppressWarnings("unchecked")
   public static <T> T locateRemoteBean(Class<T> beanClass) {
     String beanName = beanClass.getSimpleName();
@@ -48,12 +51,11 @@ public class Invocation {
       bean = (T) InitialContext.doLookup("java:module/" + beanName);
 
     } catch (NamingException ex) {
-      LogUtils.getRootLogger().severe("Remote bean not found:", BeeUtils.bracket(beanName));
-
+      logger.severe("Remote bean not found:", BeeUtils.bracket(beanName));
     } catch (ClassCastException ex) {
-      LogUtils.getRootLogger().severe("Remote bean cannot be cast to ",
-          BeeUtils.bracket(beanClass.getName()));
+      logger.severe("Remote bean cannot be cast to ", BeeUtils.bracket(beanClass.getName()));
     }
+
     return bean;
   }
 
@@ -129,6 +131,26 @@ public class Invocation {
 
     } else {
       return ResponseObject.collection(I18nUtils.getInfo(), Property.class);
+    }
+  }
+
+  public ResponseObject sleep(RequestInfo reqInfo) {
+    String millis = reqInfo.getContent();
+
+    if (BeeUtils.isPositiveInt(millis)) {
+      logger.debug("sleep", millis);
+
+      try {
+        Thread.sleep(BeeUtils.toLong(millis));
+        logger.debug("awake", millis);
+      } catch (InterruptedException ex) {
+        logger.warning(ex);
+      }
+
+      return ResponseObject.response(millis);
+
+    } else {
+      return ResponseObject.emptyResponse();
     }
   }
 

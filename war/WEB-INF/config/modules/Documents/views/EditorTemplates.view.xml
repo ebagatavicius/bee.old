@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="EditorTemplates" source="EditorTemplates"
+  caption="=editorTemplates" newRowCaption="=newEditorTemplate"
+  >
+  <Columns>
+    <SimpleColumn name="Origin" />
+    <SimpleColumn name="Name" />
+    <SimpleColumn name="Content" />
+  </Columns>
+</View>
+ 

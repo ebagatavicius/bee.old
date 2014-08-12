@@ -1,7 +1,6 @@
 package com.butent.bee.client.screen;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.HasSelectionHandlers;
@@ -15,14 +14,15 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.Historian;
 import com.butent.bee.client.Place;
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.ActiveWidgetChangeEvent;
 import com.butent.bee.client.event.logical.CaptionChangeEvent;
 import com.butent.bee.client.event.logical.HasActiveWidgetChangeHandlers;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Direction;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.layout.Split;
@@ -31,10 +31,12 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HandlesHistory;
 import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.IdentifiableWidget;
-import com.butent.bee.client.ui.WidgetFactory;
 import com.butent.bee.client.utils.JsonUtils;
 import com.butent.bee.client.view.View;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.HasInfo;
 import com.butent.bee.shared.State;
 import com.butent.bee.shared.i18n.Localized;
@@ -153,7 +155,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
         return false;
       }
 
-      WidgetFactory.create(contentSuppliers.get(newIndex), new Callback<IdentifiableWidget>() {
+      ViewFactory.create(contentSuppliers.get(newIndex), new ViewCallback() {
         @Override
         public void onFailure(String... reason) {
           contentSuppliers.remove(newIndex);
@@ -163,7 +165,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
         }
 
         @Override
-        public void onSuccess(IdentifiableWidget result) {
+        public void onSuccess(View result) {
           setContentIndex(newIndex);
           updateContent(result, false);
         }
@@ -252,7 +254,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
     }
 
     private void addContentSupplier(String key) {
-      if (WidgetFactory.hasSupplier(key)) {
+      if (!BeeUtils.isEmpty(key)) {
         if (contentSuppliers.contains(key)) {
           contentSuppliers.remove(key);
         }
@@ -403,6 +405,94 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
     }
   }
 
+  private final class ContentRestorer implements Consumer<Boolean> {
+
+    private final Map<String, String> contentByTile;
+    private final List<String> tileIds;
+
+    private final Consumer<Boolean> callback;
+
+    private final Map<String, HandlerRegistration> readyHandlerRegistry = new HashMap<>();
+
+    private int position;
+
+    private ContentRestorer(Map<String, String> contentByTile, Consumer<Boolean> callback) {
+      this.contentByTile = contentByTile;
+      this.tileIds = new ArrayList<>(contentByTile.keySet());
+
+      this.callback = callback;
+    }
+
+    @Override
+    public void accept(Boolean input) {
+      if (BeeUtils.isTrue(input) && getPosition() < tileIds.size() - 1) {
+        setPosition(getPosition() + 1);
+        run();
+      } else {
+        onComplete(input);
+      }
+    }
+
+    private int getPosition() {
+      return position;
+    }
+
+    private void onComplete(Boolean success) {
+      EventUtils.clearRegistry(readyHandlerRegistry.values());
+
+      afterRestore();
+
+      if (callback != null) {
+        callback.accept(success);
+      }
+    }
+
+    private void run() {
+      final String tileId = tileIds.get(getPosition());
+      final String contentSupplier = contentByTile.get(tileId);
+
+      ViewFactory.create(contentSupplier, new ViewCallback() {
+        @Override
+        public void onSuccess(View result) {
+          HandlerRegistration registration = result.addReadyHandler(new ReadyEvent.Handler() {
+            @Override
+            public void onReady(ReadyEvent event) {
+              HandlerRegistration hr = readyHandlerRegistry.remove(tileId);
+              if (hr != null) {
+                hr.removeHandler();
+              }
+
+              logger.info("restored tile", BeeUtils.progress(tileIds.indexOf(tileId) + 1,
+                  tileIds.size()), contentSupplier);
+              accept(true);
+            }
+          });
+
+          if (registration != null) {
+            readyHandlerRegistry.put(tileId, registration);
+          }
+
+          Tile tile = getTileById(tileId);
+          if (tile == null) {
+            onComplete(false);
+          } else {
+            tile.addContentSupplier(contentSupplier);
+            tile.setWidget(result);
+          }
+        }
+      });
+    }
+
+    private void setPosition(int position) {
+      this.position = position;
+    }
+
+    private void start() {
+      setPosition(0);
+      run();
+    }
+  }
+
   private static class Position {
     private int left;
     private int right;
@@ -477,6 +567,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
   }
 
   private String activeTileId;
+  private String pendingTileId;
 
   private final Map<String, List<String>> tree = new HashMap<>();
   private String rootId;
@@ -764,6 +855,22 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
     }
   }
 
+  void afterRestore() {
+    Tile tile;
+
+    if (!BeeUtils.isEmpty(getPendingTileId())) {
+      tile = getTileById(getPendingTileId());
+      setPendingTileId(null);
+
+    } else {
+      tile = getActiveTile();
+    }
+
+    if (tile != null) {
+      tile.activate(false);
+    }
+  }
+
   void clear(Workspace workspace) {
     onRemove();
 
@@ -903,8 +1010,18 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
     }
   }
 
-  void restore(Workspace workspace, JSONObject json) {
-    restore(workspace, json, getActiveTile());
+  Map<String, String> restore(Workspace workspace, JSONObject json) {
+    return restore(workspace, json, getActiveTile());
+  }
+
+  void restoreContent(Map<String, String> contentByTile, final Consumer<Boolean> callback) {
+    if (!BeeUtils.isEmpty(contentByTile)) {
+      ContentRestorer restorer = new ContentRestorer(contentByTile, callback);
+      restorer.start();
+
+    } else if (callback != null) {
+      callback.accept(false);
+    }
   }
 
   void setActiveTileId(String activeTileId) {
@@ -977,6 +1094,14 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
     return result;
   }
 
+  private int getMaxSize(Direction dir) {
+    int max = dir.isHorizontal() ? getOffsetWidth() : getOffsetHeight();
+    if (max <= 0 && getParent() != null) {
+      max = dir.isHorizontal() ? getParent().getOffsetWidth() : getParent().getOffsetHeight();
+    }
+    return max;
+  }
+
   private String getParentTileId(String childId) {
     for (Map.Entry<String, List<String>> entry : tree.entrySet()) {
       if (entry.getValue().contains(childId)) {
@@ -984,6 +1109,10 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
       }
     }
     return null;
+  }
+
+  private String getPendingTileId() {
+    return pendingTileId;
   }
 
   private String getRootId() {
@@ -1050,60 +1179,55 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
       }
     }
   }
-  
-  private void restore(Workspace workspace, JSONObject json, final Tile tile) {
+
+  private Map<String, String> restore(Workspace workspace, JSONObject json, final Tile tile) {
+    Map<String, String> contentByTile = new HashMap<>();
+
     if (json.containsKey(KEY_SPLIT)) {
       JSONArray split = json.get(KEY_SPLIT).isArray();
-      
+
       if (split != null) {
         for (int i = 0; i < split.size(); i++) {
           JSONObject child = split.get(i).isObject();
 
           if (child != null && child.containsKey(Workspace.KEY_DIRECTION)
               && child.containsKey(Workspace.KEY_SIZE)) {
-            
+
             Direction direction = Direction.parse(JsonUtils.getString(child,
                 Workspace.KEY_DIRECTION));
             Double size = JsonUtils.getNumber(child, Workspace.KEY_SIZE);
-            
+
             if (direction != null && !direction.isCenter()) {
-              int max = direction.isHorizontal() ? getOffsetWidth() : getOffsetHeight();
+              int max = getMaxSize(direction);
 
               if (BeeUtils.isPositive(size) && max > 0) {
                 Tile childTile = addTile(workspace, tile, direction,
                     Workspace.restoreSize(size, max));
-                restore(workspace, child, childTile);
+
+                contentByTile.putAll(restore(workspace, child, childTile));
               }
             }
           }
         }
       }
     }
-    
-    if (json.containsKey(KEY_CONTENT)) {
-      final String contentSupplier = JsonUtils.getString(json, KEY_CONTENT);
-      
-      if (!BeeUtils.isEmpty(contentSupplier)) {
-        WidgetFactory.create(contentSupplier, new Callback<IdentifiableWidget>() {
-          @Override
-          public void onSuccess(IdentifiableWidget result) {
-            tile.setWidget(result);
-            tile.addContentSupplier(contentSupplier);
 
-            CaptionChangeEvent.fire(tile, getCaption());
-          }
-        });
+    if (json.containsKey(KEY_CONTENT)) {
+      String contentSupplier = JsonUtils.getString(json, KEY_CONTENT);
+      if (!BeeUtils.isEmpty(contentSupplier)) {
+        contentByTile.put(tile.getId(), contentSupplier);
       }
     }
-    
+
     if (json.containsKey(KEY_ACTIVE) && BeeUtils.isTrue(JsonUtils.getBoolean(json, KEY_ACTIVE))) {
-      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-        @Override
-        public void execute() {
-          tile.activate(false);
-        }
-      });
+      setPendingTileId(tile.getId());
     }
+
+    return contentByTile;
+  }
+
+  private void setPendingTileId(String pendingTileId) {
+    this.pendingTileId = pendingTileId;
   }
 
   private void setRootId(String rootId) {
@@ -1125,7 +1249,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
         json.put(Workspace.KEY_DIRECTION, new JSONString(direction.brief()));
 
         int size = data.getSize();
-        int max = direction.isHorizontal() ? getOffsetWidth() : getOffsetHeight();
+        int max = getMaxSize(direction);
 
         if (size > 0 && max > 0) {
           json.put(Workspace.KEY_SIZE, new JSONNumber(Workspace.scaleSize(size, max)));

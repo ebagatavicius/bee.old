@@ -78,7 +78,7 @@ public class EditorDescription implements BeeSerializable, HasInfo, HasOptions {
 
   private EditorDescription() {
   }
-  
+
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
@@ -232,7 +232,7 @@ public class EditorDescription implements BeeSerializable, HasInfo, HasOptions {
   public boolean isUpperCase() {
     return Boolean.TRUE.equals(getUpperCase());
   }
-  
+
   @Override
   public String serialize() {
     Serial[] members = Serial.values();

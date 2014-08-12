@@ -18,7 +18,7 @@ public enum CachingPolicy {
       return policy;
     }
   }
-  
+
   public static CachingPolicy get(String name) {
     return EnumUtils.getEnumByName(CachingPolicy.class, name);
   }

@@ -235,7 +235,7 @@ public class AsyncProvider extends Provider {
 
   private boolean prefetchPending;
 
-  public AsyncProvider(HasDataTable display, HandlesActions actionHandler, 
+  public AsyncProvider(HasDataTable display, HandlesActions actionHandler,
       NotificationListener notificationListener,
       String viewName, List<BeeColumn> columns, CachingPolicy cachingPolicy) {
     this(display, actionHandler, notificationListener,
@@ -415,7 +415,7 @@ public class AsyncProvider extends Provider {
 
         } else {
           rejectFilter(newFilter, notify);
-          
+
           if (callback != null) {
             callback.accept(false);
           }

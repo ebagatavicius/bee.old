@@ -658,6 +658,11 @@ public class UserServiceBean {
     return isModuleVisible(ModuleAndSub.of(Module.ADMINISTRATION));
   }
 
+  public boolean isAnyModuleVisible(String input) {
+    UserInfo info = getCurrentUserInfo();
+    return (info == null) ? false : info.getUserData().isAnyModuleVisible(input);
+  }
+
   public Boolean isBlocked(String user) {
     UserInfo userInfo = getUserInfo(getUserId(user));
     return (userInfo == null) ? null : userInfo.isBlocked(System.currentTimeMillis());
@@ -699,11 +704,6 @@ public class UserServiceBean {
   public boolean isModuleVisible(ModuleAndSub moduleAndSub) {
     UserInfo info = getCurrentUserInfo();
     return (info == null) ? false : info.getUserData().isModuleVisible(moduleAndSub);
-  }
-
-  public boolean isModuleVisible(String module) {
-    UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().isModuleVisible(module);
   }
 
   public boolean isRoleTable(String tblName) {

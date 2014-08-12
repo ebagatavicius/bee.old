@@ -18,9 +18,9 @@ public class CartItem implements BeeSerializable {
   }
 
   private EcItem ecItem;
-  
+
   private int quantity;
-  
+
   private String note;
 
   public CartItem(EcItem ecItem, int quantity) {
@@ -30,7 +30,7 @@ public class CartItem implements BeeSerializable {
 
   private CartItem() {
   }
-  
+
   public void add(int qty) {
     setQuantity(getQuantity() + qty);
   }

@@ -34,7 +34,7 @@ final class RecurringTaskWrapper implements HasDateRange {
 
   private static final String startLabel = Data.getColumnLabel(VIEW_TASKS, COL_START_TIME);
   private static final String endLabel = Data.getColumnLabel(VIEW_TASKS, COL_FINISH_TIME);
-  
+
   private static final String typeLabel = Data.getColumnLabel(VIEW_RECURRING_TASKS, COL_TASK_TYPE);
   private static final String priorityLabel = Data.getColumnLabel(VIEW_RECURRING_TASKS,
       COL_PRIORITY);
@@ -42,7 +42,9 @@ final class RecurringTaskWrapper implements HasDateRange {
   private static final String summaryLabel = Data.getColumnLabel(VIEW_RECURRING_TASKS, COL_SUMMARY);
   private static final String ownerLabel = Data.getColumnLabel(VIEW_RECURRING_TASKS, COL_OWNER);
 
-  static List<RecurringTaskWrapper> spawn(SimpleRow row, Collection<ScheduleDateRange> sdrs) {
+  static List<RecurringTaskWrapper> spawn(SimpleRow row, Collection<ScheduleDateRange> sdrs,
+      JustDate minDate, JustDate maxDate) {
+
     List<RecurringTaskWrapper> result = new ArrayList<>();
 
     JustDate from = row.getDate(COL_RT_SCHEDULE_FROM);
@@ -50,12 +52,12 @@ final class RecurringTaskWrapper implements HasDateRange {
       return result;
     }
 
-    JustDate until = row.getDate(COL_RT_SCHEDULE_UNTIL);
+    JustDate until = BeeUtils.min(row.getDate(COL_RT_SCHEDULE_UNTIL), maxDate);
     if (until == null) {
       until = TimeUtils.endOfYear(TimeUtils.year(), 1);
     }
 
-    JustDate min = BeeUtils.max(from, TimeUtils.today());
+    JustDate min = BeeUtils.max(BeeUtils.max(from, minDate), TimeUtils.today());
 
     DateTime lastSpawn = row.getDateTime(ALS_LAST_SPAWN);
     if (lastSpawn != null) {
@@ -67,6 +69,7 @@ final class RecurringTaskWrapper implements HasDateRange {
     }
 
     CronExpression.Builder builder = new CronExpression.Builder(from, until)
+        .id(row.getValue(ID_COLUMN))
         .dayOfMonth(row.getValue(COL_RT_DAY_OF_MONTH))
         .month(row.getValue(COL_RT_MONTH))
         .dayOfWeek(row.getValue(COL_RT_DAY_OF_WEEK))

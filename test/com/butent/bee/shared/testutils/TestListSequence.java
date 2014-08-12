@@ -26,7 +26,7 @@ public class TestListSequence {
     ar.add("junit");
     ar.add("test");
 
-    ls = new ListSequence<String>(ar);
+    ls = new ListSequence<>(ar);
   }
 
   @After

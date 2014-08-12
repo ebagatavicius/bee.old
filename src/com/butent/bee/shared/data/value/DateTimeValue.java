@@ -9,7 +9,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.math.BigDecimal;
 
 /**
- * The {@code DateTimeValue} class represents date and time values. It allows 
+ * The {@code DateTimeValue} class represents date and time values. It allows
  * the interpretation of dates as year, month, day, hour, minute,
  * second, millisecond values.
  */
@@ -71,7 +71,7 @@ public class DateTimeValue extends Value {
     Assert.notNull(getDateTime());
     return getDateTime().getDom();
   }
-  
+
   @Override
   public BigDecimal getDecimal() {
     if (isNull()) {
@@ -155,7 +155,7 @@ public class DateTimeValue extends Value {
     Assert.notNull(getDateTime());
     return getDateTime().getYear();
   }
-  
+
   @Override
   public int hashCode() {
     if (isNull()) {
@@ -166,9 +166,9 @@ public class DateTimeValue extends Value {
 
   @Override
   public boolean isEmpty() {
-    return isNull(); 
+    return isNull();
   }
-  
+
   @Override
   public boolean isNull() {
     return this == NULL_VALUE || getDateTime() == null;

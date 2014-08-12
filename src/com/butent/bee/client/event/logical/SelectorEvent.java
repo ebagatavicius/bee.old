@@ -20,7 +20,7 @@ public final class SelectorEvent extends GwtEvent<SelectorEvent.Handler> impleme
     void onDataSelector(SelectorEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
+  private static final Type<Handler> TYPE = new Type<>();
 
   public static void fire(DataSelector selector, State state) {
     fireEvent(selector, new SelectorEvent(state));
@@ -47,7 +47,7 @@ public final class SelectorEvent extends GwtEvent<SelectorEvent.Handler> impleme
     SelectorEvent event = new SelectorEvent(State.CREATED, row);
     fireEvent(selector, event);
   }
-  
+
   public static Type<Handler> getType() {
     return TYPE;
   }
@@ -67,15 +67,15 @@ public final class SelectorEvent extends GwtEvent<SelectorEvent.Handler> impleme
       BeeKeeper.getBus().fireEventFromSource(event, selector);
     }
   }
-  
+
   private final State state;
   private final BeeRow newRow;
   private String newRowFormName;
-  
+
   private Collection<Long> exclusions;
 
   private boolean consumed;
-  
+
   private String defValue;
 
   private SelectorEvent(State state) {
@@ -158,12 +158,12 @@ public final class SelectorEvent extends GwtEvent<SelectorEvent.Handler> impleme
   public boolean isClosed() {
     return State.CLOSED.equals(getState());
   }
-  
+
   @Override
   public boolean isConsumed() {
     return consumed;
   }
-  
+
   public boolean isDataLoaded() {
     return State.LOADED.equals(getState());
   }
@@ -175,7 +175,7 @@ public final class SelectorEvent extends GwtEvent<SelectorEvent.Handler> impleme
   public boolean isNewRow() {
     return State.NEW.equals(getState());
   }
-  
+
   public boolean isOpened() {
     return State.OPEN.equals(getState());
   }

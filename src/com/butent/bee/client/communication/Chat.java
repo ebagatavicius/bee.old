@@ -15,17 +15,20 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.ElementSize;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.event.logical.VisibilityChangeEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
+import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
+import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.websocket.Endpoint;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
@@ -44,6 +47,7 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.websocket.messages.ChatMessage;
 
@@ -52,7 +56,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class Chat extends Flow implements Presenter, View, Printable,
-    VisibilityChangeEvent.Handler {
+    VisibilityChangeEvent.Handler, HasWidgetSupplier {
 
   private static final class MessageWidget extends Flow {
 
@@ -135,7 +139,7 @@ public class Chat extends Flow implements Presenter, View, Printable,
   private boolean autoScroll = true;
 
   private final List<HandlerRegistration> registry = Lists.newArrayList();
-  
+
   public Chat(ChatRoom chatRoom) {
     super(STYLE_PREFIX + "view");
 
@@ -146,10 +150,10 @@ public class Chat extends Flow implements Presenter, View, Printable,
         EnumSet.of(Action.PRINT, Action.CONFIGURE, Action.CLOSE), Action.NO_ACTIONS,
         Action.NO_ACTIONS);
     headerView.setViewPresenter(this);
-    
+
     headerView.addCommandItem(createAutoScrollToggle(autoScroll));
     add(headerView);
-    
+
     this.messagePanel = new Flow(STYLE_PREFIX + "messages");
     add(messagePanel);
 
@@ -226,6 +230,12 @@ public class Chat extends Flow implements Presenter, View, Printable,
   }
 
   @Override
+  public com.google.gwt.event.shared.HandlerRegistration addReadyHandler(
+      ReadyEvent.Handler handler) {
+    return addHandler(handler, ReadyEvent.getType());
+  }
+
+  @Override
   public String getCaption() {
     return headerView.getCaption();
   }
@@ -260,12 +270,12 @@ public class Chat extends Flow implements Presenter, View, Printable,
   }
 
   @Override
-  public Presenter getViewPresenter() {
-    return this;
+  public String getSupplierKey() {
+    return ViewFactory.SupplierKind.CHAT.getKey(BeeUtils.toString(roomId));
   }
 
   @Override
-  public IdentifiableWidget getWidget() {
+  public Presenter getViewPresenter() {
     return this;
   }
 
@@ -330,6 +340,11 @@ public class Chat extends Flow implements Presenter, View, Printable,
   }
 
   @Override
+  public boolean reactsTo(Action action) {
+    return EnumUtils.in(action, Action.CONFIGURE, Action.PRINT, Action.CANCEL, Action.CLOSE);
+  }
+
+  @Override
   public void setEnabled(boolean enabled) {
     this.enabled = enabled;
   }
@@ -348,8 +363,10 @@ public class Chat extends Flow implements Presenter, View, Printable,
 
     EventUtils.clearRegistry(registry);
     registry.add(VisibilityChangeEvent.register(this));
-    
+
     maybeScroll(false);
+
+    ReadyEvent.fire(this);
   }
 
   @Override
@@ -392,31 +409,31 @@ public class Chat extends Flow implements Presenter, View, Printable,
     InlineLabel label = new InlineLabel(AUTO_SCROLL_LABEL);
     label.addStyleName(STYLE_AUTO_SCROLL_PREFIX + "label");
     container.add(label);
-    
+
     final Button toggle = new Button(on ? AUTO_SCROLL_ON : AUTO_SCROLL_OFF);
     toggle.addStyleName(STYLE_AUTO_SCROLL_PREFIX + "toggle");
     toggle.addStyleName(on ? STYLE_AUTO_SCROLL_ON : AUTO_SCROLL_OFF);
-    
+
     toggle.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         setAutoScroll(!autoScroll());
-        
+
         toggle.setHtml(autoScroll() ? AUTO_SCROLL_ON : AUTO_SCROLL_OFF);
         toggle.setStyleName(STYLE_AUTO_SCROLL_ON, autoScroll());
         toggle.setStyleName(STYLE_AUTO_SCROLL_OFF, !autoScroll());
-        
+
         maybeScroll(false);
       }
     });
-    
+
     container.add(toggle);
-    
+
     return container;
   }
 
   private void maybeScroll(boolean checkVisibility) {
-    if (autoScroll() && messagePanel.getWidgetCount() > 1 
+    if (autoScroll() && messagePanel.getWidgetCount() > 1
         && (!checkVisibility || DomUtils.isVisible(this))) {
       DomUtils.scrollToBottom(messagePanel);
     }
@@ -447,7 +464,7 @@ public class Chat extends Flow implements Presenter, View, Printable,
   private void setAutoScroll(boolean autoScroll) {
     this.autoScroll = autoScroll;
   }
-  
+
   private void updateHeader(long maxTime) {
     List<String> list = Lists.newArrayList();
 
@@ -463,7 +480,7 @@ public class Chat extends Flow implements Presenter, View, Printable,
       headerView.setMessageTitle(TimeUtils.renderDateTime(maxTime));
     }
   }
-  
+
   private void updateOnlinePanel(Collection<Long> users) {
     ChatUtils.renderOtherUsers(onlinePanel, users, STYLE_PREFIX + "user");
   }

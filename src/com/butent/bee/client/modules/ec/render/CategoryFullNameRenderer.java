@@ -14,7 +14,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.List;
 
 public final class CategoryFullNameRenderer extends AbstractCellRenderer {
-  
+
   public static class Provider implements ProvidesGridColumnRenderer {
     public Provider() {
       super();
@@ -27,12 +27,12 @@ public final class CategoryFullNameRenderer extends AbstractCellRenderer {
 
       int index = DataUtils.getColumnIndex(columnName, dataColumns);
       Assert.nonNegative(index);
-      
+
       String options = (columnDescription == null) ? null : columnDescription.getOptions();
       return new CategoryFullNameRenderer(index, BeeUtils.nvl(options, " - "));
     }
   }
-  
+
   private final int categoryIndex;
   private final String separator;
 
@@ -48,7 +48,7 @@ public final class CategoryFullNameRenderer extends AbstractCellRenderer {
     if (row == null) {
       return null;
     }
-    
+
     Long category = row.getLong(categoryIndex);
     if (category == null) {
       return null;

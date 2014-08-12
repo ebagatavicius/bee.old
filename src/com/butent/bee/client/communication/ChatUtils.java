@@ -22,7 +22,7 @@ public final class ChatUtils {
 
   private static final DateTimeFormat dateTimeFormat =
       DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.MONTH_DAY);
-  
+
   public static int countOtherUsers(Collection<Long> users) {
     int size = BeeUtils.size(users);
     if (size > 0 && users.contains(BeeKeeper.getUser().getUserId())) {
@@ -65,22 +65,22 @@ public final class ChatUtils {
     if (!container.isEmpty()) {
       container.clear();
     }
-   
+
     if (BeeUtils.isEmpty(users)) {
       return;
     }
-    
+
     for (Long userId : users) {
-      if (Objects.equal(userId,  BeeKeeper.getUser().getUserId())) {
+      if (Objects.equal(userId, BeeKeeper.getUser().getUserId())) {
         continue;
       }
-      
+
       UserData userData = Global.getUsers().getUserData(userId);
       if (userData != null) {
         CustomDiv widget = new CustomDiv(itemStyleName);
         widget.setText(userData.getFirstName());
         widget.setTitle(userData.getUserSign());
-        
+
         container.add(widget);
       }
     }
@@ -92,7 +92,7 @@ public final class ChatUtils {
       widget.asWidget().setTitle(TimeUtils.renderDateTime(time));
     }
   }
-  
+
   private ChatUtils() {
   }
 }

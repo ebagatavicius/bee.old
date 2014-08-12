@@ -6,8 +6,8 @@ name="References" label="=classifiers" order="10" module="Classifiers"
   <Item name="Goods" label="=goods" service="items" parameters="g" />
   <Item name="Services" label="=services" service="items" parameters="s" />
 
-  <Item name="ItemCategories" label="=itemCategories" service="form" parameters="CategoryTree"
-    separator="true" data="CategoryTree" />
+  <Item name="ItemCategories" label="=itemCategoryTree" service="form" parameters="CategoryTree"
+    data="CategoryTree" separator="true" />
 
   <Item name="Units" label="=units" service="grid" parameters="Units" separator="true" />
 
@@ -16,10 +16,17 @@ name="References" label="=classifiers" order="10" module="Classifiers"
   <Item name="UpdateExchangeRates" label="=updateExchangeRatesMenu"
     service="update_exchange_rates" />
 
+  <Item name="Warehouses" label="=warehouses" service="grid" parameters="Warehouses"
+    separator="true" module="Trade Ec" />
+
   <Item name="Cities" label="=cities" service="grid" parameters="Cities" separator="true" />
   <Item name="Countries" label="=countries" service="grid" parameters="Countries" />
   
   <Item name="Banks" label="=banks" service="grid" parameters="Banks" separator="true" />
+
+  <Item name="ActivityTypes" label="=activityTypes" service="grid" parameters="ActivityTypes"
+    separator="true" />
+  <Item name="CostCenters" label="=costCenters" service="grid" parameters="CostCenters" />
 
   <Item name="Colors" label="=colors" service="grid" parameters="Colors" separator="true" />
   <Item name="Themes" label="=colorThemes" service="grid" parameters="Themes" />

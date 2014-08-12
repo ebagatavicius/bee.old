@@ -122,28 +122,28 @@ public final class TaskUtils {
     if (DataUtils.isEmpty(rowSet)) {
       return result;
     }
-    
+
     int rtIndex = rowSet.getColumnIndex(COL_RECURRING_TASK);
 
     int fromIndex = rowSet.getColumnIndex(COL_RTD_FROM);
     int untilIndex = rowSet.getColumnIndex(COL_RTD_UNTIL);
     int modeIndex = rowSet.getColumnIndex(COL_RTD_MODE);
-    
+
     for (BeeRow row : rowSet.getRows()) {
       Long rt = row.getLong(rtIndex);
 
       JustDate from = row.getDate(fromIndex);
       JustDate until = row.getDate(untilIndex);
-      
+
       ScheduleDateMode mode =
           EnumUtils.getEnumByIndex(ScheduleDateMode.class, row.getInteger(modeIndex));
-      
+
       ScheduleDateRange sdr = ScheduleDateRange.maybeCreate(from, until, mode);
       if (DataUtils.isId(rt) && sdr != null) {
         result.put(rt, sdr);
       }
     }
-    
+
     return result;
   }
 

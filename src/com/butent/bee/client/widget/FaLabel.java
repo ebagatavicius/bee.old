@@ -23,7 +23,7 @@ public class FaLabel extends Label {
       addStyleName(styleName);
     }
   }
-  
+
   @Override
   public String getIdPrefix() {
     return "fa";

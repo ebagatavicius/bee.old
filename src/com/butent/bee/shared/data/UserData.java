@@ -2,7 +2,6 @@ package com.butent.bee.shared.data;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
@@ -11,7 +10,6 @@ import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.RegulatedWidget;
 import com.butent.bee.shared.rights.RightsObjectType;
@@ -25,6 +23,7 @@ import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,21 +93,20 @@ public class UserData implements BeeSerializable, HasInfo {
   private UserData() {
   }
 
-  public boolean canCreateData(String object) {
-    return hasDataRight(object, RightsState.CREATE);
+  public boolean canCreateData(String viewName) {
+    return hasDataRight(viewName, RightsState.CREATE);
   }
 
-  public boolean canDeleteData(String object) {
-    return hasDataRight(object, RightsState.DELETE);
+  public boolean canDeleteData(String viewName) {
+    return hasDataRight(viewName, RightsState.DELETE);
   }
 
   public boolean canEditColumn(String viewName, String column) {
-    return BeeUtils.anyEmpty(viewName, column)
-        || hasFieldRight(RightsUtils.buildName(viewName, column), RightsState.EDIT);
+    return BeeUtils.anyEmpty(viewName, column) || hasFieldRight(viewName, column, RightsState.EDIT);
   }
 
-  public boolean canEditData(String object) {
-    return hasDataRight(object, RightsState.EDIT);
+  public boolean canEditData(String viewName) {
+    return hasDataRight(viewName, RightsState.EDIT);
   }
 
   @Override
@@ -162,7 +160,7 @@ public class UserData implements BeeSerializable, HasInfo {
           String[] entry = Codec.beeDeserializeCollection(value);
 
           if (!ArrayUtils.isEmpty(entry)) {
-            properties = Maps.newHashMap();
+            properties = new HashMap<>();
 
             for (int j = 0; j < entry.length; j += 2) {
               properties.put(entry[j], entry[j + 1]);
@@ -263,7 +261,7 @@ public class UserData implements BeeSerializable, HasInfo {
     }
     return null;
   }
-  
+
   public long getUserId() {
     return userId;
   }
@@ -272,17 +270,31 @@ public class UserData implements BeeSerializable, HasInfo {
     return BeeUtils.notEmpty(BeeUtils.joinWords(getFirstName(), getLastName()), getLogin());
   }
 
-  public boolean hasDataRight(String object, RightsState state) {
-    return hasRight(RightsObjectType.DATA, object, state);
+  public boolean hasDataRight(String viewName, RightsState state) {
+    return isAnyModuleVisible(RightsUtils.getViewModules(viewName))
+        && hasRight(RightsObjectType.DATA, viewName, state);
+  }
+
+  public boolean isAnyModuleVisible(String input) {
+    if (BeeUtils.isEmpty(input)) {
+      return true;
+    } else {
+      List<ModuleAndSub> list = ModuleAndSub.parseList(input);
+      for (ModuleAndSub ms : list) {
+        if (isModuleVisible(ms)) {
+          return true;
+        }
+      }
+      return false;
+    }
   }
 
   public boolean isColumnVisible(String viewName, String column) {
-    return BeeUtils.anyEmpty(viewName, column)
-        || hasFieldRight(RightsUtils.buildName(viewName, column), RightsState.VIEW);
+    return BeeUtils.anyEmpty(viewName, column) || hasFieldRight(viewName, column, RightsState.VIEW);
   }
 
-  public boolean isDataVisible(String object) {
-    return hasDataRight(object, RightsState.VIEW);
+  public boolean isDataVisible(String viewName) {
+    return hasDataRight(viewName, RightsState.VIEW);
   }
 
   public boolean isMenuVisible(String object) {
@@ -296,11 +308,6 @@ public class UserData implements BeeSerializable, HasInfo {
       return moduleAndSub.isEnabled()
           && hasRight(RightsObjectType.MODULE, moduleAndSub.getName(), RightsState.VIEW);
     }
-  }
-
-  public boolean isModuleVisible(String object) {
-    return Module.isEnabled(object)
-        && hasRight(RightsObjectType.MODULE, object, RightsState.VIEW);
   }
 
   public boolean isWidgetVisible(RegulatedWidget widget) {
@@ -353,10 +360,10 @@ public class UserData implements BeeSerializable, HasInfo {
           Map<Integer, Map<Integer, Set<String>>> map = null;
 
           if (rights != null) {
-            map = Maps.newHashMap();
+            map = new HashMap<>();
 
             for (RightsState state : rights.rowKeySet()) {
-              Map<Integer, Set<String>> row = Maps.newHashMap();
+              Map<Integer, Set<String>> row = new HashMap<>();
 
               for (Entry<RightsObjectType, Set<String>> entry : rights.row(state).entrySet()) {
                 row.put(entry.getKey().ordinal(), entry.getValue());
@@ -397,7 +404,7 @@ public class UserData implements BeeSerializable, HasInfo {
 
   public UserData setProperty(String name, String value) {
     if (this.properties == null) {
-      this.properties = Maps.newHashMap();
+      this.properties = new HashMap<>();
     }
     this.properties.put(name, value);
     return this;
@@ -407,8 +414,9 @@ public class UserData implements BeeSerializable, HasInfo {
     this.rights = rights;
   }
 
-  private boolean hasFieldRight(String object, RightsState state) {
-    return hasRight(RightsObjectType.FIELD, object, state);
+  private boolean hasFieldRight(String viewName, String column, RightsState state) {
+    return hasDataRight(viewName, state)
+        && hasRight(RightsObjectType.FIELD, RightsUtils.buildName(viewName, column), state);
   }
 
   private boolean hasRight(RightsObjectType type, String object, RightsState state) {

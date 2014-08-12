@@ -25,9 +25,9 @@ public class ExceptionHandler implements UncaughtExceptionHandler {
       logger.error(cause);
       cause = cause.getCause();
     }
-    
+
     LogUtils.logStack(logger, LogLevel.ERROR, err);
-    
+
     logger.info(LogFormatter.LOG_SEPARATOR_TAG);
   }
 }

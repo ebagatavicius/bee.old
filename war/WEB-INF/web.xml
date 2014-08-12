@@ -33,7 +33,7 @@
   </security-role>
 
   <data-source>
-    <name>BeeDS</name>
+    <name>_BeeDS</name>
     <class-name>org.postgresql.ds.PGSimpleDataSource</class-name>
     <server-name>127.0.0.1</server-name>
     <port-number>5432</port-number>

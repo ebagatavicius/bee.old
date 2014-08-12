@@ -140,17 +140,17 @@ public class SimpleCache<K, V> implements HasInfo {
       addCount++;
       lastAdd = currentMillis();
     }
-    
+
     if (impl.update(key, value)) {
       return;
     }
-    
+
     if (impl.isFull()) {
       evict();
     }
     impl.add(key, value);
   }
-  
+
   protected synchronized void clearHistory() {
     if (history != null) {
       history.clear();
@@ -160,7 +160,7 @@ public class SimpleCache<K, V> implements HasInfo {
   protected synchronized boolean containsKey(K key) {
     return impl.containsKey(key);
   }
-  
+
   protected synchronized boolean deleteKey(K key) {
     if (impl.deleteKey(key)) {
       if (history != null) {
@@ -206,7 +206,7 @@ public class SimpleCache<K, V> implements HasInfo {
     missCount = 0;
     addCount = 0;
     evictionCount = 0;
-    
+
     lastHit = 0;
     lastMiss = 0;
     lastAdd = 0;

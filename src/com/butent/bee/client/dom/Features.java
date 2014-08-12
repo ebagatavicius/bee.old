@@ -117,7 +117,7 @@ public final class Features {
 
   private static Boolean xhrCrossDomain;
   private static Boolean xhrUploadProgress;
-  
+
   public static String getAudioAac() {
     if (!supportsAudio()) {
       return BeeConst.STRING_EMPTY;
@@ -215,7 +215,7 @@ public final class Features {
         "Input Time", supportsInputTime(),
         "Input Url", supportsInputUrl(),
         "Input Week", supportsInputWeek(),
-        
+
         "Intl", supportsIntl(),
         "Local Storage", supportsLocalStorage(),
         "Microdata", supportsMicrodata(),
@@ -611,7 +611,7 @@ public final class Features {
     }
     return intl;
   }
-  
+
   public static boolean supportsLocalStorage() {
     if (localStorage == null) {
       localStorage = testLocalStorage();
@@ -647,7 +647,7 @@ public final class Features {
     return requestAnimationFrame;
   }
 
-    public static boolean supportsSelectors() {
+  public static boolean supportsSelectors() {
     if (selectors == null) {
       selectors = testSelectors();
     }
@@ -779,6 +779,7 @@ public final class Features {
     return xhrUploadProgress;
   }
 
+//@formatter:off
   private static native JavaScriptObject getWindowProperty(String p) /*-{
     var obj;
 
@@ -795,7 +796,7 @@ public final class Features {
     var ok;
 
     try {
-      ok = (typeof($doc[fnc]) == "function");
+      ok = (typeof ($doc[fnc]) == "function");
     } catch (err) {
       ok = false;
     }
@@ -835,7 +836,7 @@ public final class Features {
     var ok;
 
     try {
-      ok = (typeof($wnd[fnc]) == "function");
+      ok = (typeof ($wnd[fnc]) == "function");
     } catch (err) {
       ok = false;
     }
@@ -854,6 +855,7 @@ public final class Features {
 
     return ok;
   }-*/;
+//@formatter:on
 
   private static boolean testApplicationCache() {
     return isWindowProperty("applicationCache");
@@ -925,6 +927,7 @@ public final class Features {
     return testAudioType("audio/mpeg;");
   }
 
+//@formatter:off
   private static native String testAudioType(String type) /*-{
     var el = $doc.createElement('audio');
     var v = "";
@@ -940,6 +943,7 @@ public final class Features {
     el = null;
     return v;
   }-*/;
+//@formatter:on
 
   private static String testAudioVorbis() {
     return testAudioType("audio/ogg; codecs=\"vorbis\"");
@@ -957,6 +961,7 @@ public final class Features {
     return JsUtils.isIn(Attributes.AUTOCOMPLETE, DomUtils.createElement(Tags.TEXT_AREA));
   }
 
+//@formatter:off
   private static native boolean testCanvas() /*-{
     var elem = $doc.createElement('canvas');
     var ok = !!(elem.getContext && elem.getContext('2d'));
@@ -977,6 +982,7 @@ public final class Features {
     elem = null;
     return ok;
   }-*/;
+//@formatter:on
 
   private static boolean testContentEditable() {
     return JsUtils.isIn("isContentEditable", DomUtils.createElement(Tags.SPAN));
@@ -1027,9 +1033,11 @@ public final class Features {
     return JsUtils.isIn("valueAsDate", DomUtils.createElement("time"));
   }
 
+//@formatter:off
   private static native boolean testFileApi() /*-{
     return typeof FileReader != 'undefined';
   }-*/;
+//@formatter:on
 
   private static boolean testGeolocation() {
     return isNavigatorProperty("geolocation");
@@ -1092,7 +1100,7 @@ public final class Features {
     if (BeeUtils.isEmpty(type)) {
       return false;
     }
-    
+
     InputElement inputElement = Browser.getDocument().createInputElement();
 
     boolean ok;
@@ -1102,7 +1110,7 @@ public final class Features {
     } catch (JavaScriptException ex) {
       ok = false;
     }
-    
+
     return ok && BeeUtils.same(inputElement.getType(), type);
   }
 
@@ -1114,10 +1122,12 @@ public final class Features {
     return testInputType("week");
   }
 
+//@formatter:off
   private static native boolean testIntl() /*-{
     return typeof Intl != 'undefined';
   }-*/;
-  
+//@formatter:on
+
   private static boolean testLocalStorage() {
     return getWindowProperty("localStorage") != null;
   }
@@ -1133,7 +1143,7 @@ public final class Features {
   private static boolean testPostMessage() {
     return isWindowProperty("postMessage");
   }
-  
+
   private static boolean testRequestAnimationFrame() {
     return isWindowFunction("requestAnimationFrame");
   }
@@ -1146,9 +1156,11 @@ public final class Features {
     return isWindowProperty("FormData");
   }
 
+//@formatter:off
   private static native boolean testServerSentEvents() /*-{
     return typeof EventSource !== 'undefined';
   }-*/;
+//@formatter:on
 
   private static boolean testSessionStorage() {
     return getWindowProperty("sessionStorage") != null;
@@ -1183,6 +1195,7 @@ public final class Features {
     return BeeUtils.same(DomUtils.getNamespaceUri(node), nsSvg);
   }
 
+//@formatter:off
   private static native boolean testSvgInTextHtml() /*-{
     var el = $doc.createElement('div');
     el.innerHTML = '<svg></svg>';
@@ -1192,6 +1205,7 @@ public final class Features {
   private static native boolean testUndo() /*-{
     return typeof UndoManager !== 'undefined';
   }-*/;
+//@formatter:on
 
   private static boolean testVideo() {
     Element element = DomUtils.createElement(Tags.VIDEO);
@@ -1221,6 +1235,7 @@ public final class Features {
     return testVideoType("video/ogg; codecs=\"theora\"");
   }
 
+//@formatter:off
   private static native String testVideoType(String type) /*-{
     var elem = $doc.createElement('video');
     if (elem == null || elem == undefined) {
@@ -1233,11 +1248,13 @@ public final class Features {
       return "";
     }
   }-*/;
+//@formatter:on
 
   private static String testVideoWebm() {
     return testVideoType("video/webm; codecs=\"vp8, vorbis\"");
   }
 
+//@formatter:off
   private static native boolean testWebGl() /*-{
     var elem = $doc.createElement('canvas');
     if (elem == null || elem == undefined || !elem.getContext) {
@@ -1257,6 +1274,7 @@ public final class Features {
 
     return ok;
   }-*/;
+//@formatter:on
 
   private static boolean testWebSockets() {
     return isInWindow("WebSocket");
@@ -1266,6 +1284,7 @@ public final class Features {
     return isWindowProperty("Worker");
   }
 
+//@formatter:off
   private static native boolean testXhrCrossDomain() /*-{
     if ($wnd.XMLHttpRequest) {
       return "withCredentials" in new $wnd.XMLHttpRequest;
@@ -1281,6 +1300,7 @@ public final class Features {
       return false;
     }
   }-*/;
+//@formatter:on
 
   private Features() {
   }

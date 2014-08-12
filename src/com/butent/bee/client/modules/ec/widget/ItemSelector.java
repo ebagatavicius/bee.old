@@ -61,11 +61,11 @@ public class ItemSelector extends Flow implements HasSelectionHandlers<InputText
     InputText input = new InputText();
     DomUtils.setSearch(input);
     EcStyles.add(input, STYLE_PRIMARY, "input");
-    
+
     if (!BeeUtils.isEmpty(acKey)) {
       AutocompleteProvider.enableAutocomplete(input, acKey);
     }
-    
+
     input.addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
@@ -76,7 +76,7 @@ public class ItemSelector extends Flow implements HasSelectionHandlers<InputText
     });
     return input;
   }
-  
+
   private void maybeFire() {
     if (!BeeUtils.isEmpty(editor.getValue())) {
       SelectionEvent.fire(this, editor);

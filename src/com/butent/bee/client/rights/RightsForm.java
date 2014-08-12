@@ -1,6 +1,5 @@
 package com.butent.bee.client.rights;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
@@ -41,9 +40,11 @@ import com.butent.bee.shared.rights.RightsObjectType;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class RightsForm extends AbstractFormInterceptor {
@@ -116,6 +117,22 @@ public abstract class RightsForm extends AbstractFormInterceptor {
     widget.setStyleName(STYLE_VALUE_DISABLED, !enabled);
   }
 
+  protected static ModuleAndSub getFirstVisibleModule(String input) {
+    if (BeeUtils.isEmpty(input)) {
+      return null;
+
+    } else {
+      List<ModuleAndSub> list = ModuleAndSub.parseList(input);
+
+      for (ModuleAndSub ms : list) {
+        if (BeeKeeper.getUser().isModuleVisible(ms)) {
+          return ms;
+        }
+      }
+      return null;
+    }
+  }
+
   protected static String getObjectName(Widget widget) {
     String objectName = DomUtils.getDataProperty(widget.getElement(), DATA_KEY_OBJECT);
     if (BeeUtils.isEmpty(objectName)) {
@@ -162,7 +179,7 @@ public abstract class RightsForm extends AbstractFormInterceptor {
     }
   }
 
-  private final List<RightsObject> objects = Lists.newArrayList();
+  private final List<RightsObject> objects = new ArrayList<>();
 
   private HtmlTable table;
 
@@ -280,10 +297,10 @@ public abstract class RightsForm extends AbstractFormInterceptor {
   }
 
   protected List<RightsObject> filterByModule(ModuleAndSub moduleAndSub) {
-    List<RightsObject> result = Lists.newArrayList();
+    List<RightsObject> result = new ArrayList<>();
 
     for (RightsObject object : objects) {
-      if (Objects.equal(object.getModuleAndSub(), moduleAndSub)) {
+      if (Objects.equals(object.getModuleAndSub(), moduleAndSub)) {
         result.add(object);
       }
     }
@@ -292,10 +309,10 @@ public abstract class RightsForm extends AbstractFormInterceptor {
   }
 
   protected List<RightsObject> filterByParent(String parent) {
-    List<RightsObject> result = Lists.newArrayList();
+    List<RightsObject> result = new ArrayList<>();
 
     for (RightsObject object : objects) {
-      if (Objects.equal(object.getParent(), parent)) {
+      if (Objects.equals(object.getParent(), parent)) {
         result.add(object);
       }
     }
@@ -323,7 +340,7 @@ public abstract class RightsForm extends AbstractFormInterceptor {
   }
 
   protected List<ModuleAndSub> getModules() {
-    List<ModuleAndSub> modules = Lists.newArrayList();
+    List<ModuleAndSub> modules = new ArrayList<>();
 
     for (RightsObject object : objects) {
       if (object.getModuleAndSub() != null && !modules.contains(object.getModuleAndSub())) {
@@ -338,7 +355,7 @@ public abstract class RightsForm extends AbstractFormInterceptor {
   }
 
   protected List<TableCellElement> getObjectCells(String objectName) {
-    List<TableCellElement> cells = Lists.newArrayList();
+    List<TableCellElement> cells = new ArrayList<>();
 
     NodeList<Element> nodes = Selectors.getNodes(table,
         Selectors.attributeEquals(Attributes.DATA_PREFIX + DATA_KEY_OBJECT, objectName));
@@ -376,7 +393,7 @@ public abstract class RightsForm extends AbstractFormInterceptor {
   }
 
   protected List<Toggle> getObjectToggles() {
-    List<Toggle> toggles = Lists.newArrayList();
+    List<Toggle> toggles = new ArrayList<>();
 
     for (Widget widget : table) {
       if (widget instanceof Toggle
@@ -467,7 +484,7 @@ public abstract class RightsForm extends AbstractFormInterceptor {
         BeeUtils.bracket(changedNames.size()));
     List<String> messages = Lists.newArrayList(message);
 
-    List<RightsObject> changedObjects = Lists.newArrayList();
+    List<RightsObject> changedObjects = new ArrayList<>();
     for (RightsObject object : objects) {
       if (changedNames.contains(object.getName())) {
         changedObjects.add(object);

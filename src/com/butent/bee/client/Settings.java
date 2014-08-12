@@ -1,9 +1,13 @@
 package com.butent.bee.client;
 
 import com.google.common.base.Splitter;
-import com.google.gwt.i18n.client.Dictionary;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.json.client.JSONBoolean;
+import com.google.gwt.json.client.JSONNumber;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
 
-import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.logging.LogLevel;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -12,172 +16,184 @@ import com.butent.bee.shared.utils.Property;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.MissingResourceException;
-
-/**
- * Manages a settings array.
- */
 
 public final class Settings {
-  
-  private static final Splitter VALUE_SPLITTER = 
-      Splitter.on(BeeConst.CHAR_COMMA).omitEmptyStrings().trimResults(); 
 
-  private static Dictionary settings;
+  private static final Splitter VALUE_SPLITTER =
+      Splitter.on(BeeConst.CHAR_COMMA).omitEmptyStrings().trimResults();
+
+  private static JSONObject settings;
   private static boolean initialized;
 
   public static int getActionSensitivityMillis() {
-    return getPropertyInt("actionSensitivityMillis");
+    return getInt("actionSensitivityMillis");
   }
 
   public static String getAppName() {
-    return getProperty("appName");
+    return getString("appName");
   }
-  
+
+  public static boolean getBoolean(String key) {
+    JSONValue value = getValue(key);
+    if (value != null) {
+      JSONBoolean b = value.isBoolean();
+      return (b == null) ? false : b.booleanValue();
+    } else {
+      return false;
+    }
+  }
+
+  public static Double getDouble(String key) {
+    JSONValue value = getValue(key);
+    if (value != null) {
+      JSONNumber number = value.isNumber();
+      return (number == null) ? null : number.doubleValue();
+    } else {
+      return null;
+    }
+  }
+
   public static List<Property> getInfo() {
     List<Property> info = new ArrayList<>();
     if (checkSettings()) {
       for (String key : settings.keySet()) {
-        info.add(new Property(key, settings.get(key)));
+        info.add(new Property(key, settings.get(key).toString()));
       }
     }
     return info;
   }
 
+  public static int getInt(String key) {
+    Double d = getDouble(key);
+    return (d == null) ? BeeConst.UNDEF : BeeUtils.toInt(d);
+  }
+
   public static int getLogCapacity() {
-    return getPropertyInt("logCapacity");
+    return getInt("logCapacity");
   }
 
   public static LogLevel getLogLevel() {
-    String value = getProperty("logLevel");
+    String value = getString("logLevel");
     return BeeUtils.isEmpty(value) ? null : LogLevel.parse(value);
   }
 
   public static String getLogoImage() {
-    return getProperty("logoImage");
+    return getString("logoImage");
   }
 
   public static String getLogoOpen() {
-    return getProperty("logoOpen");
+    return getString("logoOpen");
   }
 
   public static String getLogoTitle() {
-    return getProperty("logoTitle");
+    return getString("logoTitle");
   }
 
-  public static List<String> getOnStartup() {
-    return getList("onStartup");
-  }
-  
-  public static String getProperty(String name) {
-    Assert.notEmpty(name);
-    if (checkSettings()) {
-      return getQuietly(name);
-    } else {
-      return BeeConst.STRING_EMPTY;
-    }
+  public static long getLong(String key) {
+    Double d = getDouble(key);
+    return (d == null) ? BeeConst.UNDEF : BeeUtils.toLong(d);
   }
 
-  public static boolean getPropertyBoolean(String name) {
-    return BeeConst.isTrue(getProperty(name));
-  }
-  
-  public static int getPropertyInt(String name) {
-    String value = getProperty(name);
-    if (BeeUtils.isInt(value)) {
-      return BeeUtils.toInt(value);
-    } else {
-      return BeeConst.UNDEF;
-    }
+  public static JSONObject getOnEmptyWorkspace() {
+    return getObject("onEmptyWorkspace");
   }
 
-  public static long getPropertyLong(String name) {
-    String value = getProperty(name);
-    if (BeeUtils.isLong(value)) {
-      return BeeUtils.toLong(value);
-    } else {
-      return BeeConst.UNDEF;
-    }
+  public static JSONObject getOnStartup() {
+    return getObject("onStartup");
   }
 
   public static int getProviderMaxPrefetchSteps() {
-    return getPropertyInt("providerMaxPrefetchSteps");
+    return getInt("providerMaxPrefetchSteps");
   }
-  
+
   public static int getProviderMinPrefetchSteps() {
-    return getPropertyInt("providerMinPrefetchSteps");
+    return getInt("providerMinPrefetchSteps");
   }
 
   public static int getProviderRepeatMillis() {
-    return getPropertyInt("providerRepeatMillis");
+    return getInt("providerRepeatMillis");
   }
 
   public static int getProviderSensitivityMillis() {
-    return getPropertyInt("providerSensitivityMillis");
+    return getInt("providerSensitivityMillis");
   }
 
   public static List<String> getScripts() {
     return getList("scripts");
   }
-  
-  public static long getStartMillis() {
-    return getPropertyLong("startMillis");
-  }
-  
+
   public static List<String> getStyleSheets() {
     return getList("styleSheets");
   }
 
   public static String getVersion() {
-    return getProperty("version");
+    return getString("version");
   }
-  
+
   public static String getWebSocketUrl() {
-    return getProperty("webSocketUrl");
+    return getString("webSocketUrl");
   }
 
   public static boolean minimizeNumberOfConcurrentRequests() {
-    return getPropertyBoolean("minimizeNumberOfConcurrentRequests");
+    return getBoolean("minimizeNumberOfConcurrentRequests");
   }
 
   public static boolean showUserPhoto() {
-    return getPropertyBoolean("showUserPhoto");
+    return getBoolean("showUserPhoto");
   }
 
   private static boolean checkSettings() {
     if (!initialized) {
-      readSettings();
+      JavaScriptObject jso = read();
+      if (jso != null) {
+        settings = new JSONObject(jso);
+      }
       initialized = true;
     }
     return settings != null;
   }
 
-  private static List<String> getList(String name) {
-    String value = getProperty(name);
+  private static List<String> getList(String key) {
+    String value = getString(key);
     if (BeeUtils.isEmpty(value)) {
       return Collections.emptyList();
     } else {
       return VALUE_SPLITTER.splitToList(value);
     }
   }
-  
-  private static String getQuietly(String name) {
-    String value;
-    try {
-      value = settings.get(name);
-    } catch (MissingResourceException ex) {
-      value = BeeConst.STRING_EMPTY;
+
+  private static JSONObject getObject(String key) {
+    JSONValue value = getValue(key);
+    if (value != null) {
+      return value.isObject();
+    } else {
+      return null;
     }
-    return value;
   }
 
-  private static void readSettings() {
-    try {
-      settings = Dictionary.getDictionary("BeeSettings");
-    } catch (MissingResourceException ex) {
-      settings = null;
+  private static String getString(String key) {
+    JSONValue value = getValue(key);
+    if (value != null) {
+      JSONString string = value.isString();
+      return (string == null) ? null : string.stringValue();
+    } else {
+      return null;
     }
   }
+
+  private static JSONValue getValue(String key) {
+    if (checkSettings() && settings.containsKey(key)) {
+      return settings.get(key);
+    } else {
+      return null;
+    }
+  }
+
+//@formatter:off
+  private static native JavaScriptObject read() /*-{
+    return $wnd['BeeSettings'];
+  }-*/;
+//@formatter:on
 
   private Settings() {
   }

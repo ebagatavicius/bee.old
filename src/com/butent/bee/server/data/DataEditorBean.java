@@ -959,7 +959,7 @@ public class DataEditorBean {
 
   private boolean refreshUpdates(Map<String, TableInfo> updates, BeeView view) {
     long id = 0;
-    SqlSelect ss = view.getQuery().resetFields();
+    SqlSelect ss = view.getQuery(usr.getCurrentUserId()).resetFields();
 
     for (TableInfo tblInfo : updates.values()) {
       if (id == 0 && BeeUtils.isEmpty(tblInfo.relation)) {
@@ -981,7 +981,7 @@ public class DataEditorBean {
       }
     }
     Assert.state(DataUtils.isId(id));
-    SimpleRow res = qs.getRow(ss.setWhere(view.getCondition(Filter.compareId(id), null)));
+    SimpleRow res = qs.getRow(ss.setWhere(view.getCondition(Filter.compareId(id))));
 
     if (res == null) {
       logger.warning("refreshUpdates:", ss.getQuery(), "getRow is null");

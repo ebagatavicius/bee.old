@@ -14,8 +14,8 @@ public class ActiveWidgetChangeEvent extends GwtEvent<ActiveWidgetChangeEvent.Ha
     void onActiveWidgetChange(ActiveWidgetChangeEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static void fireActivate(HasActiveWidgetChangeHandlers source, IdentifiableWidget widget) {
     String widgetId = (widget == null) ? null : widget.getId();
     Domain domain = (widget instanceof HasDomain) ? ((HasDomain) widget).getDomain() : null;

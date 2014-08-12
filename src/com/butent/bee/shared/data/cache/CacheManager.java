@@ -38,7 +38,7 @@ public class CacheManager implements HandlesAllDataEvents {
   private final class Entry implements HasExtendedInfo, HasViewName, CellUpdateEvent.Handler {
 
     private final DataInfo dataInfo;
-    
+
     private final int maximumSize;
     private final ReplacementPolicy replacementPolicy;
 
@@ -47,11 +47,11 @@ public class CacheManager implements HandlesAllDataEvents {
 
     private Entry(DataInfo dataInfo) {
       this.dataInfo = dataInfo;
-      
+
       this.maximumSize = BeeUtils.nvl(dataInfo.getCacheMaximumSize(), DEFAULT_MAXIMUM_SIZE);
       this.replacementPolicy = BeeUtils.nvl(dataInfo.getCacheReplacementPolicy(),
           DEFAULT_REPLACEMENT_POLICY);
-      
+
       this.dataRows = new CachedData(maximumSize, replacementPolicy);
     }
 
@@ -301,13 +301,13 @@ public class CacheManager implements HandlesAllDataEvents {
       return ok;
     }
   }
-  
+
   private static final BeeLogger logger = LogUtils.getLogger(CacheManager.class);
 
   private static final int DEFAULT_MAXIMUM_SIZE = 0x3fff;
   private static final ReplacementPolicy DEFAULT_REPLACEMENT_POLICY =
       ReplacementPolicy.FIRST_IN_FIRST_OUT;
-  
+
   private final Map<String, Entry> entries = Maps.newHashMap();
 
   public CacheManager() {
@@ -317,7 +317,7 @@ public class CacheManager implements HandlesAllDataEvents {
   public void add(DataInfo dataInfo, BeeRowSet rowSet) {
     add(dataInfo, rowSet, null, null, BeeConst.UNDEF, BeeConst.UNDEF);
   }
-  
+
   public void add(DataInfo dataInfo, BeeRowSet rowSet, Filter filter, Order order, int offset,
       int limit) {
     if (dataInfo == null || rowSet == null) {
@@ -378,7 +378,7 @@ public class CacheManager implements HandlesAllDataEvents {
 
     return entry.firstNotCached(filter, order, offset, limit, forward);
   }
-  
+
   public List<ExtendedProperty> getExtendedInfo() {
     List<ExtendedProperty> info = Lists.newArrayList();
     info.add(new ExtendedProperty("Cache", "Entries", BeeUtils.toString(entries.size())));
@@ -394,7 +394,7 @@ public class CacheManager implements HandlesAllDataEvents {
   public BeeRowSet getRowSet(String viewName) {
     return getRowSet(viewName, null, null, BeeConst.UNDEF, BeeConst.UNDEF);
   }
-  
+
   public BeeRowSet getRowSet(String viewName, Filter filter, Order order, int offset, int limit) {
     Assert.notEmpty(viewName);
     Entry entry = get(viewName);

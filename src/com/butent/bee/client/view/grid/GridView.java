@@ -44,45 +44,47 @@ public interface GridView extends DataView, HasAddStartHandlers, HasAddEndHandle
   }
 
   boolean addColumn(ColumnDescription columnDescription, String dynGroup, int beforeIndex);
-  
+
   void create(Order order);
 
   void ensureRelId(IdCallback callback);
-  
+
   int estimatePageSize(int containerWidth, int containerHeight);
 
   void formCancel();
 
   void formConfirm();
-  
+
+  FormView getActiveForm();
+
   List<BeeColumn> getDataColumns();
 
   int getDataIndex(String source);
 
   List<String> getDynamicColumnGroups();
-  
+
   FormView getForm(boolean edit);
 
   CellGrid getGrid();
 
   GridDescription getGridDescription();
-  
+
   GridInterceptor getGridInterceptor();
-  
+
   String getGridKey();
 
   String getGridName();
 
   String getRelColumn();
-  
+
   Collection<RowInfo> getSelectedRows(SelectedRows mode);
 
   void initData(int rowCount, BeeRowSet rowSet);
-  
+
   boolean isAdding();
 
   boolean isChild();
-  
+
   boolean isReadOnly();
 
   boolean isRowEditable(IsRow row, NotificationListener notificationListener);

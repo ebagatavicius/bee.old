@@ -9,6 +9,7 @@ import static com.butent.bee.shared.modules.administration.AdministrationConstan
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.ec.EcConstants.*;
 
+import com.butent.bee.server.Config;
 import com.butent.bee.server.data.IdGeneratorBean;
 import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.data.SystemBean;
@@ -937,6 +938,9 @@ public class TecDocBean {
 
   @Timeout
   private void doTimerEvent(Timer timer) {
+    if (!Config.isInitialized()) {
+      return;
+    }
     if (timer.getInfo() instanceof EcSupplier) {
       switch ((EcSupplier) timer.getInfo()) {
         case EOLTAS:
@@ -1101,10 +1105,10 @@ public class TecDocBean {
         .addFromInner(tcdTypeArticles,
             SqlUtils.joinUsing(art, tcdTypeArticles, TCD_ARTICLE_ID));
 
-    tweakSql(true);
+    qs.tweakSql(true);
     analyzeQuery(query);
     String typArt = qs.sqlCreateTemp(query);
-    tweakSql(false);
+    qs.tweakSql(false);
 
     qs.sqlIndex(typArt, TCD_TYPE_ID);
     String tcdTypes = SqlUtils.table(TCD_SCHEMA, TBL_TCD_TYPES);
@@ -1461,12 +1465,6 @@ public class TecDocBean {
     qs.sqlDropTemp(tmp);
     tmp = zz;
 
-    qs.updateData(new SqlUpdate(tmp)
-        .addExpression(COL_TCD_ARTICLE,
-            SqlUtils.field(TBL_TCD_ARTICLES, sys.getIdName(TBL_TCD_ARTICLES)))
-        .setFrom(TBL_TCD_ARTICLES, SqlUtils.and(SqlUtils.notNull(tmp, idName),
-            SqlUtils.join(tmp, idName, TBL_TCD_ARTICLES, TCD_TECDOC_ID))));
-
     qs.loadData(TBL_TCD_ARTICLE_SUPPLIERS, new SqlSelect().setLimit(100000)
         .addFields(tmp, COL_TCD_ARTICLE, COL_TCD_COST, COL_TCD_PRICE, COL_TCD_SUPPLIER_ID)
         .addConstant(supplier.ordinal(), COL_TCD_SUPPLIER)
@@ -1679,12 +1677,5 @@ public class TecDocBean {
       }
       tcd.cleanup(entry.preparations);
     }
-  }
-
-  private void tweakSql(boolean on) {
-    if (SqlEngine.POSTGRESQL != SqlBuilderFactory.getBuilder().getEngine()) {
-      return;
-    }
-    qs.doSql("set enable_seqscan=" + (on ? "off" : "on"));
   }
 }

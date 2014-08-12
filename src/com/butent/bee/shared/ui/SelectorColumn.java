@@ -19,7 +19,7 @@ import java.util.Map;
 public final class SelectorColumn implements BeeSerializable, HasInfo {
 
   private enum Serial {
-    SOURCE, CLASSES, STYLE, HOR_ALIGN, VERT_ALIGN, RENDERER_DESCR, RENDER, RENDER_TOKENS, 
+    SOURCE, CLASSES, STYLE, HOR_ALIGN, VERT_ALIGN, RENDERER_DESCR, RENDER, RENDER_TOKENS,
     ENUM_KEY, RENDER_COLUMNS
   }
 
@@ -39,7 +39,7 @@ public final class SelectorColumn implements BeeSerializable, HasInfo {
     if (!BeeUtils.isEmpty(renderTokens)) {
       selectorColumn.setRenderTokens(renderTokens);
     }
-    
+
     return selectorColumn;
   }
 
@@ -69,7 +69,7 @@ public final class SelectorColumn implements BeeSerializable, HasInfo {
 
   private SelectorColumn() {
   }
-  
+
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
@@ -192,7 +192,7 @@ public final class SelectorColumn implements BeeSerializable, HasInfo {
   public void replaceSource(String oldId, String newId) {
     if (!BeeUtils.isEmpty(oldId) && !BeeUtils.isEmpty(newId)
         && !BeeUtils.equalsTrim(oldId, newId)) {
-      
+
       if (BeeUtils.same(getSource(), oldId)) {
         setSource(newId.trim());
       }
@@ -205,7 +205,7 @@ public final class SelectorColumn implements BeeSerializable, HasInfo {
           token.replaceSource(oldId, newId);
         }
       }
-      
+
       if (BeeUtils.containsSame(getRenderColumns(), oldId)) {
         setRenderColumns(NameUtils.rename(getRenderColumns(), oldId, newId));
       }

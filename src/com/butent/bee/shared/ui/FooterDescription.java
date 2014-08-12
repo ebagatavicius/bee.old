@@ -21,7 +21,7 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
   private static final String ATTR_AGGREGATE = "aggregate";
   private static final String ATTR_EXPRESSION = "expression";
   private static final String ATTR_TYPE = "type";
-  
+
   public static FooterDescription restore(String s) {
     if (BeeUtils.isEmpty(s)) {
       return null;
@@ -51,11 +51,11 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
 
   private FooterDescription() {
   }
-  
+
   public FooterDescription copy() {
     return restore(serialize());
   }
-  
+
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
@@ -133,7 +133,7 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
         "Horizontal Alignment", getHorAlign(),
         "Scale", getScale(),
         "Options", getOptions());
-    
+
     PropertyUtils.addWhenEmpty(info, getClass());
     return info;
   }
@@ -160,7 +160,7 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
       setExpression(Calculation.renameColumn(getExpression(), oldId, newId));
     }
   }
-  
+
   @Override
   public String serialize() {
     Serial[] members = Serial.values();
@@ -228,7 +228,7 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
         setText(value);
       } else if (BeeUtils.same(key, UiConstants.ATTR_HTML)) {
         setHtml(value);
-      
+
       } else if (BeeUtils.same(key, UiConstants.ATTR_FORMAT)) {
         setFormat(value);
       } else if (BeeUtils.same(key, UiConstants.ATTR_HORIZONTAL_ALIGNMENT)) {

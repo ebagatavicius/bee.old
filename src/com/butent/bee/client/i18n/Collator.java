@@ -71,6 +71,7 @@ public final class Collator implements Comparator<String> {
       return this;
     }
 
+    //@formatter:off
     public final native void setCaseFirst(String caseFirst) /*-{
       this.caseFirst = caseFirst;
     }-*/;
@@ -94,6 +95,7 @@ public final class Collator implements Comparator<String> {
     public final native void setUsage(String usage) /*-{
       this.usage = usage;
     }-*/;
+    //@formatter:on
 
     public final Options usageSearch() {
       setUsage("search");
@@ -168,12 +170,13 @@ public final class Collator implements Comparator<String> {
     }
   }
 
+//@formatter:off
   private native int compareImpl(String source, String target) /*-{
     return source.localeCompare(target);
   }-*/;
 
   private native int compareImpl(String source, String target, String loc) /*-{
-    // chromium issue 314210    
+    // chromium issue 314210
     var z;
     try {
       z = source.localeCompare(target, loc);
@@ -186,6 +189,7 @@ public final class Collator implements Comparator<String> {
   private native int compareImpl(String source, String target, String loc, Options opt) /*-{
     return source.localeCompare(target, loc, opt);
   }-*/;
+//@formatter:on
 
   private String normalize(String s) {
     return (caseSensitivity == Case.INSENSITIVE) ? s.toLowerCase() : s;

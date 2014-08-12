@@ -86,7 +86,7 @@ public class TestArrayUtils {
   @Test
   public void testGetQuietly() {
     assertEquals("simple", ArrayUtils.getQuietly(strMas1, 3));
-    assertEquals(null, ArrayUtils.getQuietly(null, 5));
+    assertNull(ArrayUtils.getQuietly(null, 5));
   }
 
   @Test

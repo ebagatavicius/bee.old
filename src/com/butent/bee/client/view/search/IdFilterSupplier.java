@@ -20,21 +20,21 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.List;
 
 public class IdFilterSupplier extends AbstractFilterSupplier {
-  
+
   private final InputLong editor;
 
   private Long oldValue;
 
   public IdFilterSupplier(String viewName, BeeColumn column, String label, String options) {
     super(viewName, column, label, options);
-    
+
     this.editor = new InputLong();
     editor.addStyleName(DEFAULT_STYLE_PREFIX + "id-editor");
 
     if (!BeeUtils.isEmpty(viewName)) {
       AutocompleteProvider.enableAutocomplete(editor, viewName.trim() + "-id-filter");
     }
-    
+
     editor.addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
@@ -49,13 +49,13 @@ public class IdFilterSupplier extends AbstractFilterSupplier {
   protected List<? extends IdentifiableWidget> getAutocompletableWidgets() {
     return Lists.newArrayList(editor);
   }
-  
+
   @Override
   public FilterValue getFilterValue() {
     String value = getEditorValue();
-    return value.isEmpty() ?  null : FilterValue.of(value);
+    return value.isEmpty() ? null : FilterValue.of(value);
   }
-  
+
   @Override
   public String getLabel() {
     return getEditorValue();
@@ -64,11 +64,11 @@ public class IdFilterSupplier extends AbstractFilterSupplier {
   @Override
   public void onRequest(Element target, Scheduler.ScheduledCommand onChange) {
     setOldValue(BeeUtils.toLongOrNull(getEditorValue()));
-    
+
     openDialog(target, editor.asWidget(), onChange);
     editor.setFocus(true);
   }
-  
+
   @Override
   public Filter parse(FilterValue input) {
     if (input != null && BeeUtils.isLong(input.getValue())) {
@@ -77,7 +77,7 @@ public class IdFilterSupplier extends AbstractFilterSupplier {
       return null;
     }
   }
-  
+
   @Override
   public void setFilterValue(FilterValue filterValue) {
     editor.setValue((filterValue == null) ? null : filterValue.getValue());
@@ -91,7 +91,7 @@ public class IdFilterSupplier extends AbstractFilterSupplier {
       editor.setValue(BeeUtils.toString(getOldValue()));
     }
   }
-  
+
   private String getEditorValue() {
     return BeeUtils.trim(editor.getValue());
   }
@@ -115,7 +115,7 @@ public class IdFilterSupplier extends AbstractFilterSupplier {
       }
     }
   }
-  
+
   private void setOldValue(Long oldValue) {
     this.oldValue = oldValue;
   }

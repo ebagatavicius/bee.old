@@ -17,7 +17,7 @@
 
   <xs:attributeGroup name="visibility">
     <xs:attribute name="visible" type="xs:boolean" />
-    <xs:attribute name="module" type="type:module" />
+    <xs:attribute name="module" type="type:modules" />
     <xs:attribute name="data" type="type:dataView" />
     <xs:attribute name="for" type="type:nameType" />
   </xs:attributeGroup>
@@ -173,6 +173,7 @@
     <xs:attributeGroup ref="ui:alignment" />
     <xs:attributeGroup ref="ui:dimension" />
     <xs:attributeGroup ref="ui:appearance" />
+    <xs:attribute name="kind" type="ui:cellKind" />
     <xs:attributeGroup ref="visibility" />
   </xs:complexType>
 
@@ -386,7 +387,7 @@
   <xs:element name="IntegerLabel" type="valueLabel" substitutionGroup="widget" />
   <xs:element name="LongLabel" type="valueLabel" substitutionGroup="widget" />
   <xs:element name="DoubleLabel" type="valueLabel" substitutionGroup="widget" />
-  <xs:element name="CurrencyLabel" type="valueLabel" substitutionGroup="widget" />
+  <xs:element name="MoneyLabel" type="valueLabel" substitutionGroup="widget" />
 
   <xs:element name="DecimalLabel" substitutionGroup="widget">
     <xs:complexType>
@@ -499,6 +500,7 @@
                 <xs:attribute name="widthUnit" type="ui:cssUnit" />
                 <xs:attributeGroup ref="ui:appearance" />
                 <xs:attributeGroup ref="ui:cellAppearance" />
+                <xs:attribute name="kind" type="ui:cellKind" />
               </xs:complexType>
             </xs:element>
 
@@ -644,17 +646,17 @@
   <xs:element name="InputLong" type="inputWidget" substitutionGroup="widget" />
   <xs:element name="InputDouble" type="inputWidget" substitutionGroup="widget" />
 
-  <xs:element name="InputDecimal" substitutionGroup="widget">
-    <xs:complexType>
-      <xs:complexContent>
-        <xs:extension base="inputWidget">
-          <xs:attribute name="scale" type="xs:unsignedByte" />
-        </xs:extension>
-      </xs:complexContent>
-    </xs:complexType>
-  </xs:element>
+  <xs:complexType name="fractionalInput">
+    <xs:complexContent>
+      <xs:extension base="inputWidget">
+        <xs:attribute name="scale" type="xs:unsignedByte" />
+        <xs:attribute name="currencySource" type="type:nameType" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
 
-  <xs:element name="InputCurrency" type="inputWidget" substitutionGroup="widget" />
+  <xs:element name="InputDecimal" type="fractionalInput" substitutionGroup="widget" />
+  <xs:element name="InputMoney" type="fractionalInput" substitutionGroup="widget" />
 
   <xs:element name="InputSpinner" type="quantizedInput" substitutionGroup="widget" />
   <xs:element name="InputRange" type="quantizedInput" substitutionGroup="widget" />
@@ -1007,6 +1009,34 @@
       <xs:complexContent>
         <xs:extension base="labelType">
           <xs:attribute name="char" type="ui:fontAwesome" use="required" />
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Relations" substitutionGroup="widget">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="widgetType">
+          <xs:sequence>
+            <xs:element name="Relation" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:complexContent>
+                  <xs:extension base="selectorType">
+                    <xs:attribute name="viewName" type="type:dataView" use="required" />
+                  </xs:extension>
+                </xs:complexContent>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="relColumn" type="type:nameType" use="required" />
+          <xs:attribute name="inline" type="xs:boolean" />
+          <xs:attribute name="defaultRelations">
+            <xs:simpleType><xs:list itemType="type:dataView" /></xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="blockedRelations">
+            <xs:simpleType><xs:list itemType="type:dataView" /></xs:simpleType>
+          </xs:attribute>
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>

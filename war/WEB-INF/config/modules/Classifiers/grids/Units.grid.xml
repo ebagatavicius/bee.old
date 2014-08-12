@@ -5,9 +5,9 @@
   newRowPopup="true" editPopup="true"
   >
   <g:columns>
-    <DataColumn name="Unit" source="Name" caption="=unitName" visible="true" />
-    <DataColumn name="Factor" caption="=unitFactor" />
-    <RelColumn  name="BaseUnit" caption="=baseUnit" newRowEnabled="false" />
-    <DataColumn name="Caption" caption="=caption" />
+    <DataColumn name="Unit" source="Name" visible="true" />
+    <DataColumn name="Factor" />
+    <RelColumn  name="BaseUnit" newRowEnabled="false" />
+    <DataColumn name="Caption" />
   </g:columns>
 </g:Grid>

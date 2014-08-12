@@ -9,9 +9,23 @@
     <SimpleJoin joinType="LEFT" name="Parent">
       <SimpleColumn name="Name" alias="ParentName" />
     </SimpleJoin>
+
+    <SimpleColumn name="Department" />
+    <SimpleJoin joinType="LEFT" name="Department">
+      <SimpleColumn name="DepartmentName" />
+    </SimpleJoin>
+    <SimpleColumn name="ActivityType" />
+    <SimpleJoin joinType="LEFT" name="ActivityType">
+      <SimpleColumn name="ActivityTypeName" />
+    </SimpleJoin>
+    <SimpleColumn name="CostCenter" />
+    <SimpleJoin joinType="LEFT" name="CostCenter">
+      <SimpleColumn name="CostCenterName" />
+    </SimpleJoin>
   </Columns>
+
   <Order>
-    <OrderBy column="ParentName" />
+    <OrderBy column="ParentName" nulls="first" />
     <OrderBy column="Name" />
   </Order>
 </View>

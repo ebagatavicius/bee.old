@@ -31,6 +31,7 @@ import com.butent.bee.client.grid.column.AbstractColumn;
 import com.butent.bee.client.modules.trade.TradeUtils;
 import com.butent.bee.client.modules.transport.charts.ChartBase;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.presenter.TreePresenter;
 import com.butent.bee.client.render.ProvidesGridColumnRenderer;
 import com.butent.bee.client.render.RendererFactory;
@@ -42,6 +43,10 @@ import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.validation.CellValidateEvent;
 import com.butent.bee.client.validation.CellValidation;
 import com.butent.bee.client.view.TreeView;
+import com.butent.bee.client.view.ViewCallback;
+import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.ViewHelper;
+import com.butent.bee.client.view.ViewSupplier;
 import com.butent.bee.client.view.edit.EditableColumn;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
@@ -49,6 +54,7 @@ import com.butent.bee.client.view.grid.interceptor.FileGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
@@ -56,6 +62,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.event.RowTransformEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.LongValue;
 import com.butent.bee.shared.data.value.Value;
@@ -134,6 +141,17 @@ public final class TransportHandler {
           }
         }
       });
+    }
+  }
+
+  private static class RowTransformHandler implements RowTransformEvent.Handler {
+    @Override
+    public void onRowTransform(RowTransformEvent event) {
+      if (event.hasView(VIEW_ASSESSMENTS)) {
+        event.setResult(DataUtils.join(Data.getDataInfo(VIEW_ASSESSMENTS), event.getRow(),
+            Lists.newArrayList("ID", COL_STATUS, COL_DATE, "CustomerName", "OrderNotes"),
+            BeeConst.STRING_SPACE));
+      }
     }
   }
 
@@ -408,9 +426,24 @@ public final class TransportHandler {
     MenuService.ASSESSMENTS_GRID.setHandler(new MenuHandler() {
       @Override
       public void onSelection(String parameters) {
-        openAssessment(parameters);
+        openAssessment(parameters, ViewHelper.getPresenterCallback());
       }
     });
+
+    ViewFactory.registerSupplier(GridFactory.getSupplierKey(GRID_ASSESSMENT_REQUESTS, null),
+        new ViewSupplier() {
+          @Override
+          public void create(ViewCallback callback) {
+            openAssessment(GRID_ASSESSMENT_REQUESTS, ViewFactory.getPresenterCallback(callback));
+          }
+        });
+    ViewFactory.registerSupplier(GridFactory.getSupplierKey(GRID_ASSESSMENT_ORDERS, null),
+        new ViewSupplier() {
+          @Override
+          public void create(ViewCallback callback) {
+            openAssessment(GRID_ASSESSMENT_ORDERS, ViewFactory.getPresenterCallback(callback));
+          }
+        });
 
     SelectorEvent.register(new TransportSelectorHandler());
 
@@ -492,11 +525,13 @@ public final class TransportHandler {
 
     BeeKeeper.getBus().registerRowActionHandler(new TransportActionHandler(), false);
 
+    BeeKeeper.getBus().registerRowTransformHandler(new RowTransformHandler(), false);
+
     ChartBase.registerBoards();
     CargoIncomesObserver.register();
   }
 
-  private static void openAssessment(final String gridName) {
+  private static void openAssessment(final String gridName, final PresenterCallback callback) {
     final GridInterceptor interceptor;
 
     switch (gridName) {
@@ -538,11 +573,12 @@ public final class TransportHandler {
             for (BeeRow row : result) {
               departments.add(row.getLong(0));
             }
-            GridFactory.openGrid(gridName, interceptor, GridOptions
-                .forFilter(Filter.or(Lists.newArrayList(
+            GridFactory.openGrid(gridName, interceptor,
+                GridOptions.forFilter(Filter.or(Lists.newArrayList(
                     Filter.equals(COL_COMPANY_PERSON, userPerson),
                     Filter.any(COL_DEPARTMENT, departments),
-                    Filter.equals(COL_USER, user), Filter.equals(COL_GROUP, user)))));
+                    Filter.equals(COL_USER, user), Filter.equals(COL_GROUP, user)))),
+                callback);
           }
         });
   }

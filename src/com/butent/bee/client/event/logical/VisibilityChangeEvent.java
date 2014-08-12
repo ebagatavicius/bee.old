@@ -18,8 +18,8 @@ public class VisibilityChangeEvent extends Event<VisibilityChangeEvent.Handler> 
     void onVisibilityChange(VisibilityChangeEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   private static final Map<String, HandlerRegistration> registry = Maps.newHashMap();
 
   public static void hideAndFire(Widget widget) {
@@ -36,7 +36,7 @@ public class VisibilityChangeEvent extends Event<VisibilityChangeEvent.Handler> 
   public static HandlerRegistration register(Handler handler) {
     return BeeKeeper.getBus().addHandler(TYPE, handler, false);
   }
-  
+
   public static void register(String key, Handler handler) {
     registry.put(key, register(handler));
   }
@@ -58,7 +58,7 @@ public class VisibilityChangeEvent extends Event<VisibilityChangeEvent.Handler> 
       handlerRegistration.removeHandler();
     }
   }
-  
+
   private final String id;
   private final boolean visible;
 

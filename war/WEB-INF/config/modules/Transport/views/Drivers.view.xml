@@ -6,6 +6,7 @@
   editForm="Driver" newRowForm="Driver"
   caption="=drivers" newRowCaption="=trNewDriver"
   >
+  <Relation renderColumns="FirstName LastName" />
   <Columns>
     <SimpleColumn name="CompanyPerson" />
     <SimpleJoin name="CompanyPerson" joinType="LEFT">

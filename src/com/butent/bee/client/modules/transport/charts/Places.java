@@ -15,18 +15,18 @@ final class Places {
 
   private static BeeRowSet countries;
   private static BeeRowSet cities;
-  
+
   private static int countryCodeIndex = BeeConst.UNDEF;
   private static int countryNameIndex = BeeConst.UNDEF;
   private static int cityNameIndex = BeeConst.UNDEF;
-  
+
   private static ValueType placeDateType = ValueType.DATE_TIME;
 
   static String getCountryFlag(Long countryId) {
     if (!DataUtils.isId(countryId) || DataUtils.isEmpty(countries)) {
       return null;
     }
-    
+
     BeeRow row = countries.getRowById(countryId);
     if (row == null) {
       return null;
@@ -39,7 +39,7 @@ final class Places {
       return Flags.get(code);
     }
   }
-  
+
   static String getCountryLabel(Long countryId) {
     if (!DataUtils.isId(countryId) || DataUtils.isEmpty(countries)) {
       return null;
@@ -57,7 +57,7 @@ final class Places {
       return BeeUtils.trim(label).toUpperCase();
     }
   }
-  
+
   static String getCityLabel(Long cityId) {
     if (!DataUtils.isId(cityId) || DataUtils.isEmpty(cities)) {
       return null;
@@ -83,7 +83,7 @@ final class Places {
       return row.getDate(colName);
     }
   }
-  
+
   static String getLoadingInfo(HasShipmentInfo item) {
     if (item == null) {
       return null;
@@ -91,7 +91,7 @@ final class Places {
       return BeeUtils.joinWords(item.getLoadingDate(), getLoadingPlaceInfo(item));
     }
   }
-  
+
   static String getLoadingPlaceInfo(HasShipmentInfo item) {
     if (item == null) {
       return null;
@@ -105,7 +105,7 @@ final class Places {
   static ValueType getPlaceDateType() {
     return Places.placeDateType;
   }
-  
+
   static String getPlaceInfo(Long countryId, String placeName, String postIndex, Long cityId,
       String number) {
     String countryLabel = getCountryLabel(countryId);
@@ -120,7 +120,7 @@ final class Places {
           cityLabel, number);
     }
   }
-  
+
   static JustDate getUnloadingDate(SimpleRow row, String colName) {
     if (getPlaceDateType() == ValueType.DATE_TIME) {
       return JustDate.get(row.getDateTime(colName));
@@ -150,7 +150,7 @@ final class Places {
   static void setCountries(BeeRowSet rowSet) {
     if (!DataUtils.isEmpty(rowSet)) {
       Places.countries = rowSet;
-      
+
       if (BeeConst.isUndef(countryCodeIndex)) {
         Places.countryCodeIndex = rowSet.getColumnIndex(ClassifierConstants.COL_COUNTRY_CODE);
         Places.countryNameIndex = rowSet.getColumnIndex(ClassifierConstants.COL_COUNTRY_NAME);

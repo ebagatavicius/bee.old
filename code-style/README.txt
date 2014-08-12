@@ -12,6 +12,8 @@ Window->Preferences->JavaScript->Code Style->Formatter->Import...
 
 Window->Preferences->Java->Code Style->Organize Imports->Import...
   code-style/gwt.importorder
+  
+Number of static imports needed for .* = 0
 
 ------------ Member sort order ------------
 

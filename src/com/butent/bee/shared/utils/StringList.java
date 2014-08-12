@@ -83,7 +83,7 @@ public class StringList implements List<String> {
     if (unique && contains(element)) {
       return;
     }
-    
+
     list.add(index, trim(element));
   }
 
@@ -95,7 +95,7 @@ public class StringList implements List<String> {
     if (unique && contains(e)) {
       return false;
     }
-    
+
     return list.add(trim(e));
   }
 
@@ -275,7 +275,7 @@ public class StringList implements List<String> {
         return v;
       }
     }
-    
+
     return list.set(index, trim(element));
   }
 

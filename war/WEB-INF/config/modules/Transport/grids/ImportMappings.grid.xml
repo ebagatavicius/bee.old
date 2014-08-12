@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
-  name="ImportMappings" caption="=trImportMappings"
+  name="ImportMappings" viewName="ImportMappings" caption="=trImportMappings"
   enabledActions="add delete refresh"
-  disabledActions="audit configure"
+  disabledActions="configure"
   >
   <g:columns>
     <DataColumn name="Value" readOnly="true" />
-    <DataColumn name="MappingValue" readOnly="true" />
+    <PropColumn type="string" name="MappingValue" label="=trImportMapping" />
   </g:columns>
 </g:Grid>

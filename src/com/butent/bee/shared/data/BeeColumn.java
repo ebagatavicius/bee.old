@@ -40,7 +40,7 @@ public class BeeColumn extends TableColumn implements BeeSerializable, HasExtend
   public static BeeColumn forRowVersion(String id) {
     return new BeeColumn(DataUtils.VERSION_TYPE, id);
   }
-  
+
   public static BeeColumn restore(String s) {
     BeeColumn c = new BeeColumn();
     c.deserialize(s);
@@ -53,7 +53,7 @@ public class BeeColumn extends TableColumn implements BeeSerializable, HasExtend
 
   private int level;
   private Pair<DefaultExpression, Object> defaults;
-  
+
   public BeeColumn() {
     super(ValueType.TEXT);
   }

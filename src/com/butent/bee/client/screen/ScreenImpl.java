@@ -160,6 +160,13 @@ public class ScreenImpl implements Screen {
   }
 
   @Override
+  public void closeAll() {
+    if (getWorkspace() != null) {
+      getWorkspace().clear();
+    }
+  }
+
+  @Override
   public void closeWidget(IdentifiableWidget widget) {
     Assert.notNull(widget, "closeWidget: widget is null");
 
@@ -352,9 +359,9 @@ public class ScreenImpl implements Screen {
   }
 
   @Override
-  public void restore(String input, boolean append) {
+  public void restore(List<String> spaces, boolean append) {
     if (getWorkspace() != null) {
-      getWorkspace().restore(input, append);
+      getWorkspace().restore(spaces, append);
     }
   }
 
@@ -373,7 +380,7 @@ public class ScreenImpl implements Screen {
   }
 
   @Override
-  public void showWidget(IdentifiableWidget widget) {
+  public void show(IdentifiableWidget widget) {
     if (BeeKeeper.getUser().openInNewTab()) {
       showInNewPlace(widget);
     } else {
@@ -414,14 +421,16 @@ public class ScreenImpl implements Screen {
   }
 
   @Override
-  public void updateProgress(String id, double value) {
+  public boolean updateProgress(String id, double value) {
     if (getProgressPanel() != null && !BeeUtils.isEmpty(id)) {
       Widget item = DomUtils.getChildById(getProgressPanel(), id);
 
       if (item instanceof HasProgress) {
         ((HasProgress) item).update(value);
+        return true;
       }
     }
+    return false;
   }
 
   @Override
@@ -477,7 +486,7 @@ public class ScreenImpl implements Screen {
 
   protected void createExpanders() {
     CustomComplex container = new CustomComplex(DomUtils.createElement(Tags.NAV),
-        StyleUtils.CLASS_NAME_PREFIX + "workspace-expander");
+        StyleUtils.CLASS_NAME_PREFIX + "Workspace-expander");
 
     Toggle toggle = new Toggle(FontAwesome.LONG_ARROW_LEFT, FontAwesome.LONG_ARROW_RIGHT,
         StyleUtils.CLASS_NAME_PREFIX + "west-toggle", false);
@@ -682,7 +691,7 @@ public class ScreenImpl implements Screen {
   }
 
   protected int getNorthHeight(int defHeight) {
-    return BeeUtils.positive(Settings.getPropertyInt("northHeight"), defHeight);
+    return BeeUtils.positive(Settings.getInt("northHeight"), defHeight);
   }
 
   protected Notification getNotification() {

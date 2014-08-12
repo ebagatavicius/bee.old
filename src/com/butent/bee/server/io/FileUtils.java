@@ -394,7 +394,7 @@ public final class FileUtils {
     Assert.notEmpty(child);
     return new File(parent, child).exists();
   }
-  
+
   public static boolean isInputFile(File fl) {
     if (fl == null) {
       return false;
@@ -470,16 +470,16 @@ public final class FileUtils {
     return prp;
   }
 
-  public static boolean saveToFile(String src, String dst) {
+  public static String saveToFile(String src, String dst) {
     return saveToFile(src, dst, defaultCharset);
   }
 
-  public static boolean saveToFile(String src, String dst, Charset cs) {
+  public static String saveToFile(String src, String dst, Charset cs) {
     Assert.notEmpty(src);
     Assert.notEmpty(dst);
 
     OutputStreamWriter fw = null;
-    boolean ok;
+    String path;
     File file = new File(dst);
 
     try {
@@ -489,14 +489,16 @@ public final class FileUtils {
       }
       fw = new OutputStreamWriter(new FileOutputStream(file), cs);
       fw.append(src);
-      ok = true;
+
+      path = file.getCanonicalPath();
+
     } catch (IOException ex) {
       logger.error(ex, dst);
-      ok = false;
+      path = null;
     }
 
     closeQuietly(fw);
-    return ok;
+    return path;
   }
 
   public static String streamToString(InputStream stream) {

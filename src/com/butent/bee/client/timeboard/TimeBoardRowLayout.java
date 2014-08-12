@@ -17,7 +17,7 @@ public class TimeBoardRowLayout {
 
   public static final class GroupLayout {
     private final Long groupId;
-    
+
     private final int firstRow;
     private final int lastRow;
 
@@ -41,7 +41,7 @@ public class TimeBoardRowLayout {
     public int getLastRow() {
       return lastRow;
     }
-    
+
     public int getSize() {
       return getLastRow() - getFirstRow() + 1;
     }
@@ -59,7 +59,7 @@ public class TimeBoardRowLayout {
       this.groupId = groupId;
       add(item);
     }
-    
+
     public boolean contains(JustDate date) {
       if (date != null) {
         for (HasDateRange item : rowItems) {
@@ -228,17 +228,17 @@ public class TimeBoardRowLayout {
   public int getDataIndex() {
     return dataIndex;
   }
-  
+
   public List<GroupLayout> getGroups() {
     List<GroupLayout> result = Lists.newArrayList();
     if (rows.isEmpty()) {
       return result;
     }
-    
+
     Long lastGroup = null;
     int firstRow = 0;
     boolean over = false;
-    
+
     for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
       Long currentGroup = rows.get(rowIndex).getGroupId();
 
@@ -256,12 +256,12 @@ public class TimeBoardRowLayout {
       if (!over && hasOverlap()) {
         over = overlaps(rows.get(rowIndex).getRowItems());
       }
-      
+
       if (rowIndex == rows.size() - 1) {
         result.add(new GroupLayout(lastGroup, firstRow, rowIndex, over));
       }
     }
-    
+
     return result;
   }
 
@@ -284,16 +284,16 @@ public class TimeBoardRowLayout {
   public boolean hasOverlap() {
     return !overlap.isEmpty();
   }
-  
+
   public boolean isEmpty() {
     return rows.isEmpty();
   }
-  
+
   private boolean overlaps(Collection<? extends HasDateRange> items) {
     if (items == null || !hasOverlap()) {
       return false;
     }
-    
+
     for (Range<JustDate> range : overlap) {
       if (BeeUtils.intersects(items, range)) {
         return true;

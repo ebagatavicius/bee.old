@@ -383,12 +383,11 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
 
       header.addCommandItem(schedule);
     }
-    
 
     for (Cron cron : Cron.values()) {
-      refreshValues(cron, row.getString(form.getDataIndex(cron.source)));
+      refreshValues(row.getId(), cron, row.getString(form.getDataIndex(cron.source)));
     }
-    
+
     enableToggles(form.isRowEnabled(row));
   }
 
@@ -420,7 +419,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
         clearErrors(cron);
 
       } else {
-        refreshValues(cron, event.getNewValue());
+        refreshValues(event.getRowId(), cron, event.getNewValue());
       }
     }
 
@@ -665,7 +664,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
       @Override
       public void onClick(ClickEvent event) {
         String updated = updateCronValue(cron.source, value, toggle.isChecked());
-        refreshErrors(cron, updated);
+        refreshErrors(getActiveRowId(), cron, updated);
       }
     });
   }
@@ -785,11 +784,12 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
     }
   }
 
-  private void refreshErrors(Cron cron, String input) {
+  private void refreshErrors(long id, Cron cron, String input) {
     if (BeeUtils.isEmpty(input)) {
       clearErrors(cron);
     } else {
-      CronExpression.parseSimpleValues(cron.field, input, getFailureHandler(cron, input));
+      CronExpression.parseSimpleValues(BeeUtils.toString(id), cron.field, input,
+          getFailureHandler(cron, input));
     }
   }
 
@@ -800,9 +800,9 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
     }
   }
 
-  private void refreshValues(Cron cron, String input) {
-    Set<Integer> values = CronExpression.parseSimpleValues(cron.field, input,
-        getFailureHandler(cron, input));
+  private void refreshValues(long id, Cron cron, String input) {
+    Set<Integer> values = CronExpression.parseSimpleValues(BeeUtils.toString(id),
+        cron.field, input, getFailureHandler(cron, input));
     setValues(cron, values);
   }
 
@@ -1005,7 +1005,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
       ((Toggle) widget).setChecked(selected);
     }
   }
-  
+
   private void setValues(Cron cron, Set<Integer> values) {
     if (toggleContainers.containsKey(cron)) {
       for (int i = 0; i < toggleContainers.get(cron).getWidgetCount(); i++) {
@@ -1072,6 +1072,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
     JustDate until = getDateValue(COL_RT_SCHEDULE_UNTIL);
 
     CronExpression.Builder builder = new CronExpression.Builder(from, until)
+        .id(BeeUtils.toString(getActiveRowId()))
         .dayOfMonth(getStringValue(COL_RT_DAY_OF_MONTH))
         .month(getStringValue(COL_RT_MONTH))
         .dayOfWeek(getStringValue(COL_RT_DAY_OF_WEEK))

@@ -15,9 +15,9 @@ import com.butent.bee.shared.logging.LogUtils;
 class Workplace extends Place {
 
   private static final BeeLogger logger = LogUtils.getLogger(Workplace.class);
-  
+
   private final Workspace workspace;
-  
+
   Workplace(Workspace workspace, String id) {
     super(id);
     this.workspace = Assert.notNull(workspace);
@@ -29,11 +29,11 @@ class Workplace extends Place {
     if (tile == null) {
       return false;
     }
-    
+
     if (DomUtils.idEquals(workspace.getActiveTile(), getId())) {
       return true;
     }
-    
+
     int index = workspace.getPageIndex(tile);
     workspace.selectPage(index, SelectionOrigin.SCRIPT);
 
@@ -59,7 +59,7 @@ class Workplace extends Place {
 
     return tile.onHistory(place, forward);
   }
-  
+
   private Tile getTile() {
     Widget child = DomUtils.getChildQuietly(workspace, getId());
     if (child instanceof Tile) {

@@ -2,9 +2,11 @@ package com.butent.bee.client.ui;
 
 import com.butent.bee.shared.data.RowChildren;
 
-public interface HasRowChildren {
-  
-  RowChildren getChildrenForInsert();
+import java.util.Collection;
 
-  RowChildren getChildrenForUpdate();
+public interface HasRowChildren {
+
+  Collection<RowChildren> getChildrenForInsert();
+
+  Collection<RowChildren> getChildrenForUpdate();
 }

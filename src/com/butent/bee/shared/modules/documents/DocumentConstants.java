@@ -11,6 +11,8 @@ public final class DocumentConstants {
   public static final String TBL_CRITERIA_GROUPS = "CriteriaGroups";
   public static final String TBL_CRITERIA = "Criteria";
 
+  public static final String TBL_EDITOR_TEMPLATES = "EditorTemplates";
+
   public static final String VIEW_DOCUMENTS = "Documents";
   public static final String VIEW_DOCUMENT_FILES = "DocumentFiles";
   public static final String VIEW_RELATED_DOCUMENTS = "RelatedDocuments";
@@ -42,6 +44,10 @@ public final class DocumentConstants {
   public static final String COL_CRITERION_NAME = "Criterion";
   public static final String COL_CRITERION_VALUE = "Value";
   public static final String COL_CRITERIA_ORDINAL = "Ordinal";
+
+  public static final String COL_EDITOR_TEMPLATE_ORIGIN = "Origin";
+  public static final String COL_EDITOR_TEMPLATE_NAME = "Name";
+  public static final String COL_EDITOR_TEMPLATE_CONTENT = "Content";
 
   public static final String COL_NUMBER = "Number";
   public static final String COL_REGISTRATION_NUMBER = "RegistrationNumber";

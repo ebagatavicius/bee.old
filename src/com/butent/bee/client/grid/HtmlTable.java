@@ -1,7 +1,5 @@
 package com.butent.bee.client.grid;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
@@ -41,6 +39,7 @@ import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -149,9 +148,11 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
       StyleUtils.setWordWrap(ensureElement(row, column), wrap);
     }
 
+    //@formatter:off
     private native TableCellElement getCell(Element table, int row, int column) /*-{
       return table.rows[row].cells[column];
     }-*/;
+    //@formatter:on
   }
 
   public class ColumnFormatter {
@@ -271,9 +272,11 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
       UIObject.setVisible(getElement(row), visible);
     }
 
+    //@formatter:off
     private native Element getTr(Element elem, int row) /*-{
       return elem.rows[row];
     }-*/;
+    //@formatter:on
   }
 
   private static final String STYLE_SUFFIX_COL = "-col";
@@ -292,8 +295,8 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
   private String defaultCellClasses;
   private String defaultCellStyles;
 
-  private final Map<Integer, String> columnCellClases = Maps.newHashMap();
-  private final Map<Integer, String> columnCellStyles = Maps.newHashMap();
+  private final Map<Integer, String> columnCellClases = new HashMap<>();
+  private final Map<Integer, String> columnCellStyles = new HashMap<>();
 
   private String caption;
 
@@ -304,7 +307,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
 
     setElement(tableElem);
 
-    this.widgetMap = new ElementMapperImpl<Widget>();
+    this.widgetMap = new ElementMapperImpl<>();
 
     this.cellFormatter = new CellFormatter();
     this.rowFormatter = new RowFormatter();
@@ -378,7 +381,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
 
   public List<TableCellElement> getColumnCells(int column) {
     Assert.nonNegative(column);
-    List<TableCellElement> cells = Lists.newArrayList();
+    List<TableCellElement> cells = new ArrayList<>();
 
     for (int row = 0; row < getRowCount(); row++) {
       if (getCellCount(row) > column) {
@@ -415,7 +418,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
 
     return index;
   }
-  
+
   public Element getEventRowElement(GwtEvent<?> event, boolean incl) {
     Integer row = getEventRow(event, incl);
     return (row == null) ? null : getRow(row);
@@ -437,7 +440,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
 
   public List<TableCellElement> getRowCells(int row) {
     Assert.nonNegative(row);
-    List<TableCellElement> cells = Lists.newArrayList();
+    List<TableCellElement> cells = new ArrayList<>();
 
     if (row < getRowCount()) {
       int cc = getCellCount(row);
@@ -558,6 +561,18 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
       columnCellClases.remove(column);
     } else {
       columnCellClases.put(column, classes);
+    }
+  }
+
+  public void setColumnCellKind(int column, CellKind cellKind) {
+    Assert.nonNegative(column);
+    Assert.notNull(cellKind);
+
+    String classes = columnCellClases.get(column);
+    if (BeeUtils.isEmpty(classes)) {
+      columnCellClases.put(column, cellKind.getStyleName());
+    } else {
+      columnCellClases.put(column, StyleUtils.buildClasses(classes, cellKind.getStyleName()));
     }
   }
 
@@ -729,6 +744,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     return defaultCellStyles;
   }
 
+//@formatter:off
   private native int getDOMCellCount(Element tableBody, int row) /*-{
     return tableBody.rows[row].cells.length;
   }-*/;
@@ -736,6 +752,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
   private native int getDOMRowCount(Element elem) /*-{
     return elem.rows.length;
   }-*/;
+//@formatter:on
 
   private Widget getWidgetImpl(int row, int column) {
     Element td = cellFormatter.getElement(row, column);

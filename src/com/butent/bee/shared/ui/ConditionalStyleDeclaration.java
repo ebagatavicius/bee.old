@@ -19,7 +19,7 @@ import java.util.List;
 public class ConditionalStyleDeclaration implements BeeSerializable, HasInfo {
 
   public static final String TAG_DYN_STYLE = "dynStyle";
-  
+
   public static ConditionalStyleDeclaration restore(String s) {
     if (BeeUtils.isEmpty(s)) {
       return null;
@@ -39,7 +39,7 @@ public class ConditionalStyleDeclaration implements BeeSerializable, HasInfo {
 
   private ConditionalStyleDeclaration() {
   }
-  
+
   public ConditionalStyleDeclaration copy() {
     ConditionalStyleDeclaration copy = new ConditionalStyleDeclaration();
 
@@ -49,10 +49,10 @@ public class ConditionalStyleDeclaration implements BeeSerializable, HasInfo {
     if (getCondition() != null) {
       copy.setCondition(getCondition().copy());
     }
-    
+
     return copy;
   }
-  
+
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
@@ -94,7 +94,7 @@ public class ConditionalStyleDeclaration implements BeeSerializable, HasInfo {
       getCondition().replaceColumn(oldId, newId);
     }
   }
-  
+
   @Override
   public String serialize() {
     return Codec.beeSerialize(new Object[] {getStyle(), getCondition()});

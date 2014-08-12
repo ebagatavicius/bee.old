@@ -30,7 +30,7 @@ public class VersionFilterSupplier extends DateTimeFilterSupplier {
           Filter.compareVersion(Operator.LT, end.getTime()));
     }
   }
-  
+
   @Override
   protected Filter getEmptinessFilter(String columnId, Boolean emptiness) {
     if (emptiness == null) {

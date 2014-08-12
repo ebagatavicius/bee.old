@@ -242,12 +242,12 @@ public final class Wildcards {
   private static char defaultOne = FS_ONE;
   private static boolean defaultCaseSensitivity;
   private static Character defaultCharExact;
-  
+
   public static boolean contains(Collection<? extends Pattern> patterns, String input) {
     if (patterns == null || BeeUtils.isEmpty(input)) {
       return false;
     }
-    
+
     for (Pattern pattern : patterns) {
       if (isLike(input, pattern)) {
         return true;
@@ -290,7 +290,7 @@ public final class Wildcards {
   public static Pattern getDefaultPattern(String expr, boolean sens, Character charExact) {
     return new DefaultPattern(expr, sens, charExact);
   }
-  
+
   /**
    * @return the current FS ANY wildcard.
    */
@@ -314,7 +314,6 @@ public final class Wildcards {
   }
 
   /**
-   * 
    * @param expr the expression for a pattern
    * @param sens specifies if Sensitive mode is set
    * @return a FsPattern with the specified expression and Sensitive mode.
@@ -326,7 +325,7 @@ public final class Wildcards {
   public static Pattern getFsPattern(String expr, boolean sens, Character charExact) {
     return new FsPattern(expr, sens, charExact);
   }
-  
+
   /**
    * @param expr the expression for a pattern
    * @param any the ANY wildcard
@@ -337,7 +336,7 @@ public final class Wildcards {
   public static Pattern getPattern(String expr, char any, char one, boolean sens, Character exact) {
     return new Pattern(expr, any, one, sens, exact);
   }
-  
+
   /**
    * @return the current SQL ANY wildcard.
    */
@@ -372,10 +371,9 @@ public final class Wildcards {
   public static Pattern getSqlPattern(String expr, boolean sens, Character charExact) {
     return new SqlPattern(expr, sens, charExact);
   }
-  
+
   /**
    * Checks if an expression {@code expr} has any of default wildcards.
-   * 
    * @param expr the expression to check
    * @return true if at least one of the wildcards are found, otherwise false
    */
@@ -388,7 +386,6 @@ public final class Wildcards {
 
   /**
    * Checks if an expression {@code expr} has any FS wildcards.
-   * 
    * @param expr the expression to check
    * @return true if at least one of the wildcards are found, otherwise false
    */
@@ -401,7 +398,6 @@ public final class Wildcards {
 
   /**
    * Checks if an expression {@code expr} has any Sql wildcards.
-   * 
    * @param expr the expression to check
    * @return true if at least one of the wildcards are found, otherwise false
    */
@@ -414,7 +410,6 @@ public final class Wildcards {
 
   /**
    * Checks if an expression {@code expr} contains only of the default ANY wildcards.
-   * 
    * @param expr the expression to check
    * @return true if the expression contain only of default ANY wildcards, otherwise false
    */
@@ -431,7 +426,6 @@ public final class Wildcards {
 
   /**
    * Checks if {@code expr} is a default Pattern.
-   * 
    * @param expr the expression to check
    * @return true if it's a default Pattern, otherwise false.
    */
@@ -441,7 +435,6 @@ public final class Wildcards {
 
   /**
    * Checks if an expression {@code expr} contains only of the FS ANY wildcards.
-   * 
    * @param expr the expression to check
    * @return true if the expression contain only of FS Any wildcards, otherwise false
    */
@@ -481,10 +474,9 @@ public final class Wildcards {
       Character charExact) {
     return isLike(input, new FsPattern(expr, sensitive, charExact));
   }
-  
+
   /**
    * Checks if {@code expr} is a FS Pattern.
-   * 
    * @param expr the expression to check
    * @return true if it's a FS Pattern, otherwise false.
    */
@@ -494,7 +486,6 @@ public final class Wildcards {
 
   /**
    * Checks if an input {@code input} matches the specified Pattern.
-   * 
    * @param input the input String
    * @param pattern the Pattern to use for checking
    * @return true if {@code input} matches the specified Pattern, otherwise false.
@@ -519,7 +510,7 @@ public final class Wildcards {
     int tokIdx = 0;
     int inpIdx = 0;
     boolean anyChars = false;
-    Stack<int[]> backtrack = new Stack<int[]>();
+    Stack<int[]> backtrack = new Stack<>();
 
     do {
       if (!backtrack.isEmpty()) {
@@ -599,10 +590,9 @@ public final class Wildcards {
   public static boolean isLike(String input, String expr, boolean sensitive, Character charExact) {
     return isLike(input, new DefaultPattern(expr, sensitive, charExact));
   }
-  
+
   /**
    * Checks if an expression {@code expr} contains only of the SQL ANY wildcards.
-   * 
    * @param expr the expression to check
    * @return true if the expression contain only of SQL ANY wildcards, otherwise false.
    */
@@ -628,7 +618,6 @@ public final class Wildcards {
   }
 
   /**
-   * 
    * @param input the input to check
    * @param expr the expression for an SQL Pattern
    * @param sensitive the Sensitive mode
@@ -643,10 +632,9 @@ public final class Wildcards {
       Character charExact) {
     return isLike(input, new SqlPattern(expr, sensitive, charExact));
   }
-  
+
   /**
    * Checks if {@code expr} is an Sql Pattern.
-   * 
    * @param expr the expression to check
    * @return true if it's an Sql Pattern, otherwise false.
    */
@@ -656,7 +644,6 @@ public final class Wildcards {
 
   /**
    * Sets the default ANY wildcard to the specified {@code defaultAny}.
-   * 
    * @param defaultAny the value to set ANY wildcard to
    */
   public static void setDefaultAny(char defaultAny) {
@@ -665,7 +652,6 @@ public final class Wildcards {
 
   /**
    * Sets the default case sensitivity to the specified {@code defaultCastSensitivity}.
-   * 
    * @param defaultCaseSensitivity the value to set default sensitivity to
    */
   public static void setDefaultCaseSensitivity(boolean defaultCaseSensitivity) {
@@ -674,7 +660,6 @@ public final class Wildcards {
 
   /**
    * Sets the default ONE wildcard to the specified {@code defaultOne}.
-   * 
    * @param defaultOne the value to set ONE wildcard to
    */
   public static void setDefaultOne(char defaultOne) {
@@ -683,7 +668,6 @@ public final class Wildcards {
 
   /**
    * Sets the FS case sensitivity to the specified {@code fsCaseSensitivity}.
-   * 
    * @param fsCaseSensitivity the value to set fsCaseSensitivity to
    */
   public static void setFsCaseSensitivity(boolean fsCaseSensitivity) {
@@ -692,7 +676,6 @@ public final class Wildcards {
 
   /**
    * Sets the SQL case sensitivity to the specified {@code sqlCaseSensitivity}.
-   * 
    * @param sqlCaseSensitivity the value to set sqlCaseSensitivity to
    */
   public static void setSqlCaseSensitivity(boolean sqlCaseSensitivity) {

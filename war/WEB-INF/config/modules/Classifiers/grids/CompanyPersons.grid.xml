@@ -4,12 +4,12 @@
   name="CompanyPersons" viewName="CompaniesAndPersons"
   newRowForm="CompanyPerson" newRowCaption="=newCompanyPerson"
   editForm="CompanyPerson"
-  flexGrow="1" flexShrink="1" flexBasis="100"
+  flexGrow="1"
   >
   <g:columns>
     <RelColumn name="Person" editEnabled="true" visible="true" />
     <DataColumn name="TabNo"/>
-    <DataColumn name="AccountingCode" />
+    <DataColumn name="AccountingCode" visible="false" />
     <RelColumn name="Department" />    
     <RelColumn name="Position" />
     <DataColumn name="Phone" />

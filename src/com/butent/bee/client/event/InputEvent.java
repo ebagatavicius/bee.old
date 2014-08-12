@@ -4,7 +4,7 @@ import com.google.gwt.event.dom.client.DomEvent;
 
 public class InputEvent extends DomEvent<InputHandler> {
 
-  private static final Type<InputHandler> TYPE = new Type<InputHandler>("input", new InputEvent());
+  private static final Type<InputHandler> TYPE = new Type<>("input", new InputEvent());
 
   public static Type<InputHandler> getType() {
     return TYPE;

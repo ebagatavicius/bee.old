@@ -17,6 +17,7 @@ import java.util.List;
 
 public final class JsUtils {
 
+//@formatter:off
   public static native void clearProperty(JavaScriptObject obj, String p) /*-{
     if (typeof (obj) != "object") {
       return;
@@ -122,6 +123,7 @@ public final class JsUtils {
     }
     return arr;
   }-*/;
+//@formatter:on
 
   public static List<Property> getInfo(JavaScriptObject obj) {
     List<Property> info = Lists.newArrayList();
@@ -141,6 +143,7 @@ public final class JsUtils {
     return getProperties(obj, null);
   }
 
+//@formatter:off
   public static native JsArrayString getProperties(JavaScriptObject obj, String pattern) /*-{
     var arr = new Array();
     var i = 0;
@@ -324,6 +327,7 @@ public final class JsUtils {
     }
     return "";
   }-*/;
+//@formatter:on
 
   private JsUtils() {
   }

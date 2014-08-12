@@ -44,6 +44,22 @@ final class CompoundCondition implements HasConditions {
   }
 
   @Override
+  public void clear() {
+    subConditions.clear();
+  }
+
+  @Override
+  public HasConditions copyOf() {
+    int c = subConditions.size();
+    IsCondition[] subs = new IsCondition[c];
+
+    for (int i = 0; i < c; i++) {
+      subs[i] = subConditions.get(i).copyOf();
+    }
+    return new CompoundCondition(joinType, subs);
+  }
+
+  @Override
   public Collection<String> getSources() {
     Collection<String> sources = null;
 

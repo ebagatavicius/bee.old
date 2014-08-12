@@ -10,9 +10,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.List;
 
 public class TokenRenderer extends AbstractCellRenderer {
-  
+
   public static final String DEFAULT_SEPARATOR = BeeConst.STRING_SPACE;
-  
+
   private final List<ColumnToken> tokens = Lists.newArrayList();
 
   public TokenRenderer(List<ColumnToken> tokens) {
@@ -48,7 +48,7 @@ public class TokenRenderer extends AbstractCellRenderer {
     if (row == null) {
       return null;
     }
-    
+
     StringBuilder sb = new StringBuilder();
     boolean wasSuffix = true;
 
@@ -57,7 +57,7 @@ public class TokenRenderer extends AbstractCellRenderer {
       if (BeeUtils.isEmpty(value)) {
         continue;
       }
-      
+
       if (!wasSuffix && !token.hasPrefix()) {
         sb.append(DEFAULT_SEPARATOR);
       }

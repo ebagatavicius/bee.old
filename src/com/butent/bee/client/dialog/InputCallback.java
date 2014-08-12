@@ -8,6 +8,9 @@ public abstract class InputCallback {
     return null;
   }
 
+  public void onAdd() {
+  }
+
   public void onCancel() {
   }
 
@@ -18,6 +21,6 @@ public abstract class InputCallback {
   public void onDelete(DialogBox dialog) {
     dialog.close();
   }
-  
+
   public abstract void onSuccess();
 }

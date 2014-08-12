@@ -46,7 +46,7 @@ public class ResultSetBean {
 
   public ResponseObject getMetaData(ResultSet rs) {
     Assert.notNull(rs);
-    
+
     ResponseObject response = new ResponseObject();
     BeeRowSet result = new BeeRowSet(metaCols);
 
@@ -78,7 +78,7 @@ public class ResultSetBean {
             String.valueOf(rsmd.isReadOnly(i)),
             String.valueOf(rsmd.isWritable(i)),
             String.valueOf(rsmd.isDefinitelyWritable(i)));
-        
+
         result.addRow(i, 0, values);
       }
 
@@ -86,7 +86,7 @@ public class ResultSetBean {
       logger.error(ex);
       response.addError(ex);
     }
-    
+
     return response.setResponse(result);
   }
 
@@ -117,13 +117,13 @@ public class ResultSetBean {
 
     try {
       int cnt = 0;
-      
+
       while (rs.next()) {
         String[] values = new String[c];
         for (int i = 0; i < c; i++) {
           values[i] = rs.getString(i + 1);
         }
-        
+
         result.addRow(++cnt, 0, values);
       }
 
@@ -131,7 +131,7 @@ public class ResultSetBean {
       logger.error(ex);
       response.addError(ex);
     }
-    
+
     return response.setResponse(result);
   }
 }

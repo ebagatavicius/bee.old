@@ -61,9 +61,9 @@
       </row>
 
       <row>
-        <InputCurrency source="Currency" />
-        <CurrencyLabel source="Currency" />
-        <CurrencyLabel source="Currency" format="#,##0.00&#160;&#164;" />
+        <InputMoney source="Currency" />
+        <MoneyLabel source="Currency" />
+        <MoneyLabel source="Currency" format="#,##0.00&#160;&#164;" />
         <InputDate source="Date" format="date_short" minValue="2008 7 1" maxValue="2012 9 1" />
         <DateLabel source="Date" />
         <DateLabel source="Date" format="yy.MM.dd" />

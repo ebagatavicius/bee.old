@@ -12,8 +12,8 @@ public final class UpdateEvent extends GwtEvent<UpdateEvent.Handler> {
     void onUpdate(UpdateEvent event);
   }
 
-  private static final Type<Handler> TYPE = new Type<Handler>();
-  
+  private static final Type<Handler> TYPE = new Type<>();
+
   public static boolean fire(HasUpdateHandlers source, Appointment appointment,
       DateTime newStart, DateTime newEnd, int oldColumnIndex, int newColumnIndex) {
     UpdateEvent event = new UpdateEvent(appointment, newStart, newEnd, oldColumnIndex,
@@ -21,11 +21,11 @@ public final class UpdateEvent extends GwtEvent<UpdateEvent.Handler> {
     source.fireEvent(event);
     return !event.isCanceled();
   }
-  
+
   public static Type<Handler> getType() {
     return TYPE;
   }
-  
+
   private final Appointment appointment;
 
   private final DateTime newStart;
@@ -33,9 +33,9 @@ public final class UpdateEvent extends GwtEvent<UpdateEvent.Handler> {
 
   private final int oldColumnIndex;
   private final int newColumnIndex;
-  
+
   private boolean canceled;
-  
+
   private UpdateEvent(Appointment appointment, DateTime newStart, DateTime newEnd,
       int oldColumnIndex, int newColumnIndex) {
     super();
@@ -70,7 +70,7 @@ public final class UpdateEvent extends GwtEvent<UpdateEvent.Handler> {
   public int getOldColumnIndex() {
     return oldColumnIndex;
   }
-  
+
   public boolean isCanceled() {
     return canceled;
   }
