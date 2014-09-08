@@ -32,13 +32,23 @@
     <role-name>architect</role-name>
   </security-role>
 
-<!--   <data-source> -->
-<!--     <name>BeeDS</name> -->
-<!--     <class-name>org.postgresql.ds.PGSimpleDataSource</class-name> -->
-<!--     <server-name>192.168.0.210</server-name> -->
-<!--     <port-number>5432</port-number> -->
-<!--     <database-name>postgres</database-name> -->
-<!--     <user>postgres</user> -->
-<!--     <password>admin</password> -->
-<!--   </data-source> -->
+  <data-source>
+    <name>BeeDS</name>
+    <class-name>org.postgresql.ds.PGSimpleDataSource</class-name>
+    <server-name>192.168.3.241</server-name>
+    <port-number>5432</port-number>
+    <database-name>bnovo</database-name>
+    <user>postgres</user>
+    <password>slabasbnovo123</password>  
+  </data-source>
+  
+  <data-source>
+    <name>BeeDSDev</name>
+    <class-name>org.postgresql.ds.PGSimpleDataSource</class-name>
+    <server-name>127.0.0.1</server-name>
+    <port-number>5432</port-number>
+    <database-name>bee</database-name>
+    <user>postgres</user>
+    <password>admin</password>
+  </data-source>  
 </web-app>
