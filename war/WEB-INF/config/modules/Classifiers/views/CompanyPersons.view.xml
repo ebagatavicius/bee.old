@@ -22,7 +22,6 @@
     <SimpleJoin name="Person" joinType="LEFT">
       <SimpleColumn name="FirstName" editable="true" />
       <SimpleColumn name="LastName" editable="true" />
-      <SimpleColumn name="DateOfBirth" editable="true" />
     </SimpleJoin>
 
     <SimpleJoin name="Contact" joinType="LEFT">

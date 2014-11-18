@@ -2,6 +2,7 @@ package com.butent.bee.client.grid;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
@@ -44,6 +45,7 @@ import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
@@ -156,6 +158,8 @@ public final class GridFactory {
 
   private static final Map<String, GridDescription> descriptionCache = new HashMap<>();
   private static final Map<String, GridInterceptor> gridInterceptors = new HashMap<>();
+
+  private static final Map<String, Consumer<ScheduledCommand>> gridPreloaders = new HashMap<>();
 
   private static final Multimap<String, String> hiddenColumns = HashMultimap.create();
 
@@ -282,29 +286,21 @@ public final class GridFactory {
     Assert.notEmpty(name);
     Assert.notNull(callback);
 
-    if (isGridDescriptionCached(name)) {
-      callback.onSuccess(descriptionCache.get(gridDescriptionKey(name)));
-      return;
-    }
+    Consumer<ScheduledCommand> preloader = gridPreloaders.get(name);
 
-    BeeKeeper.getRpc().sendText(Service.GET_GRID, name, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        Assert.notNull(response);
+    if (preloader == null) {
+      loadDescription(name, callback);
 
-        if (response.hasResponse(GridDescription.class)) {
-          GridDescription gridDescription =
-              GridDescription.restore((String) response.getResponse());
-          callback.onSuccess(gridDescription);
-          if (!BeeUtils.isFalse(gridDescription.getCacheDescription())) {
-            descriptionCache.put(gridDescriptionKey(name), gridDescription);
-          }
-        } else {
-          callback.onFailure(response.getErrors());
-          descriptionCache.put(gridDescriptionKey(name), null);
+    } else {
+      preloader.accept(new ScheduledCommand() {
+        @Override
+        public void execute() {
+          loadDescription(name, callback);
         }
-      }
-    });
+      });
+
+      gridPreloaders.remove(name);
+    }
   }
 
   public static GridInterceptor getGridInterceptor(String gridName) {
@@ -466,6 +462,12 @@ public final class GridFactory {
     return supplier;
   }
 
+  public static void registerPreloader(String gridName, Consumer<ScheduledCommand> preloader) {
+    Assert.notEmpty(gridName);
+    Assert.notNull(preloader);
+    gridPreloaders.put(gridName, preloader);
+  }
+
   public static void showGridInfo(String name) {
     if (descriptionCache.isEmpty()) {
       logger.warning("grid description cache is empty");
@@ -557,8 +559,13 @@ public final class GridFactory {
         getPredefinedFilters(gridDescription, gridInterceptor);
     Global.getFilters().ensurePredefinedFilters(supplierKey, predefinedFilters);
 
-    final List<FilterComponent> initialUserFilterValues =
-        Global.getFilters().getInitialValues(supplierKey);
+    final List<FilterComponent> initialUserFilterValues;
+    if (gridInterceptor == null) {
+      initialUserFilterValues = Global.getFilters().getInitialValues(supplierKey);
+    } else {
+      initialUserFilterValues =
+          gridInterceptor.getInitialUserFilters(Global.getFilters().getInitialValues(supplierKey));
+    }
 
     final Order order = gridDescription.getOrder();
 
@@ -676,6 +683,32 @@ public final class GridFactory {
       return false;
     }
     return descriptionCache.containsKey(gridDescriptionKey(name));
+  }
+
+  private static void loadDescription(final String name, final Callback<GridDescription> callback) {
+    if (isGridDescriptionCached(name)) {
+      callback.onSuccess(descriptionCache.get(gridDescriptionKey(name)));
+      return;
+    }
+
+    BeeKeeper.getRpc().sendText(Service.GET_GRID, name, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        Assert.notNull(response);
+
+        if (response.hasResponse(GridDescription.class)) {
+          GridDescription gridDescription =
+              GridDescription.restore((String) response.getResponse());
+          callback.onSuccess(gridDescription);
+          if (!BeeUtils.isFalse(gridDescription.getCacheDescription())) {
+            descriptionCache.put(gridDescriptionKey(name), gridDescription);
+          }
+        } else {
+          callback.onFailure(response.getErrors());
+          descriptionCache.put(gridDescriptionKey(name), null);
+        }
+      }
+    });
   }
 
   private GridFactory() {

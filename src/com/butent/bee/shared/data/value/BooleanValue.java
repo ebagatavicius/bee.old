@@ -22,7 +22,7 @@ public final class BooleanValue extends Value {
   public static final BooleanValue FALSE = new BooleanValue(false);
   public static final BooleanValue NULL = new BooleanValue(null);
 
-  public static BooleanValue getInstance(Boolean value) {
+  public static BooleanValue of(Boolean value) {
     if (value == null) {
       return NULL;
     }

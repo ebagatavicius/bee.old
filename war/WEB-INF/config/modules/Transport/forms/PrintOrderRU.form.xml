@@ -137,11 +137,16 @@
 
     <HorizontalPanel class="&form;-table" style="&section;">
       <Label html="Цена:" style="&bold;" />
-        
       <FlowPanel>
         <DecimalLabel name="Total" scale="2" inline="true" style="margin-right:2px;" />
         <TextLabel source="CurrencyName" inline="true" />
       </FlowPanel>
+      <Label html="Cрок оплаты (дни):" style="&bold;" />
+      <TextLabel name="CreditDays">
+        <render>
+          <ui:expression>row.DaysAsBuyer ? row.DaysAsBuyer : row.CreditDays</ui:expression>
+        </render>
+      </TextLabel>
     </HorizontalPanel>
 
     <HtmlPanel style="&section;">

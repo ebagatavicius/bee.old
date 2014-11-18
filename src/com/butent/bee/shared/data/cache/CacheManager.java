@@ -1,9 +1,5 @@
 package com.butent.bee.shared.data.cache;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasExtendedInfo;
@@ -28,6 +24,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,7 @@ public class CacheManager implements HandlesAllDataEvents {
     private final ReplacementPolicy replacementPolicy;
 
     private final CachedData dataRows;
-    private final Set<CachedQuery> queries = Sets.newHashSet();
+    private final Set<CachedQuery> queries = new HashSet<>();
 
     private Entry(DataInfo dataInfo) {
       this.dataInfo = dataInfo;
@@ -57,7 +56,7 @@ public class CacheManager implements HandlesAllDataEvents {
 
     @Override
     public List<ExtendedProperty> getExtendedInfo() {
-      List<ExtendedProperty> info = Lists.newArrayList();
+      List<ExtendedProperty> info = new ArrayList<>();
 
       info.add(new ExtendedProperty("View Name", getViewName()));
 
@@ -257,6 +256,19 @@ public class CacheManager implements HandlesAllDataEvents {
       }
     }
 
+    private boolean invalidateQuery(Filter filter, Order order) {
+      CachedQuery query = getQuery(filter, order);
+
+      if (query == null) {
+        return false;
+
+      } else {
+        query.invalidate();
+        queries.remove(query);
+        return true;
+      }
+    }
+
     private void setRowCount(Filter filter, Order order, int rowCount) {
       boolean found = false;
 
@@ -308,7 +320,7 @@ public class CacheManager implements HandlesAllDataEvents {
   private static final ReplacementPolicy DEFAULT_REPLACEMENT_POLICY =
       ReplacementPolicy.FIRST_IN_FIRST_OUT;
 
-  private final Map<String, Entry> entries = Maps.newHashMap();
+  private final Map<String, Entry> entries = new HashMap<>();
 
   public CacheManager() {
     super();
@@ -380,7 +392,7 @@ public class CacheManager implements HandlesAllDataEvents {
   }
 
   public List<ExtendedProperty> getExtendedInfo() {
-    List<ExtendedProperty> info = Lists.newArrayList();
+    List<ExtendedProperty> info = new ArrayList<>();
     info.add(new ExtendedProperty("Cache", "Entries", BeeUtils.toString(entries.size())));
 
     int idx = 0;
@@ -402,6 +414,13 @@ public class CacheManager implements HandlesAllDataEvents {
       return null;
     }
     return entry.getRowSet(filter, order, offset, limit);
+  }
+
+  public boolean invalidateQuery(String viewName, Filter filter, Order order) {
+    Assert.notEmpty(viewName);
+    Entry entry = get(viewName);
+
+    return (entry == null) ? false : entry.invalidateQuery(filter, order);
   }
 
   @Override

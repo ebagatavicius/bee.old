@@ -47,7 +47,7 @@
       <row>
         <text/>
         <cell colSpan="2">
-          <Label name="SupplierWebsite" class="bee-trade-print-" />
+          <Label name="SupplierWebsite" class="bee-trade-print-company-website" />
         </cell>
       </row>
       

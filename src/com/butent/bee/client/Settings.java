@@ -25,8 +25,8 @@ public final class Settings {
   private static JSONObject settings;
   private static boolean initialized;
 
-  public static int getActionSensitivityMillis() {
-    return getInt("actionSensitivityMillis");
+  public static int getApplianceHeaderHeight() {
+    return getInt("applianceHeaderHeight");
   }
 
   public static String getAppName() {
@@ -41,6 +41,14 @@ public final class Settings {
     } else {
       return false;
     }
+  }
+
+  public static int getClickSensitivityDistance() {
+    return getInt("clickSensitivityDistance");
+  }
+
+  public static int getClickSensitivityMillis() {
+    return getInt("clickSensitivityMillis");
   }
 
   public static Double getDouble(String key) {
@@ -128,6 +136,10 @@ public final class Settings {
 
   public static String getVersion() {
     return getString("version");
+  }
+
+  public static int getViewHeaderHeight() {
+    return getInt("viewHeaderHeight");
   }
 
   public static String getWebSocketUrl() {

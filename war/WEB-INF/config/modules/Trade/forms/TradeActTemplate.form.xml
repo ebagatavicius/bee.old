@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form[
+  <!ENTITY inpw "width: 200px;">
+]>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  
+  name="TradeActTemplate" viewName="TradeActTemplates"
+  caption="=tradeActTemplate"
+  width="800" height="600"
+  >
+  <FlowPanel class="flexBox-vertical">
+    <br/>
+    <Table>
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+      
+      <row>
+        <Label for="Template" visible="true" />
+        <InputText source="Template" visible="true" style="&inpw;" />
+
+        <Label for="Name" />
+        <DataSelector source="Name" newRowEnabled="false" visible="true" style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Until" />
+        <InputDateTime source="Until" style="width: 120px;" />
+
+        <Label for="Series" />
+        <DataSelector source="Series" newRowEnabled="false" style="width: 120px;" />
+      </row>
+
+      <row>
+        <Label for="Operation" />
+        <DataSelector source="Operation" renderColumns="OperationName" newRowEnabled="false"
+          style="&inpw;" />
+
+        <Label for="Status" />
+        <DataSelector source="Status" renderColumns="StatusName" newRowEnabled="false"
+          style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Company" />
+        <DataSelector source="Company" newRowEnabled="false" style="&inpw;" />
+
+        <Label for="Object" />
+        <DataSelector source="Object" renderColumns="ObjectName"
+          choiceColumns="CompanyName ObjectName ObjectAddress" newRowEnabled="false"
+          style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Contact" />
+        <DataSelector source="Contact" newRowEnabled="false" style="&inpw;"
+          renderColumns="ContactFirstName ContactLastName"
+          choiceColumns="FirstName LastName CompanyName" options="Company" />
+
+        <Label for="Manager" />
+        <DataSelector source="Manager" editSource="ManagerPerson" 
+          renderColumns="ManagerFirstName ManagerLastName" newRowEnabled="false" style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Vehicle" />
+        <DataSelector source="Vehicle" 
+          renderColumns="VehicleParentModel VehicleModel VehicleNumber" newRowEnabled="false"
+          style="&inpw;" />
+        
+        <Label for="Driver" />
+        <DataSelector source="Driver" renderColumns="DriverFirstName DriverLastName" 
+          newRowEnabled="false" style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Currency" />
+        <DataSelector source="Currency" renderColumns="CurrencyName" editEnabled="false"
+          newRowEnabled="false" style="width: 60px;" />
+      </row>
+    </Table>
+
+    <br/>
+    <TabbedPages class="flexible">
+      <page>
+        <text>=goods</text>
+        <ChildGrid name="TradeActTmplItems" relColumn="TradeActTemplate" />
+      </page>
+
+      <page>
+        <text>=services</text>
+        <ChildGrid name="TradeActTmplServices" relColumn="TradeActTemplate" />
+      </page>
+
+      <page>
+        <text>=notes</text>
+        <SimplePanel>
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
+        </SimplePanel>
+      </page>
+    </TabbedPages>
+  </FlowPanel>
+</f:Form>

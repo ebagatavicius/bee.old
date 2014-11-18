@@ -3,7 +3,8 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   
-  name="CategoryTree" caption="=itemCategoryTree">
+  name="CategoryTree" caption="=itemCategoryTree" data="CategoryTree">
+  
   <DataTree caption="=itemCategories" viewName="CategoryTree" parentColumn="Parent">
     <calc>
       <ui:expression>row.Name</ui:expression>
@@ -18,16 +19,17 @@
           <InputText source="Name" style="width: 300px;" />
         </row>
 
-        <row>
+        <row data="Departments">
           <Label for="Department" />
           <DataSelector source="Department" />
         </row>
-        <row>
+
+        <row data="ActivityTypes">
           <Label for="ActivityType" />
           <DataSelector source="ActivityType" />
         </row>
 
-        <row>
+        <row data="CostCenters">
           <Label for="CostCenter" />
           <DataSelector source="CostCenter" />
         </row>

@@ -2,7 +2,6 @@ package com.butent.bee.shared.ui;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -13,6 +12,7 @@ import com.butent.bee.shared.utils.Codec;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public class Color implements BeeSerializable {
 
   private static final String HEX_PREFIX = "#";
 
-  private static final Map<String, String> names = Maps.newHashMap();
+  private static final Map<String, String> names = new HashMap<>();
 
   private static final Splitter rgbSplitter =
       Splitter.on(BeeConst.CHAR_COMMA).omitEmptyStrings().trimResults();
@@ -113,7 +113,7 @@ public class Color implements BeeSerializable {
       return BeeUtils.isHexString(key.substring(1)) ? normalizeHex(key.substring(1)) : null;
 
     } else if (key.startsWith("rgb")) {
-      List<Integer> rgb = Lists.newArrayList();
+      List<Integer> rgb = new ArrayList<>();
 
       for (String s : rgbSplitter.split(key)) {
         int v = Math.max(extract(s), 0);
@@ -132,7 +132,7 @@ public class Color implements BeeSerializable {
       }
 
     } else if (key.startsWith("hsl")) {
-      List<Integer> hsl = Lists.newArrayList();
+      List<Integer> hsl = new ArrayList<>();
 
       for (String s : hslSplitter.split(key)) {
         int v = extract(s);

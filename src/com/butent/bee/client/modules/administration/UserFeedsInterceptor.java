@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.administration;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.OptionElement;
 
 import com.butent.bee.client.BeeKeeper;
@@ -15,6 +14,7 @@ import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.websocket.Endpoint;
 import com.butent.bee.client.widget.ListBox;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.CellSource;
@@ -29,6 +29,7 @@ import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserFeedsInterceptor extends AbstractGridInterceptor {
@@ -83,7 +84,7 @@ public class UserFeedsInterceptor extends AbstractGridInterceptor {
     List<? extends IsRow> data = presenter.getGridView().getRowData();
     int dataIndex = getDataIndex(NewsConstants.COL_UF_FEED);
 
-    List<Feed> feeds = Lists.newArrayList();
+    List<Feed> feeds = new ArrayList<>();
 
     for (Feed feed : Feed.values()) {
       if (BeeKeeper.getUser().isModuleVisible(feed.getModuleAndSub())) {
@@ -123,7 +124,7 @@ public class UserFeedsInterceptor extends AbstractGridInterceptor {
     Global.inputWidget(Localized.getConstants().feedNew(), listBox, new InputCallback() {
       @Override
       public void onSuccess() {
-        List<Feed> selection = Lists.newArrayList();
+        List<Feed> selection = new ArrayList<>();
 
         for (int i = 0; i < listBox.getItemCount(); i++) {
           OptionElement optionElement = listBox.getOptionElement(i);
@@ -139,7 +140,7 @@ public class UserFeedsInterceptor extends AbstractGridInterceptor {
           subscribe(selection);
         }
       }
-    }, "bee-UserFeeds-add", presenter.getHeader().getElement());
+    }, BeeConst.CSS_CLASS_PREFIX + "UserFeeds-add", presenter.getHeader().getElement());
 
     return false;
   }

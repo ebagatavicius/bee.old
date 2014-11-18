@@ -1,7 +1,5 @@
 package com.butent.bee.client.validation;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.client.utils.Evaluator;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -12,6 +10,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class ValidationHelper {
@@ -26,14 +25,14 @@ public final class ValidationHelper {
 
   public static List<String> getBounds(HasBounds obj) {
     if (obj == null) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     } else {
       return getBounds(obj.getMinValue(), obj.getMaxValue());
     }
   }
 
   public static List<String> getBounds(String minValue, String maxValue) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     if (!BeeUtils.isEmpty(minValue)) {
       result.add(BeeUtils.joinWords(Localized.getConstants().minValue(), minValue));
@@ -111,7 +110,7 @@ public final class ValidationHelper {
   }
 
   private static boolean validateCell(CellValidation cv) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
 
     boolean checkForNull = !cv.isAdding() || !cv.hasDefaults();
 

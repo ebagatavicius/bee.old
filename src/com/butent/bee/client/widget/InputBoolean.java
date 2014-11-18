@@ -15,12 +15,14 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.view.edit.EditChangeHandler;
 import com.butent.bee.client.view.edit.EditStopEvent;
 import com.butent.bee.client.view.edit.EditStopEvent.Handler;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.shared.data.value.BooleanValue;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.ui.HasCheckedness;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -42,6 +44,8 @@ public class InputBoolean extends Composite implements Editor, HasValueChangeHan
   private String options;
 
   private boolean handlesTabulation;
+
+  private boolean summarize;
 
   public InputBoolean(String label) {
     super();
@@ -82,6 +86,11 @@ public class InputBoolean extends Composite implements Editor, HasValueChangeHan
   }
 
   @Override
+  public HandlerRegistration addSummaryChangeHandler(SummaryChangeEvent.Handler handler) {
+    return addHandler(handler, SummaryChangeEvent.getType());
+  }
+
+  @Override
   public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
     return addHandler(handler, ValueChangeEvent.getType());
   }
@@ -118,6 +127,11 @@ public class InputBoolean extends Composite implements Editor, HasValueChangeHan
   @Override
   public String getOptions() {
     return options;
+  }
+
+  @Override
+  public Value getSummary() {
+    return BooleanValue.of(isChecked());
   }
 
   @Override
@@ -224,6 +238,11 @@ public class InputBoolean extends Composite implements Editor, HasValueChangeHan
   }
 
   @Override
+  public void setSummarize(boolean summarize) {
+    this.summarize = summarize;
+  }
+
+  @Override
   public void setTabIndex(int index) {
     getCheckBox().setTabIndex(index);
   }
@@ -241,6 +260,11 @@ public class InputBoolean extends Composite implements Editor, HasValueChangeHan
   @Override
   public void startEdit(String oldValue, char charCode, EditorAction onEntry,
       Element sourceElement) {
+  }
+
+  @Override
+  public boolean summarize() {
+    return summarize;
   }
 
   @Override

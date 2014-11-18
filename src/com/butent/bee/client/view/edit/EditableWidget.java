@@ -15,6 +15,7 @@ import com.butent.bee.client.data.HasRelatedRow;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.ActiveWidgetChangeEvent;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.WidgetDescription;
 import com.butent.bee.client.utils.Evaluator;
@@ -462,6 +463,8 @@ public class EditableWidget implements EditChangeHandler, FocusHandler, BlurHand
       if (isDisplay()) {
         getDisplayWidget().refresh((Widget) getEditor(), row);
       }
+
+      maybeSummarize();
     }
 
     setDirty(false);
@@ -552,6 +555,12 @@ public class EditableWidget implements EditChangeHandler, FocusHandler, BlurHand
     return required;
   }
 
+  private void maybeSummarize() {
+    if (getEditor() != null && getEditor().summarize()) {
+      SummaryChangeEvent.fire(getEditor());
+    }
+  }
+
   private void reset() {
     if (hasColumn() || isDisplay()) {
       refresh(getRowValue());
@@ -580,6 +589,9 @@ public class EditableWidget implements EditChangeHandler, FocusHandler, BlurHand
       if (normalize) {
         reset();
       }
+      if (getRowValue() == null) {
+        maybeSummarize();
+      }
       if (keyCode == null) {
         return true;
       }
@@ -588,7 +600,9 @@ public class EditableWidget implements EditChangeHandler, FocusHandler, BlurHand
       if (normalize) {
         getEditor().normalizeDisplay(newValue);
       }
+
       setDirty(true);
+      maybeSummarize();
 
     } else {
       if (normalize) {
@@ -596,6 +610,7 @@ public class EditableWidget implements EditChangeHandler, FocusHandler, BlurHand
           reset();
         } else {
           getEditor().clearValue();
+          maybeSummarize();
         }
       }
       return false;

@@ -59,6 +59,7 @@ import com.butent.bee.shared.ui.Relation.Caching;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.websocket.messages.ProgressMessage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EcOrphansGrid extends AbstractGridInterceptor implements ClickHandler {
@@ -252,7 +253,7 @@ public class EcOrphansGrid extends AbstractGridInterceptor implements ClickHandl
     List<BeeColumn> columns = Data.getColumns(orphans, Lists.newArrayList(COL_TCD_ARTICLE_NR,
         COL_TCD_ARTICLE_NAME, COL_TCD_ARTICLE_DESCRIPTION, COL_TCD_BRAND));
 
-    List<String> values = Lists.newArrayList();
+    List<String> values = new ArrayList<>();
 
     for (BeeColumn col : columns) {
       if (BeeUtils.same(col.getId(), COL_TCD_ARTICLE_NAME)) {
@@ -267,7 +268,7 @@ public class EcOrphansGrid extends AbstractGridInterceptor implements ClickHandl
         List<BeeColumn> cols = Data.getColumns(TBL_TCD_ARTICLE_SUPPLIERS,
             Lists.newArrayList(COL_TCD_ARTICLE, COL_TCD_SUPPLIER, COL_TCD_SUPPLIER_ID));
 
-        List<String> vals = Lists.newArrayList();
+        List<String> vals = new ArrayList<>();
 
         for (BeeColumn col : cols) {
           if (BeeUtils.same(col.getId(), COL_TCD_ARTICLE)) {

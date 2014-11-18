@@ -1,6 +1,5 @@
 package com.butent.bee.client.style;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -24,6 +23,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -128,6 +128,12 @@ public final class Font implements HasInfo {
 
   private static final RangeMap<Double, CssUnit> DEFAULT_UNITS =
       RangeMap.create(Range.lessThan(4.0), CssUnit.EM, Range.atLeast(4.0), CssUnit.PX);
+
+  public static Font bold() {
+    Font font = new Font();
+    font.setWeight(FontWeight.BOLD);
+    return font;
+  }
 
   public static Font getComputed(Element el) {
     Map<String, String> styles = ComputedStyles.getNormalized(el);
@@ -438,7 +444,7 @@ public final class Font implements HasInfo {
 
   @Override
   public List<Property> getInfo() {
-    List<Property> info = Lists.newArrayList();
+    List<Property> info = new ArrayList<>();
 
     if (getStyle() != null) {
       info.add(new Property("Font Style", getStyle().getCssName()));

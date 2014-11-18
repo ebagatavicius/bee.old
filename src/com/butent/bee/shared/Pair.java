@@ -1,11 +1,12 @@
 package com.butent.bee.shared;
 
 import com.google.common.base.CharMatcher;
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+
+import java.util.Objects;
 
 /**
  * Defines pairs of objects.
@@ -21,6 +22,10 @@ public final class Pair<A, B> implements BeeSerializable {
 
   public static final Splitter SPLITTER =
       Splitter.on(CharMatcher.anyOf(" ,;=")).trimResults().omitEmptyStrings().limit(2);
+
+  public static <A, B> Pair<A, B> of() {
+    return of(null, null);
+  }
 
   /**
    * Creates the new {@code Pair} object passing the pair of objects.
@@ -98,8 +103,8 @@ public final class Pair<A, B> implements BeeSerializable {
     if (!(obj instanceof Pair)) {
       return false;
     }
-    return Objects.equal(getA(), ((Pair<?, ?>) obj).getA())
-        && Objects.equal(getB(), ((Pair<?, ?>) obj).getB());
+    return Objects.equals(getA(), ((Pair<?, ?>) obj).getA())
+        && Objects.equals(getB(), ((Pair<?, ?>) obj).getB());
   }
 
   /**
@@ -122,7 +127,7 @@ public final class Pair<A, B> implements BeeSerializable {
 
   @Override
   public int hashCode() {
-    return 1 + Objects.hashCode(getA(), getB());
+    return 1 + Objects.hash(getA(), getB());
   }
 
   public boolean isNull() {

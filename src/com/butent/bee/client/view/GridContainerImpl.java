@@ -64,18 +64,18 @@ import java.util.Set;
  * Implements design content for a grid container component.
  */
 
-public class GridContainerImpl extends Split implements GridContainerView, HasNavigation,
+public class GridContainerImpl extends Split implements GridContainerView,
     HasSearch, ActiveRowChangeEvent.Handler, AddStartEvent.Handler, AddEndEvent.Handler,
     EditFormEvent.Handler, HasEditState, RenderingEvent.Handler {
 
-  private static final String STYLE_NAME = StyleUtils.CLASS_NAME_PREFIX + "GridContainer";
+  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "GridContainer";
 
   private static final String STYLE_HAS_DATA = STYLE_NAME + "-has-data";
   private static final String STYLE_NO_DATA = STYLE_NAME + "-no-data";
 
   private static final String STYLE_SCROLLABLE = STYLE_NAME + "-scrollable";
 
-  private static final String STYLE_AUTO_FIT = StyleUtils.CLASS_NAME_PREFIX + "auto-fit";
+  private static final String STYLE_AUTO_FIT = BeeConst.CSS_CLASS_PREFIX + "auto-fit";
 
   private static final Set<Action> HEADER_ACTIONS =
       EnumSet.of(Action.REFRESH, Action.FILTER, Action.REMOVE_FILTER, Action.ADD, Action.DELETE,
@@ -112,7 +112,7 @@ public class GridContainerImpl extends Split implements GridContainerView, HasNa
 
     addStyleName(STYLE_NAME);
     if (!BeeUtils.isEmpty(gridName)) {
-      addStyleName(StyleUtils.CLASS_NAME_PREFIX + "grid-" + gridName.trim());
+      addStyleName(BeeConst.CSS_CLASS_PREFIX + "grid-" + gridName.trim());
     }
 
     this.supplierKey = supplierKey;
@@ -145,7 +145,8 @@ public class GridContainerImpl extends Split implements GridContainerView, HasNa
       GridFactory.GridOptions gridOptions) {
 
     setHasPaging(UiOption.hasPaging(uiOptions));
-    setHasSearch(UiOption.hasSearch(uiOptions));
+    setHasSearch(UiOption.hasSearch(uiOptions)
+        || gridDescription.getEnabledActions().contains(Action.FILTER));
 
     boolean hasData = !BeeUtils.isEmpty(gridDescription.getViewName());
     boolean readOnly = BeeUtils.isTrue(gridDescription.isReadOnly())
@@ -404,6 +405,10 @@ public class GridContainerImpl extends Split implements GridContainerView, HasNa
       }
     }
 
+    if (gridView.getGridInterceptor() != null) {
+      gridView.getGridInterceptor().onActiveRowChange(event);
+    }
+
     String eventSource = BeeUtils.notEmpty(getViewPresenter().getEventSource(), getId());
     BeeKeeper.getBus().fireEventFromSource(new ParentRowEvent(gridView.getViewName(), rowValue,
         rowEnabled), eventSource);
@@ -540,7 +545,7 @@ public class GridContainerImpl extends Split implements GridContainerView, HasNa
   @Override
   public void onRender(RenderingEvent event) {
     if (event != null && event.isAfter()) {
-      boolean empty = getGridView().getGrid().getRowData().isEmpty();
+      boolean empty = getGridView().isEmpty();
 
       setStyleName(STYLE_HAS_DATA, !empty);
       setStyleName(STYLE_NO_DATA, empty);

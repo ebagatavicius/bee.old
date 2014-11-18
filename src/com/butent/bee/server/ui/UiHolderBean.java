@@ -2,9 +2,6 @@ package com.butent.bee.server.ui;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import com.butent.bee.server.Config;
 import com.butent.bee.server.data.BeeView;
@@ -36,12 +33,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
@@ -109,7 +109,7 @@ public class UiHolderBean {
     if (object != null) {
       if (cache.containsKey(key(objectName))) {
         logger.warning(BeeUtils.parenthesize(moduleName),
-            "Dublicate", clazz, "name:", BeeUtils.bracket(objectName));
+            "Duplicate", clazz, "name:", BeeUtils.bracket(objectName));
       } else {
         cache.put(key(objectName), object);
       }
@@ -131,9 +131,9 @@ public class UiHolderBean {
   @EJB
   SystemBean sys;
 
-  private final Map<String, String> gridCache = Maps.newHashMap();
-  private final Map<String, String> formCache = Maps.newHashMap();
-  private final Map<String, Menu> menuCache = Maps.newHashMap();
+  private final Map<String, String> gridCache = new HashMap<>();
+  private final Map<String, String> formCache = new HashMap<>();
+  private final Map<String, Menu> menuCache = new HashMap<>();
 
   private final Map<String, String> gridViewNames = new ConcurrentHashMap<>();
   private final Map<String, String> formViewNames = new ConcurrentHashMap<>();
@@ -156,6 +156,10 @@ public class UiHolderBean {
     Element formElement = doc.getDocumentElement();
 
     String viewName = formElement.getAttribute(UiConstants.ATTR_VIEW_NAME);
+    if (BeeUtils.isEmpty(viewName)) {
+      viewName = formElement.getAttribute(UiConstants.ATTR_DATA);
+    }
+
     BeeView view = sys.isView(viewName) ? sys.getView(viewName) : null;
 
     checkWidgetChildrenVisibility(formElement, view);
@@ -211,7 +215,7 @@ public class UiHolderBean {
   }
 
   public ResponseObject getMenu(boolean checkRights) {
-    Map<Integer, Menu> menus = Maps.newTreeMap();
+    Map<Integer, Menu> menus = new TreeMap<>();
 
     for (Menu menu : menuCache.values()) {
       Menu entry = getMenu(null, Menu.restore(Codec.beeSerialize(menu)), checkRights);
@@ -237,48 +241,68 @@ public class UiHolderBean {
   public void initMenu() {
     initObjects(UiObject.MENU);
 
-    for (String menuKey : Sets.newHashSet(menuCache.keySet())) {
+    for (String menuKey : new HashSet<>(menuCache.keySet())) {
       Menu xmlMenu = menuCache.get(menuKey);
       String parent = xmlMenu.getParent();
 
       if (!BeeUtils.isEmpty(parent)) {
-        Menu menu = null;
+        Menu parentMenu = null;
 
         for (String entry : Splitter.on('.').omitEmptyStrings().trimResults().split(parent)) {
-          if (menu == null) {
-            menu = menuCache.get(key(entry));
+          if (parentMenu == null) {
+            parentMenu = menuCache.get(key(entry));
 
-          } else if (menu instanceof MenuEntry) {
+          } else if (parentMenu instanceof MenuEntry) {
             boolean found = false;
 
-            for (Menu item : ((MenuEntry) menu).getItems()) {
+            for (Menu item : ((MenuEntry) parentMenu).getItems()) {
               found = BeeUtils.same(item.getName(), entry);
 
               if (found) {
-                menu = item;
+                parentMenu = item;
                 break;
               }
             }
             if (!found) {
-              menu = null;
+              parentMenu = null;
               break;
             }
           } else {
             break;
           }
         }
-        if (menu == null || !(menu instanceof MenuEntry)) {
+
+        if (parentMenu == null || !(parentMenu instanceof MenuEntry)) {
           logger.severe("Menu parent is not valid:", "Module:", xmlMenu.getModule(),
               "; Menu:", xmlMenu.getName(), "; Parent:", parent);
-        } else {
-          List<Menu> items = ((MenuEntry) menu).getItems();
 
-          if (BeeUtils.isIndex(items, xmlMenu.getOrder())) {
-            items.add(xmlMenu.getOrder(), xmlMenu);
+        } else {
+          List<Menu> items = ((MenuEntry) parentMenu).getItems();
+
+          Integer order = xmlMenu.getOrder();
+          int index = BeeConst.UNDEF;
+
+          if (BeeUtils.isNonNegative(order)) {
+            if (BeeUtils.isIndex(items, order)) {
+              index = order;
+
+            } else {
+              for (int i = 0; i < items.size(); i++) {
+                if (BeeUtils.isMeq(items.get(i).getOrder(), order)) {
+                  index = i;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (BeeUtils.isIndex(items, index)) {
+            items.add(index, xmlMenu);
           } else {
             items.add(xmlMenu);
           }
         }
+
         unregister(menuKey, menuCache);
       }
     }
@@ -325,6 +349,9 @@ public class UiHolderBean {
       Document doc = XmlUtils.getXmlResource(resource, UiObject.FORM.getSchemaPath());
       if (doc != null) {
         viewName = doc.getDocumentElement().getAttribute(UiConstants.ATTR_VIEW_NAME);
+        if (BeeUtils.isEmpty(viewName)) {
+          viewName = doc.getDocumentElement().getAttribute(UiConstants.ATTR_DATA);
+        }
       }
     }
 
@@ -493,7 +520,7 @@ public class UiHolderBean {
     }
 
     int cnt = 0;
-    Collection<File> roots = Lists.newArrayList();
+    Collection<File> roots = new ArrayList<>();
 
     for (String moduleName : moduleBean.getModules()) {
       roots.clear();
@@ -511,7 +538,7 @@ public class UiHolderBean {
           FileUtils.findFiles(obj.getFileName("*"), roots, null, null, false, true);
 
       if (!BeeUtils.isEmpty(resources)) {
-        Set<String> objects = Sets.newHashSet();
+        Set<String> objects = new HashSet<>();
 
         for (File resource : resources) {
           String resourcePath = resource.getPath();

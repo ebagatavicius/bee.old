@@ -1,7 +1,5 @@
 package com.butent.bee.server.data;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.server.DataSourceBean;
 import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.jdbc.BeeConnection;
@@ -26,6 +24,7 @@ import com.butent.bee.shared.utils.Property;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -488,7 +487,7 @@ public class DataServiceBean {
           NameUtils.addName(ret, BeeUtils.toString(memC1 - memC2)));
 
     } else if (BeeUtils.containsSame(ret, "meta")) {
-      List<Property> result = Lists.newArrayList();
+      List<Property> result = new ArrayList<>();
 
       List<Property> info = BeeConnection.getInfo(conn);
       result.add(new Property("Connection", BeeUtils.bracket(info.size())));

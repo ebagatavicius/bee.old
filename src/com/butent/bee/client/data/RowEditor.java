@@ -40,8 +40,9 @@ import java.util.Set;
 
 public final class RowEditor {
 
-  public static final String DIALOG_STYLE = "bee-EditRow";
-  public static final String EDITABLE_RELATION_STYLE = "bee-EditableRelation";
+  public static final String DIALOG_STYLE = BeeConst.CSS_CLASS_PREFIX + "EditRow";
+  public static final String EDITABLE_RELATION_STYLE = BeeConst.CSS_CLASS_PREFIX
+      + "EditableRelation";
 
   private static final BeeLogger logger = LogUtils.getLogger(RowEditor.class);
 

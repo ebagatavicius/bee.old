@@ -2,7 +2,6 @@ package com.butent.bee.client.event;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.DataTransfer;
 import com.google.gwt.event.dom.client.DragDropEventBase;
 import com.google.gwt.event.dom.client.DragEndEvent;
@@ -30,6 +29,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -73,7 +73,7 @@ public final class DndHelper {
 
   public static List<Property> getDataTransferInfo(DragDropEventBase<?> event) {
     Assert.notNull(event);
-    List<Property> result = Lists.newArrayList();
+    List<Property> result = new ArrayList<>();
 
     DataTransfer dataTransfer = event.getDataTransfer();
     if (dataTransfer == null) {

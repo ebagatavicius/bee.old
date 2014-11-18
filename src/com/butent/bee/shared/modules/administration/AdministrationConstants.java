@@ -7,6 +7,7 @@ import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
+import com.butent.bee.shared.imports.ImportType;
 import com.butent.bee.shared.modules.ParameterType;
 import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.rights.RightsObjectType;
@@ -69,9 +70,9 @@ public final class AdministrationConstants {
 
     EnumUtils.register(ScheduleDateMode.class);
     EnumUtils.register(WorkdayTransition.class);
-  }
 
-  public static final String METHOD = "Service";
+    EnumUtils.register(ImportType.class);
+  }
 
   public static final String PARAMETERS_PREFIX = "parameters_";
 
@@ -79,6 +80,8 @@ public final class AdministrationConstants {
   public static final String SVC_GET_PARAMETERS = PARAMETERS_PREFIX + "get";
   public static final String SVC_RESET_PARAMETER = PARAMETERS_PREFIX + "reset";
   public static final String SVC_SET_PARAMETER = PARAMETERS_PREFIX + "set";
+
+  public static final String SVC_DO_IMPORT = "DoImport";
 
   public static final String SVC_NUMBER_TO_WORDS = "GetNumberInWords";
 
@@ -109,6 +112,17 @@ public final class AdministrationConstants {
   public static final String SVC_BLOCK_HOST = "block_host";
   public static final String SVC_CREATE_USER = "create_user";
   public static final String SVC_COPY_RIGHTS = "copy_rights";
+
+  public static final String VAR_IMPORT_TEST = "Test";
+  public static final String VAR_MAPPING_TABLE = "MappingTable";
+  public static final String VAR_MAPPING_FIELD = "MappingField";
+  public static final String VAR_IMPORT_FILE = "File";
+  public static final String VAR_IMPORT_SHEET = "Sheet";
+  public static final String VAR_IMPORT_START_ROW = "Row";
+  public static final String VAR_IMPORT_DATE_FORMAT = "DateFormat";
+
+  public static final String VAR_IMPORT_LOGIN = "Login";
+  public static final String VAR_IMPORT_PASSWORD = "Password";
 
   public static final String AUDIT_SUFFIX = "AUDIT";
   public static final String AUDIT_USER = "bee.user";
@@ -146,6 +160,10 @@ public final class AdministrationConstants {
 
   public static final String TBL_AUTOCOMPLETE = "Autocomplete";
 
+  public static final String TBL_IMPORT_OPTIONS = "ImportOptions";
+  public static final String TBL_IMPORT_PROPERTIES = "ImportProperties";
+  public static final String TBL_IMPORT_MAPPINGS = "ImportMappings";
+
   public static final String VIEW_USERS = "Users";
   public static final String VIEW_USER_SETTINGS = "UserSettings";
   public static final String VIEW_USER_GROUP_SETTINGS = "UserGroupSettings";
@@ -169,9 +187,6 @@ public final class AdministrationConstants {
   public static final String VIEW_ROLES = "Roles";
   public static final String VIEW_RIGHTS = "Rights";
   public static final String VIEW_USER_ROLES = "UserRoles";
-
-  public static final String VIEW_PARAMETERS = "Parameters";
-  public static final String VIEW_USER_PARAMETERS = "UserParameters";
 
   public static final String VIEW_FILTERS = "Filters";
 
@@ -279,7 +294,21 @@ public final class AdministrationConstants {
   public static final String COL_WORKSPACE_CONTINUE = "WorkspaceContinue";
   public static final String COL_LAST_WORKSPACE = "LastWorkspace";
 
+  public static final String COL_APPLIANCE_HEADER_HEIGHT = "ApplianceHeaderHeight";
+  public static final String COL_VIEW_HEADER_HEIGHT = "ViewHeaderHeight";
+  public static final String COL_CLICK_SENSITIVITY_MILLIS = "ClickSensitivityMillis";
+  public static final String COL_CLICK_SENSITIVITY_DISTANCE = "ClickSensitivityDistance";
+
   public static final String COL_USER_STYLE = "Style";
+
+  public static final String COL_IMPORT_OPTION = "Option";
+  public static final String COL_IMPORT_TYPE = "Type";
+  public static final String COL_IMPORT_DATA = "Data";
+  public static final String COL_IMPORT_DESCRIPTION = "Description";
+  public static final String COL_IMPORT_PROPERTY = "Property";
+  public static final String COL_IMPORT_VALUE = "Value";
+  public static final String COL_IMPORT_RELATION_OPTION = "RelationOption";
+  public static final String COL_IMPORT_MAPPING = "Mapping";
 
   public static final String ALS_FILE_NAME = "FileName";
   public static final String ALS_FILE_SIZE = "FileSize";
@@ -302,11 +331,14 @@ public final class AdministrationConstants {
   public static final String FORM_DEPARTMENT = "Department";
   public static final String FORM_NEW_ROLE = "NewRole";
 
+  public static final String FORM_IMPORT_OPTION = "ImportOption";
+
   public static final String PRM_SQL_MESSAGES = "SQLMessages";
 
   public static final String PRM_COMPANY = "CompanyName";
   public static final String PRM_CURRENCY = "MainCurrency";
   public static final String PRM_VAT_PERCENT = "VATPercent";
+  public static final String PRM_REFRESH_CURRENCY_HOURS = "CurrencyRefreshHours";
 
   public static final String PRM_ERP_NAMESPACE = "ERPNamespace";
   public static final String PRM_ERP_ADDRESS = "ERPAddress";
@@ -318,8 +350,6 @@ public final class AdministrationConstants {
   public static final String PRM_URL = "Url";
 
   public static final String PROP_ICON = "Icon";
-
-  public static final String STYLE_SHEET = "commons";
 
   private AdministrationConstants() {
   }

@@ -8,8 +8,11 @@
   <g:columns>
     <DataColumn name="Name" visible="true" />
     <DataColumn name="Caption" />
+
     <DataColumn name="MinorName" />
     <DataColumn name="MinorCaption" />
+
     <DataColumn name="UpdateTag" />
+    <IdColumn name="Id" />
   </g:columns>
 </g:Grid>

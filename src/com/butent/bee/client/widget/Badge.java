@@ -2,11 +2,12 @@ package com.butent.bee.client.widget;
 
 import com.google.gwt.core.client.Scheduler;
 
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public class Badge extends CustomDiv {
 
-  private static final String STYLE_NAME = "bee-Badge";
+  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "Badge";
   private static final String STYLE_EMPTY = STYLE_NAME + "-empty";
   private static final String STYLE_UPDATED = STYLE_NAME + "-updated";
 

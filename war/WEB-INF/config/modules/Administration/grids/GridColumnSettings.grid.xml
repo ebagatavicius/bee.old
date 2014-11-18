@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="GridColumnSettings" viewName="GridColumnSettings" caption="=gridColumnSettings"
+  autoFit="true"
+  >
+  <g:columns>
+    <DataColumn name="Name" visible="true" />
+
+    <DataColumn name="Caption" />
+
+    <DataColumn name="Width" />
+    <DataColumn name="MinWidth" />
+    <DataColumn name="MaxWidth" />
+
+    <DataColumn name="AutoFit" />
+
+    <DataColumn name="FlexGrow" />
+    <DataColumn name="FlexShrink" />
+    <DataColumn name="FlexBasis" />
+    <DataColumn name="FlexBasisUnit" />
+
+    <DataColumn name="Format" />
+
+    <DataColumn name="EditInPlace" />
+
+    <DataColumn name="HeaderStyle" />
+    <DataColumn name="HeaderFont" />
+
+    <DataColumn name="BodyStyle" />
+    <DataColumn name="BodyFont" />
+
+    <DataColumn name="FooterStyle" />
+    <DataColumn name="FooterFont" />
+  </g:columns>
+</g:Grid>

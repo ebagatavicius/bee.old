@@ -7,15 +7,19 @@
   <Fields>
     <String name="Name" precision="100" notNull="true" label="=itemName" />
     <String name="Name2" precision="100" label="=itemName2" />
+    <String name="Name3" precision="100" label="=itemName3" />
 
     <String name="Article" precision="30" unique="true" label="=article" />
     <String name="Article2" precision="30" label="=article2" />
     <String name="Barcode" precision="30" unique="true" label="=itemBarcode" />
 
     <Relation name="Unit" notNull="true" relation="Units" label="=unit" />
-    <Numeric name="Weight" precision="10" scale="3" label="=weight" />
+    <Enum name="TimeUnit" key="TradeActTimeUnit" label="=taTimeUnit" />
 
-    <Numeric name="Price" precision="15" scale="5" label="=sellingPrice" />
+    <Numeric name="Weight" precision="10" scale="3" label="=weight" />
+    <Numeric name="Area" precision="10" scale="3" label="=area" />
+
+    <Numeric name="Price" precision="15" scale="5" label="=salePrice" />
     <Relation name="Currency" relation="Currencies" label="=currency" />
 
     <Numeric name="Cost" precision="15" scale="5" label="=cost" />
@@ -25,8 +29,10 @@
     <Relation name="Currency1" relation="Currencies" label="=currency1" />
     <Numeric name="Price2" precision="15" scale="5" label="=price2" />
     <Relation name="Currency2" relation="Currencies" label="=currency2" />
+    <Numeric name="Price3" precision="15" scale="5" label="=price3" />
+    <Relation name="Currency3" relation="Currencies" label="=currency3" />
 
-    <Boolean name="Vat" label="=vat" />
+    <Boolean name="Vat" label="=vat" defValue="true" />
     <Numeric name="VatPercent" precision="3" label="=vatPercent" />
 
     <Boolean name="IsService" label="=service" />
@@ -37,6 +43,9 @@
     <Relation name="Department" relation="Departments" label="=department" />
     <Relation name="ActivityType" relation="ActivityTypes" label="=activityType" />
     <Relation name="CostCenter" relation="CostCenters" label="=costCenter" />
+
+    <Numeric name="DaysPerWeek" precision="1" label="=taDaysPerWeek" />
+    <Numeric name="MinTerm" precision="3" label="=taMinTerm" />
 
     <Integer name="Ordinal" label="=ordinal" />
     <String name="ExternalCode" precision="10" label="=externalCode" />

@@ -1,11 +1,9 @@
 package com.butent.bee.server.modules.calendar;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
@@ -78,7 +76,6 @@ import com.butent.bee.shared.news.Headline;
 import com.butent.bee.shared.news.HeadlineProducer;
 import com.butent.bee.shared.news.NewsConstants;
 import com.butent.bee.shared.rights.Module;
-import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -87,12 +84,16 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -170,7 +171,7 @@ public class CalendarModuleBean implements BeeModule {
 
   private static Map<Integer, Integer> splitByHour(DateTime start, DateTime end,
       Range<DateTime> dateRange, Range<Integer> hourRange) {
-    Map<Integer, Integer> result = Maps.newHashMap();
+    Map<Integer, Integer> result = new HashMap<>();
     if (start == null || end == null) {
       return result;
     }
@@ -200,7 +201,7 @@ public class CalendarModuleBean implements BeeModule {
 
   private static Map<YearMonth, Integer> splitByYearMonth(DateTime start, DateTime end,
       Range<DateTime> range) {
-    Map<YearMonth, Integer> result = Maps.newHashMap();
+    Map<YearMonth, Integer> result = new HashMap<>();
     if (start == null || end == null) {
       return result;
     }
@@ -302,7 +303,7 @@ public class CalendarModuleBean implements BeeModule {
     Collection<Timer> timers = null;
 
     if (idInfo == null) {
-      timers = Lists.newArrayList(notificationTimers.values());
+      timers = new ArrayList<>(notificationTimers.values());
       notificationTimers.clear();
 
     } else {
@@ -321,7 +322,7 @@ public class CalendarModuleBean implements BeeModule {
           timer = entry.getValue();
 
           try {
-            if (Objects.equal(timer.getInfo(), id)) {
+            if (Objects.equals(timer.getInfo(), id)) {
               appointmentId = entry.getKey();
               break;
             }
@@ -404,22 +405,21 @@ public class CalendarModuleBean implements BeeModule {
 
   @Override
   public List<SearchResult> doSearch(String query) {
-    List<SearchResult> results = Lists.newArrayList();
+    List<SearchResult> results = new ArrayList<>();
 
-    if (usr.isModuleVisible(ModuleAndSub.of(Module.CALENDAR))) {
-      Filter filter = Filter.or(
-          Filter.anyContains(Sets.newHashSet(COL_SUMMARY, COL_DESCRIPTION,
-              COL_APPOINTMENT_LOCATION, ALS_COMPANY_NAME, COL_VEHICLE_NUMBER), query),
-          Filter.anyItemContains(COL_STATUS, AppointmentStatus.class, query));
+    Filter filter = Filter.or(
+        Filter.anyContains(Sets.newHashSet(COL_SUMMARY, COL_DESCRIPTION,
+            COL_APPOINTMENT_LOCATION, ALS_COMPANY_NAME, COL_VEHICLE_NUMBER), query),
+        Filter.anyItemContains(COL_STATUS, AppointmentStatus.class, query));
 
-      List<BeeRow> appointments = getAppointments(filter,
-          new Order(COL_START_DATE_TIME, false), true);
-      if (!BeeUtils.isEmpty(appointments)) {
-        for (BeeRow row : appointments) {
-          results.add(new SearchResult(VIEW_APPOINTMENTS, row));
-        }
+    List<BeeRow> appointments = getAppointments(filter,
+        new Order(COL_START_DATE_TIME, false), true);
+    if (!BeeUtils.isEmpty(appointments)) {
+      for (BeeRow row : appointments) {
+        results.add(new SearchResult(VIEW_APPOINTMENTS, row));
       }
     }
+
     return results;
   }
 
@@ -628,7 +628,7 @@ public class CalendarModuleBean implements BeeModule {
           caption = BeeUtils.bracket(row.getId());
         }
 
-        List<String> subtitles = Lists.newArrayList();
+        List<String> subtitles = new ArrayList<>();
 
         String period = TimeUtils.renderPeriod(
             DataUtils.getDateTime(rowSet, row, COL_START_DATE_TIME),
@@ -755,7 +755,7 @@ public class CalendarModuleBean implements BeeModule {
   }
 
   private List<BeeRow> getAppointments(Filter filter, Order order, boolean checkVisibility) {
-    List<BeeRow> result = Lists.newArrayList();
+    List<BeeRow> result = new ArrayList<>();
 
     Long userId = usr.getCurrentUserId();
     if (!DataUtils.isId(userId)) {
@@ -878,7 +878,7 @@ public class CalendarModuleBean implements BeeModule {
       return null;
     }
 
-    List<Integer> hours = Lists.newArrayList(table.columnKeySet());
+    List<Integer> hours = new ArrayList<>(table.columnKeySet());
     Collections.sort(hours);
 
     BeeRowSet attRowSet = qs.getViewData(VIEW_ATTENDEES,
@@ -965,7 +965,7 @@ public class CalendarModuleBean implements BeeModule {
       return null;
     }
 
-    List<YearMonth> months = Lists.newArrayList(table.columnKeySet());
+    List<YearMonth> months = new ArrayList<>(table.columnKeySet());
     Collections.sort(months);
 
     BeeRowSet attRowSet = qs.getViewData(VIEW_ATTENDEES,
@@ -1086,7 +1086,7 @@ public class CalendarModuleBean implements BeeModule {
         BeeConst.STRING_LEFT_BRACKET, appDuration, BeeConst.STRING_PLUS, taskDuration,
         BeeConst.STRING_EQ, appDuration + taskDuration, BeeConst.STRING_RIGHT_BRACKET);
 
-    Map<String, Object> result = Maps.newHashMap();
+    Map<String, Object> result = new HashMap<>();
     if (!appointments.isEmpty()) {
       result.put(ItemType.APPOINTMENT.name(), appointments);
     }
@@ -1102,7 +1102,7 @@ public class CalendarModuleBean implements BeeModule {
   }
 
   private List<CalendarTask> getCalendarTasks(long calendarId, Long startMillis, Long endMillis) {
-    List<CalendarTask> tasks = Lists.newArrayList();
+    List<CalendarTask> tasks = new ArrayList<>();
 
     BeeRowSet calRowSet = qs.getViewData(VIEW_CALENDARS, Filter.compareId(calendarId));
     if (DataUtils.isEmpty(calRowSet)) {
@@ -1127,8 +1127,8 @@ public class CalendarModuleBean implements BeeModule {
       observed = false;
     }
 
-    Set<Long> executors = Sets.newHashSet();
-    Map<Long, ColorAndStyle> executorAppearance = Maps.newHashMap();
+    Set<Long> executors = new HashSet<>();
+    Map<Long, ColorAndStyle> executorAppearance = new HashMap<>();
 
     SimpleRowSet exGroupData = qs.getData(new SqlSelect()
         .setDistinctMode(true)
@@ -1182,7 +1182,7 @@ public class CalendarModuleBean implements BeeModule {
       return tasks;
     }
 
-    EnumMap<TaskType, ColorAndStyle> typeAppearance = Maps.newEnumMap(TaskType.class);
+    EnumMap<TaskType, ColorAndStyle> typeAppearance = new EnumMap<>(TaskType.class);
 
     String source = TaskConstants.TBL_TASKS;
     String idName = sys.getIdName(source);
@@ -1279,7 +1279,7 @@ public class CalendarModuleBean implements BeeModule {
       Long owner = row.getLong(TaskConstants.COL_OWNER);
       Long executor = row.getLong(TaskConstants.COL_EXECUTOR);
 
-      Set<Long> observers = Sets.newHashSet();
+      Set<Long> observers = new HashSet<>();
 
       Long[] taskUsers = qs.getLongColumn(new SqlSelect()
           .addFields(TaskConstants.TBL_TASK_USERS, COL_USER)
@@ -1299,9 +1299,9 @@ public class CalendarModuleBean implements BeeModule {
       TaskType type;
       if (!DataUtils.isId(calendarOwner)) {
         type = TaskType.ALL;
-      } else if (Objects.equal(executor, calendarOwner)) {
+      } else if (Objects.equals(executor, calendarOwner)) {
         type = TaskType.ASSIGNED;
-      } else if (Objects.equal(owner, calendarOwner)) {
+      } else if (Objects.equals(owner, calendarOwner)) {
         type = TaskType.DELEGATED;
       } else if (observers.contains(calendarOwner)) {
         type = TaskType.OBSERVED;
@@ -1735,10 +1735,10 @@ public class CalendarModuleBean implements BeeModule {
   private boolean updateChildren(String tblName, String parentRelation, long parentId,
       String columnId, List<Long> oldValues, List<Long> newValues) {
 
-    List<Long> insert = Lists.newArrayList(newValues);
+    List<Long> insert = new ArrayList<>(newValues);
     insert.removeAll(oldValues);
 
-    List<Long> delete = Lists.newArrayList(oldValues);
+    List<Long> delete = new ArrayList<>(oldValues);
     delete.removeAll(newValues);
 
     if (insert.isEmpty() && delete.isEmpty()) {

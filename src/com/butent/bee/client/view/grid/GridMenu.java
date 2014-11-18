@@ -17,7 +17,6 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.rights.Roles;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.grid.GridView.SelectedRows;
@@ -61,11 +60,6 @@ public class GridMenu {
       }
 
       @Override
-      Widget renderIcon(GridPresenter presenter) {
-        return new FaLabel(FontAwesome.BOOKMARK_O);
-      }
-
-      @Override
       void select(GridPresenter presenter) {
         presenter.handleAction(Action.BOOKMARK);
       }
@@ -81,11 +75,6 @@ public class GridMenu {
       @Override
       boolean isVisible(GridPresenter presenter) {
         return presenter.getMainView().isEnabled() && presenter.getActiveRow() != null;
-      }
-
-      @Override
-      Widget renderIcon(GridPresenter presenter) {
-        return new FaLabel(FontAwesome.COPY);
       }
 
       @Override
@@ -106,11 +95,6 @@ public class GridMenu {
       }
 
       @Override
-      Widget renderIcon(GridPresenter presenter) {
-        return new FaLabel(FontAwesome.FILE_EXCEL_O);
-      }
-
-      @Override
       void select(GridPresenter presenter) {
         presenter.handleAction(Action.EXPORT);
       }
@@ -124,17 +108,30 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().getRowData().isEmpty();
-      }
-
-      @Override
-      Widget renderIcon(GridPresenter presenter) {
-        return new FaLabel(FontAwesome.COG);
+        return !presenter.getGridView().isEmpty();
       }
 
       @Override
       void select(GridPresenter presenter) {
         presenter.handleAction(Action.CONFIGURE);
+      }
+    },
+
+    RESET(Action.RESET_SETTINGS) {
+      @Override
+      boolean isEnabled(GridDescription gridDescription, Collection<UiOption> uiOptions) {
+        return UiOption.hasSettings(uiOptions);
+      }
+
+      @Override
+      boolean isVisible(GridPresenter presenter) {
+        return !presenter.getGridView().isEmpty()
+            && GridSettings.contains(presenter.getGridView().getGridKey());
+      }
+
+      @Override
+      void select(GridPresenter presenter) {
+        presenter.handleAction(Action.RESET_SETTINGS);
       }
     },
 
@@ -152,11 +149,6 @@ public class GridMenu {
       }
 
       @Override
-      Widget renderIcon(GridPresenter presenter) {
-        return new FaLabel(FontAwesome.HISTORY);
-      }
-
-      @Override
       void select(GridPresenter presenter) {
         presenter.handleAction(Action.AUDIT);
       }
@@ -170,12 +162,7 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().getRowData().isEmpty();
-      }
-
-      @Override
-      Widget renderIcon(GridPresenter presenter) {
-        return new FaLabel(FontAwesome.PRINT);
+        return !presenter.getGridView().isEmpty();
       }
 
       @Override
@@ -192,7 +179,7 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().getRowData().isEmpty();
+        return !presenter.getGridView().isEmpty();
       }
 
       @Override
@@ -218,7 +205,7 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().getRowData().isEmpty();
+        return !presenter.getGridView().isEmpty();
       }
 
       @Override
@@ -244,7 +231,7 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().getRowData().isEmpty();
+        return !presenter.getGridView().isEmpty();
       }
 
       @Override
@@ -270,7 +257,7 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().getRowData().isEmpty();
+        return !presenter.getGridView().isEmpty();
       }
 
       @Override
@@ -335,7 +322,12 @@ public class GridMenu {
 
     abstract boolean isVisible(GridPresenter presenter);
 
-    abstract Widget renderIcon(GridPresenter presenter);
+    /**
+     * @param presenter
+     */
+    Widget renderIcon(GridPresenter presenter) {
+      return new FaLabel(action.getIcon());
+    }
 
     abstract void select(GridPresenter presenter);
 
@@ -357,7 +349,7 @@ public class GridMenu {
   public static final List<RightsState> ALL_STATES =
       Lists.newArrayList(RightsState.VIEW, RightsState.EDIT, RightsState.DELETE);
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "GridMenu-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "GridMenu-";
 
   private static final String STYLE_POPUP = STYLE_PREFIX + "popup";
   private static final String STYLE_TABLE = STYLE_PREFIX + "table";

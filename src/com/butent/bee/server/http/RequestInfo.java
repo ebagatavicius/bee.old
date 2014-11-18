@@ -11,6 +11,7 @@ import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.CommUtils;
 import com.butent.bee.shared.communication.ContentType;
 import com.butent.bee.shared.logging.BeeLogger;
+import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.PropertyUtils;
@@ -267,6 +268,15 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
 
   public String getService() {
     return service;
+  }
+
+  public SubModule getSubModule() {
+    String value = getParameter(Service.VAR_SUB_MODULE);
+    if (BeeUtils.isEmpty(value)) {
+      return null;
+    } else {
+      return SubModule.parse(value);
+    }
   }
 
   public String getUserAgent() {

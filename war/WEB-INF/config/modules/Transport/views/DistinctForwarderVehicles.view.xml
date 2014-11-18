@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="DistinctForwarderVehicles" source="Trips"
+  filter="ForwarderVehicle"
+  >
+  <Columns>
+    <SimpleColumn name="ForwarderVehicle" />
+  </Columns>
+  <GroupBy columns="ForwarderVehicle" />
+  <Order>
+    <OrderBy column="ForwarderVehicle" />
+  </Order>
+</View>

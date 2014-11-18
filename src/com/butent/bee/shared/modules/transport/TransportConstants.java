@@ -1,21 +1,10 @@
 package com.butent.bee.shared.modules.transport;
 
-import com.google.common.collect.Maps;
-
-import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.i18n.LocalizableConstants;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.modules.administration.AdministrationConstants;
-import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
-import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
-import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 public final class TransportConstants {
 
@@ -108,122 +97,6 @@ public final class TransportConstants {
     public String getCaption() {
       return getCaption(Localized.getConstants());
     }
-  }
-
-  public enum ImportType implements HasLocalizedCaption {
-    COSTS {
-      @Override
-      public String getCaption(LocalizableConstants constants) {
-        return constants.trImportCosts();
-      }
-
-      @Override
-      protected void init() {
-        LocalizableConstants locale = Localized.getConstants();
-        addProperty(new ImportProperty(VAR_IMPORT_START_ROW, locale.startRow()));
-        addProperty(new ImportProperty(VAR_IMPORT_DATE_FORMAT, locale.dateFormat()));
-        addProperty(new ImportProperty(COL_VEHICLE, locale.trVehicle(),
-            TBL_VEHICLES, COL_VEHICLE_NUMBER));
-        addProperty(new ImportProperty(COL_COSTS_DATE, locale.date()));
-        addProperty(new ImportProperty(COL_COSTS_ITEM, locale.itemOrService(),
-            ClassifierConstants.TBL_ITEMS, ClassifierConstants.COL_ITEM_NAME));
-        addProperty(new ImportProperty(COL_COSTS_QUANTITY, locale.quantity()));
-        addProperty(new ImportProperty(COL_COSTS_PRICE, locale.price()));
-        addProperty(new ImportProperty(COL_COSTS_CURRENCY, locale.currency(),
-            AdministrationConstants.TBL_CURRENCIES, AdministrationConstants.COL_CURRENCY_NAME));
-        addProperty(new ImportProperty(TradeConstants.COL_TRADE_VAT_PLUS, locale.vatPlus()));
-        addProperty(new ImportProperty(COL_COSTS_VAT, locale.vat()));
-        addProperty(new ImportProperty(TradeConstants.COL_TRADE_VAT_PERC, locale.vatPercent()));
-        addProperty(new ImportProperty(COL_AMOUNT, locale.amount()));
-        addProperty(new ImportProperty(COL_COSTS_SUPPLIER, locale.supplier(),
-            ClassifierConstants.TBL_COMPANIES, ClassifierConstants.COL_COMPANY_NAME));
-        addProperty(new ImportProperty(COL_NUMBER, locale.number()));
-        addProperty(new ImportProperty(COL_COSTS_COUNTRY, locale.country(),
-            ClassifierConstants.TBL_COUNTRIES, ClassifierConstants.COL_COUNTRY_NAME));
-        addProperty(new ImportProperty(COL_COSTS_NOTE, locale.notes()));
-        addProperty(new ImportProperty(COL_COSTS_EXTERNAL_ID, locale.externalId()));
-      }
-    },
-    TRACKING {
-      @Override
-      public String getCaption(LocalizableConstants constants) {
-        return constants.trImportTracking();
-      }
-
-      @Override
-      protected void init() {
-        LocalizableConstants locale = Localized.getConstants();
-        addProperty(new ImportProperty(VAR_IMPORT_LOGIN, locale.loginUserName()));
-        addProperty(new ImportProperty(VAR_IMPORT_PASSWORD, locale.loginPassword()));
-        addProperty(new ImportProperty(COL_VEHICLE, locale.trVehicle(),
-            TBL_VEHICLES, COL_VEHICLE_NUMBER));
-        addProperty(new ImportProperty(ClassifierConstants.COL_COUNTRY, locale.country(),
-            ClassifierConstants.TBL_COUNTRIES, ClassifierConstants.COL_COUNTRY_NAME));
-      }
-    };
-
-    public static class ImportProperty {
-      private final String name;
-      private final String caption;
-      private String relTable;
-      private String relField;
-
-      public ImportProperty(String name, String caption) {
-        Assert.notEmpty(name);
-        this.name = name;
-        this.caption = BeeUtils.notEmpty(caption, name);
-      }
-
-      public ImportProperty(String name, String caption, String relTable, String relField) {
-        this(name, caption);
-        Assert.notEmpty(relTable);
-        Assert.notEmpty(relField);
-
-        this.relTable = relTable;
-        this.relField = relField;
-      }
-
-      public String getCaption() {
-        return caption;
-      }
-
-      public String getName() {
-        return name;
-      }
-
-      public String getRelField() {
-        return relField;
-      }
-
-      public String getRelTable() {
-        return relTable;
-      }
-    }
-
-    private final Map<String, ImportProperty> properties = Maps.newLinkedHashMap();
-
-    private ImportType() {
-      init();
-    }
-
-    protected void addProperty(ImportProperty property) {
-      properties.put(property.getName(), property);
-    }
-
-    @Override
-    public String getCaption() {
-      return getCaption(Localized.getConstants());
-    }
-
-    public Collection<ImportProperty> getProperties() {
-      return Collections.unmodifiableCollection(properties.values());
-    }
-
-    public ImportProperty getProperty(String name) {
-      return properties.get(name);
-    }
-
-    protected abstract void init();
   }
 
   public enum OrderStatus implements HasLocalizedCaption {
@@ -324,7 +197,6 @@ public final class TransportConstants {
     EnumUtils.register(CargoRequestStatus.class);
 
     EnumUtils.register(FuelSeason.class);
-    EnumUtils.register(ImportType.class);
   }
 
   public static final String SVC_GET_BEFORE = "GetBeforeData";
@@ -342,10 +214,11 @@ public final class TransportConstants {
   public static final String SVC_GET_ASSESSMENT_QUANTITY_REPORT = "GetAssessmentQuantityReport";
   public static final String SVC_GET_ASSESSMENT_TURNOVER_REPORT = "GetAssessmentTurnoverReport";
   public static final String SVC_CREATE_INVOICE_ITEMS = "CreateInvoiceItems";
-  public static final String SVC_DO_IMPORT = "DoImport";
   public static final String SVC_GET_CREDIT_INFO = "GetCreditInfo";
 
   public static final String SVC_SEND_MESSAGE = "SendMessage";
+
+  public static final String SVC_TRIP_PROFIT_REPORT = "TripProfitReport";
 
   public static final String PRM_ERP_REFRESH_INTERVAL = "ERPRefreshIntervalInMinutes";
   public static final String PRM_MESSAGE_TEMPLATE = "MessageTemplate";
@@ -353,15 +226,6 @@ public final class TransportConstants {
 
   public static final String VAR_INCOME = "Income";
   public static final String VAR_EXPENSE = "Expense";
-
-  public static final String VAR_MAPPING_TABLE = "MappingTable";
-  public static final String VAR_MAPPING_FIELD = "MappingField";
-  public static final String VAR_IMPORT_FILE = "File";
-  public static final String VAR_IMPORT_START_ROW = "Row";
-  public static final String VAR_IMPORT_DATE_FORMAT = "DateFormat";
-
-  public static final String VAR_IMPORT_LOGIN = "Login";
-  public static final String VAR_IMPORT_PASSWORD = "Password";
 
   public static final String TBL_TRANSPORT_GROUPS = "TransportGroups";
 
@@ -409,9 +273,7 @@ public final class TransportConstants {
   public static final String TBL_SHIPMENT_REQUESTS = "ShipmentRequests";
   public static final String TBL_CARGO_REQUESTS = "CargoRequests";
 
-  public static final String TBL_IMPORT_OPTIONS = "ImportOptions";
-  public static final String TBL_IMPORT_PROPERTIES = "ImportProperties";
-  public static final String TBL_IMPORT_MAPPINGS = "ImportMappings";
+  public static final String TBL_COUNTRY_NORMS = "CountryNorms";
 
   public static final String VIEW_ORDERS = "TransportationOrders";
 
@@ -481,6 +343,7 @@ public final class TransportConstants {
   public static final String COL_EXPEDITION = "Expedition";
   public static final String COL_FORWARDER = "Forwarder";
   public static final String COL_FORWARDER_VEHICLE = "ForwarderVehicle";
+  public static final String COL_FORWARDER_DRIVER = "ForwarderDriver";
 
   public static final String COL_CARGO = "Cargo";
   public static final String COL_CARGO_DESCRIPTION = "Description";
@@ -505,6 +368,9 @@ public final class TransportConstants {
   public static final String COL_CARGO_VALUE_CURRENCY = "ValueCurrency";
 
   public static final String COL_CARGO_HANDLING_NOTES = "Notes";
+
+  public static final String COL_DAILY_COSTS_ITEM = "DailyCostsItem";
+  public static final String COL_ROAD_COSTS_ITEM = "RoadCostsItem";
 
   public static final String COL_ASSESSMENT = "Assessment";
   public static final String COL_ASSESSMENT_ID = "AssessmentID";
@@ -537,6 +403,7 @@ public final class TransportConstants {
   public static final String COL_ORDER = "Order";
   public static final String COL_ORDER_ID = "OrderID";
   public static final String COL_ORDER_NO = "OrderNo";
+  public static final String COL_ORDER_NOTES = "Notes";
   public static final String COL_ORDER_DATE = "Date";
   public static final String COL_ORDER_MANAGER = "Manager";
   public static final String COL_CUSTOMER = "Customer";
@@ -784,12 +651,6 @@ public final class TransportConstants {
 
   public static final String COL_CRF_REQUEST = "CargoRequest";
 
-  public static final String COL_IMPORT_OPTION = "Option";
-  public static final String COL_IMPORT_TYPE = "Type";
-  public static final String COL_IMPORT_PROPERTY = "Property";
-  public static final String COL_IMPORT_VALUE = "Value";
-  public static final String COL_IMPORT_MAPPING = "Mapping";
-
   public static final String FORM_NEW_VEHICLE = "NewVehicle";
   public static final String FORM_ORDER = "TransportationOrder";
   public static final String FORM_TRIP = "Trip";
@@ -815,8 +676,6 @@ public final class TransportConstants {
   public static final String FORM_SHIPMENT_REQUEST = "ShipmentRequest";
   public static final String FORM_NEW_CARGO_REQUEST = "NewCargoRequest";
   public static final String FORM_CARGO_REQUEST = "CargoRequest";
-
-  public static final String FORM_IMPORT_OPTION = "ImportOption";
 
   public static final String GRID_ASSESSMENT_REQUESTS = "AssessmentRequests";
   public static final String GRID_ASSESSMENT_ORDERS = "AssessmentOrders";
@@ -905,8 +764,6 @@ public final class TransportConstants {
   public static final String AR_EXPENSE = "Expense";
   public static final String AR_SECONDARY_INCOME = "SecondaryIncome";
   public static final String AR_SECONDARY_EXPENSE = "SecondaryExpense";
-
-  public static final String STYLE_SHEET = "transport";
 
   public static String defaultLoadingColumnAlias(String colName) {
     return "DefLoad" + colName;

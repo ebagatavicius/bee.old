@@ -4,8 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.gwt.xml.client.Element;
 
 import com.butent.bee.client.data.IdCallback;
+import com.butent.bee.client.event.logical.ActiveRowChangeEvent;
 import com.butent.bee.client.event.logical.ParentRowEvent;
 import com.butent.bee.client.event.logical.RenderingEvent;
+import com.butent.bee.client.event.logical.RowCountChangeEvent;
 import com.butent.bee.client.grid.ColumnFooter;
 import com.butent.bee.client.grid.ColumnHeader;
 import com.butent.bee.client.grid.column.AbstractColumn;
@@ -33,12 +35,14 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.RowInsertEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.filter.FilterComponent;
 import com.butent.bee.shared.data.filter.FilterDescription;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.GridDescription;
+import com.butent.bee.shared.ui.Relation;
 
 import java.util.Collection;
 import java.util.List;
@@ -106,7 +110,8 @@ public abstract class AbstractGridInterceptor implements GridInterceptor {
   }
 
   @Override
-  public void afterUpdateCell(IsColumn column, IsRow result, boolean rowMode) {
+  public void afterUpdateCell(IsColumn column, String oldValue, String newValue, IsRow result,
+      boolean rowMode) {
   }
 
   @Override
@@ -165,6 +170,10 @@ public abstract class AbstractGridInterceptor implements GridInterceptor {
 
   @Override
   public void beforeRender(GridView gridView, RenderingEvent event) {
+  }
+
+  @Override
+  public void configureRelation(String name, Relation relation) {
   }
 
   @Override
@@ -255,6 +264,11 @@ public abstract class AbstractGridInterceptor implements GridInterceptor {
   }
 
   @Override
+  public List<FilterComponent> getInitialUserFilters(List<FilterComponent> defaultFilters) {
+    return defaultFilters;
+  }
+
+  @Override
   public List<String> getParentLabels() {
     return null;
   }
@@ -301,6 +315,10 @@ public abstract class AbstractGridInterceptor implements GridInterceptor {
   }
 
   @Override
+  public void onActiveRowChange(ActiveRowChangeEvent event) {
+  }
+
+  @Override
   public boolean onClose(GridPresenter presenter) {
     return true;
   }
@@ -323,6 +341,11 @@ public abstract class AbstractGridInterceptor implements GridInterceptor {
 
   @Override
   public void onReadyForUpdate(GridView gridView, ReadyForUpdateEvent event) {
+  }
+
+  @Override
+  public boolean onRowCountChange(GridView gridView, RowCountChangeEvent event) {
+    return true;
   }
 
   @Override

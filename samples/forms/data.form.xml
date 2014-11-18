@@ -61,9 +61,27 @@
       </row>
 
       <row>
-        <InputMoney source="Currency" />
-        <MoneyLabel source="Currency" />
+        <InputMoney source="Currency">
+          <dynStyle>
+            <ui:class>bee-FontWeight-bold</ui:class>
+            <ui:expression>cell.value &gt; 0</ui:expression>
+          </dynStyle>
+        </InputMoney>
+
+        <MoneyLabel source="Currency">
+          <dynStyle>
+            <ui:inline>color: red;</ui:inline>
+            <ui:expression>cell.value &lt; 0</ui:expression>
+          </dynStyle>
+          <dynStyle>
+            <ui:inline>color: green;</ui:inline>
+            <ui:font>large italic</ui:font>
+            <ui:expression>row.Currency &gt; 100</ui:expression>
+          </dynStyle>
+        </MoneyLabel>
+
         <MoneyLabel source="Currency" format="#,##0.00&#160;&#164;" />
+
         <InputDate source="Date" format="date_short" minValue="2008 7 1" maxValue="2012 9 1" />
         <DateLabel source="Date" />
         <DateLabel source="Date" format="yy.MM.dd" />
@@ -97,8 +115,14 @@
             </ui:function>
           </validation>
         </InputDouble>
-        <DoubleLabel source="Double" />
+        <DoubleLabel source="Double">
+          <dynStyle>
+            <ui:inline>transform: scaleY([cell.value]);</ui:inline>
+            <ui:expression>cell.value &gt; 0 &amp;&amp; cell.value &lt; 10</ui:expression>
+          </dynStyle>
+        </DoubleLabel>
         <DoubleLabel source="Double" format="#.000" />
+
         <InputLong source="Long" minValue="0" />
         <LongLabel source="Long" />
         <Progress source="Long" max="10">

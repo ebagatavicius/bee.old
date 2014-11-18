@@ -29,7 +29,6 @@ import com.butent.bee.client.layout.Split;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HandlesHistory;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.utils.JsonUtils;
 import com.butent.bee.client.view.View;
@@ -43,6 +42,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.HasCaption;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
@@ -185,7 +185,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
     @Override
     protected void init() {
       super.init();
-      addStyleName("bee-Tile");
+      addStyleName(BeeConst.CSS_CLASS_PREFIX + "Tile");
     }
 
     @Override
@@ -277,7 +277,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
     }
 
     private void setActiveStyle(boolean add) {
-      setStyleName("bee-Tile-active", add);
+      setStyleName(BeeConst.CSS_CLASS_PREFIX + "Tile-active", add);
     }
 
     private void setContentIndex(int contentIndex) {
@@ -574,7 +574,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
 
   TilePanel(Workspace workspace) {
     super(5);
-    addStyleName("bee-TilePanel");
+    addStyleName(BeeConst.CSS_CLASS_PREFIX + "TilePanel");
 
     init(workspace);
   }

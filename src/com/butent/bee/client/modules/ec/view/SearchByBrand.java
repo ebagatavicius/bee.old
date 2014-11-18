@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.ec.view;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -27,6 +26,7 @@ import com.butent.bee.shared.modules.ec.EcConstants;
 import com.butent.bee.shared.modules.ec.EcItem;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class SearchByBrand extends EcView {
@@ -41,7 +41,7 @@ class SearchByBrand extends EcView {
 
   private final ItemPanel itemPanel;
 
-  private final List<EcBrand> brands = Lists.newArrayList();
+  private final List<EcBrand> brands = new ArrayList<>();
   private int brandIndex = BeeConst.UNDEF;
 
   SearchByBrand() {
@@ -137,7 +137,7 @@ class SearchByBrand extends EcView {
           });
         }
 
-        List<String> names = Lists.newArrayList();
+        List<String> names = new ArrayList<>();
         for (EcBrand brand : brands) {
           names.add(brand.getName());
         }

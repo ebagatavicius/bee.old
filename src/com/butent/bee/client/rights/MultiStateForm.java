@@ -2,7 +2,6 @@ package com.butent.bee.client.rights;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -37,8 +36,10 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -240,7 +241,7 @@ abstract class MultiStateForm extends RightsForm {
   protected String getChangeMessage(RightsObject object) {
     Collection<RightsState> changedStates = changes.get(object.getName());
 
-    List<String> stateCaptions = Lists.newArrayList();
+    List<String> stateCaptions = new ArrayList<>();
     for (RightsState state : getRightsStates()) {
       if (changedStates.contains(state)) {
         stateCaptions.add(state.getCaption());
@@ -337,7 +338,7 @@ abstract class MultiStateForm extends RightsForm {
       params.addQueryItem(COL_OBJECT_TYPE, getObjectType().ordinal());
       params.addQueryItem(COL_ROLE, getRoleId());
 
-      Map<String, String> diff = Maps.newHashMap();
+      Map<String, String> diff = new HashMap<>();
       for (String objectName : changes.keySet()) {
         diff.put(objectName, EnumUtils.buildIndexList(changes.get(objectName)));
       }
@@ -587,7 +588,7 @@ abstract class MultiStateForm extends RightsForm {
   }
 
   private Map<String, Integer> getLeaves() {
-    Map<String, Integer> leaves = Maps.newHashMap();
+    Map<String, Integer> leaves = new HashMap<>();
 
     int col = getValueStartCol() - 2;
 
@@ -729,7 +730,7 @@ abstract class MultiStateForm extends RightsForm {
   }
 
   private List<Toggle> getStateToggles() {
-    List<Toggle> toggles = Lists.newArrayList();
+    List<Toggle> toggles = new ArrayList<>();
 
     for (Widget widget : getTable()) {
       if (widget instanceof Toggle && isDataType(widget, DATA_TYPE_STATE_TOGGLE)) {

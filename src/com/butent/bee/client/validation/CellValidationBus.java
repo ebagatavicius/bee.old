@@ -1,11 +1,11 @@
 package com.butent.bee.client.validation;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.shared.HandlerRegistration;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CellValidationBus implements HasCellValidationHandlers {
@@ -20,7 +20,7 @@ public class CellValidationBus implements HasCellValidationHandlers {
   public HandlerRegistration addCellValidationHandler(final CellValidateEvent.Handler handler) {
     Assert.notNull(handler);
     if (handlers == null) {
-      handlers = Lists.newArrayList();
+      handlers = new ArrayList<>();
     }
 
     if (!handlers.contains(handler)) {

@@ -1,22 +1,18 @@
 package com.butent.bee.client.images;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 
+import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.shared.Assert;
-import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.NotificationListener;
-import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
-import com.butent.bee.shared.utils.ArrayUtils;
-import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -355,7 +351,7 @@ public final class Images {
 
   public static final long MAX_SIZE_FOR_DATA_URL = 1258292L; /* ~1.2 MB */
 
-  private static final Map<String, ImageResource> map = Maps.newHashMap();
+  private static final Map<String, ImageResource> map = new HashMap<>();
 
   private static final ImageElement imageElement = Document.get().createImageElement();
 
@@ -545,31 +541,7 @@ public final class Images {
 
   public static List<FileInfo> sanitizeInput(Collection<? extends FileInfo> input,
       NotificationListener notificationListener) {
-
-    List<FileInfo> result = Lists.newArrayList();
-    if (BeeUtils.isEmpty(input)) {
-      return result;
-    }
-
-    List<String> errors = Lists.newArrayList();
-
-    for (FileInfo fileInfo : input) {
-      long size = fileInfo.getSize();
-
-      if (size > MAX_SIZE_FOR_DATA_URL) {
-        errors.add(BeeUtils.join(BeeConst.STRING_COLON + BeeConst.STRING_SPACE, fileInfo.getName(),
-            Localized.getMessages().fileSizeExceeded(size, MAX_SIZE_FOR_DATA_URL)));
-      } else {
-        result.add(fileInfo);
-      }
-    }
-
-    if (!errors.isEmpty() && notificationListener != null) {
-      result.clear();
-      notificationListener.notifyWarning(ArrayUtils.toArray(errors));
-    }
-
-    return result;
+    return FileUtils.validateFileSize(input, MAX_SIZE_FOR_DATA_URL, notificationListener);
   }
 
   private static String key(String name) {

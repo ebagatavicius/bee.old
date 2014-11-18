@@ -1,7 +1,5 @@
 package com.butent.bee.server.news;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.server.sql.HasConditions;
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.SqlSelect;
@@ -20,6 +18,7 @@ import com.butent.bee.shared.news.NewsConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ public final class NewsHelper {
   public static List<IsCondition> buildConditions(IsCondition... conditions) {
     Assert.notNull(conditions);
 
-    List<IsCondition> result = Lists.newArrayList();
+    List<IsCondition> result = new ArrayList<>();
     for (IsCondition condition : conditions) {
       if (condition != null) {
         result.add(condition);
@@ -54,7 +53,7 @@ public final class NewsHelper {
     Assert.notEmpty(source);
     Assert.notNull(condition);
 
-    List<Pair<String, IsCondition>> result = Lists.newArrayList();
+    List<Pair<String, IsCondition>> result = new ArrayList<>();
     result.add(Pair.of(source, condition));
 
     return result;
@@ -67,7 +66,7 @@ public final class NewsHelper {
     Assert.notEmpty(s2);
     Assert.notNull(c2);
 
-    List<Pair<String, IsCondition>> result = Lists.newArrayList();
+    List<Pair<String, IsCondition>> result = new ArrayList<>();
     result.add(Pair.of(s1, c1));
     result.add(Pair.of(s2, c2));
 

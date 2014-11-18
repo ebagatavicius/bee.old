@@ -1,7 +1,5 @@
 package com.butent.bee.client.communication;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.State;
@@ -10,6 +8,7 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,7 +62,7 @@ public class RpcList extends LinkedHashMap<Integer, RpcInfo> {
     int c = cols.length;
     Assert.parameterCount(c + 1, 2);
 
-    List<String[]> result = Lists.newArrayList();
+    List<String[]> result = new ArrayList<>();
     if (isEmpty()) {
       return result;
     }

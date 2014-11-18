@@ -1,6 +1,5 @@
 package com.butent.bee.client.maps;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 
@@ -10,6 +9,7 @@ import com.butent.bee.shared.State;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class ApiLoader {
@@ -19,7 +19,7 @@ public final class ApiLoader {
 
   private static BeeLogger logger = LogUtils.getLogger(ApiLoader.class);
 
-  private static List<ScheduledCommand> callbacks = Lists.newArrayList();
+  private static List<ScheduledCommand> callbacks = new ArrayList<>();
 
   private static State state;
 

@@ -17,7 +17,9 @@ import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.ClientDefaults;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.decorator.TuningFactory;
+import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.i18n.Money;
 import com.butent.bee.client.logging.ClientLogManager;
 import com.butent.bee.client.modules.ModuleManager;
 import com.butent.bee.client.modules.administration.AdministrationKeeper;
@@ -40,10 +42,12 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.RightsUtils;
 import com.butent.bee.shared.ui.UserInterface;
+import com.butent.bee.shared.ui.UserInterface.Component;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -134,6 +138,11 @@ public class Bee implements EntryPoint, ClosingHandler {
     UserData userData = UserData.restore(data.get(Service.VAR_USER));
     BeeKeeper.getUser().setUserData(userData);
 
+    String userSettings = data.get(Component.SETTINGS.key());
+    if (!BeeUtils.isEmpty(userSettings)) {
+      BeeKeeper.getUser().loadSettings(userSettings);
+    }
+
     Module.setEnabledModules(data.get(Service.PROPERTY_MODULES));
 
     RightsUtils.setViewModules(Codec.deserializeMap(data.get(Service.PROPERTY_VIEW_MODULES)));
@@ -185,6 +194,10 @@ public class Bee implements EntryPoint, ClosingHandler {
             BeeKeeper.getMenu().restore(serialized);
             break;
 
+          case MONEY:
+            Money.load(serialized);
+            break;
+
           case NEWS:
             Global.getNewsAggregator().loadSubscriptions(serialized);
             break;
@@ -194,7 +207,6 @@ public class Bee implements EntryPoint, ClosingHandler {
             break;
 
           case SETTINGS:
-            BeeKeeper.getUser().loadSettings(serialized);
             break;
 
           case USERS:
@@ -277,6 +289,13 @@ public class Bee implements EntryPoint, ClosingHandler {
       @Override
       public void onResize(ResizeEvent event) {
         BeeKeeper.getScreen().getScreenPanel().onResize();
+
+        Collection<Popup> popups = Popup.getVisiblePopups();
+        if (!BeeUtils.isEmpty(popups)) {
+          for (Popup popup : popups) {
+            popup.onResize();
+          }
+        }
       }
     });
 

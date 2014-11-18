@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="TradeActTemplates" viewName="TradeActTemplates" caption="=tradeActTemplates"
+  >
+  <g:columns>
+    <DataColumn name="Template" visible="true" />
+
+    <RelColumn name="Name" />
+    <DataColumn name="Until" />
+
+    <RelColumn name="Series" />
+
+    <RelColumn name="Operation" renderColumns="OperationName" />
+    <RelColumn name="Status" renderColumns="StatusName" />
+
+    <RelColumn name="Company" />
+    <RelColumn name="Contact" renderColumns="ContactFirstName ContactLastName"
+      choiceColumns="FirstName LastName CompanyName" />
+    <RelColumn name="Object" renderColumns="ObjectName" />
+
+    <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
+    <RelColumn name="Currency" renderColumns="CurrencyName" />
+
+    <RelColumn name="Vehicle" renderColumns="VehicleParentModel VehicleModel VehicleNumber" />
+    <RelColumn name="Driver" renderColumns="DriverFirstName DriverLastName" />
+
+    <DataColumn name="Notes" />
+  </g:columns>
+</g:Grid>

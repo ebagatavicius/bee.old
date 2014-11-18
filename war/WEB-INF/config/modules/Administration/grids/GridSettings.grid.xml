@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:w="http://www.butent.com/widget"
+  xmlns:ui="http://www.butent.com/ui"
+  
+  name="GridSettings" viewName="GridSettings" caption="=gridSettings"
+  enabledActions="copy" autoFit="true"
+  >
+
+  <g:south size="250" splitterSize="2">
+    <w:ChildGrid name="GridColumnSettings" relColumn="GridSetting" />
+  </g:south>
+
+  <g:body height="40" />
+
+  <g:columns>
+    <DataColumn name="Key" visible="true" />
+    <RelColumn name="User" visible="true" renderColumns="FirstName LastName" />
+
+    <DataColumn name="Caption" />
+
+    <DataColumn name="Columns">
+      <style>
+        <bodyStyle>
+          <ui:inline>word-wrap: break-word;</ui:inline>
+          <ui:font>smaller</ui:font>
+        </bodyStyle>
+      </style>
+    </DataColumn>
+    <DataColumn name="Order" />
+
+    <DataColumn name="HeaderHeight" />
+    <DataColumn name="HeaderStyle" />
+    <DataColumn name="HeaderFont" />
+    <DataColumn name="HeaderPadding" />
+    <DataColumn name="HeaderBorderWidth" />
+    <DataColumn name="HeaderMargin" />
+
+    <DataColumn name="RowHeight" />
+    <DataColumn name="BodyStyle" />
+    <DataColumn name="BodyFont" />
+    <DataColumn name="BodyPadding" />
+    <DataColumn name="BodyBorderWidth" />
+    <DataColumn name="BodyMargin" />
+
+    <DataColumn name="FooterHeight" />
+    <DataColumn name="FooterStyle" />
+    <DataColumn name="FooterFont" />
+    <DataColumn name="FooterPadding" />
+    <DataColumn name="FooterBorderWidth" />
+    <DataColumn name="FooterMargin" />
+
+    <DataColumn name="AutoFit" />
+
+    <DataColumn name="MinColumnWidth" />
+    <DataColumn name="MaxColumnWidth" />
+
+    <DataColumn name="FlexGrow" />
+    <DataColumn name="FlexShrink" />
+    <DataColumn name="FlexBasis" />
+    <DataColumn name="FlexBasisUnit" />
+  </g:columns>
+</g:Grid>

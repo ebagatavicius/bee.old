@@ -5,7 +5,6 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -24,8 +23,11 @@ import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.Wildcards;
 import com.butent.bee.shared.utils.Wildcards.Pattern;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -163,8 +165,9 @@ public final class DataUtils {
 
   public static BeeRowSet createRowSetForInsert(String viewName, List<BeeColumn> columns,
       IsRow row, Collection<String> alwaysInclude, boolean addProperties) {
-    List<BeeColumn> newColumns = Lists.newArrayList();
-    List<String> values = Lists.newArrayList();
+
+    List<BeeColumn> newColumns = new ArrayList<>();
+    List<String> values = new ArrayList<>();
 
     for (int i = 0; i < columns.size(); i++) {
       BeeColumn column = columns.get(i);
@@ -235,7 +238,7 @@ public final class DataUtils {
   }
 
   public static List<BeeRow> filterRows(BeeRowSet rowSet, String columnId, String value) {
-    List<BeeRow> result = Lists.newArrayList();
+    List<BeeRow> result = new ArrayList<>();
     int index = rowSet.getColumnIndex(columnId);
 
     for (BeeRow row : rowSet.getRows()) {
@@ -265,18 +268,24 @@ public final class DataUtils {
   }
 
   public static int getColumnIndex(String columnId, List<? extends IsColumn> columns) {
-    int index = BeeConst.UNDEF;
-    if (BeeUtils.isEmpty(columnId) || BeeUtils.isEmpty(columns)) {
-      return index;
-    }
+    return getColumnIndex(columnId, columns, false);
+  }
 
-    for (int i = 0; i < columns.size(); i++) {
-      if (BeeUtils.same(columns.get(i).getId(), columnId)) {
-        index = i;
-        break;
+  public static int getColumnIndex(String columnId, List<? extends IsColumn> columns,
+      boolean warn) {
+
+    if (columns != null) {
+      for (int i = 0; i < columns.size(); i++) {
+        if (BeeUtils.same(columns.get(i).getId(), columnId)) {
+          return i;
+        }
       }
     }
-    return index;
+
+    if (warn) {
+      logger.warning("column not found", columnId);
+    }
+    return BeeConst.UNDEF;
   }
 
   public static String getColumnName(String input, List<? extends IsColumn> columns,
@@ -308,7 +317,7 @@ public final class DataUtils {
 
   public static List<String> getColumnNames(List<? extends IsColumn> columns,
       String idColumnName, String versionColumnName) {
-    List<String> names = Lists.newArrayList();
+    List<String> names = new ArrayList<>();
 
     if (!BeeUtils.isEmpty(columns)) {
       for (IsColumn column : columns) {
@@ -335,7 +344,7 @@ public final class DataUtils {
       return columns;
     }
 
-    List<BeeColumn> result = Lists.newArrayList();
+    List<BeeColumn> result = new ArrayList<>();
     for (int index : indexes) {
       if (index >= 0 && index < columns.size()) {
         result.add(columns.get(index));
@@ -345,7 +354,7 @@ public final class DataUtils {
   }
 
   public static List<BeeColumn> getColumns(List<BeeColumn> columns, List<String> input) {
-    List<BeeColumn> result = Lists.newArrayList();
+    List<BeeColumn> result = new ArrayList<>();
 
     if (!BeeUtils.isEmpty(input)) {
       for (String s : input) {
@@ -393,7 +402,7 @@ public final class DataUtils {
   }
 
   public static List<Long> getDistinct(Collection<? extends IsRow> rows, int index, Long exclude) {
-    List<Long> result = Lists.newArrayList();
+    List<Long> result = new ArrayList<>();
     if (BeeUtils.isEmpty(rows)) {
       return result;
     }
@@ -527,7 +536,7 @@ public final class DataUtils {
       return null;
     }
 
-    List<String> colNames = Lists.newArrayList();
+    List<String> colNames = new ArrayList<>();
     if (!BeeUtils.isEmpty(dataInfo.getRowCaption())) {
       colNames.addAll(dataInfo.parseColumns(dataInfo.getRowCaption()));
     }
@@ -548,7 +557,7 @@ public final class DataUtils {
   }
 
   public static List<Long> getRowIds(BeeRowSet rowSet) {
-    List<Long> result = Lists.newArrayList();
+    List<Long> result = new ArrayList<>();
     for (BeeRow row : rowSet.getRows()) {
       result.add(row.getId());
     }
@@ -563,15 +572,21 @@ public final class DataUtils {
     return row.getString(getColumnIndex(columnId, columns));
   }
 
-  public static String getString(IsRow row, int index) {
+  public static String getStringQuietly(IsRow row, int index) {
     if (row == null) {
       return null;
+
     } else if (index == ID_INDEX) {
       return BeeUtils.toString(row.getId());
+
     } else if (index == VERSION_INDEX) {
       return BeeUtils.toString(row.getVersion());
-    } else {
+
+    } else if (index >= 0 && index < row.getNumberOfCells()) {
       return row.getString(index);
+
+    } else {
+      return null;
     }
   }
 
@@ -581,8 +596,8 @@ public final class DataUtils {
     Assert.notNull(oldRow);
     Assert.notNull(newRow);
 
-    List<String> oldValues = Lists.newArrayList();
-    List<String> newValues = Lists.newArrayList();
+    List<String> oldValues = new ArrayList<>();
+    List<String> newValues = new ArrayList<>();
 
     for (int i = 0; i < oldRow.getNumberOfCells(); i++) {
       oldValues.add(oldRow.getString(i));
@@ -610,9 +625,9 @@ public final class DataUtils {
     Assert.isTrue(cc == oldValues.size());
     Assert.isTrue(cc == newValues.size());
 
-    List<BeeColumn> updatedColumns = Lists.newArrayList();
-    List<String> updatedOldValues = Lists.newArrayList();
-    List<String> updatedNewValues = Lists.newArrayList();
+    List<BeeColumn> updatedColumns = new ArrayList<>();
+    List<String> updatedOldValues = new ArrayList<>();
+    List<String> updatedNewValues = new ArrayList<>();
 
     for (int i = 0; i < cc; i++) {
       BeeColumn column = columns.get(i);
@@ -664,6 +679,10 @@ public final class DataUtils {
     return id != null && id > 0;
   }
 
+  public static boolean isId(String s) {
+    return s != null && BeeUtils.isDigit(s.trim()) && isId(BeeUtils.toLongOrNull(s));
+  }
+
   public static boolean isNewRow(IsRow row) {
     return row != null && row.getId() == NEW_ROW_ID;
   }
@@ -683,7 +702,7 @@ public final class DataUtils {
     for (String colName : colNames) {
       int i = dataInfo.getColumnIndex(colName);
       if (BeeConst.isUndef(i)) {
-        logger.warning(dataInfo.getViewName(), "column not found:", colName);
+        logger.warning(dataInfo.getViewName(), "column not found", colName);
         continue;
       }
 
@@ -753,7 +772,7 @@ public final class DataUtils {
   public static List<String> parseColumns(List<String> input, List<? extends IsColumn> columns,
       String idName, String versionName) {
 
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (BeeUtils.isEmpty(input)) {
       return result;
     }
@@ -772,8 +791,8 @@ public final class DataUtils {
     }
 
     if (hasWildcards || hasExclusions) {
-      Set<Pattern> include = Sets.newHashSet();
-      Set<Pattern> exclude = Sets.newHashSet();
+      Set<Pattern> include = new HashSet<>();
+      Set<Pattern> exclude = new HashSet<>();
 
       for (String item : input) {
         if (hasExclusions && BeeUtils.isPrefixOrSuffix(item, BeeConst.CHAR_MINUS)) {
@@ -786,7 +805,7 @@ public final class DataUtils {
         }
       }
 
-      List<String> colNames = Lists.newArrayList();
+      List<String> colNames = new ArrayList<>();
 
       if (!include.isEmpty()) {
         if (!BeeUtils.isEmpty(idName) && Wildcards.contains(include, idName)) {
@@ -847,15 +866,15 @@ public final class DataUtils {
   public static List<String> parseColumns(String input, List<? extends IsColumn> columns,
       String idColumnName, String versionColumnName) {
     if (BeeUtils.isEmpty(input)) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     } else {
-      return parseColumns(Lists.newArrayList(NameUtils.NAME_SPLITTER.split(input)), columns,
+      return parseColumns(NameUtils.NAME_SPLITTER.splitToList(input), columns,
           idColumnName, versionColumnName);
     }
   }
 
   public static List<Long> parseIdList(String input) {
-    List<Long> result = Lists.newArrayList();
+    List<Long> result = new ArrayList<>();
     if (BeeUtils.isEmpty(input)) {
       return result;
     }
@@ -870,7 +889,7 @@ public final class DataUtils {
   }
 
   public static Set<Long> parseIdSet(String input) {
-    Set<Long> result = Sets.newHashSet();
+    Set<Long> result = new HashSet<>();
     if (BeeUtils.isEmpty(input)) {
       return result;
     }
@@ -941,7 +960,7 @@ public final class DataUtils {
       return null;
     }
 
-    List<BeeRow> result = Lists.newArrayList();
+    List<BeeRow> result = new ArrayList<>();
     String[] arr = Codec.beeDeserializeCollection(s);
 
     if (arr != null) {
@@ -953,23 +972,12 @@ public final class DataUtils {
   }
 
   public static boolean sameId(IsRow r1, IsRow r2) {
-    if (r1 == null) {
-      return r2 == null;
-    } else if (r2 == null) {
-      return false;
-    } else {
-      return r1.getId() == r2.getId();
-    }
+    return r1 != null && r2 != null && r1.getId() == r2.getId();
   }
 
   public static boolean sameIdAndVersion(IsRow r1, IsRow r2) {
-    if (r1 == null) {
-      return r2 == null;
-    } else if (r2 == null) {
-      return false;
-    } else {
-      return r1.getId() == r2.getId() && r1.getVersion() == r2.getVersion();
-    }
+    return r1 != null && r2 != null
+        && r1.getId() == r2.getId() && r1.getVersion() == r2.getVersion();
   }
 
   public static boolean sameIdSet(String s, Collection<Long> col) {
@@ -983,6 +991,20 @@ public final class DataUtils {
 
   public static boolean sameIdSet(String s1, String s2) {
     return sameIdSet(s1, parseIdSet(s2));
+  }
+
+  public static boolean sameValues(IsRow r1, IsRow r2) {
+    if (r1 != null && r2 != null && r1.getNumberOfCells() == r2.getNumberOfCells()) {
+      for (int i = 0; i < r1.getNumberOfCells(); i++) {
+        if (!Objects.equals(r1.getString(i), r2.getString(i))) {
+          return false;
+        }
+      }
+      return true;
+
+    } else {
+      return false;
+    }
   }
 
   public static int setDefaults(IsRow row, Collection<String> colNames, List<BeeColumn> columns,
@@ -1021,7 +1043,7 @@ public final class DataUtils {
 
   public static List<String> translate(List<String> input, List<? extends IsColumn> columns,
       IsRow row) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     if (BeeUtils.isEmpty(input) || BeeUtils.isEmpty(columns)) {
       BeeUtils.overwrite(result, input);

@@ -7,7 +7,7 @@
   newRowCaption="=newItem"
   >
   <g:columns>
-    <RelColumn name="Item" renderColumns="ItemName" visible="true">
+    <RelColumn name="Item" renderColumns="ItemName" choiceColumns="Name Article" visible="true">
       <footer text="=totalOf" horizontalAlignment="right" />
     </RelColumn>
     <DataColumn name="Article" />
@@ -21,25 +21,13 @@
       <footer expression="row.Quantity * row.Price" />
     </DataColumn>
 
-    <DataColumn name="VatPlus" width="20" sortable="false" horizontalAlignment="center" caption="+">
-      <render><ui:expression>row.VatPlus ? '+' : ''</ui:expression></render>
-      <carry>
-        <ui:expression>cell.value</ui:expression>
-      </carry>
+    <DataColumn name="VatPlus" width="20" sortable="false" caption="+" format="+" carry="true" />
+    <DataColumn name="Vat" carry="true">
+      <footer evaluator="vat" />
     </DataColumn>
-    <DataColumn name="Vat">
-      <carry>
-        <ui:expression>cell.value</ui:expression>
-      </carry>
-    </DataColumn>
-    <DataColumn name="VatPercent" width="20" sortable="false" horizontalAlignment="center" caption="%">
-      <render><ui:expression>row.VatPercent ? '%' : ''</ui:expression></render>
-      <carry>
-        <ui:expression>cell.value</ui:expression>
-      </carry>
-    </DataColumn>
+    <DataColumn name="VatPercent" width="20" sortable="false" caption="%" format="%" carry="true" />
 
-    <CalcColumn name="VatSum" type="decimal" caption="=vatSum" format="0.00" visible="false">
+    <CalcColumn name="VatSum" type="decimal" caption="=vatAmount" format="0.00" visible="false">
       <renderer type="vat" />
       <footer aggregate="sum" />
     </CalcColumn>

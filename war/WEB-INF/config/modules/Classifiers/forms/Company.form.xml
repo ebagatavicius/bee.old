@@ -46,10 +46,9 @@
       </row>
     </Table>
 
-    <Disclosure xmlns="http://www.butent.com/widget" xmlns:xi="http://www.w3.org/2001/XInclude"
-      open="true">
+    <Disclosure open="true">
        <Label text="=contactInfo" style="text-transform: uppercase; " />
-        <FlowPanel class="flexible">
+       <FlowPanel>
          <xi:include href="widgets/ContactDetails.widget.xml" />     
          <ChildGrid name="CompanyContacts" relColumn="Company" style="min-height: 150px" />
        </FlowPanel>
@@ -63,7 +62,7 @@
             <row>
               <Label text="=creditLimit" for="CreditLimit" style="&lbl1;"/>
               <FlowPanel>
-                <InputInteger source="CreditLimit" style="text-align: right" />
+                <InputInteger source="CreditLimit" style="text-align: right" summarize="true" />
                 <DataSelector source="LimitCurrency" editEnabled="false" placeholder="=currencyShort"
                   style="width:40px; margin-left:5px; display:inline-block;" for="CreditLimit" />
               </FlowPanel>
@@ -73,28 +72,28 @@
             </row>
   
             <row for="CreditTolerance">
-              <Label text="=creditTolerance" style="&lbl1;"/>
-              <InputInteger source="CreditTolerance" style="width: 60px;" />
+              <Label text="=creditTolerance" style="&lbl1;" />
+              <InputInteger source="CreditTolerance" style="width: 60px;" summarize="true" />
             </row>
   
             <row for="CreditDays">
               <Label text="=creditDays" style="&lbl1;"/>
-              <InputDecimal source="CreditDays" style="width: 60px;" />
+              <InputDecimal source="CreditDays" style="width: 60px;" summarize="true" />
             </row>
   
             <row for="FinancialState">
-              <Label text="=financialState" style="&lbl1;"/>
-              <DataSelector source="FinancialState" />
+              <Label text="=financialState" style="&lbl1;" />
+              <DataSelector source="FinancialState" summarize="true" />
             </row>
   
             <row for="DaysAsBuyer">
               <Label text="=daysAsBuyer" style="&lbl1;"/>
-              <InputDecimal source="DaysAsBuyer" style="width: 60px;" />
+              <InputDecimal source="DaysAsBuyer" style="width: 60px;" summarize="true" />
             </row>
   
             <row for="DaysAsSupplier">
               <Label text="=daysAsSupplier" style="&lbl1;"/>
-              <InputDecimal source="DaysAsSupplier" style="width: 60px;" />
+              <InputDecimal source="DaysAsSupplier" style="width: 60px;" summarize="true" />
             </row>
           </Table>   
           <ChildGrid name="CompanyBankAccounts" class="flexible" relColumn="Company" style="min-heght: 150px;"/>
@@ -117,21 +116,21 @@
           <Table>
             <row>
               <Label style="&lbl1;" for="CompanySize" />
-              <DataSelector source="CompanySize" style="width: 100px;" />
+              <DataSelector source="CompanySize" style="width: 100px;" summarize="true" />
               <Label style="margin-left: 8px; margin-right: 8px;" for="InformationSource" />
-              <DataSelector source="InformationSource" style="width: 100px;" />
+              <DataSelector source="InformationSource" style="width: 100px;" summarize="true" />
             </row>
             <row data="CompActStore">
               <Label text="=companyActivities" style="&lbl1;" />
               <cell colSpan="3">
                 <ChildSelector viewName="CompanyActivities" childTable="CompActStore"
                   targetRelColumn="Company" sourceRelColumn="Activity"
-                  label="=companyActivities" style="width: 338px;" />
+                  label="=companyActivities" style="width: 338px;" summarize="true" />
               </cell>
             </row>
             <row for="Rating">
               <Label text="=rating" style="&lbl1;"/>
-              <InputText source="Rating" style="width:100px;" />
+              <InputText source="Rating" style="width: 100px;" summarize="true" />
             </row>
           </Table>
         </FlowPanel>
@@ -142,17 +141,30 @@
         <ChildGrid name="RelatedDocuments" relColumn="Company" />
       </page>
 
+      <page>
+        <text>=objects</text>
+        <ChildGrid name="CompanyObjects" relColumn="Company" module="Trade.Acts" />
+      </page>
+      <page>
+        <text>=tradeActs</text>
+        <ChildGrid name="CompanyTradeActs" relColumn="Company" module="Trade.Acts" />
+      </page>
+
       <page for="Notes">
         <text>=notes</text>
         <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" />
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>  
 
       <page for="RelatedMessages">
         <text>=mails</text>
         <ChildGrid name="RelatedMessages" relColumn="Company" />
-      </page>  
+      </page>
+      <page for="Tasks">
+        <text>=crmTasks</text>
+        <ChildGrid name="Tasks" relColumn="Company" />
+      </page>
     </TabbedPages>
 
   </FlowPanel>

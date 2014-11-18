@@ -1,0 +1,306 @@
+.bee-ta-command-disabled {
+  display: none;
+}
+
+.bee-GridFormContainer-edit .bee-ta-template-selection,
+.bee-FormContainer .bee-ta-template-selection,
+.bee-RowContainer .bee-ta-template-selection,
+.bee-ta-form-return .bee-ta-template-selection {
+  display: none;
+}
+
+.bee-ta-form-no-services .bee-ta-until-label,
+.bee-ta-form-no-services .bee-ta-until-input,
+.bee-ta-form-no-services .bee-ta-services-tab,
+.bee-ta-form-no-services .bee-grid-TradeActServices {
+  display: none;
+}
+.bee-GridFormContainer-newRow .bee-ta-invoices-tab,
+.bee-NewRowContainer .bee-ta-invoices-tab,
+.bee-ta-form-no-invoices .bee-ta-invoices-tab {
+  display: none;
+}
+
+.bee-ta-form-return .bee-ta-command-import-items {
+  display: none;
+}
+
+.bee-ta-picker-search-panel {
+  margin-top: 2ex;
+  margin-bottom: 2ex;
+}
+.bee-ta-picker-search-box {
+  margin-left: 1em;
+  font-size: medium;
+}
+.bee-ta-picker-search-command {
+  display: inline-block;
+  margin-left: 1em;
+  font-size: 18px;
+  color: #888;
+}
+.bee-ta-picker-search-command:hover {
+  color: black;
+}
+
+.bee-ta-picker-item-panel,
+.bee-ta-return-items-wrapper,
+.bee-ta-import-items-wrapper {
+  max-height: 70vh;
+  overflow: auto;
+}
+.bee-ta-picker-item-table,
+.bee-ta-return-items-table,
+.bee-ta-import-items-table,
+.bee-ta-invoice-act-table,
+.bee-ta-invoice-service-table {
+  border-collapse: collapse;
+}
+.bee-ta-picker-item-table td,
+.bee-ta-return-items-table td,
+.bee-ta-import-items-table td,
+.bee-ta-invoice-act-table td,
+.bee-ta-invoice-service-table td {
+  border: 1px solid #ddd;
+}
+.bee-ta-picker-header td,
+.bee-ta-return-items-header td,
+.bee-ta-import-items-header td,
+.bee-ta-invoice-act-header td,
+.bee-ta-invoice-service-header td {
+  text-align: center;
+  padding: 3px 5px;
+  font-weight: bold;
+}
+.bee-ta-picker-price-label,
+.bee-ta-picker-sel-price-label {
+  max-width: 80px;
+}
+.bee-ta-return-items-header,
+.bee-ta-import-items-header {
+  white-space: nowrap;
+}
+
+.bee-ta-return-items-item:nth-child(odd),
+.bee-ta-picker-item:nth-child(odd),
+.bee-ta-invoice-act-row:nth-child(odd),
+.bee-ta-invoice-service-row:nth-child(odd),
+.bee-ta-report-ibc-body:nth-child(odd),
+.bee-ta-report-svc-body:nth-child(odd),
+.bee-ta-report-trf-body:nth-child(odd),
+.bee-ta-report-stock-body:nth-child(odd) {
+  background-color: #f5f5f5;
+}
+.bee-ta-return-items-item:nth-child(even),
+.bee-ta-picker-item:nth-child(even),
+.bee-ta-invoice-act-row:nth-child(even),
+.bee-ta-invoice-service-row:nth-child(even),
+.bee-ta-report-ibc-body:nth-child(even),
+.bee-ta-report-svc-body:nth-child(even),
+.bee-ta-report-trf-body:nth-child(even),
+.bee-ta-report-stock-body:nth-child(even) {
+  background-color: #ebebeb;
+}
+.bee-ta-picker-item:hover,
+.bee-ta-return-items-item:hover,
+.bee-ta-import-items-item:hover,
+.bee-ta-invoice-act-row-item:hover,
+.bee-ta-invoice-service-row-item:hover,
+.bee-ta-report-ibc-body:hover,
+.bee-ta-report-ibc-footer:hover,
+.bee-ta-report-svc-body:hover,
+.bee-ta-report-svc-footer:hover,
+.bee-ta-report-trf-body:hover,
+.bee-ta-report-trf-footer:hover,
+.bee-ta-report-stock-body:hover,
+.bee-ta-report-stock-footer:hover {
+  background-color: blanchedalmond;
+}
+.bee-ta-return-items-selected td,
+.bee-ta-picker-item-selected td,
+.bee-ta-invoice-act-selected td,
+.bee-ta-invoice-service-selected td {
+  background-color: aquamarine;
+}
+.bee-ta-picker-item td,
+.bee-ta-return-items-item td,
+.bee-ta-import-items-item td,
+.bee-ta-invoice-act-row td,
+.bee-ta-invoice-service-row td,
+.bee-ta-invoice-service-footer td {
+  padding: 2px 5px;
+}
+
+.bee-ta-picker-id-cell,
+.bee-ta-picker-price-cell,
+.bee-ta-picker-sel-price-cell,
+.bee-ta-picker-stock-cell,
+.bee-ta-picker-from-cell,
+.bee-ta-return-items-price-cell,
+.bee-ta-return-items-qty-cell,
+.bee-ta-import-items-qty-cell,
+.bee-ta-import-items-stock-cell,
+.bee-ta-import-items-from-cell,
+.bee-ta-import-items-id-cell,
+.bee-ta-invoice-act-id-cell,
+.bee-ta-invoice-act-total-cell,
+.bee-ta-invoice-service-act-cell,
+.bee-ta-invoice-service-item-cell,
+.bee-ta-invoice-service-qty-cell,
+.bee-ta-invoice-service-price-cell,
+.bee-ta-invoice-service-amount-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.bee-ta-picker-type-cell,
+.bee-ta-picker-group-cell {
+  white-space: pre-line;
+}
+
+.bee-ta-return-items-price-currency,
+.bee-ta-picker-price-currency {
+  padding-left: 5px;
+  font-size: x-small;
+}
+
+.bee-ta-picker-price-label:hover,
+.bee-ta-picker-price-cell:hover {
+  cursor: pointer;
+  background-color: white;
+  outline: blue solid 1px;
+  outline-offset: -1px;
+}
+.bee-ta-picker-sel-price-label,
+.bee-ta-picker-sel-price-cell.bee-ta-picker-sel-price-cell {
+  background-color: honeydew;
+}
+
+.bee-ta-picker-from-label,
+.bee-ta-picker-from-cell.bee-ta-picker-from-cell,
+.bee-ta-import-items-from-label,
+.bee-ta-import-items-from-cell {
+  background-color: azure;
+}
+.bee-ta-return-items-qty-cell:hover,
+.bee-ta-picker-from-cell:hover {
+  cursor: pointer;
+  background-color: white;
+  outline: green solid 1px;
+  outline-offset: -1px;
+}
+
+.bee-ta-return-items-input-cell,
+.bee-ta-picker-qty-cell {
+  text-align: center;
+}
+.bee-ta-return-items-input-widget.bee-ta-return-items-input-widget,
+.bee-ta-picker-qty-input.bee-ta-picker-qty-input {
+  width: 60px;
+  font-weight: bold;
+}
+
+.bee-ta-import-items-toggle-cell,
+.bee-ta-invoice-act-toggle-cell,
+.bee-ta-invoice-service-toggle-cell {
+  text-align: center;
+}
+.bee-ta-import-items-toggle-label .bee-ta-import-items-toggle,
+.bee-ta-invoice-act-toggle-label .bee-ta-invoice-act-toggle,
+.bee-ta-invoice-service-toggle-label .bee-ta-service-act-toggle {
+  font-size: 18px;
+  font-weight: normal;
+}
+.bee-ta-import-items-toggle,
+.bee-ta-invoice-act-toggle,
+.bee-ta-invoice-service-toggle {
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.bee-ta-import-items-selected {
+  background-color: #dfd;
+}
+.bee-ta-import-items-duplicate td {
+  background-color: #fdd;
+}
+.bee-ta-import-items-no-stock .bee-ta-import-items-qty-cell,
+.bee-ta-import-items-no-stock .bee-ta-import-items-from-cell {
+  background-color: yellow;
+}
+
+.bee-ta-invoice-command-disabled {
+  visibility: hidden;
+}
+.bee-ta-invoice-act-id-cell:hover,
+.bee-ta-invoice-act-number-cell:hover,
+.bee-ta-invoice-service-act-cell:hover,
+.bee-ta-invoice-service-item-cell:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.bee-ta-invoice-service-factor-cell,
+.bee-ta-invoice-service-minterm-cell,
+.bee-ta-invoice-service-discount-cell {
+  text-align: center;
+}
+.bee-ta-invoice-service-factor-input.bee-ta-invoice-service-factor-input {
+  width: 50px;
+}
+
+.bee-ta-invoice-service-total-label,
+.bee-ta-invoice-service-total-cell {
+  text-align: right;
+  font-weight: bold;
+}
+
+.bee-ta-report-ibc-table td,
+.bee-ta-report-svc-table td,
+.bee-ta-report-trf-table td,
+.bee-ta-report-stock-table td {
+  padding: 3px 5px;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+.bee-ta-report-ibc-header,
+.bee-ta-report-ibc-footer,
+.bee-ta-report-svc-header,
+.bee-ta-report-svc-footer,
+.bee-ta-report-trf-header,
+.bee-ta-report-trf-footer,
+.bee-ta-report-stock-header,
+.bee-ta-report-stock-footer {
+  font-weight: bold;
+}
+.bee-ta-report-ibc-header td,
+.bee-ta-report-svc-header td,
+.bee-ta-report-trf-header td,
+.bee-ta-report-stock-header td {
+  text-align: center;
+}
+
+.bee-ta-report-ibc-body .bee-ta-report-ibc-TradeAct:hover,
+.bee-ta-report-ibc-body .bee-ta-report-ibc-ActName:hover,
+.bee-ta-report-ibc-body .bee-ta-report-ibc-Number:hover,
+.bee-ta-report-svc-body .bee-ta-report-svc-Sale:hover,
+.bee-ta-report-svc-body .bee-ta-report-svc-InvoiceNo:hover,
+.bee-ta-report-trf-body .bee-ta-report-trf-TradeAct:hover,
+.bee-ta-report-trf-body .bee-ta-report-trf-ActName:hover,
+.bee-ta-report-trf-body .bee-ta-report-trf-Number:hover,
+.bee-ta-report-trf-body .bee-ta-report-trf-Item:hover,
+.bee-ta-report-trf-body .bee-ta-report-trf-ItemName:hover,
+.bee-ta-report-trf-body .bee-ta-report-trf-Article:hover,
+.bee-ta-report-stock-body .bee-ta-report-stock-Item:hover,
+.bee-ta-report-stock-body .bee-ta-report-stock-ItemName:hover,
+.bee-ta-report-stock-body .bee-ta-report-stock-Article:hover,
+.bee-ta-report-stock-body .bee-ta-report-stock-movement:hover,
+.bee-ta-report-stock-footer .bee-ta-report-stock-movement:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.bee-ta-report-stock-Weight,
+.bee-ta-report-stock-wgt {
+  font-style: italic;
+}

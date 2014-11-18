@@ -1,58 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module rename-to='bee'>
-  <inherits name='com.google.gwt.user.User'/>
-  <inherits name='com.google.gwt.http.HTTP'/>
-  <inherits name='com.google.gwt.xml.XML'/>  
+<module rename-to="bee">
+  <inherits name="com.google.gwt.user.User"/>
+  <inherits name="com.google.gwt.http.HTTP"/>
+  <inherits name="com.google.gwt.xml.XML"/>  
   <inherits name="com.google.gwt.json.JSON"/>  
   
-  <inherits name='com.google.common.cache.Cache'/>
-  <inherits name='com.google.common.net.Net'/>
-  <inherits name='com.google.common.html.Html'/>
+  <inherits name="com.google.common.cache.Cache"/>
+  <inherits name="com.google.common.net.Net"/>
+  <inherits name="com.google.common.html.Html"/>
 
-  <inherits name='elemental.Elemental'/>
+  <inherits name="elemental.Elemental"/>
   
-  <inherits name='com.butent.bee.Screen'/>
+  <inherits name="com.butent.bee.Screen"/>
 
-  <set-property name='user.agent' value='safari'/>
+  <set-property name="user.agent" value="safari"/>
 
-  <extend-property name='locale' values='lt'/>
-  <set-property name='locale' value='lt'/>
+  <extend-property name="locale" values="lt"/>
+  <set-property name="locale" value="lt"/>
   <set-property-fallback name="locale" value="lt"/>
   
-  <entry-point class='com.butent.bee.client.Bee'/>
+  <entry-point class="com.butent.bee.client.Bee"/>
 
-  <replace-with class='com.butent.bee.client.screen.ScreenImpl'>
-    <when-type-is class='com.butent.bee.client.Screen'/>
+  <replace-with class="com.butent.bee.client.screen.ScreenImpl">
+    <when-type-is class="com.butent.bee.client.Screen"/>
   </replace-with>
 
-  <replace-with class='com.butent.bee.client.modules.ec.EcScreen'>
-    <when-type-is class='com.butent.bee.client.Screen'/>
-    <when-property-is name='screen' value='ec'/> 
+  <replace-with class="com.butent.bee.client.modules.ec.EcScreen">
+    <when-type-is class="com.butent.bee.client.Screen"/>
+    <when-property-is name="screen" value="ec"/> 
   </replace-with>
 
-  <replace-with class='com.butent.bee.client.modules.transport.SelfServiceScreen'>
-    <when-type-is class='com.butent.bee.client.Screen'/>
-    <when-property-is name='screen' value='trss'/> 
+  <replace-with class="com.butent.bee.client.modules.transport.SelfServiceScreen">
+    <when-type-is class="com.butent.bee.client.Screen"/>
+    <when-property-is name="screen" value="trss"/> 
   </replace-with>
 
-  <replace-with class='com.butent.bee.client.screen.Mobile'>
-    <when-type-is class='com.butent.bee.client.Screen'/>
-    <when-property-is name='screen' value='mobile'/> 
+  <replace-with class="com.butent.bee.client.screen.Mobile">
+    <when-type-is class="com.butent.bee.client.Screen"/>
+    <when-property-is name="screen" value="mobile"/> 
   </replace-with>
 
-  <replace-with class='com.butent.bee.client.screen.Tablet'>
-    <when-type-is class='com.butent.bee.client.Screen'/>
-    <when-property-is name='screen' value='tablet'/> 
+  <replace-with class="com.butent.bee.client.screen.Tablet">
+    <when-type-is class="com.butent.bee.client.Screen"/>
+    <when-property-is name="screen" value="tablet"/> 
   </replace-with>
 
   <replace-with class="com.google.gwt.logging.impl.LoggerImplRegular">
     <when-type-is class="com.google.gwt.logging.impl.LoggerImplNull"/>
   </replace-with>
     
-  <source path='client'/>
-  <source path='shared'/>
-  <super-source path='translatable'/>
-  
-  <add-linker name="xsiframe"/>
-  <set-configuration-property name="devModeRedirectEnabled" value="true"/>   
+  <source path="client"/>
+  <source path="shared"/>
+  <super-source path="translatable"/>
 </module>

@@ -19,7 +19,8 @@ public enum RendererType {
   URL("url", true),
   IMAGE("image", true),
   TOTAL("total", false),
-  VAT("vat", false);
+  VAT("vat", false),
+  DISCOUNT("discount", false);
 
   public static RendererType getByTypeCode(String code) {
     if (code == null || code.isEmpty()) {

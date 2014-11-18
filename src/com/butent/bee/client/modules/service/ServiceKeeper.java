@@ -6,7 +6,6 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.timeboard.TimeBoard;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.view.View;
@@ -14,6 +13,7 @@ import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.view.ViewSupplier;
 import com.butent.bee.client.view.grid.interceptor.FileGridInterceptor;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -21,12 +21,10 @@ import com.butent.bee.shared.rights.Module;
 
 public final class ServiceKeeper {
 
-  public static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "svc-";
+  public static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "svc-";
 
   public static ParameterList createArgs(String method) {
-    ParameterList args = BeeKeeper.getRpc().createParameters(Module.SERVICE.getName());
-    args.addQueryItem(AdministrationConstants.METHOD, method);
-    return args;
+    return BeeKeeper.getRpc().createParameters(Module.SERVICE, method);
   }
 
   public static void register() {

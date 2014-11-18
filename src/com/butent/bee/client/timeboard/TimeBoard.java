@@ -1,7 +1,6 @@
 package com.butent.bee.client.timeboard;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -33,7 +32,6 @@ import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
@@ -68,6 +66,7 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.Color;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -90,7 +89,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     START_SLIDER, END_SLIDER, MOVER
   }
 
-  static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "timeboard-";
+  static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "timeboard-";
 
   private static final BeeLogger logger = LogUtils.getLogger(TimeBoard.class);
 
@@ -198,7 +197,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   private Widget startSliderLabel;
   private Widget endSliderLabel;
 
-  private final EnumMap<RangeMover, Element> rangeMovers = Maps.newEnumMap(RangeMover.class);
+  private final EnumMap<RangeMover, Element> rangeMovers = new EnumMap<>(RangeMover.class);
 
   private String scrollAreaId;
   private String contentId;

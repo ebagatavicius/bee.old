@@ -117,8 +117,6 @@ public final class ServiceConstants {
   public static final String PROP_MAIN_ITEM = "MainItem";
   public static final String PROP_CRITERIA = "Criteria";
 
-  public static final String STYLE_SHEET = "service";
-
   public static void register() {
     EnumUtils.register(ServiceCompanyKind.class);
   }

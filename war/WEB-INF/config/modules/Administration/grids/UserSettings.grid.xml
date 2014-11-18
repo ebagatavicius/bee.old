@@ -24,6 +24,12 @@
 
     <DataColumn name="LastWorkspace" visible="false" />
 
+    <DataColumn name="ApplianceHeaderHeight" visible="false" />
+    <DataColumn name="ViewHeaderHeight" visible="false" />
+
+    <DataColumn name="ClickSensitivityMillis" visible="false" />
+    <DataColumn name="ClickSensitivityDistance" visible="false" />
+
     <DataColumn name="Style" visible="false" />
   </g:columns>
 </g:Grid>

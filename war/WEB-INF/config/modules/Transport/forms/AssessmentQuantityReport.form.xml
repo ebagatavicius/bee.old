@@ -3,7 +3,6 @@
   xmlns:f="http://www.butent.com/form"
   
   name="AssessmentQuantityReport" caption="=trAssessmentQuantityReport"
-  enabledActions="filter bookmark export"
   >
   <FlowPanel>
     <Table style="border-collapse: collapse; margin-top: 1ex;">

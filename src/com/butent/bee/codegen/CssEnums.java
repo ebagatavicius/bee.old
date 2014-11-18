@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class CssEnums {
@@ -30,7 +31,7 @@ public final class CssEnums {
   }
 
   private static void generateType(String type, List<String> values) {
-    List<String> lines = Lists.newArrayList();
+    List<String> lines = new ArrayList<>();
     lines.add("package com.butent.bee.shared.css.values;");
     lines.add("import com.butent.bee.shared.css.HasCssName;");
     lines.add("public enum " + type + " implements HasCssName {");

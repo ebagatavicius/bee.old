@@ -317,9 +317,7 @@ public final class TasksKeeper {
   }
 
   static ParameterList createArgs(String method) {
-    ParameterList args = BeeKeeper.getRpc().createParameters(Module.TASKS.getName());
-    args.addQueryItem(AdministrationConstants.METHOD, method);
-    return args;
+    return BeeKeeper.getRpc().createParameters(Module.TASKS, method);
   }
 
   static ParameterList createTaskRequestParameters(TaskEvent event) {

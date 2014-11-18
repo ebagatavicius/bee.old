@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+    xmlns:ui="http://www.butent.com/ui">
+
+  <CalcColumn name="Total" type="decimal" caption="=trdAmount" scale="2">
+    <style>
+      <bodyStyle><ui:font>bold</ui:font></bodyStyle>
+    </style>
+    <renderer type="total" />
+    <footer aggregate="sum" />
+  </CalcColumn>
+</g:columns>

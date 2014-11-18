@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.collect.Lists;
-
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
@@ -23,6 +21,7 @@ import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +87,7 @@ public final class CargoIncomesObserver implements RowInsertEvent.Handler, Handl
 
         if (overdue > 0 || (debt + income) > limit) {
           String cap = result.get(ClassifierConstants.COL_COMPANY_NAME);
-          List<String> msgs = Lists.newArrayList();
+          List<String> msgs = new ArrayList<>();
 
           msgs.add(BeeUtils.join(": ", Localized.getConstants().creditLimit(),
               BeeUtils.joinWords(limit, result.get(COL_CURRENCY))));

@@ -1,12 +1,11 @@
 package com.butent.bee.shared.modules.ec;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EcItemInfo implements BeeSerializable {
@@ -21,11 +20,11 @@ public class EcItemInfo implements BeeSerializable {
     return ecItemInfo;
   }
 
-  private final List<ArticleCriteria> criteria = Lists.newArrayList();
+  private final List<ArticleCriteria> criteria = new ArrayList<>();
 
-  private final List<EcCarType> carTypes = Lists.newArrayList();
+  private final List<EcCarType> carTypes = new ArrayList<>();
 
-  private final List<String> oeNumbers = Lists.newArrayList();
+  private final List<String> oeNumbers = new ArrayList<>();
 
   public EcItemInfo() {
     super();

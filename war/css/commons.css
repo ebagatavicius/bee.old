@@ -1,5 +1,5 @@
 .bee-co-companyInfo-label, .bee-co-companyInfo-item {
-  display: inline-block;
+  display: inline;
   margin-right: 4px;
 }
 .bee-co-companyInfo-label:after {
@@ -11,6 +11,10 @@
 }
 .bee-co-companyInfo-name .bee-co-companyInfo-item {
   font-weight: bold;
+}
+
+.bee-co-companyInfo-phone, .bee-co-companyInfo-mobile, .bee-co-companyInfo-fax {
+  display: inline;
 }
 
 .bee-co-updateRates-panel {

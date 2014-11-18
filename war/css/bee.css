@@ -1,6 +1,6 @@
 @font-face {
   font-family: FontAwesome;
-  src: url(../fonts/fontawesome-webfont.woff?v=4.1.0);
+  src: url(../fonts/fontawesome-webfont.woff?v=4.2.0);
   font-weight: normal;
   font-style: normal;
 }
@@ -242,7 +242,7 @@
   margin-left: 1em;
 }
 .bee-UserExit {
-  font-size: 18px;
+  font-size: large;
   cursor: pointer;
   color: #888;
 }
@@ -510,7 +510,7 @@
 .bee-Header-commandPanel .bee-fa-label, .bee-Dialog-header .bee-fa-label {
   margin-left: 4px;
   margin-right: 4px;
-  font-size: 19px;
+  font-size: large;
   color: #888;
 }
 
@@ -522,22 +522,26 @@
   color: black;
 }
 
-.bee-Header-control {
+.bee-Header-control,
+.bee-TreeView-action,
+.bee-Gallery-command {
   margin-right: 10px;
-}
-.bee-Header-control.bee-fa-label {
-  font-size: 19px;
+  font-size: large;
   color: #888;
 }
-.bee-Header-control.bee-fa-label:hover {
+.bee-Header-control:hover,
+.bee-TreeView-action:hover,
+.bee-Gallery-command:hover {
   color: black;
 }
 
 .bee-Header-control.bee-Action-removeFilter {
   margin-right: 0;
+  font-size: 12px;
+  color: red;
   position: relative;
-  top: -10px;
-  left: -10px;
+  top: -8px;
+  left: -8px;
 }
 
 .bee-Header-disabled .bee-Header-control {
@@ -685,7 +689,6 @@
   position: absolute;
   background-color: white;
   box-sizing: content-box !important;
-  -moz-box-sizing: content-box !important;
 }
 
 .bee-SelectionHeader {
@@ -941,15 +944,6 @@
   font-weight: bold;
 }
 
-.bee-Disclosure-header {
-  cursor: pointer;
-  border-spacing: 3px;
-}
-
-.bee-Disclosure-content {
-  margin-left: 12px;
-}
-
 .bee-InputPanel {
   position: relative;
   min-height: 50px;
@@ -1041,7 +1035,16 @@
 }
 
 .bee-TreeView-actions {
-  text-align: right;
+  height: 30px;
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  justify-content: flex-end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  align-items: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
 }
 
 .bee-DatePicker {
@@ -1168,6 +1171,18 @@
   cursor: default;
 }
 
+.bee-TabbedPages-tabCaption {
+  display: inline-block;
+}
+.bee-TabbedPages-tabSummary {
+  display: inline-block;
+  font-size: 12px;
+  line-height: normal;
+  vertical-align: super;
+  position: relative;
+  left: 5px;
+}
+
 .bee-TabbedPages-content {
   overflow: auto;
 }
@@ -1247,7 +1262,7 @@
 }
 .bee-FavoritesEdit,
 .bee-FavoritesDelete {
-  font-size: 18px;
+  font-size: large;
   padding: 3px;
   cursor: pointer;
   color: #555;
@@ -1702,7 +1717,8 @@
 }
 
 .bee-ModalTableContainer {
-  max-height: 500px;
+  max-height: 60vh;
+  max-width: 80vw;
   overflow: auto;
 }
 
@@ -1990,11 +2006,6 @@
   color: #00e;
 }
 
-.bee-TreeView-actions img {
-  margin-top: 2px;
-  margin-right: 5px;
-}
-
 .bee-FontSize-xx-small {
   font-size: xx-small;
 }
@@ -2043,7 +2054,6 @@
 .bee-DataSelector-editableContainer,
 .bee-MultiSelector-container {
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
   margin: 0;
   background-color: white;
   color: inherit;
@@ -2092,27 +2102,44 @@
 }
 .bee-GridSettings-wrapper {
   width: 100%;
-  max-height: 500px;
+  max-height: 70vh;
   overflow: auto;
   margin-right: 20px;
 }
 .bee-GridSettings-table {
   border-collapse: collapse;
 }
-.bee-GridSettings-check {
-  margin: 0;
+.bee-GridSettings-table td {
+  padding: 2px 5px;
 }
 .bee-GridSettings-label {
   min-width: 80px;
-  min-height: 20px;
   font-size: 12px;
-  margin-left: 1em;
   cursor: move;
+}
+.bee-GridSettings-visibility,
+.bee-GridSettings-editInPlace {
+  font-size: 16px;
+  cursor: pointer;
+}
+.bee-GridSettings-visibility:hover,
+.bee-GridSettings-editInPlace:hover {
+  color: black;
+}
+.bee-GridSettings-visibility-checked,
+.bee-GridSettings-editInPlace-checked {
+  color: #555; 
+}
+.bee-GridSettings-visibility-unchecked,
+.bee-GridSettings-editInPlace-unchecked {
+  color: #888;
+}
+.bee-GridSettings-table tr:hover {
+  background-color: #f2f2f2;
 }
 .bee-GridSettings-drag {
   background-color: yellow;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
   border: 1px solid darkgreen;
 }
 
@@ -2404,7 +2431,7 @@
 
 .bee-Online-tweet,
 .bee-Online-home {
-  font-size: 18px;
+  font-size: large;
   padding: 3px;
   cursor: pointer;
   color: #555;
@@ -2445,7 +2472,7 @@
 .bee-Room-infoCommand,
 .bee-Room-settingsCommand,
 .bee-Room-deleteCommand {
-  font-size: 18px;
+  font-size: large;
   padding: 3px;
   cursor: pointer;
   color: #888;
@@ -2720,7 +2747,7 @@
   position: absolute;
   top: 5px;
   color: #888;
-  font-size: 18px;
+  font-size: large;
   padding: 1px 3px;
   cursor: pointer;
 }
@@ -2815,7 +2842,7 @@
   margin-right: 2px;
 }
 .bee-News-subscription-filter {
-  font-size: 18px;
+  font-size: large;
   margin-left: 4px;
   margin-right: 2px;
   border-radius: 4px;
@@ -2941,7 +2968,7 @@
 
 .bee-Rights-role-orientation,
 .bee-Rights-column-label-orientation {
-  font-size: 18px;
+  font-size: large;
   width: 20px;
   padding: 2px;
   cursor: pointer;
@@ -3109,7 +3136,7 @@
 
 .bee-report-settings-edit,
 .bee-report-settings-delete {
-  font-size: 18px;
+  font-size: large;
   padding: 3px;
   cursor: pointer;
   color: #555;
@@ -3169,7 +3196,7 @@
   padding: 4px 10px;
 }
 .bee-GridMenu-popup .bee-fa-label {
-  font-size: 18px;
+  font-size: large;
   color: #888;
 }
 .bee-GridMenu-table tr:hover .bee-fa-label {
@@ -3234,7 +3261,7 @@
 .bee-spaces-startup,
 .bee-spaces-edit,
 .bee-spaces-delete {
-  font-size: 18px;
+  font-size: large;
   padding: 3px;
   color: #555;
 }
@@ -3270,6 +3297,7 @@ textarea,
 
 .bee-output:not(:empty) {
   background-color: whitesmoke;
+  box-sizing: border-box;
   padding: 1px 2px;
   border: 1px solid silver;
 }
@@ -3289,7 +3317,8 @@ textarea,
   overflow: auto;
 }
 
-.bee-Form .bee-HtmlTable {
+.bee-Form .bee-HtmlTable,
+.bee-Form .bee-Horizontal {
   border-collapse: collapse;
 }
 .bee-Form .bee-HtmlTable td {
@@ -3300,4 +3329,118 @@ textarea,
   vertical-align: top;
   padding-left: 10px;
   padding-right: 6px;
+}
+
+.bee-Gallery {
+  min-height: 120px;
+  position: relative;
+}
+.bee-Gallery-command-panel {
+  height: 30px;
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  justify-content: flex-end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+  align-items: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+}
+.bee-Gallery-picture-panel {
+  height: calc(100% - 30px);
+  overflow: auto;
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+}
+.bee-Gallery .bee-FileCollector-headless {
+  position: absolute;
+  left: 0;
+  top: -100px;
+}
+
+.bee-Gallery-picture {
+  margin-left: 1em;
+}
+.bee-Gallery-picture:hover .bee-Gallery-picture-controls {
+  visibility: visible;
+}
+
+.bee-Gallery-picture-controls {
+  width: 100px;
+  height: 30px;
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  align-items: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  visibility: hidden;
+}
+.bee-Gallery-picture-control {
+  margin-right: 10px;
+  font-size: large;
+  color: #888;
+}
+.bee-Gallery-picture-control:hover {
+  color: black;
+}
+.bee-Gallery-picture-panel div:first-child .bee-Gallery-picture-controls .bee-Gallery-picture-move-left,
+.bee-Gallery-picture-panel div:last-child .bee-Gallery-picture-controls .bee-Gallery-picture-move-right {
+  display: none;
+}
+
+.bee-Gallery-image {
+  width: auto;
+  height: auto;
+  max-width: 300px;
+  max-height: 150px;
+}
+
+.bee-Disclosure-header {
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  flex-direction: row;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  align-items: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+}
+.bee-Disclosure-header > div {
+  margin-left: 10px;
+}
+.bee-Disclosure-toggle {
+  font-size: x-large;
+  color: #555;
+  cursor: pointer;
+}
+.bee-Disclosure-toggle:hover {
+  color: black;
+}
+.bee-Disclosure-label {
+  cursor: pointer;
+}
+.bee-Disclosure-summary {
+  font-size: 12px;
+  align-self: flex-start;
+  -webkit-align-self: flex-start;
+  -ms-flex-item-align: start;
+}
+
+.bee-Disclosure-open .bee-Disclosure-content {
+  max-height: 100vh;
+  opacity: 1;
+  transition: max-height 200ms linear, opacity 200ms linear;
+}
+.bee-Disclosure-closed .bee-Disclosure-content {
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 200ms linear, opacity 200ms linear;
+  pointer-events: none;
 }

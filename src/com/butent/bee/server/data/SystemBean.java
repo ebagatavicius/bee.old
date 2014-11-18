@@ -88,8 +88,6 @@ import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 
 /**
  * Ensures core data management functionality containing: data structures for tables and views,
@@ -156,16 +154,6 @@ public class SystemBean {
 
   private final EventBus dataEventBus = new EventBus();
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  @Lock(LockType.WRITE)
-  public void activateTable(String tblName) {
-    BeeTable table = getTable(tblName);
-
-    if (!table.isActive()) {
-      rebuildTable(table);
-    }
-  }
-
   public List<Property> checkTables(List<String> tbls, String progressId) {
     List<Property> diff = new ArrayList<>();
     List<String> tables;
@@ -206,6 +194,33 @@ public class SystemBean {
         return BeeUtils.left(value.trim(), precision);
       } else {
         return value;
+      }
+    }
+  }
+
+  @Lock(LockType.WRITE)
+  public void ensureTables() {
+    HashMultimap<String, String> flds = HashMultimap.create();
+
+    for (SimpleRow row : qs.dbFields(getDbName(), getDbSchema(), null)) {
+      flds.put(row.getValue(SqlConstants.TBL_NAME), row.getValue(SqlConstants.FLD_NAME));
+    }
+    for (String tblName : getTableNames()) {
+      boolean rebuild = !flds.containsKey(tblName);
+
+      if (!rebuild) {
+        for (String fldName : getTableFieldNames(tblName)) {
+          if (!flds.get(tblName).contains(fldName)) {
+            logger.warning(tblName, fldName, "column not found, rebuilding");
+            rebuild = true;
+            break;
+          }
+        }
+      } else {
+        logger.warning(tblName, "table not found, rebuilding");
+      }
+      if (rebuild) {
+        rebuildTable(tblName);
       }
     }
   }
@@ -259,6 +274,10 @@ public class SystemBean {
 
   public int getFieldPrecision(String tblName, String fldName) {
     return getTable(tblName).getField(fldName).getPrecision();
+  }
+
+  public int getFieldScale(String tblName, String fldName) {
+    return getTable(tblName).getField(fldName).getScale();
   }
 
   public String getIdName(String tblName) {
@@ -1514,7 +1533,7 @@ public class SystemBean {
       T existingObject = cache.get(BeeUtils.normalize(objectName));
 
       if (existingObject != null) {
-        logger.warning(moduleName, "Dublicate", name, "name:",
+        logger.warning(moduleName, "Duplicate", name, "name:",
             BeeUtils.bracket(objectName), BeeUtils.parenthesize(existingObject.getModule()));
       } else {
         cache.put(BeeUtils.normalize(objectName), object);

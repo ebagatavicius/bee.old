@@ -2,7 +2,6 @@ package com.butent.bee.shared.modules.tasks;
 
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.LongValue;
@@ -10,6 +9,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.ui.HasCaption;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public enum TaskType implements HasCaption, HasWidgetSupplier {

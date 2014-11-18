@@ -1,8 +1,5 @@
 package com.butent.bee.server.utils;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import com.butent.bee.server.io.FileUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -234,7 +231,7 @@ public final class XmlUtils {
 
   public static Map<String, String> getAttributes(Node node) {
     Assert.notNull(node);
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
 
     NamedNodeMap attributes = node.getAttributes();
     if (attributes == null || attributes.getLength() <= 0) {
@@ -354,7 +351,7 @@ public final class XmlUtils {
 
   public static List<Element> getChildrenElements(Node parent) {
     Assert.notNull(parent);
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
 
     NodeList nodes = parent.getChildNodes();
     if (nodes == null || nodes.getLength() <= 0) {
@@ -373,7 +370,7 @@ public final class XmlUtils {
   public static List<Element> getChildrenElements(Node parent, Collection<String> tagNames) {
     Assert.notNull(parent);
     Assert.notNull(tagNames);
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
 
     NodeList nodes = parent.getChildNodes();
     if (isEmpty(nodes)) {
@@ -545,7 +542,7 @@ public final class XmlUtils {
     Assert.notNull(parent);
     Assert.notEmpty(tagName);
 
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
     NodeList nodes;
 
     if (isElement(parent)) {

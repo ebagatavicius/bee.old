@@ -1,8 +1,6 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -72,15 +70,16 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
-import com.butent.bee.shared.modules.transport.TransportConstants.AssessmentStatus;
-import com.butent.bee.shared.modules.transport.TransportConstants.OrderStatus;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public final class TransportHandler {
@@ -126,7 +125,7 @@ public final class TransportHandler {
 
           } else if (response.hasArrayResponse(String.class)) {
             String[] arr = Codec.beeDeserializeCollection(response.getResponseAsString());
-            List<String> messages = Lists.newArrayList();
+            List<String> messages = new ArrayList<>();
 
             if (arr != null && arr.length % 2 == 0) {
               for (int i = 0; i < arr.length; i += 2) {
@@ -262,12 +261,12 @@ public final class TransportHandler {
               Double updValue;
               double newVal = BeeUtils.toDouble(cv.getNewValue());
 
-              if (Objects.equal(columnId, "Kilometers")) {
+              if (Objects.equals(columnId, "Kilometers")) {
                 updValue = row.getDouble(speedFromIndex);
                 updColumn = speedToColumn;
                 updIndex = speedToIndex;
               } else {
-                if (Objects.equal(columnId, "SpeedometerFrom")) {
+                if (Objects.equals(columnId, "SpeedometerFrom")) {
                   newVal = 0 - newVal;
                   updValue = row.getDouble(speedToIndex);
                 } else {
@@ -416,10 +415,8 @@ public final class TransportHandler {
     }
   }
 
-  public static ParameterList createArgs(String name) {
-    ParameterList args = BeeKeeper.getRpc().createParameters(Module.TRANSPORT.getName());
-    args.addQueryItem(AdministrationConstants.METHOD, name);
-    return args;
+  public static ParameterList createArgs(String method) {
+    return BeeKeeper.getRpc().createParameters(Module.TRANSPORT, method);
   }
 
   public static void register() {
@@ -500,8 +497,6 @@ public final class TransportHandler {
         new FileGridInterceptor(COL_CRF_REQUEST, AdministrationConstants.COL_FILE,
             AdministrationConstants.COL_FILE_CAPTION, AdministrationConstants.ALS_FILE_NAME));
 
-    GridFactory.registerGridInterceptor(TBL_IMPORT_OPTIONS, new ImportOptionsGrid());
-
     FormFactory.registerFormInterceptor(FORM_ORDER, new TransportationOrderForm());
     FormFactory.registerFormInterceptor(FORM_TRIP, new TripForm());
     FormFactory.registerFormInterceptor(FORM_EXPEDITION_TRIP, new TripForm());
@@ -521,8 +516,6 @@ public final class TransportHandler {
     FormFactory.registerFormInterceptor(FORM_NEW_CARGO_REQUEST, new CargoRequestForm());
     FormFactory.registerFormInterceptor(FORM_CARGO_REQUEST, new CargoRequestForm());
 
-    FormFactory.registerFormInterceptor(FORM_IMPORT_OPTION, new ImportOptionForm());
-
     BeeKeeper.getBus().registerRowActionHandler(new TransportActionHandler(), false);
 
     BeeKeeper.getBus().registerRowTransformHandler(new RowTransformHandler(), false);
@@ -536,20 +529,7 @@ public final class TransportHandler {
 
     switch (gridName) {
       case GRID_ASSESSMENT_REQUESTS:
-        interceptor = new AbstractGridInterceptor() {
-          @Override
-          public GridInterceptor getInstance() {
-            return null;
-          }
-
-          @Override
-          public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
-            newRow.setValue(gridView.getDataIndex(COL_ASSESSMENT_STATUS),
-                AssessmentStatus.NEW.ordinal());
-            newRow.setValue(gridView.getDataIndex(ALS_ORDER_STATUS), OrderStatus.REQUEST.ordinal());
-            return true;
-          }
-        };
+        interceptor = null;
         break;
 
       case GRID_ASSESSMENT_ORDERS:
@@ -567,7 +547,7 @@ public final class TransportHandler {
             Filter.notNull(COL_DEPARTMENT_HEAD)), new RowSetCallback() {
           @Override
           public void onSuccess(BeeRowSet result) {
-            Set<Long> departments = Sets.newHashSet();
+            Set<Long> departments = new HashSet<>();
             Long user = BeeKeeper.getUser().getUserId();
 
             for (BeeRow row : result) {

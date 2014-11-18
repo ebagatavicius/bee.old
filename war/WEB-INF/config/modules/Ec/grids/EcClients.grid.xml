@@ -4,7 +4,7 @@
   name="EcClients" viewName="EcClients" caption="=ecClients"
   >
   <g:columns>
-    <RelColumn name="User" renderColumns="Login"
+    <RelColumn name="User" newRowEnabled="false" renderColumns="Login"
       choiceColumns="Login FirstName LastName CompanyName" visible="true" />
 
     <DataColumn name="FirstName" visible="true" />
@@ -13,10 +13,10 @@
 
     <DataColumn name="Type" />
 
-    <RelColumn name="PrimaryBranch" visible="true" />
-    <RelColumn name="SecondaryBranch" />
+    <RelColumn name="PrimaryBranch" newRowEnabled="false" visible="true" />
+    <RelColumn name="SecondaryBranch" newRowEnabled="false" />
 
-    <RelColumn name="Manager" visible="true" />
+    <RelColumn name="Manager" newRowEnabled="false" visible="true" />
 
     <DataColumn name="Phone" />
     <DataColumn name="Mobile" />
@@ -33,6 +33,20 @@
       filterOptions="-" visible="false">
       <renderer type="flag" />
     </CalcColumn>
+
+    <DataColumn name="DiscountPercent" />
+    <RelColumn name="DiscountParent" newRowEnabled="false">
+      <renderToken source="ParentFirstName" />
+      <renderToken source="ParentLastName" />
+      <renderToken source="ParentCompanyName" prefix=", " />
+    </RelColumn>
+
+    <DataColumn name="DisplayedPrice" />
+
+    <RelColumn name="BasePriceList0" newRowEnabled="false" />
+    <RelColumn name="ClientPriceList0" newRowEnabled="false" />
+    <RelColumn name="BasePriceList1" newRowEnabled="false" visible="false" />
+    <RelColumn name="ClientPriceList1" newRowEnabled="false" visible="false" />
 
     <DataColumn name="CreditLimitWarning" visible="false" />
     <DataColumn name="Registered" visible="false" />

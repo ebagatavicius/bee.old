@@ -1,6 +1,5 @@
 package com.butent.bee.client.communication;
 
-import com.google.common.base.Objects;
 import com.google.gwt.user.client.ui.IsWidget;
 
 import com.butent.bee.client.BeeKeeper;
@@ -17,6 +16,7 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.Objects;
 
 public final class ChatUtils {
 
@@ -71,7 +71,7 @@ public final class ChatUtils {
     }
 
     for (Long userId : users) {
-      if (Objects.equal(userId, BeeKeeper.getUser().getUserId())) {
+      if (Objects.equals(userId, BeeKeeper.getUser().getUserId())) {
         continue;
       }
 

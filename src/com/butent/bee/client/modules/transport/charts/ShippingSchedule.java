@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 
@@ -17,6 +15,7 @@ import com.butent.bee.client.timeboard.TimeBoardRowLayout;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.widget.Label;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Size;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
@@ -26,14 +25,16 @@ import com.butent.bee.shared.modules.transport.TransportConstants.VehicleType;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.Action;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 final class ShippingSchedule extends VehicleTimeBoard {
 
   static final String SUPPLIER_KEY = "shipping_schedule";
   private static final String DATA_SERVICE = SVC_GET_SS_DATA;
 
-  private static final String STYLE_PREFIX = "bee-tr-ss-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-ss-";
 
   private static final String STYLE_TRIP_GROUP_PREFIX = STYLE_PREFIX + "trip-Group-";
   private static final String STYLE_TRIP_GROUP_ROW_SEPARATOR = STYLE_TRIP_GROUP_PREFIX + "row-sep";
@@ -56,7 +57,7 @@ final class ShippingSchedule extends VehicleTimeBoard {
 
   private boolean separateTrips;
 
-  private final Map<Integer, Long> tripsByRow = Maps.newHashMap();
+  private final Map<Integer, Long> tripsByRow = new HashMap<>();
 
   private ShippingSchedule() {
     super();
@@ -244,7 +245,7 @@ final class ShippingSchedule extends VehicleTimeBoard {
       int top = rowIndex * getRowHeight();
       Long currentTrip = tripsByRow.get(rowIndex);
 
-      if (Objects.equal(lastTrip, currentTrip)) {
+      if (Objects.equals(lastTrip, currentTrip)) {
         TimeBoardHelper.addRowSeparator(panel, top, getChartLeft(), getCalendarWidth());
       } else {
         TimeBoardHelper.addRowSeparator(panel, STYLE_TRIP_GROUP_ROW_SEPARATOR, top,

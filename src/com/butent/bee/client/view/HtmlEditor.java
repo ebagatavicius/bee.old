@@ -20,7 +20,6 @@ import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.richtext.RichTextEditor;
 import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
@@ -33,6 +32,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
@@ -42,7 +42,7 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable, HasW
 
   private static final BeeLogger logger = LogUtils.getLogger(HtmlEditor.class);
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "HtmlEditor-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "HtmlEditor-";
 
   private static final String STYLE_VIEW = STYLE_PREFIX + "view";
   private static final String STYLE_CANVAS = STYLE_PREFIX + "canvas";

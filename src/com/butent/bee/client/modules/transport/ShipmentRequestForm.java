@@ -1,7 +1,6 @@
 package com.butent.bee.client.modules.transport;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
@@ -34,6 +33,7 @@ import com.butent.bee.shared.modules.transport.TransportConstants.CargoRequestSt
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +98,7 @@ class ShipmentRequestForm extends AbstractFormInterceptor {
           return;
         }
 
-        Map<String, String> parameters = Maps.newHashMap();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(COL_COMPANY_NAME, companyName);
 
         putField(parameters, COL_QUERY_CUSTOMER_CODE, COL_COMPANY_CODE);

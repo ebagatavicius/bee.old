@@ -1,7 +1,5 @@
 package com.butent.bee.shared.data;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasExtendedInfo;
@@ -16,6 +14,7 @@ import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -160,7 +159,7 @@ public class BeeColumn extends TableColumn implements BeeSerializable, HasExtend
       lst.addAll(getProperties().getInfo());
     }
 
-    List<ExtendedProperty> result = Lists.newArrayList();
+    List<ExtendedProperty> result = new ArrayList<>();
     PropertyUtils.appendChildrenToExtended(result, getId(), lst);
 
     return result;

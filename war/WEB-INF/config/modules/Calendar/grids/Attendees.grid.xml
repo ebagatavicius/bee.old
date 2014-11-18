@@ -4,10 +4,10 @@
 
   name="Attendees" viewName="Attendees"
   caption="=calAttendees" newRowCaption="=calNewAttendee"
-  editForm="Attendee" newRowForm="Attendee" editInPlace="Ordinal"
+  editForm="Attendee" newRowForm="Attendee"
   >
   <g:columns>
-    <DataColumn name="Ordinal" />
+    <DataColumn name="Ordinal" editInPlace="true" />
 
     <DataColumn name="TypeName" label="=calAttendeeType" visible="true" />
 

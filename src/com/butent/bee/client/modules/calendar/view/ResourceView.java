@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.calendar.view;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
@@ -27,6 +26,7 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Orientation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -99,7 +99,7 @@ public class ResourceView extends CalendarView {
 
       List<CalendarItem> multi = CalendarUtils.filterMulti(getItems(), date, 1, id);
       if (!multi.isEmpty()) {
-        List<ItemAdapter> adapters = Lists.newArrayList();
+        List<ItemAdapter> adapters = new ArrayList<>();
         for (CalendarItem item : multi) {
           adapters.add(new ItemAdapter(item));
         }

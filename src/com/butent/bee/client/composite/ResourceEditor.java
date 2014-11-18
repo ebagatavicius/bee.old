@@ -17,8 +17,6 @@ import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
-import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
@@ -36,6 +34,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
@@ -47,7 +46,7 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable, 
 
   private static final BeeLogger logger = LogUtils.getLogger(ResourceEditor.class);
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "ResourceEditor-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "ResourceEditor-";
 
   public static void open(final String item, final ViewCallback callback) {
     Assert.notEmpty(item);

@@ -17,7 +17,6 @@ import com.butent.bee.client.dialog.StringCallback;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.layout.Flow;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.FaLabel;
@@ -108,8 +107,7 @@ public class Spaces {
             boolean value = ((Toggle) event.getSource()).isChecked();
             getItem().setStartup(value);
 
-            Queries.update(VIEW_WORKSPACES, getItem().getId(), COL_STARTUP,
-                BooleanValue.getInstance(value));
+            Queries.update(VIEW_WORKSPACES, getItem().getId(), COL_STARTUP, BooleanValue.of(value));
           }
         }
       });
@@ -193,7 +191,7 @@ public class Spaces {
     }
   }
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "spaces-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "spaces-";
 
   private static final String STYLE_ITEM = STYLE_PREFIX + "item";
 

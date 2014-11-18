@@ -1,6 +1,5 @@
 package com.butent.bee.client.composite;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -24,6 +23,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class UnboundSelector extends DataSelector implements HandlesRendering, Launchable {
@@ -143,7 +143,7 @@ public final class UnboundSelector extends DataSelector implements HandlesRender
 
   @Override
   public List<String> validate(String normalizedValue, boolean checkForNull) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     messages.addAll(super.validate(normalizedValue, checkForNull));
     if (!messages.isEmpty()) {
       return messages;

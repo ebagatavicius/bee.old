@@ -1,16 +1,15 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-
 import com.butent.bee.client.i18n.Collator;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 class ChartData {
 
@@ -40,7 +39,7 @@ class ChartData {
 
     @Override
     public boolean equals(Object obj) {
-      return (obj instanceof Item) ? Objects.equal(name, ((Item) obj).name) : false;
+      return (obj instanceof Item) ? Objects.equals(name, ((Item) obj).name) : false;
     }
 
     @Override
@@ -122,7 +121,7 @@ class ChartData {
 
   private final Type type;
 
-  private final List<Item> items = Lists.newArrayList();
+  private final List<Item> items = new ArrayList<>();
 
   private int numberOfSelectedItems;
   private int numberOfDisabledItems;
@@ -186,7 +185,7 @@ class ChartData {
     }
 
     for (Item item : items) {
-      if (Objects.equal(item.id, id)) {
+      if (Objects.equals(item.id, id)) {
         return true;
       }
     }
@@ -228,7 +227,7 @@ class ChartData {
   }
 
   Collection<String> getDisabledNames() {
-    List<String> names = Lists.newArrayList();
+    List<String> names = new ArrayList<>();
 
     if (getNumberOfDisabledItems() > 0) {
       for (Item item : items) {
@@ -258,7 +257,7 @@ class ChartData {
   }
 
   List<Item> getSelectedItems() {
-    List<Item> result = Lists.newArrayList();
+    List<Item> result = new ArrayList<>();
 
     if (getNumberOfSelectedItems() > 0) {
       for (Item item : items) {
@@ -272,7 +271,7 @@ class ChartData {
   }
 
   Collection<String> getSelectedNames() {
-    List<String> names = Lists.newArrayList();
+    List<String> names = new ArrayList<>();
 
     if (getNumberOfSelectedItems() > 0) {
       for (Item item : items) {
@@ -382,7 +381,7 @@ class ChartData {
 
   private Item find(String name) {
     for (Item item : items) {
-      if (Objects.equal(item.name, name)) {
+      if (Objects.equals(item.name, name)) {
         return item;
       }
     }

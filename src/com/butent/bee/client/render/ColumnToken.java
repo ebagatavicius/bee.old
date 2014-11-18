@@ -117,7 +117,7 @@ public class ColumnToken implements HasDateTimeFormat, HasNumberFormat, HasScale
       return null;
     }
 
-    String value = DataUtils.getString(row, getDataIndex());
+    String value = DataUtils.getStringQuietly(row, getDataIndex());
     String formatted = Format.render(value, getValueType(), getDateTimeFormat(), getNumberFormat(),
         getScale());
 

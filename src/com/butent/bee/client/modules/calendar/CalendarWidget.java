@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.calendar;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -36,7 +34,9 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,9 +50,9 @@ public class CalendarWidget extends Flow implements HasOpenHandlers<CalendarItem
   private final CalendarSettings settings;
 
   private final CalendarDataManager dataManager;
-  private final List<Long> attendees = Lists.newArrayList();
+  private final List<Long> attendees = new ArrayList<>();
 
-  private final Map<CalendarView.Type, CalendarView> viewCache = Maps.newHashMap();
+  private final Map<CalendarView.Type, CalendarView> viewCache = new HashMap<>();
 
   private final Timer resizeTimer = new Timer() {
     @Override

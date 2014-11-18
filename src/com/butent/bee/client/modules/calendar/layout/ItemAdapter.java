@@ -1,11 +1,10 @@
 package com.butent.bee.client.modules.calendar.layout;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemAdapter {
@@ -14,7 +13,7 @@ public class ItemAdapter {
   private final int dayMinutesStart;
   private final int dayMinutesEnd;
 
-  private final List<TimeBlock> intersectingBlocks = Lists.newArrayList();
+  private final List<TimeBlock> intersectingBlocks = new ArrayList<>();
 
   private int cellStart;
   private int cellSpan;

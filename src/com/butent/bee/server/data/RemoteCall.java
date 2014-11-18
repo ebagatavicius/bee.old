@@ -2,7 +2,6 @@
 package com.butent.bee.server.data;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeColumn;
@@ -15,6 +14,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -65,7 +65,7 @@ public class RemoteCall {
 
     public void addColumn(String name, String value) {
       if (columns == null) {
-        columns = Lists.newArrayList();
+        columns = new ArrayList<>();
       }
       DataColumn col = new DataColumn();
       col.name = name;
@@ -135,7 +135,7 @@ public class RemoteCall {
         rs = null;
         Filter filter = null;
         Order order = null;
-        List<String> columns = Lists.newArrayList();
+        List<String> columns = new ArrayList<>();
         BeeView view = sys.getView(prm.view);
 
         if (!BeeUtils.isEmpty(prm.columns)) {
@@ -180,12 +180,12 @@ public class RemoteCall {
       BeeRowSet rowSet = (BeeRowSet) rs;
       data.affected = rowSet.getNumberOfRows();
 
-      data.columns = Lists.newArrayList();
+      data.columns = new ArrayList<>();
       for (BeeColumn column : rowSet.getColumns()) {
         data.columns.add(column.getLabel());
       }
 
-      data.rows = Lists.newArrayList();
+      data.rows = new ArrayList<>();
 
       if (prm.showId || prm.showVersion || !skipColumns) {
         for (BeeRow r : rowSet.getRows()) {

@@ -1,6 +1,7 @@
 package com.butent.bee.client.widget;
 
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.html.Attributes;
 import com.butent.bee.shared.html.Tags;
 
@@ -87,6 +88,6 @@ public class Meter extends CustomWidget {
   @Override
   protected void init() {
     super.init();
-    setStyleName("bee-Meter");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "Meter");
   }
 }

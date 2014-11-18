@@ -427,8 +427,6 @@ public final class CalendarConstants {
   public static final JustDate MIN_DATE = new JustDate(2010, 1, 1);
   public static final JustDate MAX_DATE = TimeUtils.endOfMonth(TimeUtils.today(), 12);
 
-  public static final String STYLE_SHEET = "calendar";
-
   private CalendarConstants() {
   }
 }

@@ -1,7 +1,5 @@
 package com.butent.bee.server;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.i18n.I18nUtils;
 import com.butent.bee.server.i18n.Localizations;
@@ -80,7 +78,7 @@ public class Invocation {
     String mode = reqInfo.getContent();
 
     if (BeeUtils.length(mode) >= 2) {
-      List<Property> lst = Lists.newArrayList();
+      List<Property> lst = new ArrayList<>();
 
       Map<String, String> constants = Localizations.getDictionary(Localizations.getDefaultLocale());
       for (String key : BeeUtils.split(mode, BeeConst.CHAR_SPACE)) {

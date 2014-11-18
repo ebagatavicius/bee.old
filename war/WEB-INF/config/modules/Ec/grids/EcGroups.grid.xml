@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
-  name="EcGroups" viewName="EcGroups" caption="=ecGroups" editInPlace="Ordinal"
+  name="EcGroups" viewName="EcGroups" caption="=ecGroups"
   >
   <g:columns>
-    <DataColumn name="Ordinal" visible="true" />
+    <DataColumn name="Ordinal" editInPlace="true" visible="true" />
     <DataColumn name="GroupName" visible="true" autoFit="true" minWidth="200" />
     <DataColumn name="Moto" visible="true" />
     <DataColumn name="BrandSelection" />

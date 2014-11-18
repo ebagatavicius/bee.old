@@ -29,7 +29,6 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.TabbedPages;
 import com.butent.bee.client.layout.Vertical;
 import com.butent.bee.client.screen.TilePanel.Tile;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.utils.JsonUtils;
 import com.butent.bee.client.widget.CustomDiv;
@@ -484,7 +483,7 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
 
   private static final BeeLogger logger = LogUtils.getLogger(Workspace.class);
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "Workspace-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "Workspace-";
 
   private static final String STYLE_NEW_TAB = STYLE_PREFIX + "new-tab";
 
@@ -1023,7 +1022,7 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
     TilePanel panel = new TilePanel(this);
     TabWidget tab = new TabWidget(Localized.getConstants().newTab());
 
-    insert(panel, tab, before);
+    insert(panel, tab, null, null, before);
 
     selectPage(before, SelectionOrigin.INSERT);
     return panel;

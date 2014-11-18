@@ -1,7 +1,5 @@
 package com.butent.bee.client.rights;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -15,6 +13,7 @@ import com.butent.bee.shared.rights.RightsObjectType;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 final class MenuRightsHandler extends MultiRoleForm {
@@ -48,7 +47,7 @@ final class MenuRightsHandler extends MultiRoleForm {
         } else if (response.hasResponse()) {
           String[] arr = Codec.beeDeserializeCollection(response.getResponseAsString());
 
-          List<RightsObject> result = Lists.newArrayList();
+          List<RightsObject> result = new ArrayList<>();
           if (arr != null) {
             for (String s : arr) {
               Menu menu = Menu.restore(s);

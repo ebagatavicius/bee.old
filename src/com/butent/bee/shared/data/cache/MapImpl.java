@@ -1,8 +1,8 @@
 package com.butent.bee.shared.data.cache;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,7 +32,7 @@ class MapImpl<K, V> extends AbstractCache<K, V> {
     if (maxSize > 0) {
       this.map = new LimitedMap<>(replacementPolicy.isAccessOrder());
     } else {
-      this.map = Maps.newHashMap();
+      this.map = new HashMap<>();
     }
   }
 

@@ -2,7 +2,6 @@ package com.butent.bee.client.modules.mail;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -168,7 +167,7 @@ public final class NewMailMessage extends AbstractFormInterceptor
   private final String content;
   private final Collection<FileInfo> defaultAttachments;
 
-  private final Map<String, MultiSelector> recipientWidgets = Maps.newHashMap();
+  private final Map<String, MultiSelector> recipientWidgets = new HashMap<>();
   private Editor subjectWidget;
   private Editor contentWidget;
   private final ListBox signaturesWidget = new ListBox();
@@ -327,6 +326,7 @@ public final class NewMailMessage extends AbstractFormInterceptor
 
   private void initHeader(DialogBox dialog) {
     FaLabel send = new FaLabel(FontAwesome.PAPER_PLANE);
+    send.setTitle(Localized.getConstants().send());
     send.addClickHandler(this);
 
     dialog.insertAction(1, send);

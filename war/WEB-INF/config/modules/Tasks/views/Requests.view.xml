@@ -13,6 +13,7 @@
     <SimpleColumn name="Created" />
     <SimpleColumn name="Finished" />
     <SimpleColumn name="Result" />
+    <SimpleColumn name="ResultProperties" />
       
       <SimpleColumn name="Customer" />
       <SimpleJoin joinType="LEFT" name="Customer">

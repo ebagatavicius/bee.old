@@ -150,7 +150,7 @@ public final class ClassUtils {
       }
     }
 
-    fldArr = getDeclaredFields(cls);
+    fldArr = getFields(cls);
     if (fldArr != null) {
       for (Field fld : fldArr) {
         PropertyUtils.addExtended(lst, "Field", transformField(fld));
@@ -486,7 +486,18 @@ public final class ClassUtils {
     if (fld == null) {
       return null;
     } else {
-      return fld.toGenericString();
+      String value = null;
+
+      if (java.lang.reflect.Modifier.isStatic(fld.getModifiers())) {
+        fld.setAccessible(true);
+
+        try {
+          value = "=" + fld.get(null);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+          value = "";
+        }
+      }
+      return fld.toGenericString() + value;
     }
   }
 

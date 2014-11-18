@@ -74,22 +74,6 @@ public class UserData implements BeeSerializable, HasInfo {
     this.login = login;
   }
 
-  public UserData(long userId, String login, String firstName, String lastName,
-      String photoFileName, String companyName, Long companyPerson, Long company, Long person) {
-    this.userId = userId;
-    this.login = login;
-
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.photoFileName = photoFileName;
-
-    this.companyName = companyName;
-
-    this.companyPerson = companyPerson;
-    this.company = company;
-    this.person = person;
-  }
-
   private UserData() {
   }
 
@@ -129,31 +113,31 @@ public class UserData implements BeeSerializable, HasInfo {
           break;
 
         case FIRST_NAME:
-          this.firstName = value;
+          setFirstName(value);
           break;
 
         case LAST_NAME:
-          this.lastName = value;
+          setLastName(value);
           break;
 
         case PHOTO_FILE_NAME:
-          this.photoFileName = value;
+          setPhotoFileName(value);
           break;
 
         case COMPANY_NAME:
-          this.companyName = value;
+          setCompanyName(value);
           break;
 
         case COMPANY_PERSON:
-          this.companyPerson = BeeUtils.toLongOrNull(value);
+          setCompanyPerson(BeeUtils.toLongOrNull(value));
           break;
 
         case COMPANY:
-          this.company = BeeUtils.toLongOrNull(value);
+          setCompany(BeeUtils.toLongOrNull(value));
           break;
 
         case PERSON:
-          this.person = BeeUtils.toLongOrNull(value);
+          setPerson(BeeUtils.toLongOrNull(value));
           break;
 
         case PROPERTIES:
@@ -314,7 +298,8 @@ public class UserData implements BeeSerializable, HasInfo {
     if (widget == null) {
       return true;
     } else {
-      return isWidgetVisible(widget.getName()) && isModuleVisible(widget.getModuleAndSub());
+      return hasRight(RightsObjectType.WIDGET, widget.getName(), RightsState.VIEW)
+          && isModuleVisible(widget.getModuleAndSub());
     }
   }
 
@@ -378,8 +363,16 @@ public class UserData implements BeeSerializable, HasInfo {
     return Codec.beeSerialize(arr);
   }
 
+  public void setCompany(Long company) {
+    this.company = company;
+  }
+
   public void setCompanyName(String companyName) {
     this.companyName = companyName;
+  }
+
+  public void setCompanyPerson(Long companyPerson) {
+    this.companyPerson = companyPerson;
   }
 
   public void setFirstName(String firstName) {
@@ -449,9 +442,5 @@ public class UserData implements BeeSerializable, HasInfo {
       checked = state.isChecked();
     }
     return checked;
-  }
-
-  private boolean isWidgetVisible(String object) {
-    return hasRight(RightsObjectType.WIDGET, object, RightsState.VIEW);
   }
 }

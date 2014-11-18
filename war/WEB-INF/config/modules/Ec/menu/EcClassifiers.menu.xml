@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="EcClassifiers" label="=ecClassifiers" order="20" parent="Ec" separator="true"
+name="EcClassifiers" label="=classifiers" order="20" parent="Ec" separator="true"
 module="Ec.Classifiers"
 >
 
@@ -9,6 +9,9 @@ module="Ec.Classifiers"
     parameters="DeliveryMethods" />
   <Item name="RejectionReasons" label="=ecRejectionReasons" service="grid"
     parameters="RejectionReasons" />
+
+  <Item name="TcdPriceLists" label="=tcdPriceLists" service="grid" parameters="TcdPriceLists"
+    separator="true" />
 
   <Item name="TcdCriteria" label="=tcdCriteria" service="grid" parameters="TcdCriteria"
     separator="true" />

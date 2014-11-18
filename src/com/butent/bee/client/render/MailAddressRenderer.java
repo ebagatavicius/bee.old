@@ -1,18 +1,17 @@
 package com.butent.bee.client.render;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MailAddressRenderer extends AbstractCellRenderer {
 
-  private final List<Integer> labelIndexes = Lists.newArrayList();
+  private final List<Integer> labelIndexes = new ArrayList<>();
   private final int addressIndex;
 
   public MailAddressRenderer(List<? extends IsColumn> dataColumns, List<String> renderColumns) {

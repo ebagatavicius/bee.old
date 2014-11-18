@@ -1,7 +1,5 @@
 package com.butent.bee.shared.io;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
@@ -12,6 +10,7 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileInfo implements HasInfo, HasCaption, BeeSerializable {
@@ -37,7 +36,7 @@ public class FileInfo implements HasInfo, HasCaption, BeeSerializable {
   }
 
   public static List<FileInfo> restoreCollection(String s) {
-    List<FileInfo> result = Lists.newArrayList();
+    List<FileInfo> result = new ArrayList<>();
     if (BeeUtils.isEmpty(s)) {
       return result;
     }

@@ -1,11 +1,10 @@
 package com.butent.bee.shared.data.value;
 
-import com.google.common.collect.Maps;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.time.TimeUtils;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,7 +24,7 @@ public enum ValueType {
   private static final char GROUP_STR = 's';
 
   static {
-    typeCodeToValueType = Maps.newHashMap();
+    typeCodeToValueType = new HashMap<>();
     for (ValueType type : ValueType.values()) {
       typeCodeToValueType.put(type.typeCode.trim().toLowerCase(), type);
     }

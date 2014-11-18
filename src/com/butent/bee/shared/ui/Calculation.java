@@ -1,7 +1,5 @@
 package com.butent.bee.shared.ui;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
@@ -11,6 +9,7 @@ import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -105,7 +104,7 @@ public class Calculation implements BeeSerializable, HasInfo {
 
   @Override
   public List<Property> getInfo() {
-    List<Property> info = Lists.newArrayList();
+    List<Property> info = new ArrayList<>();
 
     if (isEmpty()) {
       PropertyUtils.addWhenEmpty(info, getClass());

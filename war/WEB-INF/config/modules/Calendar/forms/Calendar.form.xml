@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Form [
-  <!ENTITY tbl "border-collapse: collapse; margin-top: 1ex;">
+  <!ENTITY tbl "margin-top: 1ex;">
   <!ENTITY cell "vertical-align: top; padding: 5px 1em;">
   <!ENTITY chld "width: 450px;">
   <!ENTITY tstl "width: 100px;">
@@ -35,21 +35,21 @@
             <Label text="=calAttendeeTypes" />
             <ChildSelector childTable="CalAttendeeTypes" viewName="AttendeeTypes"
               targetRelColumn="Calendar" sourceRelColumn="AttendeeType" newRowEnabled="false"
-              renderColumns="Name" style="&chld;" />
+              renderColumns="Name" style="&chld;" summarize="true" />
           </row>
 
           <row data="CalendarAttendees">
             <Label text="=calAttendees" />
             <ChildSelector childTable="CalendarAttendees" viewName="Attendees"
               targetRelColumn="Calendar" sourceRelColumn="Attendee" newRowEnabled="false"
-              renderColumns="Name" choiceColumns="TypeName Name" style="&chld;" />
+              renderColumns="Name" choiceColumns="TypeName Name" style="&chld;" summarize="true" />
           </row>
 
           <row data="CalAppointmentTypes">
             <Label text="=calAppointmentTypes" />
             <ChildSelector childTable="CalAppointmentTypes" viewName="AppointmentTypes"
               targetRelColumn="Calendar" sourceRelColumn="AppointmentType" newRowEnabled="false"
-              renderColumns="Name" style="&chld;" />
+              renderColumns="Name" style="&chld;" summarize="true" />
           </row>
         </Table>
       </page>
@@ -65,19 +65,19 @@
           </row>
               
           <row>
-            <CheckBox source="AssignedTasks" text="=calTasksAssigned" />
+            <CheckBox source="AssignedTasks" text="=calTasksAssigned" summarize="true" />
             <ColorEditor source="AssignedTasksBackground" />
             <ColorEditor source="AssignedTasksForeground" />
             <DataSelector source="AssignedTasksStyle" style="&tstl;" />
           </row>
           <row>
-            <CheckBox source="DelegatedTasks" text="=calTasksDelegated" />
+            <CheckBox source="DelegatedTasks" text="=calTasksDelegated" summarize="true" />
             <ColorEditor source="DelegatedTasksBackground" />
             <ColorEditor source="DelegatedTasksForeground" />
             <DataSelector source="DelegatedTasksStyle" style="&tstl;" />
           </row>
           <row>
-            <CheckBox source="ObservedTasks" text="=calTasksObserved" />
+            <CheckBox source="ObservedTasks" text="=calTasksObserved" summarize="true" />
             <ColorEditor source="ObservedTasksBackground" />
             <ColorEditor source="ObservedTasksForeground" />
             <DataSelector source="ObservedTasksStyle" style="&tstl;" />

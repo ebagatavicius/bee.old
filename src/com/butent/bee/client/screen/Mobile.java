@@ -1,7 +1,5 @@
 package com.butent.bee.client.screen;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -28,6 +26,7 @@ import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.ui.UserInterface;
@@ -36,6 +35,7 @@ import com.butent.bee.shared.utils.ExtendedProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Handles mobile phone size screen implementation.
@@ -74,7 +74,7 @@ public class Mobile extends ScreenImpl {
 
     if (UiHelper.isModal(widget.asWidget())) {
       UiHelper.closeDialog(widget.asWidget());
-    } else if (Objects.equal(widget, getActiveWidget())) {
+    } else if (Objects.equals(widget, getActiveWidget())) {
       getScreenPanel().remove(widget);
     } else {
       notifyWarning("closeWidget: widget not found");
@@ -113,7 +113,7 @@ public class Mobile extends ScreenImpl {
 
   @Override
   public List<IdentifiableWidget> getOpenWidgets() {
-    List<IdentifiableWidget> result = Lists.newArrayList();
+    List<IdentifiableWidget> result = new ArrayList<>();
     if (getActiveWidget() != null) {
       result.add(getActiveWidget());
     }
@@ -172,12 +172,12 @@ public class Mobile extends ScreenImpl {
   @Override
   protected Pair<? extends IdentifiableWidget, Integer> initNorth() {
     Complex panel = new Complex();
-    panel.addStyleName("bee-NorthContainer");
+    panel.addStyleName(BeeConst.CSS_CLASS_PREFIX + "NorthContainer");
 
     panel.addLeftTop(Global.getSearchWidget(), 40, 2);
 
     Flow menuContainer = new Flow();
-    menuContainer.addStyleName("bee-MainMenu");
+    menuContainer.addStyleName(BeeConst.CSS_CLASS_PREFIX + "MainMenu");
     panel.addLeftTop(menuContainer, 10, 30);
     setMenuPanel(menuContainer);
 

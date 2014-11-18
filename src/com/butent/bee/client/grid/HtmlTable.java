@@ -39,6 +39,7 @@ import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -82,7 +83,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     }
 
     public boolean isVisible(int row, int column) {
-      return UIObject.isVisible(getElement(row, column));
+      return DomUtils.isVisible(getElement(row, column));
     }
 
     public void removeStyleName(int row, int column, String styleName) {
@@ -243,7 +244,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     }
 
     public boolean isVisible(int row) {
-      return UIObject.isVisible(getElement(row));
+      return DomUtils.isVisible(getElement(row));
     }
 
     public void removeStyleName(int row, String styleName) {
@@ -279,6 +280,8 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     //@formatter:on
   }
 
+  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "HtmlTable";
+
   private static final String STYLE_SUFFIX_COL = "-col";
   private static final String STYLE_SUFFIX_CELL = "-cell";
 
@@ -313,7 +316,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     this.rowFormatter = new RowFormatter();
     this.columnFormatter = new ColumnFormatter();
 
-    setStyleName("bee-HtmlTable");
+    setStyleName(STYLE_NAME);
 
     init();
   }
@@ -603,9 +606,13 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     }
   }
 
-  public void setHtml(int row, int column, String html, String cellStyleName) {
+  public void setHtml(int row, int column, String html, String... cellStyles) {
     setHtml(row, column, html);
-    getCellFormatter().addStyleName(row, column, cellStyleName);
+    if (cellStyles != null) {
+      for (String cellStyle : cellStyles) {
+        getCellFormatter().addStyleName(row, column, cellStyle);
+      }
+    }
   }
 
   @Override
@@ -622,6 +629,15 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
   }
 
   public void setText(int row, int column, String text, String... cellStyles) {
+    setText(row, column, text);
+    if (cellStyles != null) {
+      for (String cellStyle : cellStyles) {
+        getCellFormatter().addStyleName(row, column, cellStyle);
+      }
+    }
+  }
+
+  public void setText(int row, int column, String text, Collection<String> cellStyles) {
     setText(row, column, text);
     if (cellStyles != null) {
       for (String cellStyle : cellStyles) {

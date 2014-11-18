@@ -1,9 +1,7 @@
 package com.butent.bee.server.modules;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import com.google.common.eventbus.EventBus;
@@ -28,6 +26,7 @@ import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
+import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -37,9 +36,11 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.ejb.EJB;
 import javax.ejb.Lock;
@@ -160,7 +161,7 @@ public class ParamHolderBean {
 
   public Collection<BeeParameter> getModuleParameters(String module) {
     Assert.notEmpty(module);
-    Collection<BeeParameter> params = Lists.newArrayList();
+    Collection<BeeParameter> params = new ArrayList<>();
     Multimap<String, BeeParameter> map = HashMultimap.create();
 
     for (BeeParameter param : parameters.values()) {
@@ -174,7 +175,7 @@ public class ParamHolderBean {
       }
     }
     for (String opt : map.keySet()) {
-      HashSet<Long> ids = Sets.newHashSet();
+      HashSet<Long> ids = new HashSet<>();
 
       for (BeeParameter param : map.get(opt)) {
         for (Long userId : param.getUsers()) {
@@ -311,9 +312,11 @@ public class ParamHolderBean {
 
       for (BeeParameter param : defaults) {
         if (param.supportsUsers() && DataUtils.isId(param.getId())) {
-          String id = BeeUtils.toString(param.getId());
-          param.setValue(BeeUtils.toLong(data.getValueByKey(FLD_PARAM, id, FLD_USER)),
-              data.getValueByKey(FLD_PARAM, id, FLD_VALUE));
+          for (SimpleRow row : data) {
+            if (Objects.equals(param.getId(), row.getLong(FLD_PARAM))) {
+              param.setValue(row.getLong(FLD_USER), row.getValue(FLD_VALUE));
+            }
+          }
         }
       }
     }
@@ -390,7 +393,7 @@ public class ParamHolderBean {
     if (hasParameter(name)) {
       BeeParameter oldParam = getParameter(name);
       Assert.state(BeeUtils.same(oldParam.getModule(), parameter.getModule()),
-          "Dublicate parameter name: " + name
+          "Duplicate parameter name: " + name
               + " (modules: " + oldParam.getModule() + ", " + parameter.getModule() + ")");
     }
     parameters.put(name, parameter.getType() == ParameterType.RELATION

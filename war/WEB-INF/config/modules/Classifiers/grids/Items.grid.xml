@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Grid[
+  <!ENTITY pricescale "2">
+  <!ENTITY costscale "2">
+]>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   xmlns:ui="http://www.butent.com/ui"
   xmlns:w="http://www.butent.com/widget"
@@ -30,18 +34,27 @@
     <DataColumn name="Barcode" />
 
     <RelColumn name="Unit" caption="=unitShort" carry="true" />
-    <DataColumn name="Weight" visible="false" />
 
-    <DataColumn name="Price" />
+    <DataColumn name="TimeUnit" module="Trade.Acts" />
+    <DataColumn name="DaysPerWeek" caption="=taDaysPerWeekShort" module="Trade.Acts"
+      visible="false" />
+    <DataColumn name="MinTerm" caption="=taMinTermShort" module="Trade.Acts" visible="false" />
+
+    <DataColumn name="Weight" visible="false" />
+    <DataColumn name="Area" visible="false" />
+
+    <DataColumn name="Price" caption="=salePriceShort" scale="&pricescale;" />
     <RelColumn name="Currency" caption="=currencyShort" />
 
-    <DataColumn name="Cost" visible="false" />
+    <DataColumn name="Cost" scale="&costscale;" visible="false" />
     <RelColumn name="CostCurrency" caption="=currencyShort" visible="false" />
 
-    <DataColumn name="Price1" visible="false" />
+    <DataColumn name="Price1" scale="&pricescale;" visible="false" />
     <RelColumn name="Currency1" caption="=currencyShort" visible="false" />
-    <DataColumn name="Price2" visible="false" />
+    <DataColumn name="Price2" scale="&pricescale;" visible="false" />
     <RelColumn name="Currency2" caption="=currencyShort" visible="false" />
+    <DataColumn name="Price3" scale="&pricescale;" visible="false" />
+    <RelColumn name="Currency3" caption="=currencyShort" visible="false" />
 
     <DataColumn name="Vat" carry="true" />
     <DataColumn name="VatPercent" carry="true" />

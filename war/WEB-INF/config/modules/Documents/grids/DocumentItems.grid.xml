@@ -3,31 +3,36 @@
   xmlns:ui="http://www.butent.com/ui"
 
   name="DocumentItems" viewName="DocumentItems"
-  editInPlace="Description Quantity Price VatPlus Vat VatPercent"
   flexGrow="1" caption="=documentItems"
   >
   <g:columns>
-    <AutoColumn name="Description" viewName="DistinctDocumentItems" viewColumn="Description">
+    <AutoColumn name="Description" viewName="DistinctDocumentItems" viewColumn="Description"
+        editInPlace="true">
       <footer text="=totalOf" horizontalAlignment="right" />
     </AutoColumn>
-    <DataColumn name="Quantity">
+    <DataColumn name="Quantity" editInPlace="true">
       <footer aggregate="sum" />
     </DataColumn>
-    <DataColumn name="Price" />
-    <DataColumn name="VatPlus" width="20" sortable="false" horizontalAlignment="center" caption="+">
+    <DataColumn name="Price" editInPlace="true" />
+
+    <DataColumn name="VatPlus" width="20" sortable="false" horizontalAlignment="center" caption="+"
+        editInPlace="true">
       <render><ui:expression>row.VatPlus ? '+' : ''</ui:expression></render>
     </DataColumn>
-    <DataColumn name="Vat" />
-    <DataColumn name="VatPercent" width="20" sortable="false" horizontalAlignment="center" caption="%">
+    <DataColumn name="Vat" editInPlace="true" />
+    <DataColumn name="VatPercent" width="20" sortable="false" horizontalAlignment="center"
+        caption="%" editInPlace="true">
       <render><ui:expression>row.VatPercent ? '%' : ''</ui:expression></render>
     </DataColumn>
+
     <CalcColumn name="Total" type="decimal" caption="=total" format="0.00">
       <style>
         <bodyStyle><ui:font>bold</ui:font></bodyStyle>
       </style>
       <footer aggregate="sum" />
     </CalcColumn>
-    <DataColumn name="Data" caption="&#xf044;" width="20" sortable="false" readOnly="true" exportable="false">
+    <DataColumn name="Data" caption="&#xf044;" width="20" sortable="false" readOnly="true"
+        exportable="false">
       <style>
         <headerStyle><ui:class>bee-fa-label</ui:class></headerStyle>
         <bodyStyle><ui:class>bee-fa-label</ui:class></bodyStyle>

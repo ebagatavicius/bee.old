@@ -1,12 +1,11 @@
 package com.butent.bee.server.modules;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import com.butent.bee.server.Config;
 import com.butent.bee.server.Invocation;
 import com.butent.bee.server.data.SystemBean;
+import com.butent.bee.server.data.UserServiceBean;
 import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.Service;
@@ -15,13 +14,15 @@ import com.butent.bee.shared.data.SearchResult;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
-import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,34 +36,36 @@ import javax.ejb.Singleton;
 @Lock(LockType.READ)
 public class ModuleHolderBean {
 
-  private enum TABLE_ACTIVATION_MODE {
-    DELAYED, FORCED
+  private enum TableActivationMode {
+    NEW, ACTIVE, ALL
   }
 
   private static BeeLogger logger = LogUtils.getLogger(ModuleHolderBean.class);
 
-  private final Map<String, BeeModule> modules = Maps.newLinkedHashMap();
+  private final Map<String, BeeModule> modules = new LinkedHashMap<>();
 
   @EJB
   SystemBean sys;
   @EJB
   ParamHolderBean prm;
+  @EJB
+  UserServiceBean usr;
 
-  public ResponseObject doModule(RequestInfo reqInfo) {
+  public ResponseObject doModule(String moduleName, RequestInfo reqInfo) {
     Assert.notNull(reqInfo);
-
-    return getModule(reqInfo.getService())
-        .doService(reqInfo.getParameter(AdministrationConstants.METHOD), reqInfo);
+    return getModule(moduleName).doService(reqInfo.getParameter(Service.VAR_METHOD), reqInfo);
   }
 
   public List<SearchResult> doSearch(String query) {
     Assert.notEmpty(query);
-    List<SearchResult> results = Lists.newArrayList();
+    List<SearchResult> results = new ArrayList<>();
 
     for (BeeModule module : modules.values()) {
-      List<SearchResult> found = module.doSearch(query);
-      if (found != null && !found.isEmpty()) {
-        results.addAll(found);
+      if (usr.isModuleVisible(ModuleAndSub.of(module.getModule()))) {
+        List<SearchResult> found = module.doSearch(query);
+        if (found != null && !found.isEmpty()) {
+          results.addAll(found);
+        }
       }
     }
     return results;
@@ -93,20 +96,28 @@ public class ModuleHolderBean {
   }
 
   public void initModules() {
-    TABLE_ACTIVATION_MODE mode = EnumUtils.getEnumByName(TABLE_ACTIVATION_MODE.class,
+    TableActivationMode mode = EnumUtils.getEnumByName(TableActivationMode.class,
         Config.getProperty("TableActivationMode"));
 
-    if (mode != TABLE_ACTIVATION_MODE.DELAYED) {
-      for (String tblName : sys.getTableNames()) {
-        if (mode == TABLE_ACTIVATION_MODE.FORCED) {
-          sys.rebuildTable(tblName);
-        } else {
-          sys.activateTable(tblName);
-        }
+    for (String mod : getModules()) {
+      prm.refreshModuleParameters(mod);
+    }
+    if (mode != null) {
+      switch (mode) {
+        case NEW:
+          sys.ensureTables();
+          break;
+        case ACTIVE:
+          sys.rebuildActiveTables();
+          break;
+        case ALL:
+          for (String tblName : sys.getTableNames()) {
+            sys.rebuildTable(tblName);
+          }
+          break;
       }
     }
     for (String mod : getModules()) {
-      prm.refreshModuleParameters(mod);
       getModule(mod).init();
     }
   }
@@ -121,7 +132,7 @@ public class ModuleHolderBean {
   private void init() {
     Module.setEnabledModules(Config.getProperty(Service.PROPERTY_MODULES));
 
-    List<String> mods = Lists.newArrayList();
+    List<String> mods = new ArrayList<>();
 
     for (Module modul : Module.values()) {
       if (BeeUtils.isEmpty(modul.getName())) {
@@ -132,7 +143,7 @@ public class ModuleHolderBean {
     }
     for (String moduleName : mods) {
       if (hasModule(moduleName)) {
-        logger.severe("Dublicate module name:", BeeUtils.bracket(moduleName));
+        logger.severe("Duplicate module name:", BeeUtils.bracket(moduleName));
       } else {
         try {
           Class<BeeModule> clazz = (Class<BeeModule>) Class.forName(BeeUtils.join(".",

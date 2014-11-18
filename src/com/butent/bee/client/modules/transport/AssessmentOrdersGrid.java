@@ -1,11 +1,8 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
@@ -35,9 +32,13 @@ import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class AssessmentOrdersGrid extends AbstractGridInterceptor implements ClickHandler {
@@ -58,7 +59,7 @@ public class AssessmentOrdersGrid extends AbstractGridInterceptor implements Cli
   @Override
   public void onClick(ClickEvent event) {
     final GridPresenter presenter = getGridPresenter();
-    final Set<Long> ids = Sets.newHashSet();
+    final Set<Long> ids = new HashSet<>();
 
     for (RowInfo row : presenter.getGridView().getSelectedRows(SelectedRows.ALL)) {
       ids.add(row.getId());
@@ -80,7 +81,7 @@ public class AssessmentOrdersGrid extends AbstractGridInterceptor implements Cli
             int vehicleCol = result.getColumnIndex(COL_FORWARDER + COL_VEHICLE);
 
             final Multimap<String, String> cargo = HashMultimap.create();
-            final Map<String, Pair<String, String>> forwarders = Maps.newLinkedHashMap();
+            final Map<String, Pair<String, String>> forwarders = new LinkedHashMap<>();
             final Multimap<String, String> vehicles = HashMultimap.create();
 
             for (BeeRow row : result.getRows()) {
@@ -92,7 +93,7 @@ public class AssessmentOrdersGrid extends AbstractGridInterceptor implements Cli
             if (forwarders.isEmpty()) {
               presenter.getGridView().notifyWarning(Localized.getConstants().noData());
             } else {
-              List<String> fwd = Lists.newArrayList();
+              List<String> fwd = new ArrayList<>();
 
               for (Pair<String, String> forwarder : forwarders.values()) {
                 fwd.add(forwarder.getA());
@@ -123,7 +124,7 @@ public class AssessmentOrdersGrid extends AbstractGridInterceptor implements Cli
                                       public void onSuccess(BeeRow res) {
                                         holder.set(holder.get() + 1);
 
-                                        if (Objects.equal(holder.get(), cargoIds.size())) {
+                                        if (Objects.equals(holder.get(), cargoIds.size())) {
                                           DataChangeEvent.fire(BeeKeeper.getBus(),
                                               presenter.getViewName(),
                                               DataChangeEvent.CANCEL_RESET_REFRESH);

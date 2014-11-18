@@ -1,6 +1,5 @@
 package com.butent.bee.client.presenter;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
@@ -8,7 +7,6 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.ParentRowCreator;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
@@ -17,6 +15,7 @@ import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.form.FormAndHeader;
 import com.butent.bee.client.view.form.FormView;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.NotificationListener;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
@@ -31,15 +30,16 @@ import com.butent.bee.shared.ui.HandlesActions;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
 public class NewRowPresenter extends AbstractPresenter implements ParentRowCreator {
 
-  public static final String STYLE_CONTAINER = StyleUtils.CLASS_NAME_PREFIX + "NewRowContainer";
-  public static final String STYLE_HEADER = StyleUtils.CLASS_NAME_PREFIX + "NewRowHeader";
-  public static final String STYLE_CAPTION = StyleUtils.CLASS_NAME_PREFIX + "NewRowCaption";
+  public static final String STYLE_CONTAINER = BeeConst.CSS_CLASS_PREFIX + "NewRowContainer";
+  public static final String STYLE_HEADER = BeeConst.CSS_CLASS_PREFIX + "NewRowHeader";
+  public static final String STYLE_CAPTION = BeeConst.CSS_CLASS_PREFIX + "NewRowCaption";
 
   private static HeaderView createHeader(String caption) {
     HeaderView formHeader = new HeaderImpl();
@@ -220,8 +220,8 @@ public class NewRowPresenter extends AbstractPresenter implements ParentRowCreat
   }
 
   private void insert(IsRow row, boolean forced, RowCallback callback) {
-    List<BeeColumn> columns = Lists.newArrayList();
-    List<String> values = Lists.newArrayList();
+    List<BeeColumn> columns = new ArrayList<>();
+    List<String> values = new ArrayList<>();
 
     for (int i = 0; i < dataInfo.getColumnCount(); i++) {
       BeeColumn column = dataInfo.getColumns().get(i);

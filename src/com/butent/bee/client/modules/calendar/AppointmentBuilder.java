@@ -1,10 +1,7 @@
 package com.butent.bee.client.modules.calendar;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -94,7 +91,11 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEvent.Handler {
@@ -131,7 +132,7 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
         return;
       }
 
-      List<String> changes = Lists.newArrayList();
+      List<String> changes = new ArrayList<>();
 
       BeeRowSet rowSet = DataUtils.getUpdated(VIEW_APPOINTMENTS,
           CalendarKeeper.getAppointmentViewColumns(), oldRow, newRow, null);
@@ -158,10 +159,10 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
         newRepair = null;
       }
 
-      if (!Objects.equal(oldService, newService)) {
+      if (!Objects.equals(oldService, newService)) {
         changes.add(Localized.getConstants().calServiceType());
       }
-      if (!Objects.equal(oldRepair, newRepair)) {
+      if (!Objects.equals(oldRepair, newRepair)) {
         changes.add(Localized.getConstants().calRepairType());
       }
 
@@ -176,17 +177,17 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
 
       DateTime oldStart = Data.getDateTime(VIEW_APPOINTMENTS, oldRow, COL_START_DATE_TIME);
       DateTime newStart = getStart();
-      if (!Objects.equal(oldStart, newStart)) {
+      if (!Objects.equals(oldStart, newStart)) {
         changes.add(Localized.getConstants().calAppointmentStart());
       }
 
       DateTime oldEnd = Data.getDateTime(VIEW_APPOINTMENTS, oldRow, COL_END_DATE_TIME);
       DateTime newEnd = getEnd(newStart);
-      if (!Objects.equal(oldEnd, newEnd) && !isNew) {
+      if (!Objects.equals(oldEnd, newEnd) && !isNew) {
         changes.add(Localized.getConstants().calAppointmentEnd());
       }
 
-      List<Long> reminders = Lists.newArrayList();
+      List<Long> reminders = new ArrayList<>();
       Long reminderType = getSelectedId(getReminderWidgetId(), reminderTypes);
       if (reminderType != null) {
         reminders.add(reminderType);
@@ -206,7 +207,7 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
         return;
       }
 
-      List<String> messages = Lists.newArrayList();
+      List<String> messages = new ArrayList<>();
 
       String msg = isNew ? Localized.getConstants().newValues()
           : Localized.getConstants().changedValues();
@@ -253,7 +254,7 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
       }
 
       Global.confirmDelete(Data.getString(VIEW_APPOINTMENTS, row, COL_SUMMARY), Icon.WARNING,
-          Lists.newArrayList(Localized.getConstants().calDeleteAppointment()),
+          Collections.singletonList(Localized.getConstants().calDeleteAppointment()),
           new ConfirmationCallback() {
             @Override
             public void onConfirm() {
@@ -304,7 +305,8 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
   private static final String NAME_BUILD = "Build";
   private static final String NAME_BUILD_INFO = "BuildInfo";
 
-  private static final String STYLE_COLOR_BAR_PREFIX = "bee-cal-ColorBar-";
+  private static final String STYLE_COLOR_BAR_PREFIX = BeeConst.CSS_CLASS_PREFIX
+      + "cal-ColorBar-";
 
   static BeeRow createEmptyRow(BeeRow typeRow, DateTime start) {
     BeeRow row = RowFactory.createEmptyRow(CalendarKeeper.getAppointmentViewInfo(), true);
@@ -325,18 +327,18 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
 
   private final DateOrTimeWidgetHandler dateOrTimeWidgetHandler = new DateOrTimeWidgetHandler();
 
-  private final List<Long> serviceTypes = Lists.newArrayList();
+  private final List<Long> serviceTypes = new ArrayList<>();
   private Long defaultServiceType;
 
-  private final List<Long> repairTypes = Lists.newArrayList();
+  private final List<Long> repairTypes = new ArrayList<>();
   private Long defaultRepairType;
 
-  private final List<Long> colors = Lists.newArrayList();
+  private final List<Long> colors = new ArrayList<>();
 
   private final SetMultimap<Long, Long> serviceResources = HashMultimap.create();
   private final SetMultimap<Long, Long> repairResources = HashMultimap.create();
 
-  private final List<Long> reminderTypes = Lists.newArrayList();
+  private final List<Long> reminderTypes = new ArrayList<>();
 
   private String serviceTypeWidgetId;
   private String repairTypeWidgetId;
@@ -361,14 +363,14 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
   private boolean saving;
 
   private boolean overlapVisible;
-  private final List<Appointment> overlappingAppointments = Lists.newArrayList();
+  private final List<Appointment> overlappingAppointments = new ArrayList<>();
 
   private DateTime lastCheckStart;
   private DateTime lastCheckEnd;
 
-  private final Set<String> requiredFields = Sets.newHashSet();
+  private final Set<String> requiredFields = new HashSet<>();
 
-  private final List<Long> ucAttendees = Lists.newArrayList();
+  private final List<Long> ucAttendees = new ArrayList<>();
 
   AppointmentBuilder(boolean isNew) {
     super();
@@ -557,8 +559,8 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
   @Override
   public void onDataSelector(SelectorEvent event) {
     if (event.isOpened()) {
-      Set<Long> include = Sets.newHashSet(ucAttendees);
-      Set<Long> exclude = Sets.newHashSet();
+      Set<Long> include = new HashSet<>(ucAttendees);
+      Set<Long> exclude = new HashSet<>();
 
       if (!serviceResources.isEmpty() && !BeeUtils.isEmpty(getServiceTypeWidgetId())) {
         Long serviceType = getSelectedId(getServiceTypeWidgetId(), serviceTypes);
@@ -719,7 +721,7 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
       return;
     }
 
-    List<Long> opaqueResources = Lists.newArrayList();
+    List<Long> opaqueResources = new ArrayList<>();
     for (Long id : resources) {
       if (CalendarKeeper.isAttendeeOpaque(id)) {
         opaqueResources.add(id);
@@ -743,7 +745,7 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
     setLastCheckStart(start);
     setLastCheckEnd(end);
 
-    ParameterList params = CalendarKeeper.createRequestParameters(SVC_GET_OVERLAPPING_APPOINTMENTS);
+    ParameterList params = CalendarKeeper.createArgs(SVC_GET_OVERLAPPING_APPOINTMENTS);
     if (!isNew) {
       params.addQueryItem(PARAM_APPOINTMENT_ID, getFormView().getActiveRow().getId());
     }
@@ -1074,7 +1076,7 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
       long id = row.getId();
 
       String groupName = Data.getString(viewName, row, ALS_PROPERTY_GROUP_NAME);
-      boolean isDef = Objects.equal(Data.getLong(viewName, row, COL_DEFAULT_PROPERTY), id);
+      boolean isDef = Objects.equals(Data.getLong(viewName, row, COL_DEFAULT_PROPERTY), id);
 
       if (BeeUtils.containsSame(groupName, "serv")) {
         serviceTypes.add(id);
@@ -1329,7 +1331,7 @@ class AppointmentBuilder extends AbstractFormInterceptor implements SelectorEven
     }
 
     final String svc = isNew ? SVC_CREATE_APPOINTMENT : SVC_UPDATE_APPOINTMENT;
-    ParameterList params = CalendarKeeper.createRequestParameters(svc);
+    ParameterList params = CalendarKeeper.createArgs(svc);
 
     BeeKeeper.getRpc().sendText(params, Codec.beeSerialize(rowSet), new ResponseCallback() {
       @Override

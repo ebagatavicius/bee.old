@@ -3,7 +3,6 @@ package com.butent.bee.client.modules.discussions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
@@ -88,6 +87,8 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -249,7 +250,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
       if (child instanceof FileCollector) {
         return ((FileCollector) child).getFiles();
       } else {
-        return Lists.newArrayList();
+        return new ArrayList<>();
       }
     }
   }
@@ -754,7 +755,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
       return input;
     }
 
-    List<FileInfo> result = Lists.newArrayList();
+    List<FileInfo> result = new ArrayList<>();
 
     for (FileInfo file : input) {
       Long id = file.getRelatedId();
@@ -1010,7 +1011,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
       return;
     }
 
-    Set<Long> roots = Sets.newHashSet();
+    Set<Long> roots = new HashSet<>();
     Multimap<Long, Long> data = HashMultimap.create();
 
     for (BeeRow row : rowSet.getRows()) {
@@ -1035,7 +1036,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
           discussParams.get(PRM_DISCUSS_ADMIN));
     }
 
-    if (panel.getWidgetCount() > 0 && form.asWidget().isVisible()) {
+    if (panel.getWidgetCount() > 0 && DomUtils.isVisible(form.getElement())) {
       final Widget last = panel.getWidget(panel.getWidgetCount() - 1);
       Scheduler.get().scheduleDeferred(new ScheduledCommand() {
         @Override
@@ -1351,7 +1352,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
   }
 
   private List<String> getUpdatedRelations(IsRow oldRow, IsRow newRow) {
-    List<String> updatedRelations = Lists.newArrayList();
+    List<String> updatedRelations = new ArrayList<>();
 
     if (oldRow == null || newRow == null) {
       return updatedRelations;

@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.data.HasDataTable;
+import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.dialog.DecisionCallback;
 import com.butent.bee.client.dialog.DialogConstants;
@@ -30,6 +31,7 @@ import com.butent.bee.client.event.logical.ActiveWidgetChangeEvent;
 import com.butent.bee.client.event.logical.DataRequestEvent;
 import com.butent.bee.client.event.logical.ParentRowEvent;
 import com.butent.bee.client.event.logical.ReadyEvent;
+import com.butent.bee.client.event.logical.RowCountChangeEvent;
 import com.butent.bee.client.event.logical.ScopeChangeEvent;
 import com.butent.bee.client.event.logical.SelectionCountChangeEvent;
 import com.butent.bee.client.event.logical.SortEvent;
@@ -38,6 +40,8 @@ import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.render.HandlesRendering;
 import com.butent.bee.client.render.RendererFactory;
+import com.butent.bee.client.style.ConditionalStyle;
+import com.butent.bee.client.style.DynamicStyler;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.EnablableWidget;
@@ -198,6 +202,14 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
         }
       }
 
+      if (hasData() && !BeeUtils.isEmpty(result.getDynStyles()) && !BeeUtils.isEmpty(id)) {
+        ConditionalStyle conditionalStyle =
+            ConditionalStyle.create(result.getDynStyles(), source, getDataColumns());
+        if (conditionalStyle != null) {
+          addDynamicStyle(id, cellSource, conditionalStyle);
+        }
+      }
+
       super.onSuccess(result, widget);
     }
   }
@@ -268,11 +280,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     }
 
     private void stop() {
-      for (com.google.web.bindery.event.shared.HandlerRegistration entry : registry) {
-        if (entry != null) {
-          entry.removeHandler();
-        }
-      }
+      EventUtils.clearRegistry(registry);
     }
   }
 
@@ -313,11 +321,9 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
   private static final BeeLogger logger = LogUtils.getLogger(FormImpl.class);
 
-  private static final String STYLE_FORM = StyleUtils.CLASS_NAME_PREFIX + "Form";
-  private static final String STYLE_FORM_DISABLED = StyleUtils.CLASS_NAME_PREFIX + "Form-"
+  private static final String STYLE_FORM = BeeConst.CSS_CLASS_PREFIX + "Form";
+  private static final String STYLE_FORM_DISABLED = BeeConst.CSS_CLASS_PREFIX + "Form-"
       + StyleUtils.SUFFIX_DISABLED;
-
-  private static final String NEW_ROW_CAPTION = "Create New";
 
   private final String formName;
 
@@ -381,12 +387,14 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
   private boolean hasReadyDelegates;
 
+  private final List<DynamicStyler> dynamicStylers = new ArrayList<>();
+
   public FormImpl(String formName) {
     super(Position.RELATIVE, Overflow.AUTO);
     this.formName = formName;
 
     if (!BeeUtils.isEmpty(formName)) {
-      addStyleName(StyleUtils.CLASS_NAME_PREFIX + "form-" + formName.trim());
+      addStyleName(BeeConst.CSS_CLASS_PREFIX + "form-" + formName.trim());
     }
   }
 
@@ -423,6 +431,28 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   }
 
   @Override
+  public void addDynamicStyle(String widgetId, CellSource cellSource,
+      ConditionalStyle conditionalStyle) {
+
+    Assert.notEmpty(widgetId);
+    Assert.notNull(conditionalStyle);
+
+    boolean found = false;
+
+    for (DynamicStyler ds : dynamicStylers) {
+      if (widgetId.equals(ds.getElementId())) {
+        ds.addConditionalStyle(conditionalStyle);
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      dynamicStylers.add(new DynamicStyler(widgetId, cellSource, conditionalStyle));
+    }
+  }
+
+  @Override
   public HandlerRegistration addReadyForInsertHandler(ReadyForInsertEvent.Handler handler) {
     return addHandler(handler, ReadyForInsertEvent.getType());
   }
@@ -436,6 +466,11 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   public HandlerRegistration addReadyHandler(ReadyEvent.Handler handler) {
     setHasReadyDelegates(ReadyEvent.maybeDelegate(this));
     return addHandler(handler, ReadyEvent.getType());
+  }
+
+  @Override
+  public HandlerRegistration addRowCountChangeHandler(RowCountChangeEvent.Handler handler) {
+    return addHandler(handler, RowCountChangeEvent.getType());
   }
 
   @Override
@@ -607,7 +642,37 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     }
 
     Widget widget = getWidgetBySource(source);
+    if (widget == null) {
+      widget = getWidgetByName(source);
+    }
+
     return UiHelper.focus(widget);
+  }
+
+  @Override
+  public int flush() {
+    if (hasData() && DataUtils.hasId(getActiveRow())
+        && DataUtils.sameId(getActiveRow(), getOldRow()) && validate(this, true)) {
+
+      return Queries.update(getViewName(), getDataColumns(), getOldRow(), getActiveRow(),
+          getChildrenForUpdate(), new RowCallback() {
+            @Override
+            public void onFailure(String... reason) {
+              notifySevere(reason);
+            }
+
+            @Override
+            public void onSuccess(BeeRow result) {
+              if (DataUtils.sameId(result, getActiveRow()) && !observesData()) {
+                updateRow(result, false);
+              }
+              RowUpdateEvent.fire(BeeKeeper.getBus(), getViewName(), result);
+            }
+          });
+
+    } else {
+      return BeeConst.INT_ERROR;
+    }
   }
 
   @Override
@@ -622,6 +687,13 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
   @Override
   public String getCaption() {
+    if (getFormInterceptor() != null) {
+      String s = getFormInterceptor().getCaption();
+      if (!BeeUtils.isEmpty(s)) {
+        return s;
+      }
+    }
+
     return caption;
   }
 
@@ -1073,6 +1145,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     }
 
     refreshDisplayWidgets(refreshed);
+    refreshDynamicStyles();
   }
 
   @Override
@@ -1214,6 +1287,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
         }
 
         refreshDisplayWidgets(refreshed);
+        refreshDynamicStyles();
 
       } else {
         fireUpdate(rowValue, column, oldValue, newValue, event.isRowMode());
@@ -1225,24 +1299,22 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
   @Override
   public void onEventPreview(NativePreviewEvent event, Node targetNode) {
-    if (isInteractive()) {
-      String type = event.getNativeEvent().getType();
+    String type = event.getNativeEvent().getType();
 
-      if (EventUtils.isClick(type)) {
-        if (!BeeUtils.isEmpty(getPreviewId())) {
-          setPreviewId(null);
-          event.cancel();
-        }
+    if (EventUtils.isClick(type)) {
+      if (!BeeUtils.isEmpty(getPreviewId())) {
+        setPreviewId(null);
+        event.cancel();
+      }
 
-      } else if (EventUtils.isMouseDown(type)) {
-        if (!BeeConst.isUndef(getActiveEditableIndex())) {
-          EditableWidget editableWidget = getEditableWidgets().get(getActiveEditableIndex());
+    } else if (EventUtils.isMouseDown(type)) {
+      if (!BeeConst.isUndef(getActiveEditableIndex()) && isInteractive()) {
+        EditableWidget editableWidget = getEditableWidgets().get(getActiveEditableIndex());
 
-          if (!editableWidget.getEditor().isOrHasPartner(targetNode)) {
-            if (!editableWidget.checkForUpdate(true)) {
-              setPreviewId(editableWidget.getWidgetId());
-              event.cancel();
-            }
+        if (!editableWidget.getEditor().isOrHasPartner(targetNode)) {
+          if (!editableWidget.checkForUpdate(true)) {
+            setPreviewId(editableWidget.getWidgetId());
+            event.cancel();
           }
         }
       }
@@ -1415,6 +1487,11 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   }
 
   @Override
+  public void setCaption(String caption) {
+    this.caption = caption;
+  }
+
+  @Override
   public void setEditing(boolean editing) {
     this.editing = editing;
   }
@@ -1490,6 +1567,8 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     } else if (fireScopeChange) {
       fireScopeChange(NavigationOrigin.SYSTEM);
     }
+
+    fireEvent(new RowCountChangeEvent(count));
   }
 
   @Override
@@ -1574,7 +1653,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   @Override
   public void startNewRow(boolean copy) {
     setAdding(true);
-    fireEvent(new AddStartEvent(NEW_ROW_CAPTION, false));
+    fireEvent(new AddStartEvent(Localized.getConstants().actionNew(), false));
 
     IsRow row = getActiveRow();
     setRowBuffer(row);
@@ -1629,8 +1708,11 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     if (!BeeUtils.equalsTrimRight(oldValue, newValue)) {
       if (isFlushable()) {
         rowValue.setValue(index, newValue);
+
         Set<String> refreshed = refreshEditableWidget(index);
         refreshDisplayWidgets(refreshed);
+        refreshDynamicStyles();
+
       } else {
         BeeColumn column = getDataColumns().get(index);
         fireUpdate(rowValue, column, oldValue, newValue, column.isForeign());
@@ -1965,6 +2047,14 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     }
   }
 
+  private void refreshDynamicStyles() {
+    if (!dynamicStylers.isEmpty()) {
+      for (DynamicStyler ds : dynamicStylers) {
+        ds.apply(getActiveRow());
+      }
+    }
+  }
+
   private Set<String> refreshEditableWidget(int dataIndex) {
     Set<String> refreshed = new HashSet<>();
 
@@ -2035,6 +2125,8 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       refreshChildWidgets(getActiveRow());
     }
 
+    refreshDynamicStyles();
+
     fireEvent(new ActiveRowChangeEvent(getActiveRow()));
 
     if (getFormInterceptor() != null) {
@@ -2063,10 +2155,6 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
   private void setAdding(boolean adding) {
     this.adding = adding;
-  }
-
-  private void setCaption(String caption) {
-    this.caption = caption;
   }
 
   private void setDataColumns(List<BeeColumn> dataColumns) {

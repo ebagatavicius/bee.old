@@ -14,6 +14,7 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasRange;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -536,6 +537,24 @@ public final class BeeUtils {
     return cnt;
   }
 
+  public static int countLines(String src) {
+    if (src == null) {
+      return 0;
+    }
+
+    String s = src.trim();
+    if (s.isEmpty()) {
+      return 0;
+    }
+
+    int cnt = count(s, BeeConst.CHAR_EOL);
+    if (cnt <= 0) {
+      cnt = count(s, BeeConst.CHAR_CR);
+    }
+
+    return cnt + 1;
+  }
+
   /**
    * Deletes a part of a String from specified {@code start} to {@code end}.
    * 
@@ -567,6 +586,13 @@ public final class BeeUtils {
       return src.substring(0, start);
     }
     return src.substring(0, start) + src.substring(end);
+  }
+
+  public static double distance(double x1, double y1, double x2, double y2) {
+    double dx = x2 - x1;
+    double dy = y2 - y1;
+
+    return Math.sqrt(dx * dx + dy * dy);
   }
 
   public static double div(int x, int y) {
@@ -632,7 +658,7 @@ public final class BeeUtils {
    * @return a new list with elements that contain {@code ctxt} in {@code src} collection.
    */
   public static List<String> filterContext(Collection<String> src, String ctxt) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (src == null) {
       return result;
     }
@@ -718,6 +744,15 @@ public final class BeeUtils {
   public static <K, V> Collection<V> getIfContains(Multimap<K, V> multimap, K key) {
     if (multimap != null && multimap.containsKey(key)) {
       return multimap.get(key);
+    } else {
+      return null;
+    }
+  }
+
+  public static <T> T getLast(List<? extends T> lst) {
+    int size = size(lst);
+    if (size > 0) {
+      return lst.get(size - 1);
     } else {
       return null;
     }
@@ -879,7 +914,6 @@ public final class BeeUtils {
     if (rest == null) {
       return false;
     }
-
     for (int y : rest) {
       if (x == y) {
         return true;
@@ -1776,6 +1810,22 @@ public final class BeeUtils {
     return null;
   }
 
+  public static Double percent(Double d, Double p) {
+    if (isDouble(d) && isDouble(p)) {
+      return d * p / 100d;
+    } else {
+      return null;
+    }
+  }
+
+  public static Double percentInclusive(Double d, Double p) {
+    if (isDouble(d) && isPositive(p)) {
+      return d * p / (p + 100d);
+    } else {
+      return null;
+    }
+  }
+
   public static Double plusPercent(Double d, Double p) {
     if (isDouble(d) && isDouble(p)) {
       return d + d * p / 100d;
@@ -1798,6 +1848,14 @@ public final class BeeUtils {
 
   public static int positive(int x, int y, int def) {
     return (x > 0) ? x : positive(y, def);
+  }
+
+  public static Long positive(Long x, Long def) {
+    return isPositive(x) ? x : def;
+  }
+
+  public static Double positive(Double x, Double def) {
+    return isPositive(x) ? x : def;
   }
 
   /**
@@ -2575,16 +2633,7 @@ public final class BeeUtils {
   }
 
   public static int toInt(Double d) {
-    if (!isDouble(d)) {
-      return 0;
-    }
-    if (d <= Integer.MIN_VALUE) {
-      return Integer.MIN_VALUE;
-    }
-    if (d >= Integer.MAX_VALUE) {
-      return Integer.MAX_VALUE;
-    }
-    return d.intValue();
+    return isDouble(d) ? round(d) : 0;
   }
 
   public static int toInt(long x) {
@@ -2639,7 +2688,7 @@ public final class BeeUtils {
   }
 
   public static List<Integer> toInts(String input) {
-    List<Integer> result = Lists.newArrayList();
+    List<Integer> result = new ArrayList<>();
 
     if (!isEmpty(input)) {
       for (String s : NUMBER_SPLITTER.split(input)) {
@@ -2671,14 +2720,13 @@ public final class BeeUtils {
   public static long toLong(Double d) {
     if (!isDouble(d)) {
       return 0L;
-    }
-    if (d <= Long.MIN_VALUE) {
+    } else if (d <= Long.MIN_VALUE) {
       return Long.MIN_VALUE;
-    }
-    if (d >= Long.MAX_VALUE) {
+    } else if (d >= Long.MAX_VALUE) {
       return Long.MAX_VALUE;
+    } else {
+      return Math.round(d);
     }
-    return d.longValue();
   }
 
   /**
@@ -2723,7 +2771,7 @@ public final class BeeUtils {
   }
 
   public static List<Long> toLongs(String input) {
-    List<Long> result = Lists.newArrayList();
+    List<Long> result = new ArrayList<>();
 
     if (!isEmpty(input)) {
       for (String s : NUMBER_SPLITTER.split(input)) {
@@ -2919,6 +2967,10 @@ public final class BeeUtils {
       result.addAll(col3);
     }
     return result;
+  }
+
+  public static String unquote(String s) {
+    return removePrefixAndSuffix(s, BeeConst.CHAR_QUOT);
   }
 
   /**

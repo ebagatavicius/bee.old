@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.calendar;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
@@ -14,13 +13,14 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public final class CalendarUtils {
 
   public static List<CalendarItem> filterByAttendee(Collection<CalendarItem> input, long id) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     for (CalendarItem item : input) {
       switch (item.getItemType()) {
@@ -39,7 +39,7 @@ public final class CalendarUtils {
 
   public static List<CalendarItem> filterByAttendees(Collection<CalendarItem> input,
       Collection<Long> attIds, boolean separate) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     for (CalendarItem item : input) {
       switch (item.getItemType()) {
@@ -69,7 +69,7 @@ public final class CalendarUtils {
 
   public static List<CalendarItem> filterByRange(Collection<CalendarItem> input, JustDate date,
       int days) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     long min = TimeUtils.startOfDay(date).getTime();
     long max = TimeUtils.startOfDay(date, days).getTime();
@@ -84,7 +84,7 @@ public final class CalendarUtils {
 
   public static List<CalendarItem> filterMulti(Collection<CalendarItem> input, JustDate date,
       int days) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     long min = TimeUtils.startOfDay(date).getTime();
     long max = TimeUtils.startOfDay(date, days).getTime();
@@ -116,7 +116,7 @@ public final class CalendarUtils {
   }
 
   public static List<CalendarItem> filterSimple(Collection<CalendarItem> input, JustDate date) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     long min = TimeUtils.startOfDay(date).getTime();
     long max = TimeUtils.startOfDay(date, 1).getTime();

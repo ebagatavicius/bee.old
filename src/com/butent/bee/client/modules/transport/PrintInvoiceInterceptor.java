@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
@@ -20,14 +18,16 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class PrintInvoiceInterceptor extends AbstractFormInterceptor {
 
-  Map<String, Widget> companies = Maps.newHashMap();
+  Map<String, Widget> companies = new HashMap<>();
   HtmlTable invoiceDetails;
-  List<Widget> totals = Lists.newArrayList();
+  List<Widget> totals = new ArrayList<>();
 
   @Override
   public void afterCreateWidget(String name, IdentifiableWidget widget,
@@ -55,7 +55,8 @@ public class PrintInvoiceInterceptor extends AbstractFormInterceptor {
       ClassifierUtils.getCompanyInfo(id, companies.get(name));
     }
     if (invoiceDetails != null) {
-      TradeUtils.getDocumentItems(getViewName(), row.getId(), invoiceDetails);
+      TradeUtils.getDocumentItems(getViewName(), row.getId(),
+          form.getStringValue(AdministrationConstants.ALS_CURRENCY_NAME), invoiceDetails);
     }
     for (Widget total : totals) {
       TradeUtils.getTotalInWords(form.getDoubleValue(COL_TRADE_AMOUNT),

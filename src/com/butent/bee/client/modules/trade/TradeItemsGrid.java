@@ -7,7 +7,7 @@ import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
-import com.butent.bee.client.ui.UiHelper;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
@@ -37,7 +37,8 @@ public class TradeItemsGrid extends AbstractGridInterceptor {
   }
 
   @Override
-  public void afterUpdateCell(IsColumn column, IsRow result, boolean rowMode) {
+  public void afterUpdateCell(IsColumn column, String oldValue, String newValue, IsRow result,
+      boolean rowMode) {
     if (BeeUtils.inListSame(column.getId(), COL_TRADE_ITEM_QUANTITY, COL_TRADE_ITEM_PRICE,
         COL_TRADE_VAT_PLUS, COL_TRADE_VAT, COL_TRADE_VAT_PERC)) {
       refresher.execute();
@@ -53,7 +54,7 @@ public class TradeItemsGrid extends AbstractGridInterceptor {
     return new ScheduledCommand() {
       @Override
       public void execute() {
-        FormView form = UiHelper.getForm(getGridView());
+        FormView form = ViewHelper.getForm(getGridView());
 
         final String viewName = (form == null) ? null : form.getViewName();
         final Long rowId = (form == null) ? null : form.getActiveRowId();

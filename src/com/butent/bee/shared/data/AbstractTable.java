@@ -1,7 +1,5 @@
 package com.butent.bee.shared.data;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
@@ -27,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -81,10 +81,10 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
     }
   }
 
-  private List<C> columns = Lists.newArrayList();
+  private List<C> columns = new ArrayList<>();
 
   private CustomProperties properties;
-  private List<DataWarning> warnings = Lists.newArrayList();
+  private List<DataWarning> warnings = new ArrayList<>();
 
   public AbstractTable() {
   }
@@ -104,7 +104,7 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
   }
 
   @Override
-  public int addColumn(C column) {
+  public void addColumn(C column) {
     assertNewColumnId(column.getId());
     columns.add(column);
 
@@ -114,63 +114,40 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
         row.addCell(new TableCell(nullValue));
       }
     }
-    return columns.size() - 1;
   }
 
   @Override
-  public int addColumn(ValueType type) {
-    return addColumn(type, DataUtils.defaultColumnLabel(getNumberOfColumns()));
+  public void addColumn(ValueType type) {
+    addColumn(type, DataUtils.defaultColumnLabel(getNumberOfColumns()));
   }
 
   @Override
-  public int addColumn(ValueType type, String label) {
-    return addColumn(type, label, DataUtils.defaultColumnId(getNumberOfColumns()));
+  public void addColumn(ValueType type, String label) {
+    addColumn(type, label, DataUtils.defaultColumnId(getNumberOfColumns()));
   }
 
   @Override
-  public int addColumn(ValueType type, String label, String id) {
-    return addColumn(createColumn(type, label, id));
+  public void addColumn(ValueType type, String label, String id) {
+    addColumn(createColumn(type, label, id));
   }
 
   @Override
-  public int addColumns(Collection<C> columnsToAdd) {
+  public void addColumns(Collection<C> columnsToAdd) {
     Assert.notEmpty(columnsToAdd);
-    int lastIndex = BeeConst.UNDEF;
     for (C column : columnsToAdd) {
-      lastIndex = addColumn(column);
+      addColumn(column);
     }
-    return lastIndex;
   }
 
   @Override
-  public int addRow() {
-    return addRow(fillRow(createRow()));
-  }
-
-  @Override
-  public int addRow(R row) {
+  public void addRow(R row) {
     getRows().add(row);
-    return getNumberOfRows() - 1;
   }
 
   @Override
-  public int addRows(Collection<R> rowsToAdd) {
+  public void addRows(Collection<R> rowsToAdd) {
     Assert.notNull(rowsToAdd);
-    int lastIndex = BeeConst.UNDEF;
-    for (R row : rowsToAdd) {
-      lastIndex = addRow(row);
-    }
-    return lastIndex;
-  }
-
-  @Override
-  public int addRows(int rowCount) {
-    Assert.isPositive(rowCount);
-    int lastIndex = BeeConst.UNDEF;
-    for (int i = 0; i < rowCount; i++) {
-      lastIndex = addRow();
-    }
-    return lastIndex;
+    getRows().addAll(rowsToAdd);
   }
 
   @Override
@@ -210,7 +187,7 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
 
   @Override
   public boolean containsColumn(String columnId) {
-    return getColumnIndex(columnId) >= 0;
+    return DataUtils.contains(getColumns(), columnId);
   }
 
   @Override
@@ -243,20 +220,6 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
     return getColumn(getColumnIndex(columnId));
   }
 
-  public List<IsCell> getColumnCells(int colIndex) {
-    assertColumnIndex(colIndex);
-    List<IsCell> colCells = Lists.newArrayListWithCapacity(getNumberOfRows());
-
-    for (R row : getRows()) {
-      colCells.add(row.getCell(colIndex));
-    }
-    return colCells;
-  }
-
-  public List<IsCell> getColumnCells(String columnId) {
-    return getColumnCells(getColumnIndex(columnId));
-  }
-
   @Override
   public String getColumnId(int colIndex) {
     return getColumn(colIndex).getId();
@@ -264,7 +227,7 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
 
   @Override
   public int getColumnIndex(String columnId) {
-    return DataUtils.getColumnIndex(columnId, getColumns());
+    return DataUtils.getColumnIndex(columnId, getColumns(), true);
   }
 
   @Override
@@ -334,16 +297,6 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
     return getColumn(colIndex).getType();
   }
 
-  public List<Value> getColumnValues(int colIndex) {
-    assertColumnIndex(colIndex);
-    List<Value> values = Lists.newArrayListWithCapacity(getNumberOfRows());
-
-    for (R row : getRows()) {
-      values.add(row.getCell(colIndex).getValue());
-    }
-    return values;
-  }
-
   @Override
   public JustDate getDate(int rowIndex, int colIndex) {
     return getRow(rowIndex).getDate(colIndex);
@@ -368,17 +321,23 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
   }
 
   @Override
-  public List<Value> getDistinctValues(int colIndex) {
+  public Set<Long> getDistinctLongs(int colIndex) {
     assertColumnIndex(colIndex);
-    Set<Value> values = Sets.newTreeSet();
+    Set<Long> result = new HashSet<>();
     for (R row : getRows()) {
-      values.add(row.getCell(colIndex).getValue());
+      result.add(row.getLong(colIndex));
     }
-    return Lists.newArrayList(values);
+    return result;
   }
 
-  public List<Value> getDistinctValues(String columnId) {
-    return getDistinctValues(getColumnIndex(columnId));
+  @Override
+  public Set<String> getDistinctStrings(int colIndex) {
+    assertColumnIndex(colIndex);
+    Set<String> result = new HashSet<>();
+    for (R row : getRows()) {
+      result.add(row.getString(colIndex));
+    }
+    return result;
   }
 
   @Override
@@ -396,6 +355,28 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
 
     for (R row : this) {
       if (filter.isMatch(getColumns(), row)) {
+        return row;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public R findRow(int colIndex, String value) {
+    assertColumnIndex(colIndex);
+    for (R row : this) {
+      if (Objects.equals(row.getString(colIndex), value)) {
+        return row;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public R findRow(int colIndex, Long value) {
+    assertColumnIndex(colIndex);
+    for (R row : this) {
+      if (Objects.equals(row.getLong(colIndex), value)) {
         return row;
       }
     }
@@ -442,9 +423,9 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
 
   @Override
   public R getRowById(long rowId) {
-    for (int i = 0; i < getNumberOfRows(); i++) {
-      if (getRow(i).getId() == rowId) {
-        return getRow(i);
+    for (R row : this) {
+      if (row.getId() == rowId) {
+        return row;
       }
     }
     return null;
@@ -491,7 +472,7 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
       return new int[] {0};
     }
 
-    List<Integer> rowIndexes = Lists.newArrayListWithCapacity(rowCount);
+    List<Integer> rowIndexes = new ArrayList<>(rowCount);
     for (int i = 0; i < rowCount; i++) {
       rowIndexes.add(i);
     }
@@ -721,7 +702,7 @@ public abstract class AbstractTable<R extends IsRow, C extends IsColumn> impleme
 
   @Override
   public void setValue(int rowIndex, int colIndex, Boolean value) {
-    setValue(rowIndex, colIndex, BooleanValue.getInstance(value));
+    setValue(rowIndex, colIndex, BooleanValue.of(value));
   }
 
   @Override

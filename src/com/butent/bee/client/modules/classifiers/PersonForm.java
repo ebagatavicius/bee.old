@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.classifiers;
 
-import com.google.common.base.Objects;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -31,6 +30,8 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.utils.BeeUtils;
+
+import java.util.Objects;
 
 import elemental.client.Browser;
 import elemental.events.Event;
@@ -252,7 +253,7 @@ class PersonForm extends AbstractFormInterceptor {
     UserData userData = BeeKeeper.getUser().getUserData();
 
     if (form != null && row != null && userData != null
-        && Objects.equal(userData.getPerson(), row.getId())) {
+        && Objects.equals(userData.getPerson(), row.getId())) {
 
       userData.setFirstName(row.getString(form.getDataIndex(ClassifierConstants.COL_FIRST_NAME)));
       userData.setLastName(row.getString(form.getDataIndex(ClassifierConstants.COL_LAST_NAME)));

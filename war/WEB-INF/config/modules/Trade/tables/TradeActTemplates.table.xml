@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="TradeActTemplates"
+  idName="TradeActTemplateID"
+  >
+  <Fields>
+    <String name="Template" precision="100" notNull="true" unique="true" label="=template" />
+
+    <Relation name="Name" relation="TradeActNames" label="=tradeActName" />
+    <DateTime name="Until" label="=taUntil" />
+
+    <Relation name="Series" relation="TradeSeries" label="=trdSeries" />
+
+    <Relation name="Operation" relation="TradeOperations" label="=trdOperation" />
+    <Relation name="Status" relation="TradeStatuses" label="=status" />
+
+    <Relation name="Company" relation="Companies" label="=client" />
+    <Relation name="Contact" relation="CompanyPersons" label="=contact" />
+    <Relation name="Object" relation="CompanyObjects" label="=object" />
+    <Relation name="Manager" relation="Users" label="=manager" />
+
+    <Relation name="Currency" relation="Currencies" label="=currency" />
+
+    <Relation name="Vehicle" relation="Vehicles" label="=trVehicle" />
+    <Relation name="Driver" relation="Drivers" label="=trdDriver" />
+
+    <Text name="Notes" label="=notes" />
+  </Fields>
+</Table>

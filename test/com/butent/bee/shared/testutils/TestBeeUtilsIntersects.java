@@ -1,7 +1,5 @@
 package com.butent.bee.shared.testutils;
 
-import com.google.common.collect.Sets;
-
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -16,6 +14,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -24,11 +23,11 @@ import java.util.Set;
 @RunWith(value = Parameterized.class)
 public class TestBeeUtilsIntersects extends TestCase {
 
-  private static Set<ValueType> testc1 = Sets.newHashSet();
-  private static Set<ValueType> testc2 = Sets.newHashSet();
+  private static Set<ValueType> testc1 = new HashSet<>();
+  private static Set<ValueType> testc2 = new HashSet<>();
 
-  private static Set<ValueType> testc3 = Sets.newHashSet();
-  private static Set<ValueType> testc4 = Sets.newHashSet();
+  private static Set<ValueType> testc3 = new HashSet<>();
+  private static Set<ValueType> testc4 = new HashSet<>();
 
   @Parameters
   public static Collection<Object[]> getTestParameters() {

@@ -12,6 +12,7 @@ import com.butent.bee.client.modules.tasks.TasksKeeper;
 import com.butent.bee.client.modules.trade.TradeKeeper;
 import com.butent.bee.client.modules.transport.TransportHandler;
 import com.butent.bee.client.utils.Command;
+import com.butent.bee.shared.rights.Module;
 
 public final class ModuleManager {
 
@@ -22,18 +23,42 @@ public final class ModuleManager {
   public static void onLoad() {
     AdministrationKeeper.register();
     ClassifierKeeper.register();
-    TransportHandler.register();
 
-    TasksKeeper.register();
-    DocumentsHandler.register();
+    if (Module.TRANSPORT.isEnabled()) {
+      TransportHandler.register();
+    }
 
-    CalendarKeeper.register();
-    MailKeeper.register();
-    TradeKeeper.register();
+    if (Module.TASKS.isEnabled()) {
+      TasksKeeper.register();
+    }
 
-    EcKeeper.register();
-    DiscussionsKeeper.register();
-    ServiceKeeper.register();
+    if (Module.DOCUMENTS.isEnabled()) {
+      DocumentsHandler.register();
+    }
+
+    if (Module.CALENDAR.isEnabled()) {
+      CalendarKeeper.register();
+    }
+
+    if (Module.MAIL.isEnabled()) {
+      MailKeeper.register();
+    }
+
+    if (Module.TRADE.isEnabled()) {
+      TradeKeeper.register();
+    }
+
+    if (Module.ECOMMERCE.isEnabled()) {
+      EcKeeper.register();
+    }
+
+    if (Module.DISCUSSIONS.isEnabled()) {
+      DiscussionsKeeper.register();
+    }
+
+    if (Module.SERVICE.isEnabled()) {
+      ServiceKeeper.register();
+    }
   }
 
   private ModuleManager() {

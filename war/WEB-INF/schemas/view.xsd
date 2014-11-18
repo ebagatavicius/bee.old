@@ -38,9 +38,9 @@
       <xs:attribute name="readOnly" type="xs:boolean" />
       <xs:attribute name="caption" type="xs:string" />
       <xs:attribute name="editForm" type="type:nameType" />
-      <xs:attribute name="rowCaption" type="type:nameList" />
+      <xs:attribute name="rowCaption" type="type:fieldNames" />
       <xs:attribute name="newRowForm" type="type:nameType" />
-      <xs:attribute name="newRowColumns" type="type:nameList" />
+      <xs:attribute name="newRowColumns" type="type:fieldNames" />
       <xs:attribute name="newRowCaption" type="xs:string" />
       <xs:attribute name="cacheMaximumSize" type="xs:int" />
       <xs:attribute name="cacheEviction" type="type:replacementPolicy" />

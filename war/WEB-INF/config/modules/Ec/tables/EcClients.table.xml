@@ -22,10 +22,15 @@
     
     <Boolean name="CreditLimitWarning" label="=ecClientCreditLimitWarning" />
     
-    <Numeric name="DiscountPercent" precision="7" scale="3" label="=ecDiscountPercent" />
+    <Numeric name="DiscountPercent" precision="7" scale="3" label="=discountPercent" />
     <Relation name="DiscountParent" relation="EcClients" label="=ecDiscountParent" />
     
     <Enum name="DisplayedPrice" key="EcDisplayedPrice" label="=ecDisplayedPrice" />
+    
+    <Relation name="BasePriceList0" relation="TcdPriceLists" label="=ecPriceListBase+ Eolt" />
+    <Relation name="ClientPriceList0" relation="TcdPriceLists" label="=ecPriceListClient+ Eolt" />
+    <Relation name="BasePriceList1" relation="TcdPriceLists" label="=ecPriceListBase+ MP" />
+    <Relation name="ClientPriceList1" relation="TcdPriceLists" label="=ecPriceListClient+ MP" />
     
     <Boolean name="ToggleListPrice" label="=ecToggleListPrice" />
     <Boolean name="TogglePrice" label="=ecTogglePrice" />

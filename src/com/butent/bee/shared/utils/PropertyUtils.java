@@ -1,12 +1,11 @@
 package com.butent.bee.shared.utils;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasInfo;
 import com.butent.bee.shared.logging.LogUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -320,7 +319,7 @@ public final class PropertyUtils {
    * @return a new list of Properties
    */
   public static List<Property> createProperties(Object... obj) {
-    List<Property> lst = Lists.newArrayList();
+    List<Property> lst = new ArrayList<>();
     if (obj != null && obj.length > 0) {
       addProperties(lst, obj);
     }
@@ -336,7 +335,7 @@ public final class PropertyUtils {
    * @return a new list of Properties
    */
   public static List<Property> createProperties(String prefix, String[] values) {
-    List<Property> lst = Lists.newArrayList();
+    List<Property> lst = new ArrayList<>();
     if (ArrayUtils.isEmpty(values)) {
       return lst;
     }
@@ -352,7 +351,7 @@ public final class PropertyUtils {
   }
 
   public static List<Property> createProperties(String prefix, Collection<String> values) {
-    List<Property> lst = Lists.newArrayList();
+    List<Property> lst = new ArrayList<>();
     if (BeeUtils.isEmpty(values)) {
       return lst;
     }
@@ -372,7 +371,7 @@ public final class PropertyUtils {
   }
 
   public static List<Property> createProperties(Map<String, String> properties) {
-    List<Property> lst = Lists.newArrayList();
+    List<Property> lst = new ArrayList<>();
     if (BeeUtils.isEmpty(properties)) {
       return lst;
     }
@@ -440,7 +439,7 @@ public final class PropertyUtils {
     if (BeeUtils.isEmpty(s)) {
       return null;
     }
-    List<ExtendedProperty> lst = Lists.newArrayList();
+    List<ExtendedProperty> lst = new ArrayList<>();
 
     String[] arr = Codec.beeDeserializeCollection(s);
     if (arr != null) {
@@ -456,7 +455,7 @@ public final class PropertyUtils {
     if (BeeUtils.isEmpty(s)) {
       return null;
     }
-    List<Property> lst = Lists.newArrayList();
+    List<Property> lst = new ArrayList<>();
 
     String[] arr = Codec.beeDeserializeCollection(s);
     if (arr != null) {

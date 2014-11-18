@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.calendar;
 
-import com.google.common.collect.Lists;
-
 import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 
@@ -14,8 +12,8 @@ import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.ChoiceCallback;
 import com.butent.bee.client.event.logical.SelectorEvent;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.DataView;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -31,6 +29,7 @@ import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.transport.TransportConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class SelectorHandler implements SelectorEvent.Handler {
@@ -78,7 +77,7 @@ class SelectorHandler implements SelectorEvent.Handler {
   private static void chooseVehicle(final DataView dataView, final BeeRowSet rowSet,
       String companyName, final IsRow owner) {
 
-    List<String> options = Lists.newArrayList();
+    List<String> options = new ArrayList<>();
 
     int numberIndex = rowSet.getColumnIndex(TransportConstants.COL_NUMBER);
     int parentModelIndex = rowSet.getColumnIndex(TransportConstants.COL_PARENT_MODEL_NAME);
@@ -157,7 +156,7 @@ class SelectorHandler implements SelectorEvent.Handler {
       return;
     }
 
-    final DataView dataView = UiHelper.getDataView(event.getSelector());
+    final DataView dataView = ViewHelper.getDataView(event.getSelector());
     if (dataView == null) {
       return;
     }
@@ -202,7 +201,7 @@ class SelectorHandler implements SelectorEvent.Handler {
       return;
     }
 
-    GridView gridView = UiHelper.getGrid(event.getSelector());
+    GridView gridView = ViewHelper.getGrid(event.getSelector());
     if (gridView == null) {
       return;
     }
@@ -249,7 +248,7 @@ class SelectorHandler implements SelectorEvent.Handler {
   }
 
   private static void handleVehicle(final SelectorEvent event) {
-    final DataView dataView = UiHelper.getDataView(event.getSelector());
+    final DataView dataView = ViewHelper.getDataView(event.getSelector());
     if (dataView == null) {
       return;
     }

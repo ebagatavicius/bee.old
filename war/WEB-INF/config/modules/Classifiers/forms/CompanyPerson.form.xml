@@ -8,23 +8,26 @@
   height="350" width="850"
   >
   <FlowPanel>
-    <Table style="border-spacing: 10px;">
+    <Table style="margin-top: 1ex;">
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+
       <row>
-        <Label text="=person" class="bee-required" />
+        <Label for="Person" />
         <DataSelector source="Person" style="width: 200px" />
-        <Label text="=personPosition" />
+        <Label for="Position" />
         <DataSelector source="Position" style="width: 200px" />
       </row>
       <row>
-        <Label text="=personTabNo" />
+        <Label for="TabNo" />
         <InputText source="TabNo" style="width: 200px" />
-        <Label text="=companyDepartment" />
+        <Label for="Department" />
         <DataSelector source="Department" style="width: 200px" />
       </row>
       <row>
-        <Label text="=personAccountingCode" />
+        <Label for="AccountingCode" />
         <InputText source="AccountingCode" style="width: 200px" />
-        <Label text="=personDateOfEmployment" />
+        <Label for="DateOfEmployment" />
         <InputDate source="DateOfEmployment" style="width: 200px" />
       </row>
     </Table>

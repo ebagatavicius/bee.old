@@ -26,6 +26,7 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.Action;
 
 import java.util.List;
+import java.util.Set;
 
 public interface FormInterceptor extends WidgetInterceptor, HasGridView, HandlesStateChange,
     HasDomain, HasActiveRow, HasViewName {
@@ -57,6 +58,10 @@ public interface FormInterceptor extends WidgetInterceptor, HasGridView, Handles
   int getDataIndex(String source);
 
   DateTime getDateTimeValue(String source);
+
+  Set<Action> getDisabledActions(Set<Action> defaultActions);
+
+  Set<Action> getEnabledActions(Set<Action> defaultActions);
 
   FormView getFormView();
 

@@ -10,9 +10,9 @@
   <FlowPanel>
     <Table style="border-spacing: 10px;">
       <row>
-        <Label text="=company" class="bee-required" />
+        <Label for="Company" />
         <DataSelector source="Company" style="width: 200px" />
-        <Label text="=personPosition" />
+        <Label for="Position" />
         <DataSelector source="Position" style="width: 200px" />
       </row>
     </Table>

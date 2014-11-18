@@ -1,10 +1,10 @@
 package com.butent.bee.client.render;
 
-import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
 
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.export.XCell;
@@ -13,11 +13,12 @@ import com.butent.bee.shared.export.XSheet;
 import com.butent.bee.shared.io.Paths;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class PhotoRenderer extends AbstractCellRenderer {
 
-  public static final String STYLE_EMBEDDED = "bee-Photo-embedded";
+  public static final String STYLE_EMBEDDED = BeeConst.CSS_CLASS_PREFIX + "Photo-embedded";
 
   private static final ImageElement imageElement;
 
@@ -27,7 +28,7 @@ public class PhotoRenderer extends AbstractCellRenderer {
     imageElement = Document.get().createImageElement();
     imageElement.addClassName(STYLE_EMBEDDED);
 
-    urlCache = Maps.newHashMap();
+    urlCache = new HashMap<>();
   }
 
   public static void addToCache(String fileName, String url) {

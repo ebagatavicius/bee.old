@@ -1,7 +1,5 @@
 package com.butent.bee.server.data;
 
-import com.google.common.collect.Maps;
-
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
@@ -11,6 +9,7 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,7 +41,7 @@ public class IdGeneratorBean {
   @EJB
   SystemBean sys;
 
-  private final Map<String, long[]> idCache = Maps.newHashMap();
+  private final Map<String, long[]> idCache = new HashMap<>();
 
   // TODO @PreDestroy
   public void destroy() {

@@ -1,7 +1,6 @@
 package com.butent.bee.client.timeboard;
 
 import com.google.common.collect.BoundType;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -44,6 +43,7 @@ import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -184,7 +184,7 @@ public final class TimeBoardHelper {
   public static List<HasDateRange> getActiveItems(Collection<? extends HasDateRange> items,
       Range<JustDate> activeRange) {
 
-    List<HasDateRange> result = Lists.newArrayList();
+    List<HasDateRange> result = new ArrayList<>();
     if (items == null || activeRange == null) {
       return result;
     }
@@ -238,7 +238,7 @@ public final class TimeBoardHelper {
   }
 
   public static List<HasDateRange> getInactivity(HasDateRange item, Range<JustDate> activeRange) {
-    List<HasDateRange> result = Lists.newArrayList();
+    List<HasDateRange> result = new ArrayList<>();
     if (activeRange == null || item == null || item.getRange() == null) {
       return result;
     }

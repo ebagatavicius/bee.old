@@ -1,15 +1,16 @@
 package com.butent.bee.server.data;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.server.sql.IsQuery;
 import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
+import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -64,6 +65,11 @@ public abstract class DataEvent {
       this.row = row;
     }
 
+    public void addValue(BeeColumn column, Value value) {
+      columns.add(column);
+      row.addValue(value);
+    }
+
     public List<BeeColumn> getColumns() {
       return columns;
     }
@@ -89,12 +95,20 @@ public abstract class DataEvent {
       this.query = query;
     }
 
+    public int getColumnCount() {
+      return (rowset == null) ? 0 : rowset.getNumberOfColumns();
+    }
+
     public SqlSelect getQuery() {
       return query;
     }
 
     public BeeRowSet getRowset() {
       return rowset;
+    }
+
+    public boolean hasData() {
+      return !DataUtils.isEmpty(rowset);
     }
 
     void setRowset(BeeRowSet rowset) {
@@ -143,7 +157,7 @@ public abstract class DataEvent {
     Assert.notEmpty(message);
 
     if (errors == null) {
-      errors = Lists.newArrayList();
+      errors = new ArrayList<>();
     }
     errors.add(message);
   }

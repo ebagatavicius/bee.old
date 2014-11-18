@@ -27,7 +27,12 @@
       <PostgreSql>
         <![CDATA[
 BEGIN
-  NEW."ContentFTS" = to_tsvector('simple', NEW."Content");
+  BEGIN
+    NEW."ContentFTS" = to_tsvector('simple', NEW."Content");
+
+    EXCEPTION WHEN program_limit_exceeded THEN
+      NEW."ContentFTS" = '';
+  END;
   RETURN NEW;
 END;
         ]]>

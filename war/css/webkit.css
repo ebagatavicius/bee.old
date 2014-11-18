@@ -1,33 +1,3 @@
-.bee-Header-control.bee-Image:hover {
-  -webkit-filter: contrast(10) invert(1) !important;
-}
-.bee-Header-control.bee-Image:active {
-  -webkit-filter: contrast(1) invert(1) !important;
-}
-
-.bee-Dialog-action.bee-Image:hover {
-  -webkit-filter: contrast(10) invert(1) !important;
-}
-.bee-TreeView-actions img:hover {
-  -webkit-filter: contrast(10) invert(1) !important;
-}
-
-.bee-Header-commandPanel .bee-Image:active {
-  -webkit-filter: contrast(10) invert(1) !important;
-}
-
-.bee-Header-commandPanel .bee-Image:hover {
-   -webkit-filter: contrast(10) invert(1) !important;
-}
-
-.bee-Workspace-actionMenu-item img {
-  -webkit-filter: grayscale(50%);
-}
-
-.bee-ApplianceFavorite .bee-Appliance-icon {
-  -webkit-filter: grayscale(50%);
-}
-
 .bee-Header-container::-webkit-scrollbar {
   height: 3px;
 }

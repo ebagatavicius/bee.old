@@ -180,6 +180,7 @@ public final class MailConstants {
 
   public static final String COL_ACCOUNT_DESCRIPTION = "Description";
   public static final String COL_ACCOUNT_DEFAULT = "Main";
+  public static final String COL_ACCOUNT_PRIVATE = "Private";
   public static final String COL_STORE_TYPE = "StoreType";
   public static final String COL_STORE_SERVER = "StoreServer";
   public static final String COL_STORE_SPORT = "StorePort";
@@ -224,8 +225,7 @@ public final class MailConstants {
   public static final String DATA_TYPE_MESSAGE = "Message";
 
   public static final String PRM_DEFAULT_ACCOUNT = "DefaultAccount";
-
-  public static final String STYLE_SHEET = "mail";
+  public static final String PRM_MAIL_CHECK_INTERVAL = "MailCheckIntervalInMinutes";
 
   public static void register() {
     EnumUtils.register(RuleCondition.class);

@@ -1,7 +1,6 @@
 package com.butent.bee.client.modules.tasks;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -31,7 +30,9 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -127,7 +128,7 @@ class TaskDialog extends DialogBox {
   }
 
   Map<String, String> addDuration() {
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
 
     result.put(COL_DURATION, addTime(Localized.getConstants().crmSpentTime()));
     result.put(COL_DURATION_TYPE, addSelector(Localized.getConstants().crmDurationType(),
@@ -230,7 +231,7 @@ class TaskDialog extends DialogBox {
     if (child instanceof FileCollector) {
       return ((FileCollector) child).getFiles();
     } else {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
   }
 

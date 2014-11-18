@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
@@ -20,6 +19,7 @@ import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.Objects;
 import java.util.Set;
 
 class Vehicle extends Filterable implements HasDateRange, HasItemName {
@@ -177,11 +177,11 @@ class Vehicle extends Filterable implements HasDateRange, HasItemName {
 
   private boolean isTarget(VehicleType vehicleType, Object data) {
     if (DndHelper.isDataType(DATA_TYPE_TRIP) && data instanceof Trip) {
-      return !Objects.equal(getId(), ((Trip) data).getVehicleId(vehicleType));
+      return !Objects.equals(getId(), ((Trip) data).getVehicleId(vehicleType));
 
     } else if (DndHelper.isDataType(DATA_TYPE_FREIGHT) && data instanceof Freight) {
       return vehicleType == VehicleType.TRUCK
-          && !Objects.equal(getId(), ((Freight) data).getVehicleId(vehicleType));
+          && !Objects.equals(getId(), ((Freight) data).getVehicleId(vehicleType));
 
     } else if (DndHelper.isDataType(DATA_TYPE_ORDER_CARGO) && data instanceof OrderCargo) {
       return vehicleType == VehicleType.TRUCK;

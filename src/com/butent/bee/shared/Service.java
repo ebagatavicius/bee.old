@@ -67,6 +67,7 @@ public final class Service {
   public static final String DELETE_ROWS = DATA_SERVICE_PREFIX + "delete_rows";
   public static final String UPDATE_CELL = DATA_SERVICE_PREFIX + "update_cell";
   public static final String UPDATE_ROW = DATA_SERVICE_PREFIX + "update_row";
+  public static final String UPDATE_ROWS = DATA_SERVICE_PREFIX + "update_rows";
   public static final String UPDATE = DATA_SERVICE_PREFIX + "update";
   public static final String INSERT_ROW = DATA_SERVICE_PREFIX + "insert_row";
   public static final String INSERT_ROWS = DATA_SERVICE_PREFIX + "insert_rows";
@@ -75,8 +76,6 @@ public final class Service {
   public static final String HISTOGRAM = DATA_SERVICE_PREFIX + "histogram";
   public static final String GET_RELATED_VALUES = DATA_SERVICE_PREFIX + "get_related_values";
   public static final String UPDATE_RELATED_VALUES = DATA_SERVICE_PREFIX + "update_related_values";
-
-  public static final String IMPORT_CSV_COMPANIES = DATA_SERVICE_PREFIX + "import_csv_companies";
 
   public static final String GET_DSNS = DATA_SERVICE_PREFIX + "get_dsns";
   public static final String SWITCH_DSN = DATA_SERVICE_PREFIX + "switch_dsn";
@@ -94,6 +93,10 @@ public final class Service {
   public static final String SET_ROLE_RIGHTS = DATA_SERVICE_PREFIX + "set_role_rights";
 
   public static final String SET_ROW_RIGHTS = DATA_SERVICE_PREFIX + "set_row_rights";
+
+  public static final String GET_GRID_SETTINGS = DATA_SERVICE_PREFIX + "get_grid_settings";
+  public static final String ENSURE_GRID_SETTINGS = DATA_SERVICE_PREFIX + "ensure_grid_settings";
+  public static final String COPY_GRID_SETTINGS = DATA_SERVICE_PREFIX + "copy_grid_settings";
 
   public static final String UPLOAD_FILE = UPLOAD_SERVICE_PREFIX + "file";
   public static final String UPLOAD_TEMP_FILE = UPLOAD_SERVICE_PREFIX + "temp_file";
@@ -118,7 +121,8 @@ public final class Service {
   public static final String RPC_VAR_PRM_CNT = RPC_VAR_SYS_PREFIX + "p_c";
   public static final String RPC_VAR_PRM = RPC_VAR_SYS_PREFIX + "prm";
 
-  public static final String RPC_VAR_METH = RPC_VAR_SYS_PREFIX + "meth";
+  public static final String VAR_SUB_MODULE = RPC_VAR_PREFIX + "sub_module";
+  public static final String VAR_METHOD = RPC_VAR_PREFIX + "method";
 
   public static final String VAR_USER = RPC_VAR_PREFIX + "user";
 

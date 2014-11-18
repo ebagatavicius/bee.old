@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
   name="NewDocument" width="500" height="400"
   >
+  <TabbedPages>
+    <page>
+      <text>=mainInformation</text>
+      <FlowPanel>
+        <xi:include href="widgets/DocumentFields.widget.xml" />
+        <FileCollector style="margin: 1ex 10px;" visibleColumns="all" editableColumns="all" />
+      </FlowPanel>
+    </page>
 
-  <FlowPanel>
-    <xi:include href="widgets/DocumentFields.widget.xml" />
-    <FileCollector style="margin: 1ex 10px;" visibleColumns="all" editableColumns="all" />
-  </FlowPanel>
+    <page data="Relations" for="Document">
+      <text>=relations</text>
+       <xi:include href="widgets/DocumentRelations.widget.xml" />
+    </page>
+  </TabbedPages>
 </f:Form>

@@ -10,6 +10,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FocusWidget;
 
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 /**
@@ -106,6 +108,8 @@ public class SimpleCheckBox extends FocusWidget implements BooleanWidget {
 
   private void init() {
     DomUtils.createId(this, getIdPrefix());
-    setStyleName("bee-SimpleCheckBox");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "SimpleCheckBox");
+
+    EventUtils.preventClickDebouncer(this);
   }
 }

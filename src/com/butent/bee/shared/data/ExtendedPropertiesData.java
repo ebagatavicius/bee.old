@@ -27,12 +27,12 @@ public class ExtendedPropertiesData extends RowList<TableRow, TableColumn> {
     long rowId = 0;
     for (ExtendedProperty property : data) {
       TableRow row = new TableRow(++rowId);
-      row.addCell(new TextValue(property.getName()));
-      row.addCell(new TextValue(property.getSub()));
-      row.addCell(new TextValue(property.getValue()));
+      row.addValue(new TextValue(property.getName()));
+      row.addValue(new TextValue(property.getSub()));
+      row.addValue(new TextValue(property.getValue()));
 
       if (addTime) {
-        row.addCell(new TextValue(property.getDate().toTimeString()));
+        row.addValue(new TextValue(property.getDate().toTimeString()));
       }
 
       addRow(row);

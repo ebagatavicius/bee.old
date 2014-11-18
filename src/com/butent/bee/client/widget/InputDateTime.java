@@ -121,7 +121,7 @@ public class InputDateTime extends InputDate {
 
   @Override
   protected String getDefaultStyleName() {
-    return "bee-InputDateTime";
+    return BeeConst.CSS_CLASS_PREFIX + "InputDateTime";
   }
 
   @Override

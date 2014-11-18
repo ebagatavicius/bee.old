@@ -30,6 +30,7 @@
     <xs:attribute name="printFooter" type="xs:boolean" />
     <xs:attributeGroup ref="ui:dimension" />
     <xs:attribute name="options" type="xs:normalizedString" />
+    <xs:attribute name="data" type="type:dataView" />
   </xs:complexType>
 
   <xs:element name="Form" type="form">

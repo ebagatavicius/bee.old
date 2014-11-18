@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.calendar;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 
 import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
@@ -25,6 +24,7 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class CalendarDataManager {
   private static List<CalendarItem> split(CalendarItem item, MultidayLayout mdl,
       int whStart, int whEnd) {
 
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     DateTime start = item.getStartTime();
     DateTime end = item.getEndTime();
@@ -127,7 +127,7 @@ public class CalendarDataManager {
     return whStart >= 0 && whEnd > whStart && whEnd <= TimeUtils.HOURS_PER_DAY;
   }
 
-  private final List<CalendarItem> items = Lists.newArrayList();
+  private final List<CalendarItem> items = new ArrayList<>();
 
   private Range<DateTime> range;
 
@@ -187,7 +187,7 @@ public class CalendarDataManager {
       return;
     }
 
-    ParameterList params = CalendarKeeper.createRequestParameters(SVC_GET_CALENDAR_ITEMS);
+    ParameterList params = CalendarKeeper.createArgs(SVC_GET_CALENDAR_ITEMS);
     params.addQueryItem(PARAM_CALENDAR_ID, calendarId);
 
     if (visibleRange != null) {

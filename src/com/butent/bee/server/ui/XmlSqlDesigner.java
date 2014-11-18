@@ -11,6 +11,7 @@ import com.butent.bee.shared.data.XmlTable.XmlRelation;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -250,7 +251,7 @@ public class XmlSqlDesigner {
        * 
        * if (!BeeUtils.isEmpty(table.fields)) { for (DataField field : table.fields) { if
        * (BeeUtils.same(field.type, STATE)) { if (xmlTable.states == null) { xmlTable.states =
-       * Sets.newHashSet(); } xmlTable.states.add(field.name);
+       * new HashSet<>(); } xmlTable.states.add(field.name);
        * 
        * } else if (!BeeUtils.same(field.name, xmlTable.idName)) { XmlField xmlField = new
        * XmlField(); xmlField.name = field.name; xmlField.notNull = BeeUtils.isEmpty(field.isNull);
@@ -266,15 +267,15 @@ public class XmlSqlDesigner {
        * !BeeUtils.isEmpty(field.type.replaceFirst(pattern, "$2")); xmlField.precision =
        * BeeUtils.toInt(field.type.replaceFirst(pattern, "$4")); xmlField.scale =
        * BeeUtils.toInt(field.type.replaceFirst(pattern, "$6")); } if (extMode) { if
-       * (xmlTable.extFields == null) { xmlTable.extFields = Lists.newArrayList(); }
+       * (xmlTable.extFields == null) { xmlTable.extFields = new ArrayList<>(); }
        * xmlTable.extFields.add(xmlField); } else { if (xmlTable.fields == null) { xmlTable.fields =
-       * Lists.newArrayList(); } xmlTable.fields.add(xmlField); } } } } if
+       * new ArrayList<>(); } xmlTable.fields.add(xmlField); } } } } if
        * (!BeeUtils.isEmpty(table.keys)) { for (DataKey key : table.keys) { if (key.type !=
        * KeyType.PRIMARY && key.parts != null) { if (key.type != KeyType.UNIQUE || key.parts.size()
        * > 1) { XmlKey xmlKey = new XmlKey(); xmlKey.unique = (key.type == KeyType.UNIQUE);
        * xmlKey.fields = key.parts;
        * 
-       * if (xmlTable.keys == null) { xmlTable.keys = Sets.newHashSet(); }
+       * if (xmlTable.keys == null) { xmlTable.keys = new HashSet<>(); }
        * xmlTable.keys.add(xmlKey); } } } } }
        */
       return xmlTable;

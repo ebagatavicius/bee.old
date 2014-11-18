@@ -5,12 +5,12 @@ import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.dom.Selectors;
-import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.shared.BeeConst;
 
 public final class EcStyles {
 
   private static final String SEPARATOR = "-";
-  private static final String PREFIX = StyleUtils.CLASS_NAME_PREFIX + "ec-";
+  private static final String PREFIX = BeeConst.CSS_CLASS_PREFIX + "ec-";
 
   private static final String LIST_PRICE = PREFIX + "List-Price";
   private static final String PRICE = PREFIX + "Price";

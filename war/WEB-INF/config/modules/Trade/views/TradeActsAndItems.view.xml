@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="TradeActsAndItems" source="TradeActItems" module="Trade.Acts"
+  caption="=tradeActsAndItems"
+  >
+  <Columns>
+    <SimpleColumn name="TradeAct" />
+    <SimpleJoin joinType="LEFT" name="TradeAct">
+      <SimpleColumn name="Name" />
+      <SimpleJoin joinType="LEFT" name="Name">
+        <SimpleColumn name="ActName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Date" />
+      <SimpleColumn name="Until" />
+
+      <SimpleColumn name="Series" />
+      <SimpleJoin joinType="LEFT" name="Series">
+        <SimpleColumn name="SeriesName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Number" />
+
+      <SimpleColumn name="Kind" />
+
+      <SimpleColumn name="Operation" />
+      <SimpleJoin joinType="LEFT" name="Operation">
+        <SimpleColumn name="OperationName" />
+        <SimpleColumn name="Background" alias="OperationBackground" />
+        <SimpleColumn name="Foreground" alias="OperationForeground" />
+    
+        <SimpleColumn name="WarehouseFrom" />
+        <SimpleJoin joinType="LEFT" name="WarehouseFrom">
+          <SimpleColumn alias="WarehouseFromCode" name="Code" />
+        </SimpleJoin>
+    
+        <SimpleColumn name="WarehouseTo" />
+        <SimpleJoin joinType="LEFT" name="WarehouseTo">
+          <SimpleColumn alias="WarehouseToCode" name="Code" />
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleColumn name="Status" />
+      <SimpleJoin joinType="LEFT" name="Status">
+        <SimpleColumn name="StatusName" />
+        <SimpleColumn name="StatusActive" />
+        <SimpleColumn name="Background" alias="StatusBackground" />
+        <SimpleColumn name="Foreground" alias="StatusForeground" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Company" />
+      <SimpleJoin joinType="LEFT" name="Company">
+        <SimpleColumn name="Name" alias="CompanyName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Object" />
+      <SimpleJoin joinType="LEFT" name="Object">
+        <SimpleColumn name="ObjectName" />
+        <SimpleColumn name="ObjectAddress" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Manager" />
+      <SimpleJoin name="Manager" joinType="LEFT">
+        <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />
+        <SimpleJoin name="CompanyPerson" joinType="LEFT">
+          <SimpleJoin name="Person" joinType="LEFT">
+            <SimpleColumn name="FirstName" alias="ManagerFirstName" />
+            <SimpleColumn name="LastName" alias="ManagerLastName" />
+          </SimpleJoin>
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleColumn name="Currency" />
+      <SimpleJoin joinType="LEFT" name="Currency">
+        <SimpleColumn name="Name" alias="CurrencyName" />
+        <SimpleColumn name="MinorName" alias="CurrencyMinorName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Vehicle" />
+      <SimpleJoin name="Vehicle" joinType="LEFT">
+        <SimpleColumn name="Number" alias="VehicleNumber" />
+        <SimpleJoin name="Type" joinType="LEFT">
+          <SimpleColumn name="Name" alias="VehicleType" />
+        </SimpleJoin>
+        <SimpleJoin name="Model" joinType="LEFT">
+          <SimpleJoin name="Parent" joinType="LEFT">
+            <SimpleColumn name="Name" alias="VehicleParentModel" />
+          </SimpleJoin>
+          <SimpleColumn name="Name" alias="VehicleModel" />
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleColumn name="Driver" />
+      <SimpleJoin name="Driver" joinType="LEFT">
+        <SimpleColumn name="CompanyPerson" alias="DriverPerson" />
+        <SimpleJoin name="CompanyPerson" joinType="LEFT">
+          <SimpleJoin name="Person" joinType="LEFT">
+            <SimpleColumn name="FirstName" alias="DriverFirstName" />
+            <SimpleColumn name="LastName" alias="DriverLastName" />
+          </SimpleJoin>
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleColumn name="Notes" />
+
+      <SimpleColumn name="Parent" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Item" />
+    <SimpleJoin joinType="LEFT" name="Item">
+      <SimpleColumn name="Type" />
+      <SimpleJoin joinType="LEFT" name="Type">
+        <SimpleColumn name="Name" alias="ItemTypeName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Group" />
+      <SimpleJoin joinType="LEFT" name="Group">
+        <SimpleColumn name="Name" alias="ItemGroupName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Name" alias="ItemName" />
+      <SimpleColumn name="Article" />
+      
+      <SimpleJoin joinType="LEFT" name="Unit">
+        <SimpleColumn name="Name" alias="UnitName" />
+      </SimpleJoin>
+  
+      <SimpleColumn name="Weight" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Quantity" />
+    <SimpleColumn name="Price" />
+
+    <SimpleColumn name="VatPlus" />
+    <SimpleColumn name="Vat" />
+    <SimpleColumn name="VatPercent" />
+
+    <SimpleColumn name="Discount" />
+
+    <SimpleColumn name="Note" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="Date" />
+    <OrderBy column="SeriesName" />
+    <OrderBy column="Number" />
+    <OrderBy column="TradeAct" />
+  </Order>
+</View>

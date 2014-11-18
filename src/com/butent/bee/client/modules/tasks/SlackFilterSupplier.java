@@ -11,6 +11,7 @@ import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.view.search.AbstractFilterSupplier;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.FilterValue;
 import com.butent.bee.shared.data.value.DateTimeValue;
@@ -115,7 +116,7 @@ class SlackFilterSupplier extends AbstractFilterSupplier {
 
   @Override
   protected String getStylePrefix() {
-    return "bee-crm-FilterSupplier-Slack-";
+    return BeeConst.CSS_CLASS_PREFIX + "crm-FilterSupplier-Slack-";
   }
 
   private Widget createWidget() {

@@ -13,6 +13,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.view.search.AbstractFilterSupplier;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.FilterValue;
 import com.butent.bee.shared.i18n.Localized;
@@ -60,7 +61,7 @@ final class DiscussStarFilterSupplier extends AbstractFilterSupplier {
 
   @Override
   protected String getStylePrefix() {
-    return "bee-discuss-FilterSupplier-Star-";
+    return BeeConst.CSS_CLASS_PREFIX + "discuss-FilterSupplier-Star-";
   }
 
   private Widget createWidget() {

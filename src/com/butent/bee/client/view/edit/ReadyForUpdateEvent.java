@@ -1,6 +1,5 @@
 package com.butent.bee.client.view.edit;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
@@ -14,6 +13,7 @@ import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -87,9 +87,9 @@ public class ReadyForUpdateEvent extends GwtEvent<ReadyForUpdateEvent.Handler> i
   }
 
   public BeeRowSet getRowSet(String viewName, List<BeeColumn> columns) {
-    List<BeeColumn> updatedColumns = Lists.newArrayList();
-    List<String> oldValues = Lists.newArrayList();
-    List<String> newValues = Lists.newArrayList();
+    List<BeeColumn> updatedColumns = new ArrayList<>();
+    List<String> oldValues = new ArrayList<>();
+    List<String> newValues = new ArrayList<>();
 
     BeeColumn firstColumn = DataUtils.getColumn(getColumn().getId(), columns);
     if (firstColumn == null) {

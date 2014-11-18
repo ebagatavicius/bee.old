@@ -117,6 +117,6 @@ public class Frame extends Widget implements IdentifiableWidget {
 
   private void init() {
     DomUtils.createId(this, getIdPrefix());
-    setStyleName("bee-Frame");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "Frame");
   }
 }

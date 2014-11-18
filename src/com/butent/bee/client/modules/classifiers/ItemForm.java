@@ -10,6 +10,7 @@ import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 
 import java.util.ArrayList;
@@ -19,6 +20,11 @@ class ItemForm extends AbstractFormInterceptor {
 
   @Override
   public void afterRefresh(FormView form, IsRow row) {
+    int index = form.getDataIndex(ClassifierConstants.COL_ITEM_IS_SERVICE);
+    boolean isService = (row == null) ? false : !row.isNull(index);
+
+    String caption;
+
     if (DataUtils.isNewRow(row)) {
       Widget categoryWidget = form.getWidgetByName("Categories");
 
@@ -32,6 +38,18 @@ class ItemForm extends AbstractFormInterceptor {
 
         ((MultiSelector) categoryWidget).setIds(categories);
       }
+
+      caption = isService
+          ? Localized.getConstants().newService() : Localized.getConstants().newItem();
+
+    } else {
+      caption = isService
+          ? Localized.getConstants().service() : Localized.getConstants().item();
+
+    }
+
+    if (form.getViewPresenter() != null && form.getViewPresenter().getHeader() != null) {
+      form.getViewPresenter().getHeader().setCaption(caption);
     }
 
     super.afterRefresh(form, row);

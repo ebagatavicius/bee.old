@@ -1,6 +1,5 @@
 package com.butent.bee.client.composite;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
@@ -50,6 +49,7 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class SlideDeck extends CustomComplex implements PreviewHandler {
@@ -403,7 +403,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
 
   private static final String EFFECT_KEY = "SlideDeckEffect";
 
-  private static final String STYLE_PREFIX = "bee-SlideDeck-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "SlideDeck-";
 
   private static final String STYLE_TN_ACTIVE = STYLE_PREFIX + "tn-active";
   private static final String STYLE_NAV_DISABLED = STYLE_PREFIX + "nav-disabled";
@@ -441,7 +441,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
     getNaturalSizes(sources, new Consumer<Size[]>() {
       @Override
       public void accept(Size[] input) {
-        List<Slide> list = Lists.newArrayList();
+        List<Slide> list = new ArrayList<>();
         for (int i = 0; i < sources.size(); i++) {
           list.add(new Slide(sources.get(i), input[i].getWidth(), input[i].getHeight()));
         }

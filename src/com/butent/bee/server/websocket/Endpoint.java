@@ -52,10 +52,10 @@ import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.RemoteEndpoint;
-import javax.websocket.SendHandler;
-import javax.websocket.SendResult;
 import javax.websocket.RemoteEndpoint.Async;
 import javax.websocket.RemoteEndpoint.Basic;
+import javax.websocket.SendHandler;
+import javax.websocket.SendResult;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 import javax.websocket.server.PathParam;
@@ -110,6 +110,10 @@ public class Endpoint {
   }
 
   public static boolean updateProgress(String progressId, double value) {
+    return updateProgress(progressId, null, value);
+  }
+
+  public static boolean updateProgress(String progressId, String label, double value) {
     String sessionId = progressToSession.get(progressId);
 
     if (BeeUtils.isEmpty(sessionId)) {
@@ -119,7 +123,7 @@ public class Endpoint {
     } else {
       Session session = findOpenSession(sessionId, true);
       if (session != null) {
-        send(session, ProgressMessage.update(progressId, value));
+        send(session, ProgressMessage.update(progressId, label, value));
       }
 
       return true;

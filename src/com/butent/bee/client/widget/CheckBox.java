@@ -14,6 +14,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FocusWidget;
 
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasHtml;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -44,6 +46,9 @@ public class CheckBox extends FocusWidget implements BooleanWidget, HasHtml {
     String id = DomUtils.createUniqueId("cbi");
     inputElem.setId(id);
     labelElem.setHtmlFor(id);
+
+    EventUtils.preventClickDebouncer(inputElem);
+    EventUtils.preventClickDebouncer(labelElem);
 
     init();
   }
@@ -197,7 +202,7 @@ public class CheckBox extends FocusWidget implements BooleanWidget, HasHtml {
   }
 
   protected String getDefaultStyleName() {
-    return "bee-CheckBox";
+    return BeeConst.CSS_CLASS_PREFIX + "CheckBox";
   }
 
   protected InputElement getInputElem() {

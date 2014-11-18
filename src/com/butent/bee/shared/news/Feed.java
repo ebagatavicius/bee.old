@@ -2,7 +2,6 @@ package com.butent.bee.shared.news;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 
@@ -25,7 +24,9 @@ import com.butent.bee.shared.ui.HasLocalizedCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -448,7 +449,7 @@ public enum Feed implements HasLocalizedCaption {
       return BeeConst.STRING_EMPTY;
     }
 
-    Set<Integer> ordinals = Sets.newHashSet();
+    Set<Integer> ordinals = new HashSet<>();
     for (Feed feed : feeds) {
       if (feed != null) {
         ordinals.add(feed.ordinal());
@@ -459,7 +460,7 @@ public enum Feed implements HasLocalizedCaption {
   }
 
   public static List<Feed> split(String input) {
-    List<Feed> feeds = Lists.newArrayList();
+    List<Feed> feeds = new ArrayList<>();
     if (BeeUtils.isEmpty(input)) {
       return feeds;
     }

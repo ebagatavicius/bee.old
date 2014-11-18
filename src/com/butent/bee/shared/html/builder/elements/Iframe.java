@@ -1,7 +1,5 @@
 package com.butent.bee.shared.html.builder.elements;
 
-import com.google.common.collect.Sets;
-
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.html.Attributes;
 import com.butent.bee.shared.html.builder.FertileElement;
@@ -9,6 +7,7 @@ import com.butent.bee.shared.html.builder.Node;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -88,7 +87,7 @@ public class Iframe extends FertileElement {
   }
 
   public Iframe sandbox(Collection<Sandbox> values) {
-    Set<String> kwds = Sets.newHashSet();
+    Set<String> kwds = new HashSet<>();
 
     if (!BeeUtils.isEmpty(values)) {
       for (Sandbox sandbox : values) {

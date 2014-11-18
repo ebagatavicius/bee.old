@@ -67,8 +67,13 @@
           <ChildGrid name="TcdArticleSuppliers" relColumn="Article" class="flexible"
             style="margin-right: 2em;" />
           <ChildGrid name="TcdRemainders" parent="TcdArticleSuppliers" relColumn="ArticleSupplier"
-            style="width: 240px;" />
+            style="width: 240px;" summarize="false" />
         </FlowPanel>
+      </page>
+
+      <page>
+        <text>=prices</text>
+        <ChildGrid name="TcdArticlePrices" relColumn="Article" />
       </page>
 
       <page>

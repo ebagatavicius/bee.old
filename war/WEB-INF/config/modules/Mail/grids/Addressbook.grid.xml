@@ -5,7 +5,7 @@
   currentUserFilter="User"
   >
   <g:columns>
-    <RelColumn name="EmailId" visible="true" />
+    <RelColumn name="EmailId" visible="true" filterSupplier="value" />
     <DataColumn name="Label" />
   </g:columns>
 </g:Grid>

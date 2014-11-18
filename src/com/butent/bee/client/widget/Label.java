@@ -36,7 +36,7 @@ public class Label extends CustomHasHtml {
   }
 
   protected String getDefaultStyleName() {
-    return "bee-Label";
+    return BeeConst.CSS_CLASS_PREFIX + "Label";
   }
 
   @Override

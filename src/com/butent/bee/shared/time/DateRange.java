@@ -1,9 +1,9 @@
 package com.butent.bee.shared.time;
 
 import com.google.common.collect.BoundType;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class DateRange implements HasDateRange {
@@ -58,7 +58,7 @@ public final class DateRange implements HasDateRange {
   }
 
   public List<JustDate> getValues() {
-    List<JustDate> values = Lists.newArrayList();
+    List<JustDate> values = new ArrayList<>();
 
     int min = getMinDays();
     int max = getMaxDays();

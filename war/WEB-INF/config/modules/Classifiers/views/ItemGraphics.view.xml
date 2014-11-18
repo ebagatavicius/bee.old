@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="ItemGraphics" source="ItemGraphics"
+  caption="=itemGraphics"
+  >
+  <Columns>
+    <SimpleColumn name="Item" />
+    <SimpleColumn name="Ordinal" />
+    <SimpleColumn name="Picture" />
+  </Columns>
+  
+  <Order>
+    <OrderBy column="Ordinal" />
+  </Order>
+</View>
+ 

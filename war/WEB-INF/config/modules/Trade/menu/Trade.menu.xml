@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+
+name="Trade" label="=trade" order="90" module="Trade"
+>
+  <Item name="TradeActNames" label="=tradeActNames" service="grid"
+    parameters="TradeActNames" separator="true" order="20" module="Trade.Acts" />
+  <Item name="TradeActTemplates" label="=tradeActTemplates" service="grid"
+    parameters="TradeActTemplates" module="Trade.Acts" />
+
+  <Item name="TradeActInvoiceBuilder" label="=taInvoiceBuilder" service="form"
+    parameters="TradeActInvoiceBuilder" separator="true" module="Trade.Acts" />
+  <Item name="Sales" label="=trdInvoices" service="grid" parameters="Sales" />
+
+  <Item name="TradeParameters" label="=trdParameters" service="parameters" parameters="Trade"
+    separator="true" order="100" module="Administration" />
+</Entry>

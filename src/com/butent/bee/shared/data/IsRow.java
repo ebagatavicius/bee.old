@@ -17,7 +17,7 @@ public interface IsRow extends HasCustomProperties {
 
   void addCell(IsCell cell);
 
-  void addCell(Value value);
+  void addValue(Value value);
 
   void clearCell(int index);
 

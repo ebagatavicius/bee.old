@@ -22,7 +22,7 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.modules.ec.view.SearchByCar;
 import com.butent.bee.client.presenter.GridPresenter;
-import com.butent.bee.client.ui.UiHelper;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
@@ -62,7 +62,7 @@ class ArticleCarsGridInterceptor extends AbstractGridInterceptor implements
   private static final String STYLE_SELECTION_REMOVE = STYLE_SELECTION_PREFIX + "remove";
 
   private static String getDialogCaption(GridView grid) {
-    FormView form = UiHelper.getForm(grid.asWidget());
+    FormView form = ViewHelper.getForm(grid.asWidget());
     IsRow itemRow = (form == null) ? null : form.getActiveRow();
 
     if (itemRow == null) {

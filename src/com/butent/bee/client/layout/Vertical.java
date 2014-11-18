@@ -4,6 +4,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.shared.BeeConst;
+
 /**
  * Enables to use panel that lays all of its widgets out in a single vertical column.
  */
@@ -12,7 +14,7 @@ public class Vertical extends CellVector  {
 
   public Vertical() {
     super();
-    addStyleName("bee-Vertical");
+    addStyleName(BeeConst.CSS_CLASS_PREFIX + "Vertical");
   }
 
   @Override

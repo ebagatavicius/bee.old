@@ -1,10 +1,8 @@
 package com.butent.bee.client.modules.ec;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -60,7 +58,6 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
-import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.ec.Cart;
 import com.butent.bee.shared.modules.ec.CartItem;
 import com.butent.bee.shared.modules.ec.DeliveryMethod;
@@ -77,9 +74,12 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public final class EcKeeper {
@@ -103,7 +103,7 @@ public final class EcKeeper {
 
   private static boolean debug;
 
-  private static Set<EcRequest> pendingRequests = Sets.newHashSet();
+  private static Set<EcRequest> pendingRequests = new HashSet<>();
 
   private static boolean listPriceVisible = true;
   private static boolean priceVisible = true;
@@ -169,9 +169,7 @@ public final class EcKeeper {
   }
 
   public static ParameterList createArgs(String method) {
-    ParameterList args = BeeKeeper.getRpc().createParameters(Module.ECOMMERCE.getName());
-    args.addQueryItem(AdministrationConstants.METHOD, method);
-    return args;
+    return BeeKeeper.getRpc().createParameters(Module.ECOMMERCE, method);
   }
 
   public static void dispatchMessages(ResponseObject response) {
@@ -314,7 +312,7 @@ public final class EcKeeper {
 
   public static List<EcItem> getResponseItems(ResponseObject response) {
     if (response == null) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     } else {
       return deserializeItems(response.getResponseAsString());
     }
@@ -409,7 +407,7 @@ public final class EcKeeper {
     ensureBrands(new Consumer<Boolean>() {
       @Override
       public void accept(Boolean input) {
-        if (!Objects.equal(activeViewId, getActiveViewId())) {
+        if (!Objects.equals(activeViewId, getActiveViewId())) {
           return;
         }
 
@@ -422,7 +420,7 @@ public final class EcKeeper {
           public void onResponse(ResponseObject response) {
             dispatchMessages(response);
 
-            if (Objects.equal(activeViewId, getActiveViewId())
+            if (Objects.equals(activeViewId, getActiveViewId())
                 && response.hasResponse(EcItemInfo.class)) {
               EcItemInfo ecItemInfo = EcItemInfo.restore(response.getResponseAsString());
               ItemDetails widget = new ItemDetails(item, ecItemInfo, allowAddToCart);
@@ -690,7 +688,7 @@ public final class EcKeeper {
         resetActiveCommand();
 
         if (items == null) {
-          items = Lists.newArrayList();
+          items = new ArrayList<>();
         }
         Promo widget = new Promo(pictures.getBanners(), items);
 
@@ -782,7 +780,7 @@ public final class EcKeeper {
   }
 
   private static List<EcItem> deserializeItems(String serialized) {
-    List<EcItem> items = Lists.newArrayList();
+    List<EcItem> items = new ArrayList<>();
 
     if (serialized != null) {
       long millis = System.currentTimeMillis();

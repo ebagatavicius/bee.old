@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.mail;
 
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -46,6 +45,7 @@ import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -186,7 +186,7 @@ public class AccountEditor extends AbstractFormInterceptor implements SelectorEv
   @Override
   public void onDataSelector(SelectorEvent event) {
     if (event.isOpened()) {
-      Set<Long> exclusions = Sets.newHashSet();
+      Set<Long> exclusions = new HashSet<>();
 
       for (SystemFolder folder : SystemFolder.values()) {
         exclusions.add(getLongValue(folder + COL_FOLDER));

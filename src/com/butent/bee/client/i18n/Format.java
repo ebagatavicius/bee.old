@@ -140,6 +140,40 @@ public final class Format {
     }
   }
 
+  private static final int DEFAULT_MONEY_SCALE = 2;
+
+  private static final String DEFAULT_MONEY_PATTERN = "#,##0.00;(#)";
+
+  private static final String DEFAULT_DECIMAL_PATTERN_INTEGER = "#,##0";
+
+  private static final NumberConstants DEFAULT_NUMBER_CONSTANTS =
+      LocaleInfo.getCurrentLocale().getNumberConstants();
+
+  private static final NumberConstants NUMBER_CONSTANTS = new Format.NumberConstantsImpl();
+
+  private static final String DEFAULT_DECIMAL_SEPARATOR = BeeConst.STRING_POINT;
+
+  private static final String DEFAULT_GROUPING_SEPARATOR = BeeConst.STRING_SPACE;
+
+  private static NumberFormat defaultDoubleFormat = getNumberFormat("#.#######");
+
+  private static NumberFormat defaultIntegerFormat = getNumberFormat("#");
+
+  private static NumberFormat defaultLongFormat = getNumberFormat("#,###");
+
+  private static NumberFormat defaultMoneyFormat = getNumberFormat(DEFAULT_MONEY_PATTERN);
+
+  private static NumberFormat defaultPercentFormat = getNumberFormat("0.0%");
+
+  private static DateTimeFormat defaultDateFormat =
+      DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
+
+  private static DateTimeFormat defaultDateTimeFormat =
+      DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT);
+
+  private static DateTimeFormat defaultTimeFormat =
+      DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT);
+
   public static DateTimeFormat getDateTimeFormat(String pattern) {
     Assert.notEmpty(pattern);
     DateTimeFormat format = getPredefinedFormat(pattern);
@@ -161,6 +195,10 @@ public final class Format {
     return getNumberFormat(getDecimalPattern(scale));
   }
 
+  public static NumberFormat getDecimalFormat(int minScale, int maxScale) {
+    return getNumberFormat(getDecimalPattern(minScale, maxScale));
+  }
+
   public static String getDecimalPattern(int scale) {
     if (scale <= 0) {
       return DEFAULT_DECIMAL_PATTERN_INTEGER;
@@ -170,12 +208,33 @@ public final class Format {
     }
   }
 
-  public static NumberFormat getDefaultCurrencyFormat() {
-    return defaultCurrencyFormat;
+  public static String getDecimalPattern(int minScale, int maxScale) {
+    if (minScale <= 0 && maxScale <= 0) {
+      return DEFAULT_DECIMAL_PATTERN_INTEGER;
+
+    } else {
+      StringBuilder sb = new StringBuilder();
+      sb.append(DEFAULT_DECIMAL_PATTERN_INTEGER).append(BeeConst.STRING_POINT);
+
+      if (minScale > 0) {
+        sb.append(BeeUtils.replicate(BeeConst.CHAR_ZERO, minScale));
+      }
+      if (maxScale > minScale) {
+        for (int i = Math.max(minScale, 0); i < maxScale; i++) {
+          sb.append(BeeConst.STRING_NUMBER_SIGN);
+        }
+      }
+
+      return sb.toString();
+    }
   }
 
-  public static int getDefaultCurrencyScale() {
-    return DEFAULT_CURRENCY_SCALE;
+  public static NumberFormat getDefaultMoneyFormat() {
+    return defaultMoneyFormat;
+  }
+
+  public static int getDefaultMoneyScale() {
+    return DEFAULT_MONEY_SCALE;
   }
 
   public static DateTimeFormat getDefaultDateFormat() {
@@ -391,6 +450,18 @@ public final class Format {
     }
   }
 
+  public static String renderDateLong(HasDateValue date) {
+    if (date == null) {
+      return null;
+
+    } else {
+      PredefinedFormat predefinedFormat = TimeUtils.hasTimePart(date)
+          ? PredefinedFormat.DATE_TIME_LONG : PredefinedFormat.DATE_LONG;
+
+      return DateTimeFormat.getFormat(predefinedFormat).format(date);
+    }
+  }
+
   public static String renderDayOfWeek(HasDateValue date) {
     return (date == null) ? null : renderDayOfWeek(date.getDow());
   }
@@ -474,40 +545,6 @@ public final class Format {
       ((HasNumberFormat) target).setNumberFormat(new NumberFormatter(pattern));
     }
   }
-
-  private static final int DEFAULT_CURRENCY_SCALE = 2;
-
-  private static final String DEFAULT_CURRENCY_PATTERN = "#,##0.00;(#)";
-
-  private static final String DEFAULT_DECIMAL_PATTERN_INTEGER = "#,##0";
-
-  private static final NumberConstants DEFAULT_NUMBER_CONSTANTS =
-      LocaleInfo.getCurrentLocale().getNumberConstants();
-
-  private static final NumberConstants NUMBER_CONSTANTS = new Format.NumberConstantsImpl();
-
-  private static final String DEFAULT_DECIMAL_SEPARATOR = BeeConst.STRING_POINT;
-
-  private static final String DEFAULT_GROUPING_SEPARATOR = BeeConst.STRING_SPACE;
-
-  private static NumberFormat defaultDoubleFormat = getNumberFormat("#.#######");
-
-  private static NumberFormat defaultIntegerFormat = getNumberFormat("#");
-
-  private static NumberFormat defaultLongFormat = getNumberFormat("#,###");
-
-  private static NumberFormat defaultCurrencyFormat = getNumberFormat(DEFAULT_CURRENCY_PATTERN);
-
-  private static NumberFormat defaultPercentFormat = getNumberFormat("0.0%");
-
-  private static DateTimeFormat defaultDateFormat =
-      DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
-
-  private static DateTimeFormat defaultDateTimeFormat =
-      DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT);
-
-  private static DateTimeFormat defaultTimeFormat =
-      DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT);
 
   private Format() {
   }

@@ -1,7 +1,5 @@
 package com.butent.bee.client;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasInfo;
@@ -12,6 +10,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import elemental.events.Event;
@@ -116,7 +115,7 @@ public final class Historian implements HasInfo {
 
   private final int initialHistoryLength;
 
-  private final List<Place> places = Lists.newArrayList();
+  private final List<Place> places = new ArrayList<>();
 
   private int position = BeeConst.UNDEF;
 

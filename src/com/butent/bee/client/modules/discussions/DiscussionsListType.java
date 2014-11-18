@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import static com.butent.bee.shared.modules.discussions.DiscussionsConstants.*;
 
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.BooleanValue;
@@ -14,6 +13,7 @@ import com.butent.bee.shared.data.value.LongValue;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.discussions.DiscussionsConstants.DiscussionStatus;
 import com.butent.bee.shared.ui.HasCaption;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 
 enum DiscussionsListType implements HasCaption, HasWidgetSupplier {

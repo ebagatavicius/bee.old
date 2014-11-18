@@ -6,5 +6,6 @@ name="DiscussionsAdministration" label="=discussAdministration" order="99" paren
    <!--  <Item name="DiscussisonParameters" label="=discussParameters" service="form" parameters="DiscussionsSettings" separator="true" /> -->
     <Item name="MarkTypes" label="=discussMarkTypes" service="grid" parameters="DiscussMarkTypes" />
     <Item name="AdsTopics" label="=adsTopics" service="grid" parameters="AdsTopics"/>
-    <Item name="DiscussisonSystemParameters" label="=discussParameters" service="parameters" parameters="Discussions" separator="true" />
+    <Item name="DiscussisonSystemParameters" label="=discussParameters" service="parameters"
+      parameters="Discussions" separator="true" module="Administration" />
 </Entry>

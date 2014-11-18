@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+
+  name="ImportProperties" viewName="ImportProperties" caption="=trImportProperties"
+  >
+  <g:columns>
+    <DataColumn name="Property" readOnly="true" cellType="html" />
+    <DataColumn name="Value">
+      <dynStyle>
+        <ui:class>bee-fa-label</ui:class>
+        <ui:inline>text-align:center;</ui:inline>
+        <ui:expression>row.RelationOption</ui:expression>
+      </dynStyle>
+      <render><ui:expression>row.RelationOption ? (row.Value ? '\uf023' : '\uf13e') : row.Value</ui:expression></render>
+    </DataColumn>
+  </g:columns>
+</g:Grid>

@@ -2,6 +2,8 @@ package com.butent.bee.client.widget;
 
 import com.google.gwt.dom.client.Document;
 
+import com.butent.bee.shared.BeeConst;
+
 /**
  * Implements a user interface component for inserting passwords.
  */
@@ -20,6 +22,6 @@ public class InputPassword extends InputText {
 
   @Override
   protected String getDefaultStyleName() {
-    return "bee-InputPassword";
+    return BeeConst.CSS_CLASS_PREFIX + "InputPassword";
   }
 }

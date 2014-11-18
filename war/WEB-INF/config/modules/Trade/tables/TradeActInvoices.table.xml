@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="TradeActInvoices"
+  idName="TradeActInvoiceID"
+  >
+  <Fields>
+    <Relation name="TradeAct" notNull="true" relation="TradeActs" cascade="DELETE" label="=tradeAct" />
+    <Relation name="Sale" notNull="true" relation="Sales" cascade="DELETE" label="=trdInvoice" />
+
+    <Date name="DateFrom" label="=dateFrom" />
+    <Date name="DateTo" label="=dateTo" />
+  </Fields>
+</Table>

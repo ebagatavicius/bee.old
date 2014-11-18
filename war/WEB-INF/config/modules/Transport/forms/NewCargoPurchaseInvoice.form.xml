@@ -60,7 +60,7 @@
       <row>
         <Label text="=trdManager" style="&lbl;" />
         <DataSelector source="Manager" editSource="ManagerPerson" />
-		<Label text="=trdWarehouseTo" class="bee-required" style="&lbl;" />
+		<Label for="WarehouseTo" style="&lbl;" />
 		<DataSelector source="WarehouseTo" />
       </row>
     </Table>

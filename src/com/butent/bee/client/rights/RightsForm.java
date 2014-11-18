@@ -51,7 +51,7 @@ public abstract class RightsForm extends AbstractFormInterceptor {
 
   private static BeeLogger logger = LogUtils.getLogger(RightsForm.class);
 
-  protected static final String STYLE_PREFIX = "bee-Rights-";
+  protected static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "Rights-";
   protected static final String STYLE_SUFFIX_CELL = "-cell";
 
   private static final String STYLE_PANEL = STYLE_PREFIX + "panel";

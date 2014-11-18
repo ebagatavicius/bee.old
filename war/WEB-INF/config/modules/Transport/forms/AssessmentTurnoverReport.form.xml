@@ -3,7 +3,6 @@
   xmlns:f="http://www.butent.com/form"
   
   name="AssessmentTurnoverReport" caption="=trAssessmentTurnoverReport"
-  enabledActions="filter bookmark export"
   >
   <FlowPanel>
     <Table style="border-collapse: collapse; margin-top: 1ex;">
@@ -41,8 +40,7 @@
       <row>
         <Label text="=clients" />
         <MultiSelector name="Customers" viewName="Companies" renderColumns="Name"
-          choiceColumns="FirstName LastName CompanyName PositionName" newRowEnabled="false"
-          style="width: 500px;" />
+          newRowEnabled="false" style="width: 500px;" />
       </row>
 
       <row>

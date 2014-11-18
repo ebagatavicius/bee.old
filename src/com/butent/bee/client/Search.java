@@ -28,7 +28,6 @@ import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.AutocompleteProvider;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiOption;
@@ -61,6 +60,7 @@ import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
@@ -74,7 +74,7 @@ public class Search {
   private static final class ResultPanel extends Flow implements HandlesDeleteEvents,
       HandlesUpdateEvents, Presenter, View, Printable, HasWidgetSupplier {
 
-    private static final String STYLE_RESULT_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "SearchResult";
+    private static final String STYLE_RESULT_PREFIX = BeeConst.CSS_CLASS_PREFIX + "SearchResult";
 
     private static final String STYLE_RESULT_CONTAINER = STYLE_RESULT_PREFIX + "Container";
 
@@ -316,11 +316,7 @@ public class Search {
 
     @Override
     protected void onUnload() {
-      for (HandlerRegistration entry : handlerRegistry) {
-        if (entry != null) {
-          entry.removeHandler();
-        }
-      }
+      EventUtils.clearRegistry(handlerRegistry);
       super.onUnload();
     }
 
@@ -452,7 +448,7 @@ public class Search {
     }
   }
 
-  private static final String STYLE_SEARCH_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "MainSearch";
+  private static final String STYLE_SEARCH_PREFIX = BeeConst.CSS_CLASS_PREFIX + "MainSearch";
 
   private static final String STYLE_SEARCH_PANEL = STYLE_SEARCH_PREFIX + "Container";
   private static final String STYLE_INPUT = STYLE_SEARCH_PREFIX + "Box";

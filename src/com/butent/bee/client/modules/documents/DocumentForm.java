@@ -2,7 +2,6 @@ package com.butent.bee.client.modules.documents;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.HasEnabled;
@@ -68,6 +67,8 @@ import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.ui.Relation.Caching;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +83,7 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
   });
   private ChildGrid itemsGrid;
 
-  private final Map<String, ChildSelector> childSelectors = Maps.newHashMap();
+  private final Map<String, ChildSelector> childSelectors = new HashMap<>();
 
   @Override
   public void afterCreateWidget(String name, IdentifiableWidget widget,
@@ -251,12 +252,12 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
     super.parseContent(content, dataId, new Consumer<String>() {
       @Override
       public void accept(String input) {
-        final Map<String, BeeRowSet> relations = Maps.newHashMap();
+        final Map<String, BeeRowSet> relations = new HashMap<>();
 
         final List<String> parts = Lists.newArrayList(Splitter
             .on("<!--{" + VIEW_DOCUMENT_ITEMS + "}-->").split(input));
 
-        final Map<String, Double> globals = Maps.newHashMap();
+        final Map<String, Double> globals = new HashMap<>();
         final Holder<Integer> holder = Holder.of(childSelectors.size() + parts.size());
 
         final BiConsumer<Integer, String> executor = new BiConsumer<Integer, String>() {
@@ -326,7 +327,7 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
 
   private void createNewServiceObjectRelation(SelectorEvent event) {
     final BeeRow row = event.getNewRow();
-    final List<Long> companies = Lists.newArrayList();
+    final List<Long> companies = new ArrayList<>();
 
     for (ChildSelector selector : childSelectors.values()) {
       if (selector.hasRelatedView(ClassifierConstants.VIEW_COMPANIES)) {
@@ -373,8 +374,8 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
           BeeUtils.trim(description));
     }
 
-    final List<Long> companies = Lists.newArrayList();
-    final List<Long> persons = Lists.newArrayList();
+    final List<Long> companies = new ArrayList<>();
+    final List<Long> persons = new ArrayList<>();
 
     for (ChildSelector selector : childSelectors.values()) {
       if (selector.hasRelatedView(ClassifierConstants.VIEW_COMPANIES)) {

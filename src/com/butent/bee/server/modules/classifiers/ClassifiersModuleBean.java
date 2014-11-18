@@ -2,7 +2,6 @@ package com.butent.bee.server.modules.classifiers;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
@@ -68,7 +67,9 @@ import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -99,7 +100,7 @@ public class ClassifiersModuleBean implements BeeModule {
 
   @Override
   public List<SearchResult> doSearch(String query) {
-    List<SearchResult> search = Lists.newArrayList();
+    List<SearchResult> search = new ArrayList<>();
 
     if (usr.isModuleVisible(ModuleAndSub.of(getModule(), SubModule.CONTACTS))) {
       List<SearchResult> companiesSr = qs.getSearchResults(VIEW_COMPANIES,
@@ -238,7 +239,8 @@ public class ClassifiersModuleBean implements BeeModule {
                 ((SqlUpdate) query).updExpression(COL_EMAIL_ADDRESS, SqlUtils.constant(email));
               }
             } catch (AddressException ex) {
-              event.addErrorMessage(BeeUtils.joinWords("Wrong address:", ex.getMessage()));
+              event.addErrorMessage(BeeUtils.joinWords("Wrong address ", email, ": ",
+                  ex.getMessage()));
             }
           }
         }
@@ -769,18 +771,24 @@ public class ClassifiersModuleBean implements BeeModule {
         .addFields(TBL_EMAILS, COL_EMAIL_ADDRESS)
         .addField(TBL_CITIES, COL_CITY_NAME, COL_CITY)
         .addField(TBL_COUNTRIES, COL_COUNTRY_NAME, COL_COUNTRY)
+        .addFields(TBL_COMPANY_BANK_ACCOUNTS, COL_BANK_ACCOUNT)
+        .addField(TBL_BANKS, COL_BANK_NAME, COL_BANK)
+        .addFields(TBL_BANKS, COL_BANK_CODE, COL_SWIFT_CODE)
         .addFrom(TBL_COMPANIES)
         .addFromLeft(TBL_CONTACTS, sys.joinTables(TBL_CONTACTS, TBL_COMPANIES, COL_CONTACT))
         .addFromLeft(TBL_EMAILS, sys.joinTables(TBL_EMAILS, TBL_CONTACTS, COL_EMAIL))
         .addFromLeft(TBL_CITIES, sys.joinTables(TBL_CITIES, TBL_CONTACTS, COL_CITY))
         .addFromLeft(TBL_COUNTRIES, sys.joinTables(TBL_COUNTRIES, TBL_CONTACTS, COL_COUNTRY))
+        .addFromLeft(TBL_COMPANY_BANK_ACCOUNTS,
+            sys.joinTables(TBL_COMPANY_BANK_ACCOUNTS, TBL_COMPANIES, COL_DEFAULT_BANK_ACCOUNT))
+        .addFromLeft(TBL_BANKS, sys.joinTables(TBL_BANKS, TBL_COMPANY_BANK_ACCOUNTS, COL_BANK))
         .setWhere(sys.idEquals(TBL_COMPANIES, companyId)));
 
     Locale loc = I18nUtils.toLocale(locale);
     LocalizableConstants constants = (loc == null)
         ? Localized.getConstants() : Localizations.getConstants(loc);
 
-    Map<String, String> translations = Maps.newHashMap();
+    Map<String, String> translations = new HashMap<>();
     translations.put(COL_COMPANY_NAME, constants.company());
     translations.put(COL_COMPANY_CODE, constants.companyCode());
     translations.put(COL_COMPANY_VAT_CODE, constants.companyVATCode());
@@ -792,8 +800,12 @@ public class ClassifiersModuleBean implements BeeModule {
     translations.put(COL_EMAIL_ADDRESS, constants.email());
     translations.put(COL_CITY, constants.city());
     translations.put(COL_COUNTRY, constants.country());
+    translations.put(COL_BANK, constants.bank());
+    translations.put(COL_BANK_CODE, constants.printBankCode());
+    translations.put(COL_SWIFT_CODE, constants.printBankSwift());
+    translations.put(COL_BANK_ACCOUNT, constants.printBankAccount());
 
-    Map<String, Pair<String, String>> info = Maps.newHashMap();
+    Map<String, Pair<String, String>> info = new HashMap<>();
 
     for (String col : translations.keySet()) {
       info.put(col, Pair.of(translations.get(col), row.getValue(col)));

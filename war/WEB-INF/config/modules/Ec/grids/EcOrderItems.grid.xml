@@ -46,9 +46,6 @@
       </dynStyle>
     </PropColumn>
 
-    <PropColumn name="SupplPrice" type="decimal" scale="2" caption="=ecItemPrice" dynamic="true"
-      flexGrow="0" />
-
     <PropColumn name="SupplierID" type="string" caption="=code" dynamic="true" flexGrow="0" />
   </g:columns>
 </g:Grid>

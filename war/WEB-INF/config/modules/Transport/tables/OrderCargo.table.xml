@@ -11,13 +11,13 @@
 
     <Numeric name="Weight" precision="8" scale="3" label="=weight" />
     <Relation name="WeightUnit" relation="Units" label="=weightUnit" />
-    <Numeric name="Volume" precision="7" scale="3" label="=volume" />
+    <Numeric name="Volume" precision="8" scale="3" label="=volume" />
     <Relation name="VolumeUnit" relation="Units" label="=volumeUnit" />
     <Numeric name="LDM" precision="5" scale="2" />
-    <Numeric name="Length" precision="6" scale="2" label="=length" />
-    <Numeric name="Width" precision="6" scale="2" label="=width" />
-    <Numeric name="Height" precision="6" scale="2" label="=height" />
-    <Integer name="Quantity" label="=quantity" />
+    <Numeric name="Length" precision="8" scale="2" label="=length" />
+    <Numeric name="Width" precision="8" scale="2" label="=width" />
+    <Numeric name="Height" precision="8" scale="2" label="=height" />
+    <Numeric name="Quantity" precision="8" scale="2" label="=quantity" />
     <Relation name="QuantityUnit" relation="Units" label="=unit" />
     <Integer name="Palettes" label="=trPalettesQuantity" />
     <Numeric name="Value" precision="12" scale="2" label="=valuation" />

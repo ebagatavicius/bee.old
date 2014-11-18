@@ -1,6 +1,5 @@
 package com.butent.bee.client.communication;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -21,7 +20,6 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
@@ -46,11 +44,13 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.websocket.messages.ChatMessage;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -104,7 +104,7 @@ public class Chat extends Flow implements Presenter, View, Printable,
 
   private static final BeeLogger logger = LogUtils.getLogger(Chat.class);
 
-  private static final String STYLE_PREFIX = "bee-Chat-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "Chat-";
   private static final String STYLE_MESSAGE_WRAPPER = STYLE_PREFIX + "message";
 
   private static final String STYLE_MESSAGE_PREFIX = STYLE_PREFIX + "message-";
@@ -138,7 +138,7 @@ public class Chat extends Flow implements Presenter, View, Printable,
   private boolean enabled = true;
   private boolean autoScroll = true;
 
-  private final List<HandlerRegistration> registry = Lists.newArrayList();
+  private final List<HandlerRegistration> registry = new ArrayList<>();
 
   public Chat(ChatRoom chatRoom) {
     super(STYLE_PREFIX + "view");
@@ -466,7 +466,7 @@ public class Chat extends Flow implements Presenter, View, Printable,
   }
 
   private void updateHeader(long maxTime) {
-    List<String> list = Lists.newArrayList();
+    List<String> list = new ArrayList<>();
 
     if (!messagePanel.isEmpty()) {
       list.add(BeeUtils.bracket(messagePanel.getWidgetCount()));

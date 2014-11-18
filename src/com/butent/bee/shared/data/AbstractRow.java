@@ -41,8 +41,9 @@ public abstract class AbstractRow implements IsRow {
   }
 
   @Override
-  public void addCell(Value value) {
-    addCell(new TableCell(value));
+  public void addCell(IsCell cell) {
+    Assert.notNull(cell);
+    addValue(cell.getValue());
   }
 
   @Override
@@ -140,7 +141,7 @@ public abstract class AbstractRow implements IsRow {
 
     switch (type) {
       case BOOLEAN:
-        return BooleanValue.getInstance(getBoolean(index));
+        return BooleanValue.of(getBoolean(index));
       case DATE:
         return new DateValue(getDate(index));
       case DATE_TIME:
@@ -255,7 +256,7 @@ public abstract class AbstractRow implements IsRow {
 
   @Override
   public void setValue(int index, Boolean value) {
-    setValue(index, BooleanValue.getInstance(value));
+    setValue(index, BooleanValue.of(value));
   }
 
   @Override

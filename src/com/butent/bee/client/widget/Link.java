@@ -112,7 +112,7 @@ public class Link extends FocusWidget implements IdentifiableWidget, HasHtml {
 
   private void init() {
     DomUtils.createId(this, getIdPrefix());
-    setStyleName("bee-Link");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "Link");
 
     setTarget(Keywords.BROWSING_CONTEXT_BLANK);
   }

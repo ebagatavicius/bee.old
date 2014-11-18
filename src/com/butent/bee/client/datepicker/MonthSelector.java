@@ -5,6 +5,7 @@ import com.google.gwt.dom.client.Element;
 
 import com.butent.bee.client.Global;
 import com.butent.bee.client.datepicker.DatePicker.CssClasses;
+import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Image;
@@ -46,6 +47,11 @@ class MonthSelector extends Component {
     this.prevMonth = new Image(Global.getImages().previous(), new Navigation(-1), styleDisabled);
     this.nextMonth = new Image(Global.getImages().next(), new Navigation(1), styleDisabled);
     this.nextYear = new Image(Global.getImages().forward(), new Navigation(12), styleDisabled);
+
+    EventUtils.preventClickDebouncer(prevYear);
+    EventUtils.preventClickDebouncer(prevMonth);
+    EventUtils.preventClickDebouncer(nextMonth);
+    EventUtils.preventClickDebouncer(nextYear);
 
     this.monthName = new CustomDiv();
 

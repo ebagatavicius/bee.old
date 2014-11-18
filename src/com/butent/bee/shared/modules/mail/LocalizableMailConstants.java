@@ -4,6 +4,8 @@ public interface LocalizableMailConstants {
 
   String mail();
 
+  String mailAccount();
+
   String mailActionMoveToTrash();
 
   String mails();
@@ -37,6 +39,8 @@ public interface LocalizableMailConstants {
   String mailForwardedPrefix();
 
   String mailFrom();
+
+  String mailMarkAsUnread();
 
   String mailMessageBodyIsEmpty();
 
@@ -77,6 +81,8 @@ public interface LocalizableMailConstants {
   String mailMessageIsSavedInDraft();
 
   String mailMessageSent();
+
+  String mailShowOriginal();
 
   String mailSpecifyRecipient();
 

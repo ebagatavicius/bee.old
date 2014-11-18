@@ -24,15 +24,15 @@ public class DialogBox extends Popup implements Printable {
 
   public static final int HEADER_HEIGHT = 31;
 
-  private static final String STYLE_DIALOG = "bee-DialogBox";
+  private static final String STYLE_DIALOG = BeeConst.CSS_CLASS_PREFIX + "DialogBox";
 
-  private static final String STYLE_HEADER = "bee-Dialog-header";
-  private static final String STYLE_CAPTION = "bee-Dialog-caption";
+  private static final String STYLE_HEADER = BeeConst.CSS_CLASS_PREFIX + "Dialog-header";
+  private static final String STYLE_CAPTION = BeeConst.CSS_CLASS_PREFIX + "Dialog-caption";
 
-  private static final String STYLE_ACTION = "bee-Dialog-action";
-  private static final String STYLE_CLOSE = "bee-Dialog-close";
+  private static final String STYLE_ACTION = BeeConst.CSS_CLASS_PREFIX + "Dialog-action";
+  private static final String STYLE_CLOSE = BeeConst.CSS_CLASS_PREFIX + "Dialog-close";
 
-  private static final String STYLE_CONTENT = "bee-Dialog-content";
+  private static final String STYLE_CONTENT = BeeConst.CSS_CLASS_PREFIX + "Dialog-content";
 
   public static DialogBox create(String caption) {
     return create(caption, null);
@@ -87,6 +87,10 @@ public class DialogBox extends Popup implements Printable {
       }
       insertAction(BeeConst.UNDEF, widget);
     }
+  }
+
+  public void addCommand(Widget widget) {
+    addAction(null, widget);
   }
 
   public void addDefaultCloseBox() {

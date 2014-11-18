@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <DataColumn name="VatPlus" width="20" sortable="false" caption="+" format="+" carry="true"
+    visible="false" />
+
+  <DataColumn name="Vat" carry="true" flexGrow="0" visible="false">
+    <footer evaluator="vat" />
+  </DataColumn>
+
+  <DataColumn name="VatPercent" width="20" sortable="false" caption="%" format="%" carry="true"
+    visible="false" />
+</g:columns>

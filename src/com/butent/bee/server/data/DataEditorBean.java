@@ -1,10 +1,5 @@
 package com.butent.bee.server.data;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 import com.butent.bee.server.data.BeeTable.BeeField;
 import com.butent.bee.server.data.BeeTable.BeeForeignKey;
 import com.butent.bee.server.data.BeeTable.BeeIndex;
@@ -48,10 +43,13 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -100,7 +98,7 @@ public class DataEditorBean {
     private final String tableAlias;
     private final String tableName;
     private final String relation;
-    private final List<FieldInfo> fields = Lists.newArrayList();
+    private final List<FieldInfo> fields = new ArrayList<>();
     private Long id;
     private Long version;
 
@@ -189,7 +187,7 @@ public class DataEditorBean {
     BeeRow row = rs.getRow(rowIndex);
     boolean isNew = DataUtils.isNewRow(row);
 
-    Map<String, TableInfo> updates = Maps.newHashMap();
+    Map<String, TableInfo> updates = new HashMap<>();
 
     if (!BeeUtils.isPositive(rs.getNumberOfColumns())) {
       response.addError("Nothing to commit");
@@ -267,7 +265,7 @@ public class DataEditorBean {
 
       if (!response.hasErrors()) {
         if (RowInfo.class.equals(returnType)) {
-          response.setResponse(new RowInfo(id, tblInfo.version, false, false));
+          response.setResponse(new RowInfo(id, tblInfo.version));
         } else {
           BeeRowSet newRs = qs.getViewData(view.getName(), Filter.compareId(id));
 
@@ -312,7 +310,7 @@ public class DataEditorBean {
     if (view.isReadOnly()) {
       return ResponseObject.error("View", BeeUtils.bracket(view.getName()), "is read only.");
     }
-    Set<Long> ids = Sets.newHashSet();
+    Set<Long> ids = new HashSet<>();
 
     for (RowInfo row : rows) {
       ids.add(row.getId());
@@ -370,16 +368,16 @@ public class DataEditorBean {
 
     Collection<BeeField> fields = sys.getTableFields(tblName);
     SqlInsert si = new SqlInsert(tblName);
-    Map<String, String[]> relations = Maps.newHashMap();
-    Map<List<String>, List<String[]>> uniques = Maps.newHashMap();
-    Map<String, Object> updates = Maps.newHashMap();
-    List<FieldInfo> extUpdate = Lists.newArrayList();
+    Map<String, String[]> relations = new HashMap<>();
+    Map<List<String>, List<String[]>> uniques = new HashMap<>();
+    Map<String, Object> updates = new HashMap<>();
+    List<FieldInfo> extUpdate = new ArrayList<>();
 
-    Map<String, List<String>> uniqueKeys = Maps.newHashMap();
+    Map<String, List<String>> uniqueKeys = new HashMap<>();
 
     for (BeeIndex key : table.getIndexes()) {
       if (key.isUnique()) {
-        List<String> keyFields = Lists.newArrayList();
+        List<String> keyFields = new ArrayList<>();
 
         for (String keyField : key.getFields()) {
           if (!BeeUtils.same(keyField, sys.getIdName(tblName))
@@ -670,7 +668,7 @@ public class DataEditorBean {
   private ResponseObject commitExtensions(String tblName, long id, List<FieldInfo> updates,
       Map<String, TableInfo> aliases) {
     int c = 0;
-    Map<String, IsQuery> queryMap = Maps.newHashMap();
+    Map<String, IsQuery> queryMap = new HashMap<>();
     BeeTable table = sys.getTable(tblName);
 
     for (FieldInfo fldInfo : updates) {
@@ -680,7 +678,7 @@ public class DataEditorBean {
 
       IsQuery query = queryMap.get(extensionKey);
 
-      if (aliases != null && Objects.equal(aliases.get(fldInfo.tableAlias).id, id)) {
+      if (aliases != null && Objects.equals(aliases.get(fldInfo.tableAlias).id, id)) {
         query = table.updateExtField((SqlUpdate) query, id, field, value);
       } else {
         query = table.insertExtField((SqlInsert) query, id, field, value);
@@ -705,9 +703,9 @@ public class DataEditorBean {
     Assert.notNull(tblInfo);
     String tblName = tblInfo.tableName;
 
-    List<FieldInfo> baseUpdate = Lists.newArrayList();
-    List<FieldInfo> extUpdate = Lists.newArrayList();
-    List<FieldInfo> translationUpdate = Lists.newArrayList();
+    List<FieldInfo> baseUpdate = new ArrayList<>();
+    List<FieldInfo> extUpdate = new ArrayList<>();
+    List<FieldInfo> translationUpdate = new ArrayList<>();
 
     for (FieldInfo fldInfo : tblInfo.fields) {
       if (BeeUtils.isEmpty(fldInfo.fieldAlias)) {
@@ -860,7 +858,7 @@ public class DataEditorBean {
   private ResponseObject commitTranslations(String tblName, long id, List<FieldInfo> updates,
       Map<String, TableInfo> aliases) {
     int c = 0;
-    Map<String, IsQuery> queryMap = Maps.newHashMap();
+    Map<String, IsQuery> queryMap = new HashMap<>();
     BeeTable table = sys.getTable(tblName);
 
     for (FieldInfo fldInfo : updates) {
@@ -871,7 +869,7 @@ public class DataEditorBean {
 
       IsQuery query = queryMap.get(translationKey);
 
-      if (aliases != null && Objects.equal(aliases.get(fldInfo.tableAlias).id, id)) {
+      if (aliases != null && Objects.equals(aliases.get(fldInfo.tableAlias).id, id)) {
         query = table.updateTranslationField((SqlUpdate) query, id, field, locale, value);
       } else {
         query = table.insertTranslationField((SqlInsert) query, id, field, locale, value);
@@ -1016,7 +1014,7 @@ public class DataEditorBean {
                 break;
             }
           }
-          if (!Objects.equal(value, fldInfo.oldValue)) {
+          if (!Objects.equals(value, fldInfo.oldValue)) {
             logger.warning("refreshUpdates:", tblInfo.tableName, tblInfo.id, fldInfo.fieldName,
                 "old:", fldInfo.oldValue, "value:", value);
             return false;
@@ -1099,8 +1097,8 @@ public class DataEditorBean {
     List<Long> newValues = DataUtils.parseIdList(children.getChildrenIds());
     Long[] oldValues = qs.getRelatedValues(tableName, parentColumn, parentId, childColumn);
 
-    List<Long> insert = Lists.newArrayList(newValues);
-    List<Long> delete = Lists.newArrayList();
+    List<Long> insert = new ArrayList<>(newValues);
+    List<Long> delete = new ArrayList<>();
 
     if (oldValues != null) {
       for (Long value : oldValues) {

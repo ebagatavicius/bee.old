@@ -1,7 +1,7 @@
 #!/bin/bash
 cd /media/bnovo/Bee
 echo start gwt dev compilator `date` $COMCOUNTLEFT
-java -cp ./lib/*:./war/WEB-INF/lib/guava-17.0.jar:/opt/gwt-2.6.1/*:./src:./war/WEB-INF/classes -Xmx512m com.google.gwt.dev.Compiler -draftCompile com.butent.bee.Dev
+java -cp ./lib/*:./war/WEB-INF/lib/guava-18.0.jar:/opt/gwt-2.6.1/*:./src:./war/WEB-INF/classes -Xmx512m com.google.gwt.dev.Compiler -draftCompile com.butent.bee.Dev
 
 if [ -z "${COMCOUNTLEFT}" ]; then
 export COMCOUNTLEFT="#####"

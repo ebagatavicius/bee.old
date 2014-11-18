@@ -69,6 +69,7 @@ public final class Features {
 
   private static Boolean fileApi;
   private static Boolean geolocation;
+  private static Boolean highResolutionTime;
   private static Boolean indexedDB;
 
   private static Boolean inputColor;
@@ -200,6 +201,7 @@ public final class Features {
 
         "File Api", supportsFileApi(),
         "Geolocation", supportsGeolocation(),
+        "High Resolution Time", supportsHighResolutionTime(),
         "Indexed DB", supportsIndexedDB(),
 
         "Input Color", supportsInputColor(),
@@ -500,6 +502,13 @@ public final class Features {
       geolocation = testGeolocation();
     }
     return geolocation;
+  }
+
+  public static boolean supportsHighResolutionTime() {
+    if (highResolutionTime == null) {
+      highResolutionTime = testHighResolutionTime();
+    }
+    return highResolutionTime;
   }
 
   public static boolean supportsIndexedDB() {
@@ -1041,6 +1050,11 @@ public final class Features {
 
   private static boolean testGeolocation() {
     return isNavigatorProperty("geolocation");
+  }
+
+  private static boolean testHighResolutionTime() {
+    JavaScriptObject performance = getWindowProperty("performance");
+    return performance != null && JsUtils.isFunction(performance, "now");
   }
 
   private static boolean testIndexedDB() {

@@ -13,6 +13,7 @@
     </DataColumn>
     <RelColumn name="Bank" renderColumns="BankName BankCode" />
     <DataColumn name="BankAccount" />
+    <RelColumn name="Currency" />
     <DataColumn name="IBANCode" />
     <DataColumn name="Notes" />
   </g:columns>

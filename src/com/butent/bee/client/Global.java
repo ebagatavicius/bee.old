@@ -3,7 +3,6 @@ package com.butent.bee.client;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.StyleInjector;
@@ -61,7 +60,9 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,7 +82,7 @@ public final class Global {
 
   private static final Images.Resources images = Images.createResources();
 
-  private static final Map<String, String> styleSheets = Maps.newHashMap();
+  private static final Map<String, String> styleSheets = new HashMap<>();
 
   private static final Favorites favorites = new Favorites();
   private static final Spaces spaces = new Spaces();
@@ -397,7 +398,8 @@ public final class Global {
 
           table.setHtml(r, i, value);
 
-          if (ValueType.isNumeric(type)) {
+          if (ValueType.isNumeric(type) || ValueType.TEXT == type
+              && CharMatcher.DIGIT.matchesAnyOf(value) && BeeUtils.isDouble(value)) {
             table.getCellFormatter().setHorizontalAlignment(r, i, TextAlign.RIGHT);
           }
         }
@@ -448,7 +450,7 @@ public final class Global {
   }
 
   public static void showError(String message) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     if (!BeeUtils.isEmpty(message)) {
       messages.add(message);
     }
@@ -474,7 +476,7 @@ public final class Global {
   }
 
   public static void showInfo(String message) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     if (!BeeUtils.isEmpty(message)) {
       messages.add(message);
     }
@@ -527,7 +529,7 @@ public final class Global {
       widget = GridFactory.simpleGrid(caption, table, BeeKeeper.getScreen().getActivePanelWidth());
     } else {
       widget = renderTable(caption, table);
-      widget.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "info-table");
+      widget.addStyleName(StyleUtils.NAME_INFO_TABLE);
     }
 
     if (widget != null) {
@@ -547,7 +549,7 @@ public final class Global {
 //@formatter:off
   // CHECKSTYLE:OFF
   private static native void exportMethods() /*-{
-    $wnd.Bee_updateForm = $entry(@com.butent.bee.client.ui.UiHelper::updateForm(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
+    $wnd.Bee_updateForm = $entry(@com.butent.bee.client.view.ViewHelper::updateForm(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     $wnd.Bee_debug = $entry(@com.butent.bee.client.Global::debug(Ljava/lang/String;));
     $wnd.Bee_updateActor = $entry(@com.butent.bee.client.decorator.TuningHelper::updateActor(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     $wnd.Bee_maybeTranslate = $entry(@com.butent.bee.shared.i18n.Localized::maybeTranslate(Ljava/lang/String;));

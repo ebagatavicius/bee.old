@@ -1,6 +1,5 @@
 package com.butent.bee.client.view;
 
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,6 +38,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,6 +48,8 @@ import java.util.Set;
 
 public class FormContainerImpl extends Split implements FormContainerView, HasNavigation,
     HasSearch, ActiveRowChangeEvent.Handler, AddStartEvent.Handler, AddEndEvent.Handler {
+
+  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "FormContainer";
 
   private Presenter viewPresenter;
 
@@ -72,6 +74,7 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
 
   public FormContainerImpl() {
     super(-1);
+    addStyleName(STYLE_NAME);
   }
 
   @Override
@@ -112,6 +115,18 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
 
     if (!disabledActions.contains(Action.PRINT)) {
       enabledActions.add(Action.PRINT);
+    }
+
+    if (interceptor != null) {
+      Set<Action> actions = interceptor.getEnabledActions(enabledActions);
+      if (!enabledActions.equals(actions)) {
+        BeeUtils.overwrite(enabledActions, actions);
+      }
+
+      actions = interceptor.getDisabledActions(disabledActions);
+      if (!disabledActions.equals(actions)) {
+        BeeUtils.overwrite(disabledActions, actions);
+      }
     }
 
     HeaderView header = new HeaderImpl();
@@ -248,7 +263,7 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
     if (hasData()) {
       return ViewHelper.getPagers(this);
     } else {
-      return Sets.newHashSet();
+      return new HashSet<>();
     }
   }
 
@@ -262,7 +277,7 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
     if (hasSearch()) {
       return ViewHelper.getSearchers(this);
     } else {
-      return Sets.newHashSet();
+      return new HashSet<>();
     }
   }
 

@@ -42,7 +42,7 @@
     <xs:attribute name="caption" type="xs:string" />
     <xs:attribute name="viewName" type="type:dataView" />
     <xs:attribute name="filter" type="xs:normalizedString" />
-    <xs:attribute name="currentUserFilter" type="type:nameType" />
+    <xs:attribute name="currentUserFilter" type="type:fieldNameType" />
     <xs:attribute name="order" type="xs:normalizedString" />
     <xs:attribute name="minColumnWidth" type="col:columnWidth" />
     <xs:attribute name="maxColumnWidth" type="col:columnWidth" />
@@ -65,7 +65,6 @@
     <xs:attribute name="editMode" type="xs:boolean" />
     <xs:attribute name="editSave" type="xs:boolean" default="true" />
     <xs:attribute name="editShowId" type="xs:boolean" />
-    <xs:attribute name="editInPlace" type="xs:normalizedString" />
     <xs:attribute name="editPopup" type="xs:boolean" />
     <xs:attribute name="editFormImmediate" type="xs:boolean" />
     <xs:attribute name="enabledActions" type="ui:viewActions" />

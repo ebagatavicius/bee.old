@@ -6,9 +6,6 @@
   >
   <Columns>
     <SimpleColumn name="GridSetting" />
-    <SimpleJoin name="GridSetting" joinType="LEFT">
-      <SimpleColumn name="User" />
-    </SimpleJoin>
 
     <SimpleColumn name="Name" />
 
@@ -27,6 +24,8 @@
 
     <SimpleColumn name="Format" />
 
+    <SimpleColumn name="EditInPlace" />
+
     <SimpleColumn name="HeaderStyle" />
     <SimpleColumn name="HeaderFont" />
 
@@ -39,6 +38,7 @@
 
   <Order>
     <OrderBy column="GridSetting" />
+    <OrderBy column="Name" />
   </Order>
 </View>
  

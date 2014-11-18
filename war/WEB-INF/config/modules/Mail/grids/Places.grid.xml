@@ -8,6 +8,7 @@
 
   <g:columns>
     <PropColumn name="Star" type="integer" cellType="html" horizontalAlignment="center" width="20" />
-    <CalcColumn name="Envelope" type="string" cellType="html" minWidth="200" flexGrow="1" flexShrink="1" />
+    <CalcColumn name="Envelope" type="string" cellType="html" minWidth="200" maxWidth="600"
+      flexGrow="1" flexShrink="1" />
   </g:columns>
 </g:Grid>

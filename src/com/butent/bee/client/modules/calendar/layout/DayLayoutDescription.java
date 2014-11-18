@@ -1,14 +1,13 @@
 package com.butent.bee.client.modules.calendar.layout;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DayLayoutDescription {
 
-  private final List<CalendarItem> items = Lists.newArrayList();
+  private final List<CalendarItem> items = new ArrayList<>();
 
   private final int dayIndex;
 

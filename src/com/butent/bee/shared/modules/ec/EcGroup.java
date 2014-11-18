@@ -1,13 +1,12 @@
 package com.butent.bee.shared.modules.ec;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EcGroup implements BeeSerializable {
@@ -27,7 +26,7 @@ public class EcGroup implements BeeSerializable {
 
   private boolean brandSelection;
 
-  private final List<Long> criteria = Lists.newArrayList();
+  private final List<Long> criteria = new ArrayList<>();
 
   public EcGroup(long id, String name) {
     this.id = id;

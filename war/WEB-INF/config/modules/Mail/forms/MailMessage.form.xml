@@ -3,7 +3,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="MailMessage" caption="=mailMessage" readOnly="true"
+  name="MailMessage" caption="=mailMessage"
   >
   <FlowPanel class="flexBox-vertical">
     <xi:include href="widgets/Message.widget.xml" />

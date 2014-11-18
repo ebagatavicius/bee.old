@@ -2,6 +2,7 @@ package com.butent.bee.client.dialog;
 
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.ui.HasDimensions;
+import com.butent.bee.shared.BeeConst;
 
 public class ModalForm extends ModalView {
 
@@ -11,7 +12,7 @@ public class ModalForm extends ModalView {
   private boolean pendingUnload;
 
   public ModalForm(Presenter presenter, HasDimensions dimensions, boolean requiresUnload) {
-    super(presenter, "bee-ModalForm", dimensions);
+    super(presenter, BeeConst.CSS_CLASS_PREFIX + "ModalForm", dimensions);
     this.requiresUnload = requiresUnload;
   }
 

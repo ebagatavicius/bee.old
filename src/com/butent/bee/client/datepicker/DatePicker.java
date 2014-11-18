@@ -1,7 +1,5 @@
 package com.butent.bee.client.datepicker;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.HasKeyDownHandlers;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -13,12 +11,15 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.butent.bee.client.layout.Vertical;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.time.YearMonth;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class DatePicker extends Composite implements HasValue<JustDate>, HasKeyDownHandlers {
 
@@ -113,7 +114,7 @@ public class DatePicker extends Composite implements HasValue<JustDate>, HasKeyD
   }
 
   private static final class DateStyler {
-    private final Map<JustDate, String> styles = Maps.newHashMap();
+    private final Map<JustDate, String> styles = new HashMap<>();
 
     private DateStyler() {
     }
@@ -144,7 +145,8 @@ public class DatePicker extends Composite implements HasValue<JustDate>, HasKeyD
   }
 
   private static final CssClasses DEFAULT_CSS_CLASSES =
-      new CssClasses("bee-DatePicker", "bee-DatePicker-");
+      new CssClasses(BeeConst.CSS_CLASS_PREFIX + "DatePicker",
+          BeeConst.CSS_CLASS_PREFIX + "DatePicker-");
 
   private final DateStyler dateStyler = new DateStyler();
 
@@ -235,7 +237,7 @@ public class DatePicker extends Composite implements HasValue<JustDate>, HasKeyD
 
   @Override
   public void setValue(JustDate newValue, boolean fireEvents) {
-    if (!Objects.equal(value, newValue)) {
+    if (!Objects.equals(value, newValue)) {
       JustDate oldValue = value;
       if (oldValue != null) {
         removeStyleFromDate(getCssClasses().dayIsValue(), oldValue);

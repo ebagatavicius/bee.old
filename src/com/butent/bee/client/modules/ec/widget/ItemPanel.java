@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.ec.widget;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -24,6 +22,8 @@ import com.butent.bee.shared.modules.ec.EcItem;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -49,7 +49,7 @@ public class ItemPanel extends Flow implements SelectionHandler<TreeItem> {
   private static final String STYLE_TREE = "tree";
 
   private static Set<Long> getBrands(List<EcItem> input) {
-    Set<Long> result = Sets.newHashSet();
+    Set<Long> result = new HashSet<>();
 
     int size = input.size();
     for (int i = 0; i < size; i++) {
@@ -62,13 +62,13 @@ public class ItemPanel extends Flow implements SelectionHandler<TreeItem> {
     return result;
   }
 
-  private final List<EcItem> items = Lists.newArrayList();
-  private final Set<Long> categories = Sets.newHashSet();
+  private final List<EcItem> items = new ArrayList<>();
+  private final Set<Long> categories = new HashSet<>();
 
-  private final Set<Long> brands = Sets.newHashSet();
-  private final Set<Long> selectedCategories = Sets.newHashSet();
+  private final Set<Long> brands = new HashSet<>();
+  private final Set<Long> selectedCategories = new HashSet<>();
 
-  private final Set<Long> selectedBrands = Sets.newHashSet();
+  private final Set<Long> selectedBrands = new HashSet<>();
   private Flow brandWrapper;
 
   private ItemList itemWrapper;
@@ -172,7 +172,7 @@ public class ItemPanel extends Flow implements SelectionHandler<TreeItem> {
       return input;
 
     } else {
-      List<EcItem> result = Lists.newArrayList();
+      List<EcItem> result = new ArrayList<>();
       for (EcItem item : input) {
         if (selectedBrands.contains(item.getBrand())) {
           result.add(item);
@@ -187,7 +187,7 @@ public class ItemPanel extends Flow implements SelectionHandler<TreeItem> {
       return input;
 
     } else {
-      List<EcItem> result = Lists.newArrayList();
+      List<EcItem> result = new ArrayList<>();
       for (EcItem item : input) {
         if (BeeUtils.intersects(selectedCategories, item.getCategorySet())) {
           result.add(item);

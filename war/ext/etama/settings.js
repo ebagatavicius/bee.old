@@ -8,7 +8,6 @@ var BeeSettings = {
   "providerMinPrefetchSteps": 1,
   "providerMaxPrefetchSteps": 100,
   "logCapacity": 1000,
-  "actionSensitivityMillis": 300,
   "minimizeNumberOfConcurrentRequests": true,
   "webSocketUrl": "ws://81.7.95.201:8080/b-novo/ws/",
   "showUserPhoto": true

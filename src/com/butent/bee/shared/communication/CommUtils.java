@@ -32,6 +32,8 @@ public final class CommUtils {
 
   public static final ContentType FORM_RESPONSE_CONTENT_TYPE = ContentType.HTML;
 
+  public static final String MEDIA_TYPE_TEXT_PLAIN = "text/plain";
+
   public static String getPath(String url, Map<String, String> parameters, boolean encode) {
     return addQueryString(url, buildQueryString(parameters, encode));
   }
@@ -145,7 +147,7 @@ public final class CommUtils {
 
     switch (ctp) {
       case TEXT:
-        mt = "text/plain";
+        mt = MEDIA_TYPE_TEXT_PLAIN;
         break;
       case XML:
         mt = "text/xml";

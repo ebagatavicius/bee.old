@@ -1,6 +1,5 @@
 package com.butent.bee.client.ui;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -10,7 +9,6 @@ import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
@@ -25,11 +23,7 @@ import com.butent.bee.client.style.HasTextAlign;
 import com.butent.bee.client.style.HasVerticalAlign;
 import com.butent.bee.client.style.HasWhiteSpace;
 import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.view.DataView;
-import com.butent.bee.client.view.HasGridView;
 import com.butent.bee.client.view.edit.TextBox;
-import com.butent.bee.client.view.form.FormView;
-import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.widget.InputText;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -43,8 +37,6 @@ import com.butent.bee.shared.css.values.WhiteSpace;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.value.ValueType;
-import com.butent.bee.shared.logging.BeeLogger;
-import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.ui.HasMaxLength;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -53,13 +45,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Contains utility user interface creation functions like setting and getting horizontal alignment.
- */
-
 public final class UiHelper {
-
-  private static final BeeLogger logger = LogUtils.getLogger(UiHelper.class);
 
   public static void add(HasWidgets container, Holder<Widget> holder,
       WidgetInitializer initializer, String name) {
@@ -169,11 +155,46 @@ public final class UiHelper {
     return result;
   }
 
+  @SuppressWarnings("unchecked")
+  public static <T extends Widget> T getChild(Widget parent, Class<T> clazz) {
+    if (parent == null || clazz == null) {
+      return null;
+
+    } else if (parent.getClass().equals(clazz)) {
+      return (T) parent;
+
+    } else if (parent instanceof HasOneWidget) {
+      return getChild(((HasOneWidget) parent).getWidget(), clazz);
+
+    } else if (parent instanceof HasWidgets) {
+      for (Widget widget : (HasWidgets) parent) {
+        T child = getChild(widget, clazz);
+        if (child != null) {
+          return child;
+        }
+      }
+      return null;
+
+    } else {
+      return null;
+    }
+  }
+
+  public static Widget getChildByStyleName(Widget parent, String styleName) {
+    Collection<Widget> children = getChildrenByStyleName(parent, Sets.newHashSet(styleName));
+
+    if (children.size() == 1) {
+      return BeeUtils.peek(children);
+    } else {
+      return null;
+    }
+  }
+
   public static Collection<Widget> getChildrenByStyleName(Widget parent,
       Collection<String> styleNames) {
 
-    Collection<Widget> result = Lists.newArrayList();
-    if (parent == null || styleNames == null) {
+    Collection<Widget> result = new ArrayList<>();
+    if (parent == null || BeeUtils.isEmpty(styleNames)) {
       return result;
     }
 
@@ -193,49 +214,37 @@ public final class UiHelper {
     return result;
   }
 
-  public static DataView getDataView(Widget widget) {
-    if (widget == null) {
-      return null;
-    }
-
-    Widget p = widget;
-    for (int i = 0; i < DomUtils.MAX_GENERATIONS; i++) {
-      if (p instanceof DataView) {
-        return (DataView) p;
-      }
-
-      p = p.getParent();
-      if (p == null) {
-        break;
-      }
-    }
-    return null;
-  }
-
   public static TextAlign getDefaultHorizontalAlignment(ValueType type) {
     if (type == null) {
       return null;
     }
 
     TextAlign align;
+
     switch (type) {
       case BOOLEAN:
         align = TextAlign.CENTER;
         break;
+
       case DECIMAL:
       case INTEGER:
       case LONG:
       case NUMBER:
-        align = TextAlign.END;
+        align = TextAlign.RIGHT;
         break;
+
       default:
         align = null;
     }
     return align;
   }
 
+  public static WhiteSpace getDefaultWhiteSpace(ValueType type) {
+    return ValueType.isNumeric(type) ? WhiteSpace.NOWRAP : null;
+  }
+
   public static List<Focusable> getFocusableChildren(Widget parent) {
-    List<Focusable> result = Lists.newArrayList();
+    List<Focusable> result = new ArrayList<>();
     if (parent == null) {
       return result;
     }
@@ -256,54 +265,8 @@ public final class UiHelper {
     return result;
   }
 
-  public static FormView getForm(IsWidget widget) {
-    if (widget == null) {
-      return null;
-    } else {
-      return getForm(widget.asWidget());
-    }
-  }
-
-  public static FormView getForm(Widget widget) {
-    if (widget == null) {
-      return null;
-    }
-
-    Widget p = widget;
-    for (int i = 0; i < DomUtils.MAX_GENERATIONS; i++) {
-      if (p instanceof FormView) {
-        return (FormView) p;
-      }
-
-      p = p.getParent();
-      if (p == null) {
-        break;
-      }
-    }
-    return null;
-  }
-
-  public static Long getFormRowId(Widget widget) {
-    FormView form = getForm(widget);
-    return (form == null) ? null : form.getActiveRowId();
-  }
-
-  public static GridView getGrid(Widget widget) {
-    DataView dataView = getDataView(widget);
-
-    if (dataView == null) {
-      return null;
-    } else if (dataView instanceof GridView) {
-      return (GridView) dataView;
-    } else if (dataView.getViewPresenter() instanceof HasGridView) {
-      return ((HasGridView) dataView.getViewPresenter()).getGridView();
-    } else {
-      return null;
-    }
-  }
-
   public static List<Widget> getImmediateChildren(Widget parent) {
-    List<Widget> result = Lists.newArrayList();
+    List<Widget> result = new ArrayList<>();
     if (parent == null) {
       return result;
     }
@@ -412,20 +375,6 @@ public final class UiHelper {
     return null;
   }
 
-  public static GridView getSiblingGrid(Widget widget, String gridName) {
-    FormView form = getForm(widget);
-    if (form == null) {
-      return null;
-    }
-
-    Widget gridWidget = form.getWidgetByName(gridName);
-    if (gridWidget instanceof HasGridView) {
-      return ((HasGridView) gridWidget).getGridView();
-    } else {
-      return null;
-    }
-  }
-
   public static Consumer<InputText> getTextBoxResizer(final int reserve) {
     return new Consumer<InputText>() {
       @Override
@@ -487,24 +436,11 @@ public final class UiHelper {
 
   public static boolean maybeResize(Widget root, String id) {
     Widget child = DomUtils.getChildQuietly(root, id);
-    if (child instanceof RequiresResize && child.isVisible()) {
+    if (child instanceof RequiresResize && DomUtils.isVisible(child)) {
       ((RequiresResize) child).onResize();
       return true;
     } else {
       return false;
-    }
-  }
-
-  public static void maybeResizeForm(Widget widget) {
-    final FormView form = getForm(widget);
-
-    if (form != null) {
-      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-        @Override
-        public void execute() {
-          form.onResize();
-        }
-      });
     }
   }
 
@@ -666,6 +602,14 @@ public final class UiHelper {
     }
   }
 
+  public static void setDefaultWhiteSpace(HasWhiteSpace obj, ValueType type) {
+    Assert.notNull(obj);
+    WhiteSpace whiteSpace = getDefaultWhiteSpace(type);
+    if (whiteSpace != null) {
+      obj.setWhiteSpace(whiteSpace);
+    }
+  }
+
   public static void setHorizontalAlignment(Element elem, String text) {
     Assert.notNull(elem);
     if (BeeUtils.isEmpty(text)) {
@@ -745,25 +689,6 @@ public final class UiHelper {
       container.setWidget(w);
     }
     return w;
-  }
-
-  public static void updateForm(String widgetId, String columnId, String value) {
-    Assert.notEmpty(widgetId);
-    Assert.notEmpty(columnId);
-
-    Widget widget = DomUtils.getWidget(widgetId);
-    if (widget == null) {
-      logger.severe("update form:", widgetId, "widget not found");
-      return;
-    }
-
-    FormView form = getForm(widget);
-    if (form == null) {
-      logger.severe("update form:", widgetId, columnId, value, "form not found");
-      return;
-    }
-
-    form.updateCell(columnId, value);
   }
 
   private static boolean isEnabled(UIObject obj) {

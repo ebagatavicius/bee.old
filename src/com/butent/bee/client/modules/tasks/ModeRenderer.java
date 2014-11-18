@@ -18,8 +18,8 @@ class ModeRenderer extends AbstractCellRenderer {
     NEW, UPD
   }
 
-  static final String STYLE_MODE_NEW = "bee-crm-Mode-new";
-  static final String STYLE_MODE_UPD = "bee-crm-Mode-upd";
+  static final String STYLE_MODE_NEW = BeeConst.CSS_CLASS_PREFIX + "crm-Mode-new";
+  static final String STYLE_MODE_UPD = BeeConst.CSS_CLASS_PREFIX + "crm-Mode-upd";
 
   private static Mode getMode(IsRow row) {
     if (row == null) {

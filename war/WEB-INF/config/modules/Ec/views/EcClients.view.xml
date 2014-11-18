@@ -104,6 +104,24 @@
 
     <SimpleColumn name="DisplayedPrice" />
 
+    <SimpleColumn name="BasePriceList0" />
+    <SimpleJoin name="BasePriceList0" joinType="LEFT">
+      <SimpleColumn name="PriceListName" alias="BasePriceListName0" />
+    </SimpleJoin>
+    <SimpleColumn name="ClientPriceList0" />
+    <SimpleJoin name="ClientPriceList0" joinType="LEFT">
+      <SimpleColumn name="PriceListName" alias="ClientPriceListName0" />
+    </SimpleJoin>
+
+    <SimpleColumn name="BasePriceList1" />
+    <SimpleJoin name="BasePriceList1" joinType="LEFT">
+      <SimpleColumn name="PriceListName" alias="BasePriceListName1" />
+    </SimpleJoin>
+    <SimpleColumn name="ClientPriceList1" />
+    <SimpleJoin name="ClientPriceList1" joinType="LEFT">
+      <SimpleColumn name="PriceListName" alias="ClientPriceListName1" />
+    </SimpleJoin>
+
     <SimpleColumn name="ToggleListPrice" />
     <SimpleColumn name="TogglePrice" />
     <SimpleColumn name="ToggleStockLimit" />

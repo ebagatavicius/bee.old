@@ -75,8 +75,7 @@
     <FlowPanel data="DiscussMarkTypes" name="DiscussMarkTypes"
       class="flexBox-horizontal bee-discuss-markTypes-container" />
       
-      <Disclosure for="Description" xmlns="http://www.butent.com/widget"
-        xmlns:xi="http://www.w3.org/2001/XInclude" open="true">
+      <Disclosure open="true">
         <Label text="=discussDescription" style="text-transform: uppercase;" />
         
         <FlowPanel>

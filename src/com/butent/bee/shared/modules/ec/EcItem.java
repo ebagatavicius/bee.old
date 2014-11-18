@@ -1,27 +1,46 @@
 package com.butent.bee.shared.modules.ec;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.primitives.Longs;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
+import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.modules.ec.EcConstants.EcDisplayedPrice;
 import com.butent.bee.shared.modules.ec.EcConstants.EcSupplier;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class EcItem implements BeeSerializable, HasCaption {
 
   private enum Serial {
-    ARTICLE_ID, BRAND, CODE, NAME, SUPPLIERS, CATEGORIES, CLIENT_PRICE, FEATURED_PRICE, LIST_PRICE,
+    ARTICLE_ID, BRAND, CODE, NAME, SUPPLIERS, CATEGORIES,
+    CLIENT_PRICE, FEATURED_PRICE, LIST_PRICE, PRICE_SUPPLIER,
     DESCRIPTION, CRITERIA, NOVELTY, FEATURED, UNIT, PRIMARY_STOCK, SECONDARY_STOCK, ANALOG_COUNT
+  }
+
+  private static final class SupplierPrice implements Comparable<SupplierPrice> {
+
+    private final EcSupplier supplier;
+    private final int price;
+
+    private SupplierPrice(EcSupplier supplier, int price) {
+      this.supplier = supplier;
+      this.price = price;
+    }
+
+    @Override
+    public int compareTo(SupplierPrice o) {
+      return Integer.compare(price, o.price);
+    }
   }
 
   public static final Splitter CATEGORY_SPLITTER =
@@ -48,14 +67,16 @@ public class EcItem implements BeeSerializable, HasCaption {
   private String name;
 
   private String categories;
-  private final Collection<ArticleSupplier> suppliers = Lists.newArrayList();
+  private final Collection<ArticleSupplier> suppliers = new ArrayList<>();
 
   private int clientPrice;
   private int featuredPrice;
   private int listPrice;
 
+  private EcSupplier priceSupplier;
+
   private String description;
-  private final List<ArticleCriteria> criteria = Lists.newArrayList();
+  private final List<ArticleCriteria> criteria = new ArrayList<>();
 
   private boolean novelty;
   private boolean featured;
@@ -105,7 +126,7 @@ public class EcItem implements BeeSerializable, HasCaption {
           break;
 
         case SUPPLIERS:
-          Collection<ArticleSupplier> sups = Lists.newArrayList();
+          Collection<ArticleSupplier> sups = new ArrayList<>();
 
           String[] suppArr = Codec.beeDeserializeCollection(value);
           if (suppArr != null) {
@@ -131,6 +152,10 @@ public class EcItem implements BeeSerializable, HasCaption {
 
         case LIST_PRICE:
           setListPrice(BeeUtils.toInt(value));
+          break;
+
+        case PRICE_SUPPLIER:
+          setPriceSupplier(Codec.unpack(EcSupplier.class, value));
           break;
 
         case DESCRIPTION:
@@ -200,7 +225,7 @@ public class EcItem implements BeeSerializable, HasCaption {
   }
 
   public Set<Long> getCategorySet() {
-    Set<Long> result = Sets.newHashSet();
+    Set<Long> result = new HashSet<>();
 
     if (getCategories() != null) {
       for (String s : CATEGORY_SPLITTER.split(getCategories())) {
@@ -247,6 +272,10 @@ public class EcItem implements BeeSerializable, HasCaption {
     }
   }
 
+  public EcSupplier getPriceSupplier() {
+    return priceSupplier;
+  }
+
   public int getPrimaryStock() {
     return primaryStock;
   }
@@ -267,54 +296,71 @@ public class EcItem implements BeeSerializable, HasCaption {
     return secondaryStock;
   }
 
-  public int getSupplierPrice(EcDisplayedPrice displayedPrice, Double marginPercent) {
+  public Pair<EcSupplier, Integer> getSupplierPrice(EcDisplayedPrice displayedPrice, boolean base,
+      Double marginPercent) {
+
     EcSupplier displayedSupplier = EcDisplayedPrice.getSupplier(displayedPrice);
 
-    int result = 0;
-    int aggregate = 0;
+    List<SupplierPrice> hasStock = new ArrayList<>();
+    List<SupplierPrice> noStock = new ArrayList<>();
 
     for (ArticleSupplier articleSupplier : getSuppliers()) {
-      int supplierPrice = articleSupplier.getListPrice(marginPercent);
+      int price = base
+          ? articleSupplier.getListPrice(marginPercent) : articleSupplier.getPrice(marginPercent);
 
-      if (supplierPrice > 0) {
-        if (displayedSupplier != null && articleSupplier.getSupplier() == displayedSupplier) {
-          result = supplierPrice;
-          break;
+      if (price > 0) {
+        EcSupplier supplier = articleSupplier.getSupplier();
+        int stock = articleSupplier.totalStock();
+
+        if (supplier == displayedSupplier && stock > 0) {
+          return Pair.of(supplier, price);
         }
 
-        if (displayedPrice == EcDisplayedPrice.MIN) {
-          if (articleSupplier.totalStock() > 0) {
-            if (result > 0) {
-              result = Math.min(result, supplierPrice);
-            } else {
-              result = supplierPrice;
-            }
-
-          } else {
-            if (aggregate > 0) {
-              aggregate = Math.min(aggregate, supplierPrice);
-            } else {
-              aggregate = supplierPrice;
-            }
-          }
-
-        } else if (displayedPrice == EcDisplayedPrice.MAX) {
-          if (articleSupplier.totalStock() > 0) {
-            result = Math.max(result, supplierPrice);
-          } else {
-            aggregate = Math.max(aggregate, supplierPrice);
-          }
-
+        SupplierPrice supplierPrice = new SupplierPrice(supplier, price);
+        if (stock > 0) {
+          hasStock.add(supplierPrice);
         } else {
-          result = Math.max(result, supplierPrice);
+          noStock.add(supplierPrice);
         }
       }
     }
 
-    if (result <= 0 && aggregate > 0) {
-      return aggregate;
+    if (hasStock.isEmpty()) {
+      return reduceSupplierPrice(noStock, displayedPrice, displayedSupplier);
     } else {
-      return result;
+      return reduceSupplierPrice(hasStock, displayedPrice, displayedSupplier);
+    }
+  }
+
+  private static Pair<EcSupplier, Integer> reduceSupplierPrice(List<SupplierPrice> supplierPrices,
+      EcDisplayedPrice displayedPrice, EcSupplier displayedSupplier) {
+
+    if (supplierPrices.isEmpty()) {
+      return null;
+
+    } else if (supplierPrices.size() == 1) {
+      SupplierPrice supplierPrice = supplierPrices.get(0);
+      return Pair.of(supplierPrice.supplier, supplierPrice.price);
+
+    } else {
+      SupplierPrice supplierPrice = null;
+
+      if (displayedSupplier != null) {
+        for (SupplierPrice sp : supplierPrices) {
+          if (sp.supplier == displayedSupplier) {
+            supplierPrice = sp;
+            break;
+          }
+        }
+      }
+
+      if (supplierPrice == null) {
+        Collections.sort(supplierPrices);
+        int index = (displayedPrice == EcDisplayedPrice.MIN) ? 0 : supplierPrices.size() - 1;
+        supplierPrice = supplierPrices.get(index);
+      }
+
+      return Pair.of(supplierPrice.supplier, supplierPrice.price);
     }
   }
 
@@ -381,6 +427,10 @@ public class EcItem implements BeeSerializable, HasCaption {
 
         case LIST_PRICE:
           arr[i++] = listPrice;
+          break;
+
+        case PRICE_SUPPLIER:
+          arr[i++] = Codec.pack(getPriceSupplier());
           break;
 
         case DESCRIPTION:
@@ -473,6 +523,10 @@ public class EcItem implements BeeSerializable, HasCaption {
 
   public void setNovelty(boolean novelty) {
     this.novelty = novelty;
+  }
+
+  public void setPriceSupplier(EcSupplier priceSupplier) {
+    this.priceSupplier = priceSupplier;
   }
 
   public void setPrimaryStock(int primaryStock) {

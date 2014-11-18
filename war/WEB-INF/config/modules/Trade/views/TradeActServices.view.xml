@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="TradeActServices" source="TradeActServices" module="Trade.Acts"
+  caption="=tradeActServices"
+  >
+  <Columns>
+    <SimpleColumn name="TradeAct" />
+
+    <SimpleColumn name="Item" />
+    <SimpleJoin joinType="INNER" name="Item">
+      <SimpleColumn name="Name" alias="ItemName" />
+      <SimpleColumn name="Article" />
+      
+      <SimpleJoin joinType="INNER" name="Unit">
+        <SimpleColumn name="Name" alias="UnitName" />
+      </SimpleJoin>
+      <SimpleColumn name="TimeUnit" />
+
+      <SimpleColumn name="IsService" />
+
+      <SimpleColumn name="Vat" alias="ItemVat" />
+      <SimpleColumn name="VatPercent" alias="ItemVatPercent" />
+    </SimpleJoin>
+
+    <SimpleColumn name="DateFrom" />
+    <SimpleColumn name="DateTo" />
+
+    <SimpleColumn name="Tariff" />
+    <SimpleColumn name="Factor" />
+
+    <SimpleColumn name="DaysPerWeek" />
+    <SimpleColumn name="MinTerm" />
+
+    <SimpleColumn name="Quantity" />
+    <SimpleColumn name="Price" />
+
+    <SimpleColumn name="VatPlus" />
+    <SimpleColumn name="Vat" />
+    <SimpleColumn name="VatPercent" />
+
+    <SimpleColumn name="Discount" />
+
+    <SimpleColumn name="Note" />
+  </Columns>
+</View>

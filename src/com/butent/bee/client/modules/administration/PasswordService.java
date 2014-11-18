@@ -12,11 +12,11 @@ import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.HtmlTable;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.widget.InputPassword;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.data.value.TextValue;
 import com.butent.bee.shared.i18n.Localized;
@@ -29,7 +29,7 @@ import java.util.Objects;
 
 public final class PasswordService {
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "ChangePassword-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "ChangePassword-";
 
   private static final String STYLE_LABEL = STYLE_PREFIX + "label";
   private static final String STYLE_INPUT = STYLE_PREFIX + "input";

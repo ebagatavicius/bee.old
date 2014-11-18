@@ -53,6 +53,8 @@
       <xs:enumeration value="trailer_time_board" />
       <xs:enumeration value="assessments_grid" />
       <xs:enumeration value="service_calendar" />
+      <xs:enumeration value="trade_act_new" />
+      <xs:enumeration value="trade_act_list" />
     </xs:restriction>
   </xs:simpleType>
 

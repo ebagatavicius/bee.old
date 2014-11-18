@@ -6,11 +6,16 @@
   >
   <Fields>
     <Relation name="Group" relation="CriteriaGroups" notNull="true" label="=criteriaGroup" cascade="DELETE" />
-    <String name="Criterion" precision="50" notNull="true" label="=criterionName" />
+    <String name="Criterion" precision="50" label="=criterionName" />
     <String name="Value" precision="200" label="=criterionValue" />
     <Numeric name="Ordinal" precision="2" label="=ordinal" />
   </Fields>
   <Constraints>
     <Unique fields="Group Criterion" />
+    <Check>
+      <PostgreSql>"Criterion" IS NOT NULL OR "Value" IS NOT NULL</PostgreSql>
+      <MsSql>[Criterion] IS NOT NULL OR [Value] IS NOT NULL</MsSql>
+      <Oracle>"Criterion" IS NOT NULL OR "Value" IS NOT NULL</Oracle>
+    </Check>
   </Constraints>
 </Table>

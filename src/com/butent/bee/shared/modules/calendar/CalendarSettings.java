@@ -1,7 +1,5 @@
 package com.butent.bee.shared.modules.calendar;
 
-import com.google.common.collect.Maps;
-
 import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 
 import com.butent.bee.shared.BeeConst;
@@ -62,7 +60,7 @@ public final class CalendarSettings {
   private ViewType activeView;
 
   private CalendarSettings() {
-    this.views = Maps.newEnumMap(ViewType.class);
+    this.views = new EnumMap<>(ViewType.class);
 
     for (ViewType view : ViewType.values()) {
       this.views.put(view, true);

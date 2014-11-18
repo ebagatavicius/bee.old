@@ -40,6 +40,7 @@ import com.butent.bee.client.event.Modifiers;
 import com.butent.bee.client.event.logical.ActiveRowChangeEvent;
 import com.butent.bee.client.event.logical.DataRequestEvent;
 import com.butent.bee.client.event.logical.RenderingEvent;
+import com.butent.bee.client.event.logical.RowCountChangeEvent;
 import com.butent.bee.client.event.logical.ScopeChangeEvent;
 import com.butent.bee.client.event.logical.SelectionCountChangeEvent;
 import com.butent.bee.client.event.logical.SortEvent;
@@ -619,7 +620,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
   private static final int PAGE_SIZE_CALCULATION_RESERVE = 3;
   private static final int LINE_WIDTH_RESERVE = 1;
 
-  private static final String STYLE_GRID = StyleUtils.CLASS_NAME_PREFIX + "CellGrid";
+  private static final String STYLE_GRID = BeeConst.CSS_CLASS_PREFIX + "CellGrid";
 
   public static final String STYLE_EVEN_ROW = STYLE_GRID + "EvenRow";
   public static final String STYLE_ODD_ROW = STYLE_GRID + "OddRow";
@@ -1004,6 +1005,11 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
   }
 
   @Override
+  public HandlerRegistration addRowCountChangeHandler(RowCountChangeEvent.Handler handler) {
+    return addHandler(handler, RowCountChangeEvent.getType());
+  }
+
+  @Override
   public HandlerRegistration addScopeChangeHandler(ScopeChangeEvent.Handler handler) {
     return addHandler(handler, ScopeChangeEvent.getType());
   }
@@ -1043,8 +1049,18 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     ColumnInfo columnInfo = getColumnInfo(col);
 
     int oldWidth = columnInfo.getWidth();
+    int newWidth = estimateColumnWidth(col);
 
-    int newWidth = Math.min(estimateColumnWidth(col), columnInfo.getUpperWidthBound());
+    if (columnInfo.getFooter() != null) {
+      Element footerCell = getFooterCellElement(col);
+      String footerContent = (footerCell == null) ? null : footerCell.getInnerHTML();
+
+      if (!BeeUtils.isEmpty(footerContent)) {
+        newWidth = Math.max(newWidth, Rulers.getLineWidth(Font.bold(), footerContent, true));
+      }
+    }
+
+    newWidth = Math.min(newWidth, columnInfo.getUpperWidthBound());
     if (fitHeader) {
       newWidth = Math.max(newWidth, columnInfo.getHeaderWidth());
     }
@@ -1528,6 +1544,15 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     return info.isColReadOnly();
   }
 
+  public boolean isColumnVisible(String columnId) {
+    for (int i = 0; i < getColumnCount(); i++) {
+      if (getColumnInfo(i).is(columnId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public boolean isEditing() {
     return editing;
@@ -1874,6 +1899,13 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     }
   }
 
+  public void overwriteVisibleColumns(List<Integer> indexes) {
+    Assert.notEmpty(indexes);
+
+    visibleColumns.clear();
+    visibleColumns.addAll(indexes);
+  }
+
   public void preliminaryUpdate(long rowId, String source, String value) {
     int row = getRowIndex(rowId);
     if (!isRowWithinBounds(row)) {
@@ -2199,9 +2231,22 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
   @Override
   public void setPageStart(int start, boolean fireScopeChange, boolean fireDataRequest,
       NavigationOrigin origin) {
+
     Assert.nonNegative(start);
     if (start == getPageStart()) {
       return;
+    }
+
+    if (origin != null && origin.shiftActiveRow()
+        && getActiveRowIndex() >= 0 && getActiveRowIndex() < getPageSize()) {
+
+      int idx = getActiveRowIndex() + getPageStart() - start;
+
+      if (idx < 0 || idx >= getPageSize()) {
+        deactivate();
+      } else {
+        setActiveRowIndex(idx);
+      }
     }
 
     this.pageStart = start;
@@ -2253,6 +2298,8 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     } else if (fireScopeChange) {
       fireScopeChange(NavigationOrigin.SYSTEM);
     }
+
+    fireEvent(new RowCountChangeEvent(count));
   }
 
   @Override
@@ -4075,7 +4122,9 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
       ColumnInfo columnInfo = getColumnInfo(i);
 
       SafeHtmlBuilder cellBuilder = new SafeHtmlBuilder();
+
       TextAlign hAlign = null;
+      WhiteSpace whiteSpace = null;
 
       if (isHeader) {
         if (columnInfo.getHeader() != null) {
@@ -4086,7 +4135,9 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
       } else if (columnInfo.getFooter() != null) {
         CellContext context = new CellContext(this, i);
         columnInfo.getFooter().render(context, cellBuilder);
+
         hAlign = columnInfo.getFooter().getTextAlign();
+        whiteSpace = columnInfo.getFooter().getWhiteSpace();
       }
 
       int width = columnInfo.getWidth();
@@ -4106,7 +4157,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
 
       SafeHtml contents = renderCell(rowIdx, i, cellClasses, left, top,
           width + xIncr - widthIncr, cellHeight, styles, extraStylesBuilder.toSafeStyles(),
-          hAlign, null, cellBuilder.toSafeHtml(), false).render();
+          hAlign, whiteSpace, cellBuilder.toSafeHtml(), false).render();
       sb.append(contents);
 
       left += width + xIncr;

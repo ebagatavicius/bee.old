@@ -27,8 +27,10 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.Relation;
 
 import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractFormInterceptor implements FormInterceptor {
 
@@ -86,6 +88,10 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   }
 
   @Override
+  public void configureRelation(String name, Relation relation) {
+  }
+
+  @Override
   public IdentifiableWidget createCustomWidget(String name, Element description) {
     return null;
   }
@@ -111,6 +117,11 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   }
 
   @Override
+  public String getCaption() {
+    return null;
+  }
+
+  @Override
   public int getDataIndex(String source) {
     return (getFormView() == null) ? BeeConst.UNDEF : getFormView().getDataIndex(source);
   }
@@ -126,8 +137,18 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   }
 
   @Override
+  public Set<Action> getDisabledActions(Set<Action> defaultActions) {
+    return defaultActions;
+  }
+
+  @Override
   public Domain getDomain() {
     return null;
+  }
+
+  @Override
+  public Set<Action> getEnabledActions(Set<Action> defaultActions) {
+    return defaultActions;
   }
 
   @Override

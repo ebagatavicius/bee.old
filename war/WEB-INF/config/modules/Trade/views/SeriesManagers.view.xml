@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="SeriesManagers" source="SeriesManagers" caption="=trdSeriesManagers"
+  >
+  <Columns>
+    <SimpleColumn name="Series" />
+
+    <SimpleColumn name="Manager" />
+    <SimpleJoin name="Manager" joinType="LEFT">
+      <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" />
+          <SimpleColumn name="LastName" />
+        </SimpleJoin>
+        <SimpleJoin name="Position" joinType="LEFT">
+          <SimpleColumn name="Name" alias="PositionName" />
+        </SimpleJoin>
+        <SimpleJoin name="Company" joinType="LEFT">
+          <SimpleColumn name="Name" alias="CompanyName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="IsDefault" />
+
+  </Columns>
+  <Order>
+    <OrderBy column="LastName" />
+    <OrderBy column="FirstName" />
+    <OrderBy column="CompanyName" />
+    <OrderBy column="PositionName" />
+  </Order>
+</View>
+ 

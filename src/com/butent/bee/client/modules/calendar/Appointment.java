@@ -1,8 +1,5 @@
 package com.butent.bee.client.modules.calendar;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import static com.butent.bee.shared.modules.calendar.CalendarHelper.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
@@ -22,6 +19,8 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -112,10 +111,10 @@ public class Appointment extends CalendarItem {
 
   private final BeeRow row;
 
-  private final List<Long> attendees = Lists.newArrayList();
-  private final List<Long> owners = Lists.newArrayList();
-  private final List<Long> properties = Lists.newArrayList();
-  private final List<Long> reminders = Lists.newArrayList();
+  private final List<Long> attendees = new ArrayList<>();
+  private final List<Long> owners = new ArrayList<>();
+  private final List<Long> properties = new ArrayList<>();
+  private final List<Long> reminders = new ArrayList<>();
 
   private final Long separatedAttendee;
 
@@ -265,7 +264,7 @@ public class Appointment extends CalendarItem {
   public Map<String, String> getSubstitutes(long calendarId, Map<Long, UserData> users,
       boolean addLabels) {
 
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
 
     List<BeeColumn> columns = CalendarKeeper.getAppointmentViewColumns();
 
@@ -277,10 +276,10 @@ public class Appointment extends CalendarItem {
       result.put(wrap(key), build(Localized.getLabel(column), value, addLabels));
     }
 
-    List<String> attNames = Lists.newArrayList();
-    List<String> ownerNames = Lists.newArrayList();
-    List<String> propNames = Lists.newArrayList();
-    List<String> remindNames = Lists.newArrayList();
+    List<String> attNames = new ArrayList<>();
+    List<String> ownerNames = new ArrayList<>();
+    List<String> propNames = new ArrayList<>();
+    List<String> remindNames = new ArrayList<>();
 
     if (!getAttendees().isEmpty()) {
       for (Long id : getAttendees()) {

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="SeriesManagers" viewName="SeriesManagers" caption="=managers"
+  newRowColumns="-" flexGrow="1"
+  >
+  <g:columns>
+    <DataColumn name="FirstName" visible="true" />
+    <DataColumn name="LastName" visible="true" />
+    <DataColumn name="CompanyName" label="=company" />
+    <DataColumn name="PositionName" label="=personPosition" />
+
+    <DataColumn name="IsDefault" />
+  </g:columns>
+</g:Grid>

@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.calendar.view;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -20,13 +18,13 @@ import com.butent.bee.client.modules.calendar.CalendarFormat;
 import com.butent.bee.client.modules.calendar.CalendarKeeper;
 import com.butent.bee.client.modules.calendar.CalendarStyleManager;
 import com.butent.bee.client.modules.calendar.CalendarUtils;
-import com.butent.bee.client.modules.calendar.ItemWidget;
 import com.butent.bee.client.modules.calendar.CalendarView;
 import com.butent.bee.client.modules.calendar.CalendarWidget;
+import com.butent.bee.client.modules.calendar.ItemWidget;
 import com.butent.bee.client.modules.calendar.dnd.MonthMoveController;
+import com.butent.bee.client.modules.calendar.layout.DayLayoutDescription;
 import com.butent.bee.client.modules.calendar.layout.ItemLayoutDescription;
 import com.butent.bee.client.modules.calendar.layout.ItemStackingManager;
-import com.butent.bee.client.modules.calendar.layout.DayLayoutDescription;
 import com.butent.bee.client.modules.calendar.layout.MonthLayoutDescription;
 import com.butent.bee.client.modules.calendar.layout.WeekLayoutDescription;
 import com.butent.bee.client.style.StyleUtils;
@@ -41,8 +39,10 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +73,7 @@ public class MonthView extends CalendarView {
   private final HtmlTable grid = new HtmlTable();
   private final Flow canvas = new Flow();
 
-  private final Map<String, List<CalendarItem>> moreLabels = Maps.newHashMap();
+  private final Map<String, List<CalendarItem>> moreLabels = new HashMap<>();
 
   private MonthMoveController moveController;
 
@@ -441,7 +441,7 @@ public class MonthView extends CalendarView {
                   layer, separate, attColors);
             } else {
               List<CalendarItem> overLimit = manager.getOverLimit(dayOfWeek);
-              overLimit.addAll(Lists.newArrayList(dayItems.getItems().subList(i, count)));
+              overLimit.addAll(new ArrayList<>(dayItems.getItems().subList(i, count)));
 
               layOnMoreLabel(overLimit, dayOfWeek, weekOfMonth);
             }

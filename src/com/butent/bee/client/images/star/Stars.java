@@ -1,6 +1,5 @@
 package com.butent.bee.client.images.star;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
@@ -9,6 +8,7 @@ import com.butent.bee.client.images.Images;
 import com.butent.bee.shared.export.XPicture;
 import com.butent.bee.shared.export.XSheet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class Stars {
@@ -54,7 +54,7 @@ public final class Stars {
 
   private static final Resources resources = GWT.create(Resources.class);
 
-  private static final List<ImageResource> list = Lists.newArrayList();
+  private static final List<ImageResource> list = new ArrayList<>();
 
   static {
     list.add(resources.starGreen());

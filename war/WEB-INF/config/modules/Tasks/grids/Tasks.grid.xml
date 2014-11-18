@@ -3,7 +3,7 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
   name="Tasks" viewName="Tasks" caption="=crmTasks"
-  cacheData="false" favorite="Summary" enabledActions="copy"
+  cacheData="false" favorite="Summary" enabledActions="copy filter"
   order="Status, FinishTime, TaskID desc" maxColumnWidth="160"
   >
 

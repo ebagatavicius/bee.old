@@ -36,7 +36,7 @@
     &separator;
     <FlowPanel style="&section;" class="flexBox-horizontal">
       <Label text="=manager" style="&inline; width:85px; padding-top:1px;" />
-      <DataSelector source="Manager" style="&inline; width:200px;" editSource="ManagerPerson"
+      <DataSelector name="Manager" source="Manager" style="&inline; width:200px;" editSource="ManagerPerson"
         newRowEnabled="false" />
     </FlowPanel>
 
@@ -58,6 +58,10 @@
     <FlowPanel style="&section;" class="flexBox-horizontal">
       <Label text="=result" style="&inline; width:78px; padding-top:1px; padding-right: 8px; text-align: right; vertical-align:top;" />
       <TextLabel source="Result" />
+    </FlowPanel>
+    
+    <FlowPanel name="ResultProperties" data="Tasks" style="&section;" class="flexBox-horizontal">
+     
     </FlowPanel>
 
     &separator;

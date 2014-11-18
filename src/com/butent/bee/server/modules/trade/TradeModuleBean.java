@@ -1,6 +1,6 @@
 package com.butent.bee.server.modules.trade;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
@@ -22,6 +22,7 @@ import com.butent.bee.server.sql.IsExpression;
 import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
+import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -35,12 +36,15 @@ import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.exceptions.BeeException;
+import com.butent.bee.shared.exceptions.BeeRuntimeException;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.trade.TradeDocumentData;
 import com.butent.bee.shared.modules.transport.TransportConstants;
 import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
+import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -48,6 +52,7 @@ import com.butent.webservice.ButentWS;
 import com.butent.webservice.WSDocument;
 import com.butent.webservice.WSDocument.WSDocumentItem;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,17 +95,55 @@ public class TradeModuleBean implements BeeModule {
   UserServiceBean usr;
   @EJB
   ParamHolderBean prm;
+  @EJB
+  TradeActBean act;
+
+  public static String decodeId(String trade, Long id) {
+    Assert.notEmpty(trade);
+    Long normalizedId;
+
+    switch (trade) {
+      case TBL_PURCHASES:
+        normalizedId = id / 2;
+        break;
+
+      case TBL_SALES:
+        normalizedId = (id - 1) / 2;
+        break;
+
+      default:
+        throw new BeeRuntimeException("View source not supported: " + trade);
+    }
+    return BeeUtils.toString(normalizedId);
+  }
 
   @Override
   public List<SearchResult> doSearch(String query) {
-    return null;
+    List<SearchResult> result = new ArrayList<>();
+
+    Set<String> columns = Sets.newHashSet(COL_TRADE_NUMBER, COL_TRADE_INVOICE_NO,
+        ALS_CUSTOMER_NAME);
+    result.addAll(qs.getSearchResults(VIEW_SALES, Filter.anyContains(columns, query)));
+
+    if (usr.isModuleVisible(ModuleAndSub.of(getModule(), SubModule.ACTS))) {
+      List<SearchResult> actSr = act.doSearch(query);
+      if (!BeeUtils.isEmpty(actSr)) {
+        result.addAll(actSr);
+      }
+    }
+    return result;
   }
 
   @Override
   public ResponseObject doService(String svc, RequestInfo reqInfo) {
     ResponseObject response = null;
 
-    if (BeeUtils.same(svc, SVC_ITEMS_INFO)) {
+    SubModule subModule = reqInfo.getSubModule();
+
+    if (subModule == SubModule.ACTS) {
+      response = act.doService(svc, reqInfo);
+
+    } else if (BeeUtils.same(svc, SVC_ITEMS_INFO)) {
       response = getItemsInfo(reqInfo.getParameter("view_name"),
           BeeUtils.toLongOrNull(reqInfo.getParameter("id")),
           reqInfo.getParameter(COL_CURRENCY));
@@ -120,7 +163,27 @@ public class TradeModuleBean implements BeeModule {
       logger.warning(msg);
       response = ResponseObject.error(msg);
     }
+
     return response;
+  }
+
+  public static String encodeId(String trade, Long id) {
+    Assert.notEmpty(trade);
+    Long normalizedId;
+
+    switch (trade) {
+      case TBL_PURCHASES:
+        normalizedId = id * 2;
+        break;
+
+      case TBL_SALES:
+        normalizedId = id * 2 + 1;
+        break;
+
+      default:
+        throw new BeeRuntimeException("View source not supported: " + trade);
+    }
+    return BeeUtils.toString(normalizedId);
   }
 
   public ResponseObject getCreditInfo(Long companyId) {
@@ -191,7 +254,8 @@ public class TradeModuleBean implements BeeModule {
 
   @Override
   public Collection<BeeParameter> getDefaultParameters() {
-    return null;
+    String module = getModule().getName();
+    return act.getDefaultParameters(module);
   }
 
   @Override
@@ -232,12 +296,14 @@ public class TradeModuleBean implements BeeModule {
           if (!BeeUtils.isEmpty(prefix)
               && DataUtils.getColumnIndex(COL_TRADE_INVOICE_NO, cols) == BeeConst.UNDEF) {
             cols.add(new BeeColumn(COL_TRADE_INVOICE_NO));
-            row.addCell(Value.getValue(qs.getNextNumber(TBL_SALES, COL_TRADE_INVOICE_NO, prefix,
+            row.addValue(Value.getValue(qs.getNextNumber(TBL_SALES, COL_TRADE_INVOICE_NO, prefix,
                 COL_TRADE_INVOICE_PREFIX)));
           }
         }
       }
     });
+
+    act.init();
   }
 
   private ResponseObject getItemsInfo(String viewName, Long id, String currencyTo) {
@@ -261,19 +327,17 @@ public class TradeModuleBean implements BeeModule {
       return ResponseObject.error("View source not supported:", trade);
     }
     SqlSelect query = new SqlSelect()
-        .addFields(TBL_ITEMS, COL_ITEM_NAME)
+        .addFields(TBL_ITEMS,
+            COL_ITEM_NAME, COL_ITEM_NAME + "2", COL_ITEM_NAME + "3", COL_ITEM_BARCODE)
         .addField(TBL_UNITS, COL_UNIT_NAME, COL_UNIT)
-        .addFields(tradeItems, COL_ITEM_ARTICLE, COL_TRADE_ITEM_QUANTITY,
-            COL_TRADE_ITEM_PRICE, COL_TRADE_VAT_PLUS, COL_TRADE_VAT, COL_TRADE_VAT_PERC,
-            COL_TRADE_ITEM_NOTE)
-        .addField(TBL_CURRENCIES, COL_CURRENCY_NAME,
-            COL_CURRENCY)
+        .addFields(tradeItems, COL_ITEM_ARTICLE, COL_TRADE_ITEM_QUANTITY, COL_TRADE_ITEM_PRICE,
+            COL_TRADE_VAT_PLUS, COL_TRADE_VAT, COL_TRADE_VAT_PERC, COL_TRADE_ITEM_NOTE)
+        .addField(TBL_CURRENCIES, COL_CURRENCY_NAME, COL_CURRENCY)
         .addFrom(tradeItems)
         .addFromInner(trade, sys.joinTables(trade, tradeItems, itemsRelation))
         .addFromInner(TBL_ITEMS, sys.joinTables(TBL_ITEMS, tradeItems, COL_ITEM))
         .addFromInner(TBL_UNITS, sys.joinTables(TBL_UNITS, TBL_ITEMS, COL_UNIT))
-        .addFromInner(TBL_CURRENCIES,
-            sys.joinTables(TBL_CURRENCIES, trade, COL_CURRENCY))
+        .addFromInner(TBL_CURRENCIES, sys.joinTables(TBL_CURRENCIES, trade, COL_CURRENCY))
         .setWhere(SqlUtils.equals(tradeItems, itemsRelation, id))
         .addOrder(tradeItems, sys.getIdName(tradeItems));
 
@@ -382,7 +446,7 @@ public class TradeModuleBean implements BeeModule {
 
     SimpleRowSet invoices = qs.getData(query.addField(trade, sys.getIdName(trade), itemsRelation));
 
-    Map<Long, String> companies = Maps.newHashMap();
+    Map<Long, String> companies = new HashMap<>();
     ResponseObject response = ResponseObject.emptyResponse();
 
     for (SimpleRow invoice : invoices) {
@@ -432,7 +496,7 @@ public class TradeModuleBean implements BeeModule {
         warehouse = prm.getText("ERPWarehouse");
         client = companies.get(invoice.getLong(COL_TRADE_CUSTOMER));
       }
-      WSDocument doc = new WSDocument(invoice.getValue(itemsRelation),
+      WSDocument doc = new WSDocument(encodeId(trade, invoice.getLong(itemsRelation)),
           invoice.getDateTime(COL_TRADE_DATE), operation, client, warehouse);
 
       if (invoices.hasColumn(COL_SALE_PAYER)) {
@@ -448,8 +512,8 @@ public class TradeModuleBean implements BeeModule {
 
       SimpleRowSet items = qs.getData(new SqlSelect()
           .addFields(TBL_ITEMS, COL_ITEM_NAME, COL_ITEM_EXTERNAL_CODE)
-          .addFields(tradeItems, COL_TRADE_ITEM_QUANTITY, COL_TRADE_ITEM_PRICE,
-              COL_TRADE_VAT_PLUS, COL_TRADE_VAT, COL_TRADE_VAT_PERC, COL_TRADE_ITEM_NOTE)
+          .addFields(tradeItems, COL_TRADE_ITEM_QUANTITY, COL_TRADE_ITEM_PRICE, COL_TRADE_VAT_PLUS,
+              COL_TRADE_VAT, COL_TRADE_VAT_PERC, COL_TRADE_ITEM_ARTICLE, COL_TRADE_ITEM_NOTE)
           .addFrom(tradeItems)
           .addFromInner(TBL_ITEMS, sys.joinTables(TBL_ITEMS, tradeItems, COL_ITEM))
           .setWhere(SqlUtils.equals(tradeItems, itemsRelation, invoice.getLong(itemsRelation))));
@@ -466,6 +530,7 @@ public class TradeModuleBean implements BeeModule {
         wsItem.setPrice(item.getValue(COL_TRADE_ITEM_PRICE));
         wsItem.setVat(item.getValue(COL_TRADE_VAT), item.getBoolean(COL_TRADE_VAT_PERC),
             item.getBoolean(COL_TRADE_VAT_PLUS));
+        wsItem.setArticle(item.getValue(COL_TRADE_ITEM_ARTICLE));
         wsItem.setNote(item.getValue(COL_TRADE_ITEM_NOTE));
       }
       if (response.hasErrors()) {

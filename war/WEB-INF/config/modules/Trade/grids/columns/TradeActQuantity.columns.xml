@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <DataColumn name="Quantity" visible="true">
+    <footer aggregate="sum" />
+  </DataColumn>
+
+  <DataColumn name="UnitName" caption="=unitShort" flexGrow="0" />
+</g:columns>

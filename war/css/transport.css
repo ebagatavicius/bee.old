@@ -88,7 +88,6 @@
 .bee-tr-vtb-Overlap {
   position: absolute;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
   border: 2px solid red;
   border-radius: 10px;
   pointer-events: none;
@@ -101,7 +100,6 @@
 .bee-tr-vtb-Freight-drag {
   background-image: linear-gradient(to bottom, white, white);
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
   border: 2px inset darkgreen;
   color: black;
 }

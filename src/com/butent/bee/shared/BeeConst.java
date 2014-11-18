@@ -111,6 +111,7 @@ public final class BeeConst {
   public static final char CHAR_POINT = '.';
   public static final char CHAR_COMMA = ',';
   public static final char CHAR_EOL = '\n';
+  public static final char CHAR_CR = '\r';
   public static final char CHAR_EQ = '=';
   public static final char CHAR_AMP = '&';
   public static final char CHAR_LT = '<';
@@ -167,8 +168,13 @@ public final class BeeConst {
   public static final String YEAR = "Year";
   public static final String MONTH = "Month";
 
+  public static final String CSS_CLASS_PREFIX = "bee-";
+
   public static final Set<String> EMPTY_IMMUTABLE_STRING_SET = Collections.emptySet();
   public static final List<String> EMPTY_IMMUTABLE_STRING_LIST = Collections.emptyList();
+
+  public static final Set<Long> EMPTY_IMMUTABLE_LONG_SET = Collections.emptySet();
+  public static final List<Long> EMPTY_IMMUTABLE_LONG_LIST = Collections.emptyList();
 
   private static String home = SERVER;
 

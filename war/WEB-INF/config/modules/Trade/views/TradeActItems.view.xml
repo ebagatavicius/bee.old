@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="TradeActItems" source="TradeActItems" module="Trade.Acts"
+  caption="=tradeActItems"
+  >
+  <Columns>
+    <SimpleColumn name="TradeAct" />
+
+    <SimpleColumn name="Item" />
+    <SimpleJoin joinType="INNER" name="Item">
+      <SimpleColumn name="Name" alias="ItemName" />
+      <SimpleColumn name="Article" />
+      
+      <SimpleJoin joinType="INNER" name="Unit">
+        <SimpleColumn name="Name" alias="UnitName" />
+      </SimpleJoin>
+  
+      <SimpleColumn name="Weight" />
+      <SimpleColumn name="Area" />
+  
+      <SimpleColumn name="Price" alias="ItemPrice" />
+      <SimpleColumn name="Currency" alias="ItemCurrency" />
+      <SimpleColumn name="Cost" alias="ItemCost" />
+      <SimpleColumn name="CostCurrency" alias="ItemCostCurrency" />
+
+      <SimpleColumn name="Price1" alias="ItemPrice1" />
+      <SimpleColumn name="Currency1" alias="ItemCurrency1" />
+      <SimpleColumn name="Price2" alias="ItemPrice2" />
+      <SimpleColumn name="Currency2" alias="ItemCurrency2" />
+      <SimpleColumn name="Price3" alias="ItemPrice3" />
+      <SimpleColumn name="Currency3" alias="ItemCurrency3" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Quantity" />
+    <SimpleColumn name="Price" />
+
+    <SimpleColumn name="VatPlus" />
+    <SimpleColumn name="Vat" />
+    <SimpleColumn name="VatPercent" />
+
+    <SimpleColumn name="Discount" />
+
+    <SimpleColumn name="Note" />
+  </Columns>
+</View>

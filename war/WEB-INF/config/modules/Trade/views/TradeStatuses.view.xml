@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="TradeStatuses" source="TradeStatuses"
+  caption="=trdStatuses" newRowCaption="=trdNewStatus"
+  >
+  <Columns>
+    <SimpleColumn name="StatusName" />
+    <SimpleColumn name="StatusActive" />
+
+    <SimpleColumn name="Background" />
+    <SimpleColumn name="Foreground" />
+  </Columns>
+  
+  <Order>
+    <OrderBy column="StatusName" />
+  </Order>
+</View>
+ 

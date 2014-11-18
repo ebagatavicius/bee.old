@@ -1,7 +1,5 @@
 package com.butent.bee.shared.data.filter;
 
-import com.google.common.base.Objects;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
@@ -13,6 +11,7 @@ import com.butent.bee.shared.utils.PropertyUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class FilterComponent implements BeeSerializable, HasInfo {
 
@@ -79,7 +78,7 @@ public class FilterComponent implements BeeSerializable, HasInfo {
       return true;
     } else if (obj instanceof FilterComponent) {
       FilterComponent other = (FilterComponent) obj;
-      return Objects.equal(name, other.name) && Objects.equal(filterValue, other.filterValue);
+      return Objects.equals(name, other.name) && Objects.equals(filterValue, other.filterValue);
     } else {
       return false;
     }

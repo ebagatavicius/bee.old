@@ -2,6 +2,7 @@ package com.butent.bee.client.widget;
 
 import com.google.gwt.dom.client.Document;
 
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public class InternalLink extends CustomHasHtml {
@@ -21,6 +22,6 @@ public class InternalLink extends CustomHasHtml {
   @Override
   protected void init() {
     super.init();
-    addStyleName("bee-InternalLink");
+    addStyleName(BeeConst.CSS_CLASS_PREFIX + "InternalLink");
   }
 }

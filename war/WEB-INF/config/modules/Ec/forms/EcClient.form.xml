@@ -17,8 +17,8 @@
     <FlowPanel style="margin-top: 2ex; margin-bottom: 2ex; min-height: 140px;">
       <FlowPanel class="flexBox-horizontal">
         <Label for="User" style="&lbl;" />
-        <DataSelector source="User" editSource="CompanyPerson" style="width: 550px;"
-          visible="true">
+        <DataSelector source="User" editSource="CompanyPerson"
+          style="width: 550px;" visible="true">
           <renderToken source="FirstName" />
           <renderToken source="LastName" />
           <renderToken source="CompanyName" prefix=", " />
@@ -38,10 +38,11 @@
 
       <xi:include href="../../Classifiers/forms/widgets/ContactInfoClosed.widget.xml" />  
       &separator;
+      &separator;
 
       <FlowPanel class="flexBox-horizontal">
         <Label for="Manager" style="&lbl;" />
-        <DataSelector source="Manager" style="&inp;"
+        <DataSelector source="Manager" newRowEnabled="false" style="&inp;"
           renderColumns="ManagerFirstName ManagerLastName" />
 
         <CheckBox text="=ecClientCreditLimitWarning" source="CreditLimitWarning"
@@ -52,10 +53,10 @@
 
       <FlowPanel class="flexBox-horizontal">
         <Label for="PrimaryBranch" style="&lbl;" />
-        <DataSelector source="PrimaryBranch" style="&inp;" visible="true" />
+        <DataSelector source="PrimaryBranch" newRowEnabled="false" style="&inp;" visible="true" />
 
         <Label for="SecondaryBranch" style="&lbl;" />
-        <DataSelector source="SecondaryBranch" style="&inp;" />
+        <DataSelector source="SecondaryBranch" newRowEnabled="false" style="&inp;" />
       </FlowPanel>
       &separator;
 
@@ -75,23 +76,52 @@
 
     <TabbedPages class="flexible">
       <page>
+        <text>=prices</text>
+        <FlowPanel>
+          &separator;
+          <Table>
+            <col index="0" kind="label" />
+            <col index="2" kind="label" />
+
+            <row>
+              <Label for="DisplayedPrice" />
+              <ListBox source="DisplayedPrice" summarize="true" />
+            </row>
+            &separator;
+    
+            <row>
+              <Label for="BasePriceList0" />
+              <DataSelector source="BasePriceList0" newRowEnabled="false" summarize="true" />
+              <Label for="BasePriceList1" />
+              <DataSelector source="BasePriceList1" newRowEnabled="false" summarize="true" />
+            </row>
+    
+            <row>
+              <Label for="ClientPriceList0" />
+              <DataSelector source="ClientPriceList0" newRowEnabled="false" summarize="true" />
+              <Label for="ClientPriceList1" />
+              <DataSelector source="ClientPriceList1" newRowEnabled="false" summarize="true" />
+            </row>
+          </Table>
+        </FlowPanel>
+      </page>
+
+      <page>
         <text>=ecDiscounts</text>
         <FlowPanel class="flexBox-vertical">
           &separator;
           <FlowPanel class="flexBox-horizontal">
             <Label for="DiscountPercent" style="margin-left: 2em; margin-right: 10px;" />
-            <InputDecimal source="DiscountPercent" style="width: 80px;" />
+            <InputDecimal source="DiscountPercent" style="width: 80px;" summarize="true" />
 
             <Label for="DiscountParent" style="margin-left: 2em; margin-right: 10px;" />
-            <DataSelector source="DiscountParent" class="flexible" 
-              style="min-width: 100px; max-width: 400px;">
+            <DataSelector source="DiscountParent" newRowEnabled="false" class="flexible" 
+              style="min-width: 100px; max-width: 400px;" summarize="true">
               <renderToken source="ParentFirstName" />
               <renderToken source="ParentLastName" />
               <renderToken source="ParentCompanyName" prefix=", " />
             </DataSelector>
 
-            <Label for="DisplayedPrice" style="margin-left: 2em; margin-right: 10px;" />
-            <ListBox source="DisplayedPrice" style="margin-right: 2em;" />
           </FlowPanel>
           &separator;
 
@@ -109,24 +139,24 @@
         <FlowPanel>
           <FlowPanel class="flexBox-horizontal-top" style="margin-top: 2ex; margin-bottom: 1ex;">
             <Label for="PersonCode" style="&lbl;" />
-            <InputText source="PersonCode" style="&inp;" />
+            <InputText source="PersonCode" style="&inp;" summarize="true" />
 
             <Label for="Activity" style="&lbl;" />
-            <InputArea source="Activity" style="&inp; height: 40px;" />
+            <InputArea source="Activity" style="&inp; height: 40px;" summarize="true" />
           </FlowPanel>
       
           <FlowPanel style="margin-left: 2em;">
             <Label text="=ecKeyboardShortcuts" />
   
-            <CheckBox text="=ecToggleListPrice" source="ToggleListPrice" style="&toggle;" />
-            <CheckBox text="=ecTogglePrice" source="TogglePrice" style="&toggle;" />
-            <CheckBox text="=ecToggleStockLimit" source="ToggleStockLimit" style="&toggle;" />
+            <CheckBox text="=ecToggleListPrice" source="ToggleListPrice" style="&toggle;" summarize="true" />
+            <CheckBox text="=ecTogglePrice" source="TogglePrice" style="&toggle;" summarize="true" />
+            <CheckBox text="=ecToggleStockLimit" source="ToggleStockLimit" style="&toggle;" summarize="true" />
           </FlowPanel>
 
           <FlowPanel class="flexBox-horizontal" style="margin-left: 2em; margin-top: 2ex;">
             <Label for="CarTypeHistorySize" style="margin-right: 10px;" />
             <InputSpinner source="CarTypeHistorySize" style="width: 50px;" 
-              minValue="-1" maxValue="100" />
+              minValue="-1" maxValue="100" summarize="true" />
           </FlowPanel>
         </FlowPanel>
       </page>
@@ -134,7 +164,7 @@
       <page>
         <text>=notes</text>
         <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" />
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>
     </TabbedPages>

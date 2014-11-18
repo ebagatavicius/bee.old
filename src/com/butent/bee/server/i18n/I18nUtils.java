@@ -1,7 +1,5 @@
 package com.butent.bee.server.i18n;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.i18n.client.Constants;
 import com.google.gwt.i18n.client.Messages;
 
@@ -20,6 +18,7 @@ import java.text.Collator;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -28,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Properties;
+import java.util.TreeMap;
 
 /**
  * Contains internationalization and localization related utility functions like
@@ -74,9 +74,9 @@ public final class I18nUtils {
   }
 
   public static List<ExtendedProperty> getExtendedInfo() {
-    List<ExtendedProperty> lst = Lists.newArrayList();
+    List<ExtendedProperty> lst = new ArrayList<>();
 
-    Map<Locale, String> locales = Maps.newTreeMap(new LocaleComparator());
+    Map<Locale, String> locales = new TreeMap<>(new LocaleComparator());
     for (Locale lc : Locale.getAvailableLocales()) {
       locales.put(lc, "Loc");
     }

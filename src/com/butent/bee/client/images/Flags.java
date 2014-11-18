@@ -1,8 +1,5 @@
 package com.butent.bee.client.images;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ResponseCallback;
@@ -18,6 +15,8 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +24,11 @@ public final class Flags {
 
   private static final BeeLogger logger = LogUtils.getLogger(Flags.class);
 
-  private static final Map<String, String> map = Maps.newHashMap();
+  private static final Map<String, String> map = new HashMap<>();
 
   private static State state = State.NEW;
 
-  private static final List<Pair<String, Callback<String>>> pendingRequests = Lists.newArrayList();
+  private static final List<Pair<String, Callback<String>>> pendingRequests = new ArrayList<>();
 
   public static String get(String countryCode) {
     if (BeeUtils.isEmpty(countryCode)) {

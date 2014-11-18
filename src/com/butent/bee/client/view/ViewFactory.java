@@ -1,7 +1,5 @@
 package com.butent.bee.client.view;
 
-import com.google.common.collect.Maps;
-
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
@@ -24,6 +22,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -146,7 +145,7 @@ public final class ViewFactory {
     abstract void create(String item, ViewCallback callback);
   }
 
-  private static final Map<String, ViewSupplier> suppliers = Maps.newHashMap();
+  private static final Map<String, ViewSupplier> suppliers = new HashMap<>();
 
   public static void clear() {
     suppliers.clear();

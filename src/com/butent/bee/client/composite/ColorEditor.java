@@ -1,6 +1,5 @@
 package com.butent.bee.client.composite;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
@@ -26,6 +25,7 @@ import com.butent.bee.client.event.InputEvent;
 import com.butent.bee.client.event.InputHandler;
 import com.butent.bee.client.event.PreviewHandler;
 import com.butent.bee.client.event.Previewer;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.view.edit.EditChangeHandler;
@@ -38,17 +38,20 @@ import com.butent.bee.client.widget.InputText;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.State;
+import com.butent.bee.shared.data.value.BooleanValue;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ColorEditor extends Flow implements Editor, HasTextBox, HasKeyDownHandlers,
     PreviewHandler {
 
-  private static final String STYLE_PREFIX = "bee-ColorEditor-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "ColorEditor-";
 
   private static final String STYLE_CONTAINER = STYLE_PREFIX + "container";
   private static final String STYLE_TEXT_BOX = STYLE_PREFIX + "textBox";
@@ -57,9 +60,11 @@ public class ColorEditor extends Flow implements Editor, HasTextBox, HasKeyDownH
   private final InputText textBox;
   private final InputColor picker;
 
-  private final List<BlurHandler> blurHandlers = Lists.newArrayList();
+  private final List<BlurHandler> blurHandlers = new ArrayList<>();
 
   private State pickerState = State.CLOSED;
+
+  private boolean summarize;
 
   public ColorEditor() {
     super();
@@ -154,6 +159,11 @@ public class ColorEditor extends Flow implements Editor, HasTextBox, HasKeyDownH
   }
 
   @Override
+  public HandlerRegistration addSummaryChangeHandler(SummaryChangeEvent.Handler handler) {
+    return addHandler(handler, SummaryChangeEvent.getType());
+  }
+
+  @Override
   public void clearValue() {
     setValue(null);
   }
@@ -176,6 +186,11 @@ public class ColorEditor extends Flow implements Editor, HasTextBox, HasKeyDownH
   @Override
   public String getOptions() {
     return textBox.getOptions();
+  }
+
+  @Override
+  public Value getSummary() {
+    return BooleanValue.of(!BeeUtils.isEmpty(getValue()));
   }
 
   @Override
@@ -296,6 +311,11 @@ public class ColorEditor extends Flow implements Editor, HasTextBox, HasKeyDownH
   }
 
   @Override
+  public void setSummarize(boolean summarize) {
+    this.summarize = summarize;
+  }
+
+  @Override
   public void setTabIndex(int index) {
     textBox.setTabIndex(index);
   }
@@ -320,13 +340,18 @@ public class ColorEditor extends Flow implements Editor, HasTextBox, HasKeyDownH
   }
 
   @Override
+  public boolean summarize() {
+    return summarize;
+  }
+
+  @Override
   public List<String> validate(boolean checkForNull) {
     return validate(getValue(), checkForNull);
   }
 
   @Override
   public List<String> validate(String normalizedValue, boolean checkForNull) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
 
     if (BeeUtils.isEmpty(normalizedValue)) {
       if (checkForNull && !isNullable()) {

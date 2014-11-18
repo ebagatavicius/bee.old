@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  
+  name="SalesInvoice" viewName="Sales"
+  caption="=trdInvoice" showRowId="true"
+  width="800" height="600"
+  >
+  <FlowPanel class="flexBox-vertical">
+    <br/>
+    <Table>
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+      <col index="4" kind="label" />
+
+      <row>
+        <Label for="Date" />
+        <InputDateTime source="Date" visible="true" />
+
+        <Label for="InvoicePrefix" />
+        <InputText source="InvoicePrefix" upperCase="true" style="width: 50px;" />
+        <Label for="InvoiceNo" />
+        <InputText source="InvoiceNo" />
+      </row>
+
+      <row>
+        <Label for="Term" />
+        <InputDate source="Term" style="width: 80px;" />
+
+        <Label text="=trdTotal" />
+        <DecimalLabel source="Amount" format="0.00" style="font-weight: bold;" />
+
+        <Label for="Currency" />
+        <DataSelector source="Currency" renderColumns="CurrencyName"
+          style="width: 50px;" editEnabled="false" newRowEnabled="false" />
+      </row>
+
+      <row>
+        <Label for="Supplier" />
+        <DataSelector source="Supplier" />
+
+        <Label for="Customer" />
+        <DataSelector source="Customer" required="true" visible="true" />
+      </row>
+
+      <row>
+        <Label for="Manager" />
+        <DataSelector source="Manager" editSource="ManagerPerson" 
+          renderColumns="ManagerFirstName ManagerLastName" />
+
+        <Label for="Payer" />
+        <DataSelector source="Payer" />
+      </row>
+    </Table>
+
+    <br/>
+
+    <TabbedPages class="flexible">
+      <page>
+        <text>=productsServices</text>
+        <ChildGrid name="SaleItems" relColumn="Sale" />
+      </page>
+
+      <page >
+        <text>=tradeActs</text>
+        <ChildGrid name="InvoiceTradeActs" relColumn="Sale" module="Trade.Acts" />
+      </page>
+
+      <page>
+        <text>=trdNotes</text>
+        <SimplePanel>
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
+        </SimplePanel>
+      </page>
+    </TabbedPages>
+  </FlowPanel>
+</f:Form>

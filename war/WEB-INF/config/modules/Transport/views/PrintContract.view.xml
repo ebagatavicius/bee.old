@@ -55,11 +55,25 @@
       <SimpleJoin name="LoadingPlace" joinType="LEFT">
         <SimpleColumn name="Date" alias="LoadingDate" />    
         <SimpleColumn name="Address" alias="LoadingAddress" />
+        <SimpleColumn name="PostIndex" alias="LoadingPostIndex" />
+        <SimpleJoin joinType="LEFT" name="City">
+          <SimpleColumn name="Name" alias="LoadingCityName" />
+        </SimpleJoin>
+        <SimpleJoin joinType="LEFT" name="Country">
+          <SimpleColumn name="Name" alias="LoadingCountryName" />
+        </SimpleJoin>
       </SimpleJoin>
   
       <SimpleJoin name="UnloadingPlace" joinType="LEFT">
         <SimpleColumn name="Date" alias="UnloadingDate" />
         <SimpleColumn name="Address" alias="UnloadingAddress" />
+        <SimpleColumn name="PostIndex" alias="UnloadingPostIndex" />
+        <SimpleJoin joinType="LEFT" name="City">
+          <SimpleColumn name="Name" alias="UnloadingCityName" />
+        </SimpleJoin>
+        <SimpleJoin joinType="LEFT" name="Country">
+          <SimpleColumn name="Name" alias="UnloadingCountryName" />
+        </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
 

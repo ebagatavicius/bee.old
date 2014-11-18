@@ -7,48 +7,82 @@ import com.butent.bee.shared.ui.HasLocalizedCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public enum Module implements HasLocalizedCaption {
 
   CLASSIFIERS(SubModule.CONTACTS) {
     @Override
     public String getCaption(LocalizableConstants constants) {
-      return constants.classifiers();
+      return constants.references();
+    }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "commons";
     }
   },
+
   CALENDAR {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.calendar();
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "calendar";
+    }
   },
+
   DOCUMENTS(SubModule.TEMPLATES) {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.documents();
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "documents";
+    }
   },
+
   TASKS {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.crmTasks();
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "task";
+    }
   },
+
   DISCUSSIONS {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.discussions();
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "discuss";
+    }
   },
+
   MAIL(SubModule.ADMINISTRATION) {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.mail();
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "mail";
+    }
   },
+
   ECOMMERCE(SubModule.ADMINISTRATION, SubModule.CLASSIFIERS) {
     @Override
     public String getCaption(LocalizableConstants constants) {
@@ -59,36 +93,78 @@ public enum Module implements HasLocalizedCaption {
     public String getName() {
       return "Ec";
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "ecommerce";
+    }
   },
-  TRADE {
+
+  TRADE(SubModule.ACTS) {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.trade();
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return (subModule == SubModule.ACTS) ? "tradeact" : "trade";
+    }
   },
+
   TRANSPORT(SubModule.SELFSERVICE, SubModule.LOGISTICS, SubModule.ADMINISTRATION) {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.transport();
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "transport";
+    }
   },
+
   SERVICE {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.svcModule();
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "service";
+    }
   },
+
   ADMINISTRATION {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.administration();
     }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return null;
+    }
   };
 
-  static final Set<ModuleAndSub> ENABLED_MODULES = new HashSet<>();
+  static final List<ModuleAndSub> ENABLED_MODULES = new ArrayList<>();
 
   public static String getEnabledModulesAsString() {
     return BeeUtils.joinItems(ENABLED_MODULES);
+  }
+
+  public static List<String> getEnabledStyleSheets() {
+    List<String> sheets = new ArrayList<>();
+
+    for (ModuleAndSub ms : ENABLED_MODULES) {
+      String sheet = ms.getModule().getStyleSheet(ms.getSubModule());
+      if (!BeeUtils.isEmpty(sheet) && !sheets.contains(sheet)) {
+        sheets.add(sheet);
+      }
+    }
+
+    return sheets;
   }
 
   public static boolean isAnyEnabled(String input) {
@@ -127,7 +203,9 @@ public enum Module implements HasLocalizedCaption {
             }
           }
 
-          ENABLED_MODULES.add(ms);
+          if (!ENABLED_MODULES.contains(ms)) {
+            ENABLED_MODULES.add(ms);
+          }
         }
       }
     }
@@ -153,6 +231,8 @@ public enum Module implements HasLocalizedCaption {
   public String getName() {
     return BeeUtils.proper(name());
   }
+
+  public abstract String getStyleSheet(SubModule subModule);
 
   public List<SubModule> getSubModules() {
     return subModules;

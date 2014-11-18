@@ -19,7 +19,7 @@
     <xs:attribute name="visible" type="xs:boolean" />
     <xs:attribute name="module" type="type:modules" />
     <xs:attribute name="data" type="type:dataView" />
-    <xs:attribute name="for" type="type:nameType" />
+    <xs:attribute name="for" type="type:fieldNameType" />
   </xs:attributeGroup>
 
   <xs:complexType name="widgetBase">
@@ -102,11 +102,11 @@
           <xs:element name="render" type="ui:calcType" />
           <xs:element name="renderToken" type="ui:renderableToken" maxOccurs="unbounded" />
         </xs:choice>
-        <xs:attribute name="source" type="type:nameType" />
+        <xs:attribute name="source" type="type:fieldNameType" />
         <xs:attribute name="property" type="type:nameType" />
         <xs:attribute name="format" type="xs:normalizedString" />
         <xs:attribute name="enumKey" type="xs:normalizedString" />
-        <xs:attribute name="renderColumns" type="type:nameList" />
+        <xs:attribute name="renderColumns" type="type:fieldNames" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -127,7 +127,7 @@
           <xs:element name="validation" type="ui:calcType" minOccurs="0" />
           <xs:element name="carry" type="ui:calcType" minOccurs="0" />
         </xs:sequence>
-        <xs:attribute name="source" type="type:nameType" />
+        <xs:attribute name="source" type="type:fieldNameType" />
         <xs:attribute name="property" type="type:nameType" />
         <xs:attribute name="caption" type="xs:string" />
         <xs:attribute name="readOnly" type="xs:boolean" />
@@ -138,6 +138,7 @@
         <xs:attribute name="required" type="xs:boolean" />
         <xs:attribute name="updateMode" type="ui:refreshType" />
         <xs:attribute name="value" type="xs:normalizedString" />
+        <xs:attribute name="summarize" type="xs:boolean" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -163,6 +164,7 @@
     <xs:complexContent>
       <xs:extension base="wdhtType">
         <xs:group ref="widgetOrDecorator" />
+        <xs:attributeGroup ref="ui:appearance" />
         <xs:attributeGroup ref="visibility" />
       </xs:extension>
     </xs:complexContent>
@@ -531,7 +533,8 @@
         <xs:attribute name="gridName" type="type:nameType" />
         <xs:attribute name="caption" type="xs:string" />
         <xs:attribute name="filter" type="xs:normalizedString" />
-        <xs:attribute name="currentUserFilter" type="type:nameType" />
+        <xs:attribute name="currentUserFilter" type="type:fieldNameType" />
+        <xs:attribute name="summarize" type="xs:boolean" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -540,8 +543,8 @@
     <xs:complexType>
       <xs:complexContent>
         <xs:extension base="gridType">
-          <xs:attribute name="relColumn" type="type:nameType" use="required" />
-          <xs:attribute name="source" type="type:nameType" />
+          <xs:attribute name="relColumn" type="type:fieldNameType" use="required" />
+          <xs:attribute name="source" type="type:fieldNameType" />
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
@@ -650,7 +653,7 @@
     <xs:complexContent>
       <xs:extension base="inputWidget">
         <xs:attribute name="scale" type="xs:unsignedByte" />
-        <xs:attribute name="currencySource" type="type:nameType" />
+        <xs:attribute name="currencySource" type="type:fieldNameType" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -712,7 +715,7 @@
         <xs:attributeGroup ref="ui:relation" />
         <xs:attribute name="label" type="xs:string" />
         <xs:attribute name="enumKey" type="xs:normalizedString" />
-        <xs:attribute name="renderColumns" type="type:nameList" />
+        <xs:attribute name="renderColumns" type="type:fieldNames" />
         <xs:attribute name="upperCase" type="xs:boolean" />
       </xs:extension>
     </xs:complexContent>
@@ -745,8 +748,8 @@
         <xs:extension base="selectorType">
           <xs:attribute name="viewName" type="type:dataView" use="required" />
           <xs:attribute name="childTable" type="type:nameType" use="required" />
-          <xs:attribute name="targetRelColumn" type="type:nameType" use="required" />
-          <xs:attribute name="sourceRelColumn" type="type:nameType" use="required" />
+          <xs:attribute name="targetRelColumn" type="type:fieldNameType" use="required" />
+          <xs:attribute name="sourceRelColumn" type="type:fieldNameType" use="required" />
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>
@@ -781,7 +784,6 @@
           <xs:choice minOccurs="0" maxOccurs="2">
             <xs:group ref="widgetOrDecorator" />
           </xs:choice>
-          <xs:attribute name="animate" type="xs:int" />
           <xs:attribute name="open" type="xs:boolean" />
         </xs:extension>
       </xs:complexContent>
@@ -954,13 +956,13 @@
   <xs:element name="OrderedList" type="htmlList" substitutionGroup="widget" />
   <xs:element name="UnorderedList" type="htmlList" substitutionGroup="widget" />
 
-  <xs:element name="RichTextEditor" type="display" substitutionGroup="widget" />
+  <xs:element name="RichTextEditor" type="editableWidget" substitutionGroup="widget" />
 
   <xs:element name="Flag" substitutionGroup="widget">
     <xs:complexType>
       <xs:complexContent>
         <xs:extension base="widgetType">
-          <xs:attribute name="source" type="type:nameType" />
+          <xs:attribute name="source" type="type:fieldNameType" />
           <xs:attribute name="country" type="xs:normalizedString" />
         </xs:extension>
       </xs:complexContent>
@@ -1029,7 +1031,7 @@
               </xs:complexType>
             </xs:element>
           </xs:sequence>
-          <xs:attribute name="relColumn" type="type:nameType" use="required" />
+          <xs:attribute name="relColumn" type="type:fieldNameType" use="required" />
           <xs:attribute name="inline" type="xs:boolean" />
           <xs:attribute name="defaultRelations">
             <xs:simpleType><xs:list itemType="type:dataView" /></xs:simpleType>
@@ -1037,6 +1039,23 @@
           <xs:attribute name="blockedRelations">
             <xs:simpleType><xs:list itemType="type:dataView" /></xs:simpleType>
           </xs:attribute>
+          <xs:attribute name="summarize" type="xs:boolean" />
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Gallery" substitutionGroup="widget">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="widgetType">
+          <xs:attribute name="viewName" type="type:dataView" use="required" />
+          <xs:attribute name="relColumn" type="type:fieldNameType" use="required" />
+          <xs:attribute name="pictureColumn" type="type:fieldNameType" use="required" />
+          <xs:attribute name="orderColumn" type="type:fieldNameType" />
+          <xs:attribute name="parentRelColumn" type="type:fieldNameType" />
+          <xs:attribute name="readOnly" type="xs:boolean" />
+          <xs:attribute name="cache" type="xs:boolean" />
         </xs:extension>
       </xs:complexContent>
     </xs:complexType>

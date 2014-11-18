@@ -34,4 +34,8 @@
     <RelColumn name="Purchase" caption="=trCreditIdShort" readOnly="true" renderColumns="Purchase"
       editEnabled="true" editForm="CargoPurchaseInvoice" editViewName="CargoPurchaseInvoices" />
   </g:columns>
+
+  <g:rowEditable>
+    <ui:expression>!row.Sale &amp;&amp; !row.Purchase</ui:expression>
+  </g:rowEditable>
 </g:Grid>

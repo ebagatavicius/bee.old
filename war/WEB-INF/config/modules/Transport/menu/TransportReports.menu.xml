@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+
+name="TransportReports" label="=trReports" parent="Transport" order="30" separator="true" 
+>
+  <Item name="TransportTripProfitReport" label="=trReportTripProfit" service="report"
+    parameters="TransportTripProfit" />
+</Entry>

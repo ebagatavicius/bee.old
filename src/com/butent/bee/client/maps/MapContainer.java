@@ -7,16 +7,16 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.Presenter;
-import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
 import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
@@ -30,7 +30,7 @@ public class MapContainer extends Flow implements Presenter, View, HasWidgetSupp
 
   private static final BeeLogger logger = LogUtils.getLogger(MapContainer.class);
 
-  private static final String STYLE_NAME = StyleUtils.CLASS_NAME_PREFIX + "MapContainer";
+  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "MapContainer";
 
   private final HeaderView headerView;
 

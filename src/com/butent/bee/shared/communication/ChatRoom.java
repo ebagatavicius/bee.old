@@ -1,8 +1,5 @@
 package com.butent.bee.shared.communication;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
@@ -15,8 +12,10 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 public class ChatRoom implements BeeSerializable, HasInfo {
@@ -83,7 +82,7 @@ public class ChatRoom implements BeeSerializable, HasInfo {
   }
 
   private ChatRoom() {
-    this.messages = Lists.newArrayList();
+    this.messages = new ArrayList<>();
   }
 
   public boolean addOwner(Long ownerId) {
@@ -267,7 +266,7 @@ public class ChatRoom implements BeeSerializable, HasInfo {
     return users;
   }
 
-  public void incrementMassageCount() {
+  public void incrementMessageCount() {
     setMessageCount(getMessageCount() + 1);
   }
 
@@ -281,7 +280,7 @@ public class ChatRoom implements BeeSerializable, HasInfo {
   }
 
   public boolean is(Long roomId) {
-    return Objects.equal(roomId, getId());
+    return Objects.equals(roomId, getId());
   }
 
   public boolean isOwner(Long userId) {
@@ -299,9 +298,12 @@ public class ChatRoom implements BeeSerializable, HasInfo {
   }
 
   public boolean join(Long userId) {
-    if (isVisible(userId) && !getUsers().contains(userId)) {
-      getUsers().add(userId);
+    if (isVisible(userId)) {
+      if (!getUsers().contains(userId)) {
+        getUsers().add(userId);
+      }
       return true;
+
     } else {
       return false;
     }

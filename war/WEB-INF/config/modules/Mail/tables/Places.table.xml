@@ -14,7 +14,7 @@
   <Indexes>
     <Index fields="MessageUID" />
     <Index>
-      <PostgreSql>(COALESCE("Places"."Flags", 0) &amp; 8)</PostgreSql>
+      <PostgreSql>((COALESCE("Places"."Flags", 0) &amp; 8))</PostgreSql>
       <MsSql />
       <Oracle />
     </Index>

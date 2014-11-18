@@ -1,8 +1,6 @@
 package com.butent.bee.client.render;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 
 import com.butent.bee.shared.Assert;
@@ -17,7 +15,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.RangeOptions;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +30,7 @@ public class RangeRenderer extends AbstractCellRenderer implements HasItems {
   public static final boolean DEFAULT_LOWER_OPEN = false;
   public static final boolean DEFAULT_UPPER_OPEN = true;
 
-  private final Map<Range<Value>, String> map = Maps.newHashMap();
+  private final Map<Range<Value>, String> map = new HashMap<>();
 
   private final String separator;
   private final Splitter splitter;
@@ -110,7 +110,7 @@ public class RangeRenderer extends AbstractCellRenderer implements HasItems {
 
   @Override
   public List<String> getItems() {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     String low;
     String upp;
 

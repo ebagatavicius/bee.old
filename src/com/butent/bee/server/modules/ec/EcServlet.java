@@ -13,6 +13,7 @@ import com.butent.bee.server.http.HttpConst;
 import com.butent.bee.server.http.HttpUtils;
 import com.butent.bee.server.i18n.Localizations;
 import com.butent.bee.server.sql.SqlInsert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.ResponseMessage;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.CssUnit;
@@ -56,7 +57,7 @@ public class EcServlet extends LoginServlet {
 
   private static final String PATH_REGISTER = "/register";
 
-  private static final String REG_STYLE_PREFIX = "bee-ec-registration-";
+  private static final String REG_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "ec-registration-";
 
   private static final String REG_STYLE_LABEL_CELL = REG_STYLE_PREFIX + "label-cell";
   private static final String REG_STYLE_LABEL = REG_STYLE_PREFIX + "label";

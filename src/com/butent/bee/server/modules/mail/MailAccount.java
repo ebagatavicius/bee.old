@@ -1,6 +1,5 @@
 package com.butent.bee.server.modules.mail;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
@@ -23,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.mail.Flags;
@@ -467,7 +467,7 @@ public class MailAccount {
       logger.debug("Checking folder", remoteSource.getName(), "UIDValidity with",
           source.getUidValidity());
 
-      if (!Objects.equal(((UIDFolder) remoteSource).getUIDValidity(), source.getUidValidity())) {
+      if (!Objects.equals(((UIDFolder) remoteSource).getUIDValidity(), source.getUidValidity())) {
         throw new MessagingException("Folder out of sync: " + source.getName());
       }
       logger.debug("Opening folder:", remoteSource.getName());
@@ -554,7 +554,7 @@ public class MailAccount {
       logger.debug("Checking folder", folder.getName(), "UIDValidity with",
           source.getUidValidity());
 
-      if (!Objects.equal(((UIDFolder) folder).getUIDValidity(), source.getUidValidity())) {
+      if (!Objects.equals(((UIDFolder) folder).getUIDValidity(), source.getUidValidity())) {
         throw new MessagingException("Folder out of sync: " + source.getName());
       }
       logger.debug("Opening folder:", folder.getName());

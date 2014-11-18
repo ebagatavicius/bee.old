@@ -16,6 +16,7 @@ import com.butent.bee.shared.rights.RightsObjectType;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,7 +66,7 @@ final class FieldRightsHandler extends MultiStateForm {
 
   @Override
   protected void initObjects(Consumer<List<RightsObject>> consumer) {
-    List<RightsObject> result = Lists.newArrayList();
+    List<RightsObject> result = new ArrayList<>();
 
     Collection<DataInfo> views = Data.getDataInfoProvider().getViews();
     for (DataInfo view : views) {

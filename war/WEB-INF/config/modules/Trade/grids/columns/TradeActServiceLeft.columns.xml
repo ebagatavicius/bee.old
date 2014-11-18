@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <RelColumn name="Item" renderColumns="ItemName" choiceColumns="Name Article" 
+    editPopup="true" label="=name" visible="true">
+    <footer text="=totalOf" horizontalAlignment="right" />
+  </RelColumn>
+  <DataColumn name="Article" />
+
+  <DataColumn name="DateFrom" width="80" />
+  <DataColumn name="DateTo" width="80" />
+
+  <DataColumn name="Quantity" visible="true">
+    <footer aggregate="sum" />
+  </DataColumn>
+    
+  <DataColumn name="UnitName" caption="=unitShort" flexGrow="0" />
+  <DataColumn name="TimeUnit" flexGrow="0" />
+
+  <DataColumn name="Tariff" flexGrow="0" />
+</g:columns>

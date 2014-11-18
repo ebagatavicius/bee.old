@@ -19,5 +19,6 @@ name="Calendar" label="=calendar" order="70" module="Calendar"
 
   <Item name="Configuration" label="=settings" service="grid" parameters="Configuration" separator="true" />
 
-  <Item name="CalendarParameters" label="=calParameters" service="parameters" parameters="Calendar" separator="true" />
+  <Item name="CalendarParameters" label="=calParameters" service="parameters" parameters="Calendar"
+    separator="true" module="Administration" />
 </Entry>

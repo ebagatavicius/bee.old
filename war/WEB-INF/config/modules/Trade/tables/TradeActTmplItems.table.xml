@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="TradeActTmplItems"
+  idName="TradeActTmplItemID"
+  >
+  <Fields>
+    <Relation name="TradeActTemplate" notNull="true" relation="TradeActTemplates" cascade="DELETE" />
+
+    <Relation name="Item" notNull="true" relation="Items" label="=item" />
+
+    <Numeric name="Quantity" precision="12" scale="3" label="=quantity" />
+    <Numeric name="Price" precision="12" scale="2" label="=price" />
+
+    <Boolean name="VatPlus" label="=vatPlus" />
+    <Numeric name="Vat" precision="12" scale="2" label="=vat" />
+    <Boolean name="VatPercent" label="=vatPercent" />
+
+    <Numeric name="Discount" precision="7" scale="3" label="=discountPercent" />
+
+    <Text name="Note" label="=note" />
+  </Fields>
+</Table>

@@ -27,6 +27,7 @@
 
 .bee-mail-Sender {
   font-weight: bold;
+  cursor: pointer;
 }
 
 .bee-mail-Recipients {
@@ -118,16 +119,38 @@
   overflow: auto;
 }
 
-.bee-mail-AttachmentsMenu-item a {
+.bee-mail-Attachments a, .bee-mail-AttachmentsMenu-panel a {
   padding: 2px 4px;
   cursor: pointer;
   color: #0A8DE9;
   text-decoration: none;
 }
+.bee-mail-AttachmentsMenu-panel {
+  border-collapse: collapse;
+}
+.bee-mail-AttachmentsMenu-panel tr:hover {
+  background-color: #f2f2f2;
+  cursor: pointer;
+}
+.bee-mail-AttachmentsMenu-panel td {
+  padding: 4px 10px;
+}
 
-.bee-mail-AttachmentsMenu-item:hover {
-  background-color: WhiteSmoke;
-}  
+.bee-mail-MenuPopup {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.bee-mail-MenuTable {
+  border-collapse: collapse;
+}
+.bee-mail-MenuTable tr:hover {
+  background-color: #f2f2f2;
+  cursor: pointer;
+}
+.bee-mail-MenuTable td {
+  padding: 4px 10px;
+}
 
 .bee-mail-PartSeparator {
   height: 0;

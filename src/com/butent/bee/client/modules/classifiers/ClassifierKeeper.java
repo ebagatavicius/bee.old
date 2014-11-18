@@ -16,7 +16,6 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.event.RowTransformEvent;
 import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
-import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -39,9 +38,7 @@ public final class ClassifierKeeper {
   }
 
   static ParameterList createArgs(String method) {
-    ParameterList args = BeeKeeper.getRpc().createParameters(Module.CLASSIFIERS.getName());
-    args.addQueryItem(AdministrationConstants.METHOD, method);
-    return args;
+    return BeeKeeper.getRpc().createParameters(Module.CLASSIFIERS, method);
   }
 
   public static void register() {

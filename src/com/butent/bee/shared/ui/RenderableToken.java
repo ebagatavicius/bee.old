@@ -1,7 +1,5 @@
 package com.butent.bee.shared.ui;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
@@ -11,6 +9,7 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +57,7 @@ public final class RenderableToken implements BeeSerializable, HasInfo {
       return null;
     }
 
-    List<RenderableToken> result = Lists.newArrayList();
+    List<RenderableToken> result = new ArrayList<>();
     for (String token : tokens) {
       RenderableToken renderableToken = restore(token);
       if (renderableToken != null) {

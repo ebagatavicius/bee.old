@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="TradeOperations"
+  idName="TradeOperationID"
+  >
+  <Fields>
+    <String name="OperationName" precision="100" notNull="true" unique="true"
+      label="=trdOperation" />
+
+    <Integer name="Ordinal" label="=ordinal" />
+
+    <Enum name="Kind" key="TradeActKind" label="=taKind" />
+    <Enum name="Price" key="ItemPrice" label="=price" />
+
+    <Relation name="WarehouseFrom" relation="Warehouses" label="=trdWarehouseFrom" />
+    <Relation name="WarehouseTo" relation="Warehouses" label="=trdWarehouseTo" />
+    
+    <Boolean name="IsDefault" label="=trdOperationDefault" />
+
+    <String name="Background" precision="100" label="=backgroundColor" />
+    <String name="Foreground" precision="100" label="=foregroundColor" />
+
+    <Text name="Description" label="=description" />
+  </Fields>
+</Table>

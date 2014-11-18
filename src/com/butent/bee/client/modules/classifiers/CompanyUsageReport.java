@@ -44,6 +44,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CompanyUsageReport extends ReportInterceptor {
 
@@ -172,6 +173,13 @@ public class CompanyUsageReport extends ReportInterceptor {
   }
 
   @Override
+  public Set<Action> getEnabledActions(Set<Action> defaultActions) {
+    Set<Action> actions = super.getEnabledActions(defaultActions);
+    actions.remove(Action.EXPORT);
+    return actions;
+  }
+
+  @Override
   public FormInterceptor getInstance() {
     return new CompanyUsageReport();
   }
@@ -179,49 +187,48 @@ public class CompanyUsageReport extends ReportInterceptor {
   @Override
   public void onLoad(FormView form) {
     ReportParameters parameters = readParameters();
-    if (parameters == null) {
-      return;
-    }
 
-    Widget widget = form.getWidgetByName(NAME_RELATION);
-    Integer index = parameters.getInteger(NAME_RELATION);
-    if (widget instanceof ListBox && BeeUtils.isPositive(index)
-        && BeeUtils.isIndex(RELATIONS, index - 1)) {
-      ((ListBox) widget).setSelectedIndex(index);
-    }
-
-    widget = form.getWidgetByName(NAME_OPERATOR);
-    String op = parameters.get(NAME_OPERATOR);
-    if (widget instanceof ListBox && !BeeUtils.isEmpty(op)) {
-      index = ((ListBox) widget).getIndex(op);
-      if (!BeeConst.isUndef(index)) {
+    if (parameters != null) {
+      Widget widget = form.getWidgetByName(NAME_RELATION);
+      Integer index = parameters.getInteger(NAME_RELATION);
+      if (widget instanceof ListBox && BeeUtils.isPositive(index)
+          && BeeUtils.isIndex(RELATIONS, index - 1)) {
         ((ListBox) widget).setSelectedIndex(index);
       }
-    }
 
-    widget = form.getWidgetByName(NAME_COUNT);
-    String cnt = parameters.get(NAME_COUNT);
-    if (widget instanceof HasStringValue && BeeUtils.isPositiveInt(cnt)) {
-      ((HasStringValue) widget).setValue(cnt);
-    }
+      widget = form.getWidgetByName(NAME_OPERATOR);
+      String op = parameters.get(NAME_OPERATOR);
+      if (widget instanceof ListBox && !BeeUtils.isEmpty(op)) {
+        index = ((ListBox) widget).getIndex(op);
+        if (!BeeConst.isUndef(index)) {
+          ((ListBox) widget).setSelectedIndex(index);
+        }
+      }
 
-    widget = form.getWidgetByName(NAME_START_DATE);
-    DateTime dateTime = parameters.getDateTime(NAME_START_DATE);
-    if (widget instanceof InputDateTime && dateTime != null) {
-      ((InputDateTime) widget).setDateTime(dateTime);
-    }
+      widget = form.getWidgetByName(NAME_COUNT);
+      String cnt = parameters.get(NAME_COUNT);
+      if (widget instanceof HasStringValue && BeeUtils.isPositiveInt(cnt)) {
+        ((HasStringValue) widget).setValue(cnt);
+      }
 
-    widget = form.getWidgetByName(NAME_END_DATE);
-    dateTime = parameters.getDateTime(NAME_END_DATE);
-    if (widget instanceof InputDateTime && dateTime != null) {
-      ((InputDateTime) widget).setDateTime(dateTime);
-    }
+      widget = form.getWidgetByName(NAME_START_DATE);
+      DateTime dateTime = parameters.getDateTime(NAME_START_DATE);
+      if (widget instanceof InputDateTime && dateTime != null) {
+        ((InputDateTime) widget).setDateTime(dateTime);
+      }
 
-    for (String name : SELECTOR_NAMES) {
-      widget = form.getWidgetByName(name);
-      String idList = parameters.get(name);
-      if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
-        ((MultiSelector) widget).setIds(idList);
+      widget = form.getWidgetByName(NAME_END_DATE);
+      dateTime = parameters.getDateTime(NAME_END_DATE);
+      if (widget instanceof InputDateTime && dateTime != null) {
+        ((InputDateTime) widget).setDateTime(dateTime);
+      }
+
+      for (String name : SELECTOR_NAMES) {
+        widget = form.getWidgetByName(name);
+        String idList = parameters.get(name);
+        if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
+          ((MultiSelector) widget).setIds(idList);
+        }
       }
     }
 
@@ -326,7 +333,7 @@ public class CompanyUsageReport extends ReportInterceptor {
 
   @Override
   protected String getBookmarkLabel() {
-    List<String> labels = Lists.newArrayList(getCaption());
+    List<String> labels = Lists.newArrayList(getReportCaption());
 
     String relationIndex = getEditorValue(NAME_RELATION);
 

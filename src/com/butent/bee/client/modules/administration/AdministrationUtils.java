@@ -37,7 +37,8 @@ import java.util.Map;
 
 public final class AdministrationUtils {
 
-  private static final String STYLE_UPDATE_RATES_PREFIX = "bee-co-updateRates-";
+  private static final String STYLE_UPDATE_RATES_PREFIX = BeeConst.CSS_CLASS_PREFIX
+      + "co-updateRates-";
 
   public static void blockHost(String caption, final String host,
       final NotificationListener notificationListener, final Callback<String> callback) {

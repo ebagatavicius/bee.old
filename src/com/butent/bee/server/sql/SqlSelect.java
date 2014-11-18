@@ -375,6 +375,15 @@ public class SqlSelect extends HasFrom<SqlSelect> implements IsCloneable<SqlSele
     return getReference();
   }
 
+  public SqlSelect addFields(String source, Collection<String> fields) {
+    Assert.notEmpty(fields);
+
+    for (String fld : fields) {
+      addField(SqlUtils.field(source, fld), null);
+    }
+    return getReference();
+  }
+
   /**
    * Adds specified fields to a group list.
    *

@@ -18,6 +18,8 @@ import com.butent.bee.shared.communication.CommUtils;
 import com.butent.bee.shared.communication.ContentType;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -68,6 +70,26 @@ public class RpcFactory {
     return new ParameterList(svc);
   }
 
+  public ParameterList createParameters(Module module, String method) {
+    Assert.notNull(module);
+    Assert.notEmpty(method);
+
+    ParameterList params = createParameters(module.getName());
+    params.addQueryItem(Service.VAR_METHOD, method);
+
+    return params;
+  }
+
+  public ParameterList createParameters(Module module, SubModule subModule, String method) {
+    ParameterList params = createParameters(module, method);
+
+    if (subModule != null) {
+      params.addQueryItem(Service.VAR_SUB_MODULE, subModule.getName());
+    }
+
+    return params;
+  }
+
   public String getOptions() {
     if (Global.isDebug()) {
       return CommUtils.OPTION_DEBUG;
@@ -116,7 +138,7 @@ public class RpcFactory {
     Assert.notEmpty(method);
 
     ParameterList params = createParameters(Service.INVOKE);
-    params.addQueryItem(Service.RPC_VAR_METH, method);
+    params.addQueryItem(Service.VAR_METHOD, method);
 
     if (data == null) {
       return makeGetRequest(params, callback);

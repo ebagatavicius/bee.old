@@ -1,6 +1,5 @@
 package com.butent.bee.client.view.search;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler;
@@ -32,7 +31,9 @@ import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ValueFilterSupplier extends AbstractFilterSupplier {
 
@@ -41,11 +42,11 @@ public class ValueFilterSupplier extends AbstractFilterSupplier {
   private static final Splitter valueSplitter =
       Splitter.on(BeeConst.CHAR_COMMA).omitEmptyStrings().trimResults();
 
-  private final List<BeeColumn> columns = Lists.newArrayList();
+  private final List<BeeColumn> columns = new ArrayList<>();
   private final String idColumnName;
   private final String versionColumnName;
 
-  private final List<BeeColumn> searchBy = Lists.newArrayList();
+  private final List<BeeColumn> searchBy = new ArrayList<>();
 
   private final InputText editor;
   private final Label errorMessage;
@@ -279,7 +280,7 @@ public class ValueFilterSupplier extends AbstractFilterSupplier {
   }
 
   private void onEmptiness(Boolean value) {
-    boolean changed = !BeeUtils.isEmpty(getOldValue()) || !Objects.equal(getEmptiness(), value);
+    boolean changed = !BeeUtils.isEmpty(getOldValue()) || !Objects.equals(getEmptiness(), value);
     setValue(null, value);
     update(changed);
   }

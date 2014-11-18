@@ -2,11 +2,11 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
       xmlns:ui="http://www.butent.com/ui"
   
-  name="CurrencyRates" viewName="CurrencyRates" caption="=currencyRates" minColumnWidth="100"
+  name="CurrencyRates" viewName="CurrencyRates" caption="=currencyRates"
   >
   <g:columns>
-    <DataColumn name="Date" source="Date" visible="true" />
-    <DataColumn name="Quantity" source="Quantity" visible="true" carry="true" />
-    <DataColumn name="Rate" source="Rate" visible="true" />
+    <DataColumn name="Date" source="Date" visible="true" minWidth="120" />
+    <DataColumn name="Quantity" source="Quantity" visible="true" carry="true" minWidth="80" />
+    <DataColumn name="Rate" source="Rate" visible="true" minWidth="100" />
   </g:columns>
 </g:Grid>

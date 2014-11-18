@@ -101,7 +101,7 @@ public final class ParametersGrid extends AbstractGridInterceptor {
 
   private final String module;
   private LocalProvider provider;
-  private final List<BeeParameter> params = Lists.newArrayList();
+  private final List<BeeParameter> params = new ArrayList<>();
   private final Long userId;
 
   private ParametersGrid(String module) {

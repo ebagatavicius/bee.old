@@ -1,10 +1,10 @@
 package com.butent.bee.client.render;
 
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.modules.trade.DiscountRenderer;
 import com.butent.bee.client.modules.trade.TotalRenderer;
 import com.butent.bee.client.modules.trade.VatRenderer;
 import com.butent.bee.client.utils.Evaluator;
@@ -28,6 +28,7 @@ import com.butent.bee.shared.ui.RendererDescription;
 import com.butent.bee.shared.ui.RendererType;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class RendererFactory {
@@ -138,7 +139,7 @@ public final class RendererFactory {
       return null;
     }
 
-    List<ColumnToken> columnTokens = Lists.newArrayList();
+    List<ColumnToken> columnTokens = new ArrayList<>();
     for (RenderableToken token : tokens) {
       String source = token.getSource();
       if (BeeUtils.isEmpty(source)) {
@@ -256,6 +257,10 @@ public final class RendererFactory {
 
       case VAT:
         renderer = new VatRenderer(dataColumns);
+        break;
+
+      case DISCOUNT:
+        renderer = new DiscountRenderer(dataColumns);
         break;
 
       case TOKEN:

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="TradeOperations" source="TradeOperations"
+  caption="=trdOperations" newRowCaption="=trdNewOperation"
+  >
+  <Columns>
+    <SimpleColumn name="OperationName" />
+    <SimpleColumn name="Ordinal" />
+
+    <SimpleColumn name="Kind" />
+    <SimpleColumn name="Price" />
+
+    <SimpleColumn name="WarehouseFrom" />
+    <SimpleJoin joinType="LEFT" name="WarehouseFrom">
+      <SimpleColumn alias="WarehouseFromCode" name="Code" />
+      <SimpleColumn alias="WarehouseFromName" name="Name" />
+    </SimpleJoin>
+
+    <SimpleColumn name="WarehouseTo" />
+    <SimpleJoin joinType="LEFT" name="WarehouseTo">
+      <SimpleColumn alias="WarehouseToCode" name="Code" />
+      <SimpleColumn alias="WarehouseToName" name="Name" />
+    </SimpleJoin>
+
+    <SimpleColumn name="IsDefault" />
+
+    <SimpleColumn name="Background" />
+    <SimpleColumn name="Foreground" />
+
+    <SimpleColumn name="Description" />
+  </Columns>
+  
+  <Order>
+    <OrderBy column="Ordinal" />
+    <OrderBy column="OperationName" />
+  </Order>
+</View>
+ 

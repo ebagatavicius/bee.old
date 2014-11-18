@@ -256,7 +256,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
 
   private String selectorClass;
 
-  private MenuConstants.ITEM_TYPE itemType;
+  private MenuConstants.ItemType itemType;
 
   private Integer visibleLines;
 
@@ -440,7 +440,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     return instant;
   }
 
-  public MenuConstants.ITEM_TYPE getItemType() {
+  public MenuConstants.ItemType getItemType() {
     return itemType;
   }
 
@@ -566,7 +566,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     }
     String it = getAttribute(ATTR_ITEM_TYPE);
     if (!BeeUtils.isEmpty(it)) {
-      setItemType(EnumUtils.getEnumByName(MenuConstants.ITEM_TYPE.class, it));
+      setItemType(EnumUtils.getEnumByName(MenuConstants.ItemType.class, it));
     }
     String lines = getAttribute(HasVisibleLines.ATTR_VISIBLE_LINES);
     if (BeeUtils.isPositiveInt(lines)) {
@@ -723,10 +723,14 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
   public boolean isEditEnabled(boolean defEnabled) {
     if (!BeeUtils.isEmpty(getValueSource())) {
       return false;
+
     } else if (defEnabled) {
       return !BeeConst.isFalse(getAttribute(UiConstants.ATTR_EDIT_ENABLED));
+
     } else {
-      return BeeConst.isTrue(getAttribute(UiConstants.ATTR_EDIT_ENABLED));
+      String enabled = getAttribute(UiConstants.ATTR_EDIT_ENABLED);
+      return BeeConst.isTrue(enabled)
+          || BeeUtils.isEmpty(enabled) && getAttributes().containsKey(UiConstants.ATTR_EDIT_POPUP);
     }
   }
 
@@ -842,7 +846,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     this.instant = instant;
   }
 
-  public void setItemType(MenuConstants.ITEM_TYPE itemType) {
+  public void setItemType(MenuConstants.ItemType itemType) {
     this.itemType = itemType;
   }
 

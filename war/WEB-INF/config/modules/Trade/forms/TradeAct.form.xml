@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form[
+  <!ENTITY inpw "width: 200px;">
+  <!ENTITY inpdt "width: 120px;">
+  <!ENTITY forparent "<dynStyle><ui:inline>display: none;</ui:inline><ui:expression>!row.Parent</ui:expression></dynStyle>">
+]>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:ui="http://www.butent.com/ui"
+  
+  name="TradeAct" viewName="TradeActs"
+  caption="=tradeAct" showRowId="true"
+  width="800" height="600"
+  >
+  <FlowPanel class="flexBox-vertical">
+    <br/>
+    <Table>
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+
+      <row class="bee-ta-template-selection" data="TradeActTemplates">
+        <Label text="=template" />
+        <UnboundSelector viewName="TradeActTemplates" choiceColumns="Template"
+          newRowEnabled="false" style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Name" visible="true" />
+        <DataSelector source="Name" style="&inpw;" visible="true" />
+
+        <Label for="Parent">
+          &forparent;
+        </Label>
+        <LongLabel source="Parent" class="bee-output" style="width: 120px;">
+          &forparent;
+        </LongLabel>
+      </row>
+
+      <row>
+        <Label for="Date" visible="true" />
+        <InputDateTime source="Date" style="&inpdt;" visible="true" />
+
+        <Label for="Until" class="bee-ta-until-label" />
+        <InputDateTime source="Until" class="bee-ta-until-input" style="&inpdt;" />
+      </row>
+
+      <row>
+        <Label for="Series" />
+        <DataSelector source="Series" newRowEnabled="false" style="width: 120px;" />
+
+        <Label for="Number" visible="true" />
+        <InputText source="Number" style="&inpw;" visible="true" />
+      </row>
+
+      <row>
+        <Label for="Operation" />
+        <DataSelector source="Operation" renderColumns="OperationName" newRowEnabled="false"
+          style="&inpw;" />
+
+        <Label for="Status" />
+        <DataSelector source="Status" renderColumns="StatusName" newRowEnabled="false"
+          style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Company" visible="true" />
+        <DataSelector source="Company" style="&inpw;" visible="true" />
+
+        <Label for="Object" />
+        <DataSelector source="Object" renderColumns="ObjectName" 
+          choiceColumns="CompanyName ObjectName ObjectAddress" newRowEnabled="false"
+          style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Contact" />
+        <DataSelector source="Contact" newRowEnabled="false" style="&inpw;"
+          renderColumns="ContactFirstName ContactLastName"
+          choiceColumns="FirstName LastName CompanyName" options="Company" />
+
+        <Label for="Manager" />
+        <DataSelector source="Manager" editSource="ManagerPerson" 
+          renderColumns="ManagerFirstName ManagerLastName" newRowEnabled="false" style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Vehicle" />
+        <DataSelector source="Vehicle" 
+          renderColumns="VehicleParentModel VehicleModel VehicleNumber" newRowEnabled="false"
+          style="&inpw;" />
+        
+        <Label for="Driver" />
+        <DataSelector source="Driver" renderColumns="DriverFirstName DriverLastName"
+          newRowEnabled="false" style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Currency" />
+        <DataSelector source="Currency" renderColumns="CurrencyName" editEnabled="false"
+          newRowEnabled="false" style="width: 60px;" />
+      </row>
+    </Table>
+
+    <br/>
+    <TabbedPages class="flexible">
+      <page>
+        <text>=goods</text>
+        <ChildGrid name="TradeActItems" relColumn="TradeAct" />
+      </page>
+
+      <page class="bee-ta-services-tab">
+        <text>=services</text>
+        <ChildGrid name="TradeActServices" relColumn="TradeAct" />
+      </page>
+
+      <page class="bee-ta-invoices-tab">
+        <text>=trdInvoices</text>
+        <ChildGrid name="TradeActInvoices" relColumn="TradeAct" />
+      </page>
+
+      <page>
+        <text>=notes</text>
+        <FlowPanel class="flexBox-vertical">
+          <br/>
+          <HorizontalPanel data="TradeNotes">
+            <cell kind="label">
+              <Label text="=trdNoteTemplate" />
+            </cell>
+            <UnboundSelector viewName="TradeNotes" choiceColumns="Name"
+              newRowEnabled="false" style="&inpw;" />
+          </HorizontalPanel>
+
+          <br/>
+          <SimplePanel class="flexible" style="position: relative;">
+            <InputArea source="Notes" class="occupy-1" summarize="true" />
+          </SimplePanel>
+        </FlowPanel>
+      </page>
+    </TabbedPages>
+  </FlowPanel>
+</f:Form>

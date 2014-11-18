@@ -1,10 +1,10 @@
 package com.butent.bee.shared.utils;
 
-import com.google.common.base.Objects;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
+
+import java.util.Objects;
 
 /**
  * Used for creating Properties.
@@ -72,8 +72,8 @@ public class Property implements Comparable<Property>, BeeSerializable {
     } else if (this == obj) {
       return true;
     } else {
-      return Objects.equal(getName(), ((Property) obj).getName())
-          && Objects.equal(getValue(), ((Property) obj).getValue());
+      return Objects.equals(getName(), ((Property) obj).getName())
+          && Objects.equals(getValue(), ((Property) obj).getValue());
     }
   }
 
@@ -93,7 +93,7 @@ public class Property implements Comparable<Property>, BeeSerializable {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getName(), getValue());
+    return Objects.hash(getName(), getValue());
   }
 
   @Override

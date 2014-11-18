@@ -1,7 +1,5 @@
 package com.butent.bee.client.view.search;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.value.ValueType;
@@ -9,6 +7,7 @@ import com.butent.bee.shared.ui.FilterSupplierType;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class FilterSupplierFactory {
@@ -21,7 +20,7 @@ public final class FilterSupplierFactory {
 
     BeeColumn sourceColumn = BeeUtils.getQuietly(dataColumns, sourceIndex);
 
-    List<BeeColumn> searchColumns = Lists.newArrayList();
+    List<BeeColumn> searchColumns = new ArrayList<>();
     if (!BeeUtils.isEmpty(searchBy)) {
       for (String by : searchBy) {
         BeeColumn column = DataUtils.getColumn(by, dataColumns);

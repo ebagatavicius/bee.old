@@ -2,11 +2,12 @@
 <View xmlns="http://www.butent.com/view"
   xmlns:x="http://www.butent.com/expression"
 
-  name="Assessments" source="Assessments"
+  name="Assessments" source="Assessments" module="Transport.Logistics"
   caption="=assessments"
-  newRowForm="Assessment" newRowCaption="=newAssessmentRequest"
+  newRowForm="Assessment"
   editForm="Assessment"
   >
+  <Relation renderColumns="ID Date CustomerName" />
   <Columns>
     <IdColumn name="ID" />
     <SimpleColumn name="Assessment" label="=captionPid" />
@@ -64,15 +65,21 @@
       </SimpleJoin>
 
       <SimpleColumn name="Number" label="=refNumber" editable="true" />
+      <SimpleColumn name="Directions" alias="Shipper" label="=shipper" editable="true" />
       <SimpleColumn name="Description" editable="true" />
       <SimpleColumn name="Notes" alias="CargoNotes" label="=additionalInfo" editable="true" />
       <SimpleColumn name="LoadedKilometers" label="=trAssessmentPlannedKm" editable="true" />
 
       <SimpleJoin name="LoadingPlace" joinType="LEFT">
-        <SimpleColumn name="Contact" alias="Shipper" label="=shipper" editable="true" />
         <SimpleColumn name="Date" alias="LoadingDate" editable="true" label="=trLoadingDate" />
+        <SimpleColumn name="Company" alias="LoadingCompany" editable="true" label="=trLoadingCompany" />
+        <SimpleColumn name="Contact" alias="LoadingContact" editable="true" label="=trLoadingContact" />
         <SimpleColumn name="Address" alias="LoadingAddress" editable="true" label="=trLoadingAddress" />
         <SimpleColumn name="PostIndex" alias="LoadingPostIndex" editable="true" label="=trLoadingPostIndex" />
+        <SimpleColumn name="City" alias="LoadingCity" editable="true" label="=trLoadingCity" />
+        <SimpleJoin joinType="LEFT" name="City">
+          <SimpleColumn name="Name" alias="LoadingCityName" />
+        </SimpleJoin>
         <SimpleColumn name="Country" alias="LoadingCountry" editable="true" label="=trLoadingCountry" />
         <SimpleJoin joinType="LEFT" name="Country">
           <SimpleColumn name="Name" alias="LoadingCountryName" />
@@ -81,8 +88,14 @@
       </SimpleJoin>
       <SimpleJoin name="UnloadingPlace" joinType="LEFT">
         <SimpleColumn name="Date" alias="UnloadingDate" editable="true" label="=trUnloadingDate" />
+        <SimpleColumn name="Company" alias="UnloadingCompany" editable="true" label="=trUnloadingCompany" />
+        <SimpleColumn name="Contact" alias="UnloadingContact" editable="true" label="=trUnloadingContact" />
         <SimpleColumn name="Address" alias="UnloadingAddress" editable="true" label="=trUnloadingAddress" />
         <SimpleColumn name="PostIndex" alias="UnloadingPostIndex" editable="true" label="=trUnloadingPostIndex" />
+        <SimpleColumn name="City" alias="UnloadingCity" editable="true" label="=trUnloadingCity" />
+        <SimpleJoin joinType="LEFT" name="City">
+          <SimpleColumn name="Name" alias="UnloadingCityName" />
+        </SimpleJoin>
         <SimpleColumn name="Country" alias="UnloadingCountry" editable="true" label="=trUnloadingCountry" />
         <SimpleJoin joinType="LEFT" name="Country">
           <SimpleColumn name="Name" alias="UnloadingCountryName" />

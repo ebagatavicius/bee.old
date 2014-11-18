@@ -1,12 +1,12 @@
 package com.butent.bee.client.utils;
 
-import com.google.common.collect.Lists;
-
+import com.butent.bee.client.dom.Features;
 import com.butent.bee.shared.html.Keywords;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import elemental.js.html.JsPerformance;
@@ -125,7 +125,7 @@ public final class BrowsingContext {
   }
 
   public static List<Property> getPerformanceInfo() {
-    List<Property> result = Lists.newArrayList();
+    List<Property> result = new ArrayList<>();
 
     JsPerformance performance = JsBrowser.getWindow().getPerformance();
     if (performance == null) {
@@ -173,8 +173,8 @@ public final class BrowsingContext {
           "Unload Event End", timing.getUnloadEventEnd());
     }
 
-    if (JsUtils.isFunction(performance, "now")) {
-      result.add(new Property("Now", JsUtils.doMethod(performance, "now")));
+    if (Features.supportsHighResolutionTime()) {
+      result.add(new Property("Now", BeeUtils.toString(highResTimeStamp())));
     }
 
     return result;
@@ -195,7 +195,7 @@ public final class BrowsingContext {
   }
 
   public static List<Property> getSupportedMimeTypes() {
-    List<Property> result = Lists.newArrayList();
+    List<Property> result = new ArrayList<>();
 
     DOMMimeTypeArray mimeTypes = JsBrowser.getWindow().getNavigator().getMimeTypes();
     if (mimeTypes == null) {
@@ -240,9 +240,23 @@ public final class BrowsingContext {
     return BeeUtils.containsSame(JsBrowser.getWindow().getNavigator().getUserAgent(), "chrome");
   }
 
+  public static double now() {
+    return Features.supportsHighResolutionTime() ? highResTimeStamp() : lowResTimeStamp();
+  }
+
   public static Window open(String url) {
     return JsBrowser.getWindow().open(url, Keywords.BROWSING_CONTEXT_BLANK);
   }
+
+//@formatter:off
+  private static native double highResTimeStamp() /*-{
+    return $wnd.performance.now();
+  }-*/;
+
+  private static native double lowResTimeStamp() /*-{
+    return Date.now();
+  }-*/;
+//@formatter:on
 
   private static String toString(Element element) {
     if (element == null) {

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="TradeActTmplServices"
+  idName="TradeActTmplServiceID"
+  >
+  <Fields>
+    <Relation name="TradeActTemplate" notNull="true" relation="TradeActTemplates" cascade="DELETE" />
+
+    <Relation name="Item" notNull="true" relation="Items" label="=service" />
+
+    <Date name="DateFrom" label="=dateFrom" />
+    <Date name="DateTo" label="=dateTo" />
+
+    <Numeric name="Tariff" precision="7" scale="1" label="=taTariff" />
+    <Numeric name="Factor" precision="7" scale="3" label="=taFactor" />
+
+    <Numeric name="DaysPerWeek" precision="1" label="=taDaysPerWeek" />
+    <Numeric name="MinTerm" precision="3" label="=taMinTerm" />
+
+    <Numeric name="Quantity" precision="12" scale="3" label="=quantity" />
+    <Numeric name="Price" precision="12" scale="2" label="=price" />
+
+    <Boolean name="VatPlus" label="=vatPlus" />
+    <Numeric name="Vat" precision="12" scale="2" label="=vat" />
+    <Boolean name="VatPercent" label="=vatPercent" />
+
+    <Numeric name="Discount" precision="7" scale="3" label="=discountPercent" />
+
+    <Text name="Note" label="=note" />
+  </Fields>
+</Table>

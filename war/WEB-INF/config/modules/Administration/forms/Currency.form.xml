@@ -5,24 +5,31 @@
   name="Currency" viewName="Currencies" caption="=currency" height="50" heightUnit="%" width="600"
   >
   <FlowPanel class="flexBox-vertical">
-    <Table style="border-spacing: 5px;">
+    <br/>
+    <Table>
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+
       <row>
-        <Label text="=currency" class="bee-required" for="Name" horizontalAlignment="right"/>
+        <Label for="Name" />
         <InputText source="Name" visible="true" />
-        <Label text="=caption" horizontalAlignment="right" for="Caption" />
+        <Label for="Caption" />
         <InputText source="Caption" />
       </row>
+
       <row>
-        <Label text="=minorName" for="MinorName" horizontalAlignment="right"/>
+        <Label for="MinorName" />
         <InputText source="MinorName" />
-        <Label text="=minorCaption" horizontalAlignment="right" for="MinorCaption" />
+        <Label for="MinorCaption" />
         <InputText source="MinorCaption" />
       </row>
+
       <row for="UpdateTag">
-        <CheckBox text="=currencyUpdateTag" source="UpdateTag" horizontalAlignment="right"/>
+        <CheckBox text="=currencyUpdateTag" source="UpdateTag" />
       </row>
     </Table>
 
+    <br/>
     <ChildGrid class="flexible" name="CurrencyRates" relColumn="Currency" />
   </FlowPanel>
 </f:Form>  

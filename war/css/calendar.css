@@ -151,7 +151,6 @@
   overflow: hidden;
   border: 1px solid #444;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
 }
 
 .bee-cal .appointment-multiday {
@@ -159,7 +158,6 @@
   overflow: hidden;
   border: 1px solid #444;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
   cursor: pointer;
 }
 

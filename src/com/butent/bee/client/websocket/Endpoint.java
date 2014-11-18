@@ -1,7 +1,6 @@
 package com.butent.bee.client.websocket;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.user.client.Timer;
@@ -24,6 +23,7 @@ import com.butent.bee.shared.websocket.WsUtils;
 import com.butent.bee.shared.websocket.messages.Message;
 import com.butent.bee.shared.websocket.messages.ProgressMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +126,7 @@ public final class Endpoint {
   }
 
   public static List<Property> getInfo() {
-    List<Property> info = Lists.newArrayList();
+    List<Property> info = new ArrayList<>();
 
     if (socket == null) {
       PropertyUtils.addProperties(info,

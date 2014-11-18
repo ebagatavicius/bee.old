@@ -18,6 +18,12 @@
 
     <Boolean name="WorkspaceContinue" label="=workspaceContinue" />
     <Text name="LastWorkspace" />
+    
+    <Integer name="ApplianceHeaderHeight" label="=heightOfApplianceHeader" />
+    <Integer name="ViewHeaderHeight" label="=heightOfViewHeader" />
+
+    <Integer name="ClickSensitivityMillis" label="=clickSensitivityMillis" />
+    <Integer name="ClickSensitivityDistance" label="=clickSensitivityDistance" />
 
     <Text name="Style" label="=style" />
   </Fields>

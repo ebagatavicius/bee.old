@@ -70,7 +70,7 @@ public class TransportSelfService extends LoginServlet {
   private static final String PATH_REGISTER = "/register";
   private static final String PATH_QUERY = "/query";
 
-  private static final String REG_STYLE_PREFIX = "bee-tr-registration-";
+  private static final String REG_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-registration-";
 
   private static final String REG_STYLE_LABEL_CELL = REG_STYLE_PREFIX + "label-cell";
   private static final String REG_STYLE_LABEL = REG_STYLE_PREFIX + "label";
@@ -80,7 +80,7 @@ public class TransportSelfService extends LoginServlet {
 
   private static final String REG_STYLE_REQUIRED = REG_STYLE_PREFIX + "required";
 
-  private static final String Q_STYLE_PREFIX = "bee-tr-query-";
+  private static final String Q_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-query-";
 
   private static final String Q_STYLE_LABEL_CELL = Q_STYLE_PREFIX + "label-cell";
   private static final String Q_STYLE_LABEL = Q_STYLE_PREFIX + "label";

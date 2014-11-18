@@ -1,45 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Table xmlns="http://www.butent.com/widget" style="border-spacing: 4px;">
+<Table xmlns="http://www.butent.com/widget">
+
+   <col index="0" kind="label" />
+   <col index="2" kind="label" />
 
   <row>
-    <Label text="=documentName" class="bee-required" horizontalAlignment="right"/>
+    <Label for="Name" visible="true" />
     <cell colSpan="3">
-      <InputText source="Name" style="width: 100%;" autocomplete="true" />
+      <InputText source="Name" style="width: 100%;" autocomplete="true" visible="true" />
     </cell>
   </row>
 
   <row>
-    <Label text="=documentDate" horizontalAlignment="right"/>
+    <Label for="DocumentDate" />
     <InputDateTime source="DocumentDate" />
-    <Label text="=documentExpires" horizontalAlignment="right" />
+    <Label for="Expires" />
     <InputDateTime source="Expires" />
   </row>
 
   <row>
-    <Label text="=documentNumber" horizontalAlignment="right"/>
+    <Label for="Number" />
     <InputText source="Number" />
-    <Label text="=documentRegistrationNumberShort" horizontalAlignment="right" />
+    <Label text="=documentRegistrationNumberShort" for="RegistrationNumber" />
     <InputText source="RegistrationNumber" />
   </row>
 
   <row>
-    <Label text="=documentCategory" class="bee-required" horizontalAlignment="right"/>
+    <Label for="Category" />
     <DataSelector source="Category" caching="local" choiceColumns="ParentName Name" />
-    <Label text="=documentType" horizontalAlignment="right" />
+    <Label for="Type" />
     <DataSelector source="Type" />
   </row>
 
   <row>
-    <Label text="=documentPlace"  horizontalAlignment="right"/>
+    <Label for="Place" />
     <DataSelector source="Place" />
-    <Label text="=documentStatus" horizontalAlignment="right" />
+    <Label for="Status" />
     <DataSelector source="Status" />
   </row>
 
   <row>
-    <Label text="=documentReceived" horizontalAlignment="right"/>
+    <Label for="Received" />
     <InputDateTime source="Received" />
-    <Label text="=documentSent" horizontalAlignment="right" />
+    <Label for="Sent" />
     <InputDateTime source="Sent" />
   </row>
   <row>
@@ -51,9 +54,7 @@
   </row>
 
   <row>
-    <cell verticalAlignment="top">
-      <Label text="=documentDescription" horizontalAlignment="right"/>
-    </cell>
+    <Label for="Description" />
     <cell colSpan="3">
       <InputArea source="Description" style="width: 100%; height: 60px;" />
     </cell>

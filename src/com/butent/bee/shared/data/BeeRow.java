@@ -1,7 +1,5 @@
 package com.butent.bee.shared.data;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
@@ -9,6 +7,7 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -116,7 +115,7 @@ public class BeeRow extends StringRow implements BeeSerializable {
       return Collections.emptyList();
     }
 
-    Collection<RowChildren> children = Lists.newArrayList();
+    Collection<RowChildren> children = new ArrayList<>();
 
     String[] arr = Codec.beeDeserializeCollection(serialized);
     if (!ArrayUtils.isEmpty(arr)) {

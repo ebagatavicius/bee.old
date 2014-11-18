@@ -147,6 +147,10 @@ public final class SelectorEvent extends GwtEvent<SelectorEvent.Handler> impleme
     }
   }
 
+  public boolean hasRelatedView(String viewName) {
+    return getSelector() != null && getSelector().hasRelatedView(viewName);
+  }
+
   public boolean isCanceled() {
     return State.CANCELED.equals(getState());
   }

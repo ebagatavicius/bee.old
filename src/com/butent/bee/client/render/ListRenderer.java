@@ -1,12 +1,11 @@
 package com.butent.bee.client.render;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.HasItems;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.ui.HasValueStartIndex;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class ListRenderer extends AbstractCellRenderer implements HasItems, HasV
     super(cellSource);
 
     if (!useProxy || proxy == null) {
-      this.itemList = Lists.newArrayList();
+      this.itemList = new ArrayList<>();
       this.itemProxy = null;
       addItems(items);
     } else {

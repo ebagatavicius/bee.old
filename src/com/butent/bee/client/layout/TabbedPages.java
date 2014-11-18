@@ -1,6 +1,5 @@
 package com.butent.bee.client.layout;
 
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,15 +17,25 @@ import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.ElementSize;
+import com.butent.bee.client.event.logical.HasSummaryChangeHandlers;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.event.logical.VisibilityChangeEvent;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class TabbedPages extends Flow implements
@@ -40,7 +49,7 @@ public class TabbedPages extends Flow implements
   private static final class Deck extends Complex {
 
     private String visibleId;
-    private final Set<String> pendingResize = Sets.newHashSet();
+    private final Set<String> pendingResize = new HashSet<>();
 
     private Deck() {
       super(Position.RELATIVE);
@@ -132,11 +141,31 @@ public class TabbedPages extends Flow implements
     }
   }
 
-  private final class Tab extends Simple implements HasClickHandlers {
+  private final class Tab extends Simple implements HasClickHandlers, SummaryChangeEvent.Handler {
+
+    private final CustomDiv summaryWidget;
+    private final Map<String, Value> summaryValues = new LinkedHashMap<>();
 
     private Tab(Widget child) {
+      this(child, null, null);
+    }
+
+    private Tab(Widget child, CustomDiv summaryWidget,
+        Collection<HasSummaryChangeHandlers> summarySources) {
+
       setWidget(child);
-      setStyleName(getStylePrefix() + "tab");
+      addStyleName(getStylePrefix() + "tab");
+
+      this.summaryWidget = summaryWidget;
+
+      if (summaryWidget != null && !BeeUtils.isEmpty(summarySources)) {
+        for (HasSummaryChangeHandlers summarySource : summarySources) {
+          if (summarySource != null && !BeeUtils.isEmpty(summarySource.getId())) {
+            summaryValues.put(summarySource.getId(), summarySource.getSummary());
+            summarySource.addSummaryChangeHandler(Tab.this);
+          }
+        }
+      }
     }
 
     @Override
@@ -149,12 +178,22 @@ public class TabbedPages extends Flow implements
       return "tab";
     }
 
+    @Override
+    public void onSummaryChange(SummaryChangeEvent event) {
+      Value oldValue = summaryValues.get(event.getSourceId());
+
+      if (!Objects.equals(event.getValue(), oldValue)) {
+        summaryValues.put(event.getSourceId(), event.getValue());
+        summaryWidget.setHtml(SummaryChangeEvent.renderSummary(summaryValues.values()));
+      }
+    }
+
     private void setSelected(boolean selected) {
       setStyleName(getStylePrefix() + "tabSelected", selected);
     }
   }
 
-  private static final String DEFAULT_STYLE_PREFIX = "bee-TabbedPages-";
+  private static final String DEFAULT_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "TabbedPages-";
   private static final String CONTENT_STYLE_SUFFIX = "content";
 
   private final String stylePrefix;
@@ -196,12 +235,18 @@ public class TabbedPages extends Flow implements
     Assert.untouchable(getClass().getName() + ": cannot add widget without tab");
   }
 
-  public void add(Widget content, String text) {
-    add(content, new Label(text));
+  public IdentifiableWidget add(Widget content, String text, String summary,
+      Collection<HasSummaryChangeHandlers> summarySources) {
+    return add(content, createCaption(text), summary, summarySources);
   }
 
-  public void add(Widget content, Widget tab) {
-    insertPage(content, new Tab(tab));
+  public IdentifiableWidget add(Widget content, Widget caption, String summary,
+      Collection<HasSummaryChangeHandlers> summarySources) {
+
+    Tab tab = createTab(caption, summary, summarySources);
+    insertPage(content, tab);
+
+    return tab;
   }
 
   @Override
@@ -255,12 +300,14 @@ public class TabbedPages extends Flow implements
     return getTab(index).getWidget();
   }
 
-  public void insert(Widget content, String text, int beforeIndex) {
-    insert(content, createTabWidget(text), beforeIndex);
+  public void insert(Widget content, String text, String summary,
+      Collection<HasSummaryChangeHandlers> summarySources, int beforeIndex) {
+    insert(content, createCaption(text), summary, summarySources, beforeIndex);
   }
 
-  public void insert(Widget content, Widget tab, int beforeIndex) {
-    insertPage(content, new Tab(tab), beforeIndex);
+  public void insert(Widget content, Widget caption, String summary,
+      Collection<HasSummaryChangeHandlers> summarySources, int beforeIndex) {
+    insertPage(content, createTab(caption, summary, summarySources), beforeIndex);
   }
 
   public boolean isIndex(int index) {
@@ -368,7 +415,34 @@ public class TabbedPages extends Flow implements
     Assert.betweenExclusive(index, 0, getPageCount(), "page index out of bounds");
   }
 
-  private static Widget createTabWidget(String text) {
+  private Tab createTab(Widget caption, String summary,
+      Collection<HasSummaryChangeHandlers> summarySources) {
+
+    if (BeeUtils.isEmpty(summary) && BeeUtils.isEmpty(summarySources)) {
+      return new Tab(caption);
+
+    } else {
+      Flow wrapper = new Flow(getStylePrefix() + "tabWrapper");
+
+      if (caption != null) {
+        caption.addStyleName(getStylePrefix() + "tabCaption");
+        wrapper.add(caption);
+      }
+
+      CustomDiv summaryWidget = new CustomDiv(getStylePrefix() + "tabSummary");
+      if (!BeeUtils.isEmpty(summary)) {
+        summaryWidget.setHtml(summary);
+      }
+
+      wrapper.add(summaryWidget);
+
+      Tab tab = new Tab(wrapper, summaryWidget, summarySources);
+
+      return tab;
+    }
+  }
+
+  private static Widget createCaption(String text) {
     return new Label(text);
   }
 

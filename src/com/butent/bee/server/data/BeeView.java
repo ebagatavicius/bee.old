@@ -1,7 +1,6 @@
 package com.butent.bee.server.data;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import com.butent.bee.server.Invocation;
@@ -75,9 +74,13 @@ import com.butent.bee.shared.utils.PropertyUtils;
 
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -281,7 +284,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
 
         if (xmlExpr instanceof XmlSwitch) {
           XmlSwitch sw = (XmlSwitch) xmlExpr;
-          List<IsExpression> cases = Lists.newArrayList();
+          List<IsExpression> cases = new ArrayList<>();
 
           for (XmlCase xmlCase : sw.cases) {
             cases.add(parse(xmlCase.whenExpression, history));
@@ -296,7 +299,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
           expr = SqlUtils.cast(member, SqlDataType.valueOf(cast.type), cast.precision, cast.scale);
         }
       } else if (xmlExpr instanceof XmlHasMembers) {
-        List<IsExpression> members = Lists.newArrayList();
+        List<IsExpression> members = new ArrayList<>();
 
         for (XmlExpression z : ((XmlHasMembers) xmlExpr).members) {
           members.add(parse(z, history));
@@ -317,7 +320,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
           expr = SqlUtils.concat(members.toArray());
         }
       } else if (xmlExpr.content != null && !xmlExpr.content.replaceAll("\\s", "").isEmpty()) {
-        List<Object> x = Lists.newArrayList();
+        List<Object> x = new ArrayList<>();
         x.add(")");
         String xpr = xmlExpr.content;
         String regex = "^(.*)\"(\\w+)\"(.*)$";
@@ -427,7 +430,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
   private boolean hasAggregate;
   private final boolean hasGrouping;
   private final SqlSelect query;
-  private final Map<String, ColumnInfo> columns = Maps.newLinkedHashMap();
+  private final Map<String, ColumnInfo> columns = new LinkedHashMap<>();
   private final String filter;
   private final Map<HasConditions, String> joinFilters = new HashMap<>();
 
@@ -489,6 +492,12 @@ public class BeeView implements BeeObject, HasExtendedInfo {
     }
   }
 
+  public BeeColumn getBeeColumn(String colName) {
+    BeeColumn column = new BeeColumn();
+    initColumn(colName, column);
+    return column;
+  }
+
   public String getCacheEviction() {
     return cacheEviction;
   }
@@ -542,7 +551,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
   }
 
   public Collection<String> getColumnNames() {
-    Collection<String> cols = Lists.newArrayList();
+    Collection<String> cols = new ArrayList<>();
 
     for (ColumnInfo col : columns.values()) {
       if (!col.isHidden()) {
@@ -634,7 +643,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
 
   @Override
   public List<ExtendedProperty> getExtendedInfo() {
-    List<ExtendedProperty> info = Lists.newArrayList();
+    List<ExtendedProperty> info = new ArrayList<>();
 
     PropertyUtils.addProperties(info, false, "Module", getModule(), "Name", getName(),
         "Source", getSourceName(), "Source Alias", getSourceAlias(),
@@ -696,7 +705,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
     return getQuery(userId, null);
   }
 
-  public SqlSelect getQuery(Long userId, Filter flt, Order ord, List<String> cols) {
+  public SqlSelect getQuery(Long userId, Filter flt, Order ord, Collection<String> cols) {
 
     SqlSelect ss;
 
@@ -716,7 +725,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
 
     if (!BeeUtils.isEmpty(cols)) {
       ss.resetFields();
-      activeCols = Sets.newHashSet();
+      activeCols = new HashSet<>();
 
       for (String col : cols) {
         if (!isColHidden(col)) {
@@ -814,7 +823,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
   }
 
   public List<BeeColumn> getRowSetColumns() {
-    List<BeeColumn> result = Lists.newArrayList();
+    List<BeeColumn> result = new ArrayList<>();
 
     for (ColumnInfo info : columns.values()) {
       if (!info.isHidden()) {
@@ -844,7 +853,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
   }
 
   public List<ViewColumn> getViewColumns() {
-    List<ViewColumn> result = Lists.newArrayList();
+    List<ViewColumn> result = new ArrayList<>();
 
     for (ColumnInfo cInf : columns.values()) {
       result.add(new ViewColumn(cInf.getName(), cInf.getParent(), cInf.getTable(), cInf.getField(),
@@ -925,7 +934,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
     Assert.state(!BeeUtils.inListSame(colName, getSourceIdName(), getSourceVersionName()),
         BeeUtils.joinWords("Reserved column name:", getName(), colName));
     Assert.state(!hasColumn(colName),
-        BeeUtils.joinWords("Dublicate column name:", getName(), colName));
+        BeeUtils.joinWords("Duplicate column name:", getName(), colName));
 
     String ownerAlias = null;
     String newAlias = alias;
@@ -1221,7 +1230,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
   }
 
   private void setGrouping(Set<String> groupBy) {
-    Set<String> group = Sets.newLinkedHashSet();
+    Set<String> group = new LinkedHashSet<>();
 
     for (String col : groupBy) {
       query.addGroup(getSqlExpression(col));

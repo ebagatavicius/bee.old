@@ -1,8 +1,6 @@
 package com.butent.bee.shared.data.view;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -17,6 +15,8 @@ import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.NameUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +26,7 @@ public class ColumnMapper implements HasExtendedInfo {
 
   private final ColumnNamesProvider columnListProvider;
 
-  private final Map<String, ImmutableList<String>> map = Maps.newHashMap();
+  private final Map<String, ImmutableList<String>> map = new HashMap<>();
 
   public ColumnMapper(ColumnNamesProvider columnListProvider) {
     super();
@@ -72,7 +72,7 @@ public class ColumnMapper implements HasExtendedInfo {
 
   @Override
   public List<ExtendedProperty> getExtendedInfo() {
-    List<ExtendedProperty> info = Lists.newArrayList();
+    List<ExtendedProperty> info = new ArrayList<>();
     info.add(new ExtendedProperty("Views", BeeUtils.bracket(map.size())));
 
     int idx = 0;

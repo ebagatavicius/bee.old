@@ -11,6 +11,7 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.CellContext;
 import com.butent.bee.client.view.grid.CellGrid;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.EventState;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -21,7 +22,7 @@ public class SelectionHeader extends AbstractCell<String> {
 
   static {
     INPUT = Document.get().createCheckInputElement();
-    INPUT.addClassName("bee-SelectionHeader");
+    INPUT.addClassName(BeeConst.CSS_CLASS_PREFIX + "SelectionHeader");
   }
 
   private boolean checked;

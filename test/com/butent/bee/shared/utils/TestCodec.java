@@ -1,20 +1,17 @@
 package com.butent.bee.shared.utils;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import com.butent.bee.shared.BeeSerializable;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class TestCodec {
@@ -47,7 +44,7 @@ public class TestCodec {
 
     String[] values = new String[] {"aaa", "", "vv", null, "x", "1234623"};
 
-    Map<String, String> valueMap = Maps.newLinkedHashMap();
+    Map<String, String> valueMap = new LinkedHashMap<>();
     for (int i = 0; i < values.length; i += 2) {
       valueMap.put(values[i], values[i + 1]);
     }

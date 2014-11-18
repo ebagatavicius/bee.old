@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,6 +32,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 
 final class TripSelector implements Handler, ClickHandler {
 
@@ -110,7 +110,7 @@ final class TripSelector implements Handler, ClickHandler {
             public void onSuccess(BeeRow result) {
               holder.set(holder.get() + 1);
 
-              if (Objects.equal(holder.get(), cargos.length)) {
+              if (Objects.equals(holder.get(), cargos.length)) {
                 Data.onTableChange(TBL_CARGO_TRIPS, EnumSet.of(Effect.REFRESH));
               }
             }

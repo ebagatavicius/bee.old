@@ -1,9 +1,8 @@
 package com.butent.bee.shared;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
  */
 public class ListSequence<T> extends AbstractSequence<T> {
 
-  private final List<T> values = Lists.newArrayList();
+  private final List<T> values = new ArrayList<>();
 
   public ListSequence() {
   }

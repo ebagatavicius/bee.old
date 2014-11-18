@@ -10,6 +10,7 @@ import com.butent.bee.client.data.HasDataTable;
 import com.butent.bee.client.event.DndWidget;
 import com.butent.bee.client.event.logical.ActiveWidgetChangeEvent;
 import com.butent.bee.client.output.Printable;
+import com.butent.bee.client.style.ConditionalStyle;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.HasDimensions;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -25,6 +26,7 @@ import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.HasState;
 import com.butent.bee.shared.NotificationListener;
 import com.butent.bee.shared.data.BeeColumn;
+import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RowChildren;
 import com.butent.bee.shared.time.DateTime;
@@ -43,6 +45,8 @@ public interface FormView extends DataView, HasDataTable, ActiveWidgetChangeEven
     HasDimensions, HasState, DndWidget, EditEndEvent.Handler, RequiresResize, Printable,
     HasSaveChangesHandlers {
 
+  void addDynamicStyle(String widgetId, CellSource cellSource, ConditionalStyle conditionalStyle);
+
   void applyOptions(String options);
 
   boolean checkOnClose(NativePreviewEvent event);
@@ -56,15 +60,13 @@ public interface FormView extends DataView, HasDataTable, ActiveWidgetChangeEven
 
   boolean focus(String source);
 
+  int flush();
+
   long getActiveRowId();
 
   Collection<RowChildren> getChildrenForInsert();
 
   Collection<RowChildren> getChildrenForUpdate();
-
-  List<BeeColumn> getDataColumns();
-
-  int getDataIndex(String source);
 
   DateTime getDateTimeValue(String source);
 
@@ -117,6 +119,8 @@ public interface FormView extends DataView, HasDataTable, ActiveWidgetChangeEven
   boolean printHeader();
 
   void refreshChildWidgets(IsRow row);
+
+  void setCaption(String caption);
 
   void start(Integer rowCount);
 

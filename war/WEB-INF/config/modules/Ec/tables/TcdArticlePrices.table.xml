@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Table xmlns="http://www.butent.com/table"
+  
+  name="TcdArticlePrices"
+  idName="ArticlePriceID"
+  audit="false"
+  idChunk="100"
+  >
+  <Fields>
+    <Relation name="Article" relation="TcdArticles" notNull="true" cascade="DELETE" label="=ecItem" />
+    <Relation name="PriceList" relation="TcdPriceLists" notNull="true" cascade="DELETE" label="=ecPriceList" />
+    <Numeric name="Price" precision="10" scale="2" label="=ecItemPrice" />
+  </Fields>
+  <Constraints>
+    <Unique fields="Article PriceList" />
+  </Constraints>
+</Table>

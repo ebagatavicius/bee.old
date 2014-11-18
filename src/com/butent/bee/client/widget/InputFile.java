@@ -1,5 +1,6 @@
 package com.butent.bee.client.widget;
 
+import com.google.common.net.MediaType;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -76,6 +77,12 @@ public class InputFile extends Widget implements HasName, HasChangeHandlers, Ena
     return !getInputElement().isDisabled();
   }
 
+  public void setAccept(MediaType mediaType) {
+    if (mediaType != null) {
+      setAccept(mediaType.toString());
+    }
+  }
+
   public void setAccept(String accept) {
     getInputElement().setAccept(accept);
   }
@@ -97,7 +104,7 @@ public class InputFile extends Widget implements HasName, HasChangeHandlers, Ena
 
   protected void init() {
     DomUtils.createId(this, getIdPrefix());
-    setStyleName("bee-InputFile");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "InputFile");
   }
 
   private InputElement getInputElement() {

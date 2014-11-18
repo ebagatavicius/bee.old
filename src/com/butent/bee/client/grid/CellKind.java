@@ -1,6 +1,6 @@
 package com.butent.bee.client.grid;
 
-import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public enum CellKind {
@@ -20,7 +20,7 @@ public enum CellKind {
 
   private CellKind(String code, String styleSuffix) {
     this.code = code;
-    this.styleName = StyleUtils.CLASS_NAME_PREFIX + styleSuffix;
+    this.styleName = BeeConst.CSS_CLASS_PREFIX + styleSuffix;
   }
 
   public String getCode() {

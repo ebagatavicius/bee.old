@@ -1,11 +1,11 @@
 package com.butent.bee.shared.data.filter;
 
-import com.google.common.base.Objects;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+
+import java.util.Objects;
 
 public final class FilterValue implements BeeSerializable {
 
@@ -57,7 +57,7 @@ public final class FilterValue implements BeeSerializable {
       return true;
     } else if (obj instanceof FilterValue) {
       FilterValue other = (FilterValue) obj;
-      return Objects.equal(value, other.value) && Objects.equal(emptyValues, other.emptyValues);
+      return Objects.equals(value, other.value) && Objects.equals(emptyValues, other.emptyValues);
     } else {
       return false;
     }

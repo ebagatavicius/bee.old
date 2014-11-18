@@ -1,7 +1,5 @@
 package com.butent.bee.shared.data;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.data.value.BooleanValue;
 import com.butent.bee.shared.data.value.TextValue;
@@ -41,9 +39,8 @@ public class StringRow extends AbstractRow {
   }
 
   @Override
-  public void addCell(IsCell cell) {
-    Assert.notNull(cell);
-    values.add(cell.getValue().getString());
+  public void addValue(Value value) {
+    values.add((value == null) ? null : value.getString());
   }
 
   @Override
@@ -65,7 +62,7 @@ public class StringRow extends AbstractRow {
 
   @Override
   public List<IsCell> getCells() {
-    List<IsCell> lst = Lists.newArrayList();
+    List<IsCell> lst = new ArrayList<>();
     for (int i = 0; i < values.size(); i++) {
       lst.add(getCell(i));
     }

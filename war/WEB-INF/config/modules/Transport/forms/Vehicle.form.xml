@@ -15,11 +15,15 @@
         <AbsolutePanel>
           <layer top="1" topUnit="ex" width="240">
             <VerticalPanel horizontalAlignment="right" cellStyle="padding-top: 5px;">
-              <DataSelector source="Fuel" caption="=vehicleFuel" />
-              <InputInteger source="TankCapacity" caption="=vehicleTankCapacity" style="width: 7em;" />
-              <InputInteger source="Speedometer" caption="=vehicleSpeedometer" style="width: 7em;" />
-              <InputDate source="StartDate" caption="=trVehicleStartDate" style="width: 7em;" />
-              <InputDate source="EndDate" caption="=trVehicleEndDate" style="width: 7em;" />
+              <DataSelector source="Fuel" caption="=vehicleFuel" summarize="true" />
+              <InputInteger source="TankCapacity" caption="=vehicleTankCapacity" style="width: 7em;" 
+                summarize="true" />
+              <InputInteger source="Speedometer" caption="=vehicleSpeedometer" style="width: 7em;"
+                summarize="true" />
+              <InputDate source="StartDate" caption="=trVehicleStartDate" style="width: 7em;"
+                summarize="true" />
+              <InputDate source="EndDate" caption="=trVehicleEndDate" style="width: 7em;"
+                summarize="true" />
             </VerticalPanel>
           </layer>
           
@@ -27,7 +31,8 @@
              <ChildGrid name="FuelConsumptions" relColumn="Vehicle" />
           </layer>
           <layer left="300" right="0" top="51" topUnit="%" bottom="0">
-             <ChildGrid name="FuelTemperatures" parent="FuelConsumptions" relColumn="Consumption" />
+             <ChildGrid name="FuelTemperatures" parent="FuelConsumptions" relColumn="Consumption" 
+               summarize="false" />
           </layer>
         </AbsolutePanel>
       </page>

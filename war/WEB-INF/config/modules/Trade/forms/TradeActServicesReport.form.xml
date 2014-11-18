@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY c1 "min-width: 120px;">
+  <!ENTITY multi "width: 500px;">
+  <!ENTITY glst "margin-right: 10px;">
+  <!ENTITY gitems "<item>-</item>
+    <item>=client</item>
+    <item>=manager</item>
+    <item>=type</item>
+    <item>=group</item>
+    <item>=service</item>">
+]>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  
+  name="TradeActServicesReport" caption="=taReportServices"
+  >
+  <FlowPanel>
+    <br/>
+    <HorizontalPanel>
+      <cell kind="label">
+        <Label text="=dateFrom" style="&c1;" />
+      </cell>
+      <InputDateTime name="StartDate" style="width: 120px;" />
+
+      <cell kind="label">
+        <Label text="=dateTo" />
+      </cell>
+      <InputDateTime name="EndDate" style="width: 120px;" />
+      
+      <cell kind="label">
+        <Label text="=currency" />
+      </cell>
+      <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
+        newRowEnabled="false" editPopup="true" style="width: 80px;" />
+    </HorizontalPanel>
+
+    <Disclosure open="true">
+      <Label text="=filters" />
+      <Table>
+        <col index="0" kind="label" />
+
+        <row>
+          <Label text="=clients" style="&c1;" />
+          <MultiSelector name="Company" viewName="Companies" renderColumns="Name"
+            newRowEnabled="false" editPopup="true" style="&multi;" summarize="true" />
+        </row>
+    
+        <row>
+          <Label text="=managers" />
+          <MultiSelector name="Manager" viewName="Users"
+            renderColumns="FirstName LastName"
+            choiceColumns="FirstName LastName CompanyName PositionName"
+            newRowEnabled="false" editPopup="true"
+            style="&multi;" summarize="true" />
+        </row>
+
+        <row>
+          <Label text="=categories" />
+          <MultiSelector name="Category" viewName="CategoryTree" renderColumns="Name"
+            choiceColumns="ParentName Name" newRowEnabled="false" style="&multi;"
+            summarize="true" />
+        </row>
+        <row>
+          <Label text="=services" />
+          <MultiSelector name="Item" viewName="Items" filter="IsService" 
+            renderColumns="Name Article" newRowEnabled="false" editPopup="true"
+            style="&multi;" summarize="true" />
+        </row>
+      </Table>
+    </Disclosure>
+    
+    <br/>
+    <HorizontalPanel>
+      <cell kind="label">
+        <Label text="=groupBy" style="&c1;" />
+      </cell>
+
+      <ListBox name="Group0" style="&glst;">
+        &gitems;
+      </ListBox>
+      <ListBox name="Group1" style="&glst;">
+        &gitems;
+      </ListBox>
+      <ListBox name="Group2" style="&glst;">
+        &gitems;
+      </ListBox>
+      <ListBox name="Group3">
+        &gitems;
+      </ListBox>
+    </HorizontalPanel>
+    
+    <br/>
+    <FlowPanel name="DataContainer" />
+  </FlowPanel>
+</f:Form>

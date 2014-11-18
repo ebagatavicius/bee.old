@@ -26,13 +26,13 @@
       <page>
         <text>=description</text>
         <SimplePanel>
-          <InputArea source="Description" class="occupy-1" />
+          <InputArea source="Description" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>  
 
       <page data="Relations" for="RecurringTask">
         <text>=relatedTo</text>
-        <Relations relColumn="RecurringTask" inline="true">
+        <Relations relColumn="RecurringTask" inline="true" summarize="true">
           <Relation viewName="Companies" renderColumns="Name" newRowEnabled="false" editPopup="true" />
           <Relation viewName="Persons" renderColumns="FirstName LastName" newRowEnabled="false" editPopup="true" />
           <Relation viewName="Documents" renderColumns="Name" newRowEnabled="false" editPopup="true" />

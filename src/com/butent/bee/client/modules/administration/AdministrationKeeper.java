@@ -10,10 +10,13 @@ import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
+import com.butent.bee.client.imports.ImportOptionForm;
+import com.butent.bee.client.imports.ImportOptionsGrid;
 import com.butent.bee.client.rights.RightsForm;
 import com.butent.bee.client.style.ColorStyleProvider;
 import com.butent.bee.client.style.ConditionalStyle;
 import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.view.grid.interceptor.GridSettingsInterceptor;
 import com.butent.bee.client.view.grid.interceptor.UniqueChildInterceptor;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.DataUtils;
@@ -39,10 +42,8 @@ public final class AdministrationKeeper {
 
   private static Long company;
 
-  public static ParameterList createArgs(String name) {
-    ParameterList args = BeeKeeper.getRpc().createParameters(Module.ADMINISTRATION.getName());
-    args.addQueryItem(METHOD, name);
-    return args;
+  public static ParameterList createArgs(String method) {
+    return BeeKeeper.getRpc().createParameters(Module.ADMINISTRATION, method);
   }
 
   public static Long getCompany() {
@@ -61,7 +62,9 @@ public final class AdministrationKeeper {
     FormFactory.registerFormInterceptor(FORM_USER_SETTINGS, new UserSettingsForm());
     FormFactory.registerFormInterceptor(FORM_DEPARTMENT, new DepartmentForm());
     FormFactory.registerFormInterceptor(FORM_NEW_ROLE, new NewRoleForm());
+    FormFactory.registerFormInterceptor(FORM_IMPORT_OPTION, new ImportOptionForm());
 
+    GridFactory.registerGridInterceptor(TBL_IMPORT_OPTIONS, new ImportOptionsGrid());
     GridFactory.registerGridInterceptor(NewsConstants.GRID_USER_FEEDS, new UserFeedsInterceptor());
 
     GridFactory.registerGridSupplier(
@@ -81,6 +84,9 @@ public final class AdministrationKeeper {
         new UniqueChildInterceptor(Localized.getConstants().newThemeColors(),
             COL_THEME, COL_COLOR, VIEW_COLORS, Lists.newArrayList(COL_COLOR_NAME),
             Lists.newArrayList(COL_COLOR_NAME, COL_BACKGROUND, COL_FOREGROUND)));
+
+    GridFactory.registerGridInterceptor(GridSettingsInterceptor.GRID_NAME,
+        new GridSettingsInterceptor());
 
     ColorStyleProvider styleProvider = ColorStyleProvider.createDefault(VIEW_COLORS);
     ConditionalStyle.registerGridColumnStyleProvider(GRID_COLORS, COL_BACKGROUND, styleProvider);

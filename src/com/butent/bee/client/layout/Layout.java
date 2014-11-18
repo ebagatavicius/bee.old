@@ -1,13 +1,13 @@
 package com.butent.bee.client.layout;
 
-import com.google.common.collect.Lists;
-import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 
+import com.butent.bee.client.animation.Animation;
 import com.butent.bee.client.dom.Rulers;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.ui.Orientation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Layout {
@@ -178,7 +178,7 @@ public class Layout {
 
   private final LayoutImpl impl = new LayoutImpl();
 
-  private final List<Layer> layers = Lists.newArrayList();
+  private final List<Layer> layers = new ArrayList<>();
   private final Element parentElem;
 
   private Animation animation;
@@ -323,7 +323,7 @@ public class Layout {
       }
     };
 
-    animation.run(duration, parentElem);
+    animation.run(duration);
   }
 
   void removeChild(Layer layer) {

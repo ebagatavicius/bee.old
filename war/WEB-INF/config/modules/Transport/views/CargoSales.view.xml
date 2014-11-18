@@ -12,6 +12,8 @@
       </ExternalJoin>
 
       <SimpleColumn name="Cmr" />
+      <SimpleColumn name="Notes" />
+
       <SimpleColumn name="Order" />
       <SimpleJoin name="Order" joinType="INNER">
         <SimpleColumn name="Status" />
@@ -31,12 +33,16 @@
         </SimpleJoin>
       </SimpleJoin>
       <SimpleJoin name="LoadingPlace" joinType="LEFT">
+        <SimpleColumn name="Country" alias="LoadingCountry" editable="true" label="=trLoadingCountry"/>
         <SimpleJoin joinType="LEFT" name="Country">
+          <SimpleColumn name="Name" alias="LoadingCountryName" />
           <SimpleColumn name="Code" alias="LoadingCountryCode" label="=from" />
         </SimpleJoin>
       </SimpleJoin>
       <SimpleJoin name="UnloadingPlace" joinType="LEFT">
+        <SimpleColumn name="Country" alias="UnloadingCountry" editable="true" label="=trUnloadingCountry" />
         <SimpleJoin joinType="LEFT" name="Country">
+          <SimpleColumn name="Name" alias="UnloadingCountryName"/>
           <SimpleColumn name="Code" alias="UnloadingCountryCode" label="=to" />
         </SimpleJoin>
         <SimpleColumn name="Date" alias="UnloadingDate" label="=unloading" />
@@ -44,6 +50,9 @@
 
       <ExternalJoin source="CargoTrips" name="Cargo" joinType="LEFT">
         <SimpleJoin name="Trip" joinType="LEFT">
+          <AggregateColumn name="ForwarderVehicle" aggregate="MAX" />
+          <AggregateColumn name="ForwarderDriver" aggregate="MAX" />
+
           <SimpleJoin name="Vehicle" joinType="LEFT">
             <AggregateColumn name="Number" alias="Vehicle" aggregate="MAX" label="=trTruck" />
           </SimpleJoin>

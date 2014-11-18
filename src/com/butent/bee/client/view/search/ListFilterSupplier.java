@@ -1,7 +1,6 @@
 package com.butent.bee.client.view.search;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.json.client.JSONArray;
@@ -25,7 +24,9 @@ import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,8 +34,29 @@ import java.util.Set;
 
 public class ListFilterSupplier extends AbstractFilterSupplier {
 
-  private final List<String> renderColumns = Lists.newArrayList();
-  private final List<String> orderColumns = Lists.newArrayList();
+  public static FilterValue buildValue(List<String> items) {
+    if (BeeUtils.isEmpty(items)) {
+      return null;
+
+    } else {
+      JSONArray arr = new JSONArray();
+
+      for (int i = 0; i < items.size(); i++) {
+        String value = items.get(i);
+
+        if (value == null) {
+          arr.set(i, JSONNull.getInstance());
+        } else {
+          arr.set(i, new JSONString(value));
+        }
+      }
+
+      return FilterValue.of(arr.toString());
+    }
+  }
+
+  private final List<String> renderColumns = new ArrayList<>();
+  private final List<String> orderColumns = new ArrayList<>();
 
   private final boolean foreign;
 
@@ -45,7 +67,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
 
   private SimpleRowSet data;
 
-  private final List<String> values = Lists.newArrayList();
+  private final List<String> values = new ArrayList<>();
 
   public ListFilterSupplier(String viewName, BeeColumn sourceColumn, BeeColumn filterColumn,
       String label, List<String> renderColumns, List<String> orderColumns, Relation relation,
@@ -94,24 +116,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
 
   @Override
   public FilterValue getFilterValue() {
-    if (values.isEmpty()) {
-      return null;
-
-    } else {
-      JSONArray arr = new JSONArray();
-
-      for (int i = 0; i < values.size(); i++) {
-        String value = values.get(i);
-
-        if (value == null) {
-          arr.set(i, JSONNull.getInstance());
-        } else {
-          arr.set(i, new JSONString(value));
-        }
-      }
-
-      return FilterValue.of(arr.toString());
-    }
+    return buildValue(values);
   }
 
   @Override
@@ -123,8 +128,8 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
       return BeeUtils.join(BeeConst.STRING_COMMA, values);
 
     } else {
-      List<String> labels = Lists.newArrayList();
-      Set<String> ids = Sets.newHashSet(values);
+      List<String> labels = new ArrayList<>();
+      Set<String> ids = new HashSet<>(values);
 
       for (SimpleRow row : data) {
         String value = row.getValue(valueIndex);
@@ -194,7 +199,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
       update(changed);
 
     } else {
-      List<String> newValues = Lists.newArrayList();
+      List<String> newValues = new ArrayList<>();
       for (int row : getSelectedItems()) {
         newValues.add(data.getValue(row, valueIndex));
       }
@@ -213,7 +218,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
 
   @Override
   protected List<String> getHistogramColumns() {
-    List<String> columns = Lists.newArrayList(renderColumns);
+    List<String> columns = new ArrayList<>(renderColumns);
     if (isForeign()) {
       columns.add(getColumnId());
     }
@@ -230,7 +235,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
       return null;
     }
 
-    List<Filter> filters = Lists.newArrayList();
+    List<Filter> filters = new ArrayList<>();
     String columnId = getColumnId();
 
     for (String value : input) {

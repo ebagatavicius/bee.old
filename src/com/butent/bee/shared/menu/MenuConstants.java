@@ -10,14 +10,14 @@ public final class MenuConstants {
   /**
    * Contains a list of possible menu types.
    */
-  public enum BAR_TYPE {
+  public enum BarType {
     TABLE, FLOW, LIST, OLIST, ULIST, DLIST
   }
 
   /**
    * Lists all possible menu item types.
    */
-  public enum ITEM_TYPE {
+  public enum ItemType {
     LABEL, BUTTON, RADIO, HTML, OPTION, LI, DT, DD, ROW
   }
 

@@ -48,9 +48,9 @@ public class TestBooleanValue {
 
   @Test
   public final void testGetInstance() {
-    assertEquals(BooleanValue.getNullValue(), BooleanValue.getInstance(null));
-    assertEquals(BooleanValue.FALSE, BooleanValue.getInstance(false));
-    assertEquals(BooleanValue.TRUE, BooleanValue.getInstance(true));
+    assertEquals(BooleanValue.getNullValue(), BooleanValue.of(null));
+    assertEquals(BooleanValue.FALSE, BooleanValue.of(false));
+    assertEquals(BooleanValue.TRUE, BooleanValue.of(true));
   }
 
   @Test

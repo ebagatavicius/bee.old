@@ -1,10 +1,10 @@
 package com.butent.bee.client.presenter;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.data.AsyncProvider;
 import com.butent.bee.client.data.CachedProvider;
@@ -24,7 +24,6 @@ import com.butent.bee.client.modules.administration.HistoryHandler;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.GridContainerImpl;
 import com.butent.bee.client.view.GridContainerView;
@@ -32,6 +31,7 @@ import com.butent.bee.client.view.HasGridView;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
 import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.ReadyForUpdateEvent;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
@@ -44,6 +44,7 @@ import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.GridView.SelectedRows;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
+import com.butent.bee.client.view.navigation.PagerView;
 import com.butent.bee.client.view.search.FilterConsumer;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -84,6 +85,8 @@ import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -275,7 +278,7 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
 
   public void deleteRows(final IsRow activeRow, final Collection<RowInfo> selectedRows) {
     int size = selectedRows.size();
-    List<String> options = Lists.newArrayList();
+    List<String> options = new ArrayList<>();
 
     Pair<String, String> defMsg = AbstractGridInterceptor.deleteRowsMessage(size);
     Pair<String, String> message =
@@ -294,7 +297,7 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
       options.add(Localized.getConstants().cancel());
 
       Global.getMsgBoxen().display(getCaption(), Icon.ALARM,
-          Lists.newArrayList(Localized.getConstants().deleteQuestion()), options, 2,
+          Collections.singletonList(Localized.getConstants().deleteQuestion()), options, 2,
           new ChoiceCallback() {
             @Override
             public void onSuccess(int value) {
@@ -362,7 +365,7 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
     }
 
     if (getGridView().isChild()) {
-      FormView form = UiHelper.getForm(getMainView().asWidget());
+      FormView form = ViewHelper.getForm(getMainView().asWidget());
 
       if (form != null && !BeeUtils.isEmpty(form.getViewName()) && form.getActiveRow() != null) {
         DataInfo dataInfo = Data.getDataInfo(form.getViewName());
@@ -412,7 +415,7 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
         if (BeeUtils.isEmpty(getGridView().getViewName())) {
           return;
         }
-        Set<Long> ids = Sets.newHashSet();
+        Set<Long> ids = new HashSet<>();
 
         for (RowInfo row : getGridView().getSelectedRows(SelectedRows.ALL)) {
           ids.add(row.getId());
@@ -441,8 +444,7 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
         break;
 
       case CONFIGURE:
-        GridSettings.handle(getGridView().getGridKey(), getGridView().getGrid(),
-            getHeaderElement());
+        GridSettings.handle(getGridView().getGridKey(), getGridView(), getHeaderElement());
         break;
 
       case COPY:
@@ -503,6 +505,12 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
         if (filterManager != null) {
           filterManager.clearFilter();
           tryFilter(null, null, true);
+        }
+        break;
+
+      case RESET_SETTINGS:
+        if (GridSettings.reset(getGridView().getGridKey())) {
+          reset();
         }
         break;
 
@@ -715,7 +723,7 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
   }
 
   public boolean validateParent() {
-    FormView form = UiHelper.getForm(getMainView().asWidget());
+    FormView form = ViewHelper.getForm(getMainView().asWidget());
     if (form == null) {
       return true;
     }
@@ -847,6 +855,25 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
   private Element getHeaderElement() {
     HeaderView header = getHeader();
     return (header == null) ? null : header.getElement();
+  }
+
+  private void reset() {
+    GridFactory.getGridDescription(getGridView().getGridName(), new Callback<GridDescription>() {
+      @Override
+      public void onSuccess(GridDescription result) {
+        getGridView().reset(result);
+
+        CellGrid display = getGridView().getGrid();
+        getDataProvider().setDisplay(display);
+
+        Collection<PagerView> pagers = gridContainer.getPagers();
+        if (pagers != null) {
+          for (PagerView pager : pagers) {
+            pager.setDisplay(display);
+          }
+        }
+      }
+    });
   }
 
   private void showFailure(String activity, String... reasons) {

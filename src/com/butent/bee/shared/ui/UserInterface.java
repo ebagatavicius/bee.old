@@ -3,19 +3,12 @@ package com.butent.bee.shared.ui;
 import com.google.common.collect.Lists;
 
 import com.butent.bee.shared.html.builder.elements.Meta;
-import com.butent.bee.shared.modules.administration.AdministrationConstants;
-import com.butent.bee.shared.modules.calendar.CalendarConstants;
-import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
-import com.butent.bee.shared.modules.documents.DocumentConstants;
 import com.butent.bee.shared.modules.ec.EcConstants;
-import com.butent.bee.shared.modules.mail.MailConstants;
-import com.butent.bee.shared.modules.service.ServiceConstants;
-import com.butent.bee.shared.modules.tasks.TaskConstants;
-import com.butent.bee.shared.modules.trade.TradeConstants;
-import com.butent.bee.shared.modules.transport.TransportConstants;
+import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -34,7 +27,7 @@ public enum UserInterface implements HasCaption {
 
     @Override
     public List<Meta> getMeta() {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
 
     @Override
@@ -45,15 +38,6 @@ public enum UserInterface implements HasCaption {
     @Override
     public String getShortName() {
       return "desktop";
-    }
-
-    @Override
-    public List<String> getStyleSheets() {
-      return Lists.newArrayList(MAIN_STYLE_SHEET, CalendarConstants.STYLE_SHEET,
-          AdministrationConstants.STYLE_SHEET, TaskConstants.STYLE_SHEET, EcConstants.STYLE_SHEET,
-          MailConstants.STYLE_SHEET, TradeConstants.STYLE_SHEET, TransportConstants.STYLE_SHEET,
-          DiscussionsConstants.STYLE_SHEET, ServiceConstants.STYLE_SHEET,
-          DocumentConstants.STYLE_SHEET);
     }
 
     @Override
@@ -72,7 +56,7 @@ public enum UserInterface implements HasCaption {
     public Collection<Component> getComponents() {
       return EnumSet.of(Component.AUTOCOMPLETE, Component.DATA_INFO, Component.DECORATORS,
           Component.DICTIONARY, Component.FILTERS, Component.GRIDS, Component.MENU,
-          Component.SETTINGS, Component.USERS);
+          Component.MONEY, Component.SETTINGS, Component.USERS);
     }
 
     @Override
@@ -94,14 +78,6 @@ public enum UserInterface implements HasCaption {
     }
 
     @Override
-    public List<String> getStyleSheets() {
-      return Lists.newArrayList(MAIN_STYLE_SHEET, CalendarConstants.STYLE_SHEET,
-          AdministrationConstants.STYLE_SHEET, TaskConstants.STYLE_SHEET, EcConstants.STYLE_SHEET,
-          MailConstants.STYLE_SHEET, TradeConstants.STYLE_SHEET, TransportConstants.STYLE_SHEET,
-          ServiceConstants.STYLE_SHEET);
-    }
-
-    @Override
     public String getTitle() {
       return TITLE;
     }
@@ -117,7 +93,7 @@ public enum UserInterface implements HasCaption {
     public Collection<Component> getComponents() {
       return EnumSet.of(Component.AUTOCOMPLETE, Component.DATA_INFO, Component.DECORATORS,
           Component.DICTIONARY, Component.FILTERS, Component.GRIDS, Component.MENU,
-          Component.SETTINGS, Component.USERS);
+          Component.MONEY, Component.SETTINGS, Component.USERS);
     }
 
     @Override
@@ -136,14 +112,6 @@ public enum UserInterface implements HasCaption {
     @Override
     public String getShortName() {
       return "mobile";
-    }
-
-    @Override
-    public List<String> getStyleSheets() {
-      return Lists.newArrayList(MAIN_STYLE_SHEET, CalendarConstants.STYLE_SHEET,
-          AdministrationConstants.STYLE_SHEET, TaskConstants.STYLE_SHEET, EcConstants.STYLE_SHEET,
-          MailConstants.STYLE_SHEET, TradeConstants.STYLE_SHEET, TransportConstants.STYLE_SHEET,
-          ServiceConstants.STYLE_SHEET);
     }
 
     @Override
@@ -218,7 +186,7 @@ public enum UserInterface implements HasCaption {
 
     @Override
     public List<String> getStyleSheets() {
-      return Lists.newArrayList(MAIN_STYLE_SHEET, TransportConstants.STYLE_SHEET);
+      return Lists.newArrayList(MAIN_STYLE_SHEET, Module.TRANSPORT.getStyleSheet(null));
     }
 
     @Override
@@ -236,6 +204,7 @@ public enum UserInterface implements HasCaption {
     FILTERS(false),
     GRIDS(false),
     MENU(false),
+    MONEY(false),
     NEWS(false),
     REPORTS(false),
     SETTINGS(false),
@@ -303,7 +272,14 @@ public enum UserInterface implements HasCaption {
 
   public abstract String getShortName();
 
-  public abstract List<String> getStyleSheets();
+  public List<String> getStyleSheets() {
+    List<String> sheets = new ArrayList<>();
+
+    sheets.add(MAIN_STYLE_SHEET);
+    sheets.addAll(Module.getEnabledStyleSheets());
+
+    return sheets;
+  }
 
   public abstract String getTitle();
 

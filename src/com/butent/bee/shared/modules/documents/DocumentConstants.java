@@ -63,7 +63,6 @@ public final class DocumentConstants {
   public static final String ALS_STATUS_NAME = "StatusName";
 
   public static final String FORM_DOCUMENT = "Document";
-  public static final String STYLE_SHEET = "documents";
 
   private DocumentConstants() {
   }

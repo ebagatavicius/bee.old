@@ -8,7 +8,6 @@
   >
   <Fields>
     <Relation name="Article" relation="TcdArticles" notNull="true" cascade="DELETE" label="=ecItem" />
-    <Numeric name="Price" precision="10" scale="2" label="=ecItemPrice" />
     <Numeric name="Cost" precision="10" scale="2" label="=ecItemCost" />
     <Numeric name="UpdatedCost" precision="10" scale="2" label="=ecUpdatedCost" />
     <DateTime name="UpdateTime" label="=ecUpdateTime" />

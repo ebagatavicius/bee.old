@@ -303,9 +303,9 @@ public class Rooms implements HasInfo {
 
   private static final BeeLogger logger = LogUtils.getLogger(Rooms.class);
 
-  private static final String STYLE_ROOMS_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "Rooms-";
+  private static final String STYLE_ROOMS_PREFIX = BeeConst.CSS_CLASS_PREFIX + "Rooms-";
 
-  private static final String STYLE_ROOM_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "Room-";
+  private static final String STYLE_ROOM_PREFIX = BeeConst.CSS_CLASS_PREFIX + "Room-";
   private static final String STYLE_GUEST = STYLE_ROOM_PREFIX + "guest";
   private static final String STYLE_USER = STYLE_ROOM_PREFIX + "user";
   private static final String STYLE_ROOM_UPDATED = STYLE_ROOM_PREFIX + "updated";
@@ -370,7 +370,7 @@ public class Rooms implements HasInfo {
 
     ChatRoom room = findRoom(chatMessage.getRoomId());
     if (room != null && chatMessage.isValid()) {
-      room.incrementMassageCount();
+      room.incrementMessageCount();
       room.updateMaxTime(chatMessage.getTextMessage().getMillis());
 
       RoomWidget roomWidget = roomsPanel.findRoomWidget(room.getId());
@@ -821,6 +821,12 @@ public class Rooms implements HasInfo {
     HtmlTable table = new HtmlTable(STYLE_ROOM_PREFIX + "details");
     int row = 0;
 
+    table.setText(row, 0, Localized.getConstants().captionId());
+    if (room.getType() != null) {
+      table.setText(row, 2, BeeUtils.toString(roomId));
+    }
+
+    row++;
     table.setText(row, 0, Localized.getConstants().type());
     if (room.getType() != null) {
       table.setText(row, 2, room.getType().getCaption());

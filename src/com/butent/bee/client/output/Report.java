@@ -3,17 +3,22 @@ package com.butent.bee.client.output;
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.modules.classifiers.CompanyTypeReport;
 import com.butent.bee.client.modules.classifiers.CompanyUsageReport;
+import com.butent.bee.client.modules.trade.acts.TradeActItemsByCompanyReport;
+import com.butent.bee.client.modules.trade.acts.TradeActServicesReport;
+import com.butent.bee.client.modules.trade.acts.TradeActStockReport;
+import com.butent.bee.client.modules.trade.acts.TradeActTransferReport;
 import com.butent.bee.client.modules.transport.AssessmentQuantityReport;
 import com.butent.bee.client.modules.transport.AssessmentTurnoverReport;
+import com.butent.bee.client.modules.transport.TransportTripProfitReport;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.view.form.interceptor.ReportInterceptor;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public enum Report implements HasWidgetSupplier {
@@ -23,7 +28,6 @@ public enum Report implements HasWidgetSupplier {
       return new CompanyTypeReport();
     }
   },
-
   COMPANY_USAGE("CompanyUsage", "CompanyUsageReport") {
     @Override
     protected ReportInterceptor getInterceptor() {
@@ -37,11 +41,42 @@ public enum Report implements HasWidgetSupplier {
       return new AssessmentQuantityReport();
     }
   },
-
   ASSESSMENT_TURNOVER("AssessmentTurnover", "AssessmentTurnoverReport") {
     @Override
     protected ReportInterceptor getInterceptor() {
       return new AssessmentTurnoverReport();
+    }
+  },
+
+  TRADE_ACT_ITEMS_BY_COMPANY("TradeActItemsByCompany", "TradeActItemsByCompanyReport") {
+    @Override
+    protected ReportInterceptor getInterceptor() {
+      return new TradeActItemsByCompanyReport();
+    }
+  },
+  TRADE_ACT_STOCK("TradeActStock", "TradeActStockReport") {
+    @Override
+    protected ReportInterceptor getInterceptor() {
+      return new TradeActStockReport();
+    }
+  },
+  TRADE_ACT_SERVICES("TradeActServices", "TradeActServicesReport") {
+    @Override
+    protected ReportInterceptor getInterceptor() {
+      return new TradeActServicesReport();
+    }
+  },
+  TRADE_ACT_TRANSFER("TradeActTransfer", "TradeActTransferReport") {
+    @Override
+    protected ReportInterceptor getInterceptor() {
+      return new TradeActTransferReport();
+    }
+  },
+
+  TRANSPORT_TRIP_PROFIT("TransportTripProfit", "TransportTripProfitReport") {
+    @Override
+    protected ReportInterceptor getInterceptor() {
+      return new TransportTripProfitReport();
     }
   };
 

@@ -14,6 +14,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,10 +22,18 @@ import java.util.Set;
 
 public final class BeeParameter implements BeeSerializable {
 
+  public static BeeParameter createBoolean(String module, String name) {
+    return createBoolean(module, name, false, null);
+  }
+
   public static BeeParameter createBoolean(String module, String name, boolean userMode,
       Boolean defValue) {
     return new BeeParameter(module, name, ParameterType.BOOLEAN, userMode,
         defValue != null ? defValue.toString() : null);
+  }
+
+  public static BeeParameter createCollection(String module, String name) {
+    return createCollection(module, name, false, null);
   }
 
   public static BeeParameter createCollection(String module, String name, boolean userMode,
@@ -33,10 +42,18 @@ public final class BeeParameter implements BeeSerializable {
         defValue != null ? Codec.beeSerialize(defValue) : null);
   }
 
+  public static BeeParameter createDate(String module, String name) {
+    return createDate(module, name, false, null);
+  }
+
   public static BeeParameter createDate(String module, String name, boolean userMode,
       JustDate defValue) {
     return new BeeParameter(module, name, ParameterType.DATE, userMode,
         defValue != null ? defValue.toString() : null);
+  }
+
+  public static BeeParameter createDateTime(String module, String name) {
+    return createDateTime(module, name, false, null);
   }
 
   public static BeeParameter createDateTime(String module, String name, boolean userMode,
@@ -45,16 +62,29 @@ public final class BeeParameter implements BeeSerializable {
         defValue != null ? defValue.toCompactString() : null);
   }
 
+  public static BeeParameter createMap(String module, String name) {
+    return createMap(module, name, false, null);
+  }
+
   public static BeeParameter createMap(String module, String name, boolean userMode,
       Map<String, String> defValue) {
     return new BeeParameter(module, name, ParameterType.MAP, userMode,
         defValue != null ? Codec.beeSerialize(defValue) : null);
   }
 
+  public static BeeParameter createNumber(String module, String name) {
+    return createNumber(module, name, false, null);
+  }
+
   public static BeeParameter createNumber(String module, String name, boolean userMode,
       Number defValue) {
     return new BeeParameter(module, name, ParameterType.NUMBER, userMode,
         defValue != null ? defValue.toString() : null);
+  }
+
+  public static BeeParameter createRelation(String module, String name,
+      String relationTable, String relationField) {
+    return createRelation(module, name, false, relationTable, relationField);
   }
 
   public static BeeParameter createRelation(String module, String name, boolean userMode,
@@ -67,6 +97,10 @@ public final class BeeParameter implements BeeSerializable {
     return param;
   }
 
+  public static BeeParameter createSet(String module, String name) {
+    return createSet(module, name, false, null);
+  }
+
   public static BeeParameter createSet(String module, String name, boolean userMode,
       Set<String> defValue) {
 
@@ -75,10 +109,18 @@ public final class BeeParameter implements BeeSerializable {
     return param;
   }
 
+  public static BeeParameter createTime(String module, String name) {
+    return createTime(module, name, false, null);
+  }
+
   public static BeeParameter createTime(String module, String name, boolean userMode,
       Long defValue) {
     return new BeeParameter(module, name, ParameterType.TIME, userMode,
         defValue != null ? TimeUtils.renderTime(defValue, false) : null);
+  }
+
+  public static BeeParameter createTimeOfDay(String module, String name) {
+    return createTimeOfDay(module, name, false, null);
   }
 
   public static BeeParameter createTimeOfDay(String module, String name, boolean userMode,
@@ -87,6 +129,10 @@ public final class BeeParameter implements BeeSerializable {
     BeeParameter param = createTime(module, name, userMode, defValue);
     param.setOptions(BeeUtils.toString(true));
     return param;
+  }
+
+  public static BeeParameter createText(String module, String name) {
+    return createText(module, name, false, null);
   }
 
   public static BeeParameter createText(String module, String name, boolean userMode,
@@ -419,7 +465,7 @@ public final class BeeParameter implements BeeSerializable {
         if (entries != null) {
           val = Lists.newArrayList(entries);
         } else {
-          val = Lists.newArrayList();
+          val = new ArrayList<>();
         }
         break;
 

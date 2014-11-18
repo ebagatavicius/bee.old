@@ -5,8 +5,11 @@
   >
   <Columns>
     <SimpleColumn name="Department" />
+    <SimpleJoin name="Department" joinType="LEFT">
+      <SimpleColumn name="DepartmentName" />
+    </SimpleJoin>
+    
     <SimpleColumn name="CompanyPerson" />
-
     <SimpleJoin name="CompanyPerson" joinType="LEFT">
       <SimpleJoin name="Person" joinType="LEFT">
         <SimpleColumn name="FirstName" />
@@ -20,7 +23,7 @@
       </SimpleJoin>
     </SimpleJoin>
     <ExternalJoin name="DepartmentHead" source="Departments" joinType="LEFT">
-      <SimpleColumn name="DepartmentHead" />
+      <IdColumn name="DepartmentHead" />
     </ExternalJoin>
   </Columns>
   <Order>

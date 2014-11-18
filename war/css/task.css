@@ -1,0 +1,371 @@
+.bee-crm-taskEvent-container {
+  background-color: #f5f5ed;
+  border-left: 1px solid #ccc;
+}
+.bee-crm-taskEvent-row {
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  border-bottom: 1px solid #ccc;
+  padding: 2px 5px 2px;
+}
+
+.bee-crm-taskEvent-col-0,
+.bee-crm-taskEvent-col-1,
+.bee-crm-taskEvent-col-2 {
+  margin-left: 1ex;
+}
+
+.bee-crm-taskEvent-col-0,
+.bee-crm-taskEvent-col-2 {
+  width: 145px;
+  min-width: 145px;
+}
+
+.bee-crm-taskEvent-col-1 {
+  margin-right: auto;
+  min-width: 125px;
+}
+
+.bee-crm-taskEvent-Event,
+.bee-crm-taskEvent-Duration {
+  font-weight: bolder;
+}
+
+.bee-crm-taskEvent-EventNote,
+.bee-crm-taskEvent-Comment {
+  white-space: pre-wrap;
+}
+
+.bee-crm-taskDialog-container td {
+  padding: 8px;
+}
+
+.bee-crm-taskDialog-commentLabelCell {
+  vertical-align: top;
+}
+.bee-crm-taskDialog-commentArea {
+  width: 300px;
+  height: 100px;
+}
+
+.bee-crm-taskDialog-timeInput {
+  width: 60px;
+}
+.bee-crm-taskDialog-selectorInput {
+  width: 200px;
+}
+.bee-crm-taskDialog-dateInput {
+  width: 120px;
+}
+
+.bee-crm-taskEdit-form .bee-RadioGroup.bee-disabled {
+  border: 1px solid silver;
+  padding-right: 2px;
+}
+
+.bee-crm-taskDuration-display {
+  border-collapse: collapse;
+}
+.bee-crm-taskDuration-display td {
+  border: 1px solid #aaa;
+  padding: 3px;
+}
+.bee-crm-taskDuration-caption {
+  padding-right: 20px;
+}
+.bee-crm-taskDuration-valueCell,
+.bee-crm-taskDuration-rowTotalCell,
+.bee-crm-taskDuration-colTotalCell,
+.bee-crm-taskDuration-totalCell {
+  text-align: right;
+}
+.bee-crm-taskDuration-rowLabel,
+.bee-crm-taskDuration-colLabel,
+.bee-crm-taskDuration-rowTotal,
+.bee-crm-taskDuration-colTotal,
+.bee-crm-taskDuration-total {
+  font-weight: bold;
+}
+
+.bee-crm-taskExtension {
+  text-decoration: line-through;
+  font-size: 12px;
+}
+
+.bee-crm-Slack-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+.bee-crm-Slack-late {
+  background-color: red;
+}
+.bee-crm-Slack-opening {
+  background-color: green;
+}
+.bee-crm-Slack-endgame {
+  background-color: orange;
+}
+.bee-crm-Slack-scheduled {
+  background-color: yellow;
+}
+
+.bee-crm-Slack-label {
+  position: absolute;
+  top: 3px;
+}
+.bee-crm-Slack-late .bee-crm-Slack-label {
+  left: 3px;
+  color: white;
+}
+.bee-crm-Slack-opening .bee-crm-Slack-label {
+  left: 30%;
+  color: white;
+}
+.bee-crm-Slack-endgame .bee-crm-Slack-label {
+  right: 30%;
+  color: white;
+}
+.bee-crm-Slack-scheduled .bee-crm-Slack-label {
+  right: 3px;
+}
+
+.bee-crm-FilterSupplier-Slack-late,
+.bee-crm-FilterSupplier-Slack-scheduled {
+  display: block;
+  color: white;
+  font-weight: bolder;
+  width: 130px;
+  height: 25px;
+  border-radius: 3px;
+  margin-bottom: 5px;
+}
+.bee-crm-FilterSupplier-Slack-late {
+  background-image: linear-gradient(to bottom, #DD4B39, #D14836);
+}
+.bee-crm-FilterSupplier-Slack-scheduled {
+  background-image: linear-gradient(to bottom, #4D90FE, #4787ED);  
+}
+
+.bee-crm-Mode-new,
+.bee-crm-Mode-upd {
+  width: 13px;
+  height: 13px;
+  border: 1px solid silver;
+  border-radius: 50%;
+  display: inline-block;
+}
+.bee-crm-Mode-new {
+  background-color: lightgreen;
+}
+.bee-crm-Mode-upd {
+  background-color: yellow;
+}
+
+.bee-CellGridActiveRow .bee-crm-Mode-new,
+.bee-CellGridActiveRow .bee-crm-Mode-upd {
+  border: 2px dashed blue;
+  animation: rotate 2s linear infinite;
+  -webkit-animation: rotate 2s linear infinite;
+}
+
+.bee-crm-taskEvent-col-Photo {
+  width: 2.5em;
+  height: 2.5em;
+  max-width: 2.5em;
+  min-width: 2.5em;
+  align-self: center;
+  -webkit-align-self: center;
+  -ms-flex-item-align: center;
+ }
+
+.bee-crm-taskEvent-Photo {
+  text-align: center;
+  max-width: 100%;
+  max-height: 100%;
+  cursor: default;
+}
+
+.bee-crm-rt-cron-values {
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  width: 640px;
+  margin-bottom: 2px;
+}
+
+.bee-crm-rt-value-toggle {
+  display: inline-block;
+  padding: 2px 2px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.bee-crm-rt-value-toggle-checked {
+  background-color: #80c4f9;
+}
+.bee-crm-rt-value-toggle:hover {
+  outline: #5a6ba3 solid 1px;
+  outline-offset: -1px;
+}
+
+.bee-crm-rt-cron-error {
+  padding-left: 3px;
+  color: transparent;
+}
+.bee-crm-rt-failure {
+  color: red;
+  background-color: yellow;
+}
+
+.bee-crm-rt-cron-help {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  text-align: center;
+  font-weight: bolder;
+  border: 1px solid #aaa;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.bee-crm-rt-cron-help:hover {
+  background-color: #aaa;
+  color: white;
+}
+.bee-crm-rt-cron-examples {
+  border-collapse: collapse;
+}
+.bee-crm-rt-cron-examples td {
+  padding: 2px 5px;
+}
+.bee-crm-rt-cron-examples tr:nth-child(odd) {
+  background-color: white;
+}
+.bee-crm-rt-cron-examples tr:nth-child(even) {
+  background-color: #f5f5f5;
+}
+
+.bee-crm-rt-schedule-panel {
+  overflow: auto;
+}
+.bee-crm-rt-month-panel {
+  display: inline-block;
+  margin: 1ex 1em;
+}
+
+.bee-crm-rt-month-label {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.bee-crm-rt-month-table {
+  border-collapse: collapse;
+}
+.bee-crm-rt-month-table td {
+  border: 1px solid #ccc;
+  text-align: center;
+  background-color: white;
+  width: 26px;
+  height: 22px;
+}
+
+.bee-crm-rt-today {
+  outline: #f99 ridge 5px;
+}
+
+.bee-crm-rt-holiday {
+  color: red;
+}
+.bee-crm-rt-exclude {
+  text-decoration: line-through;
+}
+.bee-crm-rt-weekend {
+  color: #999;
+}
+.bee-crm-rt-day-has-tasks.bee-crm-rt-weekend,
+.bee-crm-rt-day-scheduled.bee-crm-rt-weekend {
+  color: black;
+}
+
+.bee-crm-rt-month-table td.bee-crm-rt-day-has-tasks {
+  background-color: blanchedalmond;
+  cursor: pointer;
+}
+.bee-crm-rt-month-table td.bee-crm-rt-day-scheduled {
+  background-color: #bfb;
+  cursor: pointer;
+}
+.bee-crm-rt-month-table td.bee-crm-rt-infertile {
+  background-color: #cfc;
+}
+.bee-crm-rt-day-has-tasks:hover,
+.bee-crm-rt-day-scheduled:hover {
+  font-weight: bold;
+  font-size: larger;
+  outline: black solid 1px;
+}
+
+.bee-crm-rt-info-label {
+  display: inline-block;
+  padding-right: 1em;
+  font-size: smaller;
+}
+
+.bee-crm-rt-offspring-dialog {
+  background-color: whitesmoke;
+}
+.bee-crm-rt-offspring-panel {
+  max-height: 500px;
+  overflow: auto;
+}
+.bee-crm-rt-offspring-table {
+  border-collapse: collapse;
+}
+.bee-crm-rt-offspring-table tr:hover {
+  background-color: blanchedalmond;
+}
+.bee-crm-rt-offspring-table td {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.bee-crm-rt-offspring-open,
+.bee-crm-rt-offspring-create,
+.bee-crm-rt-offspring-delete {
+  color: #888;
+  font-size: 20px;
+  padding: 2px;
+  cursor: pointer;
+}
+.bee-crm-rt-offspring-open:hover {
+  background-color: gray;
+  color: white;
+}
+.bee-crm-rt-offspring-create:hover {
+  background-color: #080;
+  color: white;
+}
+.bee-crm-rt-offspring-delete:hover {
+  background-color: red;
+  color: white;
+}
+
+.bee-crm-task-alien {
+  background-image: url(../images/checkered_background.png) !important;
+}
+
+.bee-crm-request-prop-caption{
+	margin-left: 3em;
+}
+
+.bee-crm-request-prop-data {
+	margin-left: 1ex;
+	font-weight: bolder;
+}

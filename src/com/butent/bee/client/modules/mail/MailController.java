@@ -31,6 +31,7 @@ import com.butent.bee.client.screen.HandlesStateChange;
 import com.butent.bee.client.screen.HasDomain;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Label;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.State;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
@@ -57,22 +58,23 @@ public class MailController extends Flow implements HasDomain, HandlesStateChang
     super();
 
     FlowPanel panel = new FlowPanel();
-    panel.setStyleName("bee-mail-Controller");
+    panel.setStyleName(BeeConst.CSS_CLASS_PREFIX + "mail-Controller");
     add(panel);
 
     sysFoldersPanel = new FlowPanel();
-    sysFoldersPanel.setStyleName("bee-mail-SysFolders");
+    sysFoldersPanel.setStyleName(BeeConst.CSS_CLASS_PREFIX + "mail-SysFolders");
     panel.add(sysFoldersPanel);
 
     Horizontal caption = new Horizontal();
-    caption.setStyleName("bee-mail-FolderRow");
+    caption.setStyleName(BeeConst.CSS_CLASS_PREFIX + "mail-FolderRow");
     panel.add(caption);
 
     Label label = new Label(Localized.getConstants().mailFolders());
-    label.setStyleName("bee-mail-FolderCaption");
+    label.setStyleName(BeeConst.CSS_CLASS_PREFIX + "mail-FolderCaption");
     caption.add(label);
 
-    final FaLabel create = new FaLabel(FontAwesome.PLUS, "bee-mail-FolderAction");
+    final FaLabel create =
+        new FaLabel(FontAwesome.PLUS, BeeConst.CSS_CLASS_PREFIX + "mail-FolderAction");
     create.setTitle(Localized.getConstants().mailCreateNewFolder());
 
     create.addClickHandler(new ClickHandler() {
@@ -84,7 +86,7 @@ public class MailController extends Flow implements HasDomain, HandlesStateChang
     caption.add(create);
 
     foldersPanel = new FlowPanel();
-    foldersPanel.setStyleName("bee-mail-Folders");
+    foldersPanel.setStyleName(BeeConst.CSS_CLASS_PREFIX + "mail-Folders");
     panel.add(foldersPanel);
   }
 
@@ -130,7 +132,7 @@ public class MailController extends Flow implements HasDomain, HandlesStateChang
       final Long folderId = account.getSystemFolder(sysFolder);
       MailFolder folder = account.findFolder(folderId);
       Label label = new Label();
-      label.setStyleName("bee-mail-SysFolder");
+      label.setStyleName(BeeConst.CSS_CLASS_PREFIX + "mail-SysFolder");
 
       label.addClickHandler(new ClickHandler() {
         @Override
@@ -169,12 +171,12 @@ public class MailController extends Flow implements HasDomain, HandlesStateChang
 
       if (!account.isSystemFolder(folderId)) {
         Horizontal row = new Horizontal();
-        row.setStyleName("bee-mail-FolderRow");
+        row.setStyleName(BeeConst.CSS_CLASS_PREFIX + "mail-FolderRow");
         row.setDefaultCellStyles("padding: 0px;");
 
         final String cap = subFolder.getName();
         Label label = new Label();
-        label.setStyleName("bee-mail-Folder");
+        label.setStyleName(BeeConst.CSS_CLASS_PREFIX + "mail-Folder");
         label.getElement().getStyle().setMarginLeft(margin, Unit.PX);
         label.addClickHandler(new ClickHandler() {
           @Override
@@ -197,7 +199,9 @@ public class MailController extends Flow implements HasDomain, HandlesStateChang
         row.add(label);
 
         if (subFolder.isConnected()) {
-          final FaLabel disconnect = new FaLabel(FontAwesome.CHAIN_BROKEN, "bee-mail-FolderAction");
+          final FaLabel disconnect =
+              new FaLabel(FontAwesome.CHAIN_BROKEN, BeeConst.CSS_CLASS_PREFIX
+                  + "mail-FolderAction");
           disconnect.setTitle(Localized.getMessages()
               .mailCancelFolderSynchronizationQuestion(BeeUtils.bracket(cap)));
 
@@ -219,7 +223,8 @@ public class MailController extends Flow implements HasDomain, HandlesStateChang
         } else {
           label.addStyleDependentName("disconnected");
         }
-        final FaLabel edit = new FaLabel(FontAwesome.EDIT, "bee-mail-FolderAction");
+        final FaLabel edit =
+            new FaLabel(FontAwesome.EDIT, BeeConst.CSS_CLASS_PREFIX + "mail-FolderAction");
         edit.setTitle(Localized.getMessages().mailRenameFolder(BeeUtils.bracket(cap)));
 
         edit.addClickHandler(new ClickHandler() {
@@ -237,7 +242,8 @@ public class MailController extends Flow implements HasDomain, HandlesStateChang
         });
         row.add(edit);
 
-        final FaLabel delete = new FaLabel(FontAwesome.TRASH_O, "bee-mail-FolderAction");
+        final FaLabel delete =
+            new FaLabel(FontAwesome.TRASH_O, BeeConst.CSS_CLASS_PREFIX + "mail-FolderAction");
         delete.setTitle(Localized.getMessages()
             .mailDeleteFolderQuestion(BeeUtils.bracket(cap)));
 

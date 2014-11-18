@@ -13,6 +13,7 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RowChildren;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,9 +28,9 @@ public final class SaveChangesEvent extends GwtEvent<SaveChangesEvent.Handler> i
 
   public static SaveChangesEvent create(IsRow oldRow, IsRow newRow, List<BeeColumn> dataColumns,
       Collection<RowChildren> children, RowCallback callback) {
-    List<BeeColumn> columns = Lists.newArrayList();
-    List<String> oldValues = Lists.newArrayList();
-    List<String> newValues = Lists.newArrayList();
+    List<BeeColumn> columns = new ArrayList<>();
+    List<String> oldValues = new ArrayList<>();
+    List<String> newValues = new ArrayList<>();
 
     for (int i = 0; i < dataColumns.size(); i++) {
       BeeColumn dataColumn = dataColumns.get(i);

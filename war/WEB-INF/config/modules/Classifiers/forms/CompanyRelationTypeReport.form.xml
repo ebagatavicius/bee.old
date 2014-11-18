@@ -3,7 +3,6 @@
   xmlns:f="http://www.butent.com/form"
   
   name="CompanyRelationTypeReport" caption="=contactReportCompanyByType"
-  enabledActions="filter bookmark export"
   >
   <FlowPanel>
     <br/>

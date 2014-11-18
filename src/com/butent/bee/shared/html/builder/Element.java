@@ -1,7 +1,5 @@
 package com.butent.bee.shared.html.builder;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.css.CssAngle;
 import com.butent.bee.shared.css.CssFrequency;
@@ -17,6 +15,7 @@ import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,10 +23,10 @@ public class Element extends Node {
 
   private final String tag;
 
-  private final List<Attribute> attributes = Lists.newArrayList();
+  private final List<Attribute> attributes = new ArrayList<>();
 
-  private final List<String> classes = Lists.newArrayList();
-  private final List<Style> styles = Lists.newArrayList();
+  private final List<String> classes = new ArrayList<>();
+  private final List<Style> styles = new ArrayList<>();
 
   protected Element() {
     super();

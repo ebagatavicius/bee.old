@@ -35,6 +35,7 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.utils.JsUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.css.CssProperties;
 import com.butent.bee.shared.html.Attributes;
 import com.butent.bee.shared.html.Tags;
 import com.butent.bee.shared.html.builder.elements.Input;
@@ -95,6 +96,17 @@ public final class DomUtils {
   public static void allowSelection(UIObject obj) {
     Assert.notNull(obj);
     preventSelection(obj.getElement());
+  }
+
+  public static List<Element> asList(NodeList<Element> nodeList) {
+    List<Element> elements = new ArrayList<>();
+
+    if (nodeList != null) {
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        elements.add(nodeList.getItem(i));
+      }
+    }
+    return elements;
   }
 
   public static void clear(Node nd) {
@@ -572,7 +584,8 @@ public final class DomUtils {
         "Scroll Width", el.getScrollWidth(),
         "Tab Index", el.getTabIndex(),
         "Tag Name", el.getTagName(),
-        "Title", el.getTitle());
+        "Title", el.getTitle(),
+        "Visible", checkVisibility(el));
 
     return lst;
   }
@@ -631,13 +644,13 @@ public final class DomUtils {
 //@formatter:on
 
   public static Element getFirstVisibleChild(Element parent) {
-    if (parent == null) {
+    if (parent == null || !isVisible(parent)) {
       return null;
     }
 
     for (Element child = parent.getFirstChildElement(); child != null; child =
         child.getNextSiblingElement()) {
-      if (UIObject.isVisible(child)) {
+      if (checkVisibility(child)) {
         return child;
       }
     }
@@ -1071,7 +1084,7 @@ public final class DomUtils {
         "Style Name", obj.getStyleName(),
         "Style Primary Name", obj.getStylePrimaryName(),
         "Title", obj.getTitle(),
-        "Visible", obj.isVisible());
+        "Visible", isVisible(obj));
 
     return lst;
   }
@@ -1118,13 +1131,13 @@ public final class DomUtils {
 
   public static List<Element> getVisibleChildren(Element parent) {
     List<Element> result = new ArrayList<>();
-    if (parent == null) {
+    if (parent == null || !isVisible(parent)) {
       return result;
     }
 
     for (Element child = parent.getFirstChildElement(); child != null; child =
         child.getNextSiblingElement()) {
-      if (UIObject.isVisible(child)) {
+      if (checkVisibility(child)) {
         result.add(child);
       }
     }
@@ -1133,17 +1146,6 @@ public final class DomUtils {
 
   public static Widget getWidget(String id) {
     return getPhysicalChild(BodyPanel.get(), id);
-  }
-
-  public static List<ExtendedProperty> getWidgetExtendedInfo(Widget w, String prefix) {
-    Assert.notNull(w);
-    List<ExtendedProperty> lst = new ArrayList<>();
-
-    PropertyUtils.appendChildrenToExtended(lst, BeeUtils.joinWords(prefix, "Widget"),
-        getWidgetInfo(w));
-    PropertyUtils.appendExtended(lst, getUIObjectExtendedInfo(w, prefix));
-
-    return lst;
   }
 
   public static List<Property> getWidgetInfo(Widget w) {
@@ -1244,17 +1246,13 @@ public final class DomUtils {
   }
 
   public static boolean isInView(Element el) {
-    if (el == null || !UIObject.isVisible(el)) {
+    if (el == null || !isVisible(el)) {
       return false;
     }
 
     ClientRect rect = ClientRect.createBounding(el);
 
     for (Element p = el.getParentElement(); p != null; p = p.getParentElement()) {
-      if (!UIObject.isVisible(p)) {
-        return false;
-      }
-
       ClientRect parentRect = ClientRect.createBounding(p);
       if (rect != null && parentRect != null && !parentRect.contains(rect)) {
         return false;
@@ -1346,19 +1344,23 @@ public final class DomUtils {
   }
 
   public static boolean isVisible(Element el) {
-    Assert.notNull(el);
+    if (el == null) {
+      return false;
+    }
 
     for (Element p = el; p != null; p = p.getParentElement()) {
-      if (!UIObject.isVisible(p)) {
+      if (!checkVisibility(p)) {
         return false;
+      }
+      if (Tags.BODY.equalsIgnoreCase(p.getTagName())) {
+        break;
       }
     }
     return true;
   }
 
   public static boolean isVisible(UIObject obj) {
-    Assert.notNull(obj);
-    return isVisible(obj.getElement());
+    return obj != null && isVisible(obj.getElement());
   }
 
   public static void makeFocusable(Element el) {
@@ -1892,6 +1894,24 @@ public final class DomUtils {
     textBoxClientHeight = elem.getClientHeight();
 
     elem.removeFromParent();
+  }
+
+  private static boolean checkVisibility(Element el) {
+    if (StyleUtils.VALUE_NONE.equals(el.getStyle().getDisplay())) {
+      return false;
+    }
+    if (StyleUtils.VALUE_HIDDEN.equals(el.getStyle().getVisibility())) {
+      return false;
+    }
+
+    if (StyleUtils.VALUE_NONE.equals(ComputedStyles.getStyleImpl(el, CssProperties.DISPLAY))) {
+      return false;
+    }
+    if (StyleUtils.VALUE_HIDDEN.equals(ComputedStyles.getStyleImpl(el, CssProperties.VISIBILITY))) {
+      return false;
+    }
+
+    return true;
   }
 
 //@formatter:off

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+
+  name="TradeActTmplItems" viewName="TradeActTmplItems"
+  flexGrow="1"
+  newRowCaption="=newItem"
+  >
+  <xi:include href="columns/TradeActItem.columns.xml" />
+
+  <xi:include href="columns/TradeActQuantity.columns.xml" />
+  <xi:include href="columns/TradeActWeight.columns.xml" />
+  <xi:include href="columns/TradeActPrice.columns.xml" />
+
+  <xi:include href="columns/TradeActDiscount.columns.xml" />
+  <xi:include href="columns/TradeActVat.columns.xml" />
+  <xi:include href="columns/TradeActTotal.columns.xml" />
+
+  <g:columns>
+    <DataColumn name="Note" visible="false" />
+  </g:columns>
+</g:Grid>

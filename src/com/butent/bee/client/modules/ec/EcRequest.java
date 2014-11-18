@@ -1,10 +1,10 @@
 package com.butent.bee.client.modules.ec;
 
-import com.google.common.base.Objects;
-
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+
+import java.util.Objects;
 
 public class EcRequest {
 
@@ -60,7 +60,7 @@ public class EcRequest {
   }
 
   public boolean sameService(String svc) {
-    return Objects.equal(service, svc);
+    return Objects.equals(service, svc);
   }
 
   String getLabel() {

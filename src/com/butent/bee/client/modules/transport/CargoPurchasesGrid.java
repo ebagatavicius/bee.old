@@ -1,8 +1,6 @@
 package com.butent.bee.client.modules.transport;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
@@ -47,6 +45,8 @@ import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -75,7 +75,7 @@ public class CargoPurchasesGrid extends AbstractGridInterceptor implements Click
   @Override
   public void onClick(ClickEvent event) {
     final GridPresenter presenter = getGridPresenter();
-    final Set<Long> ids = Sets.newHashSet();
+    final Set<Long> ids = new HashSet<>();
 
     for (RowInfo row : presenter.getGridView().getSelectedRows(SelectedRows.ALL)) {
       ids.add(row.getId());
@@ -87,9 +87,9 @@ public class CargoPurchasesGrid extends AbstractGridInterceptor implements Click
     Queries.getRowSet(getViewName(), null, Filter.idIn(ids), new RowSetCallback() {
       @Override
       public void onSuccess(BeeRowSet result) {
-        Set<String> orders = Sets.newHashSet();
-        Map<Long, Pair<String, Integer>> suppliers = Maps.newHashMap();
-        Map<Long, String> currencies = Maps.newHashMap();
+        Set<String> orders = new HashSet<>();
+        Map<Long, Pair<String, Integer>> suppliers = new HashMap<>();
+        Map<Long, String> currencies = new HashMap<>();
 
         boolean itemEmpty = false;
         DataInfo info = Data.getDataInfo(getViewName());

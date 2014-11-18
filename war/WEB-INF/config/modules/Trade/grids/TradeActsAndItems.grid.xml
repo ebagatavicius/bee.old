@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Grid[]>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+
+  name="TradeActsAndItems" viewName="TradeActsAndItems" readOnly="true"
+  caption="=tradeActsAndItems" flexGrow="1"
+  >
+
+  <g:columns>
+    <RelColumn name="TradeAct" renderColumns="TradeAct" editPopup="true"
+      horizontalAlignment="right" />
+    <DataColumn name="Parent" visible="false" />
+
+    <RelColumn name="Name" renderColumns="ActName" />
+    <DataColumn name="Kind" visible="false" />
+
+    <DataColumn name="Date" />
+    <DataColumn name="Until" visible="false" />
+
+    <RelColumn name="Series" renderColumns="SeriesName" />
+    <DataColumn name="Number" />
+
+    <RelColumn name="Operation" renderColumns="OperationName" visible="false" />
+    <DataColumn name="WarehouseFromCode" label="=trdWarehouseFrom" visible="false" />
+    <DataColumn name="WarehouseToCode" label="=trdWarehouseTo" visible="false" />
+
+    <RelColumn name="Status" renderColumns="StatusName" visible="false" />
+
+    <RelColumn name="Company" renderColumns="CompanyName" />
+    <RelColumn name="Object" renderColumns="ObjectName" />
+
+    <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName"
+      visible="false" />
+
+    <RelColumn name="Vehicle" renderColumns="VehicleParentModel VehicleModel VehicleNumber"
+      visible="false" />
+    <RelColumn name="Driver" renderColumns="DriverFirstName DriverLastName"
+      visible="false" />
+
+    <DataColumn name="Notes" visible="false" />
+
+    <DataColumn name="ItemTypeName" label="=type" visible="false" />
+    <DataColumn name="ItemGroupName" label="=group" visible="false" />
+
+    <RelColumn name="Item" renderColumns="ItemName" editPopup="true" />
+    <DataColumn name="Article" />
+
+    <DataColumn name="Quantity" />
+    <DataColumn name="UnitName" caption="=unitShort" flexGrow="0" />
+
+    <DataColumn name="Weight" />
+
+    <DataColumn name="Price" />
+    <RelColumn name="Currency" renderColumns="CurrencyName" />
+
+    <DataColumn name="Discount" flexGrow="0" />
+
+    <CalcColumn name="Total" type="decimal" caption="=trdAmount" scale="2">
+      <style>
+        <bodyStyle><ui:font>bold</ui:font></bodyStyle>
+      </style>
+      <renderer type="total" />
+    </CalcColumn>
+
+    <DataColumn name="Note" visible="false" />
+  </g:columns>
+</g:Grid>

@@ -124,8 +124,8 @@
     </xs:union>
   </xs:simpleType>
   
-  <xs:simpleType name="nameList">
-    <xs:list itemType="nameType" />
+  <xs:simpleType name="fieldNames">
+    <xs:list itemType="fieldNameType" />
   </xs:simpleType>
   
   <xs:simpleType name="replacementPolicy">
@@ -200,6 +200,7 @@
       <xs:enumeration value="Ec.Administration" />
       <xs:enumeration value="Ec.Classifiers" />
       <xs:enumeration value="Trade" />
+      <xs:enumeration value="Trade.Acts" />
       <xs:enumeration value="Transport" />
       <xs:enumeration value="Transport.Logistics" />
       <xs:enumeration value="Transport.SelfService" />
@@ -271,6 +272,7 @@
       <xs:enumeration value="CompanyContacts" />
       <xs:enumeration value="CompanyDepartments" />
       <xs:enumeration value="CompanyGroups" />
+      <xs:enumeration value="CompanyObjects" />
       <xs:enumeration value="CompanyPersons" />
       <xs:enumeration value="CompanyPriorities" />
       <xs:enumeration value="CompanyRelationTypes" />
@@ -281,6 +283,8 @@
       <xs:enumeration value="Configuration" />
       <xs:enumeration value="CostCenters" />
       <xs:enumeration value="Countries" />
+      <xs:enumeration value="CountryDailyCosts" />
+      <xs:enumeration value="CountryNorms" />
       <xs:enumeration value="Criteria" />
       <xs:enumeration value="CriteriaGroups" />
       <xs:enumeration value="Currencies" />
@@ -298,6 +302,7 @@
       <xs:enumeration value="DistinctCriteriaGroups" />
       <xs:enumeration value="DistinctCriterionValues" />
       <xs:enumeration value="DistinctDocumentItems" />
+      <xs:enumeration value="DistinctForwarderVehicles" />
       <xs:enumeration value="DocumentData" />
       <xs:enumeration value="DocumentFiles" />
       <xs:enumeration value="DocumentItems" />
@@ -345,8 +350,10 @@
       <xs:enumeration value="ImportOptions" />
       <xs:enumeration value="ImportProperties" />
       <xs:enumeration value="InformationSources" />
+      <xs:enumeration value="InvoiceTradeActs" />
       <xs:enumeration value="IpFilters" />
       <xs:enumeration value="ItemCategories" />
+      <xs:enumeration value="ItemGraphics" />
       <xs:enumeration value="Items" />
       <xs:enumeration value="Maintenance" />
       <xs:enumeration value="Messages" />
@@ -384,6 +391,7 @@
       <xs:enumeration value="Rules" />
       <xs:enumeration value="SaleItems" />
       <xs:enumeration value="Sales" />
+      <xs:enumeration value="SeriesManagers" />
       <xs:enumeration value="ServiceCriteria" />
       <xs:enumeration value="ServiceCritGroups" />
       <xs:enumeration value="ServiceDates" />
@@ -418,6 +426,7 @@
       <xs:enumeration value="TcdArticleCriteria" />
       <xs:enumeration value="TcdArticleGraphics" />
       <xs:enumeration value="TcdArticles" />
+      <xs:enumeration value="TcdArticlePrices" />
       <xs:enumeration value="TcdArticleSuppliers" />
       <xs:enumeration value="TcdBrands" />
       <xs:enumeration value="TcdBrandsMapping" />
@@ -426,6 +435,7 @@
       <xs:enumeration value="TcdManufacturers" />
       <xs:enumeration value="TcdModels" />
       <xs:enumeration value="TcdOrphans" />
+      <xs:enumeration value="TcdPriceLists" />
       <xs:enumeration value="TcdRemainders" />
       <xs:enumeration value="TcdTypeArticles" />
       <xs:enumeration value="TcdTypes" />
@@ -433,6 +443,19 @@
       <xs:enumeration value="ThemeColors" />
       <xs:enumeration value="Themes" />
       <xs:enumeration value="TimeZones" />
+      <xs:enumeration value="TradeActInvoices" />
+      <xs:enumeration value="TradeActItems" />
+      <xs:enumeration value="TradeActNames" />
+      <xs:enumeration value="TradeActs" />
+      <xs:enumeration value="TradeActsAndItems" />
+      <xs:enumeration value="TradeActServices" />
+      <xs:enumeration value="TradeActTemplates" />
+      <xs:enumeration value="TradeActTmplItems" />
+      <xs:enumeration value="TradeActTmplServices" />
+      <xs:enumeration value="TradeNotes" />
+      <xs:enumeration value="TradeOperations" />
+      <xs:enumeration value="TradeSeries" />
+      <xs:enumeration value="TradeStatuses" />
       <xs:enumeration value="TransportationOrders" />
       <xs:enumeration value="TransportGroups" />
       <xs:enumeration value="TransportSettings" />

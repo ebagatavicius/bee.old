@@ -4,6 +4,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.shared.BeeConst;
+
 /**
  * Contains a panel that lays all of its widgets out in a single horizontal row.
  */
@@ -14,7 +16,7 @@ public class Horizontal extends CellVector {
 
   public Horizontal() {
     super();
-    addStyleName("bee-Horizontal");
+    addStyleName(BeeConst.CSS_CLASS_PREFIX + "Horizontal");
 
     tableRow = DOM.createTR();
     DOM.appendChild(getBody(), tableRow);

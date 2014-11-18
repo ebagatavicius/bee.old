@@ -2,8 +2,6 @@ package com.butent.bee.shared.modules.discussions;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import static com.butent.bee.shared.modules.discussions.DiscussionsConstants.*;
 
@@ -22,6 +20,8 @@ import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +33,7 @@ public final class DiscussionsUtils {
 
   public static List<Long> getDiscussionMarksIds(IsRow row) {
     if (row == null) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     }
     return DataUtils.parseIdList(row.getProperty(PROP_MARKS));
 
@@ -57,7 +57,7 @@ public final class DiscussionsUtils {
   }
 
   public static List<Long> getDiscussionMembers(IsRow row, List<BeeColumn> columns) {
-    List<Long> users = Lists.newArrayList();
+    List<Long> users = new ArrayList<>();
 
     Long owner = row.getLong(DataUtils.getColumnIndex(COL_OWNER, columns));
     if (owner != null) {
@@ -77,11 +77,11 @@ public final class DiscussionsUtils {
 
   public static Map<String, String> getDiscussionsParameters(IsRow formRow) {
     if (formRow == null) {
-      return Maps.newHashMap();
+      return new HashMap<>();
     }
 
     if (BeeUtils.isEmpty(formRow.getProperty(PROP_PARAMETERS))) {
-      return Maps.newHashMap();
+      return new HashMap<>();
     }
 
     Map<String, String> params = Codec.deserializeMap(formRow.getProperty(PROP_PARAMETERS));
@@ -121,7 +121,7 @@ public final class DiscussionsUtils {
   }
 
   public static List<String> getMarkStats(Long commentId, SimpleRowSet marksStats) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     if (marksStats == null) {
       return result;

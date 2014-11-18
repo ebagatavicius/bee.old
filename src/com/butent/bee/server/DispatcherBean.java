@@ -1,7 +1,5 @@
 package com.butent.bee.server;
 
-import com.google.common.collect.Maps;
-
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 
 import com.butent.bee.server.communication.Rooms;
@@ -19,7 +17,6 @@ import com.butent.bee.server.ui.UiHolderBean;
 import com.butent.bee.server.ui.UiServiceBean;
 import com.butent.bee.server.utils.Reflection;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -34,6 +31,7 @@ import com.butent.bee.shared.ui.UserInterface.Component;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.ejb.EJB;
@@ -82,7 +80,7 @@ public class DispatcherBean {
 
   public ResponseObject doLogin(RequestInfo reqInfo) {
     ResponseObject response = new ResponseObject();
-    Map<String, Object> data = Maps.newHashMap();
+    Map<String, Object> data = new HashMap<>();
 
     ResponseObject userData = userService.login(reqInfo.getRemoteAddr(), reqInfo.getUserAgent());
     response.addMessagesFrom(userData);
@@ -181,9 +179,9 @@ public class DispatcherBean {
             break;
 
           case GRIDS:
-            Pair<BeeRowSet, BeeRowSet> settings = uiService.getGridAndColumnSettings();
-            if (settings != null && !settings.isNull()) {
-              data.put(component.key(), settings);
+            ResponseObject settingsData = uiService.getGridAndColumnSettings();
+            if (settingsData != null && settingsData.hasResponse()) {
+              data.put(component.key(), settingsData.getResponse());
             }
             break;
 
@@ -194,6 +192,13 @@ public class DispatcherBean {
               if (!menuData.hasErrors() && menuData.hasResponse()) {
                 data.put(component.key(), menuData.getResponse());
               }
+            }
+            break;
+
+          case MONEY:
+            BeeRowSet rates = qs.getViewData(VIEW_CURRENCY_RATES);
+            if (!DataUtils.isEmpty(rates)) {
+              data.put(component.key(), rates);
             }
             break;
 
@@ -248,7 +253,7 @@ public class DispatcherBean {
     ResponseObject response;
 
     if (moduleHolder.hasModule(svc)) {
-      response = moduleHolder.doModule(reqInfo);
+      response = moduleHolder.doModule(svc, reqInfo);
 
     } else if (Service.isDataService(svc)) {
       response = uiService.doService(reqInfo);
@@ -269,7 +274,7 @@ public class DispatcherBean {
       response = ResponseObject.info(System.currentTimeMillis(), BeeConst.whereAmI());
 
     } else if (BeeUtils.same(svc, Service.INVOKE)) {
-      response = Reflection.invoke(invocation, reqInfo.getParameter(Service.RPC_VAR_METH), reqInfo);
+      response = Reflection.invoke(invocation, reqInfo.getParameter(Service.VAR_METHOD), reqInfo);
 
     } else {
       String msg = BeeUtils.joinWords(svc, "service not recognized");

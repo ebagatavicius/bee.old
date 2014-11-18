@@ -115,7 +115,8 @@
 
       <row>
         <Label name="ExecutorsLabel" class="bee-required" text="=crmTaskExecutors" />
-        <MultiSelector viewName="Users" property="Executors" renderColumns="FirstName LastName"
+        <MultiSelector name="Executors"
+          viewName="Users" property="Executors" renderColumns="FirstName LastName"
           editPopup="true" newRowEnabled="false" editSource="CompanyPerson" style="&inp2x;"
           label="=crmTaskExecutors" />
       </row>

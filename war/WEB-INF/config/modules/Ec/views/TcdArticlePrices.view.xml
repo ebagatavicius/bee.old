@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="TcdArticlePrices" source="TcdArticlePrices"
+  caption="=tcdArticlePrices"
+  >
+  <Columns>
+    <SimpleColumn name="Article" />
+    
+    <SimpleColumn name="PriceList" />
+    <SimpleJoin name="PriceList" joinType="INNER">
+      <SimpleColumn name="PriceListName" />
+    </SimpleJoin>
+    <SimpleColumn name="Price" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="PriceListName" />
+  </Order>
+</View>

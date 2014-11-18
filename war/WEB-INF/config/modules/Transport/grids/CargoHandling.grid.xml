@@ -4,7 +4,6 @@
 
   name="CargoHandling" viewName="CargoHandling"
   newRowForm="CargoPlace" newRowCaption="=trNewCargoPlace" editForm="CargoPlace"
-  editInPlace="Notes"
   flexGrow="1" flexShrink="1"
   >
   <g:body height="50" />
@@ -12,6 +11,6 @@
   <g:columns>
     <CalcColumn name="Loading" type="string" cellType="html" caption="=loading" minWidth="140" flexBasis="120" />
     <CalcColumn name="Unloading" type="string" cellType="html" caption="=unloading" minWidth="140" flexBasis="120" />
-    <DataColumn name="Notes" />
+    <DataColumn name="Notes" editInPlace="true" />
   </g:columns>
 </g:Grid>

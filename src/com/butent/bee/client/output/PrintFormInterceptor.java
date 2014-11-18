@@ -21,6 +21,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PrintFormInterceptor extends AbstractFormInterceptor {
@@ -78,8 +79,8 @@ public abstract class PrintFormInterceptor extends AbstractFormInterceptor {
               counter.set(counter.get() + 1);
 
               if (counter.get() == forms.size()) {
-                List<String> captions = Lists.newArrayList();
-                List<FormDescription> descriptions = Lists.newArrayList();
+                List<String> captions = new ArrayList<>();
+                List<FormDescription> descriptions = new ArrayList<>();
 
                 for (FormDescription dscr : forms) {
                   if (dscr != null) {

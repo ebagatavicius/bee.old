@@ -10,6 +10,6 @@ name="Mail" label="=mail" order="80" module="Mail"
 
   <Item name="Proxy" label="=mailReloadMailProxy" service="restart_proxy" separator="true"
    module="Mail.Administration" />
-  <Item name="Parameters" label="=mailParameters" service="parameters" parameters="Mail"  separator="true"
-    module="Mail.Administration" />
+  <Item name="Parameters" label="=mailParameters" service="parameters" parameters="Mail"
+    separator="true" module="Mail.Administration" />
 </Entry>

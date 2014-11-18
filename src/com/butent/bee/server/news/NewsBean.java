@@ -1,9 +1,5 @@
 package com.butent.bee.server.news;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 import com.butent.bee.server.data.BeeView;
 import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.data.SystemBean;
@@ -45,7 +41,10 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.websocket.messages.ModificationMessage;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -89,7 +88,7 @@ public class NewsBean {
       return ResponseObject.emptyResponse();
     }
 
-    List<Subscription> subscriptions = Lists.newArrayList();
+    List<Subscription> subscriptions = new ArrayList<>();
     int countHeadlines = 0;
 
     for (SimpleRow row : userFeeds) {
@@ -317,7 +316,7 @@ public class NewsBean {
   private Map<Long, Long> getAccess(Feed feed, String usageTable, String relationColumn,
       long userId, DateTime startDate) {
 
-    Map<Long, Long> access = Maps.newHashMap();
+    Map<Long, Long> access = new HashMap<>();
 
     SqlSelect query = NewsHelper.getQueryForAccess(feed, usageTable, relationColumn, userId,
         startDate);
@@ -338,7 +337,7 @@ public class NewsBean {
   }
 
   private List<Headline> getHeadlines(Feed feed, long userId, DateTime startDate) {
-    List<Headline> result = Lists.newArrayList();
+    List<Headline> result = new ArrayList<>();
 
     if (NewsHelper.hasChannel(feed)) {
       List<Headline> headlines = NewsHelper.getHeadlines(feed, userId, startDate);
@@ -358,8 +357,8 @@ public class NewsBean {
 
     Map<Long, Long> access = getAccess(feed, usageTable, relationColumn, userId, startDate);
 
-    Set<Long> newIds = Sets.newHashSet();
-    Set<Long> updIds = Sets.newHashSet();
+    Set<Long> newIds = new HashSet<>();
+    Set<Long> updIds = new HashSet<>();
 
     if (access.isEmpty()) {
       newIds.addAll(updates.keySet());
@@ -388,7 +387,7 @@ public class NewsBean {
   private Map<Long, Long> getUpdates(Feed feed, String usageTable, String relationColumn,
       long userId, DateTime startDate) {
 
-    Map<Long, Long> updates = Maps.newHashMap();
+    Map<Long, Long> updates = new HashMap<>();
 
     SqlSelect query = NewsHelper.getQueryForUpdates(feed, usageTable, relationColumn,
         userId, startDate);
@@ -440,7 +439,7 @@ public class NewsBean {
 
   private List<Headline> produceHeadlines(Feed feed, long userId, Collection<Long> newIds,
       Collection<Long> updIds) {
-    List<Headline> headlines = Lists.newArrayList();
+    List<Headline> headlines = new ArrayList<>();
 
     boolean hasNew = !BeeUtils.isEmpty(newIds);
     boolean hasUpd = !BeeUtils.isEmpty(updIds);
@@ -449,7 +448,7 @@ public class NewsBean {
       return headlines;
     }
 
-    List<Long> ids = Lists.newArrayList();
+    List<Long> ids = new ArrayList<>();
     if (hasNew) {
       ids.addAll(newIds);
     }
@@ -478,7 +477,7 @@ public class NewsBean {
       headlineColumns = null;
 
     } else {
-      headlineColumns = Lists.newArrayList();
+      headlineColumns = new ArrayList<>();
 
       if (!BeeUtils.isEmpty(labelColumns)) {
         headlineColumns.addAll(labelColumns);
@@ -488,8 +487,8 @@ public class NewsBean {
       }
     }
 
-    List<Integer> labelIndexes = Lists.newArrayList();
-    List<Integer> titleIndexes = Lists.newArrayList();
+    List<Integer> labelIndexes = new ArrayList<>();
+    List<Integer> titleIndexes = new ArrayList<>();
 
     for (int pos = 0; pos < ids.size(); pos += ID_CHUNK_SIZE) {
       List<Long> chunk = ids.subList(pos, Math.min(pos + ID_CHUNK_SIZE, ids.size()));

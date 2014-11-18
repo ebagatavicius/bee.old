@@ -1,12 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  
-  name="AnnouncementsBoard" caption="=announcementsBoard" enabledActions="refresh">
-  
-  <Table name="AdsContent" class="bee-discuss-adsFormContent" >
-    <!--  Content generating via form interceptor -->
-  </Table>
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
+	xmlns:xi="http://www.w3.org/2001/XInclude" name="AnnouncementsBoard"
+	caption="=announcementsBoard" enabledActions="refresh">
+
+	<Table name="AdsContent" class="bee-discuss-adsFormContent"
+		style="background-color: white; margin-left: 1em; word-wrap: normal; margin: 1ex; width: 95%; border-spacing: 0px;">
+		<row>
+			<cell colSpan="2" style="border-bottom: 2px solid #ccc; width: 100%;">
+				<Label text="=welcome" />
+			</cell>
+		</row>
+		<row>
+			<FlowPanel />
+			<cell
+				style="font-weight: bolder; vertical-align: top; padding-left: 1ex; border-top: 1px solid #ccc; border-left: 1px solid #ccc; border-right:  1px solid #ccc; background-color: whitesmoke; position: relative; top: 2px; width: 100%;">
+				<FlowPanel />
+			</cell>
+		</row>
+		<row>
+			<cell
+				style="white-space: nowrap;  vertical-align: top;  padding-right: 1ex;">
+				<Image class="bee-Image" url="images/logo.png" style="max-height: 90px;" />
+			</cell>
+			<cell
+				style="vertical-align: top; padding: 1ex; max-height: 370px; display: block; overflow: hidden; text-overflow: ellipsis; min-height: 6em; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc; border-right:  1px solid #ccc; border-bottom-right-radius: 10px; background-color: whitesmoke; position: relative; top: 2px; box-shadow: 5px 3px 5px #ccc; margin-bottom: 1em;">
+				<Label text="=welcomeMessage" />
+			</cell>
+		</row>
+		<row style="text-align: center;">
+			<FlowPanel />
+			<FlowPanel />
+		</row>
+		
+		 <!--  Content generating via form interceptor -->
+	</Table>
 </f:Form>  

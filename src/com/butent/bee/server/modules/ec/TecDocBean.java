@@ -1,15 +1,16 @@
 package com.butent.bee.server.modules.ec;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.ec.EcConstants.*;
 
-import com.butent.bee.server.Config;
+import com.butent.bee.server.Invocation;
+import com.butent.bee.server.concurrency.ConcurrencyBean;
+import com.butent.bee.server.concurrency.ConcurrencyBean.AsynchronousRunnable;
+import com.butent.bee.server.concurrency.ConcurrencyBean.HasTimerService;
 import com.butent.bee.server.data.IdGeneratorBean;
 import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.data.SystemBean;
@@ -27,6 +28,7 @@ import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
 import com.butent.bee.server.websocket.Endpoint;
+import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst.SqlEngine;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -35,7 +37,6 @@ import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.exceptions.BeeException;
 import com.butent.bee.shared.logging.BeeLogger;
-import com.butent.bee.shared.logging.LogLevel;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.ec.EcConstants.EcSupplier;
@@ -51,7 +52,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -60,11 +64,9 @@ import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
-import javax.ejb.ScheduleExpression;
 import javax.ejb.Stateless;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
-import javax.ejb.TimerConfig;
 import javax.ejb.TimerService;
 import javax.imageio.ImageIO;
 import javax.net.ssl.HostnameVerifier;
@@ -77,7 +79,7 @@ import pl.motonet.WSMotoOfertaSoap;
 
 @Stateless
 @LocalBean
-public class TecDocBean {
+public class TecDocBean implements HasTimerService {
 
   static {
     HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
@@ -97,21 +99,27 @@ public class TecDocBean {
   private class RemoteItem {
     private final String supplierId;
     private final Double cost;
-    private final Double price;
     private final String brand;
     private final String articleNr;
     private final String name;
     private final String descr;
+    private Map<String, Double> prices;
 
     public RemoteItem(String supplierId, String brand, String articleNr, Double cost,
-        Double price, String name, String descr) {
+        String name, String descr) {
       this.supplierId = supplierId;
       this.brand = brand;
       this.articleNr = articleNr;
       this.cost = cost;
-      this.price = price;
       this.name = name;
       this.descr = descr;
+    }
+
+    public void addPrice(String priceList, Double price) {
+      if (prices == null) {
+        prices = new HashMap<>();
+      }
+      prices.put(priceList, price);
     }
   }
 
@@ -130,8 +138,8 @@ public class TecDocBean {
   private class TcdData {
     private final SqlCreate base;
     private final SqlSelect baseSource;
-    private final List<String[]> baseIndexes = Lists.newArrayList();
-    private final List<IsSql> preparations = Lists.newArrayList();
+    private final List<String[]> baseIndexes = new ArrayList<>();
+    private final List<IsSql> preparations = new ArrayList<>();
 
     public TcdData(SqlCreate base, SqlSelect baseSource) {
       this.base = base;
@@ -148,7 +156,6 @@ public class TecDocBean {
   }
 
   private static BeeLogger logger = LogUtils.getLogger(TecDocBean.class);
-  private static BeeLogger messyLogger = LogUtils.getLogger(QueryServiceBean.class);
 
   private static Boolean supportsJPEG2000;
   private static final String JPEG = "JPG";
@@ -178,6 +185,8 @@ public class TecDocBean {
   IdGeneratorBean ig;
   @EJB
   ParamHolderBean prm;
+  @EJB
+  ConcurrencyBean cb;
 
   @Resource
   TimerService timerService;
@@ -195,11 +204,8 @@ public class TecDocBean {
         .addFrom(TBL_TCD_BRANDS)
         .setWhere(SqlUtils.sqlFalse()));
 
-    boolean isDebugEnabled = messyLogger.isDebugEnabled();
+    boolean isDebugEnabled = qs.debugOff();
 
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.INFO);
-    }
     SqlInsert insert = new SqlInsert(tmp)
         .addFields(COL_TCD_ARTICLE, COL_TCD_BRAND, COL_TCD_ARTICLE_NR, COL_TCD_BRAND_NAME);
     int c = 0;
@@ -217,9 +223,8 @@ public class TecDocBean {
       qs.insertData(insert);
       logger.debug(tmp, "Inserted", c, "records");
     }
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.DEBUG);
-    }
+    qs.debugOn(isDebugEnabled);
+
     String tcdArticles = SqlUtils.table(TCD_SCHEMA, TBL_TCD_ARTICLES);
 
     qs.updateData(new SqlUpdate(tmp)
@@ -346,71 +351,37 @@ public class TecDocBean {
 
   public Collection<BeeParameter> getDefaultParameters() {
     return Lists.newArrayList(
-        BeeParameter.createText(Module.ECOMMERCE.getName(), PRM_BUTENT_PRICE, false, null),
-        BeeParameter.createNumber(Module.ECOMMERCE.getName(), PRM_BUTENT_INTERVAL, false, null),
-        BeeParameter.createText(Module.ECOMMERCE.getName(), PRM_MOTONET_HOURS, false, null));
+        BeeParameter.createMap(Module.ECOMMERCE.getName(), PRM_BUTENT_PRICES),
+        BeeParameter.createNumber(Module.ECOMMERCE.getName(), PRM_BUTENT_INTERVAL),
+        BeeParameter.createText(Module.ECOMMERCE.getName(), PRM_MOTONET_HOURS));
+  }
+
+  @Override
+  public TimerService getTimerService() {
+    return timerService;
   }
 
   public void initTimers() {
-    for (Entry<String, EcSupplier> entry : ImmutableMap.of(PRM_BUTENT_INTERVAL, EcSupplier.EOLTAS,
-        PRM_MOTONET_HOURS, EcSupplier.MOTOPROFIL).entrySet()) {
-
-      String parameter = entry.getKey();
-      EcSupplier supplier = entry.getValue();
-
-      Timer tcdTimer = null;
-
-      for (Timer timer : timerService.getTimers()) {
-        if (Objects.equal(timer.getInfo(), supplier)) {
-          tcdTimer = timer;
-          break;
-        }
-      }
-      if (tcdTimer != null) {
-        tcdTimer.cancel();
-      }
-      boolean ok = false;
-
-      switch (supplier) {
-        case EOLTAS:
-          Integer minutes = prm.getInteger(parameter);
-          ok = BeeUtils.isPositive(minutes);
-
-          if (ok) {
-            tcdTimer = timerService.createIntervalTimer(minutes * TimeUtils.MILLIS_PER_MINUTE,
-                minutes * TimeUtils.MILLIS_PER_MINUTE, new TimerConfig(supplier, false));
-
-            logger.info(supplier, "created timer every", minutes, "minutes starting at",
-                tcdTimer.getNextTimeout());
-          }
-          break;
-
-        case MOTOPROFIL:
-          String hours = prm.getText(parameter);
-          ok = !BeeUtils.isEmpty(hours);
-
-          if (ok) {
-            try {
-              tcdTimer = timerService.createCalendarTimer(new ScheduleExpression().hour(hours),
-                  new TimerConfig(supplier, false));
-
-              logger.info(supplier, "created timer on", hours, "hours starting at",
-                  tcdTimer.getNextTimeout());
-            } catch (IllegalArgumentException e) {
-              logger.error(e, parameter);
-              ok = false;
-            }
-          }
-          break;
-      }
-      if (!ok && tcdTimer != null) {
-        logger.info(supplier, "removed timer");
-      }
-    }
+    cb.createIntervalTimer(this.getClass(), PRM_BUTENT_INTERVAL);
+    cb.createCalendarTimer(this.getClass(), PRM_MOTONET_HOURS);
   }
 
-  @Asynchronous
-  public void suckButent() {
+  public void suckButent(boolean async) {
+    if (async) {
+      cb.asynchronousCall(new AsynchronousRunnable() {
+        @Override
+        public String getId() {
+          return BeeUtils.joinWords(TecDocBean.class.getName(), PRM_BUTENT_INTERVAL);
+        }
+
+        @Override
+        public void run() {
+          TecDocBean bean = Assert.notNull(Invocation.locateRemoteBean(TecDocBean.class));
+          bean.suckButent(false);
+        }
+      });
+      return;
+    }
     EcSupplier supplier = EcSupplier.EOLTAS;
     String remoteNamespace = prm.getText(PRM_ERP_NAMESPACE);
     String remoteAddress = prm.getText(PRM_ERP_ADDRESS);
@@ -418,24 +389,55 @@ public class TecDocBean {
     String remotePassword = prm.getText(PRM_ERP_PASSWORD);
 
     try {
+      Map<String, String> fields = new LinkedHashMap<>();
+      fields.put("pr", "preke");
+      fields.put("sv", "savikaina");
+      fields.put("ga", "gam_art");
+      fields.put("gam", "gamintojas");
+      fields.put("pav", "pavad");
+      fields.put("apr", "aprasymas");
+
+      Map<String, String> prices = prm.getMap(PRM_BUTENT_PRICES);
+
+      if (!BeeUtils.isEmpty(prices)) {
+        int i = 1;
+        for (Entry<String, String> entry : prices.entrySet()) {
+          String fld = "k" + i++;
+          fields.put(fld, entry.getValue());
+          prices.put(entry.getKey(), fld);
+        }
+      }
+      StringBuilder fldList = new StringBuilder();
+
+      for (Entry<String, String> entry : fields.entrySet()) {
+        if (fldList.length() > 0) {
+          fldList.append(", ");
+        }
+        fldList.append(entry.getValue()).append(" AS ").append(entry.getKey());
+      }
       String itemsFilter = "prekes.gam_art IS NOT NULL AND prekes.gam_art != ''"
           + " AND prekes.gamintojas IS NOT NULL AND prekes.gamintojas != ''";
 
       SimpleRowSet rows = ButentWS.connect(remoteNamespace, remoteAddress, remoteLogin,
           remotePassword)
-          .getSQLData("SELECT preke AS pr, savikaina AS sv, "
-              + BeeUtils.notEmpty(prm.getText(PRM_BUTENT_PRICE), "null") + " AS kn, gam_art AS ga,"
-              + " gamintojas AS gam, pavad AS pav, aprasymas AS apr"
+          .getSQLData("SELECT " + fldList.toString()
               + " FROM prekes"
               + " WHERE " + itemsFilter,
-              new String[] {"pr", "sv", "kn", "ga", "gam", "pav", "apr"});
+              fields.keySet().toArray(new String[0]));
 
       if (rows.getNumberOfRows() > 0) {
-        List<RemoteItem> data = Lists.newArrayListWithCapacity(rows.getNumberOfRows());
+        List<RemoteItem> data = new ArrayList<>(rows.getNumberOfRows());
 
         for (SimpleRow row : rows) {
-          data.add(new RemoteItem(row.getValue("pr"), row.getValue("gam"), row.getValue("ga"),
-              row.getDouble("sv"), row.getDouble("kn"), row.getValue("pav"), row.getValue("apr")));
+          RemoteItem item = new RemoteItem(row.getValue("pr"), row.getValue("gam"),
+              row.getValue("ga"), row.getDouble("sv"), row.getValue("pav"), row.getValue("apr"));
+
+          if (!BeeUtils.isEmpty(prices)) {
+            for (Entry<String, String> entry : prices.entrySet()) {
+              item.addPrice(entry.getKey(), row.getDouble(entry.getValue()));
+            }
+          }
+          data.add(item);
         }
         importItems(supplier, data);
       }
@@ -462,8 +464,27 @@ public class TecDocBean {
     }
   }
 
-  @Asynchronous
-  public void suckMotonet() {
+  public void suckMotonet(boolean async) {
+    if (async) {
+      cb.asynchronousCall(new AsynchronousRunnable() {
+        @Override
+        public String getId() {
+          return BeeUtils.joinWords(TecDocBean.class.getName(), PRM_MOTONET_HOURS);
+        }
+
+        @Override
+        public long getTimeout() {
+          return TimeUtils.MILLIS_PER_DAY * 2;
+        }
+
+        @Override
+        public void run() {
+          TecDocBean bean = Assert.notNull(Invocation.locateRemoteBean(TecDocBean.class));
+          bean.suckMotonet(false);
+        }
+      });
+      return;
+    }
     EcSupplier supplier = EcSupplier.MOTOPROFIL;
     logger.info(supplier, "Waiting for data...");
 
@@ -477,8 +498,8 @@ public class TecDocBean {
     }
     if (info != null && info.getString().size() > 1) {
       int size = info.getString().size();
-      List<RemoteItem> items = Lists.newArrayListWithCapacity(size);
-      List<RemoteRemainder> remainders = Lists.newArrayListWithCapacity(size);
+      List<RemoteItem> items = new ArrayList<>(size);
+      List<RemoteRemainder> remainders = new ArrayList<>(size);
 
       logger.info(supplier, "Received", size, "records. Updating data...");
 
@@ -490,7 +511,7 @@ public class TecDocBean {
               sys.joinTables(TBL_TCD_BRANDS, TBL_TCD_BRANDS_MAPPING, COL_TCD_BRAND))
           .setWhere(SqlUtils.equals(TBL_TCD_BRANDS_MAPPING, COL_TCD_SUPPLIER, supplier.ordinal())));
 
-      Map<String, String> mappings = Maps.newHashMap();
+      Map<String, String> mappings = new HashMap<>();
 
       for (SimpleRow row : rs) {
         mappings.put(row.getValue(COL_TCD_SUPPLIER_BRAND), row.getValue(COL_TCD_BRAND_NAME));
@@ -508,7 +529,7 @@ public class TecDocBean {
               String supplierId = supplierBrand + values[1];
 
               items.add(new RemoteItem(supplierId, brand, values[1],
-                  BeeUtils.toDoubleOrNull(values[7].replace(',', '.')), null, null, null));
+                  BeeUtils.toDoubleOrNull(values[7].replace(',', '.')), null, null));
 
               remainders.add(new RemoteRemainder(supplierId, "MotoNet",
                   BeeUtils.toDoubleOrNull(values[3])));
@@ -536,7 +557,7 @@ public class TecDocBean {
 
   @Asynchronous
   public void suckTecdoc() {
-    List<IsSql> init = Lists.newArrayList();
+    List<IsSql> init = new ArrayList<>();
 
     init.add(new SqlCreate("_country_designations", false)
         .setDataSource(new SqlSelect()
@@ -574,7 +595,7 @@ public class TecDocBean {
     init.add(SqlUtils.createIndex("_designations", SqlUtils.uniqueName(),
         Lists.newArrayList("des_id"), false));
 
-    List<TcdData> builds = Lists.newArrayList();
+    List<TcdData> builds = new ArrayList<>();
 
     TcdData data = new TcdData(new SqlCreate(TBL_TCD_MODELS, false)
         .addInteger(TCD_MODEL_ID, true)
@@ -938,19 +959,10 @@ public class TecDocBean {
 
   @Timeout
   private void doTimerEvent(Timer timer) {
-    if (!Config.isInitialized()) {
-      return;
-    }
-    if (timer.getInfo() instanceof EcSupplier) {
-      switch ((EcSupplier) timer.getInfo()) {
-        case EOLTAS:
-          suckButent();
-          break;
-
-        case MOTOPROFIL:
-          suckMotonet();
-          break;
-      }
+    if (cb.isParameterTimer(timer, PRM_BUTENT_INTERVAL)) {
+      suckButent(true);
+    } else if (cb.isParameterTimer(timer, PRM_MOTONET_HOURS)) {
+      suckMotonet(true);
     }
   }
 
@@ -1049,11 +1061,8 @@ public class TecDocBean {
 
     qs.sqlIndex(categ, TCD_CATEGORY_ID);
     qs.sqlIndex(categ, TCD_PARENT_ID);
-    boolean isDebugEnabled = messyLogger.isDebugEnabled();
+    boolean isDebugEnabled = qs.debugOff();
 
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.INFO);
-    }
     for (SimpleRow row : qs.getData(new SqlSelect()
         .addFields(categ, COL_TCD_CATEGORY_NAME, TCD_CATEGORY_ID)
         .addFrom(categ))) {
@@ -1063,9 +1072,8 @@ public class TecDocBean {
               .addConstant(COL_TCD_CATEGORY_NAME, row.getValue(COL_TCD_CATEGORY_NAME))))
           .addConstant(TCD_TECDOC_ID, row.getLong(TCD_CATEGORY_ID)));
     }
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.DEBUG);
-    }
+    qs.debugOn(isDebugEnabled);
+
     qs.updateData(new SqlUpdate(categ)
         .addExpression(COL_TCD_CATEGORY_PARENT,
             SqlUtils.field(TBL_TCD_TECDOC_CATEGORIES, COL_TCD_CATEGORY))
@@ -1267,10 +1275,8 @@ public class TecDocBean {
 
       do {
         data = qs.getData(sql.setOffset(offset));
+        qs.debugOff();
 
-        if (isDebugEnabled) {
-          messyLogger.setLevel(LogLevel.INFO);
-        }
         for (SimpleRow row : data) {
           String type = row.getValue(COL_TCD_GRAPHICS_TYPE);
           String image = row.getValue(COL_TCD_GRAPHICS_RESOURCE);
@@ -1313,9 +1319,7 @@ public class TecDocBean {
           qs.insertData(insert);
           logger.debug("Inserted", tot, "records into table", TBL_TCD_GRAPHICS);
         }
-        if (isDebugEnabled) {
-          messyLogger.setLevel(LogLevel.DEBUG);
-        }
+        qs.debugOn(isDebugEnabled);
         offset += chunk;
       } while (data.getNumberOfRows() == chunk);
     }
@@ -1346,53 +1350,82 @@ public class TecDocBean {
         .setWhere(SqlUtils.and(SqlUtils.notNull(brandsAlias, COL_TCD_BRAND_NAME),
             SqlUtils.isNull(TBL_TCD_BRANDS, sys.getIdName(TBL_TCD_BRANDS)))));
 
-    boolean isDebugEnabled = messyLogger.isDebugEnabled();
-
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.INFO);
-    }
     for (String brand : brands) {
       qs.insertData(new SqlInsert(TBL_TCD_BRANDS)
           .addConstant(COL_TCD_BRAND_NAME, brand));
-    }
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.DEBUG);
     }
   }
 
   private void importItems(EcSupplier supplier, List<RemoteItem> data) {
     String log = supplier + " " + TBL_TCD_ARTICLE_SUPPLIERS + ":";
 
+    if (BeeUtils.isEmpty(data)) {
+      return;
+    }
     String idName = SqlUtils.uniqueName();
 
-    String tmp = qs.sqlCreateTemp(new SqlSelect()
+    SqlSelect query = new SqlSelect()
         .addField(TBL_TCD_ARTICLES, COL_TCD_ARTICLE_NR, COL_TCD_SEARCH_NR)
         .addFields(TBL_TCD_ARTICLES, COL_TCD_ARTICLE_NR)
-        .addFields(TBL_TCD_ARTICLE_SUPPLIERS, COL_TCD_SUPPLIER_ID, COL_TCD_COST, COL_TCD_PRICE)
+        .addFields(TBL_TCD_ARTICLE_SUPPLIERS, COL_TCD_SUPPLIER_ID, COL_TCD_COST)
         .addFields(TBL_TCD_ARTICLES, COL_TCD_ARTICLE_NAME, COL_TCD_ARTICLE_DESCRIPTION)
         .addFields(TBL_TCD_BRANDS, COL_TCD_BRAND_NAME)
         .addEmptyLong(idName)
         .addFrom(TBL_TCD_ARTICLES)
         .addFrom(TBL_TCD_BRANDS)
         .addFrom(TBL_TCD_ARTICLE_SUPPLIERS)
-        .setWhere(SqlUtils.sqlFalse()));
+        .setWhere(SqlUtils.sqlFalse());
 
-    boolean isDebugEnabled = messyLogger.isDebugEnabled();
+    Map<String, Object> fields = new LinkedHashMap<>();
+    Map<String, String> priceLists = new LinkedHashMap<>();
 
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.INFO);
+    if (!BeeUtils.isEmpty(data.get(0).prices)) {
+      SimpleRowSet rs = qs.getData(new SqlSelect()
+          .addFields(TBL_TCD_PRICELISTS, COL_TCD_PRICELIST_NAME)
+          .addField(TBL_TCD_PRICELISTS, sys.getIdName(TBL_TCD_PRICELISTS), COL_TCD_PRICELIST)
+          .addFrom(TBL_TCD_PRICELISTS));
+
+      for (String priceList : data.get(0).prices.keySet()) {
+        Long id = BeeUtils.toLongOrNull(rs.getValueByKey(COL_TCD_PRICELIST_NAME, priceList,
+            COL_TCD_PRICELIST));
+
+        if (!DataUtils.isId(id)) {
+          id = qs.insertData(new SqlInsert(TBL_TCD_PRICELISTS)
+              .addConstant(COL_TCD_PRICELIST_NAME, priceList));
+        }
+        String fld = "prc" + id;
+        priceLists.put(priceList, fld);
+        query.addEmptyDouble(fld);
+        fields.put(fld, null);
+      }
     }
-    SqlInsert insert = new SqlInsert(tmp)
-        .addFields(COL_TCD_SEARCH_NR, COL_TCD_ARTICLE_NR, COL_TCD_BRAND_NAME, COL_TCD_COST,
-            COL_TCD_PRICE, COL_TCD_SUPPLIER_ID, COL_TCD_ARTICLE_NAME, COL_TCD_ARTICLE_DESCRIPTION);
+    String tmp = qs.sqlCreateTemp(query);
+
+    for (String fld : new String[] {COL_TCD_SEARCH_NR, COL_TCD_ARTICLE_NR, COL_TCD_BRAND_NAME,
+        COL_TCD_COST, COL_TCD_SUPPLIER_ID, COL_TCD_ARTICLE_NAME, COL_TCD_ARTICLE_DESCRIPTION}) {
+      fields.put(fld, null);
+    }
+    SqlInsert insert = new SqlInsert(tmp).addFields(fields.keySet().toArray(new String[0]));
     int tot = 0;
+    boolean isDebugEnabled = qs.debugOff();
 
     for (RemoteItem info : data) {
       String searchNr = EcUtils.normalizeCode(info.articleNr);
 
       if (!BeeUtils.isEmpty(searchNr)) {
-        insert.addValues(searchNr, info.articleNr, info.brand, info.cost, info.price,
-            info.supplierId, BeeUtils.left(info.name, 50), info.descr);
+        fields.put(COL_TCD_SEARCH_NR, searchNr);
+        fields.put(COL_TCD_ARTICLE_NR, info.articleNr);
+        fields.put(COL_TCD_BRAND_NAME, info.brand);
+        fields.put(COL_TCD_COST, info.cost);
+        fields.put(COL_TCD_SUPPLIER_ID, info.supplierId);
+        fields.put(COL_TCD_ARTICLE_NAME,
+            sys.clampValue(TBL_TCD_ARTICLES, COL_TCD_ARTICLE_NAME, info.name));
+        fields.put(COL_TCD_ARTICLE_DESCRIPTION, info.descr);
+
+        for (Entry<String, String> entry : priceLists.entrySet()) {
+          fields.put(entry.getValue(), info.prices.get(entry.getKey()));
+        }
+        insert.addValues(fields.values().toArray());
       }
       if (++tot % 1e4 == 0) {
         qs.insertData(insert);
@@ -1406,9 +1439,8 @@ public class TecDocBean {
       }
       logger.debug(log, "Processed", tot, "records");
     }
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.DEBUG);
-    }
+    qs.debugOn(isDebugEnabled);
+
     IsCondition join = SqlUtils.and(SqlUtils.joinUsing(tmp, TBL_TCD_ARTICLE_SUPPLIERS,
         COL_TCD_SUPPLIER_ID), SqlUtils.equals(TBL_TCD_ARTICLE_SUPPLIERS, COL_TCD_SUPPLIER,
         supplier.ordinal()));
@@ -1420,10 +1452,6 @@ public class TecDocBean {
 
     long time = System.currentTimeMillis();
 
-    qs.updateData(new SqlUpdate(TBL_TCD_ARTICLE_SUPPLIERS)
-        .addExpression(COL_TCD_PRICE, SqlUtils.field(tmp, COL_TCD_PRICE))
-        .setFrom(tmp, join));
-
     tot = qs.updateData(new SqlUpdate(TBL_TCD_ARTICLE_SUPPLIERS)
         .addExpression(COL_TCD_UPDATED_COST, SqlUtils.field(tmp, COL_TCD_COST))
         .addConstant(COL_TCD_UPDATE_TIME, time)
@@ -1434,6 +1462,16 @@ public class TecDocBean {
 
     logger.info(log, "Updated", tot, "records");
 
+    String tmpPrices = null;
+
+    if (!BeeUtils.isEmpty(priceLists)) {
+      tmpPrices = qs.sqlCreateTemp(new SqlSelect()
+          .addFields(TBL_TCD_ARTICLE_SUPPLIERS, COL_TCD_ARTICLE)
+          .addFields(tmp, priceLists.values().toArray(new String[0]))
+          .addFrom(tmp)
+          .addFromInner(TBL_TCD_ARTICLE_SUPPLIERS,
+              sys.joinTables(TBL_TCD_ARTICLE_SUPPLIERS, tmp, idName)));
+    }
     qs.updateData(new SqlDelete(tmp)
         .setWhere(SqlUtils.notNull(tmp, idName)));
 
@@ -1466,7 +1504,7 @@ public class TecDocBean {
     tmp = zz;
 
     qs.loadData(TBL_TCD_ARTICLE_SUPPLIERS, new SqlSelect().setLimit(100000)
-        .addFields(tmp, COL_TCD_ARTICLE, COL_TCD_COST, COL_TCD_PRICE, COL_TCD_SUPPLIER_ID)
+        .addFields(tmp, COL_TCD_ARTICLE, COL_TCD_COST, COL_TCD_SUPPLIER_ID)
         .addConstant(supplier.ordinal(), COL_TCD_SUPPLIER)
         .addField(tmp, COL_TCD_COST, COL_TCD_UPDATED_COST)
         .addConstant(time, COL_TCD_UPDATE_TIME)
@@ -1474,6 +1512,52 @@ public class TecDocBean {
         .setWhere(SqlUtils.notNull(tmp, COL_TCD_ARTICLE))
         .addOrder(tmp, COL_TCD_SUPPLIER_ID));
 
+    if (!BeeUtils.isEmpty(priceLists)) {
+      List<String> flds = new ArrayList<>();
+      flds.add(COL_TCD_ARTICLE);
+      flds.addAll(priceLists.values());
+
+      qs.insertData(new SqlInsert(tmpPrices)
+          .addFields(flds.toArray(new String[0]))
+          .setDataSource(new SqlSelect()
+              .addFields(tmp, flds.toArray(new String[0]))
+              .addFrom(tmp)
+              .setWhere(SqlUtils.notNull(tmp, COL_TCD_ARTICLE))));
+
+      for (Entry<String, String> entry : priceLists.entrySet()) {
+        String col = entry.getValue();
+        Long id = Assert.notNull(BeeUtils.toLongOrNull(BeeUtils.removePrefix(col, "prc")));
+
+        String tmpPr = qs.sqlCreateTemp(new SqlSelect()
+            .addFields(tmpPrices, COL_TCD_ARTICLE)
+            .addField(TBL_TCD_ARTICLE_PRICES, sys.getIdName(TBL_TCD_ARTICLE_PRICES),
+                COL_TCD_PRICELIST)
+            .addMax(tmpPrices, col, COL_TCD_PRICE)
+            .addFrom(tmpPrices)
+            .addFromLeft(TBL_TCD_ARTICLE_PRICES, SqlUtils.and(SqlUtils.joinUsing(tmpPrices,
+                TBL_TCD_ARTICLE_PRICES, COL_TCD_ARTICLE),
+                SqlUtils.equals(TBL_TCD_ARTICLE_PRICES, COL_TCD_PRICELIST, id)))
+            .addGroup(tmpPrices, COL_TCD_ARTICLE)
+            .addGroup(TBL_TCD_ARTICLE_PRICES, sys.getIdName(TBL_TCD_ARTICLE_PRICES)));
+
+        int c = qs.updateData(new SqlUpdate(TBL_TCD_ARTICLE_PRICES)
+            .addExpression(COL_TCD_PRICE, SqlUtils.field(tmpPr, COL_TCD_PRICE))
+            .setFrom(tmpPr, sys.joinTables(TBL_TCD_ARTICLE_PRICES, tmpPr, COL_TCD_PRICELIST)));
+
+        logger.info(entry.getKey(), "- Updated", c, "records");
+
+        qs.loadData(TBL_TCD_ARTICLE_PRICES, new SqlSelect().setLimit(100000)
+            .addFields(tmpPr, COL_TCD_ARTICLE, COL_TCD_PRICE)
+            .addConstant(id, COL_TCD_PRICELIST)
+            .addFrom(tmpPr)
+            .setWhere(SqlUtils.and(SqlUtils.isNull(tmpPr, COL_TCD_PRICELIST),
+                SqlUtils.notNull(tmpPr, COL_TCD_PRICE)))
+            .addOrder(tmpPr, COL_TCD_ARTICLE));
+
+        qs.sqlDropTemp(tmpPr);
+      }
+      qs.sqlDropTemp(tmpPrices);
+    }
     qs.updateData(new SqlDelete(tmp)
         .setWhere(SqlUtils.notNull(tmp, COL_TCD_ARTICLE)));
 
@@ -1535,11 +1619,8 @@ public class TecDocBean {
         .addFrom(TBL_WAREHOUSES)
         .setWhere(SqlUtils.sqlFalse()));
 
-    boolean isDebugEnabled = messyLogger.isDebugEnabled();
+    boolean isDebugEnabled = qs.debugOff();
 
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.INFO);
-    }
     SqlInsert insert = new SqlInsert(tmp)
         .addFields(COL_TCD_SUPPLIER_ID, supplierWarehouse, COL_TCD_REMAINDER);
     int tot = 0;
@@ -1559,9 +1640,8 @@ public class TecDocBean {
       }
       logger.debug(log, "Processed", tot, "records");
     }
-    if (isDebugEnabled) {
-      messyLogger.setLevel(LogLevel.DEBUG);
-    }
+    qs.debugOn(isDebugEnabled);
+
     qs.sqlIndex(rem, COL_TCD_SUPPLIER_ID, supplierWarehouse);
 
     qs.updateData(new SqlUpdate(tmp)
@@ -1641,8 +1721,6 @@ public class TecDocBean {
       int chunk = query.getLimit();
       int offset = 0;
 
-      boolean isDebugEnabled = messyLogger.isDebugEnabled();
-
       do {
         if (chunk > 0) {
           chunkTotal = 0;
@@ -1655,18 +1733,16 @@ public class TecDocBean {
         }
         List<StringBuilder> inserts = tcd.getRemoteData(query, insert);
 
-        if (isDebugEnabled) {
-          messyLogger.setLevel(LogLevel.INFO);
-        }
+        boolean isDebugEnabled = qs.debugOff();
+
         for (StringBuilder sql : inserts) {
           int cnt = (Integer) qs.doSql(sql.toString());
           total += cnt;
           chunkTotal += cnt;
           logger.debug(target, "inserted rows:", total);
         }
-        if (isDebugEnabled) {
-          messyLogger.setLevel(LogLevel.DEBUG);
-        }
+        qs.debugOn(isDebugEnabled);
+
         if (chunk > 0) {
           offset += chunk;
         }

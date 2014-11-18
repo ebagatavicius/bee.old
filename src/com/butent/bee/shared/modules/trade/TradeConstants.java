@@ -13,6 +13,10 @@ public final class TradeConstants {
   public static final String TBL_SALES = "Sales";
   public static final String TBL_SALE_ITEMS = "SaleItems";
 
+  public static final String TBL_TRADE_OPERATIONS = "TradeOperations";
+  public static final String TBL_TRADE_SERIES = "TradeSeries";
+  public static final String TBL_TRADE_STATUSES = "TradeStatuses";
+
   public static final String VAR_VIEW_NAME = "view_name";
   public static final String VAR_ID_LIST = "IdList";
 
@@ -20,6 +24,13 @@ public final class TradeConstants {
   public static final String VIEW_PURCHASE_ITEMS = "PurchaseItems";
   public static final String VIEW_SALES = "Sales";
   public static final String VIEW_SALE_ITEMS = "SaleItems";
+
+  public static final String VIEW_TRADE_NOTES = "TradeNotes";
+  public static final String VIEW_TRADE_OPERATIONS = "TradeOperations";
+  public static final String VIEW_TRADE_SERIES = "TradeSeries";
+  public static final String VIEW_TRADE_STATUSES = "TradeStatuses";
+
+  public static final String VIEW_SERIES_MANAGERS = "SeriesManagers";
 
   public static final String COL_PURCHASE = "Purchase";
   public static final String COL_PURCHASE_WAREHOUSE_TO = "WarehouseTo";
@@ -49,19 +60,44 @@ public final class TradeConstants {
   public static final String COL_TRADE_VAT = "Vat";
   public static final String COL_TRADE_VAT_PERC = "VatPercent";
 
+  public static final String COL_TRADE_DISCOUNT = "Discount";
+
   public static final String COL_TRADE_ITEM_ARTICLE = "Article";
   public static final String COL_TRADE_ITEM_QUANTITY = "Quantity";
   public static final String COL_TRADE_ITEM_PRICE = "Price";
   public static final String COL_TRADE_ITEM_NOTE = "Note";
 
+  public static final String COL_SERIES = "Series";
+  public static final String COL_SERIES_NAME = "SeriesName";
+  public static final String COL_SERIES_MANAGER = "Manager";
+  public static final String COL_SERIES_DEFAULT = "IsDefault";
+
+  public static final String COL_OPERATION_NAME = "OperationName";
+  public static final String COL_OPERATION_KIND = "Kind";
+  public static final String COL_OPERATION_PRICE = "Price";
+  public static final String COL_OPERATION_WAREHOUSE_FROM = "WarehouseFrom";
+  public static final String COL_OPERATION_WAREHOUSE_TO = "WarehouseTo";
+  public static final String COL_OPERATION_DEFAULT = "IsDefault";
+
+  public static final String COL_STATUS_NAME = "StatusName";
+  public static final String COL_STATUS_ACTIVE = "StatusActive";
+
   public static final String ALS_CUSTOMER_NAME = "CustomerName";
   public static final String ALS_SUPPLIER_NAME = "SupplierName";
+
+  public static final String ALS_OPERATION_BACKGROUND = "OperationBackground";
+  public static final String ALS_OPERATION_FOREGROUND = "OperationForeground";
+  public static final String ALS_STATUS_BACKGROUND = "StatusBackground";
+  public static final String ALS_STATUS_FOREGROUND = "StatusForeground";
 
   public static final String VAR_TOTAL = "Total";
   public static final String VAR_DEBT = "Debt";
   public static final String VAR_OVERDUE = "Overdue";
 
-  public static final String STYLE_SHEET = "trade";
+  public static final String GRID_TRADE_OPERATIONS = "TradeOperations";
+  public static final String GRID_TRADE_STATUSES = "TradeStatuses";
+
+  public static final String GRID_SERIES_MANAGERS = "SeriesManagers";
 
   private TradeConstants() {
   }

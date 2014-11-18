@@ -1,6 +1,5 @@
 package com.butent.bee.server.i18n;
 
-import com.google.common.collect.Maps;
 import com.google.gwt.i18n.client.Constants.DefaultBooleanValue;
 import com.google.gwt.i18n.client.Constants.DefaultDoubleValue;
 import com.google.gwt.i18n.client.Constants.DefaultFloatValue;
@@ -16,6 +15,7 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -86,7 +86,7 @@ public class GwtConstants extends GwtLocalizable {
     } else if (ClassUtils.isMap(type)) {
       DefaultStringMapValue ann = method.getAnnotation(DefaultStringMapValue.class);
       if (ann != null) {
-        Map<String, String> result = Maps.newHashMap();
+        Map<String, String> result = new HashMap<>();
         String[] arr = ann.value();
         for (int i = 0; i < arr.length - 1; i += 2) {
           result.put(arr[i], arr[i + 1]);
@@ -122,7 +122,7 @@ public class GwtConstants extends GwtLocalizable {
     }
 
     if (ClassUtils.isMap(type)) {
-      Map<String, String> result = Maps.newHashMap();
+      Map<String, String> result = new HashMap<>();
       String[] arr = BeeUtils.split(str, BeeConst.CHAR_COMMA);
       for (String key : arr) {
         String value = getProperty(key);

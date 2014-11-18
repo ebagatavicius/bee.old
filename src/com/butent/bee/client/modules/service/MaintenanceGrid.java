@@ -11,7 +11,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.RenderingEvent;
 import com.butent.bee.client.presenter.GridPresenter;
-import com.butent.bee.client.ui.UiHelper;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
@@ -204,7 +204,7 @@ public class MaintenanceGrid extends AbstractGridInterceptor implements HandlesD
       invEnable &= BeeKeeper.getUser().canCreateData(VIEW_SERVICE_INVOICES);
       dfEnable &= BeeKeeper.getUser().canCreateData(VIEW_SERVICE_DEFECTS);
 
-      FormView form = UiHelper.getForm(getGridView().asWidget());
+      FormView form = ViewHelper.getForm(getGridView().asWidget());
 
       if (getInvoiceCommand().isEnabled() != invEnable) {
         getInvoiceCommand().setEnabled(invEnable);

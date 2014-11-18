@@ -1,10 +1,11 @@
 package com.butent.bee.client.menu;
 
 import com.butent.bee.client.dialog.Popup;
+import com.butent.bee.shared.BeeConst;
 
 public class MenuPopup extends Popup {
 
-  private static final String STYLENAME_DEFAULT = "bee-MenuPopup";
+  private static final String STYLENAME_DEFAULT = BeeConst.CSS_CLASS_PREFIX + "MenuPopup";
 
   private MenuBar parentMenu;
   private MenuItem parentItem;

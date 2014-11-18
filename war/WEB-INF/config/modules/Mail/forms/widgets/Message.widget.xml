@@ -20,10 +20,12 @@
         <cell style="width:50%; padding:0;">
           <hr style="border:0; border-top:1px solid lightgray;"/>
         </cell>
-        <FaLabel name="Reply" char="mail_reply" />
-        <FaLabel name="ReplyAll" char="mail_reply_all" />
-        <FaLabel name="Forward" char="mail_forward" />
-        <Relations relColumn="Message" defaultRelations="Requests Tasks" blockedRelations="Messages" />
+        <FaLabel name="Reply" char="mail_reply" title="=mailReply" disablable="false" />
+        <FaLabel name="ReplyAll" char="mail_reply_all" title="=mailReplyAll" disablable="false" />
+        <FaLabel name="Forward" char="mail_forward" title="=mailForward" disablable="false" />
+        <Relations relColumn="Message" defaultRelations="Requests Tasks Assessments"
+          blockedRelations="Messages" />
+        <FaLabel name="Menu" char="navicon" title="=menu" disablable="false" />
         <cell style="width:50%; padding:0;">
           <hr style="border:0; border-top:1px solid lightgray;"/>
         </cell>

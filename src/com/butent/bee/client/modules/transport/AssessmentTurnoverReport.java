@@ -1,7 +1,6 @@
 package com.butent.bee.client.modules.transport;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -24,7 +23,6 @@ import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Report;
 import com.butent.bee.client.output.ReportParameters;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasIndexedWidgets;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -63,7 +61,9 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -130,7 +130,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
   private static final List<String> NAME_GROUP_BY =
       Lists.newArrayList("Group0", "Group1", "Group2", "Group3");
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "tr-atr-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-atr-";
 
   private static final String STYLE_TABLE = STYLE_PREFIX + "table";
   private static final String STYLE_HEADER = STYLE_PREFIX + "header";
@@ -180,7 +180,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
   }
 
   private static Map<Integer, RowValue> getPreviuosValues(SimpleRowSet data, SimpleRowSet prev) {
-    Map<Integer, RowValue> result = Maps.newHashMap();
+    Map<Integer, RowValue> result = new HashMap<>();
     if (DataUtils.isEmpty(data)
         || !data.hasColumn(BeeConst.YEAR) || !data.hasColumn(BeeConst.MONTH)) {
       return result;
@@ -304,44 +304,43 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
   @Override
   public void onLoad(FormView form) {
     ReportParameters parameters = readParameters();
-    if (parameters == null) {
-      return;
-    }
 
-    Widget widget = form.getWidgetByName(NAME_START_DATE);
-    DateTime dateTime = parameters.getDateTime(NAME_START_DATE);
-    if (widget instanceof InputDateTime && dateTime != null) {
-      ((InputDateTime) widget).setDateTime(dateTime);
-    }
-
-    widget = form.getWidgetByName(NAME_END_DATE);
-    dateTime = parameters.getDateTime(NAME_END_DATE);
-    if (widget instanceof InputDateTime && dateTime != null) {
-      ((InputDateTime) widget).setDateTime(dateTime);
-    }
-
-    widget = form.getWidgetByName(NAME_CURRENCY);
-    Long currency = parameters.getLong(NAME_CURRENCY);
-    if (widget instanceof UnboundSelector && DataUtils.isId(currency)) {
-      ((UnboundSelector) widget).setValue(currency, false);
-    }
-
-    List<String> selectorNames = Lists.newArrayList(NAME_DEPARTMENTS, NAME_MANAGERS,
-        NAME_CUSTOMERS);
-
-    for (String selectorName : selectorNames) {
-      widget = form.getWidgetByName(selectorName);
-      String idList = parameters.get(selectorName);
-      if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
-        ((MultiSelector) widget).setIds(idList);
+    if (parameters != null) {
+      Widget widget = form.getWidgetByName(NAME_START_DATE);
+      DateTime dateTime = parameters.getDateTime(NAME_START_DATE);
+      if (widget instanceof InputDateTime && dateTime != null) {
+        ((InputDateTime) widget).setDateTime(dateTime);
       }
-    }
 
-    for (String groupName : NAME_GROUP_BY) {
-      widget = form.getWidgetByName(groupName);
-      Integer index = parameters.getInteger(groupName);
-      if (widget instanceof ListBox && BeeUtils.isPositive(index)) {
-        ((ListBox) widget).setSelectedIndex(index);
+      widget = form.getWidgetByName(NAME_END_DATE);
+      dateTime = parameters.getDateTime(NAME_END_DATE);
+      if (widget instanceof InputDateTime && dateTime != null) {
+        ((InputDateTime) widget).setDateTime(dateTime);
+      }
+
+      widget = form.getWidgetByName(NAME_CURRENCY);
+      Long currency = parameters.getLong(NAME_CURRENCY);
+      if (widget instanceof UnboundSelector && DataUtils.isId(currency)) {
+        ((UnboundSelector) widget).setValue(currency, false);
+      }
+
+      List<String> selectorNames = Lists.newArrayList(NAME_DEPARTMENTS, NAME_MANAGERS,
+          NAME_CUSTOMERS);
+
+      for (String selectorName : selectorNames) {
+        widget = form.getWidgetByName(selectorName);
+        String idList = parameters.get(selectorName);
+        if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
+          ((MultiSelector) widget).setIds(idList);
+        }
+      }
+
+      for (String groupName : NAME_GROUP_BY) {
+        widget = form.getWidgetByName(groupName);
+        Integer index = parameters.getInteger(groupName);
+        if (widget instanceof ListBox && BeeUtils.isPositive(index)) {
+          ((ListBox) widget).setSelectedIndex(index);
+        }
       }
     }
 
@@ -407,7 +406,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
     }
 
     ParameterList params = TransportHandler.createArgs(SVC_GET_ASSESSMENT_TURNOVER_REPORT);
-    final List<String> headers = Lists.newArrayList(BeeUtils.joinWords(getCaption(),
+    final List<String> headers = Lists.newArrayList(BeeUtils.joinWords(getReportCaption(),
         getFilterLabel(NAME_CURRENCY)));
 
     if (start != null) {
@@ -543,13 +542,13 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
   @Override
   protected void export() {
     if (!sheet.isEmpty()) {
-      Exporter.maybeExport(sheet, getCaption());
+      Exporter.maybeExport(sheet, getReportCaption());
     }
   }
 
   @Override
   protected String getBookmarkLabel() {
-    List<String> labels = Lists.newArrayList(getCaption(),
+    List<String> labels = Lists.newArrayList(getReportCaption(),
         Format.renderPeriod(getDateTime(NAME_START_DATE), getDateTime(NAME_END_DATE)),
         getFilterLabel(NAME_CURRENCY),
         getFilterLabel(NAME_DEPARTMENTS),
@@ -658,7 +657,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
   }
 
   private List<String> getGroupBy() {
-    List<String> groupBy = Lists.newArrayList();
+    List<String> groupBy = new ArrayList<>();
 
     for (String groupName : NAME_GROUP_BY) {
       Integer index = getSelectedIndex(groupName);
@@ -952,7 +951,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
             col++;
           }
 
-          text = Localized.getConstants().margin();
+          text = Localized.getConstants().marginPercent();
           table.setText(row + 1, c2, text, STYLE_HEADER_2, STYLE_MARGIN, partStyle);
           xr2.add(new XCell(col, text, styleRef));
 
@@ -1352,7 +1351,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
     filter.add(Filter.isNot(Filter.in(COL_CARGO, VIEW_CARGO_INCOMES, COL_CARGO,
         Filter.isNull(TradeConstants.COL_SALE))));
 
-    List<String> captions = Lists.newArrayList();
+    List<String> captions = new ArrayList<>();
 
     String[] colNames = dataRow.getColumnNames();
 

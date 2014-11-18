@@ -59,7 +59,7 @@ public class LoginServlet extends HttpServlet {
 
   protected static final String FORM_NAME = "login";
 
-  protected static final String STYLE_PREFIX = "bee-SignIn-";
+  protected static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "SignIn-";
 
   private static BeeLogger logger = LogUtils.getLogger(LoginServlet.class);
 

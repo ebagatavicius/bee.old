@@ -1,6 +1,5 @@
 package com.butent.bee.shared.data.event;
 
-import com.google.common.collect.Lists;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -10,6 +9,7 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -132,7 +132,7 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
 
   @Override
   public String serialize() {
-    List<String> packedEffects = Lists.newArrayList();
+    List<String> packedEffects = new ArrayList<>();
     if (!BeeUtils.isEmpty(effects)) {
       for (Effect effect : effects) {
         packedEffects.add(Codec.pack(effect));

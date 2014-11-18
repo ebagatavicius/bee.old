@@ -4,9 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
 import com.butent.bee.client.event.logical.RenderingEvent;
@@ -30,6 +28,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +52,7 @@ public final class DynamicColumnFactory {
 
     Collection<DynamicColumnIdentity> dynamicColumns = getDynamicColumns(gridView, dynGroup);
 
-    List<ColumnDescription> columnDescriptions = Lists.newArrayList();
+    List<ColumnDescription> columnDescriptions = new ArrayList<>();
 
     if (!BeeUtils.isEmpty(dynamicColumns)) {
       ColumnDescription template = null;
@@ -245,7 +244,7 @@ public final class DynamicColumnFactory {
     Assert.notEmpty(prefix);
     Assert.notNull(rows);
 
-    Set<String> names = Sets.newHashSet();
+    Set<String> names = new HashSet<>();
 
     for (IsRow row : rows) {
       CustomProperties properties = row.getProperties();
@@ -258,7 +257,7 @@ public final class DynamicColumnFactory {
       }
     }
 
-    List<DynamicColumnIdentity> result = Lists.newArrayList();
+    List<DynamicColumnIdentity> result = new ArrayList<>();
 
     for (String name : names) {
       String suffix = BeeUtils.removePrefix(name, prefix);
@@ -290,14 +289,14 @@ public final class DynamicColumnFactory {
     Assert.notEmpty(dataColumns);
     Assert.notNull(rows);
 
-    Set<Integer> indexes = Sets.newHashSet();
+    Set<Integer> indexes = new HashSet<>();
     for (int i = 0; i < dataColumns.size(); i++) {
       if (BeeUtils.isPrefix(dataColumns.get(i).getId(), prefix)) {
         indexes.add(i);
       }
     }
 
-    List<DynamicColumnIdentity> result = Lists.newArrayList();
+    List<DynamicColumnIdentity> result = new ArrayList<>();
 
     for (int index : indexes) {
       boolean found = false;
@@ -418,10 +417,10 @@ public final class DynamicColumnFactory {
 
     boolean changed = false;
 
-    Set<Integer> hide = Sets.newHashSet();
-    Set<Integer> show = Sets.newHashSet();
+    Set<Integer> hide = new HashSet<>();
+    Set<Integer> show = new HashSet<>();
 
-    List<ColumnDescription> add = Lists.newArrayList();
+    List<ColumnDescription> add = new ArrayList<>();
 
     List<ColumnInfo> predefinedColumns = gridView.getGrid().getPredefinedColumns();
     List<Integer> visibleColumns = gridView.getGrid().getVisibleColumns();

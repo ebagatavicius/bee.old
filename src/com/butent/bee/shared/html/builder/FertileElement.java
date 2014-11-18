@@ -1,16 +1,15 @@
 package com.butent.bee.shared.html.builder;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FertileElement extends Element {
 
-  private final List<Node> children = Lists.newArrayList();
+  private final List<Node> children = new ArrayList<>();
 
   protected FertileElement() {
     super();
@@ -149,7 +148,7 @@ public class FertileElement extends Element {
   }
 
   public List<Element> queryTag(String tagName) {
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
     if (getTag().equals(tagName)) {
       result.add(this);
     }

@@ -26,11 +26,11 @@ import com.butent.bee.client.modules.administration.PasswordService;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.screen.ScreenImpl;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.filter.Filter;
@@ -67,7 +67,7 @@ public class SelfServiceScreen extends ScreenImpl {
     }
   }
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "tr-SelfService-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-SelfService-";
 
   private final Map<String, String> activeViews = new HashMap<>();
 

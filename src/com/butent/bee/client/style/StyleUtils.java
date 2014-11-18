@@ -3,7 +3,6 @@ package com.butent.bee.client.style;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style;
@@ -43,6 +42,7 @@ import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.StringPredicate;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -61,11 +61,9 @@ public final class StyleUtils {
     NONE, HORIZONTAL, VERTICAL, BOTH
   }
 
-  public static final String CLASS_NAME_PREFIX = "bee-";
-
-  public static final String DND_SOURCE = CLASS_NAME_PREFIX + "dndSource";
-  public static final String DND_OVER = CLASS_NAME_PREFIX + "dndOver";
-  public static final String DROP_AREA = CLASS_NAME_PREFIX + "dropArea";
+  public static final String DND_SOURCE = BeeConst.CSS_CLASS_PREFIX + "dndSource";
+  public static final String DND_OVER = BeeConst.CSS_CLASS_PREFIX + "dndOver";
+  public static final String DROP_AREA = BeeConst.CSS_CLASS_PREFIX + "dropArea";
 
   public static final String STYLE_WIDTH = "width";
   public static final String STYLE_MIN_WIDTH = "minWidth";
@@ -149,6 +147,7 @@ public final class StyleUtils {
   public static final String VALUE_FIXED = "fixed";
   public static final String VALUE_HIDDEN = "hidden";
   public static final String VALUE_INHERIT = "inherit";
+  public static final String VALUE_NONE = "none";
 
   public static final String SUFFIX_HORIZONTAL = "horizontal";
   public static final String SUFFIX_VERTICAL = "vertical";
@@ -162,14 +161,16 @@ public final class StyleUtils {
   public static final String NAME_FLEX_BOX_CENTER = "flexBox-center";
   public static final String NAME_FLEXIBLE = "flexible";
 
-  public static final String NAME_ERROR = CLASS_NAME_PREFIX + "error";
-  public static final String NAME_REQUIRED = CLASS_NAME_PREFIX + "required";
-  public static final String NAME_HAS_DEFAULTS = CLASS_NAME_PREFIX + "hasDefaults";
-  public static final String NAME_RESIZABLE = CLASS_NAME_PREFIX + "resizable";
-  public static final String NAME_FOCUSABLE = CLASS_NAME_PREFIX + "focusable";
-  public static final String NAME_DISABLED = CLASS_NAME_PREFIX + SUFFIX_DISABLED;
+  public static final String NAME_ERROR = BeeConst.CSS_CLASS_PREFIX + "error";
+  public static final String NAME_REQUIRED = BeeConst.CSS_CLASS_PREFIX + "required";
+  public static final String NAME_HAS_DEFAULTS = BeeConst.CSS_CLASS_PREFIX + "hasDefaults";
+  public static final String NAME_RESIZABLE = BeeConst.CSS_CLASS_PREFIX + "resizable";
+  public static final String NAME_FOCUSABLE = BeeConst.CSS_CLASS_PREFIX + "focusable";
+  public static final String NAME_DISABLED = BeeConst.CSS_CLASS_PREFIX + SUFFIX_DISABLED;
 
-  public static final String NAME_TEXT_BOX = CLASS_NAME_PREFIX + "TextBox";
+  public static final String NAME_TEXT_BOX = BeeConst.CSS_CLASS_PREFIX + "TextBox";
+
+  public static final String NAME_INFO_TABLE = BeeConst.CSS_CLASS_PREFIX + "info-table";
 
   public static final String TRANSFORM_ROTATE = "rotate";
   public static final String TRANSFORM_SCALE = "scale";
@@ -499,8 +500,8 @@ public final class StyleUtils {
 
   public static <E extends Enum<?> & HasCssName> String className(E value) {
     Assert.notNull(value);
-    return CLASS_NAME_PREFIX + NameUtils.getClassName(value.getDeclaringClass()) + NAME_DELIMITER
-        + value.getCssName().replace(BeeConst.CHAR_SPACE, NAME_DELIMITER);
+    return BeeConst.CSS_CLASS_PREFIX + NameUtils.getClassName(value.getDeclaringClass())
+        + NAME_DELIMITER + value.getCssName().replace(BeeConst.CHAR_SPACE, NAME_DELIMITER);
   }
 
   public static void clearClip(Element el) {
@@ -1242,7 +1243,7 @@ public final class StyleUtils {
 
   public static List<Property> parseStyles(String styles) {
     Assert.notEmpty(styles);
-    List<Property> result = Lists.newArrayList();
+    List<Property> result = new ArrayList<>();
 
     for (String style : DEFINITION_SPLITTER.split(styles)) {
       String name = BeeUtils.getPrefix(style, NAME_VALUE_SEPARATOR);
@@ -2300,13 +2301,28 @@ public final class StyleUtils {
     setZIndex(obj.getElement(), value);
   }
 
+  public static List<String> splitClasses(String classes) {
+    List<String> result = new ArrayList<>();
+
+    if (!BeeUtils.isEmpty(classes)) {
+      for (String name : CLASS_NAME_SPLITTER.split(classes)) {
+        if (!result.contains(name)) {
+          result.add(name);
+        }
+      }
+    }
+
+    return result;
+  }
+
   public static String toCssLength(double value, CssUnit unit) {
     return BeeUtils.toString(value, 5) + normalizeUnit(unit).getCaption();
   }
 
   public static SafeStyles toSafeStyles(String s) {
-    Assert.notEmpty(s);
-    if (s.trim().endsWith(DEFINITION_SEPARATOR)) {
+    if (BeeUtils.isEmpty(s)) {
+      return null;
+    } else if (s.trim().endsWith(DEFINITION_SEPARATOR)) {
       return SafeStylesUtils.fromTrustedString(s.trim());
     } else {
       return SafeStylesUtils.fromTrustedString(s.trim() + DEFINITION_SEPARATOR);

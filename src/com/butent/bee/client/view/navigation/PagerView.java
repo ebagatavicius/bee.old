@@ -6,5 +6,8 @@ import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.view.View;
 
 public interface PagerView extends View, ScopeChangeEvent.Handler, Printable {
+
+  void setDisplay(HasDataTable display);
+
   void start(HasDataTable display);
 }

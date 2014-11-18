@@ -6,6 +6,7 @@ import com.butent.bee.client.event.logical.DataRequestEvent;
 import com.butent.bee.client.event.logical.HasActiveRowChangeHandlers;
 import com.butent.bee.client.event.logical.HasSelectionCountChangeHandlers;
 import com.butent.bee.client.event.logical.HasSortHandlers;
+import com.butent.bee.client.event.logical.RowCountChangeEvent;
 import com.butent.bee.client.event.logical.ScopeChangeEvent;
 import com.butent.bee.client.view.edit.HasEditState;
 import com.butent.bee.shared.data.IsRow;
@@ -23,6 +24,8 @@ public interface HasDataTable extends HasSortHandlers, HandlesDeleteEvents, Hand
     HasSelectionCountChangeHandlers, HasEditState, HasActiveRowChangeHandlers, HasDataRows {
 
   HandlerRegistration addDataRequestHandler(DataRequestEvent.Handler handler);
+
+  HandlerRegistration addRowCountChangeHandler(RowCountChangeEvent.Handler handler);
 
   HandlerRegistration addScopeChangeHandler(ScopeChangeEvent.Handler handler);
 

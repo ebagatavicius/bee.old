@@ -20,11 +20,13 @@
     
     <DataColumn name="CustomerName" />
 
+    <RelColumn name="LoadingCountry" visible="false" readOnly="true"/>
     <CalcColumn type="string" name="From" source="LoadingCountryCode" cellType="html" width="20"
       horizontalAlignment="center" searchBy="LoadingCountryName LoadingCountryCode">
       <renderer type="flag" />
     </CalcColumn>
 
+    <RelColumn name="UnloadingCountry" visible="false"  readOnly="true"/>
     <CalcColumn type="string" name="To" source="UnloadingCountryCode" cellType="html" width="20"
       horizontalAlignment="center" searchBy="UnloadingCountryName UnloadingCountryCode">
       <renderer type="flag" />

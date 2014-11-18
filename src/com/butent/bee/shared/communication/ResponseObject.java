@@ -1,8 +1,5 @@
 package com.butent.bee.shared.communication;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.NotificationListener;
@@ -13,8 +10,10 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Used to transport data with messages between various layers.
@@ -75,7 +74,7 @@ public class ResponseObject implements BeeSerializable {
     return new ResponseObject().addWarning(obj);
   }
 
-  private final Collection<ResponseMessage> messages = Lists.newArrayList();
+  private final Collection<ResponseMessage> messages = new ArrayList<>();
   private Object response;
   private String type;
   private boolean isArrayType;
@@ -304,7 +303,7 @@ public class ResponseObject implements BeeSerializable {
   public void notify(NotificationListener notificator) {
     if (notificator != null && hasMessages()) {
       LogLevel level = null;
-      List<String> list = Lists.newArrayList();
+      List<String> list = new ArrayList<>();
 
       for (ResponseMessage message : getMessages()) {
         if (!BeeUtils.isEmpty(message.getMessage())) {
@@ -381,10 +380,10 @@ public class ResponseObject implements BeeSerializable {
   }
 
   private String[] getMessageArray(LogLevel lvl) {
-    List<String> msgs = Lists.newArrayList();
+    List<String> msgs = new ArrayList<>();
 
     for (ResponseMessage message : messages) {
-      if (Objects.equal(message.getLevel(), lvl)) {
+      if (Objects.equals(message.getLevel(), lvl)) {
         msgs.add(message.getMessage());
       }
     }
@@ -393,7 +392,7 @@ public class ResponseObject implements BeeSerializable {
 
   private boolean hasMessages(LogLevel lvl) {
     for (ResponseMessage message : messages) {
-      if (lvl == null || Objects.equal(message.getLevel(), lvl)) {
+      if (lvl == null || Objects.equals(message.getLevel(), lvl)) {
         return true;
       }
     }

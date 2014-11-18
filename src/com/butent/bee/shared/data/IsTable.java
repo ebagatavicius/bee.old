@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Determines method requirements for table structure implementing classes.
@@ -17,23 +18,19 @@ import java.util.List;
 
 public interface IsTable<R extends IsRow, C extends IsColumn> extends Iterable<R> {
 
-  int addColumn(C column);
+  void addColumn(C column);
 
-  int addColumn(ValueType type);
+  void addColumn(ValueType type);
 
-  int addColumn(ValueType type, String label);
+  void addColumn(ValueType type, String label);
 
-  int addColumn(ValueType type, String label, String id);
+  void addColumn(ValueType type, String label, String id);
 
-  int addColumns(Collection<C> columnsToAdd);
+  void addColumns(Collection<C> columnsToAdd);
 
-  int addRow();
+  void addRow(R row);
 
-  int addRow(R row);
-
-  int addRows(Collection<R> rowsToAdd);
-
-  int addRows(int rowCount);
+  void addRows(Collection<R> rowsToAdd);
 
   void addWarning(DataWarning warning);
 
@@ -58,6 +55,10 @@ public interface IsTable<R extends IsRow, C extends IsColumn> extends Iterable<R
   R createRow(long id);
 
   R findRow(RowFilter filter);
+
+  R findRow(int colIndex, String value);
+
+  R findRow(int colIndex, Long value);
 
   Boolean getBoolean(int rowIndex, int colIndex);
 
@@ -93,7 +94,9 @@ public interface IsTable<R extends IsRow, C extends IsColumn> extends Iterable<R
 
   BigDecimal getDecimal(int rowIndex, int colIndex);
 
-  List<Value> getDistinctValues(int colIndex);
+  Set<Long> getDistinctLongs(int colIndex);
+
+  Set<String> getDistinctStrings(int colIndex);
 
   Double getDouble(int rowIndex, int colIndex);
 

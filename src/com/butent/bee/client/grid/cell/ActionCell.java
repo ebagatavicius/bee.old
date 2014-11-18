@@ -11,6 +11,7 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.grid.CellContext;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.EventState;
 import com.butent.bee.shared.HasOptions;
 import com.butent.bee.shared.data.HasViewName;
@@ -21,14 +22,24 @@ import com.butent.bee.shared.utils.EnumUtils;
 public class ActionCell extends AbstractCell<String> implements HasOptions, HasViewName {
 
   public enum Type {
-    LINK, BUTTON;
+    LINK("Link"), BUTTON("Button");
+
+    private final String styleSuffix;
+
+    private Type(String styleSuffix) {
+      this.styleSuffix = styleSuffix;
+    }
+
+    private String getStyleName() {
+      return BeeConst.CSS_CLASS_PREFIX + "ActionCell" + styleSuffix;
+    }
 
     private SafeHtml render(String value) {
       switch (this) {
         case LINK:
-          return TEMPLATE.link(value);
+          return TEMPLATE.link(getStyleName(), value);
         case BUTTON:
-          return TEMPLATE.button(value);
+          return TEMPLATE.button(getStyleName(), value);
         default:
           Assert.untouchable();
           return null;
@@ -37,11 +48,11 @@ public class ActionCell extends AbstractCell<String> implements HasOptions, HasV
   }
 
   interface Template extends SafeHtmlTemplates {
-    @Template("<button class=\"bee-ActionCellButton\">{0}</button>")
-    SafeHtml button(String option);
+    @Template("<button class=\"{0}\">{1}</button>")
+    SafeHtml button(String styleName, String option);
 
-    @Template("<div class=\"bee-ActionCellLink\">{0}</div>")
-    SafeHtml link(String option);
+    @Template("<div class=\"{0}\">{1}</div>")
+    SafeHtml link(String styleName, String option);
   }
 
   private static final Template TEMPLATE = GWT.create(Template.class);

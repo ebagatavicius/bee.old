@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
@@ -25,6 +24,7 @@ import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class CargoInvoicesGrid extends AbstractGridInterceptor implements ClickHandler {
@@ -45,7 +45,7 @@ public class CargoInvoicesGrid extends AbstractGridInterceptor implements ClickH
   @Override
   public void onClick(ClickEvent event) {
     final GridPresenter presenter = getGridPresenter();
-    final Set<Long> ids = Sets.newHashSet();
+    final Set<Long> ids = new HashSet<>();
 
     for (RowInfo row : presenter.getGridView().getSelectedRows(SelectedRows.ALL)) {
       ids.add(row.getId());

@@ -15,12 +15,11 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
-import com.butent.bee.client.ui.HasWidgetSupplier;
 import com.butent.bee.client.ui.IdentifiableWidget;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.ViewSupplier;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -28,12 +27,14 @@ import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.InputDate;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public class TasksReportsInterceptor extends AbstractFormInterceptor {
@@ -67,7 +68,7 @@ public class TasksReportsInterceptor extends AbstractFormInterceptor {
 
     @Override
     public void onClick(ClickEvent event) {
-      final FormView form = UiHelper.getForm((Widget) event.getSource());
+      final FormView form = ViewHelper.getForm((Widget) event.getSource());
 
       InputDate fromDate = (InputDate) form.getWidgetByName(WIDGET_DATE_FROM_NAME);
 
@@ -110,7 +111,7 @@ public class TasksReportsInterceptor extends AbstractFormInterceptor {
 
     @Override
     public void onClick(ClickEvent event) {
-      final FormView form = UiHelper.getForm((Widget) event.getSource());
+      final FormView form = ViewHelper.getForm((Widget) event.getSource());
       ParameterList params = null;
 
       switch (reportType) {
@@ -215,16 +216,18 @@ public class TasksReportsInterceptor extends AbstractFormInterceptor {
             return;
           }
 
-          g.addStyleName("bee-HtmlTable bee-crm-taskDuration-display");
+          g.addStyleName(BeeConst.CSS_CLASS_PREFIX + "crm-taskDuration-display");
           for (int i = 0; i < gridRows; i++) {
             for (int j = 0; j < gridCols; j++) {
               g.setHtml(i, j, rowSet.getValue(i, j));
 
               if (i == 0) {
-                g.getCellFormatter().addStyleName(i, j, "bee-crm-taskDuration-colLabel");
+                g.getCellFormatter().addStyleName(i, j,
+                    BeeConst.CSS_CLASS_PREFIX + "crm-taskDuration-colLabel");
               }
               if (i == gridRows - 1) {
-                g.getCellFormatter().addStyleName(i, j, "bee-crm-taskDuration-rowTotal");
+                g.getCellFormatter().addStyleName(i, j,
+                    BeeConst.CSS_CLASS_PREFIX + "crm-taskDuration-rowTotal");
               }
             }
           }

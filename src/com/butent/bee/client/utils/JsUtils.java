@@ -1,14 +1,15 @@
 // CHECKSTYLE:OFF
 package com.butent.bee.client.utils;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 import com.google.gwt.core.client.JsDate;
 
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -126,14 +127,17 @@ public final class JsUtils {
 //@formatter:on
 
   public static List<Property> getInfo(JavaScriptObject obj) {
-    List<Property> info = Lists.newArrayList();
+    List<Property> info = new ArrayList<>();
     JsArrayString arr = getProperties(obj);
     if (arr == null || arr.length() < 3) {
       return info;
     }
 
     for (int i = 0; i < arr.length(); i += 3) {
-      info.add(new Property(arr.get(i), arr.get(i + 2)));
+      String value = arr.get(i + 2);
+      if (!BeeUtils.isEmpty(value)) {
+        info.add(new Property(arr.get(i), value));
+      }
     }
     return info;
   }
