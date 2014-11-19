@@ -48,6 +48,7 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
+import com.butent.bee.shared.modules.documents.DocumentConstants;
 import com.butent.bee.shared.modules.mail.MailConstants;
 import com.butent.bee.shared.modules.mail.MailConstants.AddressType;
 import com.butent.bee.shared.modules.mail.MailConstants.MessageFlag;
@@ -432,7 +433,9 @@ public class MailModuleBean implements BeeModule, HasTimerService {
         BeeParameter.createText(module, "SMTPServer", false, null),
         BeeParameter.createNumber(module, "SMTPServerPort", false, null),
         BeeParameter.createNumber(module, "SMTPBindPort", false, null),
-        BeeParameter.createNumber(module, PRM_MAIL_CHECK_INTERVAL, false, null));
+        BeeParameter.createNumber(module, PRM_MAIL_CHECK_INTERVAL, false, null),
+        BeeParameter.createRelation(module, "DefaultDocumentCategory",
+            DocumentConstants.TBL_DOCUMENT_TREE, DocumentConstants.COL_CATEGORY_NAME));
 
     return params;
   }

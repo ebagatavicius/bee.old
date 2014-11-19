@@ -24,6 +24,7 @@ import static com.butent.bee.shared.modules.mail.MailConstants.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.DataSelector;
@@ -209,7 +210,16 @@ public class MailMessage extends AbstractFormInterceptor {
                     case DocumentConstants.TBL_DOCUMENTS:
                       Data.setValue(viewName, row, DocumentConstants.COL_DOCUMENT_NAME,
                           getSubject());
-                      break;
+
+                      Global.getParameter("DefaultDocumentCategory", new Consumer<String>() {
+                        @Override
+                        public void accept(String input) {
+                          Data.setValue(viewName, row, DocumentConstants.COL_DOCUMENT_CATEGORY,
+                              input);
+                          executor.execute();
+                        }
+                      });
+                      return;
                   }
                 }
                 executor.execute();
