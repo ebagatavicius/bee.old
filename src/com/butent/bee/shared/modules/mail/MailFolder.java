@@ -1,7 +1,5 @@
 package com.butent.bee.shared.modules.mail;
 
-import com.google.common.collect.Maps;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.utils.ArrayUtils;
@@ -9,6 +7,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -32,7 +31,7 @@ public class MailFolder implements BeeSerializable {
   private Long uidValidity;
   private int unread;
 
-  private final Map<String, MailFolder> childs = Maps.newLinkedHashMap();
+  private final Map<String, MailFolder> childs = new LinkedHashMap<>();
 
   public MailFolder() {
     this(null, null, null, null);

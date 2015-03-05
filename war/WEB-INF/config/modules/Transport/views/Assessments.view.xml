@@ -65,15 +65,21 @@
       </SimpleJoin>
 
       <SimpleColumn name="Number" label="=refNumber" editable="true" />
+      <SimpleColumn name="Directions" alias="Shipper" label="=shipper" editable="true" />
       <SimpleColumn name="Description" editable="true" />
       <SimpleColumn name="Notes" alias="CargoNotes" label="=additionalInfo" editable="true" />
       <SimpleColumn name="LoadedKilometers" label="=trAssessmentPlannedKm" editable="true" />
 
       <SimpleJoin name="LoadingPlace" joinType="LEFT">
-        <SimpleColumn name="Contact" alias="Shipper" label="=shipper" editable="true" />
         <SimpleColumn name="Date" alias="LoadingDate" editable="true" label="=trLoadingDate" />
+        <SimpleColumn name="Company" alias="LoadingCompany" editable="true" label="=trLoadingCompany" />
+        <SimpleColumn name="Contact" alias="LoadingContact" editable="true" label="=trLoadingContact" />
         <SimpleColumn name="Address" alias="LoadingAddress" editable="true" label="=trLoadingAddress" />
         <SimpleColumn name="PostIndex" alias="LoadingPostIndex" editable="true" label="=trLoadingPostIndex" />
+        <SimpleColumn name="City" alias="LoadingCity" editable="true" label="=trLoadingCity" />
+        <SimpleJoin joinType="LEFT" name="City">
+          <SimpleColumn name="Name" alias="LoadingCityName" />
+        </SimpleJoin>
         <SimpleColumn name="Country" alias="LoadingCountry" editable="true" label="=trLoadingCountry" />
         <SimpleJoin joinType="LEFT" name="Country">
           <SimpleColumn name="Name" alias="LoadingCountryName" />
@@ -82,8 +88,14 @@
       </SimpleJoin>
       <SimpleJoin name="UnloadingPlace" joinType="LEFT">
         <SimpleColumn name="Date" alias="UnloadingDate" editable="true" label="=trUnloadingDate" />
+        <SimpleColumn name="Company" alias="UnloadingCompany" editable="true" label="=trUnloadingCompany" />
+        <SimpleColumn name="Contact" alias="UnloadingContact" editable="true" label="=trUnloadingContact" />
         <SimpleColumn name="Address" alias="UnloadingAddress" editable="true" label="=trUnloadingAddress" />
         <SimpleColumn name="PostIndex" alias="UnloadingPostIndex" editable="true" label="=trUnloadingPostIndex" />
+        <SimpleColumn name="City" alias="UnloadingCity" editable="true" label="=trUnloadingCity" />
+        <SimpleJoin joinType="LEFT" name="City">
+          <SimpleColumn name="Name" alias="UnloadingCityName" />
+        </SimpleJoin>
         <SimpleColumn name="Country" alias="UnloadingCountry" editable="true" label="=trUnloadingCountry" />
         <SimpleJoin joinType="LEFT" name="Country">
           <SimpleColumn name="Name" alias="UnloadingCountryName" />
@@ -123,21 +135,7 @@
       <SimpleJoin joinType="LEFT" name="Currency">
         <SimpleColumn name="Name" alias="CurrencyName" />
       </SimpleJoin>
-    </SimpleJoin>
-    
-    <ExternalJoin name="Assessment" source="AssessmentObservers" joinType="LEFT">
-      <HiddenColumn name="User" />
-    </ExternalJoin>
-    
-    <ExternalJoin name="Assessment" source="AssessmentOGroups" joinType="LEFT">
-      <SimpleJoin name="Group" joinType="LEFT">
-        <ExternalJoin name="Group" source="UserGroups" joinType="LEFT">
-          <HiddenColumn name="User" alias="Group" />
-        </ExternalJoin>
-      </SimpleJoin>
-    </ExternalJoin>
 
-    <SimpleJoin name="Cargo" joinType="INNER">
       <ExternalJoin name="Cargo" source="CargoIncomes" joinType="LEFT">
         <HiddenColumn name="Sale" alias="Incomes" />
         <AggregateColumn name="Sale" alias="IncomesCommited" aggregate="MIN">
@@ -158,6 +156,18 @@
         <AggregateColumn name="Cargo" alias="ExpensesCount" aggregate="COUNT_DISTINCT" />
       </ExternalJoin>
     </SimpleJoin>
+    
+    <ExternalJoin name="Assessment" source="AssessmentObservers" joinType="LEFT">
+      <HiddenColumn name="User" />
+    </ExternalJoin>
+    
+    <ExternalJoin name="Assessment" source="AssessmentOGroups" joinType="LEFT">
+      <SimpleJoin name="Group" joinType="LEFT">
+        <ExternalJoin name="Group" source="UserGroups" joinType="LEFT">
+          <HiddenColumn name="User" alias="Group" />
+        </ExternalJoin>
+      </SimpleJoin>
+    </ExternalJoin>
     
     <ExternalJoin name="Assessment" source="AssessmentForwarders" joinType="LEFT">
       <SimpleJoin name="Trip" joinType="LEFT">

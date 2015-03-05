@@ -13,6 +13,8 @@
   
     <SimpleColumn name="Summary" />
     <SimpleColumn name="Description" />
+    <SimpleColumn name="ActionResult" />
+    <SimpleColumn name="ActionReminded" />
 
     <SimpleColumn name="Location" />
 
@@ -57,6 +59,31 @@
         <SimpleJoin name="Email" joinType="LEFT">
           <SimpleColumn name="Email" alias="CompanyEmail" />
         </SimpleJoin>
+      </SimpleJoin>
+      
+      <SimpleJoin name="CompanyType" joinType="LEFT" >
+        <SimpleColumn name="Name" alias="CompanyType" />
+      </SimpleJoin>
+    </SimpleJoin>
+    
+    <SimpleColumn name="CompanyPerson" />
+    <SimpleJoin name="CompanyPerson" joinType="LEFT">    
+      <SimpleJoin name="Person" joinType="LEFT">
+        <SimpleColumn alias="PersonFirstName" name="FirstName" />
+        <SimpleColumn alias="PersonLastName" name="LastName" />
+        <SimpleJoin name="Contact" joinType="LEFT">
+        <SimpleColumn alias="PersonPhone" name="Phone" />
+        <SimpleColumn alias="PersonMobile" name="Mobile" />
+
+        <SimpleJoin name="Email" joinType="LEFT">
+          <SimpleColumn name="Email" alias="PersonEmail" />
+        </SimpleJoin>
+      </SimpleJoin>
+      </SimpleJoin>
+      
+      <SimpleColumn name="Company" alias="PersonCompany" />
+      <SimpleJoin name="Company" joinType="LEFT">
+        <SimpleColumn alias="PersonCompanyName" name="Name" />
       </SimpleJoin>
     </SimpleJoin>
     

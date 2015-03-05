@@ -3,6 +3,7 @@ package com.butent.bee.client.modules.classifiers;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.xml.client.Element;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
@@ -11,8 +12,11 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.Queries.IntCallback;
+import com.butent.bee.client.data.RowCallback;
+import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.grid.ChildGrid;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.modules.trade.TradeKeeper;
@@ -29,13 +33,16 @@ import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -47,7 +54,8 @@ public class CompanyForm extends AbstractFormInterceptor {
   public void afterCreateWidget(String name, IdentifiableWidget widget,
       WidgetDescriptionCallback callback) {
 
-    if (widget instanceof ChildGrid && BeeUtils.same(name, GRID_COMPANY_BANK_ACCOUNTS)) {
+    if (widget instanceof ChildGrid && (BeeUtils.same(name, GRID_COMPANY_BANK_ACCOUNTS)
+        || BeeUtils.same(name, GRID_COMPANY_USERS))) {
       ChildGrid grid = (ChildGrid) widget;
 
       grid.setGridInterceptor(new AbstractGridInterceptor() {
@@ -70,7 +78,7 @@ public class CompanyForm extends AbstractFormInterceptor {
                 gridView.notifyWarning(Localized.getConstants().selectAtLeastOneRow());
                 return;
               } else {
-                setAsPrimaryAccount(selectedRow.getId());
+                setAsPrimary(selectedRow.getId());
               }
             }
           });
@@ -79,8 +87,8 @@ public class CompanyForm extends AbstractFormInterceptor {
         }
 
         @Override
-        public void afterInsertRow(IsRow accountsRow) {
-          setAsPrimaryAccount(accountsRow.getId(), true);
+        public void afterInsertRow(IsRow row) {
+          setAsPrimary(row.getId(), true);
         }
 
         @Override
@@ -88,8 +96,21 @@ public class CompanyForm extends AbstractFormInterceptor {
           return null;
         }
 
-        private void setAsPrimaryAccount(Long companyBankAccount) {
-          setAsPrimaryAccount(companyBankAccount, false);
+        private void setAsPrimary(Long gridRowId) {
+          setAsPrimary(gridRowId, false);
+        }
+
+        private void setAsPrimary(Long gridRowId, boolean checkDefault) {
+          GridView gridView = getGridPresenter().getGridView();
+          String gridName = gridView.getGridName();
+
+          if (BeeUtils.same(gridName, GRID_COMPANY_BANK_ACCOUNTS)) {
+            setAsPrimaryAccount(gridRowId, checkDefault);
+          }
+
+          if (BeeUtils.same(gridName, GRID_COMPANY_USERS)) {
+            setAsPrimaryCompanyUser(gridRowId, checkDefault);
+          }
         }
 
         private void setAsPrimaryAccount(final Long companyBankAccount, boolean checkDefault) {
@@ -117,6 +138,82 @@ public class CompanyForm extends AbstractFormInterceptor {
           }
         }
 
+        private void setAsPrimaryCompanyUser(final Long companyUser, boolean checkDefault) {
+          final IsRow companyRow = getFormView().getActiveRow();
+          final IsRow companyRowOld = getFormView().getOldRow();
+          final int idxDefComanyUser = Data.getColumnIndex(VIEW_COMPANIES,
+              COL_DEFAULT_COMPANY_USER);
+
+          boolean hasDefault =
+              DataUtils.isId(companyRow.getLong(idxDefComanyUser));
+          boolean canChange = !hasDefault || !checkDefault;
+
+          if (canChange) {
+            Queries.update(getFormView().getViewName(), Filter.compareId(companyRow.getId()),
+                COL_DEFAULT_COMPANY_USER, Value.getValue(companyUser), new IntCallback() {
+
+                  @Override
+                  public void onSuccess(Integer result) {
+                    companyRow.setValue(idxDefComanyUser, companyUser);
+                    companyRowOld.setValue(idxDefComanyUser, companyUser);
+                    DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getGridView().getViewName());
+                  }
+                });
+          }
+        }
+
+      });
+    } else if (BeeUtils.same(name, TBL_COMPANY_PERSONS) && widget instanceof ChildGrid) {
+      ((ChildGrid) widget).setGridInterceptor(new AbstractGridInterceptor() {
+        @Override
+        public ColumnDescription beforeCreateColumn(GridView gridView, ColumnDescription descr) {
+          if (BeeUtils.same(descr.getId(), COL_COMPANY)) {
+            return null;
+          }
+          return super.beforeCreateColumn(gridView, descr);
+        }
+
+        @Override
+        public boolean beforeAddRow(final GridPresenter presenter, boolean copy) {
+          presenter.getGridView().ensureRelId(new IdCallback() {
+            @Override
+            public void onSuccess(Long id) {
+              final String viewName = presenter.getViewName();
+              DataInfo dataInfo = Data.getDataInfo(viewName);
+              BeeRow newRow = RowFactory.createEmptyRow(dataInfo, true);
+              Data.setValue(viewName, newRow, COL_COMPANY, id);
+
+              RowFactory.createRow(dataInfo.getNewRowForm(),
+                  Localized.getConstants().newCompanyPerson(), dataInfo, newRow, null,
+                  new AbstractFormInterceptor() {
+                    @Override
+                    public boolean beforeCreateWidget(String widgetName, Element description) {
+                      if (BeeUtils.startsWith(widgetName, COL_COMPANY)) {
+                        return false;
+                      }
+                      return super.beforeCreateWidget(widgetName, description);
+                    }
+
+                    @Override
+                    public FormInterceptor getInstance() {
+                      return null;
+                    }
+                  },
+                  new RowCallback() {
+                    @Override
+                    public void onSuccess(BeeRow result) {
+                      Data.onViewChange(viewName, DataChangeEvent.CANCEL_RESET_REFRESH);
+                    }
+                  });
+            }
+          });
+          return false;
+        }
+
+        @Override
+        public GridInterceptor getInstance() {
+          return null;
+        }
       });
     }
   }

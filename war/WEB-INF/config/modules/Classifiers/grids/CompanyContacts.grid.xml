@@ -4,7 +4,8 @@
   name="CompanyContacts" viewName="CompanyContacts" caption="=additionalContacts"
   flexGrow="1" flexShrink="1"
   >
-  <g:columns>  
+  <g:columns>
+  	<DataColumn name="Notes" minWidth="250" visible="true" caption="=name" label="=name"/>
     <DataColumn name="Address" minWidth="200" maxWidth="300" visible="true" />
     <DataColumn name="PostIndex" minWidth="50" maxWidth="200" />
     <RelColumn name="City" minWidth="50" maxWidth="200" renderColumns="CityName" visible="true" />

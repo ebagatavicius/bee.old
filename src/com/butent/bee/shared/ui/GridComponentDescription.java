@@ -1,7 +1,5 @@
 package com.butent.bee.shared.ui;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
@@ -10,6 +8,7 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -128,7 +127,7 @@ public class GridComponentDescription implements BeeSerializable, HasInfo {
 
   @Override
   public List<Property> getInfo() {
-    List<Property> info = Lists.newArrayList();
+    List<Property> info = new ArrayList<>();
     if (getStyle() != null) {
       info.addAll(getStyle().getInfo());
     }

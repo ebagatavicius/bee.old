@@ -2,12 +2,17 @@
 <View xmlns="http://www.butent.com/view"
 
   name="Departments" source="Departments" module="Administration"
-  caption="=departments" newRowCaption="=newDepartment" newRowForm="Department" editForm="Department"
+  caption="=departments" newRowCaption="=newDepartment"
+  newRowForm="Department" editForm="Department"
   >
   <Columns>
     <SimpleColumn name="DepartmentName" />
+    <SimpleColumn name="Parent" />
+    <SimpleJoin joinType="LEFT" name="Parent">
+      <SimpleColumn name="DepartmentName" alias="ParentName" />
+    </SimpleJoin>
+
     <SimpleColumn name="DepartmentHead" />
-    
     <SimpleJoin name="DepartmentHead" joinType="LEFT">
       <SimpleColumn name="CompanyPerson" />
       <SimpleJoin name="CompanyPerson" joinType="LEFT">
@@ -22,6 +27,11 @@
           <SimpleColumn name="Name" alias="CompanyName" />
         </SimpleJoin>
       </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Role" />
+    <SimpleJoin name="Role" joinType="LEFT">
+      <SimpleColumn name="Name" alias="RoleName" />
     </SimpleJoin>
   </Columns>
   <Order>

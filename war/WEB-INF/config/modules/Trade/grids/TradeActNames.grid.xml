@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="TradeActNames" viewName="TradeActNames" caption="=tradeActNames"
+  >
+  <g:columns>
+    <DataColumn name="ActName" flexGrow="1" visible="true" />
+  </g:columns>
+</g:Grid>

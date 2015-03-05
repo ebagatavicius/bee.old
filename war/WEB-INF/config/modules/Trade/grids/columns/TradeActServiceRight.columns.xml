@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <DataColumn name="Factor" caption="=taFactorShort" flexGrow="0" />
+
+  <DataColumn name="DaysPerWeek" caption="=taDaysPerWeekShort" maxValue="7" flexGrow="0" />
+  <DataColumn name="MinTerm" caption="=taMinTermShort" flexGrow="0" />
+  
+  <DataColumn name="Note" visible="false" />
+</g:columns>

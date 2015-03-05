@@ -12,6 +12,6 @@
   <g:columns>
     <DataColumn name="Task" label="=captionId" />
   </g:columns>
-
+  
   <xi:include href="columns/Task.columns.xml" />
 </g:Grid>

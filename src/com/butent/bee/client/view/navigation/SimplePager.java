@@ -16,6 +16,7 @@ import com.butent.bee.client.utils.Command;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.ui.NavigationOrigin;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -68,7 +69,7 @@ public class SimplePager extends AbstractPager {
     FIRST, REWIND, PREV, NEXT, FORWARD, LAST
   }
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "SimplePager-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "SimplePager-";
   private static final String STYLE_CONTAINER = STYLE_PREFIX + "container";
   private static final String STYLE_DISABLED_BUTTON = STYLE_PREFIX + "disabledButton";
   private static final String STYLE_INFO = STYLE_PREFIX + "info";

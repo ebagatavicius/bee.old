@@ -10,4 +10,6 @@ separator="true"
     parameters="TradeActStock" />
   <Item name="TradeActServicesReport" label="=taReportServices" service="report"
     parameters="TradeActServices" />
+  <Item name="TradeActTransferReport" label="=taReportTransfer" service="report"
+    parameters="TradeActTransfer" />
 </Entry>

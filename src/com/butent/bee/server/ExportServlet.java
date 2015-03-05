@@ -532,7 +532,7 @@ public class ExportServlet extends LoginServlet {
   protected void doService(HttpServletRequest req, HttpServletResponse resp) {
     long start = System.currentTimeMillis();
 
-    RequestInfo reqInfo = new RequestInfo(req);
+    RequestInfo reqInfo = new RequestInfo(req, false);
     String svc = reqInfo.getService();
 
     if (Service.EXPORT_WORKBOOK.equals(svc)) {

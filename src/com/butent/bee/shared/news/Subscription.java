@@ -1,8 +1,5 @@
 package com.butent.bee.shared.news;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
@@ -11,6 +8,8 @@ import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +30,7 @@ public class Subscription implements BeeSerializable, HasCaption {
   private String caption;
   private DateTime date;
 
-  private final List<Headline> headlines = Lists.newArrayList();
+  private final List<Headline> headlines = new ArrayList<>();
 
   public Subscription(long rowId, Feed feed, String caption, DateTime date) {
     this.rowId = rowId;
@@ -131,7 +130,7 @@ public class Subscription implements BeeSerializable, HasCaption {
   }
 
   public Set<Long> getIdSet() {
-    Set<Long> result = Sets.newHashSet();
+    Set<Long> result = new HashSet<>();
 
     for (Headline headline : headlines) {
       result.add(headline.getId());

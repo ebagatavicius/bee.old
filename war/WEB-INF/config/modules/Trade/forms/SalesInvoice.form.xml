@@ -7,6 +7,7 @@
   caption="=trdInvoice" showRowId="true"
   width="800" height="600"
   >
+  <f:properties reports="PrintSalesInvoice" />
   <FlowPanel class="flexBox-vertical">
     <br/>
     <Table>
@@ -62,10 +63,15 @@
         <ChildGrid name="SaleItems" relColumn="Sale" />
       </page>
 
+      <page >
+        <text>=tradeActs</text>
+        <ChildGrid name="InvoiceTradeActs" relColumn="Sale" module="Trade.Acts" />
+      </page>
+
       <page>
         <text>=trdNotes</text>
         <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" />
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>
     </TabbedPages>

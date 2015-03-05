@@ -3,7 +3,6 @@
 
   name="EventDurations"
   idName="EventDurationID"
-  x="948" y="8"
   >
   <Fields>
     <Relation name="DurationType" notNull="true" relation="DurationTypes" label="=crmDurationType" />

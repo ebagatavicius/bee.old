@@ -1,12 +1,11 @@
 package com.butent.webservice;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.server.utils.XmlUtils;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WSDocument {
@@ -18,11 +17,16 @@ public class WSDocument {
     private String vatMode;
     private String vat;
     private String vatPercent;
+    private String article;
     private String note;
 
     private WSDocumentItem(String itemId, String quantity) {
       this.itemId = itemId;
       this.quantity = quantity;
+    }
+
+    public void setArticle(String article) {
+      this.article = article;
     }
 
     public void setNote(String note) {
@@ -59,7 +63,7 @@ public class WSDocument {
   private String payer;
   private String currency;
 
-  private final List<WSDocumentItem> items = Lists.newArrayList();
+  private final List<WSDocumentItem> items = new ArrayList<>();
 
   public WSDocument(String documentId, DateTime date, String operation, String company,
       String warehouse) {
@@ -96,6 +100,7 @@ public class WSDocument {
           .append(XmlUtils.tag("valiuta", currency))
           .append(XmlUtils.tag("preke", item.itemId))
           .append(XmlUtils.tag("kiekis", item.quantity))
+          .append(XmlUtils.tag("artikulas", item.article))
           .append(XmlUtils.tag("pastaba", item.note));
 
       if (!BeeUtils.isEmpty(item.price)) {

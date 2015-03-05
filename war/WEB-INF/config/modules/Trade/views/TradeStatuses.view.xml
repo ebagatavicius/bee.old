@@ -6,6 +6,7 @@
   >
   <Columns>
     <SimpleColumn name="StatusName" />
+    <SimpleColumn name="StatusActive" />
 
     <SimpleColumn name="Background" />
     <SimpleColumn name="Foreground" />

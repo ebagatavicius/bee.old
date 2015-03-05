@@ -22,11 +22,19 @@ public class RowInfo implements BeeSerializable, Comparable<RowInfo> {
   private boolean editable;
   private boolean removable;
 
+  public RowInfo(IsRow row) {
+    this(row, row.isEditable());
+  }
+
   public RowInfo(IsRow row, boolean editable) {
     this(row.getId(), row.getVersion(), editable, row.isRemovable());
   }
 
-  public RowInfo(long id, long version, boolean editable, boolean removable) {
+  public RowInfo(long id, long version) {
+    this(id, version, true, true);
+  }
+
+  private RowInfo(long id, long version, boolean editable, boolean removable) {
     super();
 
     this.id = id;

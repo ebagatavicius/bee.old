@@ -5,6 +5,8 @@
   idName="TradeActID"
   >
   <Fields>
+    <Relation name="Name" relation="TradeActNames" label="=tradeActName" />
+
     <DateTime name="Date" notNull="true" defExpr="CURRENT_TIME" label="=taDate" />
     <DateTime name="Until" label="=taUntil" />
 
@@ -17,7 +19,8 @@
     <Relation name="Status" relation="TradeStatuses" label="=status" />
 
     <Relation name="Company" relation="Companies" label="=client" />
-    <Relation name="ServiceObject" relation="ServiceObjects" label="=svcObject" />
+    <Relation name="Contact" relation="CompanyPersons" label="=contact" />
+    <Relation name="Object" relation="CompanyObjects" label="=object" />
     <Relation name="Manager" relation="Users" label="=manager" defExpr="CURRENT_USER" />
 
     <Relation name="Currency" relation="Currencies" notNull="true" defExpr="MAIN_CURRENCY"
@@ -27,5 +30,7 @@
     <Relation name="Driver" relation="Drivers" label="=trdDriver" />
 
     <Text name="Notes" label="=notes" />
+
+    <Relation name="Parent" relation="TradeActs" label="=taParent" />
   </Fields>
 </Table>

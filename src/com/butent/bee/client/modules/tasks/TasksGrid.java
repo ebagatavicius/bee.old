@@ -77,6 +77,7 @@ import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -372,7 +373,7 @@ class TasksGrid extends AbstractGridInterceptor implements ClickHandler {
           return;
         }
 
-        List<String> notes = Lists.newArrayList();
+        List<String> notes = new ArrayList<>();
 
         BeeRow newRow = DataUtils.cloneRow(row);
         newRow.setValue(info.getColumnIndex(COL_STATUS), TaskStatus.APPROVED.ordinal());

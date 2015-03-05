@@ -1,12 +1,12 @@
 package com.butent.bee.server.sql;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -18,7 +18,7 @@ public class SqlUpdate extends SqlQuery<SqlUpdate> implements HasTarget {
   private final String target;
   private IsFrom fromSource;
   private IsCondition fromJoin;
-  private final Map<String, IsSql> updates = Maps.newLinkedHashMap();
+  private final Map<String, IsSql> updates = new LinkedHashMap<>();
   private IsCondition whereClause;
 
   /**

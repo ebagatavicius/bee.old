@@ -15,7 +15,7 @@
 
     <row>
       <Label text="=crmRTDayOfMonth" class="bee-crm-rt-cron-label" />
-      <InputText source="DayOfMonth" class="bee-crm-rt-cron-input" style="&inp;" />
+      <InputText source="DayOfMonth" class="bee-crm-rt-cron-input" style="&inp;" summarize="true" />
       <Label text="?" name="DomHelp" class="bee-crm-rt-cron-help" />
     </row>
     <row>
@@ -33,7 +33,7 @@
 
     <row>
       <Label text="=crmRTMonth" class="bee-crm-rt-cron-label" />
-      <InputText source="Month" class="bee-crm-rt-cron-input" style="&inp;" />
+      <InputText source="Month" class="bee-crm-rt-cron-input" style="&inp;" summarize="true" />
       <Label text="?" name="MonthHelp" class="bee-crm-rt-cron-help" />
     </row>
     <row>
@@ -51,7 +51,7 @@
 
     <row>
       <Label text="=crmRTDayOfWeek" class="bee-crm-rt-cron-label" />
-      <InputText source="DayOfWeek" class="bee-crm-rt-cron-input" style="&inp;" />
+      <InputText source="DayOfWeek" class="bee-crm-rt-cron-input" style="&inp;" summarize="true" />
       <Label text="?" name="DowHelp" class="bee-crm-rt-cron-help" />
     </row>
     <row>

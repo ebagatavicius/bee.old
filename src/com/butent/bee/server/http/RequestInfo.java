@@ -13,11 +13,13 @@ import com.butent.bee.shared.communication.ContentType;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.PropertyUtils;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +58,7 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
 
   private ContentType contentType;
 
-  public RequestInfo(HttpServletRequest req) {
+  public RequestInfo(HttpServletRequest req, boolean encoded) {
     super();
     counter++;
 
@@ -80,14 +82,19 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
       }
     }
 
-    this.contentLen = req.getContentLength();
-    if (contentLen > 0) {
+    if (req.getContentLength() > 0) {
       this.contentTypeHeader = req.getContentType();
-      this.content = CommUtils.getContent(getContentType(), HttpUtils.readContent(req));
+      if (encoded) {
+        this.content = CommUtils.getContent(getContentType(),
+            Codec.fromBytes(Base64.getDecoder().decode(HttpUtils.readContent(req))));
+      } else {
+        this.content = CommUtils.getContent(getContentType(), HttpUtils.readContent(req));
+      }
     } else {
       this.contentTypeHeader = null;
       this.content = null;
     }
+    this.contentLen = BeeUtils.length(this.content);
 
     if (isXml()) {
       this.vars = XmlUtils.getElements(content, Service.VAR_DATA);
@@ -236,6 +243,10 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
     }
 
     return value;
+  }
+
+  public Integer getParameterInt(String name) {
+    return BeeUtils.toIntOrNull(getParameter(name));
   }
 
   public Long getParameterLong(String name) {

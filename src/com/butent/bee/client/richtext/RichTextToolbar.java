@@ -183,7 +183,7 @@ public class RichTextToolbar extends Flow implements EnablableWidget {
         getInput("Html", null, new Consumer<String>() {
           @Override
           public void accept(String parameter) {
-            formatter.insertHTML(parameter);
+            formatter.insertHtml(parameter);
             area.setFocus(true);
           }
         });
@@ -214,7 +214,7 @@ public class RichTextToolbar extends Flow implements EnablableWidget {
     }
   }
 
-  private static final String STYLE_ROW = "bee-RichTextToolbar-row";
+  private static final String STYLE_ROW = BeeConst.CSS_CLASS_PREFIX + "RichTextToolbar-row";
 
   private static final RichTextArea.FontSize[] fontSizesConstants = new RichTextArea.FontSize[] {
       RichTextArea.FontSize.XX_SMALL, RichTextArea.FontSize.X_SMALL,

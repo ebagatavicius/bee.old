@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Table xmlns="http://www.butent.com/table"
+  
+  name="TcdPriceLists"
+  idName="PriceListID"
+  audit="false"
+  >
+  <Fields>
+    <String name="PriceListName" precision="30" notNull="true" unique="true" label="=ecPriceList" />
+  </Fields>
+</Table>

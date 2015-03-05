@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+  
+  name="CountryNorms" viewName="CountryNorms" caption="=trCountryNorms"
+  >
+  <g:columns>
+    <RelColumn name="Country" />
+    <RelColumn name="DailyCostsItem">
+      <carry><ui:expression>cell.value</ui:expression></carry>
+    </RelColumn>
+    <RelColumn name="RoadCostsItem">
+      <carry><ui:expression>cell.value</ui:expression></carry>
+    </RelColumn>
+  </g:columns>
+</g:Grid>

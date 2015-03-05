@@ -1,6 +1,5 @@
 package com.butent.bee.shared.data.cache;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 
 import com.butent.bee.shared.Assert;
@@ -10,7 +9,9 @@ import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 class CachedQuery extends SimpleCache<Integer, Long> {
 
@@ -40,7 +41,7 @@ class CachedQuery extends SimpleCache<Integer, Long> {
 
   @Override
   public List<Property> getInfo() {
-    List<Property> lst = Lists.newArrayList();
+    List<Property> lst = new ArrayList<>();
 
     if (!BeeUtils.isEmpty(strFilter)) {
       lst.add(new Property("Filter", strFilter));
@@ -56,7 +57,7 @@ class CachedQuery extends SimpleCache<Integer, Long> {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(strFilter, strOrder);
+    return Objects.hash(strFilter, strOrder);
   }
 
   @Override

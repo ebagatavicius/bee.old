@@ -2,7 +2,6 @@ package com.butent.bee.client.composite;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -30,8 +29,10 @@ import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -346,7 +347,7 @@ public class FileGroup extends HtmlTable implements HasOptions {
     }
   }
 
-  private static final String STYLE_PREFIX = "bee-FileGroup-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "FileGroup-";
 
   private static final String STYLE_CELL = "Cell";
 
@@ -361,14 +362,14 @@ public class FileGroup extends HtmlTable implements HasOptions {
 
   private static final List<Column> DEFAULT_VISIBLE_COLUMNS =
       Lists.newArrayList(Column.ICON, Column.NAME, Column.SIZE);
-  private static final List<Column> DEFAULT_EDITABLE_COLUMNS = Lists.newArrayList();
+  private static final List<Column> DEFAULT_EDITABLE_COLUMNS = new ArrayList<>();
 
   public static Widget getDefaultFace() {
     return new Button(Localized.getConstants().chooseFiles());
   }
 
   public static List<Column> parseColumns(String input) {
-    List<Column> columns = Lists.newArrayList();
+    List<Column> columns = new ArrayList<>();
     if (BeeUtils.isEmpty(input) || BeeUtils.same(input, BeeConst.NONE)) {
       return columns;
     }
@@ -391,12 +392,12 @@ public class FileGroup extends HtmlTable implements HasOptions {
     return columns;
   }
 
-  private final List<FileInfo> files = Lists.newArrayList();
+  private final List<FileInfo> files = new ArrayList<>();
 
   private String options;
 
-  private final List<Column> columns = Lists.newArrayList();
-  private final List<Column> editable = Lists.newArrayList();
+  private final List<Column> columns = new ArrayList<>();
+  private final List<Column> editable = new ArrayList<>();
 
   public FileGroup() {
     this(DEFAULT_VISIBLE_COLUMNS);
@@ -557,7 +558,7 @@ public class FileGroup extends HtmlTable implements HasOptions {
       public void onSuccess() {
         getRowFormatter().removeStyleName(index, STYLE_PREFIX + STYLE_EDITING);
 
-        Set<Column> changedColumns = Sets.newHashSet();
+        Set<Column> changedColumns = new HashSet<>();
         for (int i = 0; i < editable.size(); i++) {
           Column column = editable.get(i);
           if (column.update(panel.getWidget(i, colInput), sf)) {
@@ -590,7 +591,7 @@ public class FileGroup extends HtmlTable implements HasOptions {
       }
     }
 
-    List<Column> vc = Lists.newArrayList();
+    List<Column> vc = new ArrayList<>();
     if (BeeUtils.isEmpty(visibleColumns)) {
       vc.addAll(DEFAULT_VISIBLE_COLUMNS);
     } else {

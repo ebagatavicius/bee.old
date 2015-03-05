@@ -1,6 +1,5 @@
 package com.butent.bee.client.widget;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.user.client.ui.Widget;
@@ -8,8 +7,10 @@ import com.google.gwt.user.client.ui.Widget;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasItems;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class HtmlList extends Widget implements IdentifiableWidget, HasItems {
 
   private final boolean ordered;
 
-  private final List<LIElement> items = Lists.newArrayList();
+  private final List<LIElement> items = new ArrayList<>();
 
   public HtmlList() {
     this(false);
@@ -36,7 +37,7 @@ public class HtmlList extends Widget implements IdentifiableWidget, HasItems {
       setElement(Document.get().createULElement());
     }
 
-    setStyleName("bee-HtmlList");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "HtmlList");
     DomUtils.createId(this, getIdPrefix());
 
     this.ordered = ordered;
@@ -88,7 +89,7 @@ public class HtmlList extends Widget implements IdentifiableWidget, HasItems {
 
   @Override
   public List<String> getItems() {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     for (int i = 0; i < getItemCount(); i++) {
       result.add(getItemHtml(i));
     }
@@ -102,7 +103,7 @@ public class HtmlList extends Widget implements IdentifiableWidget, HasItems {
 
   public void insertItem(String item, int index) {
     LIElement child = DomUtils.createListItem(item).cast();
-    child.setClassName("bee-HtmlListItem");
+    child.setClassName(BeeConst.CSS_CLASS_PREFIX + "HtmlListItem");
 
     if ((index < 0) || (index >= getItemCount())) {
       getElement().appendChild(child);

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="ProjectStages"
+  idName="ProjectStageID"
+  >
+  <Fields>
+    <Relation name="Project" notNull="true" relation="Projects" cascade="DELETE" label="=project"/>
+    <String name="Name" notNull="true" precision="100" label="=name" />
+    <Date name="StartDate" label="=crmStartDate" />
+    <Date name="EndDate" label="=crmFinishDate" />
+    <Numeric name="ExpectedDuration" precision="10" label="=crmTaskExpectedDuration" />
+    <Numeric name="Expenses" precision="15" scale="5" label="=prjExpenses" />
+    <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
+  </Fields>
+</Table>

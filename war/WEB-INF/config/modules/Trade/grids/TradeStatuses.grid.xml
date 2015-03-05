@@ -2,15 +2,15 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
   name="TradeStatuses" viewName="TradeStatuses" caption="=trdStatuses"
-  minColumnWidth="100"
   >
   <g:columns>
-    <DataColumn name="StatusName" visible="true" />
+    <DataColumn name="StatusName" visible="true" minWidth="100" />
+    <DataColumn name="StatusActive" visible="true" />
 
-    <DataColumn name="Background" updateMode="row">
+    <DataColumn name="Background" updateMode="row" minWidth="100">
       <editor type="color" />
     </DataColumn>
-    <DataColumn name="Foreground" updateMode="row">
+    <DataColumn name="Foreground" updateMode="row" minWidth="100">
       <editor type="color" />
     </DataColumn>
   </g:columns>

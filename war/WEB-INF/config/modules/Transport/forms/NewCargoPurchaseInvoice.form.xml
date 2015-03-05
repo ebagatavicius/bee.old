@@ -44,7 +44,7 @@
 		  <Table>
 		    <row>
 			  <Label text="=trdTerm" style="&lbl2; width:131px; text-align:right; margin-right: 5px;" />
-			  <InputDate source="Term" style="width:75px;" />
+			  <InputDate source="Term" style="width:150px;" />
 			  <Label name="MainItemCaption" text="=transportMainItemCaption" style="&lbl2; width:214px; margin-right: 5px;" />
 			  <UnboundSelector name="MainItem" viewName="Items" renderColumns="Name" />
 			</row>
@@ -60,7 +60,7 @@
       <row>
         <Label text="=trdManager" style="&lbl;" />
         <DataSelector source="Manager" editSource="ManagerPerson" />
-		<Label text="=trdWarehouseTo" class="bee-required" style="&lbl;" />
+		<Label for="WarehouseTo" style="&lbl;" />
 		<DataSelector source="WarehouseTo" />
       </row>
     </Table>

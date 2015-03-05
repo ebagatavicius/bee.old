@@ -108,7 +108,7 @@
                     <InputText source="Number" />
                     <Label text="=quantity" horizontalAlignment="right" style="&lbl1;"/>
                     <FlowPanel>
-                      <InputInteger source="Quantity" style="width:70px" />
+                      <InputDecimal source="Quantity" format="0.00" style="width:70px" />
                       <DataSelector source="QuantityUnit" style="display:inline-block; width:40px; margin-left:5px;" />
                     </FlowPanel>
                     <cell rowSpan="2">

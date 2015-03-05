@@ -3,7 +3,6 @@
 
   name="CargoPlaces"
   idName="PlaceID"
-  x="0" y="0"
   >
   <Fields>
     <DateTime name="Date" label="=date" />
@@ -17,5 +16,6 @@
     <String name="PostIndex" precision="20" label="=postIndex" />
     <Relation name="City" relation="Cities" label="=city" />
     <Relation name="Country" relation="Countries" label="=country" />
+    <String name="Note" precision="100" label="=note" />
   </Fields>
 </Table>

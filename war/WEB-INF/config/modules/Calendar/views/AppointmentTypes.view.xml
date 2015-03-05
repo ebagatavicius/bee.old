@@ -29,6 +29,7 @@
     
     <SimpleColumn name="AppointmentCompact" />
     <SimpleColumn name="AppointmentTitle" />
+    <SimpleColumn name="PlannedDuration" />
   </Columns>
   <Order>
     <OrderBy column="Name" />

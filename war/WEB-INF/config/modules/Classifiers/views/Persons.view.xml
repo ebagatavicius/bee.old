@@ -40,6 +40,7 @@
     </SimpleJoin>
 
     <SimpleColumn name="Photo" />
+    <SimpleColumn name="Notes" />
   </Columns>
   <Order>
     <OrderBy column="LastName" />

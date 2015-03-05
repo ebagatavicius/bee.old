@@ -98,6 +98,17 @@ public final class DomUtils {
     preventSelection(obj.getElement());
   }
 
+  public static List<Element> asList(NodeList<Element> nodeList) {
+    List<Element> elements = new ArrayList<>();
+
+    if (nodeList != null) {
+      for (int i = 0; i < nodeList.getLength(); i++) {
+        elements.add(nodeList.getItem(i));
+      }
+    }
+    return elements;
+  }
+
   public static void clear(Node nd) {
     Assert.notNull(nd);
     while (nd.getFirstChild() != null) {
@@ -1563,6 +1574,14 @@ public final class DomUtils {
     resizeVerticalBy(obj.getElement(), dh);
   }
 
+  public static boolean sameId(Element x, Element y) {
+    return y != null && idEquals(x, y.getId());
+  }
+
+  public static boolean sameId(UIObject x, UIObject y) {
+    return x != null && y != null && sameId(x.getElement(), y.getElement());
+  }
+
   public static void scrollToBottom(Element elem) {
     Assert.notNull(elem);
     elem.setScrollTop(elem.getScrollHeight());
@@ -1642,6 +1661,10 @@ public final class DomUtils {
         setDataProperty(elem, property.getKey(), property.getValue());
       }
     }
+  }
+
+  public static void setDataProperty(Element elem, String key, double value) {
+    setDataProperty(elem, key, Double.toString(value));
   }
 
   public static void setDataProperty(Element elem, String key, int value) {

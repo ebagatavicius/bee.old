@@ -52,7 +52,7 @@ public final class JvmUtils {
         err = new BeeException("Classloader.classes not of type java.util.Vector: "
             + fld.getType().getName());
       }
-    } catch (Throwable t) {
+    } catch (NoSuchFieldException | SecurityException t) {
       err = t;
       fld = null;
     }

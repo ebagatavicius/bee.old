@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
   
   name="Departments" viewName="Departments" caption="=departments" flexGrow="1"
   >
   <g:columns>
-    <DataColumn name="DepartmentName" visible="true" />
-    <RelColumn name="DepartmentHead" renderColumns="FirstName LastName" />
+    <DataColumn name="DepartmentName" sortable="false" visible="true" />
+
+    <CalcColumn type="string" name="DepartmentParent" label="=departmentParent">
+      <render><ui:function>
+        if (row.FullName) {
+          return row.FullName.replace(row.DepartmentName, "").trim();
+        }
+        return null;
+      </ui:function></render>
+    </CalcColumn>
+
+    <RelColumn name="DepartmentHead" renderColumns="FirstName LastName" sortable="false" />
+    <RelColumn name="Role" sortable="false" />
   </g:columns>
 </g:Grid>

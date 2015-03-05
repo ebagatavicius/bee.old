@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="ImportOptions"
+  idName="OptionID"
+  >
+  <Fields>
+    <Enum name="Type" key="ImportType" notNull="true" label="=trImportType" />
+    <String name="Description" precision="30" label="=description" />
+    <String name="Data" precision="30" label="=data" />
+  </Fields>
+</Table>

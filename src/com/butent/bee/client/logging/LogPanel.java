@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.layout.Flow;
+import com.butent.bee.shared.BeeConst;
 
 /**
  * Manages a specific type of flow panel to contain log entries.
@@ -16,7 +17,7 @@ class LogPanel extends Flow {
 
   LogPanel() {
     super();
-    setStyleName("bee-LogArea");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "LogArea");
     sinkEvents(Event.ONCLICK);
   }
 

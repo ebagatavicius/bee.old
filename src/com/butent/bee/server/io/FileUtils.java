@@ -30,6 +30,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -125,7 +127,7 @@ public final class FileUtils {
     String stem = FileNameUtils.getBaseName(search);
     String ext = FileNameUtils.getExtension(search);
 
-    List<File> roots = Lists.newArrayList();
+    List<File> roots = new ArrayList<>();
 
     if (!BeeUtils.isEmpty(pfx)) {
       roots.addAll(Config.getDirectories(pfx));
@@ -139,7 +141,7 @@ public final class FileUtils {
       }
     }
 
-    List<Filter> filters = Lists.newArrayList();
+    List<Filter> filters = new ArrayList<>();
     if (requiredFilters != null) {
       filters.addAll(requiredFilters);
     }
@@ -162,7 +164,7 @@ public final class FileUtils {
   public static List<File> findFiles(Collection<File> directories,
       Collection<? extends Filter> filters, boolean recurse, boolean all) {
     Assert.notEmpty(directories);
-    List<File> files = Lists.newArrayList();
+    List<File> files = new ArrayList<>();
 
     for (File dir : directories) {
       files.addAll(findFiles(dir, filters, recurse));
@@ -181,7 +183,7 @@ public final class FileUtils {
       boolean recurse) {
     Assert.notNull(dir);
 
-    List<File> found = Lists.newArrayList();
+    List<File> found = new ArrayList<>();
     if (!dir.isDirectory() || !Config.isVisible(dir)) {
       return found;
     }
@@ -457,7 +459,7 @@ public final class FileUtils {
 
     try {
       cs = Charset.forName(name);
-    } catch (Exception ex) {
+    } catch (IllegalCharsetNameException | UnsupportedCharsetException ex) {
       logger.warning(ex, name);
       cs = null;
     }

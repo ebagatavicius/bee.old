@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="ProjectEvents" source="ProjectEvents"
+  caption="=prjComments" newRowForm="NewProjectComment"
+  >
+  <Columns>
+    <SimpleColumn name="Project" />
+    <SimpleColumn name="Publisher" />
+    <SimpleJoin name="Publisher" joinType="LEFT">
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn alias="PublisherFirstName" name="FirstName" />
+          <SimpleColumn alias="PublisherLastName" name="LastName" />
+          <SimpleColumn name="Photo" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+    <SimpleColumn name="PublishTime" />
+    <SimpleColumn name="Comment" />
+    <SimpleColumn name="Event" />
+    <SimpleColumn name="Properties" />
+  </Columns>
+</View>
+ 

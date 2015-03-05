@@ -176,7 +176,7 @@
   </g:rowStyle>
 
   <g:rowMessage>
-    <ui:function>return String(rowId) + '  ' + rowVersion.toLocaleTimeString()</ui:function>
+    <ui:function>return String(rowId) + '  ' + (rowVersion ? rowVersion.toLocaleTimeString() : '')</ui:function>
   </g:rowMessage>
 
   <g:rowEditable>

@@ -3,7 +3,6 @@
 
   name="Trips"
   idName="TripID"
-  x="0" y="0"
   >
   <Fields>
     <Enum name="Status" key="TripStatus" notNull="true" label="=status" defValue="0" />

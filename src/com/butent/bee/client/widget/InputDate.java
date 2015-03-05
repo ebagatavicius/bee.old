@@ -1,6 +1,5 @@
 package com.butent.bee.client.widget;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.DomEvent;
@@ -30,6 +29,7 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InputDate extends InputText implements HasDateTimeFormat, HasIntStep, HasBounds {
@@ -37,10 +37,10 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
   protected static final JustDate DEFAULT_MIN_DATE = new JustDate(2000, 1, 1);
   protected static final JustDate DEFAULT_MAX_DATE = TimeUtils.endOfYear(TimeUtils.year(), 10);
 
-  private static final String STYLE_INPUT = "bee-InputDate";
+  private static final String STYLE_INPUT = BeeConst.CSS_CLASS_PREFIX + "InputDate";
   private static final String STYLE_ACTIVE = STYLE_INPUT + "-active";
 
-  private static final String STYLE_POPUP = "bee-DateBox-popup";
+  private static final String STYLE_POPUP = BeeConst.CSS_CLASS_PREFIX + "DateBox-popup";
 
   private DateTimeFormat format;
 
@@ -209,7 +209,7 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
 
   @Override
   public List<String> validate(boolean checkForNull) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     messages.addAll(super.validate(checkForNull));
     if (!messages.isEmpty()) {
       return messages;
@@ -242,7 +242,7 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
 
   @Override
   public List<String> validate(String normalizedValue, boolean checkForNull) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     messages.addAll(super.validate(normalizedValue, checkForNull));
     if (!messages.isEmpty()) {
       return messages;
@@ -543,7 +543,7 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
   }
 
   private List<String> validateBounds(HasDateValue dateValue) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     if (dateValue != null && !checkBounds(dateValue)) {
       result.add(TimeUtils.renderCompact(dateValue));

@@ -13,6 +13,7 @@
     <String name="Address" precision="100" label="=address" />
     <String name="PostIndex" precision="20" label="=postIndex" />
     <String name="SocialContacts" precision="100" label="=socialContacts" />
+    <String name="Notes" precision="255" label="=notes" />
     <Relation name="City" relation="Cities" label="=city" />
     <Relation name="Country" relation="Countries" label="=country" />
   </Fields>

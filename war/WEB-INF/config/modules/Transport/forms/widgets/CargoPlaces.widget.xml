@@ -16,6 +16,10 @@
       <InputDateTime source="LoadingDate" style="width: 110px;" />
     </row>
     <row>
+      <Label text="=note" horizontalAlignment="right" style="&lbl1;"/>
+      <InputText source="LoadingNote" />
+    </row>
+    <row>
       <Label text="=company" horizontalAlignment="right" style="&lbl1;"/>
       <InputText source="LoadingCompany" autocompleteKey="cargo-place-company" />
     </row>
@@ -72,6 +76,10 @@
     <row>
       <Label text="=date" horizontalAlignment="right" style="&lbl1;"/>
       <InputDateTime source="UnloadingDate" style="width: 110px;" />
+    </row>
+    <row>
+      <Label text="=note" horizontalAlignment="right" style="&lbl1;"/>
+      <InputText source="UnloadingNote" />
     </row>
     <row>
       <Label text="=company" horizontalAlignment="right" style="&lbl1;"/>

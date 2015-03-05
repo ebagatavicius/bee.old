@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="TradeActNames" source="TradeActNames" module="Trade.Acts"
+  caption="=tradeActNames" newRowCaption="=tradeActNewName"
+  >
+  <Columns>
+    <SimpleColumn name="ActName" />
+  </Columns>
+  
+  <Order>
+    <OrderBy column="ActName" />
+  </Order>
+</View>

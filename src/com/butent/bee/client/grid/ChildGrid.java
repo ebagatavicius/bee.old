@@ -1,26 +1,13 @@
 package com.butent.bee.client.grid;
 
-import com.google.common.base.Objects;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-
-import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.event.logical.ParentRowEvent;
-import com.butent.bee.client.event.logical.ReadyEvent;
-import com.butent.bee.client.event.logical.ReadyEvent.HasReadyHandlers;
-import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.presenter.GridPresenter;
-import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.EnablableWidget;
-import com.butent.bee.client.ui.HasFosterParent;
 import com.butent.bee.client.ui.UiOption;
-import com.butent.bee.client.view.HasGridView;
 import com.butent.bee.client.view.grid.GridSettings;
 import com.butent.bee.client.view.grid.GridView;
-import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Launchable;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -37,60 +24,37 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Enables using data grids with data related to another source.
  */
 
-public class ChildGrid extends Simple implements EnablableWidget, Launchable, HasFosterParent,
-    ParentRowEvent.Handler, HasGridView, ReadyEvent.HasReadyHandlers {
+public class ChildGrid extends EmbeddedGrid implements Launchable {
+
+  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "ChildGrid";
 
   private static final Collection<UiOption> uiOptions = EnumSet.of(UiOption.CHILD);
-
-  private final String gridName;
 
   private final int parentIndex;
   private final String relSource;
 
-  private final GridFactory.GridOptions gridOptions;
-
   private final boolean disablable;
 
-  private GridInterceptor gridInterceptor;
   private GridDescription gridDescription;
-  private GridPresenter presenter;
 
   private IsRow pendingRow;
   private Boolean pendingEnabled;
 
-  private String parentId;
-  private HandlerRegistration parentRowReg;
+  public ChildGrid(String gridName, GridFactory.GridOptions gridOptions,
+      int parentIndex, String relSource, boolean disablable) {
+    super(gridName, gridOptions);
 
-  public ChildGrid(String gridName, int parentIndex, String relSource,
-      GridFactory.GridOptions gridOptions, boolean disablable) {
-    super();
-
-    this.gridName = gridName;
     this.parentIndex = parentIndex;
     this.relSource = relSource;
-    this.gridOptions = gridOptions;
     this.disablable = disablable;
 
-    this.gridInterceptor = GridFactory.getGridInterceptor(gridName);
-
-    addStyleName("bee-ChildGrid");
-  }
-
-  @Override
-  public com.google.gwt.event.shared.HandlerRegistration addReadyHandler(
-      ReadyEvent.Handler handler) {
-
-    return addHandler(handler, ReadyEvent.getType());
-  }
-
-  @Override
-  public GridView getGridView() {
-    return getPresenter() == null ? null : getPresenter().getGridView();
+    addStyleName(STYLE_NAME);
   }
 
   @Override
@@ -99,25 +63,8 @@ public class ChildGrid extends Simple implements EnablableWidget, Launchable, Ha
   }
 
   @Override
-  public String getParentId() {
-    return parentId;
-  }
-
-  public GridPresenter getPresenter() {
-    return presenter;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    if (getPresenter() == null) {
-      return false;
-    }
-    return getPresenter().getMainView().isEnabled();
-  }
-
-  @Override
   public void launch() {
-    GridFactory.getGridDescription(gridName, new Callback<GridDescription>() {
+    GridFactory.getGridDescription(getGridName(), new Callback<GridDescription>() {
       @Override
       public void onSuccess(GridDescription result) {
         if (getGridInterceptor() != null && !getGridInterceptor().initDescription(result)) {
@@ -132,9 +79,7 @@ public class ChildGrid extends Simple implements EnablableWidget, Launchable, Ha
 
   @Override
   public void onParentRow(ParentRowEvent event) {
-    if (getGridInterceptor() != null) {
-      getGridInterceptor().onParentRow(event);
-    }
+    super.onParentRow(event);
 
     setPendingRow(event.getRow());
     if (isDisablable()) {
@@ -155,43 +100,6 @@ public class ChildGrid extends Simple implements EnablableWidget, Launchable, Ha
     }
   }
 
-  public void setGridInterceptor(GridInterceptor gridInterceptor) {
-    this.gridInterceptor = gridInterceptor;
-  }
-
-  @Override
-  public void setParentId(String parentId) {
-    this.parentId = parentId;
-    if (isAttached()) {
-      register();
-    }
-  }
-
-  @Override
-  public void setWidget(Widget w) {
-    if (w != null) {
-      StyleUtils.makeAbsolute(w);
-
-      if (w instanceof HasReadyHandlers) {
-        ReadyEvent.maybeDelegate(this, (HasReadyHandlers) w);
-      }
-    }
-
-    super.setWidget(w);
-  }
-
-  @Override
-  protected void onLoad() {
-    super.onLoad();
-    register();
-  }
-
-  @Override
-  protected void onUnload() {
-    unregister();
-    super.onUnload();
-  }
-
   private void createPresenter(GridView gridView, IsRow row, BeeRowSet rowSet,
       Filter immutableFilter, Map<String, Filter> initialFilters, Order order) {
 
@@ -210,7 +118,7 @@ public class ChildGrid extends Simple implements EnablableWidget, Launchable, Ha
       getGridInterceptor().afterCreatePresenter(gp);
     }
 
-    if (Objects.equal(row, getPendingRow())) {
+    if (Objects.equals(row, getPendingRow())) {
       updateFilter(row);
       resetState();
       if (row == null) {
@@ -234,18 +142,6 @@ public class ChildGrid extends Simple implements EnablableWidget, Launchable, Ha
     return gridDescription;
   }
 
-  private GridInterceptor getGridInterceptor() {
-    return gridInterceptor;
-  }
-
-  private String getGridKey() {
-    return GridFactory.getSupplierKey(gridName, getGridInterceptor());
-  }
-
-  private GridFactory.GridOptions getGridOptions() {
-    return gridOptions;
-  }
-
   private void getInitialRowSet(final IsRow row) {
     final Filter immutableFilter =
         GridFactory.getImmutableFilter(getGridDescription(), getGridOptions());
@@ -261,6 +157,8 @@ public class ChildGrid extends Simple implements EnablableWidget, Launchable, Ha
 
     final GridView gridView = GridFactory.createGridView(getGridDescription(), getGridKey(),
         dataInfo.getColumns(), getRelSource(), getGridInterceptor(), order);
+
+    afterCreateGrid(gridView);
 
     if (!hasParentValue(row)) {
       BeeRowSet rowSet = new BeeRowSet(dataInfo.getViewName(), dataInfo.getColumns());
@@ -284,10 +182,6 @@ public class ChildGrid extends Simple implements EnablableWidget, Launchable, Ha
 
   private int getParentIndex() {
     return parentIndex;
-  }
-
-  private HandlerRegistration getParentRowReg() {
-    return parentRowReg;
   }
 
   private Long getParentValue(IsRow row) {
@@ -318,13 +212,6 @@ public class ChildGrid extends Simple implements EnablableWidget, Launchable, Ha
 
   private boolean isDisablable() {
     return disablable;
-  }
-
-  private void register() {
-    unregister();
-    if (!BeeUtils.isEmpty(getParentId())) {
-      setParentRowReg(BeeKeeper.getBus().registerParentRowHandler(getParentId(), this, false));
-    }
   }
 
   private void resetState() {
@@ -364,27 +251,12 @@ public class ChildGrid extends Simple implements EnablableWidget, Launchable, Ha
     this.gridDescription = gridDescription;
   }
 
-  private void setParentRowReg(HandlerRegistration parentRowReg) {
-    this.parentRowReg = parentRowReg;
-  }
-
   private void setPendingEnabled(Boolean pendingEnabled) {
     this.pendingEnabled = pendingEnabled;
   }
 
   private void setPendingRow(IsRow pendingRow) {
     this.pendingRow = pendingRow;
-  }
-
-  private void setPresenter(GridPresenter presenter) {
-    this.presenter = presenter;
-  }
-
-  private void unregister() {
-    if (getParentRowReg() != null) {
-      getParentRowReg().removeHandler();
-      setParentRowReg(null);
-    }
   }
 
   private void updateFilter(IsRow row) {

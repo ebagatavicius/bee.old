@@ -10,8 +10,8 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.presenter.Presenter;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.InputText;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.FilterParser;
@@ -103,7 +103,7 @@ public class SearchBox extends InputText implements SearchView {
 
   @Override
   protected String getDefaultStyleName() {
-    return StyleUtils.CLASS_NAME_PREFIX + "SearchBox";
+    return BeeConst.CSS_CLASS_PREFIX + "SearchBox";
   }
 
   @Override

@@ -1,6 +1,5 @@
 package com.butent.bee.client.view.search;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
@@ -35,6 +34,7 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 public class DateTimeFilterSupplier extends AbstractFilterSupplier {
 
@@ -273,7 +273,7 @@ public class DateTimeFilterSupplier extends AbstractFilterSupplier {
     }
 
     Range<DateTime> newRange = buildRange(start, end);
-    boolean changed = !Objects.equal(getRange(), newRange) || getEmptiness() != null;
+    boolean changed = !Objects.equals(getRange(), newRange) || getEmptiness() != null;
 
     if (changed) {
       setValue(newRange, null);
@@ -467,7 +467,7 @@ public class DateTimeFilterSupplier extends AbstractFilterSupplier {
   }
 
   private void onEmptiness(Boolean value) {
-    boolean changed = getRange() != null || !Objects.equal(getEmptiness(), value);
+    boolean changed = getRange() != null || !Objects.equals(getEmptiness(), value);
     setValue(null, value);
     update(changed);
   }

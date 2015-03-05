@@ -13,6 +13,7 @@ import com.google.gwt.user.client.Event;
 
 import com.butent.bee.client.Global;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.layout.Absolute;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.ui.FormWidget;
@@ -28,6 +29,7 @@ import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InputArea;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.State;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.ui.HasTextDimensions;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -41,7 +43,7 @@ import java.util.List;
 public class TextEditor extends Absolute implements Editor, HasTextDimensions, HasTextBox,
     HasKeyDownHandlers {
 
-  private static final String STYLE_NAME = "bee-TextEditor";
+  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "TextEditor";
 
   private final InputArea area;
   private final String acceptId;
@@ -50,6 +52,8 @@ public class TextEditor extends Absolute implements Editor, HasTextDimensions, H
   private String options;
 
   private boolean handlesTabulation;
+
+  private boolean summarize;
 
   public TextEditor() {
     super();
@@ -102,6 +106,11 @@ public class TextEditor extends Absolute implements Editor, HasTextDimensions, H
   }
 
   @Override
+  public HandlerRegistration addSummaryChangeHandler(SummaryChangeEvent.Handler handler) {
+    return addHandler(handler, SummaryChangeEvent.getType());
+  }
+
+  @Override
   public void clearValue() {
     setValue(BeeConst.STRING_EMPTY);
   }
@@ -129,6 +138,11 @@ public class TextEditor extends Absolute implements Editor, HasTextDimensions, H
   @Override
   public String getOptions() {
     return options;
+  }
+
+  @Override
+  public Value getSummary() {
+    return getArea().getSummary();
   }
 
   @Override
@@ -255,6 +269,11 @@ public class TextEditor extends Absolute implements Editor, HasTextDimensions, H
   }
 
   @Override
+  public void setSummarize(boolean summarize) {
+    this.summarize = summarize;
+  }
+
+  @Override
   public void setTabIndex(int index) {
     getArea().setTabIndex(index);
   }
@@ -273,6 +292,11 @@ public class TextEditor extends Absolute implements Editor, HasTextDimensions, H
   public void startEdit(String oldValue, char charCode, EditorAction onEntry,
       Element sourceElement) {
     getArea().startEdit(oldValue, charCode, onEntry, sourceElement);
+  }
+
+  @Override
+  public boolean summarize() {
+    return summarize;
   }
 
   @Override

@@ -19,6 +19,7 @@
 .bee-trade-itemsInfo-Price,
 .bee-trade-itemsInfo-Vat,
 .bee-trade-itemsInfo-Amount,
+.bee-trade-itemsInfo-Rate,
 .bee-trade-itemsInfo-RateAmount,
 .bee-trade-itemsInfo-QuantityTotal,
 .bee-trade-itemsInfo-AmountTotal,
@@ -26,18 +27,24 @@
 .bee-trade-itemsInfo-Total,
 .bee-trade-itemsInfo-RateAmountTotal,
 .bee-trade-itemsInfo-RateVatTotal,
-.bee-trade-itemsInfo-RateTotal,
-.bee-trade-itemsInfo-AmountTotal-caption,
-.bee-trade-itemsInfo-VatTotal-caption,
-.bee-trade-itemsInfo-Total-caption {
+.bee-trade-itemsInfo-RateTotal {
   text-align: right;
-  white-space: nowrap;
 }
 
-.bee-trade-itemsInfo-AmountTotal-caption:after,
-.bee-trade-itemsInfo-VatTotal-caption:after,
-.bee-trade-itemsInfo-Total-caption:after {
-  content: ":";
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-Quantity,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-Price,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-Vat,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-Amount,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-Rate,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-RateAmount,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-QuantityTotal,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-AmountTotal,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-VatTotal,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-Total,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-RateAmountTotal,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-RateVatTotal,
+.bee-trade-itemsInfo-data .bee-trade-itemsInfo-RateTotal {
+  white-space: nowrap;
 }
 
 .bee-trade-print-document-title {

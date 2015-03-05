@@ -19,7 +19,7 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
     }
   }
 
-  public static YearMonth get(HasYearMonth ref) {
+  public static YearMonth of(HasYearMonth ref) {
     if (ref == null) {
       return null;
     } else {
@@ -90,7 +90,11 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
   }
 
   public JustDate getLast() {
-    return new JustDate(getYear(), getMonth(), Grego.monthLength(getYear(), getMonth()));
+    return new JustDate(getYear(), getMonth(), getLength());
+  }
+
+  public int getLength() {
+    return Grego.monthLength(getYear(), getMonth());
   }
 
   @Override

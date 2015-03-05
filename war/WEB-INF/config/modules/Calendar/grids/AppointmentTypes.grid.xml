@@ -23,5 +23,8 @@
 
     <DataColumn name="AppointmentCreator" />
     <DataColumn name="AppointmentEditor" />
+    <DataColumn name="PlannedDuration">
+      <editor type="time" />
+    </DataColumn>
   </g:columns>
 </g:Grid>

@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class DefinitionList extends Widget implements IdentifiableWidget {
     setElement(Document.get().createDLElement());
 
     DomUtils.createId(this, getIdPrefix());
-    setStyleName("bee-DefinitionList");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "DefinitionList");
   }
 
   public void addDefinition(String text) {
@@ -74,7 +75,7 @@ public class DefinitionList extends Widget implements IdentifiableWidget {
     Element child = DomUtils.createDefinitionItem(definition, item).cast();
 
     String tag = child.getTagName().toLowerCase();
-    child.setClassName("bee-Definition-" + tag);
+    child.setClassName(BeeConst.CSS_CLASS_PREFIX + "Definition-" + tag);
 
     if ((index < 0) || (index >= getItemCount())) {
       getElement().appendChild(child);

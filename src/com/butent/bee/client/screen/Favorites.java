@@ -225,14 +225,17 @@ public class Favorites implements HandlesDeleteEvents {
 
   private static final BeeLogger logger = LogUtils.getLogger(Favorites.class);
 
-  private static final String DISPLAY_STYLE = "bee-FavoritesDisplay";
-  private static final String ITEM_COLUMN_STYLE = "bee-FavoritesItemColumn";
-  private static final String EDIT_COLUMN_STYLE = "bee-FavoritesEditColumn";
-  private static final String DELETE_COLUMN_STYLE = "bee-FavoritesDeleteColumn";
+  private static final String DISPLAY_STYLE = BeeConst.CSS_CLASS_PREFIX + "FavoritesDisplay";
+  private static final String ITEM_COLUMN_STYLE = BeeConst.CSS_CLASS_PREFIX
+      + "FavoritesItemColumn";
+  private static final String EDIT_COLUMN_STYLE = BeeConst.CSS_CLASS_PREFIX
+      + "FavoritesEditColumn";
+  private static final String DELETE_COLUMN_STYLE = BeeConst.CSS_CLASS_PREFIX
+      + "FavoritesDeleteColumn";
 
-  private static final String ITEM_STYLE = "bee-FavoritesItem";
-  private static final String EDIT_STYLE = "bee-FavoritesEdit";
-  private static final String DELETE_STYLE = "bee-FavoritesDelete";
+  private static final String ITEM_STYLE = BeeConst.CSS_CLASS_PREFIX + "FavoritesItem";
+  private static final String EDIT_STYLE = BeeConst.CSS_CLASS_PREFIX + "FavoritesEdit";
+  private static final String DELETE_STYLE = BeeConst.CSS_CLASS_PREFIX + "FavoritesDelete";
 
   private static final int ITEM_COLUMN = 0;
   private static final int EDIT_COLUMN = 1;

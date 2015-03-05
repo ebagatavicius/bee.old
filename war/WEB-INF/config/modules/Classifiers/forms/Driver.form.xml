@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY separator "<br/>">
+  <!ENTITY lbl "width: 120px; padding-right: 9px; text-align: right;">
+  <!ENTITY w2 "width: 230px;">
+  <!ENTITY inpdt "width: 7em;">
+]>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  
+  name="Driver" viewName="Drivers" caption="=vehicleDriver"
+  >
+  <FlowPanel class="flexBox-vertical" style="padding: 5px 1em 45px 1em; min-width: 1000px;">
+    <FlowPanel style="margin-top: 1ex;">
+	<Table style="border-spacing: 5px;">
+	  <row>
+        <Label text="=trDriverName" class="bee-required" style="&lbl;" />
+        <DataSelector source="CompanyPerson" style="&w2;" 
+          renderColumns="FirstName LastName" choiceColumns="FirstName LastName CompanyName" />
+
+        <Label text="=driverGroupsShort" class="bee-required" style="&lbl;" />
+        <ChildSelector viewName="TransportGroups" childTable="DriverGroups"
+          targetRelColumn="Driver" sourceRelColumn="Group" newRowEnabled="false"
+          required="true" label="=driverGroupsShort" />
+      </row>
+	  <row>
+        <Label text="=company" class="bee-co-companyInfo-label" style="&lbl;" />
+        <TextLabel source="CompanyName" />
+	  </row>
+	  <row>
+        <Label text="=driverPosition" class="bee-co-companyInfo-label" style="&lbl;" />
+        <TextLabel source="PositionName" style="&w2;" />
+
+        <Label text="=trDriverExperience" style="&lbl;" />
+        <SimplePanel style="&w2;">
+          <InputDate source="Experience" style="&inpdt;" minValue="1960" />
+        </SimplePanel>
+      </row>
+      <row>
+        <Label text="=phones" class="bee-co-companyInfo-label" style="&lbl;" />
+        <TextLabel source="Phone" style="&w2;" />
+
+
+        <Label text="=trDriverStartingDate" style="&lbl;" />
+        <SimplePanel style="&w2;">
+          <InputDate source="StartDate" style="&inpdt;" />
+        </SimplePanel>
+	  </row>
+	  <row>
+        <Label text="=email" class="bee-co-companyInfo-label" style="&lbl;" />
+        <TextLabel style="&w2;" textOnly="true" />
+
+        <Label text="=trDriverEndingDate" style="&lbl;" />
+        <SimplePanel style="&w2;">
+          <InputDate source="EndDate" style="&inpdt; color: red;" />
+        </SimplePanel>
+	  </row>
+	  </Table>
+    </FlowPanel>
+
+    <TabbedPages class="flexible">
+      <page module="Documents">
+        <text>=documents</text>
+        <ChildGrid name="RelatedDocuments" relColumn="Driver" />
+      </page>
+      <page module="Transport">
+        <text>=trips</text>
+        <ChildGrid name="DriverTrips" relColumn="Driver" />
+      </page>
+      <page module="Transport">
+        <text>=driverAbsence</text>
+        <ChildGrid name="DriverAbsence" relColumn="Driver" />
+      </page>
+      <page>
+        <text>=notes</text>
+        <SimplePanel>
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
+        </SimplePanel>
+      </page>  
+    </TabbedPages>
+  </FlowPanel>
+</f:Form>  

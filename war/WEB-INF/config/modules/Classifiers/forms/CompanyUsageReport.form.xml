@@ -6,7 +6,6 @@
   xmlns:f="http://www.butent.com/form"
   
   name="CompanyUsageReport" caption="=contactReportCompanyUsage"
-  enabledActions="filter bookmark"
   >
   <FlowPanel class="flexBox-vertical">
     <br/>
@@ -33,9 +32,9 @@
     </HorizontalPanel>
     
     <br/>
-    <Disclosure open="true" style="border-collapse: collapse;">
+    <Disclosure open="true">
       <Label text="=filters" />
-      <Table style="border-collapse: collapse;">
+      <Table>
         <col index="0" cellStyle="padding: 4px 10px; text-align: right;" />
         <col index="1" cellStyle="padding: 4px 0" />
         <col index="2" cellStyle="padding: 4px 10px; text-align: right;" />

@@ -7,7 +7,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.event.logical.SelectorEvent;
-import com.butent.bee.client.ui.UiHelper;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -43,7 +43,7 @@ class SelectorHandler implements SelectorEvent.Handler {
         && event.getNewRow() != null && DataUtils.isId(event.getNewRow().getId())
         && BeeUtils.same(event.getRelatedViewName(), VIEW_SERVICE_OBJECTS)) {
 
-      FormView form = UiHelper.getForm(event.getSelector());
+      FormView form = ViewHelper.getForm(event.getSelector());
       if (form != null && BeeUtils.same(form.getViewName(), VIEW_DOCUMENTS)) {
 
         IsRow docRow = form.getActiveRow();

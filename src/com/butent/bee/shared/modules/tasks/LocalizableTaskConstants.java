@@ -132,6 +132,8 @@ public interface LocalizableTaskConstants {
 
   String crmTaskExpectedDuration();
 
+  String crmTaskExpectedExpenses();
+
   String crmTaskFilterAll();
 
   String crmTaskFilterLate();
@@ -171,6 +173,8 @@ public interface LocalizableTaskConstants {
   String crmTaskManager();
 
   String crmTaskMustBePerformed();
+
+  String crmTaskNotFound();
 
   String crmTaskObservers();
 
@@ -228,6 +232,12 @@ public interface LocalizableTaskConstants {
 
   String crmTermNotChanged();
 
+  String crmTodoCreateAppointment();
+
+  String crmTodoCreateTask();
+
+  String crmTodoItem();
+
   String crmTodoList();
 
   String hideZeroTimes();
@@ -243,6 +253,8 @@ public interface LocalizableTaskConstants {
   String requestFinishing();
 
   String requestFinishToTask();
+
+  String requestUpdatingQuestion();
 
   String specifyResult();
 }

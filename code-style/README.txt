@@ -7,6 +7,30 @@ Window->Preferences->Java->Code Style->Formatter->Import...
 
 Window->Preferences->JavaScript->Code Style->Formatter->Import...
   code-style/bee-js-format.xml
+  
+---------- Tabs and identation ----------
+
+Window->Preferences->General->Editors->Text Editors
+
+Set the check "Insert space for tabs"
+
+Window->Preferences->Java->Editor->Save Actions
+
+Set the check "Perform the selected actions on save"
+Set the check "Format source code", "Format all lines"
+Set the check "Organize imports"
+
+Window->Preferences->Web->CSS Files->Editor
+
+Activate "Ident using spaces"
+Set "Indentation size" 2
+
+Additional settings apply in "Html files", 
+
+Window->Preferences->XML->XML Files
+Activate "Ident using spaces"
+Set "Indentation size" 2
+
 
 ----------- Import organization -----------
 

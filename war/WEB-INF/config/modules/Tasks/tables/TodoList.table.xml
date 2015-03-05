@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="TodoList"
+  idName="TodoItemID"
+  >
+  <Fields>
+    <String name="Summary" notNull="true" precision="100" label="=summary" />
+    <Text name="Description" label="=description" />
+
+    <DateTime name="Created" defExpr="CURRENT_TIME" label="=registered" />
+    <Relation name="Creator" relation="Users" defExpr="CURRENT_USER" label="=creator" />
+
+    <DateTime name="StartTime" label="=crmStartDate" />
+    <DateTime name="FinishTime" label="=crmFinishDate" />
+    <String name="ExpectedDuration" precision="10" label="=crmTaskExpectedDuration" />
+
+    <Relation name="Company" relation="Companies" label="=company" />
+    <Relation name="Contact" relation="CompanyPersons" label="=personContact" />
+  </Fields>
+</Table>

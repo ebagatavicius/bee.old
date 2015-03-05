@@ -1,7 +1,6 @@
 package com.butent.bee.client.render;
 
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
 import com.butent.bee.client.data.Data;
@@ -29,6 +28,7 @@ import com.butent.bee.shared.ui.RendererDescription;
 import com.butent.bee.shared.ui.RendererType;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class RendererFactory {
@@ -109,6 +109,7 @@ public final class RendererFactory {
 
   public static void registerGcrProvider(String gridName, String columnName,
       ProvidesGridColumnRenderer provider) {
+
     Assert.notEmpty(gridName);
     Assert.notEmpty(columnName);
     Assert.notNull(provider);
@@ -118,6 +119,7 @@ public final class RendererFactory {
 
   private static AbstractCellRenderer createRenderer(Calculation calculation,
       List<? extends IsColumn> dataColumns, CellSource source) {
+
     Assert.notNull(calculation);
 
     String columnId = (source == null) ? null : source.getName();
@@ -135,11 +137,12 @@ public final class RendererFactory {
 
   private static AbstractCellRenderer createRenderer(List<RenderableToken> tokens,
       List<? extends IsColumn> dataColumns) {
+
     if (BeeUtils.isEmpty(tokens) || BeeUtils.isEmpty(dataColumns)) {
       return null;
     }
 
-    List<ColumnToken> columnTokens = Lists.newArrayList();
+    List<ColumnToken> columnTokens = new ArrayList<>();
     for (RenderableToken token : tokens) {
       String source = token.getSource();
       if (BeeUtils.isEmpty(source)) {
@@ -263,6 +266,10 @@ public final class RendererFactory {
         renderer = new DiscountRenderer(dataColumns);
         break;
 
+      case BRANCH:
+        renderer = new BranchRenderer(source, description.getSeparator(), description.getOptions());
+        break;
+
       case TOKEN:
         logger.severe("renderer", type.name(), "not supported");
         break;
@@ -280,6 +287,7 @@ public final class RendererFactory {
 
   private static AbstractCellRenderer createRenderer(String viewName, List<String> renderColumns,
       String separator) {
+
     Assert.notEmpty(viewName);
     Assert.notEmpty(renderColumns);
 
@@ -298,6 +306,7 @@ public final class RendererFactory {
 
   private static CellSource getDataSource(RendererDescription description, Calculation calculation,
       String enumKey, List<? extends IsColumn> dataColumns, CellSource source, Relation relation) {
+
     if (relation == null || BeeUtils.isEmpty(enumKey)) {
       return source;
     }

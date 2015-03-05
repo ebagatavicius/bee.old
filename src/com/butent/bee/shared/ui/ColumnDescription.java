@@ -16,6 +16,7 @@ import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -78,8 +79,14 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     SEARCH_BY, FILTER_SUPPLIER, FILTER_OPTIONS, SORT_BY,
     HEADER_STYLE, BODY_STYLE, FOOTER_STYLE, DYN_STYLES, CELL_TYPE, CELL_RESIZABLE, UPDATE_MODE,
     AUTO_FIT, FLEXIBILITY, OPTIONS, ELEMENT_TYPE, FOOTER_DESCRIPTION, DYNAMIC,
-    EXPORTABLE, EXPORT_WIDTH_FACTOR
+    EXPORTABLE, EXPORT_WIDTH_FACTOR, EDIT_IN_PLACE, DRAGGABLE
   }
+
+  public static final String TBL_COLUMN_SETTINGS = "GridColumnSettings";
+  public static final String VIEW_COLUMN_SETTINGS = "GridColumnSettings";
+  public static final String COL_GRID_SETTING = "GridSetting";
+
+  private static boolean omniView;
 
   public static ColumnDescription restore(String s) {
     if (BeeUtils.isEmpty(s)) {
@@ -90,7 +97,10 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     return column;
   }
 
-  public static final String VIEW_COLUMN_SETTINGS = "GridColumnSettings";
+  public static boolean toggleOmniView() {
+    omniView = !omniView;
+    return omniView;
+  }
 
   private ColType colType;
 
@@ -168,6 +178,9 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
 
   private Boolean exportable;
   private Double exportWidthFactor;
+
+  private Boolean editInPlace;
+  private Boolean draggable;
 
   private boolean relationInitialized;
 
@@ -301,7 +314,7 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
           if (ArrayUtils.isEmpty(scs)) {
             setDynStyles(null);
           } else {
-            List<ConditionalStyleDeclaration> lst = Lists.newArrayList();
+            List<ConditionalStyleDeclaration> lst = new ArrayList<>();
             for (String z : scs) {
               lst.add(ConditionalStyleDeclaration.restore(z));
             }
@@ -367,6 +380,12 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
         case EXPORT_WIDTH_FACTOR:
           setExportWidthFactor(BeeUtils.toDoubleOrNull(value));
           break;
+        case EDIT_IN_PLACE:
+          setEditInPlace(BeeUtils.toBooleanOrNull(value));
+          break;
+        case DRAGGABLE:
+          setDraggable(BeeUtils.toBooleanOrNull(value));
+          break;
       }
     }
   }
@@ -403,6 +422,10 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     return colType;
   }
 
+  public Boolean getDraggable() {
+    return draggable;
+  }
+
   public Boolean getDynamic() {
     return dynamic;
   }
@@ -413,6 +436,10 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
 
   public Calculation getEditable() {
     return editable;
+  }
+
+  public Boolean getEditInPlace() {
+    return editInPlace;
   }
 
   public EditorDescription getEditor() {
@@ -510,7 +537,9 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
         "Dynamic", getDynamic(),
         "Exportable", getExportable(),
         "Export Width Factor", getExportWidthFactor(),
-        "Carry On", getCarryOn());
+        "Carry On", getCarryOn(),
+        "Edit In Place", getEditInPlace(),
+        "Draggable", getDraggable());
 
     if (getFlexibility() != null) {
       info.addAll(getFlexibility().getInfo());
@@ -674,7 +703,7 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
   }
 
   public Boolean getVisible() {
-    return visible;
+    return omniView ? null : visible;
   }
 
   public String getWhiteSpace() {
@@ -912,6 +941,12 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
         case EXPORT_WIDTH_FACTOR:
           arr[i++] = getExportWidthFactor();
           break;
+        case EDIT_IN_PLACE:
+          arr[i++] = getEditInPlace();
+          break;
+        case DRAGGABLE:
+          arr[i++] = getDraggable();
+          break;
       }
     }
     return Codec.beeSerialize(arr);
@@ -945,6 +980,10 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     this.cellType = cellType;
   }
 
+  public void setDraggable(Boolean draggable) {
+    this.draggable = draggable;
+  }
+
   public void setDynamic(Boolean dynamic) {
     this.dynamic = dynamic;
   }
@@ -955,6 +994,10 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
 
   public void setEditable(Calculation editable) {
     this.editable = editable;
+  }
+
+  public void setEditInPlace(Boolean editInPlace) {
+    this.editInPlace = editInPlace;
   }
 
   public void setEditor(EditorDescription editor) {

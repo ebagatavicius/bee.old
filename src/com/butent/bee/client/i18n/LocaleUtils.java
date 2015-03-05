@@ -1,6 +1,5 @@
 package com.butent.bee.client.i18n;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.client.LocalizedNames;
 import com.google.gwt.i18n.client.constants.NumberConstants;
@@ -13,6 +12,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,7 +52,7 @@ public final class LocaleUtils {
   }
 
   public static List<ExtendedProperty> getInfo() {
-    List<ExtendedProperty> lst = Lists.newArrayList();
+    List<ExtendedProperty> lst = new ArrayList<>();
 
     String[] names = LocaleInfo.getAvailableLocaleNames();
     PropertyUtils.addExtended(lst, "Available Locale Names", ArrayUtils.length(names));

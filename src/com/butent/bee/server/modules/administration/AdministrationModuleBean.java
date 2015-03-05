@@ -3,7 +3,6 @@ package com.butent.bee.server.modules.administration;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
@@ -11,10 +10,13 @@ import com.google.common.eventbus.Subscribe;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 
+import com.butent.bee.server.concurrency.ConcurrencyBean;
+import com.butent.bee.server.concurrency.ConcurrencyBean.HasTimerService;
 import com.butent.bee.server.data.BeeTable;
 import com.butent.bee.server.data.BeeView;
 import com.butent.bee.server.data.DataEditorBean;
 import com.butent.bee.server.data.DataEvent.TableModifyEvent;
+import com.butent.bee.server.data.DataEvent.ViewQueryEvent;
 import com.butent.bee.server.data.DataEventHandler;
 import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.data.SystemBean;
@@ -32,6 +34,7 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeConst.SqlEngine;
 import com.butent.bee.shared.Pair;
+import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
@@ -48,7 +51,6 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.rights.Module;
-import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -57,11 +59,16 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 import com.ibm.icu.text.RuleBasedNumberFormat;
 
-import java.math.BigDecimal;
+import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -69,12 +76,15 @@ import javax.ejb.EJB;
 import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerService;
 
 import lt.lb.webservices.exchangerates.ExchangeRatesWS;
 
 @Stateless
 @LocalBean
-public class AdministrationModuleBean implements BeeModule {
+public class AdministrationModuleBean implements BeeModule, HasTimerService {
 
   private static BeeLogger logger = LogUtils.getLogger(AdministrationModuleBean.class);
 
@@ -88,20 +98,21 @@ public class AdministrationModuleBean implements BeeModule {
   QueryServiceBean qs;
   @EJB
   ParamHolderBean prm;
+  @EJB
+  ImportBean imp;
+  @EJB
+  ConcurrencyBean cb;
 
   @Resource
   EJBContext ctx;
+  @Resource
+  TimerService timerService;
 
   @Override
   public List<SearchResult> doSearch(String query) {
-    List<SearchResult> commonsSr = Lists.newArrayList();
-
-    if (usr.isModuleVisible(ModuleAndSub.of(Module.ADMINISTRATION))) {
-      List<SearchResult> usersSr = qs.getSearchResults(VIEW_USERS,
-          Filter.anyContains(Sets.newHashSet(COL_LOGIN, COL_FIRST_NAME, COL_LAST_NAME), query));
-      commonsSr.addAll(usersSr);
-    }
-    return commonsSr;
+    List<SearchResult> usersSr = qs.getSearchResults(VIEW_USERS,
+        Filter.anyContains(Sets.newHashSet(COL_LOGIN, COL_FIRST_NAME, COL_LAST_NAME), query));
+    return usersSr;
   }
 
   @Override
@@ -116,7 +127,8 @@ public class AdministrationModuleBean implements BeeModule {
           DataUtils.parseIdSet(reqInfo.getParameter(VAR_HISTORY_IDS)));
 
     } else if (BeeUtils.same(svc, SVC_UPDATE_EXCHANGE_RATES)) {
-      response = updateExchangeRates(reqInfo);
+      response = updateExchangeRates(reqInfo.getParameter(VAR_DATE_LOW),
+          reqInfo.getParameter(VAR_DATE_HIGH));
 
     } else if (BeeUtils.same(svc, SVC_GET_LIST_OF_CURRENCIES)) {
       response = getListOfCurrencies();
@@ -124,8 +136,8 @@ public class AdministrationModuleBean implements BeeModule {
       response = getCurrentExchangeRate(reqInfo);
     } else if (BeeUtils.same(svc, SVC_GET_EXCHANGE_RATE)) {
       response = getExchangeRate(reqInfo);
-    } else if (BeeUtils.same(svc, SVC_GET_EXCHANGE_RATES_BY_CURRENCY)) {
-      response = getExchangeRatesByCurrency(reqInfo);
+    } else if (BeeUtils.same(svc, SVC_GET_EXCHANGE_RATES_FOR_CURRENCY)) {
+      response = getExchangeRatesForCurrency(reqInfo);
 
     } else if (BeeUtils.same(svc, SVC_CREATE_USER)) {
       response = createUser(reqInfo);
@@ -140,6 +152,9 @@ public class AdministrationModuleBean implements BeeModule {
       response = getNumberInWords(BeeUtils.toLongOrNull(reqInfo.getParameter(VAR_AMOUNT)),
           reqInfo.getParameter(VAR_LOCALE));
 
+    } else if (BeeUtils.same(svc, SVC_DO_IMPORT)) {
+      response = imp.doImport(reqInfo);
+
     } else {
       String msg = BeeUtils.joinWords("Commons service not recognized:", svc);
       logger.warning(msg);
@@ -153,18 +168,19 @@ public class AdministrationModuleBean implements BeeModule {
     String module = getModule().getName();
 
     List<BeeParameter> params = Lists.newArrayList(
-        BeeParameter.createText(module, "ProgramTitle", false, UserInterface.TITLE),
-        BeeParameter.createRelation(module, PRM_COMPANY, false, TBL_COMPANIES, COL_COMPANY_NAME),
-        BeeParameter.createRelation(module, PRM_CURRENCY, false, TBL_CURRENCIES,
-            COL_CURRENCY_NAME),
+        BeeParameter.createRelation(module, PRM_COMPANY, TBL_COMPANIES, COL_COMPANY_NAME),
+        BeeParameter.createRelation(module, PRM_COUNTRY, TBL_COUNTRIES, COL_COUNTRY_NAME),
+        BeeParameter.createRelation(module, PRM_CURRENCY, TBL_CURRENCIES, COL_CURRENCY_NAME),
         BeeParameter.createNumber(module, PRM_VAT_PERCENT, false, 21),
-        BeeParameter.createText(module, PRM_ERP_NAMESPACE, false, null),
-        BeeParameter.createText(module, PRM_ERP_ADDRESS, false, null),
-        BeeParameter.createText(module, PRM_ERP_LOGIN, false, null),
-        BeeParameter.createText(module, PRM_ERP_PASSWORD, false, null),
-        BeeParameter.createText(module, "ERPOperation", false, null),
-        BeeParameter.createText(module, "ERPWarehouse", false, null),
-        BeeParameter.createText(module, PRM_URL, false, null));
+        BeeParameter.createText(module, PRM_REFRESH_CURRENCY_HOURS),
+        BeeParameter.createText(module, PRM_ERP_NAMESPACE),
+        BeeParameter.createText(module, PRM_ERP_ADDRESS),
+        BeeParameter.createText(module, PRM_ERP_LOGIN),
+        BeeParameter.createText(module, PRM_ERP_PASSWORD),
+        BeeParameter.createText(module, PRM_ERP_PURCHASE_OPERATION),
+        BeeParameter.createText(module, PRM_ERP_OPERATION),
+        BeeParameter.createRelation(module, PRM_ERP_WAREHOUSE, TBL_WAREHOUSES, COL_WAREHOUSE_CODE),
+        BeeParameter.createText(module, PRM_URL));
 
     params.addAll(getSqlEngineParameters());
     return params;
@@ -175,13 +191,47 @@ public class AdministrationModuleBean implements BeeModule {
     return Module.ADMINISTRATION;
   }
 
+  public double getRate(long currency, long time) {
+    SqlSelect query = new SqlSelect()
+        .addFields(TBL_CURRENCY_RATES,
+            COL_CURRENCY_RATE_DATE, COL_CURRENCY_RATE_QUANTITY, COL_CURRENCY_RATE)
+        .addFrom(TBL_CURRENCY_RATES)
+        .setWhere(SqlUtils.and(
+            SqlUtils.equals(TBL_CURRENCY_RATES, COL_CURRENCY_RATE_CURRENCY, currency),
+            SqlUtils.lessEqual(TBL_CURRENCY_RATES, COL_CURRENCY_RATE_DATE, time)))
+        .addOrderDesc(TBL_CURRENCY_RATES, COL_CURRENCY_RATE_DATE)
+        .setLimit(1);
+
+    SimpleRowSet data = qs.getData(query);
+    if (DataUtils.isEmpty(data)) {
+      return BeeConst.DOUBLE_ONE;
+
+    } else {
+      double rate = data.getDouble(0, COL_CURRENCY_RATE);
+
+      Integer quantity = data.getInt(0, COL_CURRENCY_RATE_QUANTITY);
+      if (quantity != null && quantity > 1) {
+        rate /= quantity;
+      }
+
+      return rate;
+    }
+  }
+
   @Override
   public String getResourcePath() {
     return getModule().getName();
   }
 
   @Override
+  public TimerService getTimerService() {
+    return timerService;
+  }
+
+  @Override
   public void init() {
+    cb.createCalendarTimer(this.getClass(), PRM_REFRESH_CURRENCY_HOURS);
+
     sys.registerDataEventHandler(new DataEventHandler() {
       @Subscribe
       public void refreshIpFilterCache(TableModifyEvent event) {
@@ -192,10 +242,100 @@ public class AdministrationModuleBean implements BeeModule {
 
       @Subscribe
       public void refreshUsersCache(TableModifyEvent event) {
-        if ((usr.isRoleTable(event.getTargetName()) || usr.isUserTable(event.getTargetName()))
+        if (BeeUtils.inList(event.getTargetName(), TBL_USERS, TBL_ROLES, TBL_USER_ROLES)
             && event.isAfter()) {
           usr.initUsers();
           Endpoint.updateUserData(usr.getAllUserData());
+        }
+      }
+
+      @Subscribe
+      public void orderDepartments(ViewQueryEvent event) {
+        if (event.isAfter() && event.isTarget(VIEW_DEPARTMENTS) && event.hasData()) {
+          String idName = sys.getIdName(TBL_DEPARTMENTS);
+
+          SqlSelect query = new SqlSelect()
+              .addFields(TBL_DEPARTMENTS, idName, COL_DEPARTMENT_NAME, COL_DEPARTMENT_PARENT)
+              .addFrom(TBL_DEPARTMENTS);
+
+          SimpleRowSet data = qs.getData(query);
+          if (DataUtils.isEmpty(data)) {
+            return;
+          }
+
+          Map<Long, Long> parents = new HashMap<>();
+          Map<Long, String> names = new HashMap<>();
+
+          for (SimpleRow row : data) {
+            Long id = row.getLong(idName);
+
+            Long parent = row.getLong(COL_DEPARTMENT_PARENT);
+            if (DataUtils.isId(parent) && !Objects.equals(id, parent)) {
+              parents.put(id, parent);
+            }
+
+            names.put(id, BeeUtils.trim(row.getValue(COL_DEPARTMENT_NAME)));
+          }
+
+          BeeRowSet rowSet = event.getRowset();
+          final int nameIndex = rowSet.getColumnIndex(COL_DEPARTMENT_NAME);
+
+          String fullName;
+
+          for (BeeRow row : rowSet) {
+            if (parents.containsKey(row.getId())) {
+              List<Long> branch = new ArrayList<>();
+              branch.add(row.getId());
+
+              Long parent = parents.get(row.getId());
+              while (parent != null && !branch.contains(parent)) {
+                branch.add(parent);
+                parent = parents.get(parent);
+              }
+
+              StringBuilder sb = new StringBuilder();
+              for (int i = branch.size() - 1; i >= 0; i--) {
+                sb.append(names.get(branch.get(i)));
+                if (i > 0) {
+                  sb.append(DEPARTMENT_NAME_SEPARATOR);
+                }
+              }
+
+              fullName = sb.toString();
+
+            } else {
+              fullName = row.getString(nameIndex);
+            }
+
+            row.setProperty(PROP_DEPARTMENT_FULL_NAME, fullName);
+          }
+
+          if (rowSet.getNumberOfRows() > 1) {
+            final Collator collator = Collator.getInstance(usr.getLocale());
+            collator.setStrength(Collator.IDENTICAL);
+
+            Collections.sort(rowSet.getRows(), new Comparator<BeeRow>() {
+              @Override
+              public int compare(BeeRow row1, BeeRow row2) {
+                String name1 = row1.getProperty(PROP_DEPARTMENT_FULL_NAME);
+                if (BeeUtils.isEmpty(name1)) {
+                  name1 = row1.getString(nameIndex);
+                }
+
+                String name2 = row2.getProperty(PROP_DEPARTMENT_FULL_NAME);
+                if (BeeUtils.isEmpty(name2)) {
+                  name2 = row2.getString(nameIndex);
+                }
+
+                int result = collator.compare(BeeUtils.normalize(name1), BeeUtils.normalize(name2));
+                if (result == BeeConst.COMPARE_EQUAL) {
+                  result = Long.compare(row1.getId(), row2.getId());
+                }
+
+                return result;
+              }
+            });
+          }
         }
       }
     });
@@ -416,67 +556,36 @@ public class AdministrationModuleBean implements BeeModule {
   }
 
   private ResponseObject getCurrentExchangeRate(RequestInfo reqInfo) {
+    String type = reqInfo.getParameter(Service.VAR_TYPE);
     String currency = reqInfo.getParameter(COL_CURRENCY_NAME);
-    if (BeeUtils.isEmpty(currency)) {
-      return ResponseObject.parameterNotFound(SVC_GET_CURRENT_EXCHANGE_RATE, COL_CURRENCY_NAME);
-    }
 
     String address = getExchangeRatesRemoteAddress();
 
-    if (BeeUtils.isEmpty(address)) {
-      return ExchangeRatesWS.getCurrentExchangeRate(currency);
-    } else {
-      return ExchangeRatesWS.getCurrentExchangeRate(address, currency);
-    }
+    return ExchangeRatesWS.getCurrentExchangeRates(address, type, currency);
   }
 
   private ResponseObject getExchangeRate(RequestInfo reqInfo) {
-    String currency = reqInfo.getParameter(COL_CURRENCY_NAME);
-    if (BeeUtils.isEmpty(currency)) {
-      return ResponseObject.parameterNotFound(SVC_GET_EXCHANGE_RATE, COL_CURRENCY_NAME);
-    }
+    String type = reqInfo.getParameter(Service.VAR_TYPE);
 
+    String currency = reqInfo.getParameter(COL_CURRENCY_NAME);
     JustDate date = TimeUtils.parseDate(reqInfo.getParameter(COL_CURRENCY_RATE_DATE));
-    if (date == null) {
-      return ResponseObject.parameterNotFound(SVC_GET_EXCHANGE_RATE, COL_CURRENCY_RATE_DATE);
-    }
 
     String address = getExchangeRatesRemoteAddress();
 
-    if (BeeUtils.isEmpty(address)) {
-      return ExchangeRatesWS.getExchangeRate(currency, date);
-    } else {
-      return ExchangeRatesWS.getExchangeRate(address, currency, date);
-    }
+    return ExchangeRatesWS.getExchangeRate(address, type, currency, date);
   }
 
-  private ResponseObject getExchangeRatesByCurrency(RequestInfo reqInfo) {
+  private ResponseObject getExchangeRatesForCurrency(RequestInfo reqInfo) {
+    String type = reqInfo.getParameter(Service.VAR_TYPE);
+
     String currency = reqInfo.getParameter(COL_CURRENCY_NAME);
-    if (BeeUtils.isEmpty(currency)) {
-      return ResponseObject.parameterNotFound(SVC_GET_EXCHANGE_RATES_BY_CURRENCY,
-          COL_CURRENCY_NAME);
-    }
 
     JustDate dateLow = TimeUtils.parseDate(reqInfo.getParameter(VAR_DATE_LOW));
-    if (dateLow == null) {
-      return ResponseObject.parameterNotFound(SVC_GET_EXCHANGE_RATES_BY_CURRENCY, VAR_DATE_LOW);
-    }
     JustDate dateHigh = TimeUtils.parseDate(reqInfo.getParameter(VAR_DATE_HIGH));
-    if (dateHigh == null) {
-      return ResponseObject.parameterNotFound(SVC_GET_EXCHANGE_RATES_BY_CURRENCY, VAR_DATE_HIGH);
-    }
-
-    if (TimeUtils.isMore(dateLow, dateHigh)) {
-      return ResponseObject.error(usr.getLocalizableConstants().invalidRange(), dateLow, dateHigh);
-    }
 
     String address = getExchangeRatesRemoteAddress();
 
-    if (BeeUtils.isEmpty(address)) {
-      return ExchangeRatesWS.getExchangeRatesByCurrency(currency, dateLow, dateHigh);
-    } else {
-      return ExchangeRatesWS.getExchangeRatesByCurrency(address, currency, dateLow, dateHigh);
-    }
+    return ExchangeRatesWS.getExchangeRatesForCurrency(address, type, currency, dateLow, dateHigh);
   }
 
   private String getExchangeRatesRemoteAddress() {
@@ -499,7 +608,7 @@ public class AdministrationModuleBean implements BeeModule {
         .resetFields().resetOrder();
 
     Multimap<String, ViewColumn> columnMap = HashMultimap.create();
-    Map<String, Pair<String, String>> idMap = Maps.newHashMap();
+    Map<String, Pair<String, String>> idMap = new HashMap<>();
 
     for (ViewColumn col : view.getViewColumns()) {
       if (!col.isHidden() && !col.isReadOnly()
@@ -542,8 +651,8 @@ public class AdministrationModuleBean implements BeeModule {
       String src = sys.getAuditSource(table.getName());
       SqlSelect subq = new SqlSelect();
 
-      List<String> fields = Lists.newArrayList();
-      List<Object> pairs = Lists.newArrayList();
+      List<String> fields = new ArrayList<>();
+      List<Object> pairs = new ArrayList<>();
 
       for (ViewColumn col : columnMap.get(als)) {
         fields.add(col.getField());
@@ -636,12 +745,7 @@ public class AdministrationModuleBean implements BeeModule {
 
   private ResponseObject getListOfCurrencies() {
     String address = getExchangeRatesRemoteAddress();
-
-    if (BeeUtils.isEmpty(address)) {
-      return ExchangeRatesWS.getListOfCurrencies();
-    } else {
-      return ExchangeRatesWS.getListOfCurrencies(address);
-    }
+    return ExchangeRatesWS.getListOfCurrencies(address);
   }
 
   private ResponseObject getNumberInWords(Long number, String locale) {
@@ -657,7 +761,7 @@ public class AdministrationModuleBean implements BeeModule {
   }
 
   private Collection<? extends BeeParameter> getSqlEngineParameters() {
-    List<BeeParameter> params = Lists.newArrayList();
+    List<BeeParameter> params = new ArrayList<>();
 
     for (SqlEngine engine : SqlEngine.values()) {
       Map<String, String> value = null;
@@ -681,14 +785,21 @@ public class AdministrationModuleBean implements BeeModule {
     return params;
   }
 
-  private ResponseObject updateExchangeRates(RequestInfo reqInfo) {
-    String low = reqInfo.getParameter(VAR_DATE_LOW);
+  @Timeout
+  private void refreshCurrencyRates(Timer timer) {
+    if (!cb.isParameterTimer(timer, PRM_REFRESH_CURRENCY_HOURS)) {
+      return;
+    }
+    String daysOfToday = BeeUtils.toString(TimeUtils.today().getDays());
+    updateExchangeRates(daysOfToday, daysOfToday);
+  }
+
+  private ResponseObject updateExchangeRates(String low, String high) {
     if (!BeeUtils.isPositiveInt(low)) {
       return ResponseObject.parameterNotFound(SVC_UPDATE_EXCHANGE_RATES, VAR_DATE_LOW);
     }
     JustDate dateLow = new JustDate(BeeUtils.toInt(low));
 
-    String high = reqInfo.getParameter(VAR_DATE_HIGH);
     if (!BeeUtils.isPositiveInt(high)) {
       return ResponseObject.parameterNotFound(SVC_UPDATE_EXCHANGE_RATES, VAR_DATE_HIGH);
     }
@@ -720,14 +831,8 @@ public class AdministrationModuleBean implements BeeModule {
       Long currencyId = currencyRow.getLong(currencyIdName);
       String currencyName = BeeUtils.trim(currencyRow.getValue(COL_CURRENCY_NAME));
 
-      ResponseObject currencyResponse;
-      if (BeeUtils.isEmpty(address)) {
-        currencyResponse = ExchangeRatesWS.getExchangeRatesByCurrency(currencyName, dateLow,
-            dateHigh);
-      } else {
-        currencyResponse = ExchangeRatesWS.getExchangeRatesByCurrency(address, currencyName,
-            dateLow, dateHigh);
-      }
+      ResponseObject currencyResponse = ExchangeRatesWS.getExchangeRatesForCurrency(address, null,
+          currencyName, dateLow, dateHigh);
 
       if (currencyResponse.hasErrors()) {
         response.addErrorsFrom(currencyResponse);
@@ -746,7 +851,7 @@ public class AdministrationModuleBean implements BeeModule {
         continue;
       }
 
-      String value = rates.getValue(0, COL_CURRENCY_RATE_DATE);
+      String value = rates.getValue(0, ExchangeRatesWS.COL_DT);
       JustDate min = TimeUtils.parseDate(value);
       if (min == null) {
         response.addWarning(currencyName, usr.getLocalizableConstants().invalidDate(), value);
@@ -757,7 +862,7 @@ public class AdministrationModuleBean implements BeeModule {
 
       if (rates.getNumberOfRows() > 1) {
         for (int i = 1; i < rates.getNumberOfRows(); i++) {
-          JustDate date = TimeUtils.parseDate(rates.getValue(i, COL_CURRENCY_RATE_DATE));
+          JustDate date = TimeUtils.parseDate(rates.getValue(i, ExchangeRatesWS.COL_DT));
           if (date != null) {
             min = TimeUtils.min(min, date);
             max = TimeUtils.max(max, date);
@@ -782,16 +887,21 @@ public class AdministrationModuleBean implements BeeModule {
       int insertCount = 0;
 
       for (SimpleRow rateRow : rates) {
-        DateTime date = TimeUtils.parseDateTime(rateRow.getValue(COL_CURRENCY_RATE_DATE));
-        Integer quantity = rateRow.getInt(COL_CURRENCY_RATE_QUANTITY);
-        BigDecimal rate = rateRow.getDecimal(COL_CURRENCY_RATE);
+        DateTime date = TimeUtils.parseDateTime(rateRow.getValue(ExchangeRatesWS.COL_DT));
 
-        if (date != null && rate != null) {
+        Double factor = rateRow.getDouble(ExchangeRatesWS.COL_AMT_2);
+
+        Double amt = rateRow.getDouble(ExchangeRatesWS.COL_AMT_1);
+        if (BeeUtils.isPositive(amt) && !Objects.equals(amt, BeeConst.DOUBLE_ONE)) {
+          factor = factor / amt;
+        }
+
+        if (date != null && BeeUtils.isPositive(factor)) {
           SqlInsert insert = new SqlInsert(TBL_CURRENCY_RATES)
               .addConstant(COL_CURRENCY_RATE_CURRENCY, currencyId)
               .addConstant(COL_CURRENCY_RATE_DATE, date.getTime())
-              .addNotNull(COL_CURRENCY_RATE_QUANTITY, quantity)
-              .addConstant(COL_CURRENCY_RATE, rate);
+              .addConstant(COL_CURRENCY_RATE_QUANTITY, 1)
+              .addConstant(COL_CURRENCY_RATE, 1 / factor);
 
           ResponseObject insertResponse = qs.insertDataWithResponse(insert);
           if (insertResponse.hasErrors()) {

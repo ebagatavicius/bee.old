@@ -20,7 +20,8 @@ public enum RendererType {
   IMAGE("image", true),
   TOTAL("total", false),
   VAT("vat", false),
-  DISCOUNT("discount", false);
+  DISCOUNT("discount", false),
+  BRANCH("branch", true);
 
   public static RendererType getByTypeCode(String code) {
     if (code == null || code.isEmpty()) {

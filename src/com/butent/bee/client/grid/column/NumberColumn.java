@@ -6,6 +6,7 @@ import com.butent.bee.client.grid.cell.AbstractCell;
 import com.butent.bee.client.grid.cell.NumberCell;
 import com.butent.bee.client.i18n.HasNumberFormat;
 import com.butent.bee.shared.css.values.TextAlign;
+import com.butent.bee.shared.css.values.WhiteSpace;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 
@@ -18,7 +19,9 @@ public abstract class NumberColumn<C extends Number> extends DataColumn<C> imple
 
   public NumberColumn(AbstractCell<C> cell, CellSource cellSource) {
     super(cell, cellSource);
+
     setTextAlign(TextAlign.RIGHT);
+    setWhiteSpace(WhiteSpace.NOWRAP);
   }
 
   public NumberColumn(NumberFormat format, CellSource cellSource) {

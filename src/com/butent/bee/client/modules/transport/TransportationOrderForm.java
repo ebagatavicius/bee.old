@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -36,6 +35,7 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -170,7 +170,7 @@ class TransportationOrderForm extends AbstractFormInterceptor implements ClickHa
 
         if (overdue > 0 || (debt + income) > limit) {
           String cap = result.get(ClassifierConstants.COL_COMPANY_NAME);
-          List<String> msgs = Lists.newArrayList();
+          List<String> msgs = new ArrayList<>();
 
           msgs.add(BeeUtils.join(": ", Localized.getConstants().creditLimit(),
               BeeUtils.joinWords(limit, result.get(AdministrationConstants.COL_CURRENCY))));

@@ -72,6 +72,7 @@ import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.utils.JsUtils;
 import com.butent.bee.client.widget.InlineLabel;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.html.Tags;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -314,13 +315,13 @@ public class Tree extends Panel implements HasTreeItems, Focusable, HasAnimation
 
     if (!BeeUtils.isEmpty(caption)) {
       this.caption = new InlineLabel(Localized.maybeTranslate(caption));
-      this.caption.setStyleName("bee-Tree-caption");
+      this.caption.setStyleName(BeeConst.CSS_CLASS_PREFIX + "Tree-caption");
       getElement().appendChild(this.caption.getElement());
     } else {
       this.caption = null;
     }
 
-    setStyleName("bee-Tree");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "Tree");
     DomUtils.createId(this, getIdPrefix());
   }
 
@@ -977,9 +978,9 @@ public class Tree extends Panel implements HasTreeItems, Focusable, HasAnimation
     Element holder = treeItem.getImageHolderElement();
     Element child = DOM.getFirstChild(holder);
     if (child == null) {
-      DOM.appendChild(holder, proto.createElement().<Element> cast());
+      DOM.appendChild(holder, proto.createElement());
     } else {
-      proto.applyTo(child.<ImagePrototypeElement> cast());
+      proto.applyTo((ImagePrototypeElement) child);
     }
   }
 }

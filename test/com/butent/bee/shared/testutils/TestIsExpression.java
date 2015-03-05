@@ -620,7 +620,7 @@ public class TestIsExpression {
   }
 
   @Test
-  public void testComplexExpressionMSSQL() {
+  public void testComplexExpressionMsSql() {
     SqlBuilderFactory.setDefaultBuilder(SqlEngine.MSSQL);
     IsExpression ce = SqlUtils.expression(1, "string", 5.0);
     assertEquals("1string5.0",

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="ContactClassifiers" label="=classifiers" parent="Contacts" order="10" 
+name="ContactClassifiers" label="=classifiers" parent="Contacts" order="20" separator="true"
 >
   <Item name="CompanyTypes" label="=clientStatus" service="grid" parameters="CompanyTypes" separator="true" />
   <Item name="CompanyGroups" label="=clientsGroups" service="grid" parameters="CompanyGroups" />
@@ -10,9 +10,10 @@ name="ContactClassifiers" label="=classifiers" parent="Contacts" order="10"
   <Item name="FinancialStates" label="=clientsFinancialStates" service="grid" parameters="FinancialStates" />
   <Item name="InformationSources" label="=clientsInformationSources" service="grid" parameters="InformationSources" />
   <Item name="CompanyActivities" label="=clientsCompanyActivities" service="grid" parameters="CompanyActivities" />
-  <Item name="Responsibilities" label="=responsibilities" service="grid" parameters="Responsibilities" />
-  <Item name="Positions" label="=personPosition" service="grid" parameters="Positions" />
-
-  <Item name="CompanyRelationTypes" label="=clientsRelationTypes" service="grid" parameters="CompanyRelationTypes" separator="true" />
+  <Item name="Turnovers" label="=clientTurnovers" service="grid" parameters="Turnovers" />
+  <Item name="CompanyRelationTypes" label="=clientsRelationTypes" service="grid" parameters="CompanyRelationTypes" />
   <Item name="RelationTypeStates" label="=clientsRelationTypeStates" service="grid" parameters="RelationTypeStates" />
+  <Item name="Responsibilities" label="=responsibilities" service="grid" parameters="Responsibilities" separator="true" />
+  <Item name="Positions" label="=personPositions" service="grid" parameters="Positions" />
+  <Item name="FamilyRelationTypes" label="=contactFamilyRelations" service="grid" parameters="FamilyRelationTypes" />
 </Entry>

@@ -3,7 +3,6 @@
 
   name="AssessmentForwarders"
   idName="ForwarderID"
-  x="0" y="0"
   >
   <Fields>
     <Relation name="Assessment" notNull="true" relation="Assessments" cascade="DELETE" label="=trAssessment" />

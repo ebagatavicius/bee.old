@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Table xmlns="http://www.butent.com/table"
+  
+  name="ProjectUsers"
+  idName="ProjectUserID"
+  >
+  <Fields>
+    <Relation name="Project" notNull="true" relation="Projects" cascade="DELETE" label="=project"/>
+    <Relation name="User" notNull="true" relation="Users" cascade="DELETE" label="=user" />
+    <Text name="Notes" label="=notes" />
+    <Numeric name="Rate" precision="15" scale="5" label="=prjPersonRate" />
+    <Relation name="Currency" relation="Currencies" label="=currency" />
+  </Fields>
+
+  <Constraints>
+    <Unique fields="Project User" />
+  </Constraints>
+</Table>

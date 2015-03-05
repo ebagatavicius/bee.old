@@ -1,8 +1,6 @@
 package com.butent.bee.server.sql;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.data.SqlConstants.SqlDataType;
@@ -17,8 +15,10 @@ import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 public final class SqlUtils {
 
   public static IsExpression aggregate(SqlFunction fnc, IsExpression expr) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("expression", expr);
     return new FunctionExpression(fnc, params);
   }
@@ -102,7 +102,7 @@ public final class SqlUtils {
     Map<String, Object> params = getConstraintMap(SqlKeyword.FOREIGN_KEY, table, name, fields);
     params.put("refTable", name(refTable));
 
-    List<Object> refFlds = Lists.newArrayList();
+    List<Object> refFlds = new ArrayList<>();
     for (String fld : refFields) {
       if (!BeeUtils.isEmpty(refFlds)) {
         refFlds.add(", ");
@@ -144,7 +144,7 @@ public final class SqlUtils {
       SqlTriggerType type, Map<String, ?> parameters,
       SqlTriggerTiming timing, EnumSet<SqlTriggerEvent> events, SqlTriggerScope scope) {
 
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("name", name(name));
     params.put("table", name(table));
     params.put("type", type);
@@ -163,7 +163,7 @@ public final class SqlUtils {
 
   public static IsQuery dbConstraints(String dbName, String dbSchema, String table,
       SqlKeyword... types) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("dbName", dbName);
     params.put("dbSchema", dbSchema);
     params.put("table", table);
@@ -173,7 +173,7 @@ public final class SqlUtils {
   }
 
   public static IsQuery dbFields(String dbName, String dbSchema, String table) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("dbName", dbName);
     params.put("dbSchema", dbSchema);
     params.put("table", table);
@@ -183,7 +183,7 @@ public final class SqlUtils {
 
   public static IsQuery dbForeignKeys(String dbName, String dbSchema, String table,
       String refTable) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("dbName", dbName);
     params.put("dbSchema", dbSchema);
     params.put("table", table);
@@ -193,7 +193,7 @@ public final class SqlUtils {
   }
 
   public static IsQuery dbIndexes(String dbName, String dbSchema, String table) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("dbName", dbName);
     params.put("dbSchema", dbSchema);
     params.put("table", table);
@@ -210,7 +210,7 @@ public final class SqlUtils {
   }
 
   public static IsQuery dbSchemas(String dbName, String schema) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("dbName", dbName);
     params.put("schema", schema);
 
@@ -218,7 +218,7 @@ public final class SqlUtils {
   }
 
   public static IsQuery dbTables(String dbName, String dbSchema, String table) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("dbName", dbName);
     params.put("dbSchema", dbSchema);
     params.put("table", table);
@@ -227,7 +227,7 @@ public final class SqlUtils {
   }
 
   public static IsQuery dbTriggers(String dbName, String dbSchema, String table) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("dbName", dbName);
     params.put("dbSchema", dbSchema);
     params.put("table", table);
@@ -618,7 +618,7 @@ public final class SqlUtils {
   }
 
   public static IsQuery setSqlParameter(String prmName, Object value) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("prmName", prmName);
     params.put("prmValue", value);
 
@@ -629,7 +629,7 @@ public final class SqlUtils {
     Assert.notNull(pairs);
     Assert.parameterCount(pairs.length, 2);
 
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     if (expr != null) {
       params.put("expression", expr);
     }
@@ -650,7 +650,7 @@ public final class SqlUtils {
   }
 
   public static IsExpression sqlIf(IsCondition cond, Object ifTrue, Object ifFalse) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("condition", cond);
     params.put("ifTrue", getSqlExpression(ifTrue));
     params.put("ifFalse", getSqlExpression(ifFalse));
@@ -733,14 +733,14 @@ public final class SqlUtils {
   private static Map<String, Object> getConstraintMap(SqlKeyword type, String table, String name,
       List<String> fields) {
 
-    List<Object> flds = Lists.newArrayList();
+    List<Object> flds = new ArrayList<>();
     for (String fld : fields) {
       if (!BeeUtils.isEmpty(flds)) {
         flds.add(", ");
       }
       flds.add(name(fld));
     }
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
     params.put("table", name(table));
     params.put("name", name(name));
     params.put("type", type);
@@ -749,7 +749,7 @@ public final class SqlUtils {
   }
 
   private static Map<String, Object> getMemberMap(Object... members) {
-    Map<String, Object> params = Maps.newHashMap();
+    Map<String, Object> params = new HashMap<>();
 
     if (members != null) {
       for (int i = 0; i < members.length; i++) {

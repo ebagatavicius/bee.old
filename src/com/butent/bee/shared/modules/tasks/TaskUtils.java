@@ -3,7 +3,6 @@ package com.butent.bee.shared.modules.tasks;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
@@ -21,6 +20,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.calendar.CalendarConstants;
 import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
 import com.butent.bee.shared.modules.documents.DocumentConstants;
+import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.time.DateTime;
@@ -31,6 +31,7 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -92,7 +93,7 @@ public final class TaskUtils {
   }
 
   public static List<ScheduleDateRange> getScheduleDateRanges(BeeRowSet rowSet) {
-    List<ScheduleDateRange> result = Lists.newArrayList();
+    List<ScheduleDateRange> result = new ArrayList<>();
     if (DataUtils.isEmpty(rowSet)) {
       return result;
     }
@@ -148,7 +149,7 @@ public final class TaskUtils {
   }
 
   public static List<Long> getTaskUsers(IsRow row, List<BeeColumn> columns) {
-    List<Long> users = Lists.newArrayList();
+    List<Long> users = new ArrayList<>();
 
     Long owner = row.getLong(DataUtils.getColumnIndex(COL_OWNER, columns));
     if (owner != null) {
@@ -202,6 +203,7 @@ public final class TaskUtils {
       taskPropertyToRelation.put(PROP_APPOINTMENTS, CalendarConstants.COL_APPOINTMENT);
       taskPropertyToRelation.put(PROP_DISCUSSIONS, DiscussionsConstants.COL_DISCUSSION);
       taskPropertyToRelation.put(PROP_SERVICE_OBJECTS, ServiceConstants.COL_SERVICE_OBJECT);
+      taskPropertyToRelation.put(PROP_PROJECTS, ProjectConstants.COL_PROJECT);
       taskPropertyToRelation.put(PROP_TASKS, COL_TASK);
     }
     return taskPropertyToRelation;

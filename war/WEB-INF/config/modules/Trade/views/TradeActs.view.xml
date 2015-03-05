@@ -6,6 +6,11 @@
   editForm="TradeAct" newRowForm="TradeAct"
   >
   <Columns>
+    <SimpleColumn name="Name" />
+    <SimpleJoin joinType="LEFT" name="Name">
+      <SimpleColumn name="ActName" />
+    </SimpleJoin>
+
     <SimpleColumn name="Date" />
     <SimpleColumn name="Until" />
 
@@ -28,6 +33,7 @@
     <SimpleColumn name="Status" />
     <SimpleJoin joinType="LEFT" name="Status">
       <SimpleColumn name="StatusName" />
+      <SimpleColumn name="StatusActive" />
       <SimpleColumn name="Background" alias="StatusBackground" />
       <SimpleColumn name="Foreground" alias="StatusForeground" />
     </SimpleJoin>
@@ -37,9 +43,22 @@
       <SimpleColumn name="Name" alias="CompanyName" />
     </SimpleJoin>
 
-    <SimpleColumn name="ServiceObject" />
-    <SimpleJoin joinType="LEFT" name="ServiceObject">
-      <SimpleColumn name="Address" alias="ObjectAddress" />
+    <SimpleColumn name="Contact" />
+    <SimpleJoin name="Contact" joinType="LEFT">
+      <SimpleColumn alias="ContactPerson" name="Person" />
+      <SimpleJoin name="Person" joinType="LEFT">
+        <SimpleColumn alias="ContactFirstName" name="FirstName" />
+        <SimpleColumn alias="ContactLastName" name="LastName" />
+      </SimpleJoin>
+      <SimpleJoin name="Company" joinType="LEFT">
+        <SimpleColumn alias="ContactCompanyName" name="Name" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Object" />
+    <SimpleJoin joinType="LEFT" name="Object">
+      <SimpleColumn name="ObjectName" />
+      <SimpleColumn name="ObjectAddress" />
     </SimpleJoin>
 
     <SimpleColumn name="Manager" />
@@ -85,9 +104,13 @@
     </SimpleJoin>
 
     <SimpleColumn name="Notes" />
+
+    <SimpleColumn name="Parent" />
   </Columns>
   
   <Order>
+    <OrderBy column="SeriesName" />
+    <OrderBy column="Number" />
     <OrderBy column="Date" />
   </Order>
 </View>

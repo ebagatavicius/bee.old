@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="ProjectIncomes" source="ProjectIncomes" module="Projects"
+  caption="=Incomes"
+  >
+  <Columns>
+    <SimpleColumn name="Project" />
+    <SimpleJoin name="Project" joinType="LEFT">
+      <SimpleColumn name="Company" />
+      <SimpleJoin joinType="LEFT" name="Company">
+        <SimpleColumn name="Name" alias="CompanyName" />
+      </SimpleJoin>
+      <SimpleColumn name="Owner"/>
+     
+      <SimpleColumn name="Currency" alias="ProjectCurrency" />
+      <SimpleJoin name="Currency" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ProjectCurrencyName" />
+      </SimpleJoin>
+    </SimpleJoin>
+    <SimpleColumn name="Date" />
+    <SimpleColumn name="Item" />
+    <SimpleJoin joinType="INNER" name="Item">
+      <SimpleColumn name="Name" alias="ItemName" />
+      <SimpleColumn name="Article" />
+      
+      <SimpleJoin joinType="INNER" name="Unit">
+        <SimpleColumn name="Name" alias="UnitName" />
+      </SimpleJoin>
+    
+      <SimpleColumn name="Price" alias="ItemPrice" />
+      <SimpleColumn name="Currency" alias="ItemCurrency" />
+         
+      <SimpleColumn name="Cost" alias="ItemCost" />
+      <SimpleColumn name="CostCurrency" alias="ItemCostCurrency" />
+
+      <SimpleColumn name="Price1" alias="ItemPrice1" />
+      <SimpleColumn name="Currency1" alias="ItemCurrency1" />
+      <SimpleColumn name="Price2" alias="ItemPrice2" />
+      <SimpleColumn name="Currency2" alias="ItemCurrency2" />
+      <SimpleColumn name="Price3" alias="ItemPrice3" />
+      <SimpleColumn name="Currency3" alias="ItemCurrency3" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Quantity" />
+    <SimpleColumn name="Price" />
+    <SimpleColumn name="VatPlus" />
+    <SimpleColumn name="Vat" />
+    <SimpleColumn name="VatPercent" />
+
+    <SimpleColumn name="Note" />
+    <SimpleColumn name="Sale" />
+  </Columns>
+</View>

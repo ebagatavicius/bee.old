@@ -1,7 +1,6 @@
 package com.butent.bee.client.timeboard;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -90,7 +89,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     START_SLIDER, END_SLIDER, MOVER
   }
 
-  static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "timeboard-";
+  static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "timeboard-";
 
   private static final BeeLogger logger = LogUtils.getLogger(TimeBoard.class);
 
@@ -198,7 +197,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   private Widget startSliderLabel;
   private Widget endSliderLabel;
 
-  private final EnumMap<RangeMover, Element> rangeMovers = Maps.newEnumMap(RangeMover.class);
+  private final EnumMap<RangeMover, Element> rangeMovers = new EnumMap<>(RangeMover.class);
 
   private String scrollAreaId;
   private String contentId;

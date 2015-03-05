@@ -6,6 +6,8 @@ import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Event;
 
+import com.butent.bee.shared.BeeConst;
+
 /**
  * Implements a mutually-exclusive selection radio button user interface component.
  */
@@ -70,6 +72,6 @@ public class RadioButton extends CheckBox {
 
   @Override
   protected String getDefaultStyleName() {
-    return "bee-RadioButton";
+    return BeeConst.CSS_CLASS_PREFIX + "RadioButton";
   }
 }

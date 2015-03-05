@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form[
+  <!ENTITY inline "display: inline-block;">
+  <!ENTITY lbl "margin-left: 1em; margin-right: 1em; text-align: right">
+  <!ENTITY lbl2 "margin-left: -6em; margin-right: 1em; text-align: right;">
+  <!ENTITY lbl3 "margin-left: -7em; margin-right: 1em; text-align: right;">
+  <!ENTITY lbl4 "margin-left: 8em; margin-right: 1em; text-align: left">
+  <!ENTITY inp1 "&inline; width: 240px;"> 
+  <!ENTITY inp2 "&inline; width: 95px; margin-left: -5px;">
+  <!ENTITY inp3 "&inline; width: 95px;">
+]>
+
+<f:Form xmlns="http://www.butent.com/widget" 
+    xmlns:f="http://www.butent.com/form"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:d="http://www.butent.com/decorator"
+    name="ProjectStage" viewName="ProjectStages" caption="=prjStage" width="90" height="80" widthUnit="%" heightUnit="%">
+  
+  <FlowPanel class="flexBox-vertical">
+    <Table>
+      <row>
+        <Label text="=name" style="&lbl;" class="bee-required" />
+        <InputText source="Name" style="&inp1;" />
+
+        <Label for="StartDate" text="=crmStartDate" style="&lbl;" />
+        <InputDate source="StartDate" style="&inp3;" />
+
+        <Label for="EndDate" text="=crmFinishDate" style="&lbl;" />
+        <InputDate source="EndDate" style="&inp2;" />
+      </row>
+      
+      <row>
+        <Label for="ExpectedDuration" text="=prjScope" style="&lbl;" />
+        <InputText source="ExpectedDuration" style="&inp3;" />
+
+        <Label for="ExpectedTasksDuration" text="=prjExpectedTaskDuration" style="&lbl2;" />
+        <InputText  name="ExpectedTasksDuration" readOnly="true" style="&inp3;" />
+
+        <Label for="ActualTasksDuration" text="=prjActualTaskDuration" style="&lbl2;" />
+        <InputText readOnly="true" name="ActualTasksDuration" style="&inp2;" />
+      </row>
+      
+      <row>
+        <Label for="Expenses" text="=prjExpenses" style="&lbl;" />
+        <FlowPanel>
+          <InputDecimal source="Expenses" style="&inp3;" scale="2" />
+          <DataSelector source="Currency" for="Expenses" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" readOnly="true" />
+        </FlowPanel>
+
+        <Label for="ExpectedTasksExpenses" text="=prjExpectedTaskExpenses" style="&lbl3;" />
+        <InputDecimal source="ExpectedTasksExpenses" style="&inp3;" scale="2" />
+
+        <Label for="ActualExpenses" text="=prjActualExpenses" style="&lbl;" />
+        <InputDecimal source="ActualExpenses" style="&inp2;" scale="2" />
+      </row>
+      
+      <row>
+        <Label text="=description" style="&lbl;" />
+        <cell colSpan="5">
+          <InputArea style="width: 100%; height: 100px; max-height: 200px; max-width: 679px;" />
+        </cell>        
+      </row>
+    </Table>
+    <TabbedPages class="flexible">
+      <page module="Tasks">
+        <text>=crmTasks</text>
+        <ChildGrid name="ChildTasks" relColumn="ProjectStage" />
+      </page>
+    </TabbedPages>
+  </FlowPanel>
+</f:Form> 

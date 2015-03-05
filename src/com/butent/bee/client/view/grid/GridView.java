@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.ParentRowCreator;
 import com.butent.bee.client.event.DndWidget;
+import com.butent.bee.client.event.logical.HasSummaryChangeHandlers;
+import com.butent.bee.client.event.logical.RowCountChangeEvent;
 import com.butent.bee.client.ui.HandlesHistory;
 import com.butent.bee.client.view.DataView;
 import com.butent.bee.client.view.add.HasAddEndHandlers;
@@ -28,6 +30,7 @@ import com.butent.bee.shared.ui.GridDescription;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Specifies necessary methods for grid view user interface component.
@@ -36,7 +39,8 @@ import java.util.List;
 public interface GridView extends DataView, HasAddStartHandlers, HasAddEndHandlers,
     HasReadyForInsertHandlers, HasReadyForUpdateHandlers, HasSaveChangesHandlers,
     HasEditFormHandlers, ParentRowCreator, HandlesHistory, DndWidget, HasWidgets,
-    RowInsertEvent.Handler, RowUpdateEvent.Handler, EditStartEvent.Handler {
+    RowInsertEvent.Handler, RowUpdateEvent.Handler, EditStartEvent.Handler,
+    RowCountChangeEvent.Handler, HasSummaryChangeHandlers {
 
   public enum SelectedRows {
     ALL, EDITABLE, REMOVABLE
@@ -60,6 +64,10 @@ public interface GridView extends DataView, HasAddStartHandlers, HasAddEndHandle
 
   List<String> getDynamicColumnGroups();
 
+  String getEditFormName();
+
+  Set<String> getEditInPlace();
+
   FormView getForm(boolean edit);
 
   CellGrid getGrid();
@@ -82,6 +90,8 @@ public interface GridView extends DataView, HasAddStartHandlers, HasAddEndHandle
 
   boolean isChild();
 
+  boolean isEmpty();
+
   boolean isReadOnly();
 
   boolean isRowEditable(IsRow row, NotificationListener notificationListener);
@@ -90,7 +100,9 @@ public interface GridView extends DataView, HasAddStartHandlers, HasAddEndHandle
 
   boolean likeAMotherlessChild();
 
-  int refreshCellContent(long rowId, String columnSource);
+  int refreshCell(long rowId, String columnSource);
+
+  void reset(GridDescription gridDescription);
 
   void setRelId(Long relId);
 

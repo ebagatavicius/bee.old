@@ -1,7 +1,6 @@
 package com.butent.bee.client.view.grid.interceptor;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
@@ -23,6 +22,8 @@ import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +41,8 @@ public class UniqueChildInterceptor extends AbstractGridInterceptor {
   public static UniqueChildInterceptor forUserGroups(String dialogCaption, String parentColumn,
       String childColumn) {
 
-    List<String> columns = Lists.newArrayList(AdministrationConstants.COL_USER_GROUP_SETTINGS_NAME);
+    List<String> columns =
+        Collections.singletonList(AdministrationConstants.COL_USER_GROUP_SETTINGS_NAME);
 
     Filter filter = Filter.or(
         BeeKeeper.getUser().getFilter(AdministrationConstants.COL_USER_GROUP_SETTINGS_OWNER),
@@ -66,7 +68,8 @@ public class UniqueChildInterceptor extends AbstractGridInterceptor {
 
   public UniqueChildInterceptor(String dialogCaption, String parentColumn, String childColumn,
       String relationViewName, String column) {
-    this(dialogCaption, parentColumn, childColumn, relationViewName, Lists.newArrayList(column));
+    this(dialogCaption, parentColumn, childColumn, relationViewName,
+        Collections.singletonList(column));
   }
 
   public UniqueChildInterceptor(String dialogCaption, String parentColumn, String childColumn,
@@ -119,7 +122,7 @@ public class UniqueChildInterceptor extends AbstractGridInterceptor {
     List<? extends IsRow> data = presenter.getGridView().getRowData();
 
     if (!BeeUtils.isEmpty(data)) {
-      Set<Long> children = Sets.newHashSet();
+      Set<Long> children = new HashSet<>();
       int childIndex = getDataIndex(childColumn);
 
       for (IsRow row : data) {
@@ -130,7 +133,7 @@ public class UniqueChildInterceptor extends AbstractGridInterceptor {
       }
 
       if (!children.isEmpty()) {
-        selector.getOracle().setAdditionalFilter(Filter.idNotIn(children));
+        selector.setAdditionalFilter(Filter.idNotIn(children));
       }
     }
 

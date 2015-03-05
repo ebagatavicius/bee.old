@@ -3,7 +3,6 @@
 
   name="Objects"
   idName="ObjectID"
-  x="0" y="0"
   >
   <Fields>
     <Enum name="Type" key="RightsObjectType" notNull="true" label="=objectType" />

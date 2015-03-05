@@ -2,10 +2,15 @@
 <View xmlns="http://www.butent.com/view"
 
   name="Positions" source="Positions" module="Classifiers.Contacts"
-  caption="=personPosition" newRowCaption="=newPersonPosition"
+  caption="=personPositions" newRowCaption="=newPersonPosition"
   >
   <Columns>
     <SimpleColumn name="Name" />
+
+    <SimpleColumn name="Role" />
+    <SimpleJoin name="Role" joinType="LEFT">
+      <SimpleColumn name="Name" alias="RoleName" />
+    </SimpleJoin>
   </Columns>
   <Order>
     <OrderBy column="Name" />

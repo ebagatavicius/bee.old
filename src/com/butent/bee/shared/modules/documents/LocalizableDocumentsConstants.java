@@ -4,6 +4,8 @@ public interface LocalizableDocumentsConstants {
 
   String criteriaGroups();
 
+  String document();
+
   String documentContentIsEmpty();
 
   String documentFileExists();

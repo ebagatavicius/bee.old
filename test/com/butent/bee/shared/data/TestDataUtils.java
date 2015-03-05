@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("static-method")
@@ -38,7 +39,7 @@ public class TestDataUtils {
   }
 
   private static List<BeeColumn> createColumns(List<String> names) {
-    List<BeeColumn> columns = Lists.newArrayList();
+    List<BeeColumn> columns = new ArrayList<>();
     for (String name : names) {
       columns.add(new BeeColumn(name));
     }

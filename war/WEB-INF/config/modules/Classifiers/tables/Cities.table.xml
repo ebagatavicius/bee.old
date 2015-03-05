@@ -3,7 +3,6 @@
 
   name="Cities"
   idName="CityID"
-  x="36" y="474"
   >
   <Fields>
     <String name="Name" precision="30" notNull="true" label="=city" />

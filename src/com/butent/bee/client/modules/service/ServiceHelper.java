@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.service;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -14,7 +13,6 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
-import com.butent.bee.client.modules.trade.TotalRenderer;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.SimpleCheckBox;
@@ -24,11 +22,13 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
+import com.butent.bee.shared.modules.trade.Totalizer;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.ui.HasCheckedness;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 final class ServiceHelper {
@@ -46,10 +46,10 @@ final class ServiceHelper {
     int priceIndex = data.getColumnIndex(TradeConstants.COL_TRADE_ITEM_PRICE);
     int currencyNameIndex = data.getColumnIndex(AdministrationConstants.ALS_CURRENCY_NAME);
 
-    TotalRenderer totalRenderer = new TotalRenderer(data.getColumns());
+    Totalizer totalizer = new Totalizer(data.getColumns());
 
-    NumberFormat priceFormat = Format.getDefaultCurrencyFormat();
-    NumberFormat amountFormat = Format.getDefaultCurrencyFormat();
+    NumberFormat priceFormat = Format.getDefaultMoneyFormat();
+    NumberFormat amountFormat = Format.getDefaultMoneyFormat();
 
     for (IsRow row : data) {
       DateTime date = row.getDateTime(dateIndex);
@@ -89,7 +89,7 @@ final class ServiceHelper {
 
       Label amountLabel = new Label();
       if (quantity != null && price != null) {
-        Double amount = totalRenderer.getTotal(row);
+        Double amount = totalizer.getTotal(row);
         if (amount != null) {
           amountLabel.setText(amountFormat.format(amount));
         }
@@ -114,7 +114,7 @@ final class ServiceHelper {
     select.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        List<BeeRow> selectedRows = Lists.newArrayList();
+        List<BeeRow> selectedRows = new ArrayList<>();
 
         for (int i = 0; i < data.getNumberOfRows(); i++) {
           Widget widget = table.getWidget(i, 0);

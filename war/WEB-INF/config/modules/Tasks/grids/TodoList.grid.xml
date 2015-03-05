@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
-  name="TodoList" viewName="Tasks" caption="=crmTodoList"
-  cacheData="false"
-  currentUserFilter="Executor" filter="Status &lt; 3"
-  order="FinishTime, TaskID desc"
-  disabledActions="filter add delete configure audit"
-  editPopup="true"
+  name="TodoList" viewName="TodoList" caption="=crmTodoList"
+  newRowPopup="true" editPopup="true"
   >
   <g:columns>
-    <DataColumn name="Summary" visible="true" maxWidth="120" />
-    <CalcColumn name="Slack" type="string" cellType="html" width="60" 
-      caption="=crmTaskDelayPlannedShort" />
+    <DataColumn name="Summary" minWidth="120" visible="true" />
+    <DataColumn name="Description" visible="false" />
 
-    <DataColumn name="FinishTime" maxWidth="120" />
+    <RelColumn name="Company" minWidth="100" />
+    <RelColumn name="Contact" visible="false" />
+
+    <DataColumn name="StartTime" />
+    <DataColumn name="FinishTime" />
+
+    <DataColumn name="ExpectedDuration" visible="false" />
+
+    <DataColumn name="Created" />
+    <RelColumn name="Creator" />
   </g:columns>
 </g:Grid>

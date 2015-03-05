@@ -1,12 +1,11 @@
 package com.butent.bee.shared.utils;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
 /**
@@ -63,7 +62,7 @@ public final class Wildcards {
       }
 
       Pattern other = (Pattern) obj;
-      return Objects.equal(expr, other.expr)
+      return Objects.equals(expr, other.expr)
           && wildcardAny == other.wildcardAny && wildcardOne == other.wildcardOne
           && sensitive == other.sensitive && exact == other.exact;
     }
@@ -98,8 +97,7 @@ public final class Wildcards {
 
     @Override
     public int hashCode() {
-      return Objects.hashCode(getExpr(), getWildcardAny(), getWildcardOne(), isSensitive(),
-          isExact());
+      return Objects.hash(getExpr(), getWildcardAny(), getWildcardOne(), isSensitive(), isExact());
     }
 
     /**
@@ -136,7 +134,7 @@ public final class Wildcards {
       String strAny = String.valueOf(wildcardAny);
       String strOne = String.valueOf(wildcardOne);
 
-      List<String> lst = Lists.newArrayList();
+      List<String> lst = new ArrayList<>();
       StringBuilder buffer = new StringBuilder();
 
       int i = 0;

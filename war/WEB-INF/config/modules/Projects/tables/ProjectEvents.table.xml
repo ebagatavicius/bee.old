@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="ProjectEvents"
+  idName="ProjectEventID"
+  >
+  <Fields>
+    <Relation name="Project" notNull="true" relation="Projects" cascade="DELETE" label="=project" />
+    <Relation name="Publisher" notNull="true" relation="Users" label="=user" />
+    <DateTime name="PublishTime" notNull="true" label="=prjPublishTime" />
+    <Text name="Comment" label="=comment" />
+    <Text name="Properties" label="=properties" />
+    <Enum name="Event" key="ProjectEvent" precision="2" notNull="true" label="=prjEvent" />
+  </Fields>
+</Table>

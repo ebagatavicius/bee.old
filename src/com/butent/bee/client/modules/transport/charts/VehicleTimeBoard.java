@@ -1,12 +1,9 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
@@ -51,14 +48,17 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 abstract class VehicleTimeBoard extends ChartBase {
 
-  private static final String STYLE_PREFIX = "bee-tr-vtb-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-vtb-";
 
   private static final String STYLE_VEHICLE_PREFIX = STYLE_PREFIX + "Vehicle-";
   private static final String STYLE_VEHICLE_ROW_SEPARATOR = STYLE_VEHICLE_PREFIX + "row-sep";
@@ -96,7 +96,7 @@ abstract class VehicleTimeBoard extends ChartBase {
   private static final String STYLE_INACTIVE = STYLE_PREFIX + "Inactive";
   private static final String STYLE_OVERLAP = STYLE_PREFIX + "Overlap";
 
-  private final List<Vehicle> vehicles = Lists.newArrayList();
+  private final List<Vehicle> vehicles = new ArrayList<>();
 
   private final Multimap<Long, Trip> trips = ArrayListMultimap.create();
 
@@ -109,10 +109,10 @@ abstract class VehicleTimeBoard extends ChartBase {
 
   private boolean separateCargo;
 
-  private final Set<String> numberPanels = Sets.newHashSet();
-  private final Set<String> infoPanels = Sets.newHashSet();
+  private final Set<String> numberPanels = new HashSet<>();
+  private final Set<String> infoPanels = new HashSet<>();
 
-  private final List<Integer> vehicleIndexesByRow = Lists.newArrayList();
+  private final List<Integer> vehicleIndexesByRow = new ArrayList<>();
 
   private final VehicleType vehicleType;
   private final VehicleType otherVehicleType;
@@ -285,7 +285,7 @@ abstract class VehicleTimeBoard extends ChartBase {
   protected Trip findTripById(Long tripId) {
     if (DataUtils.isId(tripId)) {
       for (Trip trip : trips.values()) {
-        if (Objects.equal(trip.getTripId(), tripId)) {
+        if (Objects.equals(trip.getTripId(), tripId)) {
           return trip;
         }
       }
@@ -296,7 +296,7 @@ abstract class VehicleTimeBoard extends ChartBase {
   @Override
   protected Collection<? extends HasDateRange> getChartItems() {
     if (isFiltered()) {
-      List<HasDateRange> result = Lists.newArrayList();
+      List<HasDateRange> result = new ArrayList<>();
 
       for (Vehicle vehicle : vehicles) {
         if (isItemVisible(vehicle) && trips.containsKey(vehicle.getId())) {
@@ -491,7 +491,7 @@ abstract class VehicleTimeBoard extends ChartBase {
 
   @Override
   protected List<ChartData> prepareFilterData(FilterType filterType) {
-    List<ChartData> data = Lists.newArrayList();
+    List<ChartData> data = new ArrayList<>();
     if (vehicles.isEmpty()) {
       return data;
     }
@@ -909,7 +909,7 @@ abstract class VehicleTimeBoard extends ChartBase {
   }
 
   private List<TimeBoardRowLayout> doLayout() {
-    List<TimeBoardRowLayout> result = Lists.newArrayList();
+    List<TimeBoardRowLayout> result = new ArrayList<>();
     Range<JustDate> range = getVisibleRange();
 
     for (int vehicleIndex = 0; vehicleIndex < vehicles.size(); vehicleIndex++) {
@@ -952,7 +952,7 @@ abstract class VehicleTimeBoard extends ChartBase {
   }
 
   private List<Freight> getFreightsForLayout(Long tripId, Range<JustDate> range) {
-    List<Freight> result = Lists.newArrayList();
+    List<Freight> result = new ArrayList<>();
     if (!freights.containsKey(tripId)) {
       return result;
     }
@@ -967,7 +967,7 @@ abstract class VehicleTimeBoard extends ChartBase {
   }
 
   private List<Trip> getTripsForLayout(Long vehicleId, Range<JustDate> range) {
-    List<Trip> result = Lists.newArrayList();
+    List<Trip> result = new ArrayList<>();
     if (!trips.containsKey(vehicleId)) {
       return result;
     }

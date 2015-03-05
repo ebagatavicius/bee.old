@@ -4,7 +4,7 @@
 
   name="CargoSales" viewName="CargoSales"
   flexGrow="1"
-  readOnly="true" caption="=trOrderCargoIncomes"
+  readOnly="true" caption="=trCargoIncomes"
   >
   <g:columns>
     <SelectionColumn name="Select" width="20" />
@@ -20,10 +20,14 @@
       </render>
     </DataColumn>
 
+    <RelColumn name="LoadingCountry" visible="false" readOnly="true" />
     <CalcColumn type="string" name="From" source="LoadingCountryCode" cellType="html" width="20"
       horizontalAlignment="center" searchBy="LoadingCountryName LoadingCountryCode">
       <renderer type="flag" />
     </CalcColumn>
+    <DataColumn name="LoadingDate" />
+
+    <RelColumn name="UnloadingCountry" visible="false" readOnly="true" />
     <CalcColumn type="string" name="To" source="UnloadingCountryCode" cellType="html" width="20"
       horizontalAlignment="center" searchBy="UnloadingCountryName UnloadingCountryCode">
       <renderer type="flag" />

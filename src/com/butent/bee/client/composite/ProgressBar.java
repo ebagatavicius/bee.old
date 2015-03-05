@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.RequiresResize;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -37,9 +38,9 @@ public class ProgressBar extends FocusWidget implements IdentifiableWidget, Requ
   private boolean textVisible = true;
   private TextFormatter textFormatter;
 
-  private String styleNameShell = "bee-ProgressBar-shell";
-  private String styleNameBar = "bee-ProgressBar-bar";
-  private String styleNameText = "bee-ProgressBar-text";
+  private String styleNameShell = BeeConst.CSS_CLASS_PREFIX + "ProgressBar-shell";
+  private String styleNameBar = BeeConst.CSS_CLASS_PREFIX + "ProgressBar-bar";
+  private String styleNameText = BeeConst.CSS_CLASS_PREFIX + "ProgressBar-text";
 
   private String styleNameFirstHalf = "firstHalf";
   private String styleNameSecondHalf = "secondHalf";

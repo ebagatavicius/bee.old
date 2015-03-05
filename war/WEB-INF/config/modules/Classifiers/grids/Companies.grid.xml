@@ -5,26 +5,26 @@
   >
   <g:columns>
     <DataColumn name="Name" visible="true" />
-    <DataColumn name="TypeName" caption="=companyStatus" />
-    <DataColumn name="GroupName" caption="=group" />
-    <DataColumn name="PriorityName" caption="=priority" />
+    <RelColumn name="CompanyType" />
+    <RelColumn name="CompanyGroup" />
+    <RelColumn name="CompanyPriority" />
     <DataColumn name="Code" />
     <DataColumn name="VATCode" visible="false" />
-    <DataColumn name="ExchangeCode" caption="=code" visible="false" module="Transport" />
     <DataColumn name="Phone" />
     <DataColumn name="Mobile" />
     <DataColumn name="Fax" visible="false" />
-    <RelColumn name="EmailId" />
+    <RelColumn name="EmailId" editEnabled="true" />
 
     <DataColumn name="Address" />
     <DataColumn name="PostIndex" />
 
-    <DataColumn name="CityName" caption="=city" />
-    <DataColumn name="CountryName" caption="=country" />
+    <DataColumn name="CityName" />
+    <DataColumn name="CountryName" />
     <CalcColumn type="string" name="Flag" source="CountryCode" cellType="html" width="30"
       caption="-" label="=countryFlag" sortable="false" horizontalAlignment="center"
       filterOptions="-" exportWidthFactor="0.5" visible="false">
       <renderer type="flag" />
     </CalcColumn>
+    <RelColumn name="DefaultCompanyUser" visible="false" filterSupplier="value" />
   </g:columns>
 </g:Grid>

@@ -4,9 +4,17 @@ public interface LocalizableClassifierConstants {
 
   String article();
 
+  String bank();
+
   String branch();
 
+  String categories();
+
+  String category();
+
   String chief();
+
+  String cities();
 
   String city();
 
@@ -22,11 +30,15 @@ public interface LocalizableClassifierConstants {
 
   String colorTitle();
 
+  String countries();
+
   String country();
 
   String currency();
 
   String currencyRates();
+
+  String currencyShort();
 
   String defaultColor();
 
@@ -40,6 +52,8 @@ public interface LocalizableClassifierConstants {
 
   String item();
 
+  String itemName();
+
   String itemOrService();
 
   String newDepartmentEmployees();
@@ -52,7 +66,19 @@ public interface LocalizableClassifierConstants {
 
   String price1();
 
+  String price1Label();
+
   String price2();
+
+  String price2Label();
+
+  String price3();
+
+  String price3Label();
+
+  String printBankAccount();
+
+  String printBankCode();
 
   String references();
 
@@ -65,6 +91,8 @@ public interface LocalizableClassifierConstants {
   String types();
 
   String unit();
+
+  String unitShort();
 
   String updateExchangeRatesDateHigh();
 

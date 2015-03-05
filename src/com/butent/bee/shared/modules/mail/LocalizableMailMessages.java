@@ -14,6 +14,8 @@ public interface LocalizableMailMessages {
 
   String mailMovedMessagesToTrash(String count);
 
+  String mailOnlyInFolder(String folderName);
+
   String mailRenameFolder(String folderName);
 
   String mailSelectedMessages(int count);

@@ -3,13 +3,14 @@
         xmlns:ui="http://www.butent.com/ui"
 
   name="AssessmentOrders" viewName="Assessments" caption="=trAssessmentOrders"
-  flexGrow="1" order="AssessmentID desc" disabledActions="add delete"
+  flexGrow="1" order="AssessmentID desc" disabledActions="add edit delete"
   filter="OrderStatus!=0"
   >
   <g:columns>
     <SelectionColumn name="Select" width="20" />
     <IdColumn name="ID" width="40" />
-    <DataColumn name="Assessment" width="40" />
+    <RelColumn name="Assessment" width="40" editEnabled="true"
+      editViewName="Assessments" editSource="Assessment" module="Transport.Logistics"/>
     <DataColumn name="Date" width="110" readOnly="true" />
     <RelColumn name="Manager" />
     <DataColumn name="OrderStatus" width="70" />
@@ -20,11 +21,13 @@
     
     <DataColumn name="CustomerName" />
 
+    <RelColumn name="LoadingCountry" visible="false" readOnly="true"/>
     <CalcColumn type="string" name="From" source="LoadingCountryCode" cellType="html" width="20"
       horizontalAlignment="center" searchBy="LoadingCountryName LoadingCountryCode">
       <renderer type="flag" />
     </CalcColumn>
 
+    <RelColumn name="UnloadingCountry" visible="false"  readOnly="true"/>
     <CalcColumn type="string" name="To" source="UnloadingCountryCode" cellType="html" width="20"
       horizontalAlignment="center" searchBy="UnloadingCountryName UnloadingCountryCode">
       <renderer type="flag" />

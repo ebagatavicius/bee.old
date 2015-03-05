@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.service;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.shared.HasHandlers;
 
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
@@ -15,7 +14,7 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
-import com.butent.bee.client.ui.UiHelper;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -38,6 +37,7 @@ import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 final class InvoiceBuilder {
@@ -76,7 +76,7 @@ final class InvoiceBuilder {
       return;
     }
 
-    final FormView form = UiHelper.getForm(sourceWidget.asWidget());
+    final FormView form = ViewHelper.getForm(sourceWidget.asWidget());
     if (form == null || !form.isEnabled() || !VIEW_SERVICE_OBJECTS.equals(form.getViewName())) {
       return;
     }
@@ -175,7 +175,7 @@ final class InvoiceBuilder {
                   params.addQueryItem(PROP_MAIN_ITEM, interceptor.getMainItem());
                 }
 
-                List<Long> ids = Lists.newArrayList();
+                List<Long> ids = new ArrayList<>();
                 for (IsRow item : items) {
                   ids.add(item.getId());
                 }

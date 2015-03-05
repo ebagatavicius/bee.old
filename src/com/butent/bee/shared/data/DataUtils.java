@@ -237,11 +237,23 @@ public final class DataUtils {
     }
   }
 
+  public static List<BeeRow> filterRows(BeeRowSet rowSet, String columnId, Long value) {
+    List<BeeRow> result = new ArrayList<>();
+    int index = rowSet.getColumnIndex(columnId);
+
+    for (BeeRow row : rowSet) {
+      if (Objects.equals(row.getLong(index), value)) {
+        result.add(row);
+      }
+    }
+    return result;
+  }
+
   public static List<BeeRow> filterRows(BeeRowSet rowSet, String columnId, String value) {
     List<BeeRow> result = new ArrayList<>();
     int index = rowSet.getColumnIndex(columnId);
 
-    for (BeeRow row : rowSet.getRows()) {
+    for (BeeRow row : rowSet) {
       if (BeeUtils.equalsTrim(row.getString(index), value)) {
         result.add(row);
       }
@@ -558,8 +570,22 @@ public final class DataUtils {
 
   public static List<Long> getRowIds(BeeRowSet rowSet) {
     List<Long> result = new ArrayList<>();
-    for (BeeRow row : rowSet.getRows()) {
-      result.add(row.getId());
+    if (!isEmpty(rowSet)) {
+      for (BeeRow row : rowSet.getRows()) {
+        result.add(row.getId());
+      }
+    }
+    return result;
+  }
+
+  public static List<Long> getRowIds(Collection<? extends IsRow> rows) {
+    List<Long> result = new ArrayList<>();
+    if (!BeeUtils.isEmpty(rows)) {
+      for (IsRow row : rows) {
+        if (hasId(row)) {
+          result.add(row.getId());
+        }
+      }
     }
     return result;
   }
@@ -572,15 +598,21 @@ public final class DataUtils {
     return row.getString(getColumnIndex(columnId, columns));
   }
 
-  public static String getString(IsRow row, int index) {
+  public static String getStringQuietly(IsRow row, int index) {
     if (row == null) {
       return null;
+
     } else if (index == ID_INDEX) {
       return BeeUtils.toString(row.getId());
+
     } else if (index == VERSION_INDEX) {
       return BeeUtils.toString(row.getVersion());
-    } else {
+
+    } else if (index >= 0 && index < row.getNumberOfCells()) {
       return row.getString(index);
+
+    } else {
+      return null;
     }
   }
 

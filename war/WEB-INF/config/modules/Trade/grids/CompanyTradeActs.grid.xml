@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  
+  name="CompanyTradeActs" viewName="TradeActs" disabledActions="add delete"
+  >
+  <xi:include href="columns/CompanyTradeAct.columns.xml" />
+</g:Grid>

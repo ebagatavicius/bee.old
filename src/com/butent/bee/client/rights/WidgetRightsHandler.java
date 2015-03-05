@@ -1,7 +1,5 @@
 package com.butent.bee.client.rights;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.rights.ModuleAndSub;
@@ -9,6 +7,7 @@ import com.butent.bee.shared.rights.RegulatedWidget;
 import com.butent.bee.shared.rights.RightsObjectType;
 import com.butent.bee.shared.rights.RightsState;
 
+import java.util.ArrayList;
 import java.util.List;
 
 final class WidgetRightsHandler extends MultiRoleForm {
@@ -33,7 +32,7 @@ final class WidgetRightsHandler extends MultiRoleForm {
 
   @Override
   protected void initObjects(Consumer<List<RightsObject>> consumer) {
-    List<RightsObject> result = Lists.newArrayList();
+    List<RightsObject> result = new ArrayList<>();
 
     for (RegulatedWidget widget : RegulatedWidget.values()) {
       ModuleAndSub ms = widget.getModuleAndSub();

@@ -44,7 +44,7 @@ import java.util.Map;
 public class DocumentTreeForm extends AbstractFormInterceptor
     implements SelectionHandler<IsRow> {
 
-  protected static final String STYLE_PREFIX = "bee-Rights-";
+  protected static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "Rights-";
   protected static final String STYLE_SUFFIX_CELL = "-cell";
 
   private static final String STYLE_TABLE = STYLE_PREFIX + "table";

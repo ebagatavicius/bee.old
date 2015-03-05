@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="PersonFamily" source="PersonFamily" caption="=personFamaly" module="Classifiers.Contacts"
+  newRowForm="PersonFamily" newRowCaption="=newContactFamilyMember"
+  > 
+  <Columns>
+    <SimpleColumn name="Person" />
+    <SimpleColumn name="FirstName" />
+    <SimpleColumn name="LastName" />
+    <SimpleColumn name="DateOfBirth" />
+    <SimpleColumn name="Relation" />
+    <SimpleJoin joinType="LEFT" name="Relation">
+    <SimpleColumn alias="RelationName" name="Name" />
+    </SimpleJoin>
+    <SimpleColumn name="Phone" />
+  
+  </Columns>  
+  <Order>
+    <OrderBy column="LastName" />
+    <OrderBy column="FirstName" />
+  </Order>
+</View> 

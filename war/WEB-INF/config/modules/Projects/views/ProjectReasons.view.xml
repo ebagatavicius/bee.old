@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="ProjectReasons" source="ProjectReasons" caption="=reasons"
+  >
+  <Columns>
+    <SimpleColumn name="Ordinal" />
+    <SimpleColumn name="Name" />
+    <SimpleColumn name="Active" />
+    <SimpleColumn name="DocumentRequired" />
+  </Columns>
+</View>
+ 

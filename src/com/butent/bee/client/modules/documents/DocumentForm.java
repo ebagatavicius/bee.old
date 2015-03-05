@@ -1,88 +1,132 @@
 package com.butent.bee.client.modules.documents;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Global;
 import com.butent.bee.client.UserInfo;
-import com.butent.bee.client.composite.Autocomplete;
 import com.butent.bee.client.composite.ChildSelector;
 import com.butent.bee.client.composite.DataSelector;
-import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.data.Queries.IntCallback;
 import com.butent.bee.client.data.Queries.RowSetCallback;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
-import com.butent.bee.client.data.RowInsertCallback;
-import com.butent.bee.client.data.RowUpdateCallback;
-import com.butent.bee.client.dialog.InputCallback;
-import com.butent.bee.client.dialog.StringCallback;
-import com.butent.bee.client.event.logical.AutocompleteEvent;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.ChildGrid;
-import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.modules.mail.Relations;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
-import com.butent.bee.client.view.edit.EditStartEvent;
-import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.GridView;
-import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
-import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.BiConsumer;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.Holder;
-import com.butent.bee.shared.State;
+import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
+import com.butent.bee.shared.data.RowChildren;
 import com.butent.bee.shared.data.filter.Filter;
-import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.data.value.LongValue;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.LocalizableConstants;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.SubModule;
-import com.butent.bee.shared.ui.Relation;
-import com.butent.bee.shared.ui.Relation.Caching;
+import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DocumentForm extends DocumentDataForm implements SelectorEvent.Handler {
+public class DocumentForm extends DocumentDataForm {
+
+  private class RelationsHandler implements SelectorEvent.Handler {
+
+    @Override
+    public void onDataSelector(SelectorEvent event) {
+      if (event.isNewRow()) {
+        final String viewName = event.getRelatedViewName();
+
+        switch (viewName) {
+
+          case TaskConstants.TBL_TASKS:
+            if (event.isNewRow() && TaskConstants.VIEW_TASKS.equals(event.getRelatedViewName())) {
+              createNewTaskRelation(event);
+            }
+            break;
+
+          case ServiceConstants.TBL_SERVICE_OBJECTS:
+            if (event.isNewRow()
+                && ServiceConstants.VIEW_SERVICE_OBJECTS.equals(event.getRelatedViewName())) {
+              createNewServiceObjectRelation(event);
+            }
+            break;
+        }
+      }
+    }
+  }
 
   private final Button newTemplateButton = new Button(Localized.getConstants()
       .newDocumentTemplate(), new ClickHandler() {
     @Override
     public void onClick(ClickEvent event) {
-      createTemplate();
+      RowFactory.createRow(VIEW_DOCUMENT_TEMPLATES, new RowCallback() {
+        @Override
+        public void onSuccess(final BeeRow row) {
+          DocumentsHandler.copyDocumentData(getLongValue(COL_DOCUMENT_DATA), new IdCallback() {
+            @Override
+            public void onSuccess(Long dataId) {
+              Queries.update(VIEW_DOCUMENT_TEMPLATES, Filter.compareId(row.getId()),
+                  COL_DOCUMENT_DATA, new LongValue(dataId), new IntCallback() {
+                    @Override
+                    public void onSuccess(Integer res) {
+                      Long oldId = Data.getLong(VIEW_DOCUMENT_TEMPLATES, row, COL_DOCUMENT_DATA);
+
+                      if (DataUtils.isId(oldId)) {
+                        Queries.deleteRow(VIEW_DOCUMENT_DATA, oldId);
+                      }
+                      RowEditor.open(VIEW_DOCUMENT_TEMPLATES, row.getId(), Opener.MODAL);
+                    }
+                  });
+            }
+          });
+        }
+      });
     }
   });
   private ChildGrid itemsGrid;
+  Relations rel;
 
-  private final Map<String, ChildSelector> childSelectors = Maps.newHashMap();
+  private final Map<String, ChildSelector> childSelectors = new HashMap<>();
 
   @Override
   public void afterCreateWidget(String name, IdentifiableWidget widget,
@@ -90,123 +134,13 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
 
     super.afterCreateWidget(name, widget, callback);
 
-    if (widget instanceof ChildSelector) {
-      if (!BeeUtils.isEmpty(name)) {
-        childSelectors.put(name, (ChildSelector) widget);
-      }
-      if (((ChildSelector) widget).hasRelatedView(TaskConstants.VIEW_TASKS)) {
-        ((ChildSelector) widget).addSelectorHandler(this);
-      } else if (((ChildSelector) widget).hasRelatedView(ServiceConstants.VIEW_SERVICE_OBJECTS)) {
-        ((ChildSelector) widget).addSelectorHandler(this);
-      }
+    if (widget instanceof Relations) {
+      this.rel = (Relations) widget;
+      rel.setSelectorHandler(new RelationsHandler());
 
     } else if (BeeUtils.same(name, VIEW_DOCUMENT_ITEMS) && widget instanceof ChildGrid) {
       itemsGrid = (ChildGrid) widget;
-
-      itemsGrid.setGridInterceptor(new AbstractGridInterceptor() {
-        @Override
-        public void afterCreateEditor(String source, Editor editor, boolean embedded) {
-          if (editor instanceof Autocomplete) {
-            ((Autocomplete) editor).addAutocompleteHandler(new AutocompleteEvent.Handler() {
-              @Override
-              public void onDataSelector(AutocompleteEvent event) {
-                if (event.getState() == State.OPEN) {
-                  event.getSelector()
-                      .setAdditionalFilter(Filter.and(Filter.isEqual(COL_DOCUMENT_CATEGORY,
-                          Value.getValue(getLongValue(COL_DOCUMENT_CATEGORY))),
-                          Filter.isNotEqual(COL_DOCUMENT, Value.getValue(getActiveRowId()))));
-                }
-              }
-            });
-          }
-        }
-
-        @Override
-        public GridInterceptor getInstance() {
-          return null;
-        }
-
-        @Override
-        public void onEditStart(final EditStartEvent event) {
-          if (!BeeUtils.same(event.getColumnId(), COL_DOCUMENT_DATA)) {
-            if (event.isReadOnly()) {
-              event.consume();
-            }
-            return;
-          }
-          Long dataId = DataUtils.getLong(getDataColumns(), event.getRowValue(), COL_DOCUMENT_DATA);
-
-          if (!DataUtils.isId(dataId)) {
-            event.consume();
-
-            Relation relation = Relation.create(VIEW_DOCUMENT_TEMPLATES,
-                Lists.newArrayList(ALS_CATEGORY_NAME, COL_DOCUMENT_TEMPLATE_NAME));
-            relation.disableNewRow();
-            relation.setCaching(Caching.QUERY);
-
-            final UnboundSelector selector = UnboundSelector.create(relation);
-
-            HtmlTable table = new HtmlTable();
-            table.setText(0, 0, Localized.getConstants().documentTemplateName());
-            table.setWidget(0, 1, selector);
-
-            Global.inputWidget(Localized.getConstants().selectDocumentTemplate(), table,
-                new InputCallback() {
-                  @Override
-                  public void onSuccess() {
-                    final Consumer<Long> executor = new Consumer<Long>() {
-                      @Override
-                      public void accept(Long newDataId) {
-                        String viewName = itemsGrid.getPresenter().getViewName();
-
-                        Queries.update(viewName, event.getRowValue().getId(),
-                            event.getRowValue().getVersion(),
-                            Data.getColumns(viewName, Lists.newArrayList(COL_DOCUMENT_DATA)),
-                            Lists.newArrayList((String) null),
-                            Lists.newArrayList(BeeUtils.toString(newDataId)),
-                            null, new RowUpdateCallback(viewName) {
-                              @Override
-                              public void onSuccess(BeeRow result) {
-                                super.onSuccess(result);
-
-                                itemsGrid.getPresenter().getGridView()
-                                    .onEditStart(new EditStartEvent(result, event.getColumnId(),
-                                        event.getSourceElement(), event.getCharCode(),
-                                        event.isReadOnly()));
-                              }
-                            });
-                      }
-                    };
-                    Long data = null;
-
-                    if (selector.getRelatedRow() != null) {
-                      data = Data.getLong(VIEW_DOCUMENT_TEMPLATES, selector.getRelatedRow(),
-                          COL_DOCUMENT_DATA);
-                    }
-                    if (DataUtils.isId(data)) {
-                      DocumentsHandler.copyDocumentData(data, new IdCallback() {
-                        @Override
-                        public void onSuccess(Long result) {
-                          executor.accept(result);
-                        }
-                      });
-                    } else {
-                      Queries.insert(VIEW_DOCUMENT_DATA, Data.getColumns(VIEW_DOCUMENT_DATA,
-                          Lists.newArrayList(COL_DOCUMENT_CONTENT)),
-                          Lists.newArrayList((String) null), null, new RowCallback() {
-                            @Override
-                            public void onSuccess(BeeRow result) {
-                              executor.accept(result.getId());
-                            }
-                          });
-                    }
-                  }
-                });
-          }
-        }
-      });
     }
-
   }
 
   @Override
@@ -229,6 +163,7 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
     if (!newRow && user.isModuleVisible(ModuleAndSub.of(Module.DOCUMENTS, SubModule.TEMPLATES))) {
       getHeaderView().addCommandItem(newTemplateButton);
     }
+    super.onStart(form);
   }
 
   @Override
@@ -237,13 +172,84 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
   }
 
   @Override
-  public void onDataSelector(SelectorEvent event) {
-    if (event.isNewRow() && TaskConstants.VIEW_TASKS.equals(event.getRelatedViewName())) {
-      createNewTaskRelation(event);
-    } else if (event.isNewRow()
-        && ServiceConstants.VIEW_SERVICE_OBJECTS.equals(event.getRelatedViewName())) {
-      createNewServiceObjectRelation(event);
+  protected Multimap<String, Pair<String, String>> getInsertObjects() {
+    Multimap<String, Pair<String, String>> objects = super.getInsertObjects();
+
+    if (objects != null) {
+      objects = LinkedListMultimap.create(objects);
+    } else {
+      objects = LinkedListMultimap.create();
     }
+    DataInfo dataInfo = Data.getDataInfo(getViewName());
+
+    for (String col : dataInfo.getColumnNames(false)) {
+      if (!BeeUtils.same(col, COL_DOCUMENT_CONTENT) && !dataInfo.hasRelation(col)) {
+        objects.put(getFormView().getCaption(),
+            Pair.of(Localized.getLabel(dataInfo.getColumn(col)), "{" + COL_DOCUMENT + col + "}"));
+      }
+    }
+    for (String relation : childSelectors.keySet()) {
+      dataInfo = Data.getDataInfo(relation);
+
+      for (String col : dataInfo.getColumnNames(false)) {
+        if (!dataInfo.hasRelation(col)) {
+          objects.put(Data.getViewCaption(relation),
+              Pair.of(Localized.getLabel(dataInfo.getColumn(col)), "{" + relation + col + "}"));
+        }
+      }
+    }
+    return objects;
+  }
+
+  @Override
+  protected Map<String, String> getTemplates() {
+    Map<String, String> templates = super.getTemplates();
+
+    if (templates != null) {
+      templates = new LinkedHashMap<>(templates);
+    } else {
+      templates = new LinkedHashMap<>();
+    }
+    LocalizableConstants loc = Localized.getConstants();
+
+    StringBuilder sb = new StringBuilder("<table style=\"border-collapse:collapse;")
+        .append(" border:1px solid black; text-align:right;\">")
+        .append("<tbody><tr style=\"text-align:center;\">");
+
+    for (String cap : new String[] {loc.ordinal(), loc.description(), loc.quantity(), loc.price(),
+        loc.amount(), loc.vat(), loc.total()}) {
+      sb.append("<td style=\"border:1px solid black;\">" + cap + "</td>");
+    }
+    sb.append("</tr>")
+        .append("<!--{DocumentItems}-->")
+        .append("<tr>")
+        .append("<td style=\"border:1px solid black;\">{Index}</td>")
+        .append("<td style=\"border:1px solid black; text-align:left;\">{Description}</td>");
+
+    for (String col : new String[] {"{Quantity}", "{Price}", "{Amount}", "{Vat}",
+        "{VatPlusAmount}"}) {
+      sb.append("<td style=\"border:1px solid black;\">" + col + "</td>");
+    }
+    sb.append("</tr>")
+        .append("<!--{DocumentItems}-->")
+        .append("<tr>")
+        .append("<td style=\"text-align:left;\" colspan=\"2\">" + loc.totalOf() + "</td>")
+        .append("<td>{QuantityAmount}</td>")
+        .append("<td colspan=\"2\">{TotalAmount}</td>")
+        .append("<td>{VatAmount}</td>")
+        .append("<td>{Total}</td>")
+        .append("</tr></tbody></table>");
+
+    templates.put(loc.documentItems(), sb.toString());
+
+    templates.put(loc.documentItems() + ": " + loc.content(),
+        new StringBuilder("<table><tbody>")
+            .append("<!--{DocumentItems}-->")
+            .append("<tr><td>{Content}</td></tr>")
+            .append("<!--{DocumentItems}-->")
+            .append("</tbody></table>").toString());
+
+    return templates;
   }
 
   @Override
@@ -251,12 +257,12 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
     super.parseContent(content, dataId, new Consumer<String>() {
       @Override
       public void accept(String input) {
-        final Map<String, BeeRowSet> relations = Maps.newHashMap();
+        final Map<String, BeeRow> relations = new HashMap<>();
 
         final List<String> parts = Lists.newArrayList(Splitter
             .on("<!--{" + VIEW_DOCUMENT_ITEMS + "}-->").split(input));
 
-        final Map<String, Double> globals = Maps.newHashMap();
+        final Map<String, Double> globals = new HashMap<>();
         final Holder<Integer> holder = Holder.of(childSelectors.size() + parts.size());
 
         final BiConsumer<Integer, String> executor = new BiConsumer<Integer, String>() {
@@ -277,36 +283,76 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
 
               for (String global : globals.keySet()) {
                 result = result.replace("{" + global + "}",
-                    BeeUtils.toString(globals.get(global), 2));
+                    BeeUtils.nonZero(globals.get(global))
+                        ? BeeUtils.toString(globals.get(global), 2) : "");
               }
-              for (final String relation : childSelectors.keySet()) {
-                ChildSelector selector = childSelectors.get(relation);
-                BeeRowSet rs = relations.get(relation);
-
-                for (BeeColumn col : Data.getColumns(selector.getOracle().getViewName())) {
-                  String val = DataUtils.isEmpty(rs)
-                      ? "" : BeeUtils.nvl(rs.getString(0, col.getId()), "");
-
-                  result = result.replace("{" + relation + col.getId() + "}", val);
+              for (BeeColumn column : getFormView().getDataColumns()) {
+                result = result.replace("{" + COL_DOCUMENT + column.getId() + "}",
+                    BeeUtils.nvl(getParsedValue(getViewName(), getActiveRow(), column), ""));
+              }
+              for (String relation : childSelectors.keySet()) {
+                for (BeeColumn column : Data.getColumns(relation)) {
+                  result = result.replace("{" + relation + column.getId() + "}",
+                      BeeUtils.nvl(getParsedValue(relation, relations.get(relation), column), ""));
                 }
               }
               consumer.accept(result);
             }
           }
+
+          private String getParsedValue(String viewName, IsRow row, BeeColumn column) {
+            String val = null;
+
+            if (row != null) {
+              switch (column.getType()) {
+                case BOOLEAN:
+                  val = BeeUtils.unbox(Data.getBoolean(viewName, row, column.getId()))
+                      ? Localized.getConstants().yes() : Localized.getConstants().no();
+                  break;
+
+                case DATE:
+                  JustDate date = Data.getDate(viewName, row, column.getId());
+
+                  if (date != null) {
+                    val = date.toString();
+                  }
+                  break;
+
+                case DATE_TIME:
+                  DateTime time = Data.getDateTime(viewName, row, column.getId());
+
+                  if (time != null) {
+                    val = time.toCompactString();
+                  }
+                  break;
+
+                default:
+                  String enumKey = column.getEnumKey();
+
+                  if (!BeeUtils.isEmpty(enumKey)) {
+                    val = EnumUtils.getLocalizedCaption(enumKey,
+                        Data.getInteger(viewName, row, column.getId()),
+                        Localized.getConstants());
+                  } else {
+                    val = Data.getString(viewName, row, column.getId());
+                  }
+                  break;
+              }
+            }
+            return val;
+          }
         };
         for (final String relation : childSelectors.keySet()) {
-          ChildSelector selector = childSelectors.get(relation);
-          Long id = BeeUtils.peek(DataUtils.parseIdList(selector.getValue()));
+          Long id = BeeUtils.peek(DataUtils.parseIdList(childSelectors.get(relation).getValue()));
 
           if (DataUtils.isId(id)) {
-            Queries.getRowSet(selector.getOracle().getViewName(), null, Filter.compareId(id),
-                new RowSetCallback() {
-                  @Override
-                  public void onSuccess(BeeRowSet result) {
-                    relations.put(relation, result);
-                    executor.accept(null, null);
-                  }
-                });
+            Queries.getRow(relation, id, new RowCallback() {
+              @Override
+              public void onSuccess(BeeRow result) {
+                relations.put(relation, result);
+                executor.accept(null, null);
+              }
+            });
           } else {
             executor.accept(null, null);
           }
@@ -325,30 +371,29 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
   }
 
   private void createNewServiceObjectRelation(SelectorEvent event) {
-    final BeeRow row = event.getNewRow();
-    final List<Long> companies = Lists.newArrayList();
+    Long company = null;
+    DataInfo info;
 
-    for (ChildSelector selector : childSelectors.values()) {
-      if (selector.hasRelatedView(ClassifierConstants.VIEW_COMPANIES)) {
-        if (!BeeUtils.isEmpty(selector.getValue())) {
-          companies.addAll(DataUtils.parseIdList(selector.getValue()));
-        }
+    for (RowChildren selector : rel.getRowChildren(false)) {
 
+      info = Data.getDataInfo(selector.getRepository());
+      if (BeeUtils.same(info.getRelation(selector.getChildColumn()), VIEW_COMPANIES)) {
+        company = BeeUtils.peek(DataUtils.parseIdList(selector.getChildrenIds()));
       }
     }
 
-    if (!companies.isEmpty()) {
+    if (DataUtils.isId(company)) {
       event.consume();
-
+      final BeeRow row = event.getNewRow();
       final String formName = event.getNewRowFormName();
       final DataSelector selector = event.getSelector();
 
-      Queries.getRow(ClassifierConstants.VIEW_COMPANIES, companies.get(0), new RowCallback() {
+      Queries.getRow(TBL_COMPANIES, company, new RowCallback() {
         @Override
         public void onSuccess(BeeRow result) {
           RelationUtils.updateRow(Data.getDataInfo(ServiceConstants.VIEW_SERVICE_OBJECTS),
               ServiceConstants.COL_SERVICE_CUSTOMER, row,
-              Data.getDataInfo(ClassifierConstants.VIEW_COMPANIES), result, true);
+              Data.getDataInfo(TBL_COMPANIES), result, true);
 
           RowFactory.createRelatedRow(formName, row, selector);
         }
@@ -358,6 +403,7 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
 
   private void createNewTaskRelation(final SelectorEvent event) {
     final BeeRow row = event.getNewRow();
+    DataInfo info;
 
     String summary = BeeUtils.notEmpty(event.getDefValue(), getStringValue(COL_DOCUMENT_NAME));
     if (!BeeUtils.isEmpty(summary)) {
@@ -373,19 +419,16 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
           BeeUtils.trim(description));
     }
 
-    final List<Long> companies = Lists.newArrayList();
-    final List<Long> persons = Lists.newArrayList();
+    final List<Long> companies = new ArrayList<>();
+    final List<Long> persons = new ArrayList<>();
 
-    for (ChildSelector selector : childSelectors.values()) {
-      if (selector.hasRelatedView(ClassifierConstants.VIEW_COMPANIES)) {
-        if (!BeeUtils.isEmpty(selector.getValue())) {
-          companies.addAll(DataUtils.parseIdList(selector.getValue()));
-        }
+    for (RowChildren selector : rel.getRowChildren(false)) {
+      info = Data.getDataInfo(selector.getRepository());
 
-      } else if (selector.hasRelatedView(ClassifierConstants.VIEW_PERSONS)) {
-        if (!BeeUtils.isEmpty(selector.getValue())) {
-          persons.addAll(DataUtils.parseIdList(selector.getValue()));
-        }
+      if (BeeUtils.same(info.getRelation(selector.getChildColumn()), VIEW_COMPANIES)) {
+        companies.addAll(DataUtils.parseIdList(selector.getChildrenIds()));
+      } else if (BeeUtils.same(info.getRelation(selector.getChildColumn()), VIEW_PERSONS)) {
+        persons.addAll(DataUtils.parseIdList(selector.getChildrenIds()));
       }
     }
 
@@ -404,12 +447,11 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
               DataUtils.buildIdList(companies.subList(1, companies.size())));
         }
 
-        Queries.getRow(ClassifierConstants.VIEW_COMPANIES, companies.get(0), new RowCallback() {
+        Queries.getRow(VIEW_COMPANIES, companies.get(0), new RowCallback() {
           @Override
           public void onSuccess(BeeRow result) {
             RelationUtils.updateRow(Data.getDataInfo(TaskConstants.VIEW_TASKS),
-                ClassifierConstants.COL_COMPANY, row,
-                Data.getDataInfo(ClassifierConstants.VIEW_COMPANIES), result, true);
+                COL_COMPANY, row, Data.getDataInfo(VIEW_COMPANIES), result, true);
 
             latch.set(latch.get() - 1);
             if (latch.get() <= 0) {
@@ -420,8 +462,8 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
       }
 
       if (!persons.isEmpty()) {
-        Queries.getRowSet(ClassifierConstants.VIEW_COMPANY_PERSONS, null,
-            Filter.equals(ClassifierConstants.COL_PERSON, persons.get(0)), new RowSetCallback() {
+        Queries.getRowSet(VIEW_COMPANY_PERSONS, null, Filter.equals(COL_PERSON, persons.get(0)),
+            new RowSetCallback() {
               @Override
               public void onSuccess(BeeRowSet result) {
                 BeeRow contact = null;
@@ -432,7 +474,7 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
 
                 } else if (size > 1 && !companies.isEmpty()) {
                   Long company = companies.get(0);
-                  int index = result.getColumnIndex(ClassifierConstants.COL_COMPANY);
+                  int index = result.getColumnIndex(COL_COMPANY);
 
                   for (BeeRow r : result) {
                     if (company.equals(r.getLong(index))) {
@@ -446,8 +488,7 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
                   row.setProperty(TaskConstants.PROP_PERSONS, DataUtils.buildIdList(persons));
                 } else {
                   RelationUtils.updateRow(Data.getDataInfo(TaskConstants.VIEW_TASKS),
-                      ClassifierConstants.COL_CONTACT, row,
-                      Data.getDataInfo(ClassifierConstants.VIEW_COMPANY_PERSONS), contact, true);
+                      COL_CONTACT, row, Data.getDataInfo(VIEW_COMPANY_PERSONS), contact, true);
 
                   if (persons.size() > 1) {
                     row.setProperty(TaskConstants.PROP_PERSONS,
@@ -465,38 +506,6 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
     }
   }
 
-
-
-  private void createTemplate() {
-    LocalizableConstants loc = Localized.getConstants();
-
-    Global.inputString(loc.newDocumentTemplate(), loc.documentTemplateName(),
-        new StringCallback() {
-          @Override
-          public void onSuccess(final String value) {
-            DocumentsHandler.copyDocumentData(getLongValue(COL_DOCUMENT_DATA),
-                new IdCallback() {
-                  @Override
-                  public void onSuccess(Long dataId) {
-                    Queries.insert(VIEW_DOCUMENT_TEMPLATES,
-                        Data.getColumns(VIEW_DOCUMENT_TEMPLATES,
-                            Lists.newArrayList(COL_DOCUMENT_CATEGORY, COL_DOCUMENT_TEMPLATE_NAME,
-                                COL_DOCUMENT_DATA)),
-                        Lists.newArrayList(getStringValue(COL_DOCUMENT_CATEGORY), value,
-                            DataUtils.isId(dataId) ? BeeUtils.toString(dataId) : null),
-                        null, new RowInsertCallback(VIEW_DOCUMENT_TEMPLATES, null) {
-                          @Override
-                          public void onSuccess(BeeRow result) {
-                            super.onSuccess(result);
-                            RowEditor.open(VIEW_DOCUMENT_TEMPLATES, result, Opener.MODAL);
-                          }
-                        });
-                  }
-                });
-          }
-        });
-  }
-
   private void parseItems(final String content, final Integer idx,
       final BiConsumer<Integer, String> consumer, Map<String, Double> globals) {
 
@@ -505,6 +514,7 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
       return;
     }
     GridView gridView = itemsGrid.getPresenter().getGridView();
+    int ordIdx = gridView.getDataIndex(COL_TRADE_ITEM_ORDINAL);
     int descrIdx = gridView.getDataIndex(COL_DESCRIPTION);
     int qtyIdx = gridView.getDataIndex(COL_TRADE_ITEM_QUANTITY);
     int prcIdx = gridView.getDataIndex(COL_TRADE_ITEM_PRICE);
@@ -557,6 +567,7 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
         }
         sum.set(sum.get() - vat.get());
       }
+      final String ordinal = row.getString(ordIdx);
       final String descr = row.getString(descrIdx);
       String itemContent = row.getString(contentIdx);
       final int index = i;
@@ -565,14 +576,19 @@ public class DocumentForm extends DocumentDataForm implements SelectorEvent.Hand
         @Override
         public void accept(String input) {
           executor.accept(index, content.replace("{" + COL_DOCUMENT_CONTENT + "}", input)
-              .replace("{Index}", BeeUtils.toString(index + 1))
+              .replace("{Index}", BeeUtils.nvl(ordinal, ""))
               .replace("{" + COL_DESCRIPTION + "}", descr)
-              .replace("{" + COL_TRADE_ITEM_QUANTITY + "}", BeeUtils.toString(qty))
-              .replace("{" + COL_TRADE_ITEM_PRICE + "}", BeeUtils.toString(sum.get() / qty, 3))
-              .replace("{" + COL_TRADE_AMOUNT + "}", BeeUtils.toString(sum.get(), 2))
-              .replace("{" + COL_TRADE_VAT + "}", BeeUtils.toString(vat.get(), 2))
+              .replace("{" + COL_TRADE_ITEM_QUANTITY + "}",
+                  BeeUtils.nonZero(qty) ? BeeUtils.toString(qty) : "")
+              .replace("{" + COL_TRADE_ITEM_PRICE + "}",
+                  BeeUtils.nonZero(sum.get()) ? BeeUtils.toString(sum.get() / qty, 3) : "")
+              .replace("{" + COL_TRADE_AMOUNT + "}",
+                  BeeUtils.nonZero(sum.get()) ? BeeUtils.toString(sum.get(), 2) : "")
+              .replace("{" + COL_TRADE_VAT + "}",
+                  BeeUtils.nonZero(vat.get()) ? BeeUtils.toString(vat.get(), 2) : "")
               .replace("{" + COL_TRADE_VAT_PLUS + COL_TRADE_AMOUNT + "}",
-                  BeeUtils.toString(vat.get() + sum.get(), 2)));
+                  BeeUtils.nonZero(vat.get() + sum.get())
+                      ? BeeUtils.toString(vat.get() + sum.get(), 2) : ""));
         }
       };
       if (!BeeUtils.isEmpty(itemContent)) {

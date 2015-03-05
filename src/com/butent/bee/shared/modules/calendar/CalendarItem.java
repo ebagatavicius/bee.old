@@ -79,6 +79,8 @@ public abstract class CalendarItem implements Comparable<CalendarItem> {
     return (getPartStart() == null) ? getStart() : getPartStart();
   }
 
+  public abstract Enum<?> getStatus();
+
   public abstract String getStringTemplate();
 
   public abstract Long getStyle();

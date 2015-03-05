@@ -1,7 +1,5 @@
 package com.butent.bee.server.data;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.jdbc.JdbcException;
 import com.butent.bee.server.utils.BeeDataSource;
@@ -19,6 +17,7 @@ import com.butent.bee.shared.utils.ExtendedProperty;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -109,7 +108,7 @@ public class MetaDataBean {
         response = rsb.read(rs);
 
       } else {
-        List<String> keys = Lists.newArrayList();
+        List<String> keys = new ArrayList<>();
         while (rs.next()) {
           keys.add(rs.getString("COLUMN_NAME"));
         }

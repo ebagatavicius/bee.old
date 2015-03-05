@@ -4,22 +4,27 @@
   name="TradeActs" viewName="TradeActs" caption="=tradeActs"
   >
   <g:columns>
-    <DataColumn name="Kind" visible="true" />
     <IdColumn name="Id" />
+    <DataColumn name="Parent" />
+
+    <RelColumn name="Name" visible="true" />
+    <DataColumn name="Kind" visible="true" />
 
     <DataColumn name="Date" visible="true" />
     <DataColumn name="Until" />
 
-    <RelColumn name="Series" />
+    <RelColumn name="Series" visible="true" />
     <DataColumn name="Number" visible="true" />
 
     <RelColumn name="Operation" renderColumns="OperationName" />
-    <RelColumn name="Status" renderColumns="StatusName" />
+    <RelColumn name="Status" renderColumns="StatusName" visible="true" />
 
     <RelColumn name="Company" visible="true" />
-    <RelColumn name="ServiceObject" />
-    <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
+    <RelColumn name="Contact" renderColumns="ContactFirstName ContactLastName"
+      choiceColumns="FirstName LastName CompanyName" />
+    <RelColumn name="Object" renderColumns="ObjectName" />
 
+    <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
     <RelColumn name="Currency" renderColumns="CurrencyName" />
 
     <RelColumn name="Vehicle" renderColumns="VehicleParentModel VehicleModel VehicleNumber" />

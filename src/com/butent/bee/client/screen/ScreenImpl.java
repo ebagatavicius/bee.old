@@ -1,7 +1,6 @@
 package com.butent.bee.client.screen;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -16,12 +15,15 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.Screen;
 import com.butent.bee.client.Settings;
+import com.butent.bee.client.cli.Shell;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dialog.ConfirmationCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dialog.Notification;
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.event.Binder;
+import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.Previewer;
 import com.butent.bee.client.layout.Complex;
 import com.butent.bee.client.layout.CustomComplex;
@@ -44,6 +46,7 @@ import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.Toggle;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasHtml;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.css.values.FontSize;
@@ -61,6 +64,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +97,7 @@ public class ScreenImpl implements Screen {
 
   private Panel progressPanel;
 
-  private final Map<Direction, Integer> hidden = Maps.newEnumMap(Direction.class);
+  private final Map<Direction, Integer> hidden = new EnumMap<>(Direction.class);
 
   private Toggle northToggle;
   private Toggle westToggle;
@@ -124,7 +128,7 @@ public class ScreenImpl implements Screen {
     if (getCommandPanel() == null) {
       logger.severe(NameUtils.getName(this), "command panel not available");
     } else {
-      widget.asWidget().addStyleName(StyleUtils.CLASS_NAME_PREFIX + "MainCommandPanelItem");
+      widget.asWidget().addStyleName(BeeConst.CSS_CLASS_PREFIX + "MainCommandPanelItem");
       getCommandPanel().add(widget.asWidget());
     }
   }
@@ -421,12 +425,12 @@ public class ScreenImpl implements Screen {
   }
 
   @Override
-  public boolean updateProgress(String id, double value) {
+  public boolean updateProgress(String id, String label, double value) {
     if (getProgressPanel() != null && !BeeUtils.isEmpty(id)) {
       Widget item = DomUtils.getChildById(getProgressPanel(), id);
 
       if (item instanceof HasProgress) {
-        ((HasProgress) item).update(value);
+        ((HasProgress) item).update(label, value);
         return true;
       }
     }
@@ -443,7 +447,7 @@ public class ScreenImpl implements Screen {
         if (!BeeUtils.isEmpty(photoFileName)) {
           Image image = new Image(PhotoRenderer.getUrl(photoFileName));
           image.setAlt(userData.getLogin());
-          image.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "UserPhoto");
+          image.addStyleName(BeeConst.CSS_CLASS_PREFIX + "UserPhoto");
 
           getUserPhotoContainer().add(image);
         }
@@ -455,8 +459,37 @@ public class ScreenImpl implements Screen {
     }
   }
 
+  protected void activateShell() {
+    if (getCentralScrutinizer() != null) {
+      getCentralScrutinizer().activateShell();
+
+    } else if (getScreenPanel() != null && getScreenPanel().getDirectionSize(Direction.WEST) <= 0) {
+      List<Widget> children = getScreenPanel().getDirectionChildren(Direction.WEST);
+      for (Widget widget : children) {
+        if (UiHelper.isOrHasChild(widget, Shell.class)) {
+          getScreenPanel().setDirectionSize(Direction.WEST, getWidth() / 5, true);
+          break;
+        }
+      }
+    }
+  }
+
+  protected void bindShellActivation(IdentifiableWidget widget) {
+    final String id = widget.getId();
+
+    Binder.addClickHandler(widget.asWidget(), new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        if (EventUtils.hasModifierKey(event.getNativeEvent())
+            && EventUtils.isTargetId(event, id)) {
+          activateShell();
+        }
+      }
+    });
+  }
+
   protected Panel createCommandPanel() {
-    return new Flow(StyleUtils.CLASS_NAME_PREFIX + "MainCommandPanel");
+    return new Flow(BeeConst.CSS_CLASS_PREFIX + "MainCommandPanel");
   }
 
   protected Widget createCopyright(String stylePrefix) {
@@ -486,10 +519,10 @@ public class ScreenImpl implements Screen {
 
   protected void createExpanders() {
     CustomComplex container = new CustomComplex(DomUtils.createElement(Tags.NAV),
-        StyleUtils.CLASS_NAME_PREFIX + "Workspace-expander");
+        BeeConst.CSS_CLASS_PREFIX + "Workspace-expander");
 
     Toggle toggle = new Toggle(FontAwesome.LONG_ARROW_LEFT, FontAwesome.LONG_ARROW_RIGHT,
-        StyleUtils.CLASS_NAME_PREFIX + "west-toggle", false);
+        BeeConst.CSS_CLASS_PREFIX + "west-toggle", false);
     setWestToggle(toggle);
 
     toggle.addClickHandler(new ClickHandler() {
@@ -508,7 +541,7 @@ public class ScreenImpl implements Screen {
     container.add(toggle);
 
     toggle = new Toggle(FontAwesome.LONG_ARROW_UP, FontAwesome.LONG_ARROW_DOWN,
-        StyleUtils.CLASS_NAME_PREFIX + "north-toggle", false);
+        BeeConst.CSS_CLASS_PREFIX + "north-toggle", false);
     setNorthToggle(toggle);
 
     toggle.addClickHandler(new ClickHandler() {
@@ -527,7 +560,7 @@ public class ScreenImpl implements Screen {
     container.add(toggle);
 
     toggle = new Toggle(FontAwesome.EXPAND, FontAwesome.COMPRESS,
-        StyleUtils.CLASS_NAME_PREFIX + "workspace-maximizer", false);
+        BeeConst.CSS_CLASS_PREFIX + "workspace-maximizer", false);
     setMaximizer(toggle);
 
     toggle.addClickHandler(new ClickHandler() {
@@ -596,7 +629,7 @@ public class ScreenImpl implements Screen {
   }
 
   protected Panel createMenuPanel() {
-    return new Flow(StyleUtils.CLASS_NAME_PREFIX + "MainMenu");
+    return new Flow(BeeConst.CSS_CLASS_PREFIX + "MainMenu");
   }
 
   protected Widget createSearch() {
@@ -611,6 +644,7 @@ public class ScreenImpl implements Screen {
     Pair<? extends IdentifiableWidget, Integer> north = initNorth();
     if (north != null) {
       p.addNorth(north.getA(), north.getB());
+      bindShellActivation(north.getA());
     }
 
     Pair<? extends IdentifiableWidget, Integer> south = initSouth();
@@ -645,13 +679,13 @@ public class ScreenImpl implements Screen {
     Horizontal userContainer = new Horizontal();
 
     if (Settings.showUserPhoto()) {
-      Flow photoContainer = new Flow(StyleUtils.CLASS_NAME_PREFIX + "UserPhotoContainer");
+      Flow photoContainer = new Flow(BeeConst.CSS_CLASS_PREFIX + "UserPhotoContainer");
       userContainer.add(photoContainer);
       setUserPhotoContainer(photoContainer);
     }
 
     Label signature = new Label();
-    signature.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "UserSignature");
+    signature.addStyleName(BeeConst.CSS_CLASS_PREFIX + "UserSignature");
     userContainer.add(signature);
     setUserSignature(signature);
 
@@ -663,10 +697,10 @@ public class ScreenImpl implements Screen {
     });
 
     Simple exitContainer = new Simple();
-    exitContainer.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "UserExitContainer");
+    exitContainer.addStyleName(BeeConst.CSS_CLASS_PREFIX + "UserExitContainer");
 
     FaLabel exit = new FaLabel(FontAwesome.SIGN_OUT);
-    exit.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "UserExit");
+    exit.addStyleName(BeeConst.CSS_CLASS_PREFIX + "UserExit");
     exit.setTitle(Localized.getConstants().signOut());
 
     exit.addClickHandler(new ClickHandler() {
@@ -699,7 +733,7 @@ public class ScreenImpl implements Screen {
   }
 
   protected String getScreenStyle() {
-    return StyleUtils.CLASS_NAME_PREFIX + "Screen";
+    return BeeConst.CSS_CLASS_PREFIX + "Screen";
   }
 
   protected void hideProgressPanel() {
@@ -718,11 +752,11 @@ public class ScreenImpl implements Screen {
 
   protected Pair<? extends IdentifiableWidget, Integer> initNorth() {
     Complex panel = new Complex();
-    panel.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "NorthContainer");
+    panel.addStyleName(BeeConst.CSS_CLASS_PREFIX + "NorthContainer");
 
     Widget logo = createLogo(null);
     if (logo != null) {
-      logo.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "Logo");
+      logo.addStyleName(BeeConst.CSS_CLASS_PREFIX + "Logo");
       panel.add(logo);
     }
 
@@ -744,11 +778,11 @@ public class ScreenImpl implements Screen {
     }
 
     Widget userContainer = createUserContainer();
-    userContainer.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "UserContainer");
+    userContainer.addStyleName(BeeConst.CSS_CLASS_PREFIX + "UserContainer");
     panel.add(userContainer);
 
     Notification nw = new Notification();
-    nw.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "MainNotificationContainer");
+    nw.addStyleName(BeeConst.CSS_CLASS_PREFIX + "MainNotificationContainer");
     panel.add(nw);
     setNotification(nw);
 
@@ -757,7 +791,7 @@ public class ScreenImpl implements Screen {
 
   protected Pair<? extends IdentifiableWidget, Integer> initSouth() {
     Flow panel = new Flow();
-    panel.addStyleName(StyleUtils.CLASS_NAME_PREFIX + "ProgressPanel");
+    panel.addStyleName(BeeConst.CSS_CLASS_PREFIX + "ProgressPanel");
     setProgressPanel(panel);
 
     return Pair.of(panel, 0);
@@ -768,7 +802,7 @@ public class ScreenImpl implements Screen {
 
     Flow panel = new Flow();
     panel.add(getCentralScrutinizer());
-    panel.add(createCopyright(StyleUtils.CLASS_NAME_PREFIX));
+    panel.add(createCopyright(BeeConst.CSS_CLASS_PREFIX));
 
     int width = BeeUtils.resize(Window.getClientWidth(), 1000, 2000, 240, 320);
     return Pair.of(panel, width);
@@ -782,6 +816,10 @@ public class ScreenImpl implements Screen {
             @Override
             public void onSuccess(BeeRow result) {
               BeeKeeper.getUser().updateSettings(result);
+
+              if (getCentralScrutinizer() != null) {
+                getCentralScrutinizer().maybeUpdateHeaders();
+              }
             }
           });
     }

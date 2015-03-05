@@ -1,7 +1,6 @@
 package com.butent.bee.shared.data.view;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
@@ -23,7 +22,9 @@ import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -73,9 +74,9 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
   private Integer cacheMaximumSize;
 
   private String cacheEviction;
-  private final List<BeeColumn> columns = Lists.newArrayList();
+  private final List<BeeColumn> columns = new ArrayList<>();
 
-  private final List<ViewColumn> viewColumns = Lists.newArrayList();
+  private final List<ViewColumn> viewColumns = new ArrayList<>();
 
   private String relationInfo;
 
@@ -223,7 +224,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
 
   public BeeColumn getColumn(String columnId) {
     int index = getColumnIndex(columnId);
-    return BeeConst.isUndef(index) ? null : getColumns().get(index);
+    return (index >= 0) ? getColumns().get(index) : null;
   }
 
   public int getColumnCount() {
@@ -308,12 +309,11 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
   }
 
   public ValueType getColumnType(String columnId) {
-    BeeColumn column = getColumn(columnId);
-    return (column == null) ? null : column.getType();
+    return getColumnType(getColumnIndex(columnId));
   }
 
   public Collection<ViewColumn> getDescendants(String colName, boolean includeHidden) {
-    Set<ViewColumn> result = Sets.newHashSet();
+    Set<ViewColumn> result = new HashSet<>();
 
     ViewColumn root = getViewColumn(colName);
     if (root == null) {
@@ -339,7 +339,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
     }
 
     while (!parents.isEmpty()) {
-      Set<ViewColumn> children = Sets.newHashSet();
+      Set<ViewColumn> children = new HashSet<>();
       for (String p : parents) {
         children.addAll(getImmediateChildren(p));
       }
@@ -407,7 +407,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
 
   @Override
   public List<ExtendedProperty> getExtendedInfo() {
-    List<ExtendedProperty> result = Lists.newArrayList();
+    List<ExtendedProperty> result = new ArrayList<>();
     PropertyUtils.addProperties(result, false,
         "Module", getModule(),
         "View Name", getViewName(),
@@ -455,7 +455,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
   }
 
   public Collection<ViewColumn> getImmediateChildren(String parent) {
-    Set<ViewColumn> children = Sets.newHashSet();
+    Set<ViewColumn> children = new HashSet<>();
     if (BeeUtils.isEmpty(parent)) {
       return children;
     }
@@ -485,7 +485,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
   }
 
   public List<String> getRelatedTables() {
-    List<String> tables = Lists.newArrayList();
+    List<String> tables = new ArrayList<>();
 
     for (ViewColumn viewColumn : getViewColumns()) {
       if (viewColumn.isHidden() || viewColumn.isReadOnly()) {
@@ -519,7 +519,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
       return null;
     }
 
-    Set<String> fields = Sets.newHashSet();
+    Set<String> fields = new HashSet<>();
 
     for (ViewColumn vc : getViewColumns()) {
       if (BeeUtils.same(vc.getRelation(), relation)) {
@@ -579,7 +579,7 @@ public class DataInfo implements BeeSerializable, Comparable<DataInfo>, HasExten
 
   public List<ViewColumn> getViewColumnsBySource(String table, String field,
       Predicate<ViewColumn> predicate) {
-    List<ViewColumn> result = Lists.newArrayList();
+    List<ViewColumn> result = new ArrayList<>();
     if (BeeUtils.anyEmpty(table, field)) {
       return result;
     }

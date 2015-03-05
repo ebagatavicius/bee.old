@@ -1,10 +1,7 @@
 package com.butent.bee.client.data;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.shared.Assert;
@@ -23,9 +20,12 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public final class Data {
@@ -34,11 +34,11 @@ public final class Data {
 
   private static final ColumnMapper COLUMN_MAPPER = new ColumnMapper(DATA_INFO_PROVIDER);
 
-  private static final Set<String> visibleViews = Sets.newHashSet();
-  private static final Set<String> hiddenViews = Sets.newHashSet();
+  private static final Set<String> visibleViews = new HashSet<>();
+  private static final Set<String> hiddenViews = new HashSet<>();
 
-  private static final Set<String> editableViews = Sets.newHashSet();
-  private static final Set<String> readOnlyViews = Sets.newHashSet();
+  private static final Set<String> editableViews = new HashSet<>();
+  private static final Set<String> readOnlyViews = new HashSet<>();
 
   private static final Multimap<String, String> readOnlyColumns = HashMultimap.create();
 
@@ -71,7 +71,7 @@ public final class Data {
   }
 
   public static boolean equals(String viewName, IsRow row, String colName, Long value) {
-    return Objects.equal(getLong(viewName, row, colName), value);
+    return Objects.equals(getLong(viewName, row, colName), value);
   }
 
   public static Boolean getBoolean(String viewName, IsRow row, String colName) {
@@ -91,7 +91,7 @@ public final class Data {
   }
 
   public static List<String> getColumnLabels(String viewName, List<String> colNames) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     for (BeeColumn column : getColumns(viewName, colNames)) {
       result.add(Localized.getLabel(column));
@@ -117,7 +117,7 @@ public final class Data {
   }
 
   public static List<BeeColumn> getColumns(String viewName, List<String> colNames) {
-    List<BeeColumn> result = Lists.newArrayList();
+    List<BeeColumn> result = new ArrayList<>();
     DataInfo dataInfo = getDataInfo(viewName);
 
     for (String colName : colNames) {

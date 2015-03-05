@@ -47,6 +47,13 @@
         <SimpleColumn alias="ContactCompanyName" name="Name" />
       </SimpleJoin>
     </SimpleJoin>
+    
+    <SimpleColumn name="Project" />
+    <SimpleJoin name="Project" joinType="LEFT">
+      <SimpleColumn name="Name" alias="ProjectName" />
+      <SimpleColumn name="StartDate" alias="ProjectStartDate"/>
+      <SimpleColumn name="EndDate" alias="ProjectEndDate" />
+    </SimpleJoin>
 
     <SimpleColumn name="ScheduleFrom" />
     <SimpleColumn name="ScheduleUntil" />

@@ -3,36 +3,33 @@
   xmlns:ui="http://www.butent.com/ui"
 
   name="DocumentItems" viewName="DocumentItems"
-  editInPlace="Description Quantity Price VatPlus Vat VatPercent"
   flexGrow="1" caption="=documentItems"
   >
   <g:columns>
-    <AutoColumn name="Description" viewName="DistinctDocumentItems" viewColumn="Description">
+    <DataColumn name="Ordinal" width="30" sortable="false" />
+    <RelColumn name="Description" viewName="DistinctDocumentItems" valueSource="Description"
+               strict="false">
       <footer text="=totalOf" horizontalAlignment="right" />
-    </AutoColumn>
+    </RelColumn>
     <DataColumn name="Quantity">
       <footer aggregate="sum" />
     </DataColumn>
     <DataColumn name="Price" />
+
     <DataColumn name="VatPlus" width="20" sortable="false" horizontalAlignment="center" caption="+">
       <render><ui:expression>row.VatPlus ? '+' : ''</ui:expression></render>
     </DataColumn>
     <DataColumn name="Vat" />
-    <DataColumn name="VatPercent" width="20" sortable="false" horizontalAlignment="center" caption="%">
+    <DataColumn name="VatPercent" width="20" sortable="false" horizontalAlignment="center"
+        caption="%">
       <render><ui:expression>row.VatPercent ? '%' : ''</ui:expression></render>
     </DataColumn>
+
     <CalcColumn name="Total" type="decimal" caption="=total" format="0.00">
       <style>
         <bodyStyle><ui:font>bold</ui:font></bodyStyle>
       </style>
       <footer aggregate="sum" />
     </CalcColumn>
-    <DataColumn name="Data" caption="&#xf044;" width="20" sortable="false" readOnly="true" exportable="false">
-      <style>
-        <headerStyle><ui:class>bee-fa-label</ui:class></headerStyle>
-        <bodyStyle><ui:class>bee-fa-label</ui:class></bodyStyle>
-      </style>
-      <render><ui:expression>row.Data ? '\uf044' : ''</ui:expression></render>
-    </DataColumn>
   </g:columns>
 </g:Grid>

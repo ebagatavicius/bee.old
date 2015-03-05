@@ -23,5 +23,6 @@
 
     <Text name="AppointmentCompact" label="=calCompactForm" />
     <Text name="AppointmentTitle" label="=calAppointmentTitle" />
+    <String precision="25" name="PlannedDuration" label="=duration" />
   </Fields>
 </Table>

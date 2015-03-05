@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Table xmlns="http://www.butent.com/table"
+  
+  name="ProjectDates"
+  idName="ProjectDateID"
+  >
+  <Fields>
+    <Relation name="Project" notNull="true" relation="Projects" cascade="DELETE"
+      label="=project" />
+      
+    <DateTime name="StartDate" notNull="true" label="=dateFrom" />
+    <DateTime name="EndDate" label="=dateTo" />
+    
+    <String name="Color" precision="100" label="=color" />
+    <String name="Note" precision="100" label="=note" />
+  </Fields>
+</Table>

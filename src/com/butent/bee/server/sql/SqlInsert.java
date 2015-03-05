@@ -1,7 +1,6 @@
 package com.butent.bee.server.sql;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import com.butent.bee.shared.Assert;
@@ -19,7 +18,7 @@ import java.util.List;
 public class SqlInsert extends SqlQuery<SqlInsert> implements HasTarget {
 
   private final String target;
-  private final LinkedHashMap<String, Integer> fieldList = Maps.newLinkedHashMap();
+  private final LinkedHashMap<String, Integer> fieldList = new LinkedHashMap<>();
   private List<IsExpression[]> data;
   private SqlSelect dataSource;
 
@@ -116,7 +115,7 @@ public class SqlInsert extends SqlQuery<SqlInsert> implements HasTarget {
           : SqlUtils.constant(values[i]);
     }
     if (data == null) {
-      data = Lists.newArrayList();
+      data = new ArrayList<>();
     }
     data.add(row);
 

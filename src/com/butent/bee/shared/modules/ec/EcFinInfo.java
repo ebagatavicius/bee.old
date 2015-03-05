@@ -1,13 +1,12 @@
 package com.butent.bee.shared.modules.ec;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EcFinInfo implements BeeSerializable {
@@ -30,8 +29,8 @@ public class EcFinInfo implements BeeSerializable {
 
   private Double totalTaken;
 
-  private final List<EcOrder> orders = Lists.newArrayList();
-  private final List<EcInvoice> invoices = Lists.newArrayList();
+  private final List<EcOrder> orders = new ArrayList<>();
+  private final List<EcInvoice> invoices = new ArrayList<>();
 
   private BeeRowSet unsuppliedItems;
 

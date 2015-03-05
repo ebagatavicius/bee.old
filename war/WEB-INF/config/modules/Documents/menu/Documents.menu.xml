@@ -17,4 +17,7 @@ name="Documents" label="=documents" order="50" module="Documents"
     separator="true" />
   <Item name="Places" label="=documentPlaces" service="grid" parameters="DocumentPlaces" />
   <Item name="Statuses" label="=documentStatuses" service="grid" parameters="DocumentStatuses" />
+
+  <Item name="Parameters" label="=printParameters" service="parameters" parameters="Documents"
+    module="Documents.Templates" separator="true" />
 </Entry>

@@ -1,7 +1,5 @@
 package com.butent.bee.server.i18n;
 
-import com.google.common.collect.Maps;
-
 import com.butent.bee.server.io.ExtensionFilter;
 import com.butent.bee.server.io.FileUtils;
 import com.butent.bee.server.io.WildcardFilter;
@@ -17,6 +15,7 @@ import com.butent.bee.shared.utils.Wildcards;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -42,10 +41,10 @@ public final class Localizations {
   private static Map<Locale, File> availableConstants;
   private static Map<Locale, File> availableMessages;
 
-  private static final Map<Locale, LocalizableConstants> localizedConstants = Maps.newHashMap();
-  private static final Map<Locale, LocalizableMessages> localizedMessages = Maps.newHashMap();
+  private static final Map<Locale, LocalizableConstants> localizedConstants = new HashMap<>();
+  private static final Map<Locale, LocalizableMessages> localizedMessages = new HashMap<>();
 
-  private static final Map<Locale, Map<String, String>> dictionaries = Maps.newHashMap();
+  private static final Map<Locale, Map<String, String>> dictionaries = new HashMap<>();
 
   public static Map<Locale, File> getAvailableConstants() {
     return availableConstants;
@@ -89,7 +88,7 @@ public final class Localizations {
 
     Properties properties = FileUtils.readProperties(availableConstants.get(z));
 
-    Map<String, String> dictionary = Maps.newHashMap();
+    Map<String, String> dictionary = new HashMap<>();
     for (String name : properties.stringPropertyNames()) {
       dictionary.put(name, properties.getProperty(name));
     }
@@ -224,11 +223,11 @@ public final class Localizations {
 
     switch (type) {
       case CONSTANTS:
-        availableConstants = Maps.newHashMap();
+        availableConstants = new HashMap<>();
         itf = LocalizableConstants.class;
         break;
       case MESSAGES:
-        availableMessages = Maps.newHashMap();
+        availableMessages = new HashMap<>();
         itf = LocalizableMessages.class;
         break;
       default:

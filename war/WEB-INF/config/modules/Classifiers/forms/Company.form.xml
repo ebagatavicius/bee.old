@@ -7,7 +7,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   xmlns:d="http://www.butent.com/decorator"
-
+  xmlns:ui="http://www.butent.com/ui"
   name="Company"
   viewName="Companies"
   caption="=client"
@@ -18,41 +18,91 @@
     <Table>
       <row>
         <Label text="=name" style="&lbl1;" class="bee-required" />
-        <InputText source="Name" style="&inp1;" visible="true" />
-        <Label style="&lbl1;" for="CompanyType" />
-        <DataSelector source="CompanyType" style="&inp1;"  />
-        <Label style="&lbl1;" for="CompanyGroup" />
-        <DataSelector source="CompanyGroup" style="&inp1;"  />
-      </row>
-
-      <row>
-        <Label style="&lbl1;" for="Code" />
-        <InputText source="Code" style="&inp1;"/>
-        <Label style="&lbl1;" for="VATCode" />
-        <InputText source="VATCode" style="&inp1;" upperCase="true" />
-        <Label text="=code" style="&lbl1;" module="Transport" for="ExchangeCode" />
-        <InputText source="ExchangeCode" style="&inp1;" module="Transport" />
-      </row>
-
-      <row>
+        <cell colSpan="3">
+          <InputText source="Name" style="width: 100%;" visible="true" />
+        </cell>
+        <DataSelector source="CompanyType" style="width: 50px;" />
         <Label style="&lbl1;" for="CompanyPriority" />
         <DataSelector source="CompanyPriority" style="&inp1;" />
-        <Label text="=companyRelation" style="&lbl1;" data="CompRelTypeStore" />
-        <ChildSelector viewName="CompanyRelationTypes" childTable="CompRelTypeStore"
-          targetRelColumn="Company" sourceRelColumn="RelationType" newRowEnabled="true"
-          label="=companyRelationType" style="&inp1;" data="CompRelTypeStore" />
-        <Label text="=status" style="&lbl1;" for="CompanyRelationTypeState" />
-        <DataSelector source="CompanyRelationTypeState" style="&inp1;" />
+      </row>
+
+      <row>
+        <Label text="=phone" style="&lbl1;" for="Phone" />
+        <InputText style="&inp1;" source="Phone" />
+        <Label style="&lbl1;" for="Mobile" />
+        <cell colSpan="2">
+          <InputText source="Mobile" style="&inp1;" />
+        </cell>
+        <Label text="=fax" style="&lbl1;" for="Fax" />
+        <InputText source="Fax" style="&inp1;" />
+      </row>
+      <row>
+        <Label for="Address" text="=address" style="&lbl1;" />
+        <cell colSpan="4">
+          <InputText source="Address" style="width: 100%;" />
+        </cell>
+        <Label for="EmailId" style="&lbl1;" />
+        <cell colSpan="1" for="EmailId" >
+          <DataSelector style="&inp1;" source="EmailId" maxLength="50" />
+        </cell>
+      </row>
+      <row>
+        <Label text="=city" style="&lbl1;" for="City" />
+        <DataSelector source="City" style="&inp1;">
+          <selectorColumn source="Name" />
+          <selectorColumn source="CountryName" />
+          <selectorColumn source="CountryCode">
+            <ui:renderer type="flag" />
+          </selectorColumn>
+        </DataSelector>
+
+        <Label text="=country" style="&lbl1;" for="Country" />
+        <DataSelector source="Country" style="&inp1;">
+          <renderToken source="CountryName" />
+          <renderToken source="CountryCode" prefix=" (" suffix=")" />
+          <selectorColumn source="Name" />
+          <selectorColumn source="Code">
+          <ui:renderer type="flag" />
+          </selectorColumn>
+        </DataSelector>
+        <Flag source="CountryCode" style="width: 22px;" />
+        <Label text="=postIndex" style="&lbl1;" for="PostIndex" />
+        <InputText source="PostIndex" style="&inp1;" />
       </row>
     </Table>
 
-    <Disclosure xmlns="http://www.butent.com/widget" xmlns:xi="http://www.w3.org/2001/XInclude"
-      open="true">
-       <Label text="=contactInfo" style="text-transform: uppercase; " />
-        <FlowPanel class="flexible">
-         <xi:include href="widgets/ContactDetails.widget.xml" />     
-         <ChildGrid name="CompanyContacts" relColumn="Company" style="min-height: 150px" />
-       </FlowPanel>
+    <Disclosure open="false">
+      <Label text="=otherInfo" style="text-transform: uppercase; " />
+      <FlowPanel>
+        <Table>
+          <row>
+            <Label text="=website" style="&lbl1;" for="Website" />
+            <InputText source="Website" style="width: 100%" />
+            <Label text="=socialContacts" style="&lbl1;" />
+            <InputText source="SocialContacts" style="width: 100%;" />
+          </row>
+          <row>
+            <Label text="=code" style="&lbl1;" for="Code" />
+            <InputText source="Code" style="&inp1;"/>
+            <Label text="=companyVATCode" style="&lbl1;" for="VATCode" />
+            <InputText source="VATCode" style="&inp1;" upperCase="true" />
+          </row>
+        </Table>
+      </FlowPanel>
+    </Disclosure>
+    
+    <Disclosure open="false">
+      <Label text="=additionalContacts" style="text-transform: uppercase; " />
+      <FlowPanel>
+       <ChildGrid name="CompanyContacts" relColumn="Company" style="min-height: 150px" />
+      </FlowPanel>
+    </Disclosure>
+    
+    <Disclosure open="false">
+      <Label text="=bankDetails" style="text-transform: uppercase; " />
+      <FlowPanel>
+       <ChildGrid name="CompanyBankAccounts" relColumn="Company" style="min-height: 150px" /> 
+      </FlowPanel> 
     </Disclosure>
 
     <TabbedPages class="flexible" style="margin-top: 15px;">
@@ -63,7 +113,7 @@
             <row>
               <Label text="=creditLimit" for="CreditLimit" style="&lbl1;"/>
               <FlowPanel>
-                <InputInteger source="CreditLimit" style="text-align: right" />
+                <InputInteger source="CreditLimit" style="text-align: right" summarize="true" />
                 <DataSelector source="LimitCurrency" editEnabled="false" placeholder="=currencyShort"
                   style="width:40px; margin-left:5px; display:inline-block;" for="CreditLimit" />
               </FlowPanel>
@@ -73,36 +123,35 @@
             </row>
   
             <row for="CreditTolerance">
-              <Label text="=creditTolerance" style="&lbl1;"/>
-              <InputInteger source="CreditTolerance" style="width: 60px;" />
+              <Label text="=creditTolerance" style="&lbl1;" />
+              <InputInteger source="CreditTolerance" style="width: 60px;" summarize="true" />
             </row>
   
             <row for="CreditDays">
               <Label text="=creditDays" style="&lbl1;"/>
-              <InputDecimal source="CreditDays" style="width: 60px;" />
+              <InputDecimal source="CreditDays" style="width: 60px;" summarize="true" />
             </row>
   
             <row for="FinancialState">
-              <Label text="=financialState" style="&lbl1;"/>
-              <DataSelector source="FinancialState" />
+              <Label text="=financialState" style="&lbl1;" />
+              <DataSelector source="FinancialState" summarize="true" />
             </row>
   
             <row for="DaysAsBuyer">
               <Label text="=daysAsBuyer" style="&lbl1;"/>
-              <InputDecimal source="DaysAsBuyer" style="width: 60px;" />
+              <InputDecimal source="DaysAsBuyer" style="width: 60px;" summarize="true" />
             </row>
   
             <row for="DaysAsSupplier">
               <Label text="=daysAsSupplier" style="&lbl1;"/>
-              <InputDecimal source="DaysAsSupplier" style="width: 60px;" />
+              <InputDecimal source="DaysAsSupplier" style="width: 60px;" summarize="true" />
             </row>
           </Table>   
-          <ChildGrid name="CompanyBankAccounts" class="flexible" relColumn="Company" style="min-heght: 150px;"/>
         </FlowPanel>
       </page>
 
-      <page>
-        <text>=personContacts</text>
+      <page for="CompanyPersons">
+        <text>=companyPersons</text>
         <ChildGrid name="CompanyPersons" relColumn="Company" />
       </page>
 
@@ -117,21 +166,35 @@
           <Table>
             <row>
               <Label style="&lbl1;" for="CompanySize" />
-              <DataSelector source="CompanySize" style="width: 100px;" />
+              <DataSelector source="CompanySize" style="&inp1;" summarize="true" />
               <Label style="margin-left: 8px; margin-right: 8px;" for="InformationSource" />
-              <DataSelector source="InformationSource" style="width: 100px;" />
+              <DataSelector source="InformationSource" style="&inp1;" summarize="true" />
             </row>
             <row data="CompActStore">
               <Label text="=companyActivities" style="&lbl1;" />
               <cell colSpan="3">
                 <ChildSelector viewName="CompanyActivities" childTable="CompActStore"
                   targetRelColumn="Company" sourceRelColumn="Activity"
-                  label="=companyActivities" style="width: 338px;" />
+                  label="=companyActivities" style="width: 100%;" summarize="true" />
               </cell>
             </row>
-            <row for="Rating">
-              <Label text="=rating" style="&lbl1;"/>
-              <InputText source="Rating" style="width:100px;" />
+            <row>
+              <Label text="=trdTurnover" style="&lbl1;"/>
+              <DataSelector source="Turnover" style="&inp1;" summarize="true" />
+              <DataSelector source="TurnoverCurrency" editEnabled="false" placeholder="=currencyShort"
+               style="width:40px; margin-left:5px; display:inline-block;" for="Turnover" />
+            </row>
+            <row>
+              <Label text="=clientGroup" style="&lbl1;" for="CompanyGroup" />
+              <DataSelector source="CompanyGroup" style="&inp1;" />
+            </row>
+            <row>
+              <Label text="=companyRelation" style="&lbl1;" data="CompRelTypeStore" />
+              <ChildSelector viewName="CompanyRelationTypes" childTable="CompRelTypeStore"
+                targetRelColumn="Company" sourceRelColumn="RelationType" newRowEnabled="true"
+                label="=companyRelationType" style="&inp1;" data="CompRelTypeStore" />
+              <Label style="&lbl1;" for="CompanyRelationTypeState" />
+              <DataSelector source="CompanyRelationTypeState" style="&inp1;" />
             </row>
           </Table>
         </FlowPanel>
@@ -142,18 +205,40 @@
         <ChildGrid name="RelatedDocuments" relColumn="Company" />
       </page>
 
-      <page for="Notes">
-        <text>=notes</text>
-        <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" />
-        </SimplePanel>
-      </page>  
-
+      <page>
+        <text>=objects</text>
+        <ChildGrid name="CompanyObjects" relColumn="Company" module="Trade.Acts" />
+      </page>
+      <page>
+        <text>=tradeActs</text>
+        <ChildGrid name="CompanyTradeActs" relColumn="Company" module="Trade.Acts" />
+      </page>
       <page for="RelatedMessages">
         <text>=mails</text>
         <ChildGrid name="RelatedMessages" relColumn="Company" />
+      </page>
+      <page for="CompActionList" module="Calendar">
+        <text>=calListOfActions</text>
+        <ChildGrid name="CompActionList" relColumn="Company" />
+      </page>
+      <page for="Tasks">
+        <text>=crmTasks</text>
+        <ChildGrid name="ChildTasks" relColumn="Company" />
+      </page>
+      <page for="Requests">
+        <text>=crmRequests</text>
+        <ChildGrid name="ChildRequests" relColumn="Customer" />
+      </page>
+      <page for="Projects">
+        <text>=projects</text>
+        <ChildGrid name="CompanyProjects" relColumn="Company" />
+      </page>
+      <page for="Notes">
+        <text>=notes</text>
+        <SimplePanel>
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
+        </SimplePanel>
       </page>  
     </TabbedPages>
-
   </FlowPanel>
 </f:Form>

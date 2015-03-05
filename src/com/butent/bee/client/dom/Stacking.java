@@ -1,6 +1,5 @@
 package com.butent.bee.client.dom;
 
-import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.UIObject;
 
@@ -11,6 +10,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public final class Stacking {
 
   private static int maxLevel;
 
-  private static final Map<String, Integer> widgetLevels = Maps.newHashMap();
+  private static final Map<String, Integer> widgetLevels = new HashMap<>();
 
   public static int addContext(Element el) {
     Assert.notNull(el, "Stacking add: element is null");

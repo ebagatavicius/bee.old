@@ -10,7 +10,7 @@
     <Relation name="Sender" relation="Emails" label="=mailSender" />
     <String name="Subject" precision="255" label="=mailSubject" />
     <Numeric name="AttachmentCount" precision="3" />
-    <Relation name="RawContent" relation="Files" notNull="true" editable="true" />
+    <Relation name="RawContent" relation="Files" editable="true" />
   </Fields>
 
   <Indexes>

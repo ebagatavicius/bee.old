@@ -3,7 +3,6 @@
 
   name="FuelTemperatures"
   idName="TemperatureID"
-  x="0" y="0"
   >
   <Fields>
     <Relation name="Consumption" notNull="true" relation="FuelConsumptions" cascade="DELETE" label="=trFuelConsumptions"/>

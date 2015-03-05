@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="Relations" source="Relations" caption="=relations"
+  name="Relations" source="Relations" module="*" caption="=relations"
   >
   <Columns>
     <SimpleColumn name="Relation" />
@@ -22,6 +22,7 @@
     <SimpleColumn name="ServiceObject" />
     <SimpleColumn name="Message" />
     <SimpleColumn name="Assessment" />
+    <SimpleColumn name="Project" />
  </Columns>
 </View>
  

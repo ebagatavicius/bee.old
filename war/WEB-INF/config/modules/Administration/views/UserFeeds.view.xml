@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="UserFeeds" source="UserFeeds" module="Administration"
+  name="UserFeeds" source="UserFeeds" module="*"
   caption="=feeds" newRowCaption="=feedNew"
   >
   <Columns>

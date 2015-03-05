@@ -74,7 +74,7 @@ class RichTextAreaImpl implements RichTextArea.Formatter, HasHtml {
   }
 
   @Override
-  public void insertHTML(String html) {
+  public void insertHtml(String html) {
     execCommand("InsertHTML", html);
   }
 

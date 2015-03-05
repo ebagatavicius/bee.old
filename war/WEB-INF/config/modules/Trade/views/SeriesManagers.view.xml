@@ -23,6 +23,8 @@
       </SimpleJoin>
     </SimpleJoin>
 
+    <SimpleColumn name="IsDefault" />
+
   </Columns>
   <Order>
     <OrderBy column="LastName" />

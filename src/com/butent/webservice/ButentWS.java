@@ -75,12 +75,11 @@ public final class ButentWS {
 
     try {
       node = XmlUtils.fromString(answer).getFirstChild();
-
-      if (BeeUtils.same(node.getLocalName(), "Error")) {
-        throw new BeeException(node.getTextContent());
-      }
     } catch (Exception e) {
-      throw new BeeException(answer, e);
+      throw new BeeException(answer);
+    }
+    if (BeeUtils.same(node.getLocalName(), "Error")) {
+      throw new BeeException(node.getTextContent());
     }
     return node;
   }

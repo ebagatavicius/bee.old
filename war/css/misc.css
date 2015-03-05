@@ -1,0 +1,49 @@
+.bee-orgChart-panel {
+  background-color: white;
+}
+.bee-orgChart-table {
+  margin-top: 1ex;
+  margin-left: 1em;
+}
+
+.bee-orgChart-department-panel {
+  border: 2px solid #b5d9ea;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.5) 3px 3px 3px;
+  background-image: linear-gradient(to bottom, #edf7ff, #cde7ee);
+  min-height: 100px;
+}
+.bee-orgChart-department-label {
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+  font-size: larger;
+  font-weight: bolder;
+  text-align: center;
+}
+
+.bee-orgChart-boss-photo,
+.bee-orgChart-employee-photo {
+  max-width: 30px;
+  max-height: 30px;
+  margin-right: 1em;
+}
+
+.bee-orgChart-boss-label {
+  display: inline-block;
+  cursor: pointer;
+  color: red;
+}
+.bee-orgChart-employee-label {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.bee-orgChart-department-drag,
+.bee-orgChart-boss-drag,
+.bee-orgChart-employee-drag {
+  background-image: linear-gradient(to bottom, yellow, yellow);
+}
+.bee-orgChart-department-dragOver {
+  border: 2px solid #e3ca4b;
+  background: linear-gradient(to bottom, #fff7ae, #eee79e);
+}

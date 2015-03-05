@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="CalendarTodo" viewName="TodoList" caption="=crmTodoList"
+  newRowPopup="true" editPopup="true" headerMode="grid"
+  disabledActions="delete filter export auto_fit"
+  >
+  <g:columns>
+    <DataColumn name="Summary" visible="true" flexGrow="1" draggable="true" />
+
+    <DataColumn name="Description" visible="false" />
+
+    <RelColumn name="Company" visible="false" />
+    <RelColumn name="Contact" visible="false" />
+
+    <DataColumn name="StartTime" visible="false" />
+    <DataColumn name="FinishTime" visible="false" />
+
+    <DataColumn name="ExpectedDuration" visible="false" />
+
+    <DataColumn name="Created" visible="false" />
+    <RelColumn name="Creator" visible="false" />
+  </g:columns>
+</g:Grid>

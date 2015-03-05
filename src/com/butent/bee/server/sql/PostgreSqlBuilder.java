@@ -15,6 +15,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -153,10 +154,11 @@ class PostgreSqlBuilder extends SqlBuilder {
     switch (operator) {
       case FULL_TEXT:
         String expression = params.get("expression");
-        List<String> values = NameUtils.toList(params.get("value" + 0));
+        List<String> values = new ArrayList<>(NameUtils.toList(params.get("value" + 0)));
 
         for (int i = 0; i < values.size(); i++) {
-          values.set(i, values.get(i).replace("'", "''").replace(":", " ") + ":*");
+          values.set(i, values.get(i).replace("'", "''")
+              .replace("\\", "\\\\").replace(":", "\\:") + ":*");
         }
         return expression + " @@ to_tsquery('simple', '" + BeeUtils.join("&", values) + "')";
 

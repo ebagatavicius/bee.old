@@ -1,13 +1,12 @@
 package com.butent.bee.shared.modules.ec;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EcOrder implements BeeSerializable {
@@ -36,8 +35,8 @@ public class EcOrder implements BeeSerializable {
 
   private String rejectionReason;
 
-  private final List<EcOrderItem> items = Lists.newArrayList();
-  private final List<EcOrderEvent> events = Lists.newArrayList();
+  private final List<EcOrderItem> items = new ArrayList<>();
+  private final List<EcOrderEvent> events = new ArrayList<>();
 
   public EcOrder() {
     super();

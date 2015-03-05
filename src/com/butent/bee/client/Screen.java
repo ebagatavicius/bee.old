@@ -91,7 +91,7 @@ public interface Screen extends NotificationListener, HasExtendedInfo {
 
   void updateMenu(IdentifiableWidget widget);
 
-  boolean updateProgress(String id, double value);
+  boolean updateProgress(String id, String label, double value);
 
   void updateUserData(UserData userData);
 }

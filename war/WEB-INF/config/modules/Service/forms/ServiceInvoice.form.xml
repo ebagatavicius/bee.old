@@ -61,7 +61,7 @@
       <page>
         <text>=trdNotes</text>
         <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" />
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>
     </TabbedPages>

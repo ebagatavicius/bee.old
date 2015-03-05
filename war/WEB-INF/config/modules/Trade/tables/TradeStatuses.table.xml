@@ -5,7 +5,8 @@
   idName="TradeStatusID"
   >
   <Fields>
-    <String name="StatusName" notNull="true" precision="30" label="=status" />
+    <String name="StatusName" notNull="true" unique="true" precision="30" label="=status" />
+    <Boolean name="StatusActive" label="=trdStatusActive" />
 
     <String name="Background" precision="100" label="=backgroundColor" />
     <String name="Foreground" precision="100" label="=foregroundColor" />

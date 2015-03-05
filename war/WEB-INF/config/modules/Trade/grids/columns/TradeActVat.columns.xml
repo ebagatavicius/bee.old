@@ -3,7 +3,7 @@
   <DataColumn name="VatPlus" width="20" sortable="false" caption="+" format="+" carry="true"
     visible="false" />
 
-  <DataColumn name="Vat" carry="true" visible="false">
+  <DataColumn name="Vat" carry="true" flexGrow="0" visible="false">
     <footer evaluator="vat" />
   </DataColumn>
 

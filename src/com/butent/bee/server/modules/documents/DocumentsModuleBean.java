@@ -1,15 +1,16 @@
 package com.butent.bee.server.modules.documents;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
 import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
 
+import com.butent.bee.server.Config;
 import com.butent.bee.server.data.BeeTable;
 import com.butent.bee.server.data.BeeView;
 import com.butent.bee.server.data.DataEditorBean;
+import com.butent.bee.server.data.DataEvent.ViewInsertEvent;
 import com.butent.bee.server.data.DataEvent.ViewQueryEvent;
 import com.butent.bee.server.data.DataEventHandler;
 import com.butent.bee.server.data.QueryServiceBean;
@@ -17,14 +18,18 @@ import com.butent.bee.server.data.SystemBean;
 import com.butent.bee.server.data.UserServiceBean;
 import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.modules.BeeModule;
+import com.butent.bee.server.modules.ParamHolderBean;
 import com.butent.bee.server.modules.administration.ExtensionIcons;
+import com.butent.bee.server.modules.administration.FileStorageBean;
 import com.butent.bee.server.sql.IsExpression;
 import com.butent.bee.server.sql.IsFrom;
 import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUtils;
+import com.butent.bee.server.utils.HtmlUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -34,20 +39,29 @@ import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.io.FileInfo;
+import com.butent.bee.shared.io.Paths;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.rights.Module;
-import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.RegulatedWidget;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
+import com.lowagie.text.DocumentException;
 
+import org.xhtmlrenderer.pdf.ITextRenderer;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,19 +85,19 @@ public class DocumentsModuleBean implements BeeModule {
   QueryServiceBean qs;
   @EJB
   DataEditorBean deb;
+  @EJB
+  FileStorageBean fs;
+  @EJB
+  ParamHolderBean prm;
 
   @Override
   public List<SearchResult> doSearch(String query) {
-    List<SearchResult> result = Lists.newArrayList();
+    List<SearchResult> docsSr = qs.getSearchResults(VIEW_DOCUMENTS,
+        Filter.anyContains(Sets.newHashSet(COL_DOCUMENT_NUMBER, COL_REGISTRATION_NUMBER,
+            COL_DOCUMENT_NAME, ALS_CATEGORY_NAME, ALS_TYPE_NAME,
+            ALS_PLACE_NAME, ALS_STATUS_NAME), query));
 
-    if (usr.isModuleVisible(ModuleAndSub.of(Module.DOCUMENTS))) {
-      List<SearchResult> docsSr = qs.getSearchResults(VIEW_DOCUMENTS,
-          Filter.anyContains(Sets.newHashSet(COL_NUMBER, COL_REGISTRATION_NUMBER,
-              COL_DOCUMENT_NAME, ALS_CATEGORY_NAME, ALS_TYPE_NAME,
-              ALS_PLACE_NAME, ALS_STATUS_NAME), query));
-      result.addAll(docsSr);
-    }
-    return result;
+    return docsSr;
   }
 
   @Override
@@ -92,6 +106,9 @@ public class DocumentsModuleBean implements BeeModule {
 
     if (BeeUtils.same(svc, SVC_COPY_DOCUMENT_DATA)) {
       response = copyDocumentData(BeeUtils.toLongOrNull(reqInfo.getParameter(COL_DOCUMENT_DATA)));
+
+    } else if (BeeUtils.same(svc, SVC_CREATE_PDF_DOCUMENT)) {
+      response = createPdf(reqInfo.getParameter(COL_DOCUMENT_CONTENT));
 
     } else if (BeeUtils.same(svc, SVC_SET_CATEGORY_STATE)) {
       response = setCategoryState(BeeUtils.toLongOrNull(reqInfo.getParameter("id")),
@@ -110,7 +127,14 @@ public class DocumentsModuleBean implements BeeModule {
 
   @Override
   public Collection<BeeParameter> getDefaultParameters() {
-    return null;
+    String module = getModule().getName();
+
+    return Arrays.asList(BeeParameter.createBoolean(module, PRM_PRINT_AS_PDF, true, null),
+        BeeParameter.createRelation(module, PRM_PRINT_HEADER, true, TBL_EDITOR_TEMPLATES,
+            COL_EDITOR_TEMPLATE_NAME),
+        BeeParameter.createRelation(module, PRM_PRINT_FOOTER, true, TBL_EDITOR_TEMPLATES,
+            COL_EDITOR_TEMPLATE_NAME),
+        BeeParameter.createText(module, PRM_PRINT_MARGINS, true, null));
   }
 
   @Override
@@ -127,6 +151,74 @@ public class DocumentsModuleBean implements BeeModule {
   public void init() {
     sys.registerDataEventHandler(new DataEventHandler() {
       @Subscribe
+      public void applyDocumentRights(ViewQueryEvent event) {
+        if (BeeUtils.inListSame(event.getTargetName(), TBL_DOCUMENTS, VIEW_RELATED_DOCUMENTS)
+            && !usr.isAdministrator()) {
+
+          if (event.isBefore()) {
+            SqlSelect query = event.getQuery();
+            String tableAlias = null;
+
+            for (IsFrom from : query.getFrom()) {
+              if (from.getSource() instanceof String
+                  && BeeUtils.same((String) from.getSource(), TBL_DOCUMENT_TREE)) {
+                tableAlias = BeeUtils.notEmpty(from.getAlias(), TBL_DOCUMENT_TREE);
+                break;
+              }
+            }
+            if (!BeeUtils.isEmpty(tableAlias)) {
+              sys.filterVisibleState(query, TBL_DOCUMENT_TREE, tableAlias);
+            }
+          } else {
+            BeeRowSet rs = event.getRowset();
+            int categoryIdx = rs.getColumnIndex(COL_DOCUMENT_CATEGORY);
+            List<Long> categories = new ArrayList<>();
+
+            if (BeeUtils.isNonNegative(categoryIdx)) {
+              for (Long category : rs.getDistinctLongs(categoryIdx)) {
+                categories.add(category);
+              }
+            }
+            if (!BeeUtils.isEmpty(categories)) {
+              BeeRowSet catRs = qs.getViewData(TBL_DOCUMENT_TREE, Filter.idIn(categories), null,
+                  Lists.newArrayList(COL_DOCUMENT_CATEGORY + COL_CATEGORY_NAME));
+
+              for (BeeRow row : rs) {
+                IsRow catRow = catRs.getRowById(row.getLong(categoryIdx));
+                row.setEditable(catRow.isEditable());
+                row.setRemovable(catRow.isRemovable());
+              }
+            }
+          }
+        }
+      }
+
+      @Subscribe
+      public void fillDocumentNumber(ViewInsertEvent event) {
+        if (BeeUtils.same(event.getTargetName(), TBL_DOCUMENTS) && event.isBefore()) {
+          List<BeeColumn> cols = event.getColumns();
+
+          if (DataUtils.contains(cols, COL_DOCUMENT_NUMBER)
+              || !DataUtils.contains(cols, COL_DOCUMENT_CATEGORY)) {
+            return;
+          }
+          IsRow row = event.getRow();
+
+          String prefix = qs.getValue(new SqlSelect()
+              .addFields(TBL_DOCUMENT_TREE, COL_NUMBER_PREFIX)
+              .addFrom(TBL_DOCUMENT_TREE)
+              .setWhere(sys.idEquals(TBL_DOCUMENT_TREE,
+                  row.getLong(DataUtils.getColumnIndex(COL_DOCUMENT_CATEGORY, cols)))));
+
+          if (!BeeUtils.isEmpty(prefix)) {
+            cols.add(new BeeColumn(COL_DOCUMENT_NUMBER));
+            row.addValue(Value.getValue(qs.getNextNumber(event.getTargetName(),
+                COL_DOCUMENT_NUMBER, prefix, null)));
+          }
+        }
+      }
+
+      @Subscribe
       public void setRowProperties(ViewQueryEvent event) {
         if (event.isBefore()) {
           return;
@@ -136,7 +228,7 @@ public class DocumentsModuleBean implements BeeModule {
               AdministrationConstants.PROP_ICON);
 
         } else if (BeeUtils.same(event.getTargetName(), VIEW_DOCUMENT_TEMPLATES)) {
-          Map<Long, IsRow> indexedRows = Maps.newHashMap();
+          Map<Long, IsRow> indexedRows = new HashMap<>();
           BeeRowSet rowSet = event.getRowset();
           int idx = rowSet.getColumnIndex(COL_DOCUMENT_DATA);
 
@@ -229,50 +321,84 @@ public class DocumentsModuleBean implements BeeModule {
               Codec.beeSerialize(states.keySet()));
         }
       }
+    });
+  }
 
-      @Subscribe
-      public void applyDocumentRights(ViewQueryEvent event) {
-        if (BeeUtils.inListSame(event.getTargetName(), TBL_DOCUMENTS, VIEW_RELATED_DOCUMENTS)
-            && !usr.isAdministrator()) {
+  private ResponseObject createPdf(String content) {
+    if (!BeeUtils.unbox(prm.getBoolean(PRM_PRINT_AS_PDF))) {
+      return ResponseObject.emptyResponse();
+    }
+    StringBuilder sb = new StringBuilder();
 
-          if (event.isBefore()) {
-            SqlSelect query = event.getQuery();
-            String tableAlias = null;
+    for (String name : new String[] {PRM_PRINT_HEADER, PRM_PRINT_FOOTER}) {
+      Long id = prm.getRelation(name);
 
-            for (IsFrom from : query.getFrom()) {
-              if (from.getSource() instanceof String
-                  && BeeUtils.same((String) from.getSource(), TBL_DOCUMENT_TREE)) {
-                tableAlias = BeeUtils.notEmpty(from.getAlias(), TBL_DOCUMENT_TREE);
-                break;
-              }
-            }
-            if (!BeeUtils.isEmpty(tableAlias)) {
-              sys.filterVisibleState(query, TBL_DOCUMENT_TREE, tableAlias);
-            }
-          } else {
-            BeeRowSet rs = event.getRowset();
-            int categoryIdx = rs.getColumnIndex(COL_DOCUMENT_CATEGORY);
-            List<Long> categories = new ArrayList<>();
+      if (DataUtils.isId(id)) {
+        String nameContent = qs.getValue(new SqlSelect()
+            .addFields(TBL_EDITOR_TEMPLATES, COL_EDITOR_TEMPLATE_CONTENT)
+            .addFrom(TBL_EDITOR_TEMPLATES)
+            .setWhere(sys.idEquals(TBL_EDITOR_TEMPLATES, id)));
 
-            if (BeeUtils.isNonNegative(categoryIdx)) {
-              for (Value category : rs.getDistinctValues(categoryIdx)) {
-                categories.add(category.getLong());
-              }
-            }
-            if (!BeeUtils.isEmpty(categories)) {
-              BeeRowSet catRs = qs.getViewData(TBL_DOCUMENT_TREE, Filter.idIn(categories), null,
-                  Lists.newArrayList(COL_CATEGORY_NAME));
-
-              for (BeeRow row : rs) {
-                IsRow catRow = catRs.getRowById(row.getLong(categoryIdx));
-                row.setEditable(catRow.isEditable());
-                row.setRemovable(catRow.isRemovable());
-              }
-            }
-          }
+        if (!BeeUtils.isEmpty(nameContent)) {
+          sb.append("<div style=\"position:running(").append(name).append(")\">")
+              .append(nameContent)
+              .append("</div>");
         }
       }
-    });
+    }
+    String parsed = HtmlUtils.cleanXml(sb.append(content).toString());
+
+    Map<Long, String> files = HtmlUtils.getFileReferences(parsed);
+    List<File> tmpFiles = new ArrayList<>();
+
+    try {
+      for (Long fileId : files.keySet()) {
+        FileInfo fileInfo = fs.getFile(fileId);
+
+        if (fileInfo != null) {
+          File file = new File(fileInfo.getPath());
+
+          if (fileInfo.isTemporary()) {
+            tmpFiles.add(file);
+          }
+          parsed = parsed.replace(files.get(fileId), file.toURI().toString());
+        }
+      }
+      StringBuilder style = new StringBuilder();
+
+      if (!BeeUtils.isEmpty(prm.getText(PRM_PRINT_MARGINS))) {
+        style.append("@page {margin:" + prm.getText(PRM_PRINT_MARGINS) + "}");
+      }
+      ITextRenderer renderer = new ITextRenderer();
+
+      renderer.setDocumentFromString("<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+          + "<!DOCTYPE html [<!ENTITY nbsp \"&#160;\">]>"
+          + "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head>"
+          + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>"
+          + "<link rel=\"stylesheet\" href=\""
+          + new File(Config.WAR_DIR, Paths.getStyleSheetPath("print")).getPath() + "\" />"
+          + "<style>" + style.toString() + "</style>"
+          + "</head><body>" + parsed + "</body></html>");
+
+      renderer.layout();
+
+      File tmp = File.createTempFile("bee_", ".pdf");
+      tmp.deleteOnExit();
+      FileOutputStream os = new FileOutputStream(tmp);
+
+      renderer.createPDF(os);
+      os.close();
+
+      return ResponseObject.response(tmp.getPath());
+
+    } catch (IOException | DocumentException e) {
+      return ResponseObject.error(e);
+
+    } finally {
+      for (File file : tmpFiles) {
+        logger.debug("File deleted:", file.getPath(), file.delete());
+      }
+    }
   }
 
   private ResponseObject copyDocumentData(Long data) {
@@ -295,7 +421,7 @@ public class DocumentsModuleBean implements BeeModule {
             sys.joinTables(TBL_CRITERIA_GROUPS, TBL_CRITERIA, COL_CRITERIA_GROUP))
         .setWhere(SqlUtils.equals(TBL_CRITERIA_GROUPS, COL_DOCUMENT_DATA, data)));
 
-    Map<Long, Long> groups = Maps.newHashMap();
+    Map<Long, Long> groups = new HashMap<>();
 
     for (SimpleRow row : rs) {
       long groupId = row.getLong(COL_CRITERIA_GROUP);

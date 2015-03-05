@@ -10,6 +10,9 @@ module="Ec.Classifiers"
   <Item name="RejectionReasons" label="=ecRejectionReasons" service="grid"
     parameters="RejectionReasons" />
 
+  <Item name="TcdPriceLists" label="=tcdPriceLists" service="grid" parameters="TcdPriceLists"
+    separator="true" />
+
   <Item name="TcdCriteria" label="=tcdCriteria" service="grid" parameters="TcdCriteria"
     separator="true" />
   <Item name="EcCategories" label="=ecItemCategories" service="form" parameters="TcdCategories"

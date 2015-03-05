@@ -4,7 +4,7 @@
   xmlns:w="http://www.butent.com/widget"
   
   name="DocumentTemplates" viewName="DocumentTemplates" caption="=documentTemplates"
-  flexGrow="1" enableCopy="Category"
+  flexGrow="1"
   >
   
   <g:west size="200" splitterSize="2">

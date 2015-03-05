@@ -8,6 +8,7 @@ import com.butent.bee.shared.modules.discussions.LocalizableDiscussionsConstants
 import com.butent.bee.shared.modules.documents.LocalizableDocumentsConstants;
 import com.butent.bee.shared.modules.ec.LocalizableEcConstants;
 import com.butent.bee.shared.modules.mail.LocalizableMailConstants;
+import com.butent.bee.shared.modules.projects.LocalizableProjectConstants;
 import com.butent.bee.shared.modules.service.LocalizableServiceConstants;
 import com.butent.bee.shared.modules.tasks.LocalizableTaskConstants;
 import com.butent.bee.shared.modules.trade.LocalizableTradeConstants;
@@ -18,7 +19,7 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
     LocalizableCalendarConstants, LocalizableMailConstants, LocalizableTransportConstants,
     LocalizableTradeConstants, LocalizableTradeActConstants, LocalizableTaskConstants,
     LocalizableEcConstants, LocalizableDiscussionsConstants, LocalizableDocumentsConstants,
-    LocalizableServiceConstants {
+    LocalizableServiceConstants, LocalizableProjectConstants {
 
   String actionAdd();
 
@@ -34,6 +35,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String actionCanNotBeExecuted();
 
+  String actionChange();
+
   String actionClose();
 
   String actionConfigure();
@@ -47,6 +50,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String actionDeleteFilter();
 
   String actionEdit();
+
+  String actionExchange();
 
   String actionExport();
 
@@ -71,6 +76,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String actionRename();
 
   String actionRenameFilter();
+
+  String actionResetSettings();
 
   String actionSave();
 
@@ -148,6 +155,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String clear();
 
+  String clearFilter();
+
   String client();
 
   String clients();
@@ -186,17 +195,29 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String dangerous();
 
+  String data();
+
+  String dataImport();
+
   String date();
 
   String dateFormat();
 
+  String dateFrom();
+
   String dateFromShort();
 
+  String dateTo();
+
   String dateToShort();
+
+  String dayShort();
 
   String delete();
 
   String deleteActiveRow();
+
+  String deletePictureQuestion();
 
   String deleteQuestion();
 
@@ -227,6 +248,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String enterTime();
 
   String error();
+
+  String errors();
 
   String exchangeCode();
 
@@ -350,7 +373,15 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String filterRemove();
 
+  String firstName();
+
+  String groupBy();
+
   String height();
+
+  String holidays();
+
+  String imported();
 
   String imageUploadFailed();
 
@@ -374,7 +405,13 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String ipBlocked();
 
+  String keywords();
+
+  String kilogramShort();
+
   String languageTag();
+
+  String lastName();
 
   String length();
 
@@ -402,6 +439,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String margin();
 
+  String marginPercent();
+
   String maxValue();
 
   String menu();
@@ -418,6 +457,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String name();
 
+  String newCompanyPerson();
+
   String newEmailAccount();
 
   String newPassword();
@@ -425,6 +466,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String newPasswordIsRequired();
 
   String newPasswordsDoesNotMatch();
+
+  String newPersonCompany();
 
   String newProperty();
 
@@ -452,6 +495,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String number();
 
+  String object();
+
   String objectData();
 
   String objectField();
@@ -459,6 +504,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String objectMenu();
 
   String objectModule();
+
+  String objects();
 
   String objectWidget();
 
@@ -490,9 +537,7 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String person();
 
-  String personContact();
-
-  String personContacts();
+  String personCompanies();
 
   String persons();
 
@@ -516,13 +561,13 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String questionLogout();
 
+  String reason();
+
   String registered();
 
   String relatedTo();
 
   String relations();
-
-  String removeFilter();
 
   String repeatNewPassword();
 
@@ -604,6 +649,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String settings();
 
+  String sheetName();
+
   String signOut();
 
   String sorry();
@@ -630,6 +677,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String time();
 
+  String timeDifference();
+
   String tooLittleData();
 
   String total();
@@ -641,6 +690,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String unitDayShort();
 
   String unitDaysShort();
+
+  String unitHourShort();
 
   String unitWeekShort();
 
@@ -664,6 +715,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String vat();
 
+  String vatAmount();
+
   String vatPercent();
 
   String vatPlus();
@@ -671,6 +724,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String volume();
 
   String warehouse();
+
+  String warehouses();
 
   String weight();
 

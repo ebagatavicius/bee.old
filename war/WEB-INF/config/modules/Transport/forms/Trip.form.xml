@@ -49,31 +49,31 @@
             
             <FlowPanel class="flexBox-horizontal" style="&ROW_STYLE;">
               <SimplePanel>
-                <InputDate source="DateFrom" style="width: 7em;" />
+                <InputDate source="DateFrom" style="width: 7em;" summarize="true" />
               </SimplePanel>
               <Label text="=date"  style="margin: 0 20px 0 20px"/>
               <SimplePanel>
-                <InputDate source="DateTo" style="width: 7em;" />
+                <InputDate source="DateTo" style="width: 7em;" summarize="true" />
               </SimplePanel>
             </FlowPanel>
             
             <FlowPanel class="flexBox-horizontal" style="&ROW_STYLE;">
               <SimplePanel>
-                <InputDouble source="SpeedometerBefore" style="width: 6em;" />
+                <InputDouble source="SpeedometerBefore" style="width: 6em;" summarize="true" />
               </SimplePanel>
               <Label text="=transportSpeedometer" style="margin: 0 10px 0 10px" />
               <SimplePanel>
-                <InputDouble source="SpeedometerAfter" style="width: 6em;" />
+                <InputDouble source="SpeedometerAfter" style="width: 6em;" summarize="true" />
               </SimplePanel>
             </FlowPanel>
             
             <FlowPanel class="flexBox-horizontal" style="&ROW_STYLE;">
               <SimplePanel>
-                <InputDecimal source="FuelBefore" style="width: 4em;" />
+                <InputDecimal source="FuelBefore" style="width: 4em;" summarize="true" />
               </SimplePanel>
-              <Label text="=transportFuelBalanceInTank" style="margin: 0 24px 0 24px"/>
+              <Label text="=transportFuelBalanceInTank" style="margin: 0 24px 0 24px" />
               <SimplePanel>
-                <InputDecimal source="FuelAfter" style="width: 4em;" />
+                <InputDecimal source="FuelAfter" style="width: 4em;" summarize="true" />
               </SimplePanel>
             </FlowPanel>
            

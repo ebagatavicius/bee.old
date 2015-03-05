@@ -8,7 +8,8 @@
     <String name="FirstName" precision="30" notNull="true" label="=firstName" />
     <String name="LastName" precision="30" label="=lastName" />
     <Date name="DateOfBirth" label="=dateOfBirth" />
-    <Relation name="Contact" unique="true" relation="Contacts" editable="true"  label="=contacts" />
+    <Relation name="Contact" unique="true" relation="Contacts" editable="true" label="=contacts" />
     <String name="Photo" precision="100" label="=photo" />
+    <Text name="Notes" label="=notes" />
   </Fields>
 </Table>

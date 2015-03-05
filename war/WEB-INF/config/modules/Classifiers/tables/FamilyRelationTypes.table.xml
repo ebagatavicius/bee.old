@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+  name="FamilyRelationTypes"
+  idName="RelationID"
+  >
+  <Fields>
+    <String name="Name" precision="100" notNull="true" unique="true" label="=contactFamilyRelation" />
+    <Text name="Description" label="=description" />
+  </Fields>
+</Table>

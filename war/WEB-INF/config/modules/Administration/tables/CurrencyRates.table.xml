@@ -8,7 +8,7 @@
     <Relation name="Currency" relation="Currencies" notNull="true" cascade="DELETE" label="=currency" />
     <DateTime name="Date" notNull="true" label="=date" />
     <Integer name="Quantity" notNull="true" label="=quantity" />
-    <Numeric name="Rate" precision="10" scale="4" notNull="true" label="=currencyRate" />
+    <Double name="Rate" notNull="true" label="=currencyRate" />
   </Fields>
 
   <Constraints>

@@ -48,7 +48,7 @@ public class BeeServlet extends LoginServlet {
     HttpSession session = req.getSession();
     String sessionId = session.getId();
 
-    RequestInfo reqInfo = new RequestInfo(req);
+    RequestInfo reqInfo = new RequestInfo(req, true);
 
     String meth = reqInfo.getMethod();
     String rid = reqInfo.getId();

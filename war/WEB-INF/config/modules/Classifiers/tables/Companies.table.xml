@@ -3,7 +3,6 @@
   
   name="Companies"
   idName="CompanyID"
-  x="752" y="484"
   >
   <Fields>
     <Relation name="Owner" relation="Companies" />
@@ -20,12 +19,13 @@
     <Relation name="CompanySize" relation="CompanySizes" label="=companySize" />
     <Relation name="InformationSource" relation="InformationSources" label="=informationSource" />
 
-    <String name="Rating" precision="100" label="=companyRating" />
+    <Relation name="Turnover" relation="Turnovers" 
+      label="=clientTurnovers" />   
+    <Relation name="TurnoverCurrency" relation="Currencies"
+      label="=currency" />
 
     <Relation name="CompanyRelationTypeState" relation="RelationTypeStates" 
       label="=companyRelationState" />
-
-    <String name="ExchangeCode" precision="30" label="=exchangeCode" />
 
     <Integer name="CreditLimit" label="=creditLimit" />
     <Relation name="LimitCurrency" relation="Currencies" label="=limitCurrency" />
@@ -34,6 +34,7 @@
     
     <Relation name="FinancialState" relation="FinancialStates" label="=financialState" />
     <Relation name="DefaultBankAccount" relation="CompanyBankAccounts" unique="true" cascade="SET_NULL" label="=defaultBankAccount" />
+    <Relation name="DefaultCompanyUser" relation="CompanyUsers" unique="true" cascade="SET_NULL" label="=defaultCompanyUser" editable="true" />
     <Numeric name="DaysAsBuyer" precision="3" label="=daysAsBuyer" />
     <Numeric name="DaysAsSupplier" precision="3" label="=daysAsSupplier" />
 

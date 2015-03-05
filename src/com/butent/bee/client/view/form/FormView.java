@@ -60,6 +60,8 @@ public interface FormView extends DataView, HasDataTable, ActiveWidgetChangeEven
 
   boolean focus(String source);
 
+  int flush();
+
   long getActiveRowId();
 
   Collection<RowChildren> getChildrenForInsert();
@@ -117,6 +119,8 @@ public interface FormView extends DataView, HasDataTable, ActiveWidgetChangeEven
   boolean printHeader();
 
   void refreshChildWidgets(IsRow row);
+
+  void setCaption(String caption);
 
   void start(Integer rowCount);
 

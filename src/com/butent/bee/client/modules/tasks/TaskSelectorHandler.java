@@ -9,7 +9,7 @@ import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.event.logical.SelectorEvent;
-import com.butent.bee.client.ui.UiHelper;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.CellSource;
@@ -18,6 +18,7 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ class TaskSelectorHandler implements SelectorEvent.Handler {
   @Override
   public void onDataSelector(SelectorEvent event) {
 
-    FormView form = UiHelper.getForm(event.getSelector());
+    FormView form = ViewHelper.getForm(event.getSelector());
     if (form == null) {
       return;
     }
@@ -147,7 +148,7 @@ class TaskSelectorHandler implements SelectorEvent.Handler {
       return;
     }
 
-    Set<String> updatedColumns = Sets.newHashSet();
+    Set<String> updatedColumns = new HashSet<>();
 
     for (int i = 0; i < templateColumns.size(); i++) {
       String colName = templateColumns.get(i).getId();

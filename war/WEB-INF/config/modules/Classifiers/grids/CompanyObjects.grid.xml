@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+  name="CompanyObjects" viewName="CompanyObjects"
+  >
+  <g:columns>
+    <DataColumn name="ObjectName" visible="true" flexGrow="1" />
+    <DataColumn name="ObjectAddress" flexGrow="2" />
+
+    <DataColumn name="DateFrom" />
+    <DataColumn name="DateUntil" />
+
+    <RelColumn name="ObjectPerson" flexGrow="1" newRowEnabled="false" caching="local" />
+
+    <DataColumn name="Notes" visible="false" flexGrow="1" />
+  </g:columns>
+</g:Grid>

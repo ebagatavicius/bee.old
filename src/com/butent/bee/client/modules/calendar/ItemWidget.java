@@ -60,6 +60,11 @@ public class ItemWidget extends Flow {
       addStyleName(CalendarStyleManager.PARTIAL);
     }
 
+    Enum<?> status = item.getStatus();
+    if (status != null) {
+      addStyleName(CalendarStyleManager.STATUS_PREFIX + status.name().toLowerCase());
+    }
+
     this.headerPanel = new Mover(CalendarStyleManager.HEADER);
     this.bodyPanel = new CustomDiv(CalendarStyleManager.BODY);
     this.footerPanel = new Mover(CalendarStyleManager.FOOTER, footerOrientation);

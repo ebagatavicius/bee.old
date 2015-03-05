@@ -11,12 +11,16 @@
         <SimpleColumn name="OrderNo" />
       </SimpleJoin>
       <SimpleJoin name="LoadingPlace" joinType="LEFT">
+        <SimpleColumn name="Country" alias="LoadingCountry" editable="true" label="=trLoadingCountry"/>
         <SimpleJoin joinType="LEFT" name="Country">
+          <SimpleColumn name="Name" alias="LoadingCountryName" />
           <SimpleColumn name="Code" alias="LoadingCountryCode" label="=from" />
         </SimpleJoin>
       </SimpleJoin>
       <SimpleJoin name="UnloadingPlace" joinType="LEFT">
+        <SimpleColumn name="Country" alias="UnloadingCountry" editable="true" label="=trUnloadingCountry"/>
         <SimpleJoin joinType="LEFT" name="Country">
+          <SimpleColumn name="Name" alias="UnloadingCountryName" />
           <SimpleColumn name="Code" alias="UnloadingCountryCode" label="=to" />
         </SimpleJoin>
       </SimpleJoin>

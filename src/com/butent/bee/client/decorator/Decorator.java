@@ -1,7 +1,5 @@
 package com.butent.bee.client.decorator;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -28,6 +26,8 @@ import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.PropertyUtils;
 import com.butent.bee.shared.utils.XmlHelper;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,11 +35,11 @@ class Decorator implements HasEnabled, HasExtendedInfo {
 
   private final class Fields implements HasExtendedInfo {
 
-    private final List<Parameter> params = Lists.newArrayList();
-    private final Map<String, String> constants = Maps.newHashMap();
-    private final Map<String, String> css = Maps.newHashMap();
+    private final List<Parameter> params = new ArrayList<>();
+    private final Map<String, String> constants = new HashMap<>();
+    private final Map<String, String> css = new HashMap<>();
     private Lifecycle lifecycle;
-    private final List<Handler> handlers = Lists.newArrayList();
+    private final List<Handler> handlers = new ArrayList<>();
     private Template template;
 
     private String eventTarget;
@@ -76,7 +76,7 @@ class Decorator implements HasEnabled, HasExtendedInfo {
 
     @Override
     public List<ExtendedProperty> getExtendedInfo() {
-      List<ExtendedProperty> result = Lists.newArrayList();
+      List<ExtendedProperty> result = new ArrayList<>();
 
       int idx;
       if (!params.isEmpty()) {
@@ -254,7 +254,7 @@ class Decorator implements HasEnabled, HasExtendedInfo {
 
   @Override
   public List<ExtendedProperty> getExtendedInfo() {
-    List<ExtendedProperty> result = Lists.newArrayList();
+    List<ExtendedProperty> result = new ArrayList<>();
     PropertyUtils.addProperties(result, false,
         DecoratorConstants.ATTR_ID, getId(),
         DecoratorConstants.ATTR_EXTENDS, getParent(),
@@ -619,7 +619,7 @@ class Decorator implements HasEnabled, HasExtendedInfo {
   }
 
   private Map<String, String> getSubstitutes(Map<String, String> options) {
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
     for (Parameter param : getFields().params) {
       result.put(wrapSubstitute(param.getName()), param.getValue(options));
     }

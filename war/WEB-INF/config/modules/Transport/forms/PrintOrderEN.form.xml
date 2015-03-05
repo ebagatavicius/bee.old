@@ -138,12 +138,17 @@
     </HorizontalPanel>
 
     <HorizontalPanel class="&form;-table" style="&section;">
-      <Label html="Rates:" style="&bold;" />
-        
+      <Label html="Rates:" style="&bold;" />        
       <FlowPanel>
         <DecimalLabel name="Total" scale="2" inline="true" style="margin-right:2px;" />
         <TextLabel source="CurrencyName" inline="true" />
       </FlowPanel>
+      <Label html="Payment term (days):" style="&bold;" />
+      <TextLabel name="CreditDays">
+        <render>
+          <ui:expression>row.DaysAsBuyer ? row.DaysAsBuyer : row.CreditDays</ui:expression>
+        </render>
+      </TextLabel>
     </HorizontalPanel>
 
     <HtmlPanel style="&section;">

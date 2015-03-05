@@ -267,7 +267,7 @@ public final class ClassUtils {
     Constructor<?> constructor;
     try {
       constructor = cls.getEnclosingConstructor();
-    } catch (NoClassDefFoundError | Exception err) {
+    } catch (SecurityException err) {
       logger.warning(err);
       constructor = null;
     }
@@ -281,7 +281,7 @@ public final class ClassUtils {
     Method method;
     try {
       method = cls.getEnclosingMethod();
-    } catch (NoClassDefFoundError | Exception err) {
+    } catch (SecurityException err) {
       logger.warning(err);
       method = null;
     }

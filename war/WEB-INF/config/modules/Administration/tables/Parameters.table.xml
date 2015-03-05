@@ -5,12 +5,7 @@
   idName="ParameterID"
   >
   <Fields>
-    <String name="Module" precision="20" notNull="true" label="=module" />
-    <String name="Name" precision="30" notNull="true" unique="true" label="=parameterName" />
-    <Text name="Value" label="=valueParameter" />
+    <String name="Name" precision="30" notNull="true" unique="true" label="=parameter" />
+    <Text name="Value" label="=value" />
   </Fields>
- 
-   <Indexes>
-     <Index fields="Module" />
-   </Indexes>
 </Table>

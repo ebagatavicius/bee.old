@@ -42,7 +42,7 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable, HasW
 
   private static final BeeLogger logger = LogUtils.getLogger(HtmlEditor.class);
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "HtmlEditor-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "HtmlEditor-";
 
   private static final String STYLE_VIEW = STYLE_PREFIX + "view";
   private static final String STYLE_CANVAS = STYLE_PREFIX + "canvas";

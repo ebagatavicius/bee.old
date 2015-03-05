@@ -1,11 +1,8 @@
 package com.butent.bee.client.modules.transport;
 
 import com.google.common.collect.Sets;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -16,21 +13,19 @@ import com.butent.bee.client.cli.Shell;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dom.DomUtils;
-import com.butent.bee.client.event.Binder;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
-import com.butent.bee.client.layout.Direction;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.logging.ClientLogManager;
 import com.butent.bee.client.modules.administration.PasswordService;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.screen.ScreenImpl;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.filter.Filter;
@@ -67,7 +62,7 @@ public class SelfServiceScreen extends ScreenImpl {
     }
   }
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "tr-SelfService-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-SelfService-";
 
   private final Map<String, String> activeViews = new HashMap<>();
 
@@ -182,27 +177,6 @@ public class SelfServiceScreen extends ScreenImpl {
   @Override
   protected Widget createSearch() {
     return null;
-  }
-
-  @Override
-  protected Pair<? extends IdentifiableWidget, Integer> initNorth() {
-    Pair<? extends IdentifiableWidget, Integer> north = super.initNorth();
-
-    if (north != null && north.getA() != null) {
-      Binder.addMouseDownHandler(north.getA().asWidget(), new MouseDownHandler() {
-        @Override
-        public void onMouseDown(MouseDownEvent event) {
-          if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
-            int oldSize = getScreenPanel().getDirectionSize(Direction.WEST);
-            int newSize = (oldSize > 0) ? 0 : getWidth() / 5;
-
-            getScreenPanel().setDirectionSize(Direction.WEST, newSize, true);
-          }
-        }
-      });
-    }
-
-    return north;
   }
 
   @Override

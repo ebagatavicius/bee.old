@@ -13,6 +13,8 @@ name="TransportClassifiers" label="=classifiers" parent="Transport" order="20" s
   <Item name="ServiceTypes" label="=trServiceTypes" service="grid" parameters="ServiceTypes" />
   <Item name="Fueltypes" label="=trFuelTypes" service="grid" parameters="FuelTypes" />
   <Item name="TransportGroups" label="=trTransportGroups" service="grid" parameters="TransportGroups" />
+
+  <Item name="CountryNorms" label="=trCountryNorms" service="grid" parameters="CountryNorms" separator="true" />
  
   <Item name="Parameters" label="=trParameters" service="parameters" parameters="Transport"
     separator="true" module="Transport.Administration" />

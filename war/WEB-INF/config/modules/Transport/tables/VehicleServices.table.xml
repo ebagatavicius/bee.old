@@ -3,7 +3,6 @@
 
   name="VehicleServices"
   idName="ServiceID"
-  x="0" y="0"
   >
   <Fields>
     <Relation name="Vehicle" notNull="true" relation="Vehicles" cascade="DELETE" label="=trVehicle" />

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="TcdPriceLists" source="TcdPriceLists"
+  caption="=tcdPriceLists"
+  >
+  <Columns>
+    <SimpleColumn name="PriceListName" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="PriceListName" />
+  </Order>
+</View>

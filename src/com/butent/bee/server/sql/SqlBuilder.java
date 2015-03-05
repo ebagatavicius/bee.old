@@ -1,8 +1,6 @@
 package com.butent.bee.server.sql;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import com.butent.bee.server.sql.SqlCreate.SqlField;
 import com.butent.bee.shared.Assert;
@@ -22,9 +20,11 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -412,7 +412,7 @@ public abstract class SqlBuilder {
             expression, "IS", (operator == Operator.NOT_NULL) ? "NOT" : "", "NULL");
 
       case IN:
-        List<String> vals = Lists.newArrayList();
+        List<String> vals = new ArrayList<>();
         int i = 0;
 
         while (params.containsKey("value" + i)) {
@@ -585,12 +585,12 @@ public abstract class SqlBuilder {
         return xpr.append(")").toString();
 
       case LEFT:
-        Map<String, Object> newParams = Maps.newHashMap(params);
+        Map<String, Object> newParams = new HashMap<>(params);
         newParams.put("pos", 1);
         return sqlFunction(SqlFunction.SUBSTRING, newParams);
 
       case RIGHT:
-        newParams = Maps.newHashMap(params);
+        newParams = new HashMap<>(params);
         newParams.put("pos", BeeUtils.joinWords(
             sqlFunction(SqlFunction.LENGTH, params), "-", params.get("len"), "+", "1"));
 

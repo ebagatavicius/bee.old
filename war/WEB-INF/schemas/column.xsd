@@ -33,18 +33,20 @@
     <xs:attribute name="visible" type="xs:boolean" />
     <xs:attribute name="module" type="type:modules" />
     <xs:attribute name="format" type="xs:normalizedString" />
+    <xs:attribute name="scale" type="xs:unsignedByte" />
     <xs:attribute name="horizontalAlignment" type="ui:horizontalAlignmentType" />
     <xs:attribute name="whiteSpace" type="ui:whiteSpaceType" />
     <xs:attribute name="cellType" type="ui:cellType" />
     <xs:attribute name="cellResizable" type="xs:boolean" />
-    <xs:attribute name="renderColumns" type="type:nameList" />
-    <xs:attribute name="sortBy" type="type:nameList" />
-    <xs:attribute name="searchBy" type="type:nameList" />
+    <xs:attribute name="renderColumns" type="type:fieldNames" />
+    <xs:attribute name="sortBy" type="type:fieldNames" />
+    <xs:attribute name="searchBy" type="type:fieldNames" />
     <xs:attribute name="filterSupplier" type="type:filterSupplier" />
     <xs:attribute name="filterOptions" type="xs:normalizedString" />
     <xs:attribute name="options" type="xs:normalizedString" />
     <xs:attribute name="exportable" type="xs:boolean" />
     <xs:attribute name="exportWidthFactor" type="type:positiveDecimal" />
+    <xs:attribute name="draggable" type="xs:boolean" />
     <xs:attribute ref="xml:base" />
   </xs:complexType>
   
@@ -64,11 +66,12 @@
           <xs:element name="validation" type="ui:calcType" minOccurs="0" />
           <xs:element name="carry" type="ui:calcType" minOccurs="0" />
         </xs:sequence>
-        <xs:attribute name="source" type="type:nameType" />
+        <xs:attribute name="source" type="type:fieldNameType" />
         <xs:attribute name="required" type="xs:boolean" />
         <xs:attribute name="enumKey" type="xs:normalizedString" />
         <xs:attribute name="updateMode" type="ui:refreshType" />
         <xs:attribute name="carry" type="xs:boolean" />
+        <xs:attribute name="editInPlace" type="xs:boolean" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -118,8 +121,7 @@
       <xs:extension base="columnType">
         <xs:attribute name="type" type="type:valueType" use="required" />
         <xs:attribute name="precision" type="xs:positiveInteger" />
-        <xs:attribute name="scale" type="xs:unsignedByte" />
-        <xs:attribute name="source" type="type:nameType" />
+        <xs:attribute name="source" type="type:fieldNameType" />
         <xs:attribute name="dynamic" type="xs:boolean" />
       </xs:extension>
     </xs:complexContent>
@@ -130,7 +132,7 @@
   <xs:complexType name="actionColumn">
     <xs:complexContent>
       <xs:extension base="columnType">
-        <xs:attribute name="source" type="type:nameType" />
+        <xs:attribute name="source" type="type:fieldNameType" />
         <xs:attribute name="element" type="ui:elementType" use="required" />
         <xs:attribute name="dynamic" type="xs:boolean" />
       </xs:extension>
@@ -144,7 +146,6 @@
       <xs:extension base="columnType">
         <xs:attribute name="type" type="type:valueType" use="required" />
         <xs:attribute name="precision" type="xs:positiveInteger" />
-        <xs:attribute name="scale" type="xs:unsignedByte" />
         <xs:attribute name="property" type="type:nameType" />
         <xs:attribute name="enumKey" type="xs:normalizedString" />
         <xs:attribute name="dynamic" type="xs:boolean" />
@@ -221,8 +222,9 @@
     <xs:attribute name="text" type="xs:string" />
     <xs:attribute name="html" type="xs:string" />
     <xs:attribute name="format" type="xs:normalizedString" />
-    <xs:attribute name="horizontalAlignment" type="ui:horizontalAlignmentType" />
     <xs:attribute name="scale" type="xs:unsignedByte" />
+    <xs:attribute name="horizontalAlignment" type="ui:horizontalAlignmentType" />
+    <xs:attribute name="whiteSpace" type="ui:whiteSpaceType" />
     <xs:attribute name="options" type="xs:normalizedString" />
   </xs:complexType>
   

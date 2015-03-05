@@ -3,13 +3,14 @@ package com.butent.bee.client.modules.calendar;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public final class CalendarStyleManager {
 
-  public static final String DAY_VIEW = "bee-cal";
+  public static final String DAY_VIEW = BeeConst.CSS_CLASS_PREFIX + "cal";
   public static final String RESOURCE_VIEW = DAY_VIEW;
-  public static final String MONTH_VIEW = "bee-cal-MonthView";
+  public static final String MONTH_VIEW = BeeConst.CSS_CLASS_PREFIX + "cal-MonthView";
 
   public static final String CALENDAR_HEADER = "calendar-header";
   public static final String DATE_CELL = "date-cell";
@@ -58,6 +59,8 @@ public final class CalendarStyleManager {
   public static final String TASK = "task";
   public static final String PARTIAL = "partial";
 
+  public static final String STATUS_PREFIX = "status-";
+
   public static final String MOVABLE = "movable";
   public static final String RESIZABLE = "resizable";
 
@@ -70,7 +73,7 @@ public final class CalendarStyleManager {
   public static final String MONTH_CELL_LABEL = "dayCellLabel";
 
   public static final String MORE_LABEL = "moreAppointments";
-  public static final String MORE_POPUP = "bee-cal-morePopup";
+  public static final String MORE_POPUP = BeeConst.CSS_CLASS_PREFIX + "cal-morePopup";
   public static final String MORE_PANEL = "morePanel";
 
   public static final String DISABLED = "disabled";
@@ -81,11 +84,12 @@ public final class CalendarStyleManager {
   public static final String NOW_POINTER = "nowPointer";
   public static final String NOW_MARKER = "nowMarker";
 
-  public static final String TODAY = "bee-cal-today";
-  public static final String TODAY_MARKER = "bee-cal-todayMarker";
+  public static final String TODAY = BeeConst.CSS_CLASS_PREFIX + "cal-today";
+  public static final String TODAY_MARKER = BeeConst.CSS_CLASS_PREFIX + "cal-todayMarker";
 
   public static final String DRAG = "drag";
   public static final String POSITIONER = "positioner";
+  public static final String TARGET = "target";
 
   static void applyStyle(Widget widget, String styles) {
     if (!BeeUtils.isEmpty(styles)) {

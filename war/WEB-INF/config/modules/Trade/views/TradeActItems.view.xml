@@ -17,6 +17,19 @@
       </SimpleJoin>
   
       <SimpleColumn name="Weight" />
+      <SimpleColumn name="Area" />
+  
+      <SimpleColumn name="Price" alias="ItemPrice" />
+      <SimpleColumn name="Currency" alias="ItemCurrency" />
+      <SimpleColumn name="Cost" alias="ItemCost" />
+      <SimpleColumn name="CostCurrency" alias="ItemCostCurrency" />
+
+      <SimpleColumn name="Price1" alias="ItemPrice1" />
+      <SimpleColumn name="Currency1" alias="ItemCurrency1" />
+      <SimpleColumn name="Price2" alias="ItemPrice2" />
+      <SimpleColumn name="Currency2" alias="ItemCurrency2" />
+      <SimpleColumn name="Price3" alias="ItemPrice3" />
+      <SimpleColumn name="Currency3" alias="ItemCurrency3" />
     </SimpleJoin>
 
     <SimpleColumn name="Quantity" />

@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.RequiresResize;
 
 import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.event.logical.ReadyEvent.Handler;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.CustomWidget;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -33,7 +32,7 @@ public final class MapWidget extends CustomWidget implements RequiresResize,
   private final Collection<Marker> markers = new ArrayList<>();
 
   private MapWidget(MapOptions options) {
-    super(Document.get().createDivElement(), StyleUtils.CLASS_NAME_PREFIX + "Map");
+    super(Document.get().createDivElement(), BeeConst.CSS_CLASS_PREFIX + "Map");
     this.mapOptions = options;
   }
 

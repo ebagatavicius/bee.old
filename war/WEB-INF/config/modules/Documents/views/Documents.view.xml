@@ -10,6 +10,11 @@
   <Columns>
     <SimpleColumn name="Name" />
 
+    <SimpleColumn name="Company" />
+    <SimpleJoin joinType="LEFT" name="Company">
+      <SimpleColumn alias="CompanyName" name="Name" />
+    </SimpleJoin>
+
     <SimpleColumn name="DocumentDate" />
     <SimpleColumn name="Expires" />
 

@@ -15,7 +15,7 @@ import com.butent.bee.shared.ui.HasWidgetSupplier;
 import java.util.Collection;
 
 public interface GridContainerView extends View, HasAllDragAndDropHandlers, HasGridView, Printable,
-    HandlesHistory, HasWidgetSupplier {
+    HandlesHistory, HasWidgetSupplier, HasNavigation {
 
   void bind();
 

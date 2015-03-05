@@ -29,6 +29,7 @@ import com.butent.bee.client.event.Binder;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.HasInputHandlers;
 import com.butent.bee.client.event.InputHandler;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.ui.UiHelper;
@@ -40,6 +41,8 @@ import com.butent.bee.client.view.edit.HasCharacterFilter;
 import com.butent.bee.client.view.edit.HasTextBox;
 import com.butent.bee.client.view.edit.TextBox;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.data.value.BooleanValue;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.html.Autocomplete;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.ui.HasAutocomplete;
@@ -77,6 +80,8 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   private boolean valueChangeHandlerInitialized;
 
   private String suggestionSource;
+
+  private boolean summarize;
 
   public InputText() {
     super(Document.get().createTextInputElement());
@@ -133,6 +138,11 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   @Override
   public HandlerRegistration addKeyPressHandler(KeyPressHandler handler) {
     return addDomHandler(handler, KeyPressEvent.getType());
+  }
+
+  @Override
+  public HandlerRegistration addSummaryChangeHandler(SummaryChangeEvent.Handler handler) {
+    return addHandler(handler, SummaryChangeEvent.getType());
   }
 
   @Override
@@ -226,6 +236,11 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   @Override
   public String getSuggestionSource() {
     return suggestionSource;
+  }
+
+  @Override
+  public Value getSummary() {
+    return BooleanValue.of(!BeeUtils.isEmpty(getValue()));
   }
 
   @Override
@@ -425,6 +440,11 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   }
 
   @Override
+  public void setSummarize(boolean summarize) {
+    this.summarize = summarize;
+  }
+
+  @Override
   public void setTabIndex(int index) {
     getInputElement().setTabIndex(index);
   }
@@ -457,6 +477,11 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   }
 
   @Override
+  public boolean summarize() {
+    return summarize;
+  }
+
+  @Override
   public List<String> validate(boolean checkForNull) {
     return Collections.emptyList();
   }
@@ -475,7 +500,7 @@ public class InputText extends CustomWidget implements Editor, TextBox, HasChara
   }
 
   protected String getDefaultStyleName() {
-    return "bee-InputText";
+    return BeeConst.CSS_CLASS_PREFIX + "InputText";
   }
 
   @Override

@@ -21,152 +21,185 @@
   width="900" height="560"
   >
 
-  <FlowPanel class="flexBox-horizontal bee-crm-taskEdit-form">
-    <FlowPanel style="margin-left: 5px;">
-      <FlowPanel style="&section;">
-        <Label for="Type" style="&lbl1;" />
-        <DataSelector source="Type" renderColumns="TypeName" newRowEnabled="false" style="&inp2;"
-          disablable="true" />
-        <Label for="Priority" style="&inline; margin-left: 16px;" />
-        <Radio source="Priority" style="&inline; font-size: 12px; margin-left: 8px;"
-          disablable="true" />
+<TabbedPages>
+    <page>
+      <text>=mainInformation</text>
+      
+      <FlowPanel class="flexBox-horizontal bee-crm-taskEdit-form">
+      <FlowPanel style="margin-left: 5px;">
+        <FlowPanel style="&section;">
+          <Label for="Type" style="&lbl1;" />
+          <DataSelector source="Type" renderColumns="TypeName" newRowEnabled="false" style="&inp2;"
+            disablable="true" />
+          <Label for="Priority" style="&inline; margin-left: 16px;" />
+          <Radio source="Priority" style="&inline; font-size: 12px; margin-left: 8px;"
+            disablable="true" />
+        </FlowPanel>
+
+        <FlowPanel style="&section;">
+          <Label for="Status" style="&lbl1;" />
+          <ListBox source="Status" style="&inp2;" readOnly="true" visible="true" />
+          <Label for="ExpectedExpenses" text="=crmTaskExpectedExpenses" style="&lbl3;" />
+          <InputDecimal source="ExpectedExpenses" style="&inp4;" disablable="true" scale="2"/>
+          <DataSelector source="Currency" for="ExpectedExpenses" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" readOnly="true" />
+        </FlowPanel>
+  
+        <FlowPanel style="&section;">
+          <Label for="Owner" style="&lbl1;" />
+          <DataSelector source="Owner" editSource="OwnerPerson" style="&inp2;" readOnly="true" />
+          <Label for="Company" style="&lbl3;" module="Classifiers.Contacts" />
+          <DataSelector source="Company" newRowEnabled="false" style="&inp4;" disablable="true"
+            module="Classifiers.Contacts" />
+        </FlowPanel>
+
+        <FlowPanel style="&section;">
+          <Label for="Executor" style="&lbl1;" />
+          <DataSelector source="Executor" editSource="ExecutorPerson" style="&inp2;" readOnly="true" />
+          <Label for="Contact" style="&lbl3;" module="Classifiers.Contacts" />
+          <DataSelector source="Contact" newRowEnabled="false" style="&inp4;" disablable="true"
+            renderColumns="ContactFirstName ContactLastName"
+            choiceColumns="FirstName LastName CompanyName" options="Company"
+            module="Classifiers.Contacts" />
+        </FlowPanel>
+
+        &separator;
+        <FlowPanel style="&section;">
+          <Label for="Created" style="&lbl1;" />
+          <InputDateTime source="Created" style="&inp2;" readOnly="true" />
+          <Label for="ExpectedDuration" style="&lbl3;" />
+          <InputTime source="ExpectedDuration" step="30" style="&inline; width: 60px;"
+            disablable="true" />
+        </FlowPanel>
+  
+        <FlowPanel style="&section;">
+          <Label for="StartTime" style="&lbl1;" />
+          <InputDateTime source="StartTime" style="&inp2;" readOnly="true" visible="true" />
+          <Label for="Completed" style="&lbl3;" />
+          <InputDateTime source="Completed" step="30" style="&inp4;" readOnly="true" />
+        </FlowPanel>
+
+        <FlowPanel style="&section;">
+          <Label for="FinishTime" style="&lbl1;" />
+          <InputDateTime source="FinishTime" style="&inp2;" readOnly="true" />
+          <Label for="Approved" style="&lbl3;" />
+          <InputDateTime source="Approved" style="&inp4;" readOnly="true" />
+        </FlowPanel>
+  
+        <FlowPanel style="&section;" for="FinishTime">
+          <FlowPanel name="TaskExtensions" style="&inp2; margin-left: 100px;" />
+        </FlowPanel>
+
+        <FlowPanel style="&section;">
+          <Label for="ReminderTime" style="&lbl1;" />
+          <InputDateTime source="ReminderTime" style="&inp2;" disablable="true" />
+          <Label for="Reminder" style="&lbl3;" />
+          <DataSelector source="Reminder" renderColumns="ReminderName" newRowEnabled="false"
+            style="&inp4;" disablable="true" />
+        </FlowPanel>
+  
+        <FlowPanel style="&section;" for="ReminderSent">
+          <DateTimeLabel source="ReminderSent" style="margin-left: 100px; font-size: 12px;" />
+        </FlowPanel>
+
+        &separator;
+        <FlowPanel style="&section;">
+          <Label for="Summary" style="&lbl1;" />
+          <InputText source="Summary" style="&inp2x;" readOnly="true" visible="true" />
+        </FlowPanel>
+  
+        <FlowPanel style="&section;" for="Description">
+          <Label for="Description" style="&top1;" />
+          <InputArea source="Description" style="width: 424px; height: 60px;" readOnly="true" />
+        </FlowPanel>
+  
+        <FileGroup name="Files" data="TaskFiles"/>
+      
+        &separator;
+        <FlowPanel style="&section;" data="TaskUsers">
+          <Label text="=crmTaskObservers" style="&top1;" />
+          <MultiSelector name="Observers" viewName="Users" property="Observers" renderColumns="FirstName LastName"
+            editSource="CompanyPerson" newRowEnabled="false" style="&inp2x;" disablable="true"
+            label="=crmTaskObservers" />
+        </FlowPanel>
+        
+        <FlowPanel style="&section;" module="Projects" name="ProjectData" >
+          <Label text="=project" style="&top1;" />
+          <DataSelector source="Project" style="&inp2x;" disablable="true" readOnly="true"/>
+        </FlowPanel>
+         
+        <FlowPanel style="&section;" module="Projects" name="ProjectStageData">
+          <Label text="=prjStage" style="&top1;" />
+          <DataSelector source="ProjectStage" style="&inp2x;" />
+        </FlowPanel>
+        &separator;
+        <FlowPanel name="TaskDurations" data="TaskDurations" style="overflow: auto; width: 524px;" />
       </FlowPanel>
 
-      <FlowPanel style="&section;">
-        <Label for="Status" style="&lbl1;" />
-        <ListBox source="Status" style="&inp2;" readOnly="true" visible="true" />
+      <FlowPanel name="TaskEvents" data="TaskEvents" class="flexible bee-crm-taskEvent-container"
+        style="margin-left: 15px; overflow: auto; height: calc(100% - 5px);" />
       </FlowPanel>
-
-      <FlowPanel style="&section;">
-        <Label for="Owner" style="&lbl1;" />
-        <DataSelector source="Owner" editSource="OwnerPerson" style="&inp2;" readOnly="true" />
-        <Label for="Company" style="&lbl3;" module="Classifiers.Contacts" />
-        <DataSelector source="Company" newRowEnabled="false" style="&inp4;" disablable="true"
-          module="Classifiers.Contacts" />
+    </page>
+    
+    <page>
+      <text>=relatedInformation</text>
+      
+      <FlowPanel class="flexBox-horizontal bee-crm-taskEdit-form">
+        <FlowPanel style="margin-left: 5px;">
+           <FlowPanel style="&section;" data="Relations" for="Company" module="Classifiers.Contacts">
+                <Label text="=companies" style="&top1;" />
+              <MultiSelector viewName="Companies" property="Companies" renderColumns="Name"
+                      newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+            </FlowPanel>
+  
+          <FlowPanel style="&section;" data="Relations" for="Person" module="Classifiers.Contacts">
+            <Label text="=persons" style="&top1;" />
+            <MultiSelector viewName="Persons" property="Persons" renderColumns="FirstName LastName"
+              newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+          </FlowPanel>
+  
+          <FlowPanel style="&section;" data="Relations" for="Document" module="Documents">
+            <Label text="=documents" style="&top1;" />
+            <MultiSelector viewName="Documents" property="Documents" renderColumns="Name"
+              newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+          </FlowPanel>
+          
+          <FlowPanel style="&section;" data="Relations" for="Appointment" module="Calendar">
+            <Label text="=calAppointments" style="&top1;" />
+            <MultiSelector viewName="Appointments" property="Appointments"
+              renderColumns="Summary" choiceColumns="Summary StartDateTime EndDateTime"
+              newRowEnabled="true" style="&inp2x;" disablable="true" summarize="true"/>
+          </FlowPanel>
+  
+          <FlowPanel style="&section;" data="Relations" for="Discussion" module="Discussions">
+            <Label text="=discussions" style="&top1;" />
+            <MultiSelector viewName="Discussions" property="Discussions"
+              renderColumns="Subject" newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+          </FlowPanel>
+    
+          <FlowPanel style="&section;" data="Relations" for="ServiceObject" module="Service">
+            <Label text="=svcObjects" style="&top1;" />
+            <MultiSelector viewName="ServiceObjects" property="ServiceObjects"
+              renderColumns="Address" choiceColumns="Address CustomerName"
+              newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+          </FlowPanel>
+  
+          <FlowPanel style="&section;" data="Relations" for="Project" module="Projects">
+            <Label text="=projects" style="&top1;" />
+            <DataSelector viewName="Projects" property="Projects"
+              renderColumns="Name" choiceColumns="Name"
+              newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+          </FlowPanel>
+    
+          <FlowPanel style="&section;" data="Relations" for="Relation">
+            <Label text="=crmTasks" style="&top1;" />
+            <MultiSelector viewName="Tasks" property="Tasks"
+              renderColumns="Summary ExecutorFirstName ExecutorLastName"
+              choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
+              newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+          </FlowPanel>
+        </FlowPanel>
       </FlowPanel>
-
-      <FlowPanel style="&section;">
-        <Label for="Executor" style="&lbl1;" />
-        <DataSelector source="Executor" editSource="ExecutorPerson" style="&inp2;" readOnly="true" />
-        <Label for="Contact" style="&lbl3;" module="Classifiers.Contacts" />
-        <DataSelector source="Contact" newRowEnabled="false" style="&inp4;" disablable="true"
-          renderColumns="ContactFirstName ContactLastName"
-          choiceColumns="FirstName LastName CompanyName" options="Company"
-          module="Classifiers.Contacts" />
-      </FlowPanel>
-
-      &separator;
-      <FlowPanel style="&section;">
-        <Label for="Created" style="&lbl1;" />
-        <InputDateTime source="Created" style="&inp2;" readOnly="true" />
-        <Label for="ExpectedDuration" style="&lbl3;" />
-        <InputTime source="ExpectedDuration" step="30" style="&inline; width: 60px;" 
-          disablable="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;">
-        <Label for="StartTime" style="&lbl1;" />
-        <InputDateTime source="StartTime" style="&inp2;" readOnly="true" visible="true" />
-        <Label for="Completed" style="&lbl3;" />
-        <InputDateTime source="Completed" step="30" style="&inp4;" readOnly="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;">
-        <Label for="FinishTime" style="&lbl1;" />
-        <InputDateTime source="FinishTime" style="&inp2;" readOnly="true" />
-        <Label for="Approved" style="&lbl3;" />
-        <InputDateTime source="Approved" style="&inp4;" readOnly="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;" for="FinishTime">
-        <FlowPanel name="TaskExtensions" style="&inp2; margin-left: 100px;" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;">
-        <Label for="ReminderTime" style="&lbl1;" />
-        <InputDateTime source="ReminderTime" style="&inp2;" disablable="true" />
-        <Label for="Reminder" style="&lbl3;" />
-        <DataSelector source="Reminder" renderColumns="ReminderName" newRowEnabled="false"
-          style="&inp4;" disablable="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;" for="ReminderSent">
-        <DateTimeLabel source="ReminderSent" style="margin-left: 100px; font-size: 12px;" />
-      </FlowPanel>
-
-      &separator;
-      <FlowPanel style="&section;">
-        <Label for="Summary" style="&lbl1;" />
-        <InputText source="Summary" style="&inp2x;" readOnly="true" visible="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;" for="Description">
-        <Label for="Description" style="&top1;" />
-        <InputArea source="Description" style="width: 424px; height: 60px;" readOnly="true" />
-      </FlowPanel>
-
-      <FileGroup name="Files" data="TaskFiles"/>
-
-      &separator;
-      <FlowPanel style="&section;" data="TaskUsers">
-        <Label text="=crmTaskObservers" style="&top1;" />
-        <MultiSelector viewName="Users" property="Observers" renderColumns="FirstName LastName"
-          editSource="CompanyPerson" newRowEnabled="false" style="&inp2x;" disablable="true"
-          label="=crmTaskObservers" />
-      </FlowPanel>
-
-      &separator;
-      <FlowPanel style="&section;" data="Relations" for="Company" module="Classifiers.Contacts">
-        <Label text="=companies" style="&top1;" />
-        <MultiSelector viewName="Companies" property="Companies" renderColumns="Name"
-          newRowEnabled="false" style="&inp2x;" disablable="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;" data="Relations" for="Person" module="Classifiers.Contacts">
-        <Label text="=persons" style="&top1;" />
-        <MultiSelector viewName="Persons" property="Persons" renderColumns="FirstName LastName"
-          newRowEnabled="false" style="&inp2x;" disablable="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;" data="Relations" for="Document" module="Documents">
-        <Label text="=documents" style="&top1;" />
-        <MultiSelector viewName="Documents" property="Documents" renderColumns="Name"
-          newRowEnabled="false" style="&inp2x;" disablable="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;" data="Relations" for="Appointment" module="Calendar">
-        <Label text="=calAppointments" style="&top1;" />
-        <MultiSelector viewName="Appointments" property="Appointments"
-          renderColumns="Summary" choiceColumns="Summary StartDateTime EndDateTime"
-          newRowEnabled="true" style="&inp2x;" disablable="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;" data="Relations" for="Discussion" module="Discussions">
-        <Label text="=discussions" style="&top1;" />
-        <MultiSelector viewName="Discussions" property="Discussions"
-          renderColumns="Subject" newRowEnabled="false" style="&inp2x;" disablable="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;" data="Relations" for="ServiceObject" module="Service">
-        <Label text="=svcObjects" style="&top1;" />
-        <MultiSelector viewName="ServiceObjects" property="ServiceObjects"
-          renderColumns="Address" choiceColumns="Address CustomerName"
-          newRowEnabled="false" style="&inp2x;" disablable="true" />
-      </FlowPanel>
-
-      <FlowPanel style="&section;" data="Relations" for="Relation">
-        <Label text="=crmTasks" style="&top1;" />
-        <MultiSelector viewName="Tasks" property="Tasks" 
-          renderColumns="Summary ExecutorFirstName ExecutorLastName"
-          choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
-          newRowEnabled="false" style="&inp2x;" disablable="true" />
-      </FlowPanel>
-
-      &separator;
-      <FlowPanel name="TaskDurations" data="TaskDurations" style="overflow: auto; width: 524px;" />
-    </FlowPanel>
-
-    <FlowPanel name="TaskEvents" data="TaskEvents" class="flexible bee-crm-taskEvent-container" 
-      style="margin-left: 15px; overflow: auto; height: calc(100% - 5px);" />
-  </FlowPanel>
+    </page>
+  </TabbedPages>
 </f:Form>

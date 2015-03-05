@@ -8,13 +8,16 @@
   <SplitPanel splitterSize="1" style="margin:5px;">
     <west size="300">
       <FlowPanel class="flexBox-vertical">
-        <InputText name="Search" placeholder="=search" style="width: 295px" />
+        <FlowPanel style="background:white; border:1px solid silver; border-radius:4px;">
+          <InputText name="Search" placeholder="=search" style="width:280px; margin:1px; border:none; outline:none;" />
+          <FaLabel name="SearchOptions" char="chevron_down" style="display:inline-block" />
+        </FlowPanel>
         <GridPanel name="Places" class="bee-mail-Headers flexible" />
       </FlowPanel>
     </west>
       
     <center>
-      <FlowPanel class="flexBox-vertical" style="margin-top: 5px; margin-left: 5px;">
+      <FlowPanel class="flexBox-vertical">
         <Label name="EmptySelection" class="bee-mail-EmptySelection" text="=mailThereIsNoMessageSelected" />
 
         <FlowPanel name="Message" class="flexible flexBox-vertical" style="display: none;">

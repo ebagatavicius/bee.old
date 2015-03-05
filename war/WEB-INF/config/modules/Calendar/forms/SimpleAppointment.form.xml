@@ -55,7 +55,7 @@
       style="width: 160px;" d:size="80" d:unit="px"
       d:rootStyle="&absolute; left: 0; top: 320px;" />
     <Radio source="Visibility" vertical="true"
-      style="&absolute; left: 260px; top: 316px;" />
+      style="&absolute; left: 260px; top: 300px;" />
 
     <Label text="=company" style="&absolute; left: 360px; top: 240px; width: 76px;" />
 

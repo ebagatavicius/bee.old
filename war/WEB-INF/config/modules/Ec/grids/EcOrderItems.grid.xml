@@ -34,7 +34,7 @@
 
     <DataColumn name="Note" visible="false" />
     
-    <PropColumn name="Remainder" type="integer" dynamic="true" minWidth="40" maxWidth="80">
+    <PropColumn name="Remainder" type="double" dynamic="true" minWidth="40" maxWidth="80">
       <footer aggregate="sum" />
     </PropColumn>
 
@@ -45,9 +45,6 @@
         <ui:expression>Number(row.Cost) >= row.Price</ui:expression>
       </dynStyle>
     </PropColumn>
-
-    <PropColumn name="SupplPrice" type="decimal" scale="2" caption="=ecItemPrice" dynamic="true"
-      flexGrow="0" />
 
     <PropColumn name="SupplierID" type="string" caption="=code" dynamic="true" flexGrow="0" />
   </g:columns>

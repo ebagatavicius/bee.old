@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -212,8 +213,10 @@ public class QueryServiceBean {
               values[i] = null;
             } else if (column.getScale() >= 0) {
               values[i] = BeeUtils.toString(d, column.getScale());
-            } else {
+            } else if (column.getType() == ValueType.DECIMAL) {
               values[i] = BeeUtils.toString(d, NumberValue.MAX_SCALE);
+            } else {
+              values[i] = BeeUtils.toString(d);
             }
             break;
 
@@ -440,6 +443,21 @@ public class QueryServiceBean {
 
   public SimpleRowSet dbTriggers(String dbName, String dbSchema, String table) {
     return getData(SqlUtils.dbTriggers(dbName, dbSchema, table));
+  }
+
+  public boolean debugOff() {
+    boolean isDebugEnabled = logger.isDebugEnabled();
+
+    if (isDebugEnabled) {
+      logger.setLevel(LogLevel.INFO);
+    }
+    return isDebugEnabled;
+  }
+
+  public void debugOn(boolean isDebugEnabled) {
+    if (isDebugEnabled) {
+      logger.setLevel(LogLevel.DEBUG);
+    }
   }
 
   @TransactionAttribute(TransactionAttributeType.MANDATORY)
@@ -700,6 +718,16 @@ public class QueryServiceBean {
     return BeeUtils.join(BeeConst.STRING_EMPTY, BeeUtils.isEmpty(prefixFld) ? prefix : null, value);
   }
 
+  public Set<Long> getNotNullLongSet(String source, String field) {
+    SqlSelect query = new SqlSelect()
+        .setDistinctMode(true)
+        .addFields(source, field)
+        .addFrom(source)
+        .setWhere(SqlUtils.notNull(source, field));
+
+    return getLongSet(query);
+  }
+
   public Long[] getRelatedValues(String tableName, String filterColumn, long filterValue,
       String resultColumn) {
 
@@ -864,6 +892,12 @@ public class QueryServiceBean {
 
   @TransactionAttribute(TransactionAttributeType.MANDATORY)
   public ResponseObject insertDataWithResponse(SqlInsert si) {
+    return insertDataWithResponse(si, null);
+  }
+
+  @TransactionAttribute(TransactionAttributeType.MANDATORY)
+  public ResponseObject insertDataWithResponse(SqlInsert si,
+      Function<SQLException, ResponseObject> errorHandler) {
     Assert.notNull(si);
 
     String target = si.getTarget();
@@ -891,7 +925,7 @@ public class QueryServiceBean {
         si.addConstant(idFld, id);
       }
     }
-    ResponseObject response = updateDataWithResponse(si);
+    ResponseObject response = updateDataWithResponse(si, errorHandler);
 
     if (!response.hasErrors()) {
       response.setResponse(id);
@@ -899,10 +933,13 @@ public class QueryServiceBean {
     return response;
   }
 
+  public boolean isEmpty(String source) {
+    return BeeUtils.isEmpty(source) || sqlCount(new SqlSelect().addFrom(source)) <= 0;
+  }
+
   @TransactionAttribute(TransactionAttributeType.MANDATORY)
   public int loadData(String target, SqlSelect sourceQuery) {
     Assert.state(sys.isTable(target));
-    boolean isDebugEnabled = logger.isDebugEnabled();
 
     int chunk = BeeUtils.toNonNegativeInt(sourceQuery.getLimit());
     int offset = 0;
@@ -922,9 +959,8 @@ public class QueryServiceBean {
             .addFields(sys.getIdName(target), sys.getVersionName(target))
             .addFields(data.getColumnNames());
       }
-      if (isDebugEnabled) {
-        logger.setLevel(LogLevel.INFO);
-      }
+      boolean isDebugEnabled = debugOff();
+
       for (String[] row : data.getRows()) {
         Object[] values = new Object[row.length + 2];
         values[0] = ig.getId(target);
@@ -942,9 +978,7 @@ public class QueryServiceBean {
         insertData(insert);
         logger.info("Inserted", tot, "records into table", target);
       }
-      if (isDebugEnabled) {
-        logger.setLevel(LogLevel.DEBUG);
-      }
+      debugOn(isDebugEnabled);
       offset += chunk;
     } while (chunk > 0 && data.getNumberOfRows() == chunk);
 
@@ -991,6 +1025,18 @@ public class QueryServiceBean {
     return result;
   }
 
+  public List<String> sqlColumns(String tmp) {
+    SqlSelect ss = new SqlSelect().addAllFields(tmp).addFrom(tmp).setWhere(SqlUtils.sqlFalse());
+    SimpleRowSet data = getData(ss);
+
+    List<String> columns = new ArrayList<>();
+    for (String colName : data.getColumnNames()) {
+      columns.add(colName);
+    }
+
+    return columns;
+  }
+
   public int sqlCount(SqlSelect query) {
     SimpleRowSet res;
     SqlSelect ss = query.copyOf().resetOrder();
@@ -1022,8 +1068,7 @@ public class QueryServiceBean {
   }
 
   public boolean sqlExists(String source, IsCondition where) {
-    return sqlCount(new SqlSelect()
-        .addConstant(null, "dummy").addFrom(source).setWhere(where)) > 0;
+    return sqlCount(new SqlSelect().addFrom(source).setWhere(where)) > 0;
   }
 
   public boolean sqlExists(String source, String field, Object value) {
@@ -1096,6 +1141,13 @@ public class QueryServiceBean {
 
   @TransactionAttribute(TransactionAttributeType.MANDATORY)
   public ResponseObject updateDataWithResponse(IsQuery query) {
+    return updateDataWithResponse(query, null);
+  }
+
+  @TransactionAttribute(TransactionAttributeType.MANDATORY)
+  public ResponseObject updateDataWithResponse(IsQuery query,
+      Function<SQLException, ResponseObject> errorHandler) {
+
     Assert.notNull(query);
     Assert.state(!query.isEmpty());
 
@@ -1131,6 +1183,18 @@ public class QueryServiceBean {
     }
     ResponseObject res = processSql(null, query.getQuery(), new SqlHandler<ResponseObject>() {
       @Override
+      public ResponseObject processError(SQLException ex) {
+        if (errorHandler != null) {
+          ResponseObject response = errorHandler.apply(ex);
+
+          if (response != null) {
+            return response;
+          }
+        }
+        return super.processError(ex);
+      }
+
+      @Override
       public ResponseObject processResultSet(ResultSet rs) throws SQLException {
         throw new BeeRuntimeException("Data modification query must not return a ResultSet");
       }
@@ -1158,7 +1222,7 @@ public class QueryServiceBean {
     if (!BeeUtils.isEmpty(sources)) {
       for (String source : sources) {
         if (sys.isTable(source) && !sys.getTable(source).isActive()) {
-          sys.activateTable(source);
+          sys.rebuildTable(source);
         }
       }
     }

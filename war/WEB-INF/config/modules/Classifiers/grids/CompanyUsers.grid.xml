@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
 
   name="CompanyUsers" viewName="CompanyUsers"
   flexGrow="1"
   >
   <g:columns>
+    <DataColumn name="DefaultCompanyUser" caption="=defaultCompanyUserShort"
+    horizontalAlignment="center" flexGrow="0">
+      <render><ui:expression>row.DefaultCompanyUser ? '\u2713' : '' </ui:expression></render>
+    </DataColumn>
     <RelColumn name="User" minWidth="150" maxWidth="200" visible="true">
       <renderToken source="FirstName" suffix=" " />
       <renderToken source="LastName" />
@@ -13,7 +18,10 @@
     <RelColumn name="Responsibility" minWidth="100" maxWidth="150" visible="true">
       <renderToken source="ResponsibilityName" />
     </RelColumn>
-
-    <DataColumn name="AccountingCode" visible="false" />
   </g:columns>
+  
+  <g:rowStyle>
+    <ui:inline>="font-weight: bolder"</ui:inline>
+    <ui:expression>row.DefaultCompanyUser != null</ui:expression>
+  </g:rowStyle>
 </g:Grid>

@@ -1,7 +1,5 @@
 package com.butent.bee.server.modules.ec;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.data.QueryServiceBean.ResultSetProcessor;
 import com.butent.bee.server.sql.IsSql;
@@ -23,6 +21,7 @@ import com.butent.bee.shared.utils.Codec;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -223,7 +222,7 @@ public class TecDocRemote {
         SqlBuilder builder = SqlBuilderFactory.getBuilder();
         StringBuilder sb = new StringBuilder();
         int c = 0;
-        List<StringBuilder> inserts = Lists.newArrayList();
+        List<StringBuilder> inserts = new ArrayList<>();
 
         while (rs.next()) {
           if (c == 0) {

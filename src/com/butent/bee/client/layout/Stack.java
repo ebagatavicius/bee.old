@@ -41,7 +41,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
   private static final class Header extends Composite implements HasClickHandlers, ProvidesResize,
       RequiresResize, IdentifiableWidget {
 
-    private final int size;
+    private int size;
 
     private Header(Widget child, int size) {
       super();
@@ -96,6 +96,18 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
     private int getSize() {
       return size;
     }
+
+    private boolean updateSize(int newSize) {
+      if (newSize > 0 && getSize() != newSize) {
+        size = newSize;
+        StyleUtils.setHeight(this, newSize);
+
+        return true;
+
+      } else {
+        return false;
+      }
+    }
   }
 
   private static final class Revelation extends RafCallback {
@@ -126,9 +138,9 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
     }
   }
 
-  private static final String CONTAINER_STYLE = "bee-StackContainer";
-  private static final String HEADER_STYLE = "bee-StackHeader";
-  private static final String CONTENT_STYLE = "bee-StackContent";
+  private static final String CONTAINER_STYLE = BeeConst.CSS_CLASS_PREFIX + "StackContainer";
+  private static final String HEADER_STYLE = BeeConst.CSS_CLASS_PREFIX + "StackHeader";
+  private static final String CONTENT_STYLE = BeeConst.CSS_CLASS_PREFIX + "StackContent";
 
   private static final String SELECTED_STYLE = HEADER_STYLE + "-selected";
 
@@ -322,6 +334,20 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
 
   public void showWidget(Widget child) {
     showWidget(getContentIndex(child));
+  }
+
+  public boolean updateHeaderSize(int size) {
+    boolean updated = false;
+
+    for (int i = 0; i < getStackSize(); i++) {
+      updated |= getHeader(i).updateSize(size);
+    }
+
+    if (updated) {
+      doLayout(false);
+    }
+
+    return updated;
   }
 
   protected boolean close() {

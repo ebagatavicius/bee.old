@@ -1,5 +1,6 @@
 package com.butent.bee.client.utils;
 
+import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.dom.Features;
 import com.butent.bee.shared.html.Keywords;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -9,20 +10,20 @@ import com.butent.bee.shared.utils.PropertyUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import elemental.js.html.JsPerformance;
-import elemental.dom.Element;
-import elemental.dom.Document;
 import elemental.client.Browser.Info;
-import elemental.html.PerformanceTiming;
-import elemental.html.PerformanceNavigation;
-import elemental.html.Window;
+import elemental.dom.Document;
+import elemental.dom.Element;
 import elemental.html.DOMMimeType;
 import elemental.html.DOMMimeTypeArray;
-import elemental.html.Screen;
+import elemental.html.Location;
 import elemental.html.MemoryInfo;
 import elemental.html.Navigator;
-import elemental.html.Location;
+import elemental.html.PerformanceNavigation;
+import elemental.html.PerformanceTiming;
+import elemental.html.Screen;
+import elemental.html.Window;
 import elemental.js.JsBrowser;
+import elemental.js.html.JsPerformance;
 
 /**
  * Enables system to get information about user's browser.
@@ -245,7 +246,12 @@ public final class BrowsingContext {
   }
 
   public static Window open(String url) {
-    return JsBrowser.getWindow().open(url, Keywords.BROWSING_CONTEXT_BLANK);
+    Window window = JsBrowser.getWindow().open(url, Keywords.BROWSING_CONTEXT_BLANK);
+
+    if (window == null) {
+      BeeKeeper.getScreen().notifyWarning("Pop-up window is blocked");
+    }
+    return window;
   }
 
 //@formatter:off

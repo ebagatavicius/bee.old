@@ -40,10 +40,12 @@ public class CalculatedColumn extends AbstractColumn<String> implements HasDateT
   public CalculatedColumn(AbstractCell<String> cell, ValueType valueType,
       AbstractCellRenderer renderer) {
     super(cell);
+
     this.valueType = valueType;
     this.renderer = renderer;
 
     UiHelper.setDefaultHorizontalAlignment(this, valueType);
+    UiHelper.setDefaultWhiteSpace(this, valueType);
   }
 
   public CalculatedColumn(ValueType valueType, AbstractCellRenderer renderer) {

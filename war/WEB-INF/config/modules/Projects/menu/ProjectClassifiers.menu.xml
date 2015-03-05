@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+
+name="ProjectClassifiers" label="=classifiers" order="40" parent="Projects" module="Projects"
+>
+  <Item name="ProjectTypes" label="=prjTypes" service="grid" parameters="ProjectTypes" />
+  <Item name="ProjectReasons" label="=reasons" service="grid" parameters="ProjectReasons" />
+</Entry>

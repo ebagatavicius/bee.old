@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.calendar.view;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -20,19 +18,21 @@ import com.butent.bee.client.modules.calendar.CalendarFormat;
 import com.butent.bee.client.modules.calendar.CalendarKeeper;
 import com.butent.bee.client.modules.calendar.CalendarStyleManager;
 import com.butent.bee.client.modules.calendar.CalendarUtils;
-import com.butent.bee.client.modules.calendar.ItemWidget;
 import com.butent.bee.client.modules.calendar.CalendarView;
 import com.butent.bee.client.modules.calendar.CalendarWidget;
+import com.butent.bee.client.modules.calendar.ItemWidget;
 import com.butent.bee.client.modules.calendar.dnd.MonthMoveController;
+import com.butent.bee.client.modules.calendar.layout.DayLayoutDescription;
 import com.butent.bee.client.modules.calendar.layout.ItemLayoutDescription;
 import com.butent.bee.client.modules.calendar.layout.ItemStackingManager;
-import com.butent.bee.client.modules.calendar.layout.DayLayoutDescription;
 import com.butent.bee.client.modules.calendar.layout.MonthLayoutDescription;
 import com.butent.bee.client.modules.calendar.layout.WeekLayoutDescription;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Label;
+import com.butent.bee.client.widget.Mover;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.calendar.CalendarItem;
@@ -41,8 +41,10 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +75,7 @@ public class MonthView extends CalendarView {
   private final HtmlTable grid = new HtmlTable();
   private final Flow canvas = new Flow();
 
-  private final Map<String, List<CalendarItem>> moreLabels = Maps.newHashMap();
+  private final Map<String, List<CalendarItem>> moreLabels = new HashMap<>();
 
   private MonthMoveController moveController;
 
@@ -237,6 +239,25 @@ public class MonthView extends CalendarView {
   public void onClock() {
   }
 
+  @Override
+  public Pair<DateTime, Long> resolveCoordinates(int x, int y) {
+    int row = getRow(y - canvas.getElement().getAbsoluteTop());
+
+    int z = x - canvas.getElement().getAbsoluteLeft();
+    int col = getColumn(z);
+
+    DateTime start = getCellDate(row, col).getDateTime();
+
+    double colWidth = getColumnWidth();
+    double h = BeeUtils.rescale(z - col * colWidth, 0, colWidth, 0, 24);
+    int hour = BeeUtils.clamp(BeeUtils.round(h), 0, 23);
+    if (hour > 0) {
+      start.setHour(hour);
+    }
+
+    return Pair.of(start, null);
+  }
+
   public void setCellStyle(int row, int col, String styleName, boolean add) {
     grid.getCellFormatter().setStyleName(row + 1, col, styleName, add);
   }
@@ -282,21 +303,24 @@ public class MonthView extends CalendarView {
     JustDate today = TimeUtils.today();
     JustDate tmpDate = JustDate.copyOf(firstDate);
 
+    String dayCaption;
+
     for (int i = 1; i <= requiredRows; i++) {
       for (int j = 0; j < TimeUtils.DAYS_PER_WEEK; j++) {
-        String dayCaption = BeeUtils.toString(tmpDate.getDom());
 
         if (j == 0) {
           CustomDiv woyDiv = new CustomDiv(CalendarStyleManager.MONTH_CELL_LABEL);
           woyDiv.addStyleName(CalendarStyleManager.DAY_CELL);
           woyDiv.setText(BeeUtils.joinWords(BeeUtils.toString(TimeUtils.weekOfYear(tmpDate)),
               Localized.getConstants().unitWeekShort()));
-          dayCaption = woyDiv.toString();
-          dayCaption += BeeUtils.toString(tmpDate.getDom());
+
+          dayCaption = woyDiv.toString() + BeeUtils.toString(tmpDate.getDom());
+
+        } else {
+          dayCaption = BeeUtils.toString(tmpDate.getDom());
         }
 
-        buildCell(i, j, dayCaption, tmpDate.equals(today),
-            tmpDate.getMonth() == month);
+        buildCell(i, j, dayCaption, tmpDate.equals(today), tmpDate.getMonth() == month);
         TimeUtils.moveOneDayForward(tmpDate);
       }
     }
@@ -339,21 +363,10 @@ public class MonthView extends CalendarView {
   }
 
   private void dayClicked(Event event) {
-    int row = getRow(event.getClientY() - canvas.getElement().getAbsoluteTop());
-
-    int x = event.getClientX() - canvas.getElement().getAbsoluteLeft();
-    int col = getColumn(x);
-
-    DateTime start = getCellDate(row, col).getDateTime();
-
-    double colWidth = getColumnWidth();
-    double h = BeeUtils.rescale(x - col * colWidth, 0, colWidth, 0, 24);
-    int hour = BeeUtils.clamp(BeeUtils.round(h), 0, 23);
-    if (hour > 0) {
-      start.setHour(hour);
+    Pair<DateTime, Long> pair = resolveCoordinates(event.getClientX(), event.getClientY());
+    if (pair != null) {
+      createAppointment(pair.getA(), pair.getB());
     }
-
-    createAppointment(start, null);
   }
 
   private double getColumnWidth() {
@@ -380,9 +393,11 @@ public class MonthView extends CalendarView {
 
     placeItemInGrid(widget, item, multi, colStart, colEnd, row, cellPosition);
 
-    if (!multi && item.isMovable(BeeKeeper.getUser().getUserId())) {
-      widget.getCompactBar().addMoveHandler(moveController);
-      widget.getCompactBar().addStyleName(CalendarStyleManager.MOVABLE);
+    if (item.isMovable(BeeKeeper.getUser().getUserId())) {
+      Mover mover = multi ? widget.getMoveHandle() : widget.getCompactBar();
+
+      mover.addMoveHandler(moveController);
+      mover.addStyleName(CalendarStyleManager.MOVABLE);
     }
 
     getItemWidgets().add(widget);
@@ -441,7 +456,7 @@ public class MonthView extends CalendarView {
                   layer, separate, attColors);
             } else {
               List<CalendarItem> overLimit = manager.getOverLimit(dayOfWeek);
-              overLimit.addAll(Lists.newArrayList(dayItems.getItems().subList(i, count)));
+              overLimit.addAll(new ArrayList<>(dayItems.getItems().subList(i, count)));
 
               layOnMoreLabel(overLimit, dayOfWeek, weekOfMonth);
             }

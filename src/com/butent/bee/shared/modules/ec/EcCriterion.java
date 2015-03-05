@@ -1,13 +1,12 @@
 package com.butent.bee.shared.modules.ec;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.SelectableValue;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EcCriterion implements BeeSerializable {
@@ -25,7 +24,7 @@ public class EcCriterion implements BeeSerializable {
   private long id;
   private String name;
 
-  private final List<SelectableValue> values = Lists.newArrayList();
+  private final List<SelectableValue> values = new ArrayList<>();
 
   public EcCriterion(long id, String name) {
     this.id = id;

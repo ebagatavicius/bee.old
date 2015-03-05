@@ -8,7 +8,7 @@
   <Fields>
     <String name="CategoryName" precision="50" notNull="true" label="=ecItemCategory" />
     <Relation name="Parent" relation="TcdCategories" />    
-    <Numeric name="MarginPercent" precision="7" scale="3" label="=ecMarginPercent" />
+    <Numeric name="MarginPercent" precision="7" scale="3" label="=marginPercent" />
     <String name="Note" precision="100" label="=ecItemCategoryNote" />
   </Fields>
 </Table>

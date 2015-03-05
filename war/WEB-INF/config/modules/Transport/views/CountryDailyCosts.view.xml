@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="CountryDailyCosts"  caption="=trDailyCosts"
+  source="CountryDailyCosts"
+  >
+  <Columns>
+    <SimpleColumn name="CountryNorm" />
+    
+    <SimpleColumn name="DateFrom" />
+    <SimpleColumn name="DateTo" />
+    <SimpleColumn name="Amount" />
+
+    <SimpleColumn name="Currency" />
+    <SimpleJoin joinType="INNER" name="Currency">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="DateFrom" descending="true" />
+  </Order>
+</View>
+ 

@@ -92,7 +92,7 @@
       <page>
         <text>=notes</text>
         <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" disablable="false" />
+          <InputArea source="Notes" class="occupy-1" disablable="false" summarize="true" />
         </SimplePanel>
       </page>
     </TabbedPages>

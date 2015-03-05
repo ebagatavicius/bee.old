@@ -1,6 +1,5 @@
 package com.butent.bee.client.view.navigation;
 
-import com.google.common.base.Objects;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
@@ -14,6 +13,8 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.NavigationOrigin;
+
+import java.util.Objects;
 
 /**
  * Is an abstract class with default pager implementation behavior.
@@ -85,6 +86,7 @@ public abstract class AbstractPager extends Composite implements PagerView {
     return false;
   }
 
+  @Override
   public void setDisplay(HasDataTable display) {
     if (changeHandler != null) {
       changeHandler.removeHandler();
@@ -115,7 +117,7 @@ public abstract class AbstractPager extends Composite implements PagerView {
 
   @Override
   public void start(HasDataTable displ) {
-    if (!Objects.equal(displ, getDisplay())) {
+    if (!Objects.equals(displ, getDisplay())) {
       setDisplay(displ);
     }
   }

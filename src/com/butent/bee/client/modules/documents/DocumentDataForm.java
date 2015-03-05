@@ -4,7 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
@@ -24,15 +23,22 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.UserInfo;
+import com.butent.bee.client.communication.ParameterList;
+import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.Autocomplete;
+import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.IdCallback;
+import com.butent.bee.client.data.ParentRowCreator;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.Queries.IntCallback;
 import com.butent.bee.client.data.Queries.RowSetCallback;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowUpdateCallback;
+import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.dialog.StringCallback;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.logical.AutocompleteEvent;
@@ -45,6 +51,8 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiHelper;
+import com.butent.bee.client.utils.BrowsingContext;
+import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.utils.JsFunction;
 import com.butent.bee.client.utils.JsUtils;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
@@ -56,33 +64,40 @@ import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
+import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
-import com.butent.bee.shared.BiFunction;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.State;
+import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
-import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.CompoundFilter;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.TextValue;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.i18n.LocalizableConstants;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
+import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.Relation;
+import com.butent.bee.shared.ui.Relation.Caching;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -98,9 +113,9 @@ public class DocumentDataForm extends AbstractFormInterceptor
     private JavaScriptObject tiny;
     private String deferedContent;
 
-    public void destroy(boolean automatic) {
+    public void destroy() {
       if (isActive()) {
-        destroy(tiny, automatic);
+        destroy(tiny);
         tiny = null;
       }
     }
@@ -133,7 +148,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
           });
     }
 
-    public void init(String editorId, Map<String, String> templates) {
+    public void init(String editorId, Map<String, String> customTemplates) {
       Assert.state(!isActive());
       Assert.notEmpty(editorId);
 
@@ -143,137 +158,66 @@ public class DocumentDataForm extends AbstractFormInterceptor
       JsUtils.setProperty(jso, "mode", "exact");
       JsUtils.setProperty(jso, "elements", editorId);
       JsUtils.setProperty(jso, "language", loc.languageTag());
-      JsUtils.setProperty(jso, "plugins", "advlist lists image charmap hr pagebreak searchreplace "
-          + "visualblocks visualchars code fullscreen table template paste textcolor");
+      JsUtils.setProperty(jso, "plugins", "advlist lists image charmap hr pagebreak searchreplace"
+          + " visualblocks visualchars code fullscreen table template paste textcolor colorpicker");
       JsUtils.setProperty(jso, "toolbar", "fullscreen | undo redo | styleselect "
           + "| bold italic underline | alignleft aligncenter alignright alignjustify "
           + "| forecolor backcolor | bullist numlist outdent indent | fontselect fontsizeselect");
       JsUtils.setProperty(jso, "image_advtab", true);
+      JsUtils.setProperty(jso, "table_advtab", true);
+      JsUtils.setProperty(jso, "table_row_advtab", true);
+      JsUtils.setProperty(jso, "table_cell_advtab", true);
       JsUtils.setProperty(jso, "paste_data_images", true);
       JsUtils.setProperty(jso, "pagebreak_separator",
           "<div style=\"page-break-before:always;\"></div>");
 
-      JsFunction jsf = JsFunction.create("editor",
-          "editor.addMenuItem('saveTemplate', {text: '" + loc.saveAsEditorTemplate() + "', "
-              + "context: 'tools', "
-              + "onclick: function() {editor.execCommand('savetemplate', false);}});");
+      StringBuilder body = new StringBuilder("editor.addMenuItem('saveTemplate', {")
+          .append("text: '" + loc.saveAsEditorTemplate() + "', ")
+          .append("context: 'tools', ")
+          .append("onclick: function() {editor.execCommand('savetemplate', false);}")
+          .append("});");
 
-      JsUtils.setProperty(jso, "setup", jsf);
+      Multimap<String, Pair<String, String>> objects = getInsertObjects();
 
-      BiFunction<String, String, String> td = new BiFunction<String, String, String>() {
-        @Override
-        public String apply(String input, String attributes) {
-          String stylePrefix = "style=\"";
+      if (objects != null && !objects.isEmpty()) {
+        body.append("editor.addMenuItem('insertObject', {")
+            .append("text: '" + loc.object() + "',")
+            .append("context: 'insert',")
+            .append("menu: [");
 
-          return "<td style=\"border:1px solid black;"
-              + (BeeUtils.startsWith(attributes, stylePrefix)
-                  ? attributes.substring(stylePrefix.length())
-                  : "\" " + BeeUtils.nvl(attributes, "")) + ">" + input + "</td>";
+        for (String object : objects.keySet()) {
+          body.append("{text: '" + object + "',")
+              .append("menu: [");
+
+          for (Pair<String, String> item : objects.get(object)) {
+            body.append("{text: '" + item.getA() + "',")
+                .append("onclick: function() {editor.insertContent('")
+                .append(item.getB())
+                .append("');}},");
+          }
+          body.setLength(body.length() - 1);
+          body.append("]},");
         }
-      };
+        body.setLength(body.length() - 1);
+        body.append("]});");
+      }
+      JsUtils.setProperty(jso, "setup", JsFunction.create("editor", body.toString()));
+
       JsArrayMixed templateArray = JavaScriptObject.createArray().cast();
 
-      JavaScriptObject template = JavaScriptObject.createObject();
-      JsUtils.setProperty(template, "title", loc.criteriaGroups());
-      JsUtils.setProperty(template, "content",
-          new StringBuilder("<p/><div><table style=\"border-collapse:collapse;\"><tbody>")
-              .append("<!--{CriteriaGroups}--><tr>")
-              .append(td.apply("{Name}", "colspan=\"3\""))
-              .append("</tr><!--{Criteria}--><tr>")
-              .append(td.apply("{Criterion}", null))
-              .append(td.apply("{Value}", null))
-              .append("</tr><!--{Criteria}-->")
-              .append("<!--{CriteriaGroups}--></tbody></table></div><p/>").toString());
-
-      templateArray.push(template);
-
-      template = JavaScriptObject.createObject();
-      JsUtils.setProperty(template, "title", loc.documentItems());
-      JsUtils.setProperty(template, "content",
-          new StringBuilder("<p/><div><table style=\"border-collapse:collapse;"
-              + " border:1px solid black;\"><tbody>")
-              .append("<tr style=\"text-align:center;\">")
-              .append(td.apply(loc.ordinal(), null))
-              .append(td.apply(loc.description(), null))
-              .append(td.apply(loc.quantity(), null))
-              .append(td.apply(loc.price(), null))
-              .append(td.apply(loc.amount(), null))
-              .append(td.apply(loc.vat(), null))
-              .append(td.apply(loc.total(), null))
-              .append("</tr><!--{DocumentItems}--><tr style=\"text-align:right;\">")
-              .append(td.apply("{Index}", null))
-              .append(td.apply("{Description}", "style=\"text-align:left;\""))
-              .append(td.apply("{Quantity}", null))
-              .append(td.apply("{Price}", null))
-              .append(td.apply("{Amount}", null))
-              .append(td.apply("{Vat}", null))
-              .append(td.apply("{VatPlusAmount}", null))
-              .append("</tr><!--{DocumentItems}--><tr style=\"text-align:right;\">")
-              .append("<td style=\"text-align:left;\" colspan=\"2\">" + loc.totalOf() + "</td>")
-              .append("<td>{QuantityAmount}</td>")
-              .append("<td colspan=\"2\">{TotalAmount}</td>")
-              .append("<td>{VatAmount}</td>")
-              .append("<td>{Total}</td>")
-              .append("</tr></tbody></table></div><p/>").toString());
-
-      templateArray.push(template);
-
-      template = JavaScriptObject.createObject();
-      JsUtils.setProperty(template, "title", loc.content());
-      JsUtils.setProperty(template, "content",
-          new StringBuilder("<p/><div><!--{DocumentItems}-->")
-              .append("<p><strong>{Index}. {Description}</strong></p>")
-              .append("<p>{Content}</p>")
-              .append("<!--{DocumentItems}--></div><p/>").toString());
-
-      templateArray.push(template);
-
-      template = JavaScriptObject.createObject();
-      JsUtils.setProperty(template, "title", loc.company());
-      List<String> descr = Lists.newArrayList();
-
-      for (BeeColumn col : Data.getColumns(ClassifierConstants.TBL_COMPANIES)) {
-        descr.add("{" + ClassifierConstants.COL_COMPANY + col.getId() + "}");
+      for (Map<String, String> templates : Arrays.asList(getTemplates(), customTemplates)) {
+        if (!BeeUtils.isEmpty(templates)) {
+          for (Entry<String, String> entry : templates.entrySet()) {
+            JavaScriptObject template = JavaScriptObject.createObject();
+            JsUtils.setProperty(template, "title", entry.getKey());
+            JsUtils.setProperty(template, "content", entry.getValue());
+            templateArray.push(template);
+          }
+        }
       }
-      JsUtils.setProperty(template, "description", BeeUtils.joinItems(descr));
-      JsUtils.setProperty(template, "content",
-          new StringBuilder("<p/>")
-              .append("<p><strong>{CompanyName}</strong></p>")
-              .append("<p>").append(loc.companyCode()).append(": {CompanyCode}</p>")
-              .append("<p>").append(loc.address()).append(": {CompanyAddress}</p>")
-              .append("<p>").append(loc.phone()).append(": {CompanyPhone}</p>")
-              .append("<p>").append(loc.email()).append(": {CompanyEmail}</p>")
-              .append("<p>").append("{CompanyWebsite}</p>")
-              .append("<p/>").toString());
-
-      templateArray.push(template);
-
-      template = JavaScriptObject.createObject();
-      JsUtils.setProperty(template, "title", loc.person());
-      descr.clear();
-
-      for (BeeColumn col : Data.getColumns(ClassifierConstants.TBL_PERSONS)) {
-        descr.add("{" + ClassifierConstants.COL_PERSON + col.getId() + "}");
+      if (templateArray.length() > 0) {
+        JsUtils.setProperty(jso, "templates", templateArray);
       }
-      JsUtils.setProperty(template, "description", BeeUtils.joinItems(descr));
-      JsUtils.setProperty(template, "content",
-          new StringBuilder("<p/>")
-              .append("<p><strong>{PersonFirstName} {PersonLastName}</strong></p>")
-              .append("<p>").append(loc.phone()).append(": {PersonPhone}</p>")
-              .append("<p>").append(loc.mobile()).append(": {PersonMobile}</p>")
-              .append("<p>").append(loc.email()).append(": {PersonEmail}</p>")
-              .append("<p/>").toString());
-
-      templateArray.push(template);
-
-      for (Entry<String, String> entry : templates.entrySet()) {
-        template = JavaScriptObject.createObject();
-        JsUtils.setProperty(template, "title", entry.getKey());
-        JsUtils.setProperty(template, "content", entry.getValue());
-        templateArray.push(template);
-      }
-      JsUtils.setProperty(jso, "templates", templateArray);
-
       initEditor(jso, this);
     }
 
@@ -316,8 +260,8 @@ public class DocumentDataForm extends AbstractFormInterceptor
     }
 
     //@formatter:off
-    private native void destroy(JavaScriptObject editor, boolean automatic) /*-{
-      editor.destroy(automatic);
+    private native void destroy(JavaScriptObject editor) /*-{
+      editor.destroy(false);
     }-*/;
 
     private native String getContent(JavaScriptObject editor) /*-{
@@ -399,9 +343,9 @@ public class DocumentDataForm extends AbstractFormInterceptor
 
   private HasWidgets panel;
   private Long groupId;
-  private final Map<String, String> criteriaHistory = Maps.newLinkedHashMap();
-  private final Map<String, Editor> criteria = Maps.newLinkedHashMap();
-  private final Map<String, Long> ids = Maps.newHashMap();
+  private final Map<String, String> criteriaHistory = new LinkedHashMap<>();
+  private final Map<String, Editor> criteria = new LinkedHashMap<>();
+  private final Map<String, Long> ids = new HashMap<>();
 
   private ChildGrid groupsGrid;
   private ChildGrid criteriaGrid;
@@ -480,8 +424,25 @@ public class DocumentDataForm extends AbstractFormInterceptor
       } else {
         parseContent(content, getLongValue(COL_DOCUMENT_DATA), new Consumer<String>() {
           @Override
-          public void accept(String input) {
-            Printer.print(input, null);
+          public void accept(final String input) {
+            ParameterList args = DocumentsHandler.createArgs(SVC_CREATE_PDF_DOCUMENT);
+            args.addDataItem(COL_DOCUMENT_CONTENT, input);
+
+            BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
+              @Override
+              public void onResponse(ResponseObject response) {
+                response.notify(getFormView());
+
+                if (!response.hasErrors()) {
+                  if (response.isEmpty()) {
+                    Printer.print(input, null);
+                  } else {
+                    BrowsingContext.open(FileUtils.getUrl(Localized.getConstants().print()
+                        + ".pdf", response.getResponseAsString()));
+                  }
+                }
+              }
+            });
           }
         });
       }
@@ -493,7 +454,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
   @Override
   public void beforeStateChange(State state, boolean modal) {
     if (state == State.CLOSED && modal && tinyEditor.isActive()) {
-      tinyEditor.destroy(false);
+      tinyEditor.destroy();
     } else if (state == State.OPEN && modal && tabbedPages != null) {
       tabbedPages.selectPage(0, SelectionOrigin.SCRIPT);
     }
@@ -515,7 +476,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
         criteria.keySet(), new Consumer<Collection<String>>() {
           @Override
           public void accept(Collection<String> collection) {
-            Map<String, Editor> oldCriteria = Maps.newHashMap(criteria);
+            Map<String, Editor> oldCriteria = new HashMap<>(criteria);
             criteria.clear();
 
             for (String crit : collection) {
@@ -541,7 +502,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
   @Override
   public void onClose(List<String> messages, IsRow oldRow, IsRow newRow) {
     LocalizableConstants loc = Localized.getConstants();
-    List<String> warnings = Lists.newArrayList();
+    List<String> warnings = new ArrayList<>();
 
     if (save(null)) {
       warnings.add(loc.mainCriteria());
@@ -584,6 +545,89 @@ public class DocumentDataForm extends AbstractFormInterceptor
   }
 
   @Override
+  public void onStart(final FormView form) {
+    if (getHeaderView() == null || getGridView() == null) {
+      return;
+    }
+    UserInfo user = BeeKeeper.getUser();
+
+    if (user.isModuleVisible(ModuleAndSub.of(Module.DOCUMENTS, SubModule.TEMPLATES))) {
+      getHeaderView().addCommandItem(new Button(Localized.getConstants().selectDocumentTemplate(),
+          new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+              if (!form.validate(form, true)) {
+                return;
+              }
+              Relation relation = Relation.create(VIEW_DOCUMENT_TEMPLATES,
+                  Lists.newArrayList(ALS_CATEGORY_NAME, COL_DOCUMENT_TEMPLATE_NAME));
+              relation.disableNewRow();
+              relation.setCaching(Caching.QUERY);
+
+              final UnboundSelector selector = UnboundSelector.create(relation);
+
+              Global.inputWidget(Localized.getConstants().documentTemplateName(), selector,
+                  new InputCallback() {
+                    @Override
+                    public String getErrorMessage() {
+                      if (selector.getRelatedRow() == null) {
+                        UiHelper.focus(selector);
+                        return Localized.getConstants().valueRequired();
+                      }
+                      return super.getErrorMessage();
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                      final Long templateData = Data.getLong(VIEW_DOCUMENT_TEMPLATES,
+                          selector.getRelatedRow(), COL_DOCUMENT_DATA);
+
+                      if (!DataUtils.isId(templateData)) {
+                        return;
+                      }
+                      if (form.getViewPresenter() instanceof ParentRowCreator) {
+                        ((ParentRowCreator) form.getViewPresenter()).createParentRow(form,
+                            new Callback<IsRow>() {
+                              @Override
+                              public void onSuccess(final IsRow row) {
+                                DocumentsHandler.copyDocumentData(templateData, new IdCallback() {
+                                  @Override
+                                  public void onSuccess(Long newDataId) {
+                                    final Long oldDataId =
+                                        row.getLong(form.getDataIndex(COL_DOCUMENT_DATA));
+
+                                    Queries.update(form.getViewName(),
+                                        row.getId(), row.getVersion(),
+                                        DataUtils.getColumns(form.getDataColumns(),
+                                            Lists.newArrayList(COL_DOCUMENT_DATA)),
+                                        Arrays.asList(DataUtils.isId(oldDataId)
+                                            ? BeeUtils.toString(oldDataId)
+                                            : (String) null),
+                                        Arrays.asList(BeeUtils.toString(newDataId)),
+                                        null, new RowUpdateCallback(form.getViewName()) {
+                                          @Override
+                                          public void onSuccess(BeeRow result) {
+                                            if (DataUtils.isId(oldDataId)) {
+                                              Queries.deleteRow(VIEW_DOCUMENT_DATA, oldDataId);
+                                            }
+                                            super.onSuccess(result);
+                                            requery(result);
+                                            form.refresh();
+                                          }
+                                        });
+                                  }
+                                });
+                              }
+                            });
+                      }
+                    }
+                  });
+            }
+          }));
+    }
+  }
+
+  @Override
   public boolean onStartEdit(FormView form, IsRow row, ScheduledCommand focusCommand) {
     requery(row);
     return true;
@@ -596,8 +640,29 @@ public class DocumentDataForm extends AbstractFormInterceptor
 
   @Override
   public void onUnload(FormView form) {
-    tinyEditor.destroy(false);
+    tinyEditor.destroy();
     super.onUnload(form);
+  }
+
+  protected Multimap<String, Pair<String, String>> getInsertObjects() {
+    return null;
+  }
+
+  protected Map<String, String> getTemplates() {
+    return Collections.singletonMap(Localized.getConstants().criteriaGroups(),
+        new StringBuilder("<table style=\"border-collapse:collapse;\"><tbody>")
+            .append("<!--{CriteriaGroups}-->")
+            .append("<tr>")
+            .append("<td style=\"border:1px solid black;\" colspan=\"3\">{Name}</td>")
+            .append("</tr>")
+            .append("<!--{Criteria}-->")
+            .append("<tr>")
+            .append("<td style=\"border:1px solid black;\">{Criterion}</td>")
+            .append("<td style=\"border:1px solid black;\">{Value}</td>")
+            .append("</tr>")
+            .append("<!--{Criteria}-->")
+            .append("<!--{CriteriaGroups}-->")
+            .append("</tbody></table>").toString());
   }
 
   protected void parseContent(final String content, Long dataId, final Consumer<String> consumer) {
@@ -684,17 +749,20 @@ public class DocumentDataForm extends AbstractFormInterceptor
           Lists.newArrayList(COL_DOCUMENT_CONTENT)), Lists.newArrayList((String) null), null,
           new RowCallback() {
             @Override
-            public void onSuccess(BeeRow result) {
-              long id = result.getId();
-              newRow.setValue(idx, id);
-
-              RowUpdateEvent.fire(BeeKeeper.getBus(), form.getViewName(), newRow);
-              form.refreshChildWidgets(newRow);
-
-              callback.onSuccess(id);
-
-              Queries.update(form.getViewName(), newRow.getId(), COL_DOCUMENT_DATA,
-                  Value.getValue(id));
+            public void onSuccess(final BeeRow dataRow) {
+              Queries.update(form.getViewName(), newRow.getId(), newRow.getVersion(),
+                  DataUtils.getColumns(form.getDataColumns(),
+                      Lists.newArrayList(COL_DOCUMENT_DATA)),
+                  Arrays.asList((String) null),
+                  Arrays.asList(BeeUtils.toString(dataRow.getId())), null,
+                  new RowUpdateCallback(form.getViewName()) {
+                    @Override
+                    public void onSuccess(BeeRow res) {
+                      super.onSuccess(res);
+                      form.refreshChildWidgets(res);
+                      callback.onSuccess(dataRow.getId());
+                    }
+                  });
             }
           });
     }
@@ -801,8 +869,8 @@ public class DocumentDataForm extends AbstractFormInterceptor
   }
 
   private boolean save(final IsRow row) {
-    final Map<String, String> newValues = Maps.newLinkedHashMap();
-    Map<Long, String> changedValues = Maps.newHashMap();
+    final Map<String, String> newValues = new LinkedHashMap<>();
+    Map<Long, String> changedValues = new HashMap<>();
     CompoundFilter flt = Filter.or();
     final Holder<Integer> holder = Holder.of(0);
 

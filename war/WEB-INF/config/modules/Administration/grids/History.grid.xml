@@ -5,19 +5,19 @@
   name="History" readOnly="true" disabledActions="audit" caption="=history"
   >
   <g:columns>
-    <DataColumn name="Time" caption="=historyTime" />
-    <DataColumn name="User" caption="=historyUser" />
-    <DataColumn name="TransactionId" visible="false" caption="=historyTransaction" />
-    <DataColumn name="Object" visible="false" caption="=historyObject" />
-    <DataColumn name="RecordId" visible="false" caption="=historyRecord" />
-    <DataColumn name="Field" caption="=historyField" />
-    <DataColumn name="Value" caption="=historyValue">
+    <DataColumn name="Time" caption="=historyTime" label="=historyTime" />
+    <DataColumn name="User" caption="=historyUser" label="=historyUser" />
+    <DataColumn name="TransactionId" visible="false" caption="=historyTransaction" label="=historyTransaction" />
+    <DataColumn name="Object" visible="false" caption="=historyObject" label="=historyObject"/>
+    <DataColumn name="RecordId" visible="false" caption="=historyRecord" label="=historyRecord"/>
+    <DataColumn name="Field" caption="=historyField" label="=historyField"/>
+    <DataColumn name="Value" caption="=historyValue" label="=historyValue">
        <dynStyle>
          <ui:class>bee-ActionCellLink</ui:class>
          <ui:expression>(row.Relation !=null) &amp;&amp; (row.Value !=null)</ui:expression>
        </dynStyle>
     </DataColumn>
-    <DataColumn name="Relation" visible="false" caption="=historyRelation" />
+    <DataColumn name="Relation" visible="false" caption="=historyRelation" label="=historyRelation" />
   </g:columns>
 
   <g:rowStyle>

@@ -1,7 +1,5 @@
 package com.butent.bee.client.ui;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -45,7 +43,10 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,10 +110,10 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
 
       @Override
       boolean save(Collection<Pair<IdentifiableWidget, String>> widgetsAndValues) {
-        Set<String> names = Sets.newHashSet();
-        List<Pair<IdentifiableWidget, String>> duplicates = Lists.newArrayList();
+        Set<String> names = new HashSet<>();
+        List<Pair<IdentifiableWidget, String>> duplicates = new ArrayList<>();
 
-        List<Element> elements = Lists.newArrayList();
+        List<Element> elements = new ArrayList<>();
 
         for (Pair<IdentifiableWidget, String> wav : widgetsAndValues) {
           HasAutocomplete field = (HasAutocomplete) wav.getA();
@@ -333,7 +334,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
         break;
       }
 
-      List<String> values = Lists.newArrayList();
+      List<String> values = new ArrayList<>();
 
       pos++;
       for (int i = pos; i < pos + cnt; i++) {
@@ -415,7 +416,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
 
   public static boolean retainValue(IdentifiableWidget widget) {
     if (INSTANCE.isSubmittable(widget)) {
-      Set<IdentifiableWidget> widgets = Sets.newHashSet(widget);
+      Set<IdentifiableWidget> widgets = Collections.singleton(widget);
       return INSTANCE.save(widgets);
     } else {
       return false;
@@ -435,7 +436,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
       return false;
     }
 
-    List<IdentifiableWidget> fields = Lists.newArrayList();
+    List<IdentifiableWidget> fields = new ArrayList<>();
     for (IdentifiableWidget widget : widgets) {
       if (INSTANCE.isSubmittable(widget)) {
         fields.add(widget);
@@ -448,7 +449,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
   public static boolean retainValues(FormView form) {
     Assert.notNull(form);
 
-    List<IdentifiableWidget> widgets = Lists.newArrayList();
+    List<IdentifiableWidget> widgets = new ArrayList<>();
 
     for (EditableWidget editableWidget : form.getEditableWidgets()) {
       if (editableWidget.isDirty() && INSTANCE.isSubmittable(editableWidget.getEditor())) {
@@ -504,7 +505,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
 
   private AutocompleteProvider() {
     this.dataContainer = Document.get().createDivElement();
-    dataContainer.addClassName("bee-AutocompleteData");
+    dataContainer.addClassName(BeeConst.CSS_CLASS_PREFIX + "AutocompleteData");
 
     BodyPanel.get().getElement().appendChild(dataContainer);
 
@@ -562,7 +563,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
   }
 
   private boolean addData(String key, String value) {
-    return addData(key, Lists.newArrayList(value));
+    return addData(key, Collections.singletonList(value));
   }
 
   private void clearData() {
@@ -609,7 +610,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
 
   private boolean save(Collection<IdentifiableWidget> widgets) {
     if (getType() != null) {
-      List<Pair<IdentifiableWidget, String>> widgetsAndValues = Lists.newArrayList();
+      List<Pair<IdentifiableWidget, String>> widgetsAndValues = new ArrayList<>();
       for (IdentifiableWidget widget : widgets) {
         widgetsAndValues.add(Pair.of(widget, BeeUtils.trim(getType().getValue(widget))));
       }
@@ -623,7 +624,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
 
   private boolean save(IdentifiableWidget widget, String value) {
     if (getType() != null) {
-      List<Pair<IdentifiableWidget, String>> widgetsAndValues = Lists.newArrayList();
+      List<Pair<IdentifiableWidget, String>> widgetsAndValues = new ArrayList<>();
       widgetsAndValues.add(Pair.of(widget, BeeUtils.trim(value)));
 
       return getType().save(widgetsAndValues);

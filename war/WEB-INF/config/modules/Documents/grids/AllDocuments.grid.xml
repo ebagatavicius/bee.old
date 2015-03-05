@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+  xmlns:w="http://www.butent.com/widget"
+  
+  name="AllDocuments" viewName="Documents" caption="=documents"
+  newRowForm="NewDocument" editForm="Document" flexGrow="1" order="DocumentID desc">
+
+  <g:columns>
+    <DataColumn name="Name" visible="true" />
+    <RelColumn name="Company" />
+    <DataColumn name="DocumentDate" />
+    <DataColumn name="Expires" />
+    <DataColumn name="Number" />
+    <RelColumn name="Type" carry="true" />
+    <RelColumn name="Place" carry="true" />
+    <DataColumn name="StatusName" />
+
+    <IdColumn name="Id" visible="false" />
+    <DataColumn name="RegistrationNumber" visible="false" />
+    <DataColumn name="Received" visible="false" />
+    <DataColumn name="Sent" visible="false" />
+    <DataColumn name="Returned" visible="false" />
+    <DataColumn name="Description" visible="false" />
+  </g:columns>
+
+  <g:predefinedFilter name="not_returned" label="=documentFilterNotReturned">
+    <g:column name="Sent" emptyValues="false" />
+    <g:column name="Returned" emptyValues="true" />
+  </g:predefinedFilter>
+  <g:predefinedFilter name="received" label="=documentFilterReceived">
+    <g:column name="Received" emptyValues="false" />
+  </g:predefinedFilter>
+  <g:predefinedFilter name="sent" label="=documentFilterSent">
+    <g:column name="Sent" emptyValues="false" />
+  </g:predefinedFilter>
+</g:Grid>

@@ -4,7 +4,7 @@
 
   name="CargoProformaInvoices" viewName="CargoInvoices"
   editShowId="true" flexGrow="1"
-  disabledActions="add"
+  disabledActions="add edit"
   caption="=trProformaInvoices"
   filter="Sale AND Proforma"
   >

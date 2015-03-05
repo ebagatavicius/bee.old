@@ -1,18 +1,17 @@
 package com.butent.bee.shared.websocket.messages;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 public class UsersMessage extends Message {
 
-  private final List<UserData> data = Lists.newArrayList();
+  private final List<UserData> data = new ArrayList<>();
 
   public UsersMessage(Collection<UserData> data) {
     this();
@@ -39,7 +38,7 @@ public class UsersMessage extends Message {
 
   @Override
   public String toString() {
-    List<Long> ids = Lists.newArrayList();
+    List<Long> ids = new ArrayList<>();
     for (UserData userData : data) {
       ids.add(userData.getUserId());
     }

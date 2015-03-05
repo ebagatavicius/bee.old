@@ -8,7 +8,7 @@
   name="CargoInvoice" viewName="CargoInvoices"
   width="800" height="600"
   >
-  <f:properties reports="PrintCargoInvoice, PrintCargoInvoiceShort, PrintCargoProformaInvoice" />
+  <f:properties reports="PrintCargoInvoice, PrintCargoInvoiceShort" />
 
   <FlowPanel class="flexBox-vertical">
     <Table>
@@ -36,21 +36,21 @@
       </row>
       <row>
         <Label text="=trdSupplier" style="&lbl;" />
-        <DataSelector source="Supplier" />
+        <DataSelector source="Supplier" renderColumns="SupplierName" />
         <Label text="=trdCustomer" class="bee-required" style="&lbl;" />
-        <DataSelector source="Customer" required="true" />
+        <DataSelector source="Customer" renderColumns="CustomerName" required="true" />
       </row>
       <row>
         <Label text="=trdManager" style="&lbl;" />
         <DataSelector source="Manager" editSource="ManagerPerson" />
         <Label text="=trdPayer" style="&lbl;" />
-        <DataSelector source="Payer" />
+        <DataSelector source="Payer" renderColumns="PayerName" />
       </row>
       <row>
         <cell colSpan="3">
           <Label text="=trdTerm" style="&lbl; text-align:right;" />
         </cell>
-        <InputDate source="Term" style="width:70px;" />
+        <InputDate source="Term" style="width:150px;" />
       </row>
       <row>
         <Label text="=trdVehicle" style="&lbl;" />
@@ -68,7 +68,7 @@
       <page>
         <text>=trdNotes</text>
         <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" />
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>
       <page module="Transport">

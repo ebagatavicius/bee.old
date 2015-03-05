@@ -18,6 +18,9 @@
       <SimpleJoin name="Company" joinType="LEFT">
         <SimpleColumn alias="CompanyName" name="Name" />
       </SimpleJoin>
+      
+      <SimpleColumn name="Project" />
+      <SimpleColumn name="ProjectStage" />
     </SimpleJoin>
 
     <SimpleColumn name="Publisher" />
@@ -28,6 +31,10 @@
           <SimpleColumn alias="PublisherLastName" name="LastName" />
         </SimpleJoin>
       </SimpleJoin>
+      <ExternalJoin name="User" source="ProjectUsers" joinType="LEFT" filter="Project = CurrentProject" >
+        <HiddenColumn name="Project" alias="CurrentProject" />
+        <SimpleColumn name="Rate"/>
+      </ExternalJoin>
     </SimpleJoin>
 
     <SimpleColumn name="PublishTime" />

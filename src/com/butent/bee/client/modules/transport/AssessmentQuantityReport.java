@@ -20,7 +20,6 @@ import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Report;
 import com.butent.bee.client.output.ReportParameters;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasIndexedWidgets;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -58,6 +57,7 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AssessmentQuantityReport extends ReportInterceptor {
@@ -73,7 +73,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
   private static final List<String> NAME_GROUP_BY =
       Lists.newArrayList("Group0", "Group1", "Group2");
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "tr-aqr-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-aqr-";
 
   private static final String STYLE_TABLE = STYLE_PREFIX + "table";
   private static final String STYLE_HEADER = STYLE_PREFIX + "header";
@@ -112,39 +112,38 @@ public class AssessmentQuantityReport extends ReportInterceptor {
   @Override
   public void onLoad(FormView form) {
     ReportParameters parameters = readParameters();
-    if (parameters == null) {
-      return;
-    }
 
-    Widget widget = form.getWidgetByName(NAME_START_DATE);
-    DateTime dateTime = parameters.getDateTime(NAME_START_DATE);
-    if (widget instanceof InputDateTime && dateTime != null) {
-      ((InputDateTime) widget).setDateTime(dateTime);
-    }
+    if (parameters != null) {
+      Widget widget = form.getWidgetByName(NAME_START_DATE);
+      DateTime dateTime = parameters.getDateTime(NAME_START_DATE);
+      if (widget instanceof InputDateTime && dateTime != null) {
+        ((InputDateTime) widget).setDateTime(dateTime);
+      }
 
-    widget = form.getWidgetByName(NAME_END_DATE);
-    dateTime = parameters.getDateTime(NAME_END_DATE);
-    if (widget instanceof InputDateTime && dateTime != null) {
-      ((InputDateTime) widget).setDateTime(dateTime);
-    }
+      widget = form.getWidgetByName(NAME_END_DATE);
+      dateTime = parameters.getDateTime(NAME_END_DATE);
+      if (widget instanceof InputDateTime && dateTime != null) {
+        ((InputDateTime) widget).setDateTime(dateTime);
+      }
 
-    widget = form.getWidgetByName(NAME_DEPARTMENTS);
-    String idList = parameters.get(NAME_DEPARTMENTS);
-    if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
-      ((MultiSelector) widget).setIds(idList);
-    }
+      widget = form.getWidgetByName(NAME_DEPARTMENTS);
+      String idList = parameters.get(NAME_DEPARTMENTS);
+      if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
+        ((MultiSelector) widget).setIds(idList);
+      }
 
-    widget = form.getWidgetByName(NAME_MANAGERS);
-    idList = parameters.get(NAME_MANAGERS);
-    if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
-      ((MultiSelector) widget).setIds(idList);
-    }
+      widget = form.getWidgetByName(NAME_MANAGERS);
+      idList = parameters.get(NAME_MANAGERS);
+      if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
+        ((MultiSelector) widget).setIds(idList);
+      }
 
-    for (String groupName : NAME_GROUP_BY) {
-      widget = form.getWidgetByName(groupName);
-      Integer index = parameters.getInteger(groupName);
-      if (widget instanceof ListBox && BeeUtils.isPositive(index)) {
-        ((ListBox) widget).setSelectedIndex(index);
+      for (String groupName : NAME_GROUP_BY) {
+        widget = form.getWidgetByName(groupName);
+        Integer index = parameters.getInteger(groupName);
+        if (widget instanceof ListBox && BeeUtils.isPositive(index)) {
+          ((ListBox) widget).setSelectedIndex(index);
+        }
       }
     }
 
@@ -185,7 +184,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
     }
 
     ParameterList params = TransportHandler.createArgs(SVC_GET_ASSESSMENT_QUANTITY_REPORT);
-    final List<String> headers = Lists.newArrayList(getCaption());
+    final List<String> headers = Lists.newArrayList(getReportCaption());
 
     if (start != null) {
       params.addDataItem(Service.VAR_FROM, start.getTime());
@@ -223,7 +222,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
       headers.add(BeeUtils.joinWords(label, getFilterLabel(NAME_MANAGERS)));
     }
 
-    List<String> groupBy = Lists.newArrayList();
+    List<String> groupBy = new ArrayList<>();
     for (String groupName : NAME_GROUP_BY) {
       Integer index = getSelectedIndex(groupName);
 
@@ -277,13 +276,13 @@ public class AssessmentQuantityReport extends ReportInterceptor {
   @Override
   protected void export() {
     if (!sheet.isEmpty()) {
-      Exporter.maybeExport(sheet, getCaption());
+      Exporter.maybeExport(sheet, getReportCaption());
     }
   }
 
   @Override
   protected String getBookmarkLabel() {
-    List<String> labels = Lists.newArrayList(getCaption(),
+    List<String> labels = Lists.newArrayList(getReportCaption(),
         Format.renderPeriod(getDateTime(NAME_START_DATE), getDateTime(NAME_END_DATE)),
         getFilterLabel(NAME_DEPARTMENTS), getFilterLabel(NAME_MANAGERS));
 
@@ -794,7 +793,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
 
   private void showDetails(SimpleRow dataRow, TableCellElement cellElement) {
     CompoundFilter filter = Filter.and();
-    List<String> captions = Lists.newArrayList();
+    List<String> captions = new ArrayList<>();
 
     String[] colNames = dataRow.getColumnNames();
 

@@ -1,9 +1,5 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
@@ -48,9 +44,13 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 final class FreightExchange extends ChartBase {
@@ -58,7 +58,7 @@ final class FreightExchange extends ChartBase {
   static final String SUPPLIER_KEY = "freight_exchange";
   private static final String DATA_SERVICE = SVC_GET_FX_DATA;
 
-  private static final String STYLE_PREFIX = "bee-tr-fx-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-fx-";
 
   private static final String STYLE_CUSTOMER_PREFIX = STYLE_PREFIX + "Customer-";
   private static final String STYLE_CUSTOMER_ROW_SEPARATOR = STYLE_CUSTOMER_PREFIX + "row-sep";
@@ -86,16 +86,16 @@ final class FreightExchange extends ChartBase {
         });
   }
 
-  private final List<OrderCargo> items = Lists.newArrayList();
+  private final List<OrderCargo> items = new ArrayList<>();
 
   private int customerWidth = BeeConst.UNDEF;
   private int orderWidth = BeeConst.UNDEF;
 
-  private final Set<String> customerPanels = Sets.newHashSet();
-  private final Set<String> orderPanels = Sets.newHashSet();
+  private final Set<String> customerPanels = new HashSet<>();
+  private final Set<String> orderPanels = new HashSet<>();
 
-  private final Map<Integer, Long> customersByRow = Maps.newHashMap();
-  private final Map<Integer, Long> ordersByRow = Maps.newHashMap();
+  private final Map<Integer, Long> customersByRow = new HashMap<>();
+  private final Map<Integer, Long> ordersByRow = new HashMap<>();
 
   private FreightExchange() {
     super();
@@ -281,7 +281,7 @@ final class FreightExchange extends ChartBase {
 
   @Override
   protected List<ChartData> prepareFilterData(FilterType filterType) {
-    List<ChartData> data = Lists.newArrayList();
+    List<ChartData> data = new ArrayList<>();
     if (items.isEmpty()) {
       return data;
     }
@@ -397,8 +397,8 @@ final class FreightExchange extends ChartBase {
         lastOrder = rowItem.getOrderId();
 
       } else {
-        boolean customerChanged = !Objects.equal(lastCustomer, rowItem.getCustomerId());
-        boolean orderChanged = customerChanged || !Objects.equal(lastOrder, rowItem.getOrderId());
+        boolean customerChanged = !Objects.equals(lastCustomer, rowItem.getCustomerId());
+        boolean orderChanged = customerChanged || !Objects.equals(lastOrder, rowItem.getOrderId());
 
         if (customerChanged) {
           addCustomerWidget(panel, customerWidget, lastCustomer, customerStartRow, row - 1);
@@ -570,19 +570,19 @@ final class FreightExchange extends ChartBase {
   }
 
   private List<List<OrderCargo>> doLayout() {
-    List<List<OrderCargo>> rows = Lists.newArrayList();
+    List<List<OrderCargo>> rows = new ArrayList<>();
 
     Long lastOrder = null;
-    List<OrderCargo> rowItems = Lists.newArrayList();
+    List<OrderCargo> rowItems = new ArrayList<>();
 
     for (OrderCargo item : items) {
       if (isItemVisible(item) && BeeUtils.intersects(getVisibleRange(), item.getRange())) {
 
-        if (!Objects.equal(item.getOrderId(), lastOrder)
+        if (!Objects.equals(item.getOrderId(), lastOrder)
             || BeeUtils.intersects(rowItems, item.getRange())) {
 
           if (!rowItems.isEmpty()) {
-            rows.add(Lists.newArrayList(rowItems));
+            rows.add(new ArrayList<>(rowItems));
             rowItems.clear();
           }
 
@@ -594,14 +594,14 @@ final class FreightExchange extends ChartBase {
     }
 
     if (!rowItems.isEmpty()) {
-      rows.add(Lists.newArrayList(rowItems));
+      rows.add(new ArrayList<>(rowItems));
     }
     return rows;
   }
 
   private String findCustomerName(Long customerId) {
     for (OrderCargo item : items) {
-      if (Objects.equal(item.getCustomerId(), customerId)) {
+      if (Objects.equals(item.getCustomerId(), customerId)) {
         return item.getCustomerName();
       }
     }

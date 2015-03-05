@@ -1,5 +1,6 @@
 package com.butent.bee.shared.modules.discussions;
 
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.TimeUtils;
@@ -96,7 +97,7 @@ public final class DiscussionsConstants {
   }
 
   public static final String DISCUSSIONS_PREFIX = "discuss_";
-  public static final String DISCUSSIONS_STYLE_PREFIX = "bee-discuss-";
+  public static final String DISCUSSIONS_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "discuss-";
 
   public static final String ALS_BIRTHDAY = "Birthday";
   public static final String ALS_BIRTHDAY_VALID = "BirthdayValid";

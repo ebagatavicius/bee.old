@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="CountryNorms"  caption="=trCountryNorms"
+  source="CountryNorms"
+  editForm="CountryNorm"
+  newRowForm="CountryNorm" newRowCaption="=trNewCountryNorm"
+  >
+  <Columns>
+    <SimpleColumn name="Country" />
+    <SimpleJoin name="Country" joinType="INNER">
+      <SimpleColumn name="Name" alias="CountryName" />
+    </SimpleJoin>
+    
+    <SimpleColumn name="DailyCostsItem"/>
+    <SimpleJoin joinType="INNER" name="DailyCostsItem">
+      <SimpleColumn name="Name" alias="DailyCostsItemName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="RoadCostsItem"/>
+    <SimpleJoin joinType="INNER" name="RoadCostsItem">
+      <SimpleColumn name="Name" alias="RoadCostsItemName" />
+    </SimpleJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="CountryName" />
+  </Order>
+</View>
+ 

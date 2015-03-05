@@ -15,8 +15,4 @@
   <Constraints>
     <Unique fields="ArticleSupplier Warehouse" />
   </Constraints>
-  <Indexes>
-    <Index fields="ArticleSupplier" />
-    <Index fields="Warehouse" />
-  </Indexes>
 </Table>

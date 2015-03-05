@@ -2,6 +2,7 @@ package com.butent.bee.shared.menu;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
+import com.butent.bee.shared.data.BeeObject;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.NameUtils;
@@ -9,8 +10,8 @@ import com.butent.bee.shared.utils.NameUtils;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-@XmlSeeAlso({MenuEntry.class, MenuItem.class })
-public abstract class Menu implements BeeSerializable {
+@XmlSeeAlso({MenuEntry.class, MenuItem.class})
+public abstract class Menu implements BeeSerializable, BeeObject {
 
   private enum Serial {
     NAME, LABEL, SEPARATOR, ORDER, MODULE, DATA
@@ -98,10 +99,12 @@ public abstract class Menu implements BeeSerializable {
     return label;
   }
 
+  @Override
   public String getModule() {
     return module;
   }
 
+  @Override
   public String getName() {
     return name;
   }
@@ -118,6 +121,10 @@ public abstract class Menu implements BeeSerializable {
 
   public Boolean hasSeparator() {
     return BeeUtils.isTrue(separator);
+  }
+
+  public void setModuleName(String moduleName) {
+    this.module = moduleName;
   }
 
   protected String serialize(Object obj) {

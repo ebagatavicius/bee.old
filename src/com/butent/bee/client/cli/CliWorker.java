@@ -27,8 +27,6 @@ import com.google.gwt.geolocation.client.Position;
 import com.google.gwt.geolocation.client.Position.Coordinates;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.storage.client.Storage;
-import com.google.gwt.storage.client.StorageEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -83,8 +81,6 @@ import com.butent.bee.client.images.Images;
 import com.butent.bee.client.layout.Direction;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Horizontal;
-import com.butent.bee.client.layout.Layout;
-import com.butent.bee.client.layout.LayoutPanel;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.layout.Split;
 import com.butent.bee.client.logging.ClientLogManager;
@@ -115,17 +111,14 @@ import com.butent.bee.client.utils.JsUtils;
 import com.butent.bee.client.utils.NewFileInfo;
 import com.butent.bee.client.utils.XmlUtils;
 import com.butent.bee.client.view.ViewFactory;
-import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.websocket.Endpoint;
 import com.butent.bee.client.widget.BeeAudio;
 import com.butent.bee.client.widget.BeeVideo;
-import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.CustomWidget;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InlineLabel;
-import com.butent.bee.client.widget.InputArea;
 import com.butent.bee.client.widget.InputFile;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.Meter;
@@ -174,6 +167,7 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Color;
+import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -406,9 +400,6 @@ public final class CliWorker {
     } else if (z.startsWith("image")) {
       showImages(arr);
 
-    } else if ("import_csv".equals(z)) {
-      importCSV(arr);
-
     } else if ("inject".equals(z) && arr.length == 2) {
       DomUtils.injectExternalScript(arr[1]);
 
@@ -460,6 +451,9 @@ public final class CliWorker {
     } else if ("notify".equals(z) && arr.length >= 2) {
       showNotes(args);
 
+    } else if (z.startsWith("omni")) {
+      logger.debug(z, ColumnDescription.toggleOmniView());
+
     } else if (BeeUtils.inList(z, "p", "prop")) {
       showProperties(v, arr, errorPopup);
 
@@ -479,7 +473,7 @@ public final class CliWorker {
       showRates(args, errorPopup);
 
     } else if ("rebuild".equals(z)) {
-      rebuildSomething(args, errorPopup);
+      rebuildSomething(args);
 
     } else if (z.startsWith("rect") && arr.length >= 2) {
       showRectangle(arr[1], errorPopup);
@@ -1381,6 +1375,8 @@ public final class CliWorker {
           }
           logger.addSeparator();
 
+          inform(z, (logger.getLevel() == null) ? BeeConst.NULL : logger.getLevel().name());
+
         } else {
           logger.setLevel(level);
           logger.log(level, "level", level);
@@ -1463,7 +1459,7 @@ public final class CliWorker {
           int index = position.get();
 
           if (index < commands.size()
-              && BeeKeeper.getScreen().updateProgress(progId.get(), index + 0.5)) {
+              && BeeKeeper.getScreen().updateProgress(progId.get(), null, index + 0.5)) {
 
             position.set(index + 1);
 
@@ -1703,17 +1699,10 @@ public final class CliWorker {
       Global.sayHuh(ArrayUtils.join(BeeConst.STRING_SPACE, arr));
       return;
     }
-
-    if (BeeUtils.same(arr[0], "download")) {
-      BrowsingContext.open(FileUtils.getUrl(arr[1], null));
-      return;
-    }
-
     ParameterList params = BeeKeeper.getRpc().createParameters(Service.GET_RESOURCE);
     for (String v : arr) {
       params.addPositionalData(v);
     }
-
     BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
@@ -1735,11 +1724,13 @@ public final class CliWorker {
       @Override
       public void onResponse(ResponseObject response) {
         if (response.hasErrors()) {
-          Global.showError(Arrays.asList(response.getErrors()));
+          Global.showError(caption, Arrays.asList(response.getErrors()));
         } else if (response.hasResponse(SimpleRowSet.class)) {
           showSimpleRowSet(caption, SimpleRowSet.restore(response.getResponseAsString()));
+        } else if (response.hasWarnings()) {
+          Global.showError(caption, Arrays.asList(response.getWarnings()));
         } else {
-          Global.showError("response type " + response.getType());
+          Global.showError(caption, Arrays.asList("response type", response.getType()));
         }
       }
     });
@@ -1779,64 +1770,6 @@ public final class CliWorker {
     }
 
     BeeKeeper.getRpc().makeRequest(params, ResponseHandler.callback(input));
-  }
-
-  @Deprecated
-  private static void importCSV(String[] arr) {
-    LogUtils.getRootLogger().debug((Object[]) arr);
-    if (arr.length < 2) {
-      return;
-    }
-
-    String servName = "";
-    if (BeeUtils.same(arr[1], "companies")) {
-      servName = Service.IMPORT_CSV_COMPANIES;
-    }
-
-    if (!BeeUtils.isEmpty(servName)) {
-      final String serviceName = servName;
-      LogUtils.getRootLogger().debug("do");
-      final Popup popup = new Popup(OutsideClick.CLOSE);
-
-      final InputFile widget = new InputFile(true);
-      widget.addChangeHandler(new ChangeHandler() {
-        @Override
-        public void onChange(ChangeEvent event) {
-          popup.close();
-          List<NewFileInfo> files = FileUtils.getNewFileInfos(widget.getFiles());
-
-          for (final NewFileInfo fi : files) {
-            logger.debug("uploading", fi.getName(), fi.getType(), fi.getSize());
-            FileUtils.uploadTempFile(fi, new Callback<String>() {
-              @Override
-              public void onSuccess(String result) {
-                BeeKeeper.getRpc().sendText(serviceName,
-                    result,
-                    new ResponseCallback() {
-                      @Override
-                      public void onResponse(ResponseObject response) {
-                        Assert.notNull(response);
-
-                        if (response.hasResponse(BeeRowSet.class)) {
-                          BeeRowSet rs = BeeRowSet.restore((String) response.getResponse());
-
-                          if (rs.isEmpty()) {
-                            logger.debug("sql: RowSet is empty");
-                          } else {
-                            Global.showTable(null, rs);
-                          }
-                        }
-                      }
-                    });
-              }
-            });
-          }
-        }
-      });
-
-      popup.setWidget(widget);
-      popup.center();
-    }
   }
 
   private static void inform(String... messages) {
@@ -2008,7 +1941,7 @@ public final class CliWorker {
     showTable("Selectors", new PropertiesData(info));
   }
 
-  private static void rebuildSomething(final String args, final boolean errorPopup) {
+  private static void rebuildSomething(final String args) {
     final String progressId;
 
     if (BeeUtils.same(args, "check") && Endpoint.isOpen()) {
@@ -2040,83 +1973,7 @@ public final class CliWorker {
           Endpoint.send(ProgressMessage.close(progressId));
         }
 
-        if (response.hasResponse(Resource.class)) {
-          final LayoutPanel p = new LayoutPanel();
-
-          final InputArea area = new InputArea(Resource.restore(response.getResponseAsString()));
-          p.add(area);
-          p.setWidgetTopBottom(area, 0, CssUnit.EM, 2, CssUnit.EM);
-
-          Button button = new Button("Save schema", new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              if (area.isValueChanged()) {
-                BeeKeeper.getRpc().sendText(Service.REBUILD, "schema " + area.getValue(),
-                    new ResponseCallback() {
-                      @Override
-                      public void onResponse(ResponseObject resp) {
-                        Assert.notNull(resp);
-
-                        if (resp.hasResponse(Resource.class)) {
-                          p.getWidget(1).removeFromParent();
-                          InputArea res =
-                              new InputArea(Resource.restore(resp.getResponseAsString()));
-                          p.add(res);
-                          p.setWidgetLeftRight(res, 50, CssUnit.PCT, 0, CssUnit.EM);
-                          p.setWidgetTopBottom(area, 0, CssUnit.EM, 0, CssUnit.EM);
-                          p.setWidgetLeftRight(area, 0, CssUnit.EM, 50, CssUnit.PCT);
-                        } else {
-                          showError(errorPopup, "Wrong response received");
-                        }
-                      }
-                    });
-              } else {
-                inform("Value has not changed", area.getDigest());
-              }
-            }
-          });
-          p.add(button);
-          p.setWidgetVerticalPosition(button, Layout.Alignment.END);
-          p.setWidgetLeftWidth(button, 42, CssUnit.PCT, 16, CssUnit.PCT);
-
-          Storage stor = Storage.getSessionStorageIfSupported();
-
-          if (stor == null) {
-            BeeKeeper.getScreen().show(p);
-          } else {
-            final String tmpKey = BeeUtils.randomString(5, 5, 'a', 'z');
-            stor.setItem(tmpKey, area.getValue());
-
-            Storage.addStorageEventHandler(new StorageEvent.Handler() {
-              @Override
-              public void onStorageChange(StorageEvent event) {
-                if (BeeUtils.same(event.getKey(), tmpKey)) {
-                  BeeKeeper.getRpc().sendText(Service.REBUILD, "schema " + event.getNewValue(),
-                      new ResponseCallback() {
-                        @Override
-                        public void onResponse(ResponseObject resp) {
-                          Assert.notNull(resp);
-
-                          if (resp.hasResponse(Resource.class)) {
-                            InputArea res =
-                                new InputArea(Resource.restore(resp.getResponseAsString()));
-                            inform(res.getValue());
-                          } else {
-                            showError(errorPopup, "Wrong response received");
-                          }
-                        }
-                      });
-                  Storage.removeStorageEventHandler(this);
-                }
-              }
-            });
-            String url = GWT.getHostPageBaseURL() + "SqlDesigner/index.html?keyword=" + tmpKey;
-            String xml = "<Form><ResizePanel><Frame url=\"" + url + "\" /></ResizePanel></Form>";
-
-            FormFactory.openForm(FormFactory.parseFormDescription(xml), null,
-                ViewHelper.getPresenterCallback());
-          }
-        } else if (response.hasResponse()) {
+        if (response.hasResponse()) {
           showPropData(BeeUtils.joinWords("Rebuild", args),
               PropertyUtils.restoreProperties((String) response.getResponse()));
         }
@@ -2440,12 +2297,31 @@ public final class CliWorker {
     BeeKeeper.getScreen().show(table);
   }
 
-  private static void showCurrentExchangeRate(String currency) {
-    ParameterList params = AdministrationKeeper.createArgs(SVC_GET_CURRENT_EXCHANGE_RATE);
-    params.addQueryItem(COL_CURRENCY_NAME, currency);
+  private static void addRateTypeAndCurrency(ParameterList params, String args) {
+    String type = null;
+    String currency = null;
 
-    getSimpleRowSet(BeeUtils.joinWords(SVC_GET_CURRENT_EXCHANGE_RATE, currency),
-        params);
+    for (String arg : NameUtils.toList(args)) {
+      if (type == null && BeeUtils.inListSame(arg, "lt", "eu")) {
+        type = arg.toUpperCase();
+      } else {
+        currency = arg.toUpperCase();
+      }
+    }
+
+    if (!BeeUtils.isEmpty(type)) {
+      params.addQueryItem(Service.VAR_TYPE, type);
+    }
+    if (!BeeUtils.isEmpty(currency)) {
+      params.addQueryItem(COL_CURRENCY_NAME, currency);
+    }
+  }
+
+  private static void showCurrentExchangeRate(String args) {
+    ParameterList params = AdministrationKeeper.createArgs(SVC_GET_CURRENT_EXCHANGE_RATE);
+    addRateTypeAndCurrency(params, args);
+
+    getSimpleRowSet(BeeUtils.joinWords("Current rate", args), params);
   }
 
   private static void showDataInfo(String viewName, boolean errorPopup) {
@@ -2720,23 +2596,27 @@ public final class CliWorker {
   private static void showExchangeRate(String currency, String date) {
     ParameterList params = AdministrationKeeper.createArgs(SVC_GET_EXCHANGE_RATE);
 
-    params.addQueryItem(COL_CURRENCY_NAME, currency);
-    params.addQueryItem(COL_CURRENCY_RATE_DATE, date);
+    addRateTypeAndCurrency(params, currency);
+    if (!BeeUtils.isEmpty(date)) {
+      params.addQueryItem(COL_CURRENCY_RATE_DATE, date);
+    }
 
-    getSimpleRowSet(BeeUtils.joinWords(SVC_GET_EXCHANGE_RATE, currency, date),
-        params);
+    getSimpleRowSet(BeeUtils.joinWords("Exchange rate", currency, date), params);
   }
 
   private static void showExchangeRates(String currency, String dateLow, String dateHigh) {
-    ParameterList params =
-        AdministrationKeeper.createArgs(SVC_GET_EXCHANGE_RATES_BY_CURRENCY);
+    ParameterList params = AdministrationKeeper.createArgs(SVC_GET_EXCHANGE_RATES_FOR_CURRENCY);
 
-    params.addQueryItem(COL_CURRENCY_NAME, currency);
-    params.addQueryItem(VAR_DATE_LOW, dateLow);
-    params.addQueryItem(VAR_DATE_HIGH, dateHigh);
+    addRateTypeAndCurrency(params, currency);
 
-    getSimpleRowSet(BeeUtils.joinWords(SVC_GET_EXCHANGE_RATES_BY_CURRENCY,
-        currency, dateLow, dateHigh), params);
+    if (!BeeUtils.isEmpty(dateLow)) {
+      params.addQueryItem(VAR_DATE_LOW, dateLow);
+    }
+    if (!BeeUtils.isEmpty(dateHigh)) {
+      params.addQueryItem(VAR_DATE_HIGH, dateHigh);
+    }
+
+    getSimpleRowSet(BeeUtils.joinWords("Rates for currency", currency, dateLow, dateHigh), params);
   }
 
   private static void showExtData(String caption, List<ExtendedProperty> data) {
@@ -2844,7 +2724,10 @@ public final class CliWorker {
     if (!BeeUtils.isEmpty(args)) {
       if (args.startsWith("4.1")) {
         range = Range.closed(FontAwesome.SPACE_SHUTTLE.getCode(), FontAwesome.BOMB.getCode());
+      } else if (args.startsWith("4.2")) {
+        range = Range.closed(FontAwesome.SOCCER_BALL_O.getCode(), FontAwesome.MEANPATH.getCode());
       }
+
       styles.addAll(StyleUtils.parseStyles(args));
     }
 
@@ -3451,7 +3334,7 @@ public final class CliWorker {
 
           } else if (prog.finish > time) {
             double value = prog.max * (time - prog.start) / (prog.finish - prog.start);
-            BeeKeeper.getScreen().updateProgress(prog.id, value);
+            BeeKeeper.getScreen().updateProgress(prog.id, null, value);
 
           } else {
             BeeKeeper.getScreen().removeProgress(prog.id);
@@ -4083,7 +3966,7 @@ public final class CliWorker {
       logger.info("view suppliers not registered");
 
     } else {
-      HtmlTable table = new HtmlTable(StyleUtils.CLASS_NAME_PREFIX + "info-table");
+      HtmlTable table = new HtmlTable(BeeConst.CSS_CLASS_PREFIX + "info-table");
       table.setCaption("Suppliers");
 
       int row = 0;

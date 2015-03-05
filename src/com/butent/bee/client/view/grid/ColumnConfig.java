@@ -1,7 +1,5 @@
 package com.butent.bee.client.view.grid;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.client.data.Data;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeColumn;
@@ -12,11 +10,12 @@ import com.butent.bee.shared.ui.Flexibility;
 import com.butent.bee.shared.ui.StyleDeclaration;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class ColumnConfig {
 
-  private static final List<BeeColumn> dataColumns = Lists.newArrayList();
+  private static final List<BeeColumn> dataColumns = new ArrayList<>();
 
   private static int gridIndex;
   private static int nameIndex;
@@ -35,6 +34,8 @@ class ColumnConfig {
 
   private static int formatIndex;
 
+  private static int editInPlaceIndex;
+
   private static int headerStyleIndex;
   private static int headerFontIndex;
 
@@ -50,7 +51,7 @@ class ColumnConfig {
 
       List<String> names = DataUtils.getColumnNames(columns);
 
-      gridIndex = GridUtils.getIndex(names, "GridSetting");
+      gridIndex = GridUtils.getIndex(names, ColumnDescription.COL_GRID_SETTING);
       nameIndex = GridUtils.getIndex(names, "Name");
       captionIndex = GridUtils.getIndex(names, "Caption");
 
@@ -67,6 +68,8 @@ class ColumnConfig {
 
       formatIndex = GridUtils.getIndex(names, "Format");
 
+      editInPlaceIndex = GridUtils.getIndex(names, "EditInPlace");
+
       headerStyleIndex = GridUtils.getIndex(names, "HeaderStyle");
       headerFontIndex = GridUtils.getIndex(names, "HeaderFont");
 
@@ -81,6 +84,11 @@ class ColumnConfig {
   static List<BeeColumn> getDataColumns() {
     ensureFields();
     return dataColumns;
+  }
+
+  static int getEditInPlaceIndex() {
+    ensureFields();
+    return editInPlaceIndex;
   }
 
   static int getGridIndex() {
@@ -104,7 +112,7 @@ class ColumnConfig {
     }
   }
 
-  final BeeRow row;
+  private BeeRow row;
 
   ColumnConfig(BeeRow row) {
     this.row = row;
@@ -151,6 +159,11 @@ class ColumnConfig {
       columnDescription.setFormat(format);
     }
 
+    Boolean editInPlace = getEditInPlace();
+    if (BeeUtils.isTrue(editInPlace)) {
+      columnDescription.setEditInPlace(editInPlace);
+    }
+
     columnDescription.setHeaderStyle(StyleDeclaration.fuse(columnDescription.getHeaderStyle(),
         null, getHeaderStyle(), getHeaderFont()));
     columnDescription.setBodyStyle(StyleDeclaration.fuse(columnDescription.getBodyStyle(),
@@ -163,6 +176,14 @@ class ColumnConfig {
     return row.getString(nameIndex);
   }
 
+  BeeRow getRow() {
+    return row;
+  }
+
+  long getRowId() {
+    return row.getId();
+  }
+
   boolean isEmpty() {
     return getCaption() == null
         && getWidth() == null && getMinWidth() == null && getMaxWidth() == null
@@ -170,9 +191,23 @@ class ColumnConfig {
         && getFlexGrow() == null && getFlexShrink() == null
         && getFlexBasis() == null && getFlexBasisUnit() == null
         && getFormat() == null
+        && getEditInPlace() == null
         && getHeaderStyle() == null && getHeaderFont() == null
         && getBodyStyle() == null && getBodyFont() == null
         && getFooterStyle() == null && getFooterFont() == null;
+  }
+
+  void setRow(BeeRow row) {
+    this.row = row;
+  }
+
+  boolean setValue(int index, String value) {
+    if (!BeeUtils.equalsTrim(row.getString(index), value)) {
+      row.setValue(index, value);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private Boolean getAutoFit() {
@@ -189,6 +224,10 @@ class ColumnConfig {
 
   private String getCaption() {
     return row.getString(captionIndex);
+  }
+
+  private Boolean getEditInPlace() {
+    return row.getBoolean(editInPlaceIndex);
   }
 
   private Integer getFlexBasis() {

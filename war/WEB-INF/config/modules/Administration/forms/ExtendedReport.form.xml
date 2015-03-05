@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  
+  name="ExtendedReport"
+  >
+  <FlowPanel>
+    <br/>
+    <HorizontalPanel>
+      <Label text="=dateFrom" />
+      <InputDateTime name="StartDate" style="width:120px;" />
+
+      <Label text="=dateTo" />
+      <InputDateTime name="EndDate" style="width:120px;" />
+      
+      <Label text="=currency" />
+      <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
+        newRowEnabled="false" editPopup="true" style="width:80px;" />
+
+      <CheckBox name="Vat" text="=trdAmountWoVat" />
+    </HorizontalPanel>
+
+    <Disclosure open="false">
+      <Label text="Dizainas" />
+
+      <FlowPanel class="flexBox-horizontal">
+        <FlowPanel class="flexible">
+          <FieldSet>
+            <Legend text="Eilutės" />
+            <FlowPanel name="DetalizationContainer" style="max-height:150px; overflow:auto;" />
+            <HorizontalPanel style="white-space:nowrap;">
+              <cell style="width:100%">
+                <FaLabel name="DetalizationAdd" char="plus" style="display:inline-block;" />
+              </cell>
+              <FlowPanel name="DetalizationGroup" />
+            </HorizontalPanel>
+          </FieldSet>
+        </FlowPanel>
+        
+        <FlowPanel class="flexible">
+          <FieldSet>
+            <Legend text="Stulpeliai" />
+            <FlowPanel name="CalculationContainer" style="max-height:150px; overflow:auto;" />
+            <HorizontalPanel style="white-space:nowrap;">
+              <cell style="width:100%">
+                <FaLabel name="CalculationAdd" char="plus" style="display:inline-block;" />
+              </cell>
+              <FlowPanel name="CalculationGroup" />
+            </HorizontalPanel>
+          </FieldSet>
+        </FlowPanel>
+      </FlowPanel>
+    </Disclosure>
+
+    <br/>
+    <FlowPanel name="DataContainer" />
+  </FlowPanel>
+</f:Form>

@@ -1,7 +1,5 @@
 package com.butent.bee.client.data;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
 import com.butent.bee.client.data.Queries.RowSetCallback;
@@ -30,6 +28,8 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.HandlesActions;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,8 +46,8 @@ public class CachedProvider extends Provider {
   private BeeRowSet table;
   private boolean complete;
 
-  private final Set<Long> filteredRowIds = Sets.newHashSet();
-  private final List<BeeRow> viewRows = Lists.newArrayList();
+  private final Set<Long> filteredRowIds = new HashSet<>();
+  private final List<BeeRow> viewRows = new ArrayList<>();
 
   public CachedProvider(HasDataTable display, HandlesActions actionHandler,
       NotificationListener notificationListener,
@@ -183,7 +183,7 @@ public class CachedProvider extends Provider {
     if (order == null || order.isEmpty()) {
       getTable().sortByRowId(true);
     } else {
-      List<Pair<Integer, Boolean>> sortList = Lists.newArrayList();
+      List<Pair<Integer, Boolean>> sortList = new ArrayList<>();
       int index;
 
       for (Order.Column sortInfo : order.getColumns()) {
@@ -259,7 +259,7 @@ public class CachedProvider extends Provider {
 
     List<BeeRow> rowValues;
     if (rowCount <= 0) {
-      rowValues = Lists.newArrayList();
+      rowValues = new ArrayList<>();
     } else if (length <= 0 || length >= rowCount) {
       rowValues = getRowList();
     } else {

@@ -9,7 +9,6 @@
   <FlowPanel class="flexBox-horizontal-space-between flexible" style="overflow: scroll;">
     <ChildGrid name="CriteriaGroups" relColumn="Data" source="Data" 
       style="width: 350px; margin-right: 20px;" />
-    <ChildGrid class="flexible" name="Criteria" parent="CriteriaGroups" relColumn="Group" 
-      style="margin-top: 30px;" />
+    <ChildGrid class="flexible" name="Criteria" parent="CriteriaGroups" relColumn="Group"  />
   </FlowPanel>
 </FlowPanel>

@@ -12,7 +12,7 @@
     <DataColumn name="Phone" />
     <DataColumn name="Mobile" />
 
-    <RelColumn name="EmailId" />
+    <RelColumn name="EmailId" editEnabled="true" />
 
     <DataColumn name="Address" />
 

@@ -162,6 +162,10 @@ public class ColumnInfo implements HasValueType, Flexible {
     return columnId.hashCode();
   }
 
+  public boolean is(String id) {
+    return BeeUtils.same(getColumnId(), id);
+  }
+
   public boolean isExportable() {
     return exportable;
   }
@@ -346,10 +350,6 @@ public class ColumnInfo implements HasValueType, Flexible {
     if (BeeUtils.isPositive(columnDescription.getExportWidthFactor())) {
       setExportWidthFactor(columnDescription.getExportWidthFactor());
     }
-  }
-
-  boolean is(String id) {
-    return BeeUtils.same(getColumnId(), id);
   }
 
   boolean isActionColumn() {

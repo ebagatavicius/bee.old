@@ -17,7 +17,7 @@ public final class TimeZone {
   public static TimeZone createTimeZone(int timeZoneOffsetInMinutes) {
     TimeZone tz = new TimeZone();
     tz.standardOffset = timeZoneOffsetInMinutes;
-    tz.timezoneID = composePOSIXTimeZoneID(timeZoneOffsetInMinutes);
+    tz.timezoneID = composePosixTimeZoneID(timeZoneOffsetInMinutes);
     tz.tzNames = new String[2];
     tz.tzNames[0] = composeUTCString(timeZoneOffsetInMinutes);
     tz.tzNames[1] = composeUTCString(timeZoneOffsetInMinutes);
@@ -26,8 +26,8 @@ public final class TimeZone {
     return tz;
   }
 
-  public static TimeZone createTimeZone(String tzJSON) {
-    TimeZoneInfo tzData = TimeZoneInfo.buildTimeZoneData(tzJSON);
+  public static TimeZone createTimeZone(String tzJson) {
+    TimeZoneInfo tzData = TimeZoneInfo.buildTimeZoneData(tzJson);
 
     return createTimeZone(tzData);
   }
@@ -80,7 +80,7 @@ public final class TimeZone {
     return new String(data);
   }
 
-  private static String composePOSIXTimeZoneID(int offset) {
+  private static String composePosixTimeZoneID(int offset) {
     int x = offset;
     if (x == 0) {
       return "Etc/GMT";

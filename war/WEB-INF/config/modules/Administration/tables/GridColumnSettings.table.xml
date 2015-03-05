@@ -23,6 +23,8 @@
 
     <String name="Format" precision="30" />
 
+    <Boolean name="EditInPlace" />
+
     <Text name="HeaderStyle" />
     <String name="HeaderFont" precision="60" />
 

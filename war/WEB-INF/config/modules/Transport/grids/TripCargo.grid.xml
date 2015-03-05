@@ -3,13 +3,13 @@
   xmlns:ui="http://www.butent.com/ui"
 
   name="TripCargo" viewName="TripCargo"
-  editForm="CargoPlace" editPopup="false" editInPlace="Ordinal CargoPercent"
+  editForm="CargoPlace" editPopup="false"
   flexGrow="1"
   >
   <g:body height="50" />
 
   <g:columns>
-    <DataColumn name="Ordinal" />
+    <DataColumn name="Ordinal" editInPlace="true" />
     <RelColumn name="OrderNo" caption="=orderNumber" minWidth="100" editEnabled="true"
       editPopup="false" editSource="Order" />
     <RelColumn name="Description" caption="=cargo" editEnabled="true" editPopup="false"
@@ -22,7 +22,7 @@
     <DataColumn name="Number" caption="=cargoNumber" />
     <DataColumn name="Cmr" caption="CMR" />
     <DataColumn name="Notes" caption="=notes" whiteSpace="pre-wrap" />
-    <DataColumn name="CargoPercent" caption="%" minValue="0" />
+    <DataColumn name="CargoPercent" caption="%" minValue="0" editInPlace="true" />
     <CalcColumn name="Loading" type="string" cellType="html" caption="=trLoaded" minWidth="140" />
     <CalcColumn name="Unloading" type="string" cellType="html" caption="=trUnloaded" minWidth="140" />
     <PropColumn name="Income" type="decimal" caption="=income" format="#.00">

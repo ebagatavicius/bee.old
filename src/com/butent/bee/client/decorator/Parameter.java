@@ -1,6 +1,5 @@
 package com.butent.bee.client.decorator;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.xml.client.Element;
 
 import com.butent.bee.client.utils.XmlUtils;
@@ -8,13 +7,14 @@ import com.butent.bee.shared.ui.DecoratorConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 class Parameter {
 
   static List<Parameter> getParameters(Element element) {
-    List<Parameter> result = Lists.newArrayList();
+    List<Parameter> result = new ArrayList<>();
     if (element == null) {
       return result;
     }

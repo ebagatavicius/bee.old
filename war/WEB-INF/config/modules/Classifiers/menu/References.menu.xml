@@ -21,13 +21,21 @@ name="References" label="=references" order="10" module="Classifiers"
 
   <Item name="Cities" label="=cities" service="grid" parameters="Cities" separator="true" />
   <Item name="Countries" label="=countries" service="grid" parameters="Countries" />
+
+  <Item name="Holidays" label="=holidays" service="form" parameters="Holidays" separator="true"
+    module="Trade.Acts" />
   
   <Item name="Banks" label="=banks" service="grid" parameters="Banks" separator="true" />
 
   <Item name="ActivityTypes" label="=activityTypes" service="grid" parameters="ActivityTypes"
     separator="true" />
   <Item name="CostCenters" label="=costCenters" service="grid" parameters="CostCenters" />
-
+  
+  <Item name="RefVehicles" label="=vehicles" service="grid" parameters="Vehicles" separator="true"/>
+  <Item name="RefVehicleTypes" label="=trVehicleTypes" service="grid" parameters="VehicleTypes" />
+  <Item name="RefDrivers" label="=drivers" service="grid" parameters="Drivers" />
+  <Item name="RefTransportGroups" label="=trTransportGroups" service="grid" parameters="TransportGroups" />
+    
   <Item name="Colors" label="=colors" service="grid" parameters="Colors" separator="true" />
   <Item name="Themes" label="=colorThemes" service="grid" parameters="Themes" />
 </Entry>

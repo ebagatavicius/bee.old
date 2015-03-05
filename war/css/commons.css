@@ -13,6 +13,10 @@
   font-weight: bold;
 }
 
+.bee-co-companyInfo-phone, .bee-co-companyInfo-mobile, .bee-co-companyInfo-fax {
+  display: inline-block;
+}
+
 .bee-co-updateRates-panel {
   margin: 2ex 1em 1ex;
 }
@@ -40,6 +44,7 @@
 }
 .bee-co-updateRates-submit {
   margin-left: 1em;
+  margin-right: 3em;
 }
 
 .bee-co-ctr-table {
@@ -84,4 +89,82 @@
   font-weight: bold;
   font-size: medium;
   padding: 2px 5px;
+}
+
+.bee-co-holidays-add-first {
+  margin-left: 3em;
+}
+.bee-co-holidays-year-widget {
+  display: inline-block;
+  margin-left: 1em;
+}
+.bee-co-holidays-add-last {
+  margin-left: 1em;
+}
+.bee-co-holidays-add-first,
+.bee-co-holidays-add-last {
+  display: inline-block;
+  font-size: 15px;
+}
+.bee-co-holidays-year-active .bee-co-holidays-year-label {
+  background-color: #80c4f9;
+  cursor: auto;
+}
+.bee-co-holidays-year-label {
+  display: inline-block;
+  font-size: large;
+  cursor: pointer;
+}
+.bee-co-holidays-year-badge {
+  display: inline-block;
+  margin-left: 3px;
+  vertical-align: top;
+  color: white;
+  background-color: #aaa;
+}
+
+.bee-co-holidays-month-panel {
+  display: inline-block;
+  margin: 1ex 1em;
+}
+.bee-co-holidays-month-label {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.bee-co-holidays-month-table {
+  border-collapse: collapse;
+}
+.bee-co-holidays-month-table td {
+  border: 1px solid #ccc;
+  text-align: center;
+  width: 26px;
+  height: 22px;
+}
+.bee-co-holidays-weekday-cell,
+.bee-co-holidays-day-cell,
+.bee-co-holidays-weekend,
+.bee-co-holidays-month-table td:empty {
+  background-color: white;
+}
+.bee-co-holidays-holiday {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  font-size: larger;
+}
+.bee-co-holidays-weekend {
+  color: #999;
+}
+.bee-co-holidays-day-cell:hover,
+.bee-co-holidays-weekend:hover {
+  font-weight: bold;
+  font-size: larger;
+  outline: black solid 1px;
+  cursor: pointer;
+}
+.bee-co-holidays-holiday:hover {
+  outline: red solid 3px;
+  outline-offset: -1px;
+  cursor: pointer;
 }

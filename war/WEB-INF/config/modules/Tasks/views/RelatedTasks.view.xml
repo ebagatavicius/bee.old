@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
+  xmlns:x="http://www.butent.com/expression"
 
   name="RelatedTasks" source="Relations" caption="=crmTasksRelated"
   newRowForm="NewTask" editForm="Task" rowCaption="Summary" 
@@ -21,6 +22,7 @@
     <SimpleColumn name="Discussion" />
     <SimpleColumn name="ServiceObject" />
     <SimpleColumn name="Message" />
+    <SimpleColumn name="Project" />
   
     <SimpleJoin name="Task" joinType="INNER">
       <SimpleColumn name="Summary" editable="true" />

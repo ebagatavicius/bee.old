@@ -189,9 +189,9 @@ public final class TasksKeeper {
     FormFactory.registerFormInterceptor(FORM_NEW_REQUEST, new RequestBuilder());
     FormFactory.registerFormInterceptor(FORM_REQUEST, new RequestEditor());
 
-    GridFactory.registerGridInterceptor(GRID_REQUESTS, new RequestsGridInterceptor());
-
     GridFactory.registerGridInterceptor(GRID_TODO_LIST, new TodoListInterceptor());
+
+    GridFactory.registerGridInterceptor(GRID_CHILD_REQUESTS, new ChildRequestsGrid());
 
     GridFactory.registerGridInterceptor(GRID_RECURRING_TASKS, new RecurringTasksGrid());
     GridFactory.registerGridInterceptor(GRID_RT_FILES,
@@ -201,6 +201,9 @@ public final class TasksKeeper {
     GridFactory.registerGridInterceptor(GRID_RELATED_TASKS, new RelatedTasksGrid());
     GridFactory.registerGridInterceptor(GRID_RELATED_RECURRING_TASKS,
         new RelatedRecurringTasksGrid());
+
+    GridFactory.registerGridInterceptor(GRID_CHILD_TASKS, new ChildTasksGrid());
+    GridFactory.registerGridInterceptor(GRID_CHILD_RECURRING_TASKS, new ChildRecurringTasksGrid());
 
     for (TaskType tt : TaskType.values()) {
       GridFactory.registerGridSupplier(tt.getSupplierKey(), GRID_TASKS,

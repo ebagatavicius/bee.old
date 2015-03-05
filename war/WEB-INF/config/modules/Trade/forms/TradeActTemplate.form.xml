@@ -18,6 +18,9 @@
       <row>
         <Label for="Template" visible="true" />
         <InputText source="Template" visible="true" style="&inpw;" />
+
+        <Label for="Name" />
+        <DataSelector source="Name" newRowEnabled="false" visible="true" style="&inpw;" />
       </row>
 
       <row>
@@ -42,18 +45,21 @@
         <Label for="Company" />
         <DataSelector source="Company" newRowEnabled="false" style="&inpw;" />
 
-        <Label for="ServiceObject" />
-        <DataSelector source="ServiceObject" newRowEnabled="false" style="&inpw;" />
+        <Label for="Object" />
+        <DataSelector source="Object" renderColumns="ObjectName"
+          choiceColumns="CompanyName ObjectName ObjectAddress" newRowEnabled="false"
+          style="&inpw;" />
       </row>
 
       <row>
+        <Label for="Contact" />
+        <DataSelector source="Contact" newRowEnabled="false" style="&inpw;"
+          renderColumns="ContactFirstName ContactLastName"
+          choiceColumns="FirstName LastName CompanyName" options="Company" />
+
         <Label for="Manager" />
         <DataSelector source="Manager" editSource="ManagerPerson" 
           renderColumns="ManagerFirstName ManagerLastName" newRowEnabled="false" style="&inpw;" />
-        
-        <Label for="Currency" />
-        <DataSelector source="Currency" renderColumns="CurrencyName" editEnabled="false"
-          newRowEnabled="false" style="width: 60px;" />
       </row>
 
       <row>
@@ -65,6 +71,12 @@
         <Label for="Driver" />
         <DataSelector source="Driver" renderColumns="DriverFirstName DriverLastName" 
           newRowEnabled="false" style="&inpw;" />
+      </row>
+
+      <row>
+        <Label for="Currency" />
+        <DataSelector source="Currency" renderColumns="CurrencyName" editEnabled="false"
+          newRowEnabled="false" style="width: 60px;" />
       </row>
     </Table>
 
@@ -83,7 +95,7 @@
       <page>
         <text>=notes</text>
         <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" />
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>
     </TabbedPages>

@@ -6,13 +6,6 @@
   flexGrow="1" order="RequestID desc"
   >
 
-  <g:north size="40">
-    <w:HorizontalPanel style="border-spacing: 8px 0px">
-      <w:CheckBox name="Registred" text="=requestShowRegistered" checked="true"/>
-      <w:CheckBox name="Finished" text="=requestShowFinished" />
-    </w:HorizontalPanel>
-  </g:north>
-
   <g:columns>
     <IdColumn name="ID" width="50" />
     <DataColumn name="Date" caption="=date" width="100" visible="true" />
@@ -26,7 +19,10 @@
     <DataColumn name="Result" visible="false" />
   </g:columns>
   
-  <!-- <g:predefinedFilter name="Executing" label="=crmRequestFilterActive">
+  <g:predefinedFilter name="request_registred" label="=requestShowRegistered" initial="true" >
     <g:column name="Finished" emptyValues="true" />
-  </g:predefinedFilter> -->
+  </g:predefinedFilter>
+  <g:predefinedFilter name="request_finished" label="=requestShowFinished">
+    <g:column name="Finished" emptyValues="false" />
+  </g:predefinedFilter>
 </g:Grid>

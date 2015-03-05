@@ -18,6 +18,7 @@ import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
 import com.butent.bee.shared.modules.ec.EcConstants;
 import com.butent.bee.shared.modules.mail.MailConstants;
+import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.trade.acts.TradeActConstants;
@@ -57,6 +58,7 @@ public final class EnumUtils {
     ClassifierConstants.register();
     CalendarConstants.register();
     TaskConstants.register();
+    ProjectConstants.register();
     DiscussionsConstants.register();
     EcConstants.register();
     TransportConstants.register();

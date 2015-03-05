@@ -4,8 +4,8 @@
 
   name="CargoInvoices" viewName="CargoInvoices"
   editShowId="true" flexGrow="1"
-  disabledActions="add"
-  caption="=trInvoices"
+  disabledActions="add edit"
+  caption="=trIncomeInvoices"
   filter="Sale AND !(Proforma)"
   >
   <g:columns>
@@ -26,8 +26,8 @@
         </ui:function>
       </render>
     </DataColumn>
-    <DataColumn name="CustomerName" caption="=trdCustomer" />
-    <DataColumn name="PayerName" caption="=trdPayer" />
+    <DataColumn name="CustomerName" />
+    <DataColumn name="PayerName" />
     <DataColumn name="Amount" />
     <DataColumn name="CurrencyName" />
     <DataColumn name="Term" />

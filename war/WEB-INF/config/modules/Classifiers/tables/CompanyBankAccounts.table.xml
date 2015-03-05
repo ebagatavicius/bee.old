@@ -7,11 +7,12 @@
   <Fields>
     <Relation name="Company" notNull="true" relation="Companies" cascade="DELETE" label="=company" />
     <Relation name="Bank" notNull="true" relation="Banks" cascade="DELETE" label="=bank" />
-    <String name="BankAccount" notNull="true" precision="30" label="=bankAccount" unique="true" />
+    <String name="BankAccount" notNull="true" unique="true" precision="30" label="=bankAccount" />
+    <Relation name="Currency" relation="Currencies" label="=currency" />
     <String name="IBANcode" precision="30" label="=ibanCode" />
     <Text name="Notes" label="=notes" /> 
   </Fields>
   <Constraints>
-    <Unique fields="Company Bank BankAccount" />
+    <Unique fields="Company Currency" />
   </Constraints>
 </Table>

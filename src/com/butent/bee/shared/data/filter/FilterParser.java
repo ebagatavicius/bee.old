@@ -1,7 +1,5 @@
 package com.butent.bee.shared.data.filter;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.value.DateTimeValue;
@@ -13,6 +11,7 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class FilterParser {
@@ -112,7 +111,7 @@ public final class FilterParser {
       x = x.replaceFirst(ptrn, "$1");
     }
 
-    List<String> parts = Lists.newArrayList();
+    List<String> parts = new ArrayList<>();
     int cnt = s.split(pattern).length;
     boolean ok = false;
 

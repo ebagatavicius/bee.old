@@ -3,7 +3,6 @@
 
   name="DurationTypes"
   idName="DurationTypeID"
-  x="935" y="177"
   >
   <Fields>
     <String name="Name" precision="50" notNull="true" unique="true" label="=crmDurationType" />

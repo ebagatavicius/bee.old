@@ -3,7 +3,6 @@
 
   name="SparePartUsage"
   idName="UsageID"
-  x="0" y="0"
   >
   <Fields>
     <Relation name="Part" notNull="true" relation="SpareParts" />

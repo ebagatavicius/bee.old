@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module>
-  <define-property name="screen" values="desktop,tablet,mobile,ec,trss" />
+  <define-property name="screen" values="desktop,tablet,mobile,ec,trss,acts" />
   <collapse-property name="screen" values="*" />
 
   <property-provider name="screen">

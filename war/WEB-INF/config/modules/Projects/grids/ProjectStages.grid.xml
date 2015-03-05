@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+	xmlns:ui="http://www.butent.com/ui" xmlns:w="http://www.butent.com/widget"
+
+	name="ProjectStages" viewName="ProjectStages" caption="=prjStages">
+		
+	<g:columns>
+		<DataColumn name="Name" />
+		<DataColumn name="StartDate" />
+		<DataColumn name="EndDate" />
+		<DataColumn name="ExpectedDuration" caption="=crmTaskExpectedDuration"
+      label="=crmTaskExpectedDuration" sortBy="ExpectedDuration">
+       <render>
+        <ui:function>
+          if (row.UnitName == null) {
+            return row.ExpectedDuration;
+          } else if (row.ExpectedDuration != null &amp;&amp; row.UnitName != null) {
+            return row.ExpectedDuration + ' ' + row.UnitName;
+          }
+          return row.ExpectedDuration;
+        </ui:function>
+       </render>
+    </DataColumn>
+		<CalcColumn name="CalcExpectedTasksDuration" type="string" caption="=prjExpectedTaskDuration"
+      label="=prjExpectedTaskDuration" />
+		<CalcColumn name="CalcActualTasksDuration" type="string" caption="=prjActualTaskDuration"
+      label="=prjActualTaskDuration" />
+		<DataColumn name="Expenses" scale="2" />
+    <RelColumn name="Currency" />
+		<DataColumn name="ActualExpenses"  scale="2" />
+	</g:columns>
+</g:Grid>

@@ -25,13 +25,17 @@
       </style>
     </CalcColumn>
 
-    <RelColumn name="Customer" caption="=payer" />
-    <DataColumn name="Number" caption="=number" />
-    <DataColumn name="Note" caption="=note" />
+    <RelColumn name="Customer" />
+    <DataColumn name="Number" />
+    <DataColumn name="Note" />
 
     <RelColumn name="Sale" caption="=trdInvoiceId" readOnly="true" renderColumns="Sale"
       editEnabled="true" editForm="CargoInvoice" editViewName="CargoInvoices" />
     <RelColumn name="Purchase" caption="=trCreditIdShort" readOnly="true" renderColumns="Purchase"
       editEnabled="true" editForm="CargoPurchaseInvoice" editViewName="CargoPurchaseInvoices" />
   </g:columns>
+
+  <g:rowEditable>
+    <ui:expression>!row.Sale &amp;&amp; !row.Purchase</ui:expression>
+  </g:rowEditable>
 </g:Grid>

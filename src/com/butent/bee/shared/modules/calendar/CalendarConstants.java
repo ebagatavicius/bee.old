@@ -121,7 +121,8 @@ public final class CalendarConstants {
 
   public enum CalendarVisibility implements HasCaption {
     PUBLIC(Localized.getConstants().calPublic()),
-    PRIVATE(Localized.getConstants().calPrivate());
+    PRIVATE(Localized.getConstants().calPrivate()),
+    EDITABLE(Localized.getConstants().calEditable());
 
     private final String caption;
 
@@ -264,6 +265,8 @@ public final class CalendarConstants {
 
   public static final String GRID_ATTENDEES = "Attendees";
 
+  public static final String GRID_CALENDAR_TODO = "CalendarTodo";
+
   public static final String FORM_CALENDAR_SETTINGS = "CalendarSettings";
 
   public static final String DEFAULT_NEW_APPOINTMENT_FORM = "SimpleAppointment";
@@ -300,6 +303,7 @@ public final class CalendarConstants {
   public static final String COL_APPOINTMENT_TYPE = "AppointmentType";
 
   public static final String COL_APPOINTMENT_TYPE_NAME = "Name";
+  public static final String COL_APPOINTMENT_TYPE_DURATION = "PlannedDuration";
 
   public static final String COL_ATTENDEE = "Attendee";
   public static final String COL_ATTENDEE_NAME = "Name";
@@ -317,6 +321,9 @@ public final class CalendarConstants {
   public static final String COL_PROPERTY_NAME = "Name";
   public static final String COL_PROPERTY_GROUP = "PropertyGroup";
   public static final String COL_DEFAULT_PROPERTY = "DefaultProperty";
+
+  public static final String ALS_PERSON_FIRST_NAME = "PersonFirstName";
+  public static final String ALS_PERSON_LAST_NAME = "PersonLastName";
   public static final String ALS_PROPERTY_NAME = "PropertyName";
   public static final String ALS_PROPERTY_GROUP_NAME = "GroupName";
 
@@ -343,6 +350,8 @@ public final class CalendarConstants {
 
   public static final String COL_SUMMARY = "Summary";
   public static final String COL_DESCRIPTION = "Description";
+  public static final String COL_ACTION_RESULT = "ActionResult";
+  public static final String COL_ACTION_REMINDED = "ActionReminded";
 
   public static final String COL_REMINDER_TYPE = "ReminderType";
 
@@ -375,7 +384,11 @@ public final class CalendarConstants {
   public static final String ALS_TYPE_TRANSPARENCY = "TypeTransparency";
 
   public static final String COL_VISIBILITY = "Visibility";
+  public static final String COL_CREATED = "Created";
   public static final String COL_CREATOR = "Creator";
+  public static final String ALS_CREATOR_COMPANY_PERSON = "CreatorCompanyPerson";
+  public static final String ALS_CREATOR_FIRST_NAME = "CreatorFirstName";
+  public static final String ALS_CREATOR_LAST_NAME = "CreatorLastName";
 
   public static final String COL_REPORT = "Report";
   public static final String COL_CAPTION = "Caption";
@@ -386,6 +399,7 @@ public final class CalendarConstants {
   public static final String COL_ATTENDEE_TYPES = "AttendeeTypes";
   public static final String COL_ATTENDEES = "Attendees";
 
+  public static final String COL_APPOINTMENTS_COUNT = "AppointmentsCount";
   public static final String COL_APPOINTMENT_CREATOR = "AppointmentCreator";
   public static final String COL_APPOINTMENT_EDITOR = "AppointmentEditor";
 

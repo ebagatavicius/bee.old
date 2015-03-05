@@ -1,8 +1,6 @@
 package com.butent.bee.client.data;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ResponseCallback;
@@ -17,6 +15,8 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,7 +24,7 @@ public class DataInfoProvider implements DataInfo.Provider, ColumnNamesProvider 
 
   private static final BeeLogger logger = LogUtils.getLogger(DataInfoProvider.class);
 
-  private final Map<String, DataInfo> views = Maps.newHashMap();
+  private final Map<String, DataInfo> views = new HashMap<>();
 
   public DataInfoProvider() {
     super();
@@ -48,7 +48,7 @@ public class DataInfoProvider implements DataInfo.Provider, ColumnNamesProvider 
   public Collection<String> getViewNames(String tableName) {
     Assert.notEmpty(tableName);
 
-    Set<String> viewNames = Sets.newHashSet();
+    Set<String> viewNames = new HashSet<>();
     for (DataInfo dataInfo : views.values()) {
       if (BeeUtils.same(dataInfo.getTableName(), tableName)) {
         viewNames.add(dataInfo.getViewName());

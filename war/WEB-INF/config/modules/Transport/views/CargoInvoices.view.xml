@@ -40,17 +40,17 @@
 
     <SimpleColumn name="Supplier" />
     <SimpleJoin joinType="LEFT" name="Supplier">
-      <SimpleColumn name="Name" alias="SupplierName" />
+      <SimpleColumn name="Name" alias="SupplierName" label="=trdSupplier" />
     </SimpleJoin>
     
     <SimpleColumn name="Customer" />
     <SimpleJoin joinType="LEFT" name="Customer">
-      <SimpleColumn name="Name" alias="CustomerName" />
+      <SimpleColumn name="Name" alias="CustomerName" label="=trdCustomer" />
     </SimpleJoin>
     
     <SimpleColumn name="Payer" />
     <SimpleJoin joinType="LEFT" name="Payer">
-      <SimpleColumn name="Name" alias="PayerName" />
+      <SimpleColumn name="Name" alias="PayerName" label="=trdPayer" />
     </SimpleJoin>
     
     <SimpleColumn name="Manager" />

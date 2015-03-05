@@ -25,8 +25,8 @@ import java.util.logging.LogRecord;
 
 public class PanelHandler extends Handler implements HasVisibility, HasEnabled {
 
-  private static final String STYLENAME_DEFAULT = "bee-LogRecord";
-  private static final String STYLENAME_SEPARATOR = "bee-LogSeparator";
+  private static final String STYLENAME_DEFAULT = BeeConst.CSS_CLASS_PREFIX + "LogRecord";
+  private static final String STYLENAME_SEPARATOR = BeeConst.CSS_CLASS_PREFIX + "LogSeparator";
 
   private static final String STORAGE_KEY = "logSize";
 

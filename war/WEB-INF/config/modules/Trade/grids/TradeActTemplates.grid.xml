@@ -6,6 +6,7 @@
   <g:columns>
     <DataColumn name="Template" visible="true" />
 
+    <RelColumn name="Name" />
     <DataColumn name="Until" />
 
     <RelColumn name="Series" />
@@ -14,9 +15,11 @@
     <RelColumn name="Status" renderColumns="StatusName" />
 
     <RelColumn name="Company" />
-    <RelColumn name="ServiceObject" />
-    <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
+    <RelColumn name="Contact" renderColumns="ContactFirstName ContactLastName"
+      choiceColumns="FirstName LastName CompanyName" />
+    <RelColumn name="Object" renderColumns="ObjectName" />
 
+    <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
     <RelColumn name="Currency" renderColumns="CurrencyName" />
 
     <RelColumn name="Vehicle" renderColumns="VehicleParentModel VehicleModel VehicleNumber" />

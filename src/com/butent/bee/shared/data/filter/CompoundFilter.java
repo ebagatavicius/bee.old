@@ -1,7 +1,6 @@
 package com.butent.bee.shared.data.filter;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.data.IsColumn;
@@ -10,6 +9,7 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,7 +26,7 @@ public class CompoundFilter extends Filter {
   }
 
   private CompoundType type;
-  private final List<Filter> subFilters = Lists.newArrayList();
+  private final List<Filter> subFilters = new ArrayList<>();
 
   protected CompoundFilter() {
     super();

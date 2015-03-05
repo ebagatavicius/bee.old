@@ -3,5 +3,5 @@
   <ChildGrid name="ServiceCritGroups" relColumn="ServiceObject" 
     style="width: 350px; margin-right: 20px;" />
   <ChildGrid class="flexible" name="ServiceCriteria" parent="ServiceCritGroups"
-    relColumn="Group" style="margin-top: 30px;" />
+    relColumn="Group" style="margin-top: 30px;" summarize="false" />
 </FlowPanel>

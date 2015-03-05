@@ -1,11 +1,9 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.DropEvent;
 
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
@@ -42,9 +40,12 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemName {
@@ -117,10 +118,10 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
   static List<Range<JustDate>> getVoidRanges(Range<JustDate> range,
       Set<JustDate> eventDates, Collection<? extends OrderCargo> cargos) {
 
-    List<Range<JustDate>> result = Lists.newArrayList();
+    List<Range<JustDate>> result = new ArrayList<>();
     int tripDays = TimeBoardHelper.getSize(range);
 
-    Set<JustDate> usedDates = Sets.newHashSet();
+    Set<JustDate> usedDates = new HashSet<>();
 
     if (!BeeUtils.isEmpty(eventDates)) {
       if (eventDates.size() >= tripDays) {
@@ -159,7 +160,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
       return result;
     }
 
-    List<JustDate> dates = Lists.newArrayList(usedDates);
+    List<JustDate> dates = new ArrayList<>(usedDates);
     Collections.sort(dates);
 
     for (int i = 0; i < dates.size(); i++) {
@@ -339,7 +340,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
   boolean hasDriver(Long driverId) {
     if (drivers != null) {
       for (Driver driver : drivers) {
-        if (Objects.equal(driverId, driver.getId())) {
+        if (Objects.equals(driverId, driver.getId())) {
           return true;
         }
       }
@@ -420,7 +421,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
     final Long oldVehicleId = getVehicleId(vehicleType);
     final Long newVehicleId = vehicle.getId();
 
-    if (Objects.equal(oldVehicleId, newVehicleId)) {
+    if (Objects.equals(oldVehicleId, newVehicleId)) {
       return;
     }
 
@@ -428,7 +429,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
     List<String> messages = Lists.newArrayList(vehicle.getMessage(getVehicleLabel(vehicleType)),
         getTitle());
 
-    final List<BeeColumn> columns = Lists.newArrayList();
+    final List<BeeColumn> columns = new ArrayList<>();
 
     switch (vehicleType) {
       case TRUCK:
@@ -496,13 +497,13 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
 
   private boolean isTarget(Object data) {
     if (DndHelper.isDataType(DATA_TYPE_TRUCK) && data instanceof Vehicle) {
-      return !Objects.equal(getTruckId(), ((Vehicle) data).getId());
+      return !Objects.equals(getTruckId(), ((Vehicle) data).getId());
 
     } else if (DndHelper.isDataType(DATA_TYPE_TRAILER) && data instanceof Vehicle) {
-      return !Objects.equal(getTrailerId(), ((Vehicle) data).getId());
+      return !Objects.equals(getTrailerId(), ((Vehicle) data).getId());
 
     } else if (DndHelper.isDataType(DATA_TYPE_FREIGHT) && data instanceof Freight) {
-      return !Objects.equal(getTripId(), ((Freight) data).getTripId());
+      return !Objects.equals(getTripId(), ((Freight) data).getTripId());
 
     } else if (DndHelper.isDataType(DATA_TYPE_ORDER_CARGO) && data instanceof OrderCargo) {
       return true;

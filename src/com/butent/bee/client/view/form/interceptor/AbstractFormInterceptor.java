@@ -15,6 +15,7 @@ import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.view.HasGridView;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
+import com.butent.bee.client.view.edit.EditEndEvent;
 import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.view.form.FormView;
@@ -27,8 +28,10 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.Relation;
 
 import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractFormInterceptor implements FormInterceptor {
 
@@ -86,6 +89,10 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   }
 
   @Override
+  public void configureRelation(String name, Relation relation) {
+  }
+
+  @Override
   public IdentifiableWidget createCustomWidget(String name, Element description) {
     return null;
   }
@@ -131,8 +138,18 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   }
 
   @Override
+  public Set<Action> getDisabledActions(Set<Action> defaultActions) {
+    return defaultActions;
+  }
+
+  @Override
   public Domain getDomain() {
     return null;
+  }
+
+  @Override
+  public Set<Action> getEnabledActions(Set<Action> defaultActions) {
+    return defaultActions;
   }
 
   @Override
@@ -201,6 +218,11 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   }
 
   @Override
+  public boolean isWidgetEditable(EditableWidget editableWidget, IsRow row) {
+    return true;
+  }
+
+  @Override
   public void notifyRequired(String message) {
     if (getFormView() != null) {
       getFormView().notifyWarning(message, Localized.getConstants().valueRequired());
@@ -209,6 +231,10 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
 
   @Override
   public void onClose(List<String> messages, IsRow oldRow, IsRow newRow) {
+  }
+
+  @Override
+  public void onEditEnd(EditEndEvent event, Object source) {
   }
 
   @Override

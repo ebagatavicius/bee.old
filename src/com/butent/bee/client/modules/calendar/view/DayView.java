@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.calendar.view;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Event;
@@ -9,25 +8,27 @@ import com.google.gwt.user.client.ui.Widget;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.modules.calendar.Appointment;
 import com.butent.bee.client.modules.calendar.CalendarKeeper;
-import com.butent.bee.client.modules.calendar.CalendarUtils;
-import com.butent.bee.client.modules.calendar.ItemWidget;
 import com.butent.bee.client.modules.calendar.CalendarStyleManager;
+import com.butent.bee.client.modules.calendar.CalendarUtils;
 import com.butent.bee.client.modules.calendar.CalendarView;
 import com.butent.bee.client.modules.calendar.CalendarWidget;
+import com.butent.bee.client.modules.calendar.ItemWidget;
 import com.butent.bee.client.modules.calendar.dnd.DayMoveController;
 import com.butent.bee.client.modules.calendar.dnd.ResizeController;
-import com.butent.bee.client.modules.calendar.layout.ItemAdapter;
 import com.butent.bee.client.modules.calendar.layout.CalendarLayoutManager;
+import com.butent.bee.client.modules.calendar.layout.ItemAdapter;
 import com.butent.bee.client.modules.calendar.layout.ItemPanel;
 import com.butent.bee.client.modules.calendar.layout.MultiDayPanel;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Orientation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -103,7 +104,7 @@ public class DayView extends CalendarView {
         attendees, separate);
 
     if (!multi.isEmpty()) {
-      List<ItemAdapter> adapters = Lists.newArrayList();
+      List<ItemAdapter> adapters = new ArrayList<>();
       for (CalendarItem item : multi) {
         adapters.add(new ItemAdapter(item));
       }
@@ -181,6 +182,12 @@ public class DayView extends CalendarView {
     itemPanel.onClock(getSettings());
   }
 
+  @Override
+  public Pair<DateTime, Long> resolveCoordinates(int x, int y) {
+    DateTime dt = itemPanel.getCoordinatesDate(x, y, getSettings(), getDate(), getDisplayedDays());
+    return Pair.of(dt, null);
+  }
+
   private void addItemsToGrid(long calendarId, List<ItemAdapter> adapters,
       boolean multi, int columnIndex, boolean separate, Map<Long, String> attColors) {
 
@@ -239,8 +246,9 @@ public class DayView extends CalendarView {
   }
 
   private void timeBlockClick(Event event) {
-    DateTime dateTime = itemPanel.getCoordinatesDate(event.getClientX(), event.getClientY(),
-        getSettings(), getDate(), getDisplayedDays());
-    createAppointment(dateTime, null);
+    Pair<DateTime, Long> pair = resolveCoordinates(event.getClientX(), event.getClientY());
+    if (pair != null) {
+      createAppointment(pair.getA(), pair.getB());
+    }
   }
 }

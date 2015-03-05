@@ -6,6 +6,7 @@
   >
   <Columns>
     <SimpleColumn name="OperationName" />
+    <SimpleColumn name="Ordinal" />
 
     <SimpleColumn name="Kind" />
     <SimpleColumn name="Price" />
@@ -22,6 +23,8 @@
       <SimpleColumn alias="WarehouseToName" name="Name" />
     </SimpleJoin>
 
+    <SimpleColumn name="IsDefault" />
+
     <SimpleColumn name="Background" />
     <SimpleColumn name="Foreground" />
 
@@ -29,6 +32,7 @@
   </Columns>
   
   <Order>
+    <OrderBy column="Ordinal" />
     <OrderBy column="OperationName" />
   </Order>
 </View>

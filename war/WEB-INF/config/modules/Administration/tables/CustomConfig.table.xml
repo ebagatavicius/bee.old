@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="CustomConfig"
+  idName="ConfigID"
+  >
+  <Fields>
+    <String name="ObjectModule" precision="20" notNull="true" label="=objectModule" />
+    <Enum name="ObjectType" key="SysObject" notNull="true" label="=objectType" />
+    <String name="ObjectName" precision="100" notNull="true" label="=name" />
+    <Text name="ObjectData" notNull="true" label="=objectData" />
+  </Fields>
+  <Constraints>
+    <Unique fields="ObjectType ObjectName" />
+  </Constraints>
+</Table>

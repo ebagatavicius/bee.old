@@ -1,7 +1,5 @@
 package com.butent.bee.shared.utils;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
 import com.butent.bee.shared.Assert;
@@ -13,9 +11,11 @@ import com.butent.bee.shared.data.value.BooleanValue;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -415,7 +415,7 @@ public final class Codec {
   }
 
   public static List<Long> deserializeIdList(String data) {
-    List<Long> result = Lists.newArrayList();
+    List<Long> result = new ArrayList<>();
 
     String[] arr = beeDeserializeCollection(data);
     if (arr != null) {
@@ -456,7 +456,7 @@ public final class Codec {
   }
 
   public static Map<String, String> deserializeMap(String data) {
-    Map<String, String> result = Maps.newLinkedHashMap();
+    Map<String, String> result = new LinkedHashMap<>();
 
     String[] arr = beeDeserializeCollection(data);
     if (arr != null) {

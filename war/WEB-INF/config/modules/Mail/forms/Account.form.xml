@@ -16,6 +16,7 @@
           <Label for="Address" horizontalAlignment="right" />
           <DataSelector source="Address" style="width:200px" />
           <CheckBox source="Main" text="=mailDefault" />
+          <CheckBox source="Private" text="=mailPrivate" module="Administration" />
         </row>
         <row>
           <Label for="Signature" horizontalAlignment="right" />

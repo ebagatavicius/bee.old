@@ -8,6 +8,7 @@
     <Relation name="User" relation="Users" cascade="DELETE" label="=user" defExpr="CURRENT_USER" />
     <String name="Description" precision="50" notNull="true" label="=mailName" />
     <Boolean name="Main" label="=mailDefault" />
+    <Boolean name="Private" label="=mailPrivate" />
     <Relation name="Address" relation="Emails" notNull="true" unique="true" label="=mailAddress" />
     <Relation name="Signature" relation="Signatures" label="=mailSignature" />
 

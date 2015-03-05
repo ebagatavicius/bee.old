@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Grid[
+  <!ENTITY qty "(row.Quantity - (row.returned_qty ? Number(row.returned_qty) : 0))">
+]>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui" xmlns:xi="http://www.w3.org/2001/XInclude"
+  name="ProjectIncomes" viewName="ProjectIncomes" flexGrow="1"
+  renderMode="full">
+  <g:columns>
+    <SelectionColumn name="Select" width="20" />
+    <DataColumn name="Date" />
+    <RelColumn name="Item" renderColumns="ItemName"
+      choiceColumns="Name Article" editPopup="true" visible="true"
+      readOnly="true">
+      <footer text="=totalOf" horizontalAlignment="right" />
+    </RelColumn>
+    <DataColumn name="Article" />
+    <DataColumn name="Quantity" visible="true">
+      <footer aggregate="sum" />
+    </DataColumn>
+    <DataColumn name="UnitName" caption="=unitShort"
+      flexGrow="0" />
+    <DataColumn name="Price" visible="true">
+      <footer expression="&qty; * row.Price" />
+    </DataColumn>
+    <CalcColumn name="ItemPrices" type="string" cellType="html"
+      label="=taItemPrices" width="100" />
+    <RelColumn name="ProjectCurrency" renderColumns="ProjectCurrencyName"  readOnly="true"/>
+    <DataColumn name="VatPlus" width="20" sortable="false"
+      caption="+" format="+" carry="true" visible="true" />
+    <DataColumn name="Vat" carry="true" flexGrow="0" visible="true">
+      <footer evaluator="vat" />
+    </DataColumn>
+    <DataColumn name="VatPercent" width="20" sortable="false"
+      caption="%" format="%" carry="true" visible="true" />
+    <CalcColumn name="Total" type="decimal" caption="=trdAmount"
+      scale="2">
+      <style>
+        <bodyStyle>
+          <ui:font>bold</ui:font>
+        </bodyStyle>
+      </style>
+      <renderer type="total" />
+      <footer aggregate="sum" />
+    </CalcColumn>
+    <RelColumn name="Sale" caption="=trdInvoiceId" readOnly="true" renderColumns="Sale"
+      editEnabled="true" editForm="SalesInvoice" editViewName="ProjectInvoices" />
+    <DataColumn name="Note" visible="false" />
+  </g:columns>
+  
+  <g:rowEditable>
+    <ui:expression>!row.Sale</ui:expression>
+  </g:rowEditable>
+</g:Grid>

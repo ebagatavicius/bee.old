@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.UIObject;
 
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.ui.HasIdentity;
+import com.butent.bee.shared.BeeConst;
 
 /**
  * Handles a menu items separating user interface component.
@@ -13,7 +14,8 @@ import com.butent.bee.client.ui.HasIdentity;
 
 public class MenuSeparator extends UIObject implements HasIdentity {
 
-  private static final String STYLENAME_DEFAULT = "bee-MenuItemSeparator";
+  private static final String STYLENAME_DEFAULT = BeeConst.CSS_CLASS_PREFIX
+      + "MenuItemSeparator";
 
   private MenuBar parentMenu;
 

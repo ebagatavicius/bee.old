@@ -1,8 +1,5 @@
 package com.butent.bee.shared.modules.calendar;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import static com.butent.bee.shared.modules.calendar.CalendarHelper.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
@@ -24,7 +21,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -310,6 +309,7 @@ public class CalendarTask extends CalendarItem implements BeeSerializable {
     return start;
   }
 
+  @Override
   public TaskStatus getStatus() {
     return status;
   }
@@ -328,7 +328,7 @@ public class CalendarTask extends CalendarItem implements BeeSerializable {
   public Map<String, String> getSubstitutes(long calendarId, Map<Long, UserData> users,
       boolean addLabels) {
 
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
 
     result.put(wrap(TaskConstants.COL_TASK_ID), build(Localized.getConstants().captionId(),
         BeeUtils.toString(getId()), addLabels));
@@ -359,7 +359,7 @@ public class CalendarTask extends CalendarItem implements BeeSerializable {
     if (BeeUtils.isEmpty(getObservers())) {
       result.put(wrap(TaskConstants.PROP_OBSERVERS), BeeConst.STRING_EMPTY);
     } else {
-      List<String> names = Lists.newArrayList();
+      List<String> names = new ArrayList<>();
       for (Long observer : getObservers()) {
         names.add(formatUser(observer, users));
       }
@@ -399,7 +399,7 @@ public class CalendarTask extends CalendarItem implements BeeSerializable {
 
   @Override
   public boolean isRemovable(Long userId) {
-    return isOwner(userId);
+    return false;
   }
 
   @Override

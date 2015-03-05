@@ -2,7 +2,7 @@
 <FlowPanel xmlns="http://www.butent.com/widget" class="flexBox-vertical flexible" >
   <FaLabel char="spinner" name="Waiting" class="bee-mail-WaitingForContent" />
 
-  <FlowPanel name="Container" class="flexBox-vertical flexible" >
+  <FlowPanel name="Container" class="flexBox-vertical flexible" style="margin:5px">
     <FlowPanel class="bee-mail-Envelope">
       <FlowPanel class="flexBox-horizontal">
         <TextLabel name="Sender" class="bee-mail-Sender flexible" />
@@ -20,11 +20,12 @@
         <cell style="width:50%; padding:0;">
           <hr style="border:0; border-top:1px solid lightgray;"/>
         </cell>
-        <FaLabel name="Reply" char="mail_reply" />
-        <FaLabel name="ReplyAll" char="mail_reply_all" />
-        <FaLabel name="Forward" char="mail_forward" />
+        <FaLabel name="Reply" char="mail_reply" title="=mailReply" disablable="false" />
+        <FaLabel name="ReplyAll" char="mail_reply_all" title="=mailReplyAll" disablable="false" />
+        <FaLabel name="Forward" char="mail_forward" title="=mailForward" disablable="false" />
         <Relations relColumn="Message" defaultRelations="Requests Tasks Assessments"
           blockedRelations="Messages" />
+        <FaLabel name="Menu" char="navicon" title="=menu" disablable="false" />
         <cell style="width:50%; padding:0;">
           <hr style="border:0; border-top:1px solid lightgray;"/>
         </cell>

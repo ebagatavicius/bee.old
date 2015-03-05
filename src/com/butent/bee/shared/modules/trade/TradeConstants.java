@@ -14,6 +14,8 @@ public final class TradeConstants {
   public static final String TBL_SALE_ITEMS = "SaleItems";
 
   public static final String TBL_TRADE_OPERATIONS = "TradeOperations";
+  public static final String TBL_TRADE_SERIES = "TradeSeries";
+  public static final String TBL_TRADE_STATUSES = "TradeStatuses";
 
   public static final String VAR_VIEW_NAME = "view_name";
   public static final String VAR_ID_LIST = "IdList";
@@ -60,6 +62,7 @@ public final class TradeConstants {
 
   public static final String COL_TRADE_DISCOUNT = "Discount";
 
+  public static final String COL_TRADE_ITEM_ORDINAL = "Ordinal";
   public static final String COL_TRADE_ITEM_ARTICLE = "Article";
   public static final String COL_TRADE_ITEM_QUANTITY = "Quantity";
   public static final String COL_TRADE_ITEM_PRICE = "Price";
@@ -68,12 +71,17 @@ public final class TradeConstants {
   public static final String COL_SERIES = "Series";
   public static final String COL_SERIES_NAME = "SeriesName";
   public static final String COL_SERIES_MANAGER = "Manager";
+  public static final String COL_SERIES_DEFAULT = "IsDefault";
 
   public static final String COL_OPERATION_NAME = "OperationName";
   public static final String COL_OPERATION_KIND = "Kind";
   public static final String COL_OPERATION_PRICE = "Price";
   public static final String COL_OPERATION_WAREHOUSE_FROM = "WarehouseFrom";
   public static final String COL_OPERATION_WAREHOUSE_TO = "WarehouseTo";
+  public static final String COL_OPERATION_DEFAULT = "IsDefault";
+
+  public static final String COL_STATUS_NAME = "StatusName";
+  public static final String COL_STATUS_ACTIVE = "StatusActive";
 
   public static final String ALS_CUSTOMER_NAME = "CustomerName";
   public static final String ALS_SUPPLIER_NAME = "SupplierName";
@@ -91,6 +99,9 @@ public final class TradeConstants {
   public static final String GRID_TRADE_STATUSES = "TradeStatuses";
 
   public static final String GRID_SERIES_MANAGERS = "SeriesManagers";
+
+  public static final String FORM_SALES_INVOICE = "SalesInvoice";
+  public static final String FORM_PRINT_SALES_INVOICE = "PrintSalesInvoice";
 
   private TradeConstants() {
   }

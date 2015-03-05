@@ -72,7 +72,6 @@
     </module>
     <module name="IllegalInstantiation"/>
     <module name="InnerAssignment"/>
-    <module name="JUnitTestCase"/>
     <module name="ModifiedControlVariable"/>
     <module name="MultipleVariableDeclarations"/>
     <module name="NestedTryDepth"/>
@@ -80,9 +79,6 @@
     <module name="NoFinalizer"/>
     <module name="PackageDeclaration"/>
     <module name="ParameterAssignment"/>
-    <module name="RedundantThrows">
-      <property name="suppressLoadErrors" value="true"/>
-    </module>
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>
     <module name="StringLiteralEquality"/>
@@ -104,6 +100,18 @@
       <property name="format" value="\s+$"/>
       <property name="ignoreComments" value="true"/>
     </module>
+    <module name="InterfaceTypeParameterName"/>
+    <module name="AbbreviationAsWordInName"/>
+    <module name="OuterTypeNumber"/>
+    <module name="GenericWhitespace"/>
+    <module name="EmptyLineSeparator">
+      <property name="allowNoEmptyLineBetweenFields" value="true"/>
+    </module>
+    <module name="SeparatorWrap">
+      <property name="tokens" value="COMMA"/>
+    </module>
+    <module name="IllegalTokenText"/>
+    <module name="OneTopLevelClass"/>
   </module>
   <module name="FileTabCharacter"/>
   <module name="Translation"/>

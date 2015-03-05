@@ -1,8 +1,5 @@
 package com.butent.bee.server.utils;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import com.butent.bee.server.io.FileUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -78,6 +75,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.SchemaFactoryConfigurationError;
 
 /**
  * Manages XML configuration files used by the system.
@@ -109,6 +107,7 @@ public final class XmlUtils {
   private static BeeLogger logger = LogUtils.getLogger(XmlUtils.class);
 
   public static final String DEFAULT_XML_EXTENSION = "xml";
+  public static final String DEFAULT_XSD_EXTENSION = "xsd";
   public static final String DEFAULT_XSL_EXTENSION = "xsl";
 
   private static final String ALL_NS = "*";
@@ -163,7 +162,7 @@ public final class XmlUtils {
 
     try {
       sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    } catch (Exception ex) {
+    } catch (IllegalArgumentException | SchemaFactoryConfigurationError ex) {
       logger.error(ex);
     }
     schemaFactory = sf;
@@ -216,7 +215,7 @@ public final class XmlUtils {
     return doc;
   }
 
-  public static List<Element> getAllDescendantElements(Element parent) {
+  public static List<Element> getAllDescendantElements(Node parent) {
     return getElementsByLocalName(parent, ALL_TAGS);
   }
 
@@ -234,7 +233,7 @@ public final class XmlUtils {
 
   public static Map<String, String> getAttributes(Node node) {
     Assert.notNull(node);
-    Map<String, String> result = Maps.newHashMap();
+    Map<String, String> result = new HashMap<>();
 
     NamedNodeMap attributes = node.getAttributes();
     if (attributes == null || attributes.getLength() <= 0) {
@@ -343,7 +342,7 @@ public final class XmlUtils {
     return getCalculation(element);
   }
 
-  public static List<Property> getCDATAInfo(CDATASection cdata) {
+  public static List<Property> getCDataInfo(CDATASection cdata) {
     Assert.notNull(cdata);
     List<Property> lst = new ArrayList<>();
 
@@ -354,7 +353,7 @@ public final class XmlUtils {
 
   public static List<Element> getChildrenElements(Node parent) {
     Assert.notNull(parent);
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
 
     NodeList nodes = parent.getChildNodes();
     if (nodes == null || nodes.getLength() <= 0) {
@@ -373,7 +372,7 @@ public final class XmlUtils {
   public static List<Element> getChildrenElements(Node parent, Collection<String> tagNames) {
     Assert.notNull(parent);
     Assert.notNull(tagNames);
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
 
     NodeList nodes = parent.getChildNodes();
     if (isEmpty(nodes)) {
@@ -545,7 +544,7 @@ public final class XmlUtils {
     Assert.notNull(parent);
     Assert.notEmpty(tagName);
 
-    List<Element> result = Lists.newArrayList();
+    List<Element> result = new ArrayList<>();
     NodeList nodes;
 
     if (isElement(parent)) {
@@ -843,7 +842,7 @@ public final class XmlUtils {
         tpInf = getTextInfo((Text) nd);
         break;
       case Node.CDATA_SECTION_NODE:
-        tpInf = getCDATAInfo((CDATASection) nd);
+        tpInf = getCDataInfo((CDATASection) nd);
         break;
       case Node.ENTITY_REFERENCE_NODE:
         tpInf = getEntityReferenceInfo((EntityReference) nd);
@@ -894,7 +893,7 @@ public final class XmlUtils {
   }
 
   public static synchronized Document getXmlResource(String resource, String resourceSchema) {
-    if (BeeUtils.isEmpty(resource) || !FileUtils.isInputFile(resource)) {
+    if (BeeUtils.isEmpty(resource)) {
       return null;
     }
     Document ret = null;
@@ -908,12 +907,16 @@ public final class XmlUtils {
       builderFactory.setSchema(schema);
       DocumentBuilder builder = builderFactory.newDocumentBuilder();
       builder.setErrorHandler(new SAXErrorHandler());
-      ret = builder.parse(new InputSource(resource));
+
+      if (FileUtils.isFile(resource)) {
+        ret = builder.parse(new InputSource(resource));
+      } else {
+        ret = builder.parse(new ByteArrayInputStream(resource.getBytes()));
+      }
     } catch (SAXException e) {
-      error = e.getMessage();
-    } catch (IOException e) {
-      error = e.getMessage();
-    } catch (ParserConfigurationException e) {
+      error = e.getException() == null ? e.getMessage() : e.getException().getMessage();
+
+    } catch (IOException | ParserConfigurationException e) {
       error = e.getMessage();
     }
     if (!BeeUtils.isEmpty(error)) {
@@ -992,8 +995,10 @@ public final class XmlUtils {
     if (value == null) {
       return "";
     }
+    String val = value.toString().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+
     return new StringBuilder("<").append(tagName).append(">")
-        .append(value)
+        .append(val)
         .append("</").append(tagName).append(">")
         .toString();
   }
@@ -1038,7 +1043,6 @@ public final class XmlUtils {
         } else {
           source = new ByteArrayInputStream(resource.getBytes());
         }
-
         if (BeeUtils.isEmpty(schemaPath)) {
           result = (T) unmarshaller.unmarshal(source);
         } else {
@@ -1056,10 +1060,7 @@ public final class XmlUtils {
       } catch (SAXException e) {
         throw new BeeRuntimeException(e.getException() == null ? e : e.getException());
 
-      } catch (ParserConfigurationException e) {
-        throw new BeeRuntimeException(e);
-
-      } catch (IOException e) {
+      } catch (ParserConfigurationException | IOException e) {
         throw new BeeRuntimeException(e);
       }
     }

@@ -3,8 +3,6 @@ package com.butent.bee.client.modules.transport;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Style.TextAlign;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -75,7 +73,10 @@ import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -167,7 +168,7 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
     private final HtmlTable driverPanel = new HtmlTable();
     private final Label characterCount = new Label();
     private final InputArea messagePanel = new InputArea();
-    private final Map<String, String> fields = Maps.newLinkedHashMap();
+    private final Map<String, String> fields = new LinkedHashMap<>();
     private Collection<String> template;
     private BeeRowSet cargoInfo;
     private Collection<Long> selectedCargos;
@@ -388,8 +389,8 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
     }
 
     private void sendMessage() {
-      List<String> errors = Lists.newArrayList();
-      Set<String> phones = Sets.newHashSet();
+      List<String> errors = new ArrayList<>();
+      Set<String> phones = new HashSet<>();
 
       for (int i = 0; i < driverPanel.getRowCount(); i++) {
         if (((InputBoolean) driverPanel.getWidget(i, 0)).isChecked()) {
@@ -468,8 +469,8 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
 
   @Override
   public void onClick(ClickEvent arg) {
-    Set<Long> cargos = Sets.newHashSet();
-    final Set<Long> selected = Sets.newHashSet();
+    Set<Long> cargos = new HashSet<>();
+    final Set<Long> selected = new HashSet<>();
 
     for (RowInfo rowInfo : getGridView().getSelectedRows(SelectedRows.ALL)) {
       selected.add(rowInfo.getId());
@@ -481,7 +482,7 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
     }
     final MessageDialog dialog = new MessageDialog();
 
-    Set<Long> driverIds = Sets.newHashSet();
+    Set<Long> driverIds = new HashSet<>();
     ChildGrid drv = (ChildGrid) tripForm.getWidgetByName(TBL_TRIP_DRIVERS);
 
     if (drv != null) {
@@ -494,7 +495,7 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
           Filter.idIn(driverIds), new RowSetCallback() {
             @Override
             public void onSuccess(BeeRowSet result) {
-              Map<String, String> drivers = Maps.newLinkedHashMap();
+              Map<String, String> drivers = new LinkedHashMap<>();
 
               for (int i = 0; i < result.getNumberOfRows(); i++) {
                 drivers.put(BeeUtils.joinWords(result.getString(i, COL_FIRST_NAME),

@@ -7,6 +7,7 @@ import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
+import com.butent.bee.shared.imports.ImportType;
 import com.butent.bee.shared.modules.ParameterType;
 import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.rights.RightsObjectType;
@@ -69,14 +70,21 @@ public final class AdministrationConstants {
 
     EnumUtils.register(ScheduleDateMode.class);
     EnumUtils.register(WorkdayTransition.class);
+
+    EnumUtils.register(ImportType.class);
+    EnumUtils.register(SysObject.class);
   }
+
+  public static final String FILE_URL = "file";
 
   public static final String PARAMETERS_PREFIX = "parameters_";
 
   public static final String SVC_GET_PARAMETER = PARAMETERS_PREFIX + "parameter";
+  public static final String SVC_GET_RELATION_PARAMETER = PARAMETERS_PREFIX + "relation_parameter";
   public static final String SVC_GET_PARAMETERS = PARAMETERS_PREFIX + "get";
-  public static final String SVC_RESET_PARAMETER = PARAMETERS_PREFIX + "reset";
   public static final String SVC_SET_PARAMETER = PARAMETERS_PREFIX + "set";
+
+  public static final String SVC_DO_IMPORT = "DoImport";
 
   public static final String SVC_NUMBER_TO_WORDS = "GetNumberInWords";
 
@@ -99,14 +107,25 @@ public final class AdministrationConstants {
   public static final String SVC_GET_CURRENT_EXCHANGE_RATE = "get_current_exchange_rate";
   public static final String SVC_GET_EXCHANGE_RATE = "get_exchange_rate";
   public static final String SVC_GET_LIST_OF_CURRENCIES = "get_list_of_currencies";
-  public static final String SVC_GET_EXCHANGE_RATES_BY_CURRENCY =
-      "get_exchange_rates_by_currency";
+  public static final String SVC_GET_EXCHANGE_RATES_FOR_CURRENCY =
+      "get_exchange_rates_for_currency";
 
   public static final String SVC_UPDATE_EXCHANGE_RATES = "update_exchange_rates";
 
   public static final String SVC_BLOCK_HOST = "block_host";
   public static final String SVC_CREATE_USER = "create_user";
   public static final String SVC_COPY_RIGHTS = "copy_rights";
+
+  public static final String VAR_IMPORT_TEST = "Test";
+  public static final String VAR_MAPPING_TABLE = "MappingTable";
+  public static final String VAR_MAPPING_FIELD = "MappingField";
+  public static final String VAR_IMPORT_FILE = "File";
+  public static final String VAR_IMPORT_SHEET = "Sheet";
+  public static final String VAR_IMPORT_START_ROW = "Row";
+  public static final String VAR_IMPORT_DATE_FORMAT = "DateFormat";
+
+  public static final String VAR_IMPORT_LOGIN = "Login";
+  public static final String VAR_IMPORT_PASSWORD = "Password";
 
   public static final String AUDIT_SUFFIX = "AUDIT";
   public static final String AUDIT_USER = "bee.user";
@@ -144,6 +163,12 @@ public final class AdministrationConstants {
 
   public static final String TBL_AUTOCOMPLETE = "Autocomplete";
 
+  public static final String TBL_IMPORT_OPTIONS = "ImportOptions";
+  public static final String TBL_IMPORT_PROPERTIES = "ImportProperties";
+  public static final String TBL_IMPORT_MAPPINGS = "ImportMappings";
+
+  public static final String TBL_CUSTOM_CONFIG = "CustomConfig";
+
   public static final String VIEW_USERS = "Users";
   public static final String VIEW_USER_SETTINGS = "UserSettings";
   public static final String VIEW_USER_GROUP_SETTINGS = "UserGroupSettings";
@@ -168,8 +193,8 @@ public final class AdministrationConstants {
   public static final String VIEW_RIGHTS = "Rights";
   public static final String VIEW_USER_ROLES = "UserRoles";
 
-  public static final String VIEW_PARAMETERS = "Parameters";
-  public static final String VIEW_USER_PARAMETERS = "UserParameters";
+  public static final String VIEW_DEPARTMENTS = "Departments";
+  public static final String VIEW_DEPARTMENT_EMPLOYEES = "DepartmentEmployees";
 
   public static final String VIEW_FILTERS = "Filters";
 
@@ -266,6 +291,7 @@ public final class AdministrationConstants {
 
   public static final String COL_DEPARTMENT = "Department";
   public static final String COL_DEPARTMENT_NAME = "DepartmentName";
+  public static final String COL_DEPARTMENT_PARENT = "Parent";
   public static final String COL_DEPARTMENT_HEAD = "DepartmentHead";
 
   public static final String COL_RS_REPORT = "Report";
@@ -277,7 +303,26 @@ public final class AdministrationConstants {
   public static final String COL_WORKSPACE_CONTINUE = "WorkspaceContinue";
   public static final String COL_LAST_WORKSPACE = "LastWorkspace";
 
+  public static final String COL_APPLIANCE_HEADER_HEIGHT = "ApplianceHeaderHeight";
+  public static final String COL_VIEW_HEADER_HEIGHT = "ViewHeaderHeight";
+  public static final String COL_CLICK_SENSITIVITY_MILLIS = "ClickSensitivityMillis";
+  public static final String COL_CLICK_SENSITIVITY_DISTANCE = "ClickSensitivityDistance";
+
   public static final String COL_USER_STYLE = "Style";
+
+  public static final String COL_IMPORT_OPTION = "Option";
+  public static final String COL_IMPORT_TYPE = "Type";
+  public static final String COL_IMPORT_DATA = "Data";
+  public static final String COL_IMPORT_DESCRIPTION = "Description";
+  public static final String COL_IMPORT_PROPERTY = "Property";
+  public static final String COL_IMPORT_VALUE = "Value";
+  public static final String COL_IMPORT_RELATION_OPTION = "RelationOption";
+  public static final String COL_IMPORT_MAPPING = "Mapping";
+
+  public static final String COL_CONFIG_MODULE = "ObjectModule";
+  public static final String COL_CONFIG_TYPE = "ObjectType";
+  public static final String COL_CONFIG_OBJECT = "ObjectName";
+  public static final String COL_CONFIG_DATA = "ObjectData";
 
   public static final String ALS_FILE_NAME = "FileName";
   public static final String ALS_FILE_SIZE = "FileSize";
@@ -295,27 +340,41 @@ public final class AdministrationConstants {
 
   public static final String ALS_ROLE_NAME = "RoleName";
 
+  public static final String ALS_DEPARTMENT_PARENT_NAME = "ParentName";
+
   public static final String FORM_USER = "User";
   public static final String FORM_USER_SETTINGS = "UserSettings";
   public static final String FORM_DEPARTMENT = "Department";
+  public static final String FORM_COMPANY_STRUCTURE = "CompanyStructure";
   public static final String FORM_NEW_ROLE = "NewRole";
+
+  public static final String FORM_IMPORT_OPTION = "ImportOption";
 
   public static final String PRM_SQL_MESSAGES = "SQLMessages";
 
   public static final String PRM_COMPANY = "CompanyName";
+  public static final String PRM_COUNTRY = "Country";
   public static final String PRM_CURRENCY = "MainCurrency";
   public static final String PRM_VAT_PERCENT = "VATPercent";
+  public static final String PRM_REFRESH_CURRENCY_HOURS = "CurrencyRefreshHours";
 
   public static final String PRM_ERP_NAMESPACE = "ERPNamespace";
   public static final String PRM_ERP_ADDRESS = "ERPAddress";
   public static final String PRM_ERP_LOGIN = "ERPLogin";
   public static final String PRM_ERP_PASSWORD = "ERPPassword";
 
+  public static final String PRM_ERP_PURCHASE_OPERATION = "ERPPurchaseOperation";
+  public static final String PRM_ERP_OPERATION = "ERPOperation";
+  public static final String PRM_ERP_WAREHOUSE = "ERPWarehouse";
+
   public static final String PRM_WS_LB_EXCHANGE_RATES_ADDRESS = "WSLBExchangeRates";
 
   public static final String PRM_URL = "Url";
 
   public static final String PROP_ICON = "Icon";
+
+  public static final String PROP_DEPARTMENT_FULL_NAME = "FullName";
+  public static final char DEPARTMENT_NAME_SEPARATOR = '\n';
 
   private AdministrationConstants() {
   }

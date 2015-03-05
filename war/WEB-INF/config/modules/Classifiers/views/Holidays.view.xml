@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="Holidays" source="Holidays" module="Classifiers"
+  caption="=holidays"
+  >
+  <Columns>
+    <SimpleColumn name="Country" />
+    <SimpleJoin name="Country" joinType="LEFT">
+      <SimpleColumn alias="CountryName" name="Name" />
+      <SimpleColumn alias="CountryCode" name="Code" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Date" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="CountryName" />
+    <OrderBy column="Date" />
+  </Order>
+</View>
+ 

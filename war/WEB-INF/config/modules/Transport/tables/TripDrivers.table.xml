@@ -3,7 +3,6 @@
 
   name="TripDrivers"
   idName="TripDriverID"
-  x="0" y="0"
   >
   <Fields>
     <Relation name="Trip" notNull="true" relation="Trips" cascade="DELETE" label="=trip"/>

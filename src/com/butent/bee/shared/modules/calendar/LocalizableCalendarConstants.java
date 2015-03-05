@@ -1,6 +1,11 @@
 package com.butent.bee.shared.modules.calendar;
 
 public interface LocalizableCalendarConstants {
+  String calAction();
+
+  String calActionRegisterResult();
+
+  String calActionResult();
 
   String calAddAttendees();
 
@@ -44,6 +49,8 @@ public interface LocalizableCalendarConstants {
 
   String calDeleteAppointment();
 
+  String calEditable();
+
   String calendar();
 
   String calEnterAttendees();
@@ -63,6 +70,10 @@ public interface LocalizableCalendarConstants {
   String calInvalidDateInterval();
 
   String calInvalidHoursInterval();
+
+  String calMailPlannedActionSubject();
+
+  String calMailPlannedActionText();
 
   String calMonthView();
 

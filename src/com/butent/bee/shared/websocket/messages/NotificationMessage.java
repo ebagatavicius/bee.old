@@ -1,12 +1,11 @@
 package com.butent.bee.shared.websocket.messages;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.communication.TextMessage;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationMessage extends Message implements HasRecipient {
@@ -46,7 +45,7 @@ public class NotificationMessage extends Message implements HasRecipient {
   private DisplayMode displayMode;
   private String icon;
 
-  private final List<TextMessage> messages = Lists.newArrayList();
+  private final List<TextMessage> messages = new ArrayList<>();
 
   NotificationMessage() {
     super(Type.NOTIFICATION);
@@ -172,7 +171,7 @@ public class NotificationMessage extends Message implements HasRecipient {
 
   @Override
   protected String serialize() {
-    List<Object> values = Lists.newArrayList();
+    List<Object> values = new ArrayList<>();
 
     values.add(getFrom());
     values.add(getTo());

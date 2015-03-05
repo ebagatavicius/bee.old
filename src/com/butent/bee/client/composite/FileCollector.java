@@ -2,7 +2,6 @@ package com.butent.bee.client.composite;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.common.net.MediaType;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Visibility;
@@ -58,6 +57,7 @@ import com.butent.bee.shared.utils.NameUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -350,7 +350,7 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
 
   private static final Collection<FileInfo> FILE_STACK = new ArrayList<>();
 
-  private static final String STYLE_PREFIX = "bee-FileCollector-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "FileCollector-";
 
   private static final String STYLE_FACE = "face";
 
@@ -382,7 +382,7 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
   }
 
   public static List<Column> parseColumns(String input) {
-    List<Column> columns = Lists.newArrayList();
+    List<Column> columns = new ArrayList<>();
     if (BeeUtils.isEmpty(input) || BeeUtils.same(input, BeeConst.NONE)) {
       return columns;
     }
@@ -407,7 +407,7 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
 
   private final InputFile inputFile;
 
-  private final List<FileInfo> files = Lists.newArrayList();
+  private final List<FileInfo> files = new ArrayList<>();
 
   private final Consumer<Collection<? extends FileInfo>> fileConsumer;
 
@@ -416,8 +416,8 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
 
   private String options;
 
-  private final List<Column> columns = Lists.newArrayList();
-  private final List<Column> editable = Lists.newArrayList();
+  private final List<Column> columns = new ArrayList<>();
+  private final List<Column> editable = new ArrayList<>();
 
   public FileCollector(IdentifiableWidget face) {
     this(face, DEFAULT_VISIBLE_COLUMNS);
@@ -704,7 +704,7 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
       public void onSuccess() {
         getRowFormatter().removeStyleName(index, STYLE_PREFIX + STYLE_EDITING);
 
-        Set<Column> changedColumns = Sets.newHashSet();
+        Set<Column> changedColumns = new HashSet<>();
         for (int i = 0; i < editable.size(); i++) {
           Column column = editable.get(i);
           if (column.update(panel.getWidget(i, colInput), fi)) {
@@ -755,7 +755,7 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
       }
     }
 
-    List<Column> vc = Lists.newArrayList();
+    List<Column> vc = new ArrayList<>();
     if (BeeUtils.isEmpty(visibleColumns)) {
       vc.addAll(DEFAULT_VISIBLE_COLUMNS);
     } else {

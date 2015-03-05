@@ -1,28 +1,26 @@
 package com.butent.bee.client.modules.documents;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
 import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
 
-import com.butent.bee.client.Global;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.data.Queries.IntCallback;
+import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
-import com.butent.bee.client.data.RowInsertCallback;
-import com.butent.bee.client.dialog.StringCallback;
+import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.form.FormView;
-import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
-import com.butent.bee.shared.i18n.LocalizableConstants;
+import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.value.LongValue;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.utils.BeeUtils;
 
 public class DocumentTemplateForm extends DocumentDataForm {
 
@@ -30,53 +28,38 @@ public class DocumentTemplateForm extends DocumentDataForm {
       new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          createDocument();
+          RowFactory.createRow(TBL_DOCUMENTS, new RowCallback() {
+            @Override
+            public void onSuccess(final BeeRow row) {
+              DocumentsHandler.copyDocumentData(getLongValue(COL_DOCUMENT_DATA), new IdCallback() {
+                @Override
+                public void onSuccess(Long dataId) {
+                  Queries.update(TBL_DOCUMENTS, Filter.compareId(row.getId()),
+                      COL_DOCUMENT_DATA, new LongValue(dataId), new IntCallback() {
+                        @Override
+                        public void onSuccess(Integer res) {
+                          Long oldId = Data.getLong(TBL_DOCUMENTS, row, COL_DOCUMENT_DATA);
+
+                          if (DataUtils.isId(oldId)) {
+                            Queries.deleteRow(VIEW_DOCUMENT_DATA, oldId);
+                          }
+                          RowEditor.open(TBL_DOCUMENTS, row.getId(), Opener.MODAL);
+                        }
+                      });
+                }
+              });
+            }
+          });
         }
       });
 
   @Override
-  public void beforeRefresh(FormView form, IsRow row) {
-    if (getHeaderView() == null) {
-      return;
-    }
+  public void afterRefresh(FormView form, IsRow row) {
     getHeaderView().clearCommandPanel();
 
     if (!DataUtils.isNewRow(row)) {
       getHeaderView().addCommandItem(newDocumentButton);
     }
-  }
-
-  @Override
-  public FormInterceptor getInstance() {
-    return new DocumentTemplateForm();
-  }
-
-  private void createDocument() {
-    LocalizableConstants loc = Localized.getConstants();
-
-    Global.inputString(loc.documentNew(), loc.documentName(),
-        new StringCallback() {
-          @Override
-          public void onSuccess(final String value) {
-            DocumentsHandler.copyDocumentData(getLongValue(COL_DOCUMENT_DATA),
-                new IdCallback() {
-                  @Override
-                  public void onSuccess(Long dataId) {
-                    Queries.insert(VIEW_DOCUMENTS,
-                        Data.getColumns(VIEW_DOCUMENTS, Lists.newArrayList(COL_DOCUMENT_CATEGORY,
-                            COL_DOCUMENT_NAME, COL_DOCUMENT_DATA)),
-                        Lists.newArrayList(getStringValue(COL_DOCUMENT_CATEGORY), value,
-                            DataUtils.isId(dataId) ? BeeUtils.toString(dataId) : null),
-                        null, new RowInsertCallback(VIEW_DOCUMENTS, null) {
-                          @Override
-                          public void onSuccess(BeeRow result) {
-                            super.onSuccess(result);
-                            RowEditor.open(VIEW_DOCUMENTS, result, Opener.MODAL);
-                          }
-                        });
-                  }
-                });
-          }
-        });
+    super.onStart(form);
   }
 }

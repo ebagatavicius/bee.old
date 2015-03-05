@@ -2,19 +2,13 @@
 <View xmlns="http://www.butent.com/view"
 
   name="UserEmails" source="Emails"
-  filter="Contact OR Addressbook"
   >
   <Columns>
     <SimpleColumn name="Email" />
 
-    <ExternalJoin source="Contacts" name="Email" joinType="LEFT">
-      <IdColumn name="Contact" aggregate="MAX" />
-    </ExternalJoin>
-
-    <ExternalJoin source="Addressbook" name="Email" joinType="LEFT" filter="User={u}">
+    <ExternalJoin source="Addressbook" name="Email" joinType="INNER" filter="User={u}">
       <HiddenColumn name="User" />
-      <IdColumn name="Addressbook" aggregate="MAX" />
-      <AggregateColumn name="Label" aggregate="MAX" />
+      <SimpleColumn name="Label" />
     </ExternalJoin>
   </Columns>
   <Order>

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
+  xmlns:ui="http://www.butent.com/ui"
   
   name="UserSettings" viewName="UserSettings" caption="=userSettings"
   width="700" height="80" heightUnit="%"
   >
   <FlowPanel class="flexBox-vertical">
-    <Table style="border-collapse: collapse; margin: 2ex 0 3ex 1em;"
-       cellStyle="padding-top: 1ex; padding-left: 1em;">
-      <col index="0" cellStyle="text-align: right;" />
-      <col index="2" cellStyle="text-align: right;" />
-
+    <br/>
+    <Table>
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+      
       <row>
         <Label for="Login" />
         <TextLabel source="Login" class="bee-output" style="min-width: 150px;" />
@@ -34,6 +35,7 @@
       </row>
     </Table>
 
+    <br/>
     <TabbedPages class="flexible">
       <page>
         <text>=feeds</text>
@@ -42,31 +44,85 @@
 
       <page module="Mail">
         <text>=mailNotify</text>
-        <FlowPanel style="padding-left: 2em; padding-top: 2ex;">
-          <CheckBox source="MailAssignedTasks" module="Tasks" />
+        <FlowPanel style="padding-left: 2em;">
           <br/>
-          <br/>
-          <CheckBox source="MailNewAnnouncements" module="Discussions" />
-          <br/>
-          <br/>
-          <CheckBox source="MailNewDiscussions" module="Discussions" />
+          <CheckBox source="MailAssignedTasks" module="Tasks" summarize="true" />
+          <br module="Discussions" />
+          <br module="Discussions" />
+          <CheckBox source="MailNewAnnouncements" module="Discussions" summarize="true" />
+          <br module="Discussions" />
+          <br module="Discussions" />
+          <CheckBox source="MailNewDiscussions" module="Discussions" summarize="true" />
+
+          <br module="Calendar" />
+          <br module="Calendar" />
+          <Table cellStyle="padding-right: 5px;" module="Calendar">
+            <row>
+              <CheckBox source="MailCompanyActions" summarize="true" />
+            </row>
+            <row>
+              <Label text="=crmRTRemindBefore" style="text-align: right;" />
+              <InputInteger source="CompanyActionRemindBefore" style="width: 50px;">
+                <validation>
+                  <ui:function>
+                    if (cell.newValue > 0 || cell.newValue == null) {
+                      return null;
+                    } else {
+                      return $wnd.Bee_maybeTranslate("=invalidTime") + cell.newValue;
+                    }
+                  </ui:function>
+                </validation>
+              </InputInteger>
+              <Label text="=unitHourShort" />
+            </row>
+          </Table>
         </FlowPanel>
       </page>
       
       <page>
         <text>=userInterface</text>
-        <FlowPanel style="padding-left: 2em; padding-top: 2ex;">
-          <CheckBox source="OpenInNewTab" />
+        <FlowPanel style="padding-left: 2em;">
+          <br/>
+          <CheckBox source="OpenInNewTab" summarize="true" />
           <br/>
           <br/>
-          <CheckBox source="WorkspaceContinue" />
+          <CheckBox source="WorkspaceContinue" summarize="true" />
+          <br/>
+          <br/>
+
+          <Table>
+            <col index="0" cellStyle="padding-right: 6px;" />
+       
+            <row>
+              <Label for="ApplianceHeaderHeight" />
+              <InputSpinner source="ApplianceHeaderHeight" minValue="0" maxValue="99"
+                style="width: 60px;" summarize="true" />
+            </row>
+            <row>
+              <Label for="ViewHeaderHeight" />
+              <InputSpinner source="ViewHeaderHeight" minValue="0" maxValue="99"
+                style="width: 60px;" summarize="true" />
+            </row>
+
+            <row>
+              <Label for="ClickSensitivityMillis" />
+              <InputSpinner source="ClickSensitivityMillis" minValue="0" maxValue="1000" step="50"
+                style="width: 60px;" summarize="true" />
+            </row>
+            <row>
+              <Label for="ClickSensitivityDistance" />
+              <InputSpinner source="ClickSensitivityDistance" minValue="0" maxValue="99"
+                style="width: 60px;" summarize="true" />
+            </row>
+          </Table>
         </FlowPanel>
       </page>
 
-      <page>
-        <text>=style</text>
+      <page for="Style">
+        <text>CSS</text>
         <SimplePanel>
-          <InputArea source="Style" class="occupy-1" style="font-family: monospace;" />
+          <InputArea source="Style" class="occupy-1" style="font-family: monospace;" 
+            summarize="true" />
         </SimplePanel>
       </page>
     </TabbedPages>     

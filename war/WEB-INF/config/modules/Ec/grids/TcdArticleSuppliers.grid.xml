@@ -7,10 +7,7 @@
   <g:columns>
     <DataColumn name="Supplier" visible="true" />
     <DataColumn name="SupplierID" />
-
     <DataColumn name="Cost" />
-    <DataColumn name="Price" />
-
     <DataColumn name="UpdatedCost" visible="false" />
     <DataColumn name="UpdateTime" visible="false" />
   </g:columns>

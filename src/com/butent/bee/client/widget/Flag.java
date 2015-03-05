@@ -6,6 +6,7 @@ import com.google.gwt.dom.client.Style.Visibility;
 
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.images.Flags;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public class Flag extends CustomWidget {
@@ -14,7 +15,7 @@ public class Flag extends CustomWidget {
 
   public Flag() {
     super(Document.get().createImageElement());
-    addStyleName("bee-Flag");
+    addStyleName(BeeConst.CSS_CLASS_PREFIX + "Flag");
   }
 
   public Flag(String country) {

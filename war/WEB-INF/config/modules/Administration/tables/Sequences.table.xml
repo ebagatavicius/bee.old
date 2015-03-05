@@ -4,7 +4,6 @@
   name="Sequences"
   idName="SequenceID"
   audit="false"
-  x="24" y="1325"
   >
   <Fields>
     <String name="Name" precision="30" notNull="true" unique="true" />

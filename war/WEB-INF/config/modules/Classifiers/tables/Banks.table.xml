@@ -3,7 +3,6 @@
   
   name="Banks"
   idName="BankID"
-  x="752" y="484"
   >
   <Fields>
     <String name="Name" precision="100" notNull="true" unique="true" label="=name" />

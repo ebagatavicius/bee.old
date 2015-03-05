@@ -3,7 +3,6 @@
 
   name="TripFuelCosts"
   idName="CostID"
-  x="0" y="0"
   >
   <Fields>
     <Relation name="Trip" relation="Trips" cascade="DELETE" label="=trip" />

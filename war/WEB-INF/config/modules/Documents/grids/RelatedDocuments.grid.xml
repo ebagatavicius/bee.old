@@ -3,7 +3,7 @@
   xmlns:ui="http://www.butent.com/ui"
   
   name="RelatedDocuments" viewName="RelatedDocuments" newRowColumns="-"
-  flexGrow="1"
+  flexGrow="1" caption="=documents"
   >
   
   <g:columns>

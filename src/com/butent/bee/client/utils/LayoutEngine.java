@@ -7,7 +7,7 @@ import elemental.client.Browser.Info;
 import elemental.js.JsBrowser;
 
 public enum LayoutEngine {
-  WEBKIT("webkit", "webkit", new JustDate(2014, 6, 6)),
+  WEBKIT("webkit", "webkit", new JustDate(2014, 9, 10)),
   GECKO("gecko", null, null),
   TRIDENT("trident", "trident", new JustDate(2014, 5, 23));
 

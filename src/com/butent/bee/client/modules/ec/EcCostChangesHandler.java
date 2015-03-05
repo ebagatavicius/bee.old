@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.ec;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
@@ -21,6 +20,7 @@ import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EcCostChangesHandler extends AbstractGridInterceptor {
@@ -32,7 +32,7 @@ public class EcCostChangesHandler extends AbstractGridInterceptor {
         new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
-            final List<Long> idList = Lists.newArrayList();
+            final List<Long> idList = new ArrayList<>();
 
             for (RowInfo row : presenter.getGridView().getSelectedRows(SelectedRows.ALL)) {
               idList.add(row.getId());

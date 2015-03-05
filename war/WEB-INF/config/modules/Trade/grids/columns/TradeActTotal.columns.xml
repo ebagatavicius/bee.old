@@ -2,7 +2,7 @@
 <g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
     xmlns:ui="http://www.butent.com/ui">
 
-  <CalcColumn name="Total" type="decimal" caption="=trdAmount" format="0.00">
+  <CalcColumn name="Total" type="decimal" caption="=trdAmount" scale="2">
     <style>
       <bodyStyle><ui:font>bold</ui:font></bodyStyle>
     </style>

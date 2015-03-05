@@ -5,6 +5,7 @@ import com.google.gwt.dom.client.Element;
 
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.ui.FormWidget;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.html.builder.elements.Input;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -33,7 +34,7 @@ public class InputInteger extends InputNumber {
 
   @Override
   protected String getDefaultStyleName() {
-    return "bee-InputInteger";
+    return BeeConst.CSS_CLASS_PREFIX + "InputInteger";
   }
 
   @Override

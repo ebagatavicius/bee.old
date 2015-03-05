@@ -3,16 +3,17 @@
         xmlns:g="http://www.butent.com/grid"
         xmlns:ui="http://www.butent.com/ui"
 
-  name="CompanyBankAccounts" viewName="CompanyBankAccounts" caption="=bankAccounts"
-  flexGrow="1" flexShrink="1"
+  name="CompanyBankAccounts" viewName="CompanyBankAccounts" caption="=bankDetails"
+  flexGrow="1"
   >
   <g:columns>
     <DataColumn name="DefaultBankAccount" caption="=defaultBankAccountShort"
-      horizontalAlignment="center" flexGrow="0">
+      horizontalAlignment="center">
       <render><ui:expression>row.DefaultBankAccount ? '\u2713' : ''</ui:expression></render>
     </DataColumn>
     <RelColumn name="Bank" renderColumns="BankName BankCode" />
     <DataColumn name="BankAccount" />
+    <RelColumn name="Currency" />
     <DataColumn name="IBANCode" />
     <DataColumn name="Notes" />
   </g:columns>

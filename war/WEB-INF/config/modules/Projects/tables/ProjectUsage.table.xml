@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Table xmlns="http://www.butent.com/table"
+  
+  name="ProjectUsage"
+  idName="ProjectUsageID"
+  >
+  <Fields>
+    <Relation name="Project" notNull="true" relation="Projects" cascade="DELETE" />
+    <Relation name="User" notNull="true" relation="Users" cascade="DELETE" />
+
+    <Long name="Access" />
+    <Long name="Update" />
+
+    <Integer name="Star" />
+  </Fields>
+</Table>

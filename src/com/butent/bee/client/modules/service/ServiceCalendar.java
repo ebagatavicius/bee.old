@@ -1098,9 +1098,6 @@ final class ServiceCalendar extends TimeBoard {
 
     SimpleRowSet objectDatesData = SimpleRowSet.getIfPresent(properties, TBL_SERVICE_DATES);
 
-    SimpleRowSet relationData = SimpleRowSet.getIfPresent(properties,
-        AdministrationConstants.TBL_RELATIONS);
-
     SimpleRowSet taskData = SimpleRowSet.getIfPresent(properties, TBL_TASKS);
     SimpleRowSet rtData = SimpleRowSet.getIfPresent(properties, TBL_RECURRING_TASKS);
 
@@ -1133,25 +1130,22 @@ final class ServiceCalendar extends TimeBoard {
       }
     }
 
-    if (!DataUtils.isEmpty(taskData) && !DataUtils.isEmpty(relationData)) {
+    if (!DataUtils.isEmpty(taskData)) {
       for (SimpleRow taskRow : taskData) {
         TaskWrapper wrapper = new TaskWrapper(taskRow);
-        Long taskId = wrapper.getId();
 
-        if (DataUtils.isId(taskId)) {
-          for (SimpleRow relationRow : relationData) {
-            if (taskId.equals(relationRow.getLong(COL_TASK))) {
-              Long objId = relationRow.getLong(COL_SERVICE_OBJECT);
+        if (!BeeUtils.isEmpty(taskRow.getValue(AdministrationConstants.COL_RELATION))) {
+          for (Long objId : DataUtils.parseIdList(taskRow
+              .getValue(AdministrationConstants.COL_RELATION))) {
               if (DataUtils.isId(objId)) {
                 tasks.put(objId, wrapper);
               }
-            }
           }
         }
       }
     }
 
-    if (!DataUtils.isEmpty(rtData) && !DataUtils.isEmpty(relationData)) {
+    if (!DataUtils.isEmpty(rtData)) {
       long startMillis = System.currentTimeMillis();
 
       BeeRowSet rtDates = BeeRowSet.getIfPresent(properties, VIEW_RT_DATES);
@@ -1167,14 +1161,13 @@ final class ServiceCalendar extends TimeBoard {
           List<RecurringTaskWrapper> rts = RecurringTaskWrapper.spawn(rtRow, sdrs,
               minDate, maxDate);
 
-          if (!rts.isEmpty()) {
-            for (SimpleRow relationRow : relationData) {
-              if (rtId.equals(relationRow.getLong(COL_RECURRING_TASK))) {
-                Long objId = relationRow.getLong(COL_SERVICE_OBJECT);
+          if (!rts.isEmpty()
+              && !BeeUtils.isEmpty(rtRow.getValue(AdministrationConstants.COL_RELATION))) {
+            for (Long objId : DataUtils.parseIdList(rtRow
+                .getValue(AdministrationConstants.COL_RELATION))) {
 
                 if (DataUtils.isId(objId)) {
                   recurringTasks.putAll(objId, rts);
-                }
               }
             }
           }

@@ -10,8 +10,8 @@ import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.event.logical.SelectorEvent;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.DataView;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
@@ -19,7 +19,9 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
+import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -58,10 +60,37 @@ public class ClassifierSelector implements SelectorEvent.Handler {
       }
 
     } else if (BeeUtils.same(event.getRelatedViewName(), VIEW_PERSONS)) {
-      if (event.isOpened() || event.isDataLoaded() || event.isUnloading()) {
-        handlePersons(event);
+      String options = event.getSelector().getOptions();
+
+      if (!BeeUtils.isEmpty(options)) {
+        if (event.isOpened() || event.isDataLoaded() || event.isUnloading()) {
+          handlePersons(event, options);
+        }
+
+      } else if (event.isOpened()) {
+        DataView dataView = ViewHelper.getDataView(event.getSelector());
+
+        if (dataView != null && VIEW_COMPANY_OBJECTS.equals(dataView.getViewName())) {
+          if (TimeUtils.year() < 0) { // never
+            filterPersonsByCompany(event, dataView);
+          }
+        }
       }
     }
+  }
+
+  private static void filterPersonsByCompany(SelectorEvent event, DataView dataView) {
+    Long company = ViewHelper.getParentRowId(dataView.asWidget(), VIEW_COMPANIES);
+
+    Filter filter;
+    if (DataUtils.isId(company)) {
+      filter = Filter.in(Data.getIdColumn(VIEW_PERSONS), VIEW_COMPANY_PERSONS, COL_PERSON,
+          Filter.equals(COL_COMPANY, company));
+    } else {
+      filter = Filter.isFalse();
+    }
+
+    event.getSelector().setAdditionalFilter(filter, true);
   }
 
   private static void handleCities(SelectorEvent event) {
@@ -75,7 +104,7 @@ public class ClassifierSelector implements SelectorEvent.Handler {
       return;
     }
 
-    DataView dataView = UiHelper.getDataView(event.getSelector());
+    DataView dataView = ViewHelper.getDataView(event.getSelector());
     if (dataView == null || BeeUtils.isEmpty(dataView.getViewName())) {
       return;
     }
@@ -128,7 +157,7 @@ public class ClassifierSelector implements SelectorEvent.Handler {
       return;
     }
 
-    DataView dataView = UiHelper.getDataView(event.getSelector());
+    DataView dataView = ViewHelper.getDataView(event.getSelector());
     if (dataView == null) {
       removeCompanyPersonSelector(selectorId);
       return;
@@ -228,12 +257,7 @@ public class ClassifierSelector implements SelectorEvent.Handler {
     }
   }
 
-  private void handlePersons(SelectorEvent event) {
-    String companySelectorName = event.getSelector().getOptions();
-    if (BeeUtils.isEmpty(companySelectorName)) {
-      return;
-    }
-
+  private void handlePersons(SelectorEvent event, String companySelectorName) {
     String selectorId = event.getSelector().getId();
     if (BeeUtils.isEmpty(selectorId)) {
       return;
@@ -244,7 +268,7 @@ public class ClassifierSelector implements SelectorEvent.Handler {
       return;
     }
 
-    FormView form = UiHelper.getForm(event.getSelector());
+    FormView form = ViewHelper.getForm(event.getSelector());
     if (form == null) {
       removePersonSelector(selectorId);
       return;

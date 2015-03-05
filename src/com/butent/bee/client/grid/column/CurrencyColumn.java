@@ -12,7 +12,7 @@ import com.butent.bee.shared.data.CellSource;
 public class CurrencyColumn extends DecimalColumn {
 
   public CurrencyColumn(CellSource cellSource) {
-    this(Format.getDefaultCurrencyFormat(), cellSource);
+    this(Format.getDefaultMoneyFormat(), cellSource);
   }
 
   public CurrencyColumn(NumberFormat format, CellSource cellSource) {

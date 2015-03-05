@@ -183,7 +183,7 @@ public class Filters implements HasExtendedInfo {
   private static final String COL_PREDEFINED = "Predefined";
   private static final String COL_VALUE = "Value";
 
-  private static final String STYLE_PREFIX = "bee-Filters-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "Filters-";
   private static final String STYLE_WRAPPER = STYLE_PREFIX + "wrapper";
 
   private static final String STYLE_TABLE = STYLE_PREFIX + "table";
@@ -366,7 +366,7 @@ public class Filters implements HasExtendedInfo {
           Item updatedItem = getItem(items, id);
           updatedItem.setInitial(value);
 
-          Queries.update(VIEW_FILTERS, id, COL_INITIAL, BooleanValue.getInstance(value));
+          Queries.update(VIEW_FILTERS, id, COL_INITIAL, BooleanValue.of(value));
 
           if (BeeUtils.isTrue(value) && items.size() > 1) {
             synchronizeInitialFilters(items, updatedItem, table);

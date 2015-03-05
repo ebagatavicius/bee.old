@@ -1,6 +1,7 @@
 package com.butent.bee.server.authentication;
 
 import java.util.Collections;
+import java.util.Map;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -27,7 +28,8 @@ public class BeeServerAuthContext implements ServerAuthContext {
       throws AuthException {
 
     this.serverAuthModule = serverAuthModule;
-    serverAuthModule.initialize(null, null, handler, Collections.<String, String> emptyMap());
+    Map<String, String> options = Collections.emptyMap();
+    serverAuthModule.initialize(null, null, handler, options);
   }
 
   @Override

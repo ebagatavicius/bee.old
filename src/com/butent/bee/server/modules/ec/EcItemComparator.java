@@ -33,12 +33,12 @@ class EcItemComparator implements Comparator<EcItem> {
       }
     }
 
-    diff = Integer.compare(o2.getPrimaryStock(), o1.getPrimaryStock());
+    diff = Double.compare(o2.getPrimaryStock(), o1.getPrimaryStock());
     if (diff != BeeConst.COMPARE_EQUAL) {
       return diff;
     }
 
-    diff = Integer.compare(o2.getSecondaryStock(), o1.getSecondaryStock());
+    diff = Double.compare(o2.getSecondaryStock(), o1.getSecondaryStock());
     if (diff != BeeConst.COMPARE_EQUAL) {
       return diff;
     }

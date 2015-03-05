@@ -1,14 +1,13 @@
 package com.butent.bee.shared.data.cache;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import java.util.LinkedList;
 
 class ListImpl<K, V> extends AbstractCache<K, V> {
 
-  private final LinkedList<K> keys = Lists.newLinkedList();
-  private final LinkedList<V> values = Lists.newLinkedList();
+  private final LinkedList<K> keys = new LinkedList<>();
+  private final LinkedList<V> values = new LinkedList<>();
 
   ListImpl(int maxSize, ReplacementPolicy replacementPolicy) {
     super(maxSize, replacementPolicy);

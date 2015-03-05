@@ -1,6 +1,5 @@
 package com.butent.bee.client.i18n;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.shared.DateTimeFormatInfo;
 import com.google.gwt.i18n.shared.DefaultDateTimeFormatInfo;
@@ -10,6 +9,7 @@ import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -252,7 +252,7 @@ public class DateTimeFormat {
     }
   }
 
-  private final List<PatternPart> patternParts = Lists.newArrayList();
+  private final List<PatternPart> patternParts = new ArrayList<>();
 
   private final DateTimeFormatInfo dateTimeFormatInfo;
   private final String[] monthsFull;

@@ -170,6 +170,8 @@ public interface LocalizableEcConstants {
 
   String ecListPrice();
 
+  String ecListPriceShort();
+
   String ecMailAccountNotFound();
 
   String ecMailClientAddressNotFound();

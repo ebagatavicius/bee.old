@@ -185,7 +185,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
     @Override
     protected void init() {
       super.init();
-      addStyleName("bee-Tile");
+      addStyleName(BeeConst.CSS_CLASS_PREFIX + "Tile");
     }
 
     @Override
@@ -277,7 +277,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
     }
 
     private void setActiveStyle(boolean add) {
-      setStyleName("bee-Tile-active", add);
+      setStyleName(BeeConst.CSS_CLASS_PREFIX + "Tile-active", add);
     }
 
     private void setContentIndex(int contentIndex) {
@@ -553,7 +553,6 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
   static final int TILE_MARGIN = 2;
 
   private static final String KEY_ACTIVE = "active";
-  private static final String KEY_CONTENT = "content";
   private static final String KEY_SPLIT = "split";
 
   static Tile getTile(Widget widget) {
@@ -574,7 +573,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
 
   TilePanel(Workspace workspace) {
     super(5);
-    addStyleName("bee-TilePanel");
+    addStyleName(BeeConst.CSS_CLASS_PREFIX + "TilePanel");
 
     init(workspace);
   }
@@ -1212,8 +1211,8 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
       }
     }
 
-    if (json.containsKey(KEY_CONTENT)) {
-      String contentSupplier = JsonUtils.getString(json, KEY_CONTENT);
+    if (json.containsKey(Workspace.KEY_CONTENT)) {
+      String contentSupplier = JsonUtils.getString(json, Workspace.KEY_CONTENT);
       if (!BeeUtils.isEmpty(contentSupplier)) {
         contentByTile.put(tile.getId(), contentSupplier);
       }
@@ -1259,7 +1258,7 @@ class TilePanel extends Split implements HasCaption, SelectionHandler<String> {
 
     String contentSupplier = tile.getContentSupplier();
     if (!BeeUtils.isEmpty(contentSupplier)) {
-      json.put(KEY_CONTENT, new JSONString(contentSupplier));
+      json.put(Workspace.KEY_CONTENT, new JSONString(contentSupplier));
     }
 
     if (tileId.equals(getActiveTileId()) && getTileCount() > 1) {

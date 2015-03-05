@@ -2,11 +2,8 @@ package com.butent.bee.client.modules.transport.charts;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -55,7 +52,10 @@ import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,7 +143,7 @@ final class DriverTimeBoard extends ChartBase {
   static final String SUPPLIER_KEY = "driver_time_board";
   private static final String DATA_SERVICE = SVC_GET_DTB_DATA;
 
-  private static final String STYLE_PREFIX = "bee-tr-dtb-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-dtb-";
 
   private static final String STYLE_DRIVER_PREFIX = STYLE_PREFIX + "Driver-";
   private static final String STYLE_DRIVER_ROW_SEPARATOR = STYLE_DRIVER_PREFIX + "row-sep";
@@ -174,12 +174,12 @@ final class DriverTimeBoard extends ChartBase {
         });
   }
 
-  private final List<Driver> drivers = Lists.newArrayList();
+  private final List<Driver> drivers = new ArrayList<>();
 
   private final Multimap<Long, DriverTrip> driverTrips = ArrayListMultimap.create();
   private final Multimap<Long, Absence> driverAbsence = ArrayListMultimap.create();
 
-  private final Map<Long, Trip> trips = Maps.newHashMap();
+  private final Map<Long, Trip> trips = new HashMap<>();
   private final Multimap<Long, Freight> freights = ArrayListMultimap.create();
 
   private int driverWidth = BeeConst.UNDEF;
@@ -322,7 +322,7 @@ final class DriverTimeBoard extends ChartBase {
   @Override
   protected Collection<? extends HasDateRange> getChartItems() {
     if (isFiltered()) {
-      List<HasDateRange> result = Lists.newArrayList();
+      List<HasDateRange> result = new ArrayList<>();
 
       for (Driver driver : drivers) {
         if (isItemVisible(driver) && driverTrips.containsKey(driver.getId())) {
@@ -558,7 +558,7 @@ final class DriverTimeBoard extends ChartBase {
 
   @Override
   protected List<ChartData> prepareFilterData(FilterType filterType) {
-    List<ChartData> data = Lists.newArrayList();
+    List<ChartData> data = new ArrayList<>();
     if (drivers.isEmpty()) {
       return data;
     }
@@ -579,7 +579,7 @@ final class DriverTimeBoard extends ChartBase {
     ChartData unloadData = new ChartData(ChartData.Type.UNLOADING);
     ChartData placeData = new ChartData(ChartData.Type.PLACE);
 
-    Set<Long> processedTrips = Sets.newHashSet();
+    Set<Long> processedTrips = new HashSet<>();
 
     for (Driver driver : drivers) {
       if (!driver.matched(filterType)) {
@@ -905,7 +905,7 @@ final class DriverTimeBoard extends ChartBase {
     Long tripId = item.tripId;
     Trip trip = trips.get(tripId);
 
-    List<String> titleLines = Lists.newArrayList();
+    List<String> titleLines = new ArrayList<>();
     if (trip != null) {
       titleLines.add(trip.getTitle());
     }
@@ -933,7 +933,7 @@ final class DriverTimeBoard extends ChartBase {
   }
 
   private List<TimeBoardRowLayout> doLayout() {
-    List<TimeBoardRowLayout> result = Lists.newArrayList();
+    List<TimeBoardRowLayout> result = new ArrayList<>();
     Range<JustDate> range = getVisibleRange();
 
     for (int driverIndex = 0; driverIndex < drivers.size(); driverIndex++) {
@@ -956,7 +956,7 @@ final class DriverTimeBoard extends ChartBase {
   }
 
   private List<HasDateRange> getAbsence(long driverId, Range<JustDate> range) {
-    List<HasDateRange> absence = Lists.newArrayList();
+    List<HasDateRange> absence = new ArrayList<>();
 
     if (driverAbsence.containsKey(driverId)) {
       absence.addAll(TimeBoardHelper.getActiveItems(driverAbsence.get(driverId), range));
@@ -965,7 +965,7 @@ final class DriverTimeBoard extends ChartBase {
   }
 
   private List<HasDateRange> getDriverTripsForLayout(long driverId, Range<JustDate> range) {
-    List<HasDateRange> dts = Lists.newArrayList();
+    List<HasDateRange> dts = new ArrayList<>();
 
     if (driverTrips.containsKey(driverId)) {
       if (isFiltered()) {

@@ -6,24 +6,28 @@
   name="Appointment" viewName="Appointments" caption="=calAppointment" showRowId="true">
 
   <FlowPanel class="flexBox-vertical">
-    <Table style="border-collapse: collapse; margin-top: 1ex; margin-bottom: 2ex;"
-       cellStyle="padding: 4px 10px;">
+    <Table style="margin-top: 1ex; margin-bottom: 2ex;">
        
-      <col index="0" cellStyle="text-align: right;" />
-      <col index="2" cellStyle="text-align: right;" />
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+      <col index="4" kind="label" />
 
       <row>
-        <Label for="Summary" class="bee-required" visible="true" />
+        <Label for="Summary" visible="true" class="bee-required" />
         <InputText source="Summary" visible="true" />
         <Label for="Location" />
         <InputText source="Location" />
+        <Label text="=type" for="Type" visible="true" class="bee-required" />
+        <DataSelector source="AppointmentType" renderColumns="TypeName" visible="true"/>
       </row>
 
       <row>
         <Label for="Company" />
         <DataSelector source="Company" renderColumns="CompanyName" />
-        <Label text="=type" for="Type" visible="true" class="bee-required"/>
-        <DataSelector source="AppointmentType" renderColumns="TypeName" visible="true"/>
+        <Label for="CompanyPerson" />
+        <DataSelector source="CompanyPerson"
+          renderColumns="PersonFirstName PersonLastName"
+          choiceColumns="FirstName LastName CompanyName" options="Company" />
       </row>
  
       <row>
@@ -36,8 +40,9 @@
       <row>
         <Label for="EndDateTime" visible="true" />
         <InputDateTime source="EndDateTime" visible="true" />
-        <cell><text/></cell>
-        <Radio source="Visibility" vertical="false" />
+        <cell colSpan="2">
+          <Radio source="Visibility" vertical="false" />
+        </cell>
       </row>
 
       <row>
@@ -70,7 +75,7 @@
       <page for="Description">
         <text>=description</text>
         <SimplePanel>
-          <InputArea source="Description" class="occupy-1" />
+          <InputArea source="Description" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>  
 
@@ -89,7 +94,7 @@
         <Table style="border-collapse: collapse; margin-top: 2ex;"
           cellStyle="padding: 3px; border: 1px solid #ccc;" >
           <row>
-            <DataSelector source="VehicleNumber" caption="=vehicleNumber" />
+            <DataSelector source="VehicleNumber" caption="=vehicleNumber" summarize="true" />
             <TextLabel source="Vehicle" caption="=vehicleModel" inline="true"
               renderColumns="VehicleParentModel VehicleModel" />
             <TextLabel source="VehicleType" caption="=vehicleType" inline="true" />

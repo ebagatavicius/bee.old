@@ -3,7 +3,6 @@
 
   name="TransportationOrders"
   idName="OrderID"
-  x="741" y="101"
   >
   <Fields>
     <Enum name="Status" key="OrderStatus" notNull="true" label="=trOrderStatus" defValue="1" />

@@ -1,7 +1,6 @@
 package com.butent.bee.client.utils;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsDate;
@@ -20,6 +19,7 @@ import com.butent.bee.shared.ui.Calculation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +53,7 @@ public final class Evaluator extends Calculation implements HasRowValue {
     private String lastOldValue;
     private String lastNewValue;
 
-    private final Set<String> lastRowPropertyNames = Sets.newHashSet();
+    private final Set<String> lastRowPropertyNames = new HashSet<>();
 
     {
       cellValues = JavaScriptObject.createObject();

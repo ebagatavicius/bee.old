@@ -14,32 +14,32 @@
           <Label text="=mailTo" horizontalAlignment="right" style="white-space:nowrap;" />
           <cell style="width:100%">
             <MultiSelector name="To" viewName="UserEmails" choiceColumns="Label Email" 
-              valueSource="Email" strict="false" style="width:100%" />
+              valueSource="Email" strict="false" caching="local" maxLength="50" style="width:100%" />
           </cell>
         </row>
         <row>
           <Label text="=mailCc" horizontalAlignment="right" style="white-space:nowrap;" />
           <MultiSelector name="Cc" viewName="UserEmails" choiceColumns="Label Email" 
-            valueSource="Email" strict="false" style="width:100%" />
+            valueSource="Email" strict="false" caching="local" maxLength="50" style="width:100%" />
         </row>
         <row>
           <Label text="=mailBcc" horizontalAlignment="right" style="white-space:nowrap;" />
           <MultiSelector name="Bcc" viewName="UserEmails" choiceColumns="Label Email" 
-            valueSource="Email" strict="false" style="width:100%" />
+            valueSource="Email" strict="false" caching="local" maxLength="50" style="width:100%" />
         </row>
       </Table>
-
-      <HorizontalPanel style="width:100%">
-        <cell style="vertical-align:top;">
+      
+      <FlowPanel class="flexBox-horizontal">
+        <FlowPanel class="flexible">
           <InputText name="Subject" placeholder="=mailSubject" style="width:100%" />
-        </cell>
-        <cell style="">
+        </FlowPanel>
+
+        <FlowPanel style="min-width:100px; max-width:300px; max-height:100px; margin-left:5px; overflow:auto;">
           <FileCollector name="Attachments">
             <face resource="attachment" />
           </FileCollector>
-        </cell>
-        <text>&amp;nbsp;</text>
-      </HorizontalPanel>
+        </FlowPanel>
+      </FlowPanel>
     </FlowPanel>
 
     <RichTextEditor name="Message" class="bee-mail-Content flexible" />

@@ -14,6 +14,8 @@ import java.math.BigDecimal;
 
 public class IntegerValue extends Value {
 
+  public static final IntegerValue ZERO = new IntegerValue(0);
+
   private static final IntegerValue NULL_VALUE = new IntegerValue(null);
 
   public static IntegerValue getNullValue() {

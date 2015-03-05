@@ -44,8 +44,6 @@
     <xs:attribute name="idName" type="type:fieldNameType" default="ID" />
     <xs:attribute name="versionName" type="type:fieldNameType" default="VERSION" />
     <xs:attribute name="audit" type="xs:boolean" default="true" />
-    <xs:attribute name="x" type="xs:int" />
-    <xs:attribute name="y" type="xs:int" />
   </xs:complexType>
 
   <xs:complexType name="fields">

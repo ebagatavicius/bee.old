@@ -5,22 +5,24 @@
   source="CargoHandling"
   >
   <Columns>
-    <SimpleColumn name="Cargo"/>
+    <SimpleColumn name="Cargo" />
     <SimpleColumn name="Notes" />
+    <SimpleColumn name="Forwarder" />
 
     <SimpleJoin name="LoadingPlace" joinType="LEFT">
-      <SimpleColumn name="Date" alias="LoadingDate" />
-      <SimpleColumn name="Number" alias="LoadingNumber" />
-      <SimpleColumn name="Contact" alias="LoadingContact" />
-      <SimpleColumn name="Company" alias="LoadingCompany"/>
-      <SimpleColumn name="Address" alias="LoadingAddress" />
-      <SimpleColumn name="PostIndex" alias="LoadingPostIndex" />
+      <SimpleColumn name="Date" alias="LoadingDate" label="=trLoadingDate" />
+      <SimpleColumn name="Note" alias="LoadingNote" label="=trLoadingNote" />
+      <SimpleColumn name="Number" alias="LoadingNumber" label="=trLoadingNumber" />
+      <SimpleColumn name="Contact" alias="LoadingContact" label="=trLoadingContact" />
+      <SimpleColumn name="Company" alias="LoadingCompany" label="=trLoadingCompany" />
+      <SimpleColumn name="Address" alias="LoadingAddress" label="=trLoadingAddress" />
+      <SimpleColumn name="PostIndex" alias="LoadingPostIndex" label="=trLoadingPostIndex" />
 
-      <SimpleColumn name="City" alias="LoadingCity" />
+      <SimpleColumn name="City" alias="LoadingCity" label="=trLoadingCity" />
       <SimpleJoin joinType="LEFT" name="City">
         <SimpleColumn name="Name" alias="LoadingCityName" />
       </SimpleJoin>
-      <SimpleColumn name="Country" alias="LoadingCountry" />
+      <SimpleColumn name="Country" alias="LoadingCountry" label="=trLoadingCountry" />
       <SimpleJoin joinType="LEFT" name="Country">
         <SimpleColumn name="Name" alias="LoadingCountryName" />
         <SimpleColumn name="Code" alias="LoadingCountryCode" />
@@ -28,18 +30,19 @@
     </SimpleJoin>
 
     <SimpleJoin name="UnloadingPlace" joinType="LEFT">
-      <SimpleColumn name="Date" alias="UnloadingDate" />
-      <SimpleColumn name="Number" alias="UnloadingNumber" />
-      <SimpleColumn name="Contact" alias="UnloadingContact" />
-      <SimpleColumn name="Company" alias="UnloadingCompany"/>
-      <SimpleColumn name="Address" alias="UnloadingAddress" />
-      <SimpleColumn name="PostIndex" alias="UnloadingPostIndex" />
+      <SimpleColumn name="Date" alias="UnloadingDate" label="=trUnloadingDate" />
+      <SimpleColumn name="Note" alias="UnloadingNote" label="=trUnloadingNote" />
+      <SimpleColumn name="Number" alias="UnloadingNumber" label="=trUnloadingNumber" />
+      <SimpleColumn name="Contact" alias="UnloadingContact" label="=trUnloadingContact" />
+      <SimpleColumn name="Company" alias="UnloadingCompany" label="=trUnloadingCompany" />
+      <SimpleColumn name="Address" alias="UnloadingAddress" label="=trUnloadingAddress" />
+      <SimpleColumn name="PostIndex" alias="UnloadingPostIndex" label="=trUnloadingPostIndex" />
 
-      <SimpleColumn name="City" alias="UnloadingCity" />
+      <SimpleColumn name="City" alias="UnloadingCity" label="=trUnloadingCity" />
       <SimpleJoin joinType="LEFT" name="City">
         <SimpleColumn name="Name" alias="UnloadingCityName" />
       </SimpleJoin>
-      <SimpleColumn name="Country" alias="UnloadingCountry" />
+      <SimpleColumn name="Country" alias="UnloadingCountry" label="=trUnloadingCountry" />
       <SimpleJoin joinType="LEFT" name="Country">
         <SimpleColumn name="Name" alias="UnloadingCountryName" />
         <SimpleColumn name="Code" alias="UnloadingCountryCode" />

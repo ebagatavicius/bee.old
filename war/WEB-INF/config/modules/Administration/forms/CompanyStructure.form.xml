@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form>
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
+
+  name="CompanyStructure" caption="=companyStructure"
+  enabledActions="refresh add"
+  >
+
+  <FlowPanel class="bee-orgChart-panel" />
+</f:Form>

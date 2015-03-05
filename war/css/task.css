@@ -10,6 +10,12 @@
   padding: 2px 5px 2px;
 }
 
+.bee-crm-taskEvent-row-new {
+	border-left-width: 5px; 
+  border-left-color: #a1bff5; 
+  border-left-style: solid; 
+}
+
 .bee-crm-taskEvent-col-0,
 .bee-crm-taskEvent-col-1,
 .bee-crm-taskEvent-col-2 {
@@ -119,17 +125,14 @@
 }
 .bee-crm-Slack-late .bee-crm-Slack-label {
   left: 3px;
-  font-size: bold;
   color: white;
 }
 .bee-crm-Slack-opening .bee-crm-Slack-label {
   left: 30%;
-  font-size: bold;
   color: white;
 }
 .bee-crm-Slack-endgame .bee-crm-Slack-label {
   right: 30%;
-  font-size: bold;
   color: white;
 }
 .bee-crm-Slack-scheduled .bee-crm-Slack-label {
@@ -190,10 +193,6 @@
   max-width: 100%;
   max-height: 100%;
   cursor: default;
-}
-
-.bee-crm-rt-actionSchedule {
-  font-size: 18px !important;
 }
 
 .bee-crm-rt-cron-values {
@@ -366,4 +365,13 @@
 
 .bee-crm-task-alien {
   background-image: url(../images/checkered_background.png) !important;
+}
+
+.bee-crm-request-prop-caption{
+	margin-left: 3em;
+}
+
+.bee-crm-request-prop-data {
+	margin-left: 1ex;
+	font-weight: bolder;
 }

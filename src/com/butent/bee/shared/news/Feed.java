@@ -2,7 +2,6 @@ package com.butent.bee.shared.news;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 
@@ -15,6 +14,7 @@ import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
 import com.butent.bee.shared.modules.documents.DocumentConstants;
 import com.butent.bee.shared.modules.ec.EcConstants;
 import com.butent.bee.shared.modules.mail.MailConstants;
+import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.modules.transport.TransportConstants;
@@ -25,7 +25,9 @@ import com.butent.bee.shared.ui.HasLocalizedCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -438,6 +440,17 @@ public enum Feed implements HasLocalizedCaption {
     public String getCaption(LocalizableConstants constants) {
       return constants.mail();
     }
+  },
+
+  PROJECT(ModuleAndSub.of(Module.PROJECTS), ProjectConstants.TBL_PROJECTS,
+      ProjectConstants.VIEW_PROJECTS,
+      Lists.newArrayList(ProjectConstants.COL_PROJECT_NAME)) {
+
+    @Override
+    public String getCaption(LocalizableConstants constants) {
+      return constants.projects();
+    }
+
   };
 
   private static final String SEPARATOR = BeeConst.STRING_COMMA;
@@ -448,7 +461,7 @@ public enum Feed implements HasLocalizedCaption {
       return BeeConst.STRING_EMPTY;
     }
 
-    Set<Integer> ordinals = Sets.newHashSet();
+    Set<Integer> ordinals = new HashSet<>();
     for (Feed feed : feeds) {
       if (feed != null) {
         ordinals.add(feed.ordinal());
@@ -459,7 +472,7 @@ public enum Feed implements HasLocalizedCaption {
   }
 
   public static List<Feed> split(String input) {
-    List<Feed> feeds = Lists.newArrayList();
+    List<Feed> feeds = new ArrayList<>();
     if (BeeUtils.isEmpty(input)) {
       return feeds;
     }

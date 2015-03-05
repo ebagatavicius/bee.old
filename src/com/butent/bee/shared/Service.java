@@ -67,6 +67,7 @@ public final class Service {
   public static final String DELETE_ROWS = DATA_SERVICE_PREFIX + "delete_rows";
   public static final String UPDATE_CELL = DATA_SERVICE_PREFIX + "update_cell";
   public static final String UPDATE_ROW = DATA_SERVICE_PREFIX + "update_row";
+  public static final String UPDATE_ROWS = DATA_SERVICE_PREFIX + "update_rows";
   public static final String UPDATE = DATA_SERVICE_PREFIX + "update";
   public static final String INSERT_ROW = DATA_SERVICE_PREFIX + "insert_row";
   public static final String INSERT_ROWS = DATA_SERVICE_PREFIX + "insert_rows";
@@ -75,8 +76,6 @@ public final class Service {
   public static final String HISTOGRAM = DATA_SERVICE_PREFIX + "histogram";
   public static final String GET_RELATED_VALUES = DATA_SERVICE_PREFIX + "get_related_values";
   public static final String UPDATE_RELATED_VALUES = DATA_SERVICE_PREFIX + "update_related_values";
-
-  public static final String IMPORT_CSV_COMPANIES = DATA_SERVICE_PREFIX + "import_csv_companies";
 
   public static final String GET_DSNS = DATA_SERVICE_PREFIX + "get_dsns";
   public static final String SWITCH_DSN = DATA_SERVICE_PREFIX + "switch_dsn";
@@ -94,6 +93,10 @@ public final class Service {
   public static final String SET_ROLE_RIGHTS = DATA_SERVICE_PREFIX + "set_role_rights";
 
   public static final String SET_ROW_RIGHTS = DATA_SERVICE_PREFIX + "set_row_rights";
+
+  public static final String GET_GRID_SETTINGS = DATA_SERVICE_PREFIX + "get_grid_settings";
+  public static final String ENSURE_GRID_SETTINGS = DATA_SERVICE_PREFIX + "ensure_grid_settings";
+  public static final String COPY_GRID_SETTINGS = DATA_SERVICE_PREFIX + "copy_grid_settings";
 
   public static final String UPLOAD_FILE = UPLOAD_SERVICE_PREFIX + "file";
   public static final String UPLOAD_TEMP_FILE = UPLOAD_SERVICE_PREFIX + "temp_file";
@@ -171,8 +174,10 @@ public final class Service {
   public static final String VAR_VALUE_COLUMN = RPC_VAR_PREFIX + "value_column";
 
   public static final String VAR_CHILDREN = RPC_VAR_PREFIX + "children";
+  public static final String VAR_LIST = RPC_VAR_PREFIX + "list";
 
   public static final String VAR_FILE_ID = RPC_VAR_PREFIX + "file_id";
+  public static final String VAR_FILES = RPC_VAR_PREFIX + "files";
   public static final String VAR_FILE_NAME = RPC_VAR_PREFIX + "file_name";
   public static final String VAR_FILE_TYPE = RPC_VAR_PREFIX + "file_type";
   public static final String VAR_FILE_SIZE = RPC_VAR_PREFIX + "file_size";

@@ -7,6 +7,7 @@
   <Columns>
     <SimpleColumn name="Name" />
     <SimpleColumn name="Name2" />
+    <SimpleColumn name="Name3" />
 
     <SimpleColumn name="Article" />
     <SimpleColumn name="Article2" />
@@ -20,6 +21,7 @@
     <SimpleColumn name="TimeUnit" />
 
     <SimpleColumn name="Weight" />
+    <SimpleColumn name="Area" />
 
     <SimpleColumn name="Price" />
     <SimpleColumn name="Currency" />
@@ -42,6 +44,11 @@
     <SimpleColumn name="Currency2" />
     <SimpleJoin joinType="LEFT" name="Currency2">
       <SimpleColumn name="Name" alias="Currency2Name" />
+    </SimpleJoin>
+    <SimpleColumn name="Price3" />
+    <SimpleColumn name="Currency3" />
+    <SimpleJoin joinType="LEFT" name="Currency3">
+      <SimpleColumn name="Name" alias="Currency3Name" />
     </SimpleJoin>
 
     <SimpleColumn name="Vat" />
@@ -79,6 +86,9 @@
     <SimpleJoin joinType="LEFT" name="CostCenter">
       <SimpleColumn name="CostCenterName" />
     </SimpleJoin>
+
+    <SimpleColumn name="DaysPerWeek" />
+    <SimpleColumn name="MinTerm" />
 
     <SimpleColumn name="Ordinal" />
     <SimpleColumn name="ExternalCode" />

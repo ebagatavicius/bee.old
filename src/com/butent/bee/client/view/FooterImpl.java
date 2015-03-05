@@ -8,7 +8,6 @@ import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.event.logical.SelectionCountChangeEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.Presenter;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.navigation.PagerView;
 import com.butent.bee.client.view.navigation.SimplePager;
@@ -28,11 +27,11 @@ import java.util.Collection;
 
 public class FooterImpl extends Flow implements FooterView, HasNavigation, HasSearch {
 
-  private static final String STYLE_CONTAINER = StyleUtils.CLASS_NAME_PREFIX + "FooterContainer";
+  private static final String STYLE_CONTAINER = BeeConst.CSS_CLASS_PREFIX + "FooterContainer";
 
-  private static final String STYLE_PAGER = StyleUtils.CLASS_NAME_PREFIX + "SimplePager";
-  private static final String STYLE_SEARCH = StyleUtils.CLASS_NAME_PREFIX + "FooterSearch";
-  private static final String STYLE_SELECTION_COUNTER = StyleUtils.CLASS_NAME_PREFIX
+  private static final String STYLE_PAGER = BeeConst.CSS_CLASS_PREFIX + "SimplePager";
+  private static final String STYLE_SEARCH = BeeConst.CSS_CLASS_PREFIX + "FooterSearch";
+  private static final String STYLE_SELECTION_COUNTER = BeeConst.CSS_CLASS_PREFIX
       + "SelectionCounter";
 
   private static final int HEIGHT = 26;

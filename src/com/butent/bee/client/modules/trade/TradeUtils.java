@@ -1,13 +1,10 @@
 package com.butent.bee.client.modules.trade;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.XMLParser;
@@ -19,25 +16,19 @@ import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.data.ClientDefaults;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.modules.administration.AdministrationKeeper;
 import com.butent.bee.client.render.ProvidesGridColumnRenderer;
 import com.butent.bee.client.render.RendererFactory;
 import com.butent.bee.client.utils.XmlUtils;
-import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.communication.ResponseObject;
-import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
-import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.utils.BeeUtils;
-
-import java.util.Map;
-import java.util.Map.Entry;
 
 public final class TradeUtils {
 
@@ -53,10 +44,12 @@ public final class TradeUtils {
   private static final String COL_RATE_AMOUNT = COL_CURRENCY_RATE + COL_TRADE_AMOUNT;
   private static final String COL_RATE_VAT = COL_CURRENCY_RATE + COL_TRADE_VAT;
   private static final String COL_RATE_TOTAL = COL_CURRENCY_RATE + COL_TOTAL;
+  private static final String COL_RATE_CURRENCY = COL_CURRENCY_RATE + COL_CURRENCY;
 
   private static ProvidesGridColumnRenderer totalRenderer;
 
-  public static void getDocumentItems(String viewName, long tradeId, final HtmlTable table) {
+  public static void getDocumentItems(String viewName, long tradeId, String currencyName,
+      final HtmlTable table) {
     Assert.notNull(table);
 
     if (BeeUtils.isEmpty(viewName) || !DataUtils.isId(tradeId)) {
@@ -66,8 +59,12 @@ public final class TradeUtils {
     args.addDataItem("view_name", viewName);
     args.addDataItem("id", tradeId);
 
-    final String currencyTo = DomUtils.getDataProperty(table.getElement(),
-        COL_CURRENCY_RATE + COL_CURRENCY);
+    String currencyTo = DomUtils.getDataProperty(table.getElement(), COL_RATE_CURRENCY);
+
+    if (!BeeUtils.isEmpty(currencyTo)
+        && !BeeUtils.same(currencyName, ClientDefaults.getCurrencyName())) {
+      currencyTo = ClientDefaults.getCurrencyName();
+    }
     final boolean rateExists = !BeeUtils.isEmpty(currencyTo);
 
     if (rateExists) {
@@ -82,73 +79,7 @@ public final class TradeUtils {
           return;
         }
         if (table.getRowCount() == 0) {
-          Map<String, String> cols = Maps.newLinkedHashMap();
-          // cols.put(COL_ORDINAL, Localized.getConstants().ordinal());
-          cols.put(COL_NAME, Localized.getConstants().item());
-          cols.put(ClassifierConstants.COL_ITEM_ARTICLE, Localized.getConstants().article());
-          cols.put(COL_TRADE_ITEM_QUANTITY, Localized.getConstants().trdQuantity());
-          cols.put(ClassifierConstants.COL_UNIT, Localized.getConstants().unit());
-          cols.put(COL_TRADE_ITEM_PRICE, Localized.getConstants().trdPrice());
-          cols.put(COL_TRADE_AMOUNT, Localized.getConstants().trdAmountWoVat());
-          cols.put(COL_TRADE_VAT, Localized.getConstants().vat());
-
-          if (rateExists) {
-            cols.put(COL_RATE_AMOUNT,
-                BeeUtils.joinWords(Localized.getConstants().trdAmount(), currencyTo));
-          }
-          int j = 0;
-
-          for (String col : cols.keySet()) {
-            Element cell = DomUtils.createDiv(cols.get(col));
-            DomUtils.setDataProperty(cell, COL_NAME, col);
-            table.setHtml(0, j++, cell.getString());
-          }
-          Widget cell = new CustomDiv();
-          DomUtils.setDataProperty(cell.getElement(),
-              COL_NAME, COL_TRADE_ITEM_QUANTITY + COL_TOTAL);
-
-          table.getCellFormatter().setColSpan(1, 0, 3);
-          table.getCellFormatter().setVerticalAlignment(1, 0, VerticalAlign.TOP);
-          table.setWidget(1, 0, cell);
-
-          FlowPanel cap = new FlowPanel();
-          FlowPanel val = new FlowPanel();
-          FlowPanel curr = new FlowPanel();
-
-          for (Entry<String, String> row : ImmutableMap.of(
-              COL_TRADE_AMOUNT + COL_TOTAL, Localized.getConstants().trdAmount(),
-              COL_TRADE_VAT + COL_TOTAL, Localized.getConstants().vat(),
-              COL_TOTAL, Localized.getConstants().trdTotal()).entrySet()) {
-
-            cell = new CustomDiv(STYLE_ITEMS + row.getKey() + "-caption");
-            cell.getElement().setInnerText(row.getValue());
-            cap.add(cell);
-
-            cell = new CustomDiv();
-            DomUtils.setDataProperty(cell.getElement(), COL_NAME, row.getKey());
-            val.add(cell);
-
-            cell = new CustomDiv();
-            DomUtils.setDataProperty(cell.getElement(), COL_NAME, COL_CURRENCY);
-            curr.add(cell);
-          }
-          table.getCellFormatter().setColSpan(1, 1, 2);
-          table.setWidget(1, 1, cap);
-          table.setWidget(1, 2, val);
-          table.setWidget(1, 3, curr);
-
-          if (rateExists) {
-            FlowPanel flow = new FlowPanel();
-
-            for (String name : new String[] {COL_RATE_AMOUNT + COL_TOTAL,
-                COL_RATE_VAT + COL_TOTAL, COL_RATE_TOTAL}) {
-
-              cell = new CustomDiv();
-              DomUtils.setDataProperty(cell.getElement(), COL_NAME, name);
-              flow.add(cell);
-            }
-            table.setWidget(1, 4, flow);
-          }
+          return;
         }
         int headerRowCount = Math.max(table.getRowCount() - 1, 1);
         boolean footer = table.getRowCount() > 1;
@@ -161,6 +92,7 @@ public final class TradeUtils {
         double vatTotal = 0;
         double sumTotal = 0;
         String rateCurrency = null;
+        double rate = 0;
         double currVatTotal = 0;
         double currSumTotal = 0;
 
@@ -168,7 +100,6 @@ public final class TradeUtils {
         int ordinal = 0;
 
         for (SimpleRow row : rs) {
-
           ordinal++;
           if (BeeUtils.isEmpty(currency)) {
             currency = row.getValue(COL_CURRENCY);
@@ -196,9 +127,9 @@ public final class TradeUtils {
 
           if (rateExists) {
             if (BeeUtils.isEmpty(rateCurrency)) {
-              rateCurrency = row.getValue(COL_CURRENCY_RATE + COL_CURRENCY);
+              rateCurrency = row.getValue(COL_RATE_CURRENCY);
+              rate = BeeUtils.unbox(row.getDouble(COL_CURRENCY_RATE));
             }
-            double rate = BeeUtils.unbox(row.getDouble(COL_CURRENCY_RATE));
             currSum = BeeUtils.round(sum * rate, 2);
             currSumTotal += currSum;
             currVatTotal += vat * rate;
@@ -237,6 +168,15 @@ public final class TradeUtils {
 
                 } else if (BeeUtils.same(fld, COL_ORDINAL)) {
                   value = BeeUtils.toString(ordinal);
+
+                } else if (BeeUtils.same(fld, COL_CURRENCY)) {
+                  value = currency;
+
+                } else if (BeeUtils.same(fld, COL_RATE_CURRENCY)) {
+                  value = rateCurrency;
+
+                } else if (BeeUtils.same(fld, COL_CURRENCY_RATE)) {
+                  value = BeeUtils.toString(rate, 7);
 
                 } else if (!rs.hasColumn(fld)) {
                   if (xml == null) {
@@ -313,8 +253,11 @@ public final class TradeUtils {
               } else if (BeeUtils.same(fld, COL_RATE_TOTAL)) {
                 value = formater.format(currSumTotal + currVatTotal);
 
-              } else if (BeeUtils.same(fld, COL_CURRENCY_RATE + COL_CURRENCY)) {
+              } else if (BeeUtils.same(fld, COL_RATE_CURRENCY)) {
                 value = rateCurrency;
+
+              } else if (BeeUtils.same(fld, COL_CURRENCY_RATE)) {
+                value = BeeUtils.toString(rate, 7);
 
               } else {
                 value = null;
@@ -340,7 +283,7 @@ public final class TradeUtils {
       return;
     }
     long number = BeeUtils.toLong(Math.floor(amount));
-    final int fraction = BeeUtils.toInt((amount - number) * 100);
+    final int fraction = BeeUtils.round((amount - number) * 100);
 
     ParameterList args = AdministrationKeeper.createArgs(SVC_NUMBER_TO_WORDS);
     args.addDataItem(VAR_AMOUNT, number);

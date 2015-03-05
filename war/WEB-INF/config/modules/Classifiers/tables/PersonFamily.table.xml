@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Table xmlns="http://www.butent.com/table"
+  
+  name="PersonFamily"
+  idName="PersonFamilyID"
+  >
+  <Fields>
+    <Relation name="Person" unique="true" relation="Persons" editable="true" />
+    <String name="FirstName" precision="30" notNull="true" label="=firstName" />
+    <String name="LastName" precision="30" label="=lastName" />
+    <Relation name="Relation" relation="FamilyRelationTypes" 
+      label="=contactFamilyRelation" />
+    <Date name="DateOfBirth" label="=dateOfBirth" />
+    <String name="Phone" precision="100" label="=phone" />
+    
+  </Fields>
+</Table>

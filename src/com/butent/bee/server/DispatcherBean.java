@@ -17,7 +17,6 @@ import com.butent.bee.server.ui.UiHolderBean;
 import com.butent.bee.server.ui.UiServiceBean;
 import com.butent.bee.server.utils.Reflection;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -180,9 +179,9 @@ public class DispatcherBean {
             break;
 
           case GRIDS:
-            Pair<BeeRowSet, BeeRowSet> settings = uiService.getGridAndColumnSettings();
-            if (settings != null && !settings.isNull()) {
-              data.put(component.key(), settings);
+            ResponseObject settingsData = uiService.getGridAndColumnSettings();
+            if (settingsData != null && settingsData.hasResponse()) {
+              data.put(component.key(), settingsData.getResponse());
             }
             break;
 

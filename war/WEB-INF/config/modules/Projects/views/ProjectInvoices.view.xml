@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+      xmlns:x="http://www.butent.com/expression"
+
+  name="ProjectInvoices" source="Sales" caption="=trdInvoices"
+  editForm="SalesInvoice"
+  >
+  <Columns>
+    <SimpleColumn name="Date" />
+    <SimpleColumn name="InvoicePrefix" />
+    <SimpleColumn name="InvoiceNo" />
+    <SimpleColumn name="Term" />
+
+    <SimpleColumn name="Vehicle" />
+    <SimpleColumn name="Driver" />
+    <SimpleColumn name="Notes" />
+    <SimpleColumn name="Exported" />
+    <SimpleColumn name="Proforma" />
+
+    <SimpleColumn name="Amount" />
+    <SimpleColumn name="Currency" />
+    <SimpleJoin joinType="LEFT" name="Currency">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+      <SimpleColumn name="MinorName" />
+    </SimpleJoin>
+    
+    <SimpleColumn name="PaymentTime" />
+    <SimpleColumn name="Paid" />
+    
+    <SimpleColumn name="Debt">
+      <x:minus>
+        <x:number>"Amount"</x:number>
+        <x:nvl type="DECIMAL">
+          <x:number>"Paid"</x:number>
+          <x:number>0</x:number>
+        </x:nvl>
+      </x:minus>
+    </SimpleColumn>
+    
+    <SimpleColumn name="Supplier" />
+    <SimpleJoin joinType="LEFT" name="Supplier">
+      <SimpleColumn name="Name" alias="SupplierName" label="=trdSupplier" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Customer" />
+    <SimpleJoin joinType="LEFT" name="Customer">
+      <SimpleColumn name="Name" alias="CustomerName" label="=trdCustomer" />
+    </SimpleJoin>
+    
+    <SimpleColumn name="Payer" />
+    <SimpleJoin joinType="LEFT" name="Payer">
+      <SimpleColumn name="Name" alias="PayerName" label="=trdPayer" />
+    </SimpleJoin>
+    
+    <SimpleColumn name="Manager" />
+    <SimpleJoin name="Manager" joinType="LEFT">
+      <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" alias="ManagerFirstName" />
+          <SimpleColumn name="LastName" alias="ManagerLastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+    
+    <ExternalJoin name="Sale" source="ProjectIncomes" joinType="LEFT">
+      <AggregateColumn name="Sale" aggregate="MAX" />
+      <AggregateColumn name="Project" aggregate="MAX" />
+    </ExternalJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="Date" descending="true" />
+  </Order>
+</View>

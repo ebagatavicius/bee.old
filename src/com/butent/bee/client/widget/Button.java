@@ -12,6 +12,7 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.utils.HasCommand;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasHtml;
 
 /**
@@ -108,7 +109,7 @@ public class Button extends FocusWidget implements IdentifiableWidget, HasComman
 
   private void init() {
     DomUtils.createId(this, getIdPrefix());
-    addStyleName("bee-Button");
+    addStyleName(BeeConst.CSS_CLASS_PREFIX + "Button");
   }
 
   private void initEvents() {

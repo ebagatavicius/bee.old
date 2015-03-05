@@ -1,26 +1,107 @@
 package com.butent.bee.client.modules.calendar;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
+
+import com.butent.bee.client.data.Data;
+import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.data.RowCallback;
+import com.butent.bee.client.data.RowFactory;
+import com.butent.bee.client.view.ViewHelper;
+import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.data.BeeRow;
+import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.RelationUtils;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 import com.butent.bee.shared.modules.calendar.CalendarSettings;
+import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class CalendarUtils {
 
+  public static void dropOnTodo(final Appointment appointment, final CalendarPanel panel) {
+    Assert.notNull(appointment);
+
+    DataInfo srcInfo = Data.getDataInfo(VIEW_APPOINTMENTS);
+    DataInfo dstInfo = Data.getDataInfo(TaskConstants.VIEW_TODO_LIST);
+
+    BeeRow srcRow = appointment.getRow();
+    BeeRow dstRow = RowFactory.createEmptyRow(dstInfo, true);
+
+    Map<String, String> colNames = new HashMap<>();
+
+    colNames.put(COL_SUMMARY, TaskConstants.COL_SUMMARY);
+    colNames.put(COL_DESCRIPTION, TaskConstants.COL_DESCRIPTION);
+
+    colNames.put(COL_START_DATE_TIME, TaskConstants.COL_START_TIME);
+    colNames.put(COL_END_DATE_TIME, TaskConstants.COL_FINISH_TIME);
+
+    for (Map.Entry<String, String> entry : colNames.entrySet()) {
+      int srcIndex = srcInfo.getColumnIndex(entry.getKey());
+      String value = BeeConst.isUndef(srcIndex) ? null : srcRow.getString(srcIndex);
+
+      if (!BeeUtils.isEmpty(value)) {
+        int dstIndex = dstInfo.getColumnIndex(entry.getValue());
+        if (!BeeConst.isUndef(dstIndex)) {
+          dstRow.setValue(dstIndex, value);
+        }
+      }
+    }
+
+    if (!appointment.isMultiDay()) {
+      long minutes = appointment.getDuration() / TimeUtils.MILLIS_PER_MINUTE;
+      if (minutes > 0) {
+        dstRow.setValue(dstInfo.getColumnIndex(TaskConstants.COL_EXPECTED_DURATION),
+            TimeUtils.renderMinutes(BeeUtils.toInt(minutes), true));
+      }
+    }
+
+    Long company = srcRow.getLong(srcInfo.getColumnIndex(ClassifierConstants.COL_COMPANY));
+    if (DataUtils.isId(company)) {
+      RelationUtils.copyWithDescendants(srcInfo, ClassifierConstants.COL_COMPANY, srcRow,
+          dstInfo, ClassifierConstants.COL_COMPANY, dstRow);
+    }
+
+    Long contact = srcRow.getLong(srcInfo.getColumnIndex(ClassifierConstants.COL_COMPANY_PERSON));
+    if (DataUtils.isId(contact)) {
+      RelationUtils.copyWithDescendants(srcInfo, ClassifierConstants.COL_COMPANY_PERSON, srcRow,
+          dstInfo, ClassifierConstants.COL_CONTACT, dstRow);
+    }
+
+    RowFactory.createRow(dstInfo, dstRow, new RowCallback() {
+      @Override
+      public void onSuccess(BeeRow result) {
+        Queries.deleteRowAndFire(VIEW_APPOINTMENTS, appointment.getId());
+
+        if (panel != null) {
+          GridView grid = ViewHelper.getChildGrid(panel.getTodoContainer(), GRID_CALENDAR_TODO);
+          if (grid != null && !grid.getGrid().containsRow(result.getId())) {
+            grid.getViewPresenter().handleAction(Action.REFRESH);
+          }
+        }
+      }
+    });
+  }
+
   public static List<CalendarItem> filterByAttendee(Collection<CalendarItem> input, long id) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     for (CalendarItem item : input) {
       switch (item.getItemType()) {
@@ -39,7 +120,7 @@ public final class CalendarUtils {
 
   public static List<CalendarItem> filterByAttendees(Collection<CalendarItem> input,
       Collection<Long> attIds, boolean separate) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     for (CalendarItem item : input) {
       switch (item.getItemType()) {
@@ -69,7 +150,7 @@ public final class CalendarUtils {
 
   public static List<CalendarItem> filterByRange(Collection<CalendarItem> input, JustDate date,
       int days) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     long min = TimeUtils.startOfDay(date).getTime();
     long max = TimeUtils.startOfDay(date, days).getTime();
@@ -84,7 +165,7 @@ public final class CalendarUtils {
 
   public static List<CalendarItem> filterMulti(Collection<CalendarItem> input, JustDate date,
       int days) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     long min = TimeUtils.startOfDay(date).getTime();
     long max = TimeUtils.startOfDay(date, days).getTime();
@@ -116,7 +197,7 @@ public final class CalendarUtils {
   }
 
   public static List<CalendarItem> filterSimple(Collection<CalendarItem> input, JustDate date) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     long min = TimeUtils.startOfDay(date).getTime();
     long max = TimeUtils.startOfDay(date, 1).getTime();
@@ -147,8 +228,7 @@ public final class CalendarUtils {
     return filterByAttendee(lst, id);
   }
 
-  public static ItemWidget findWidget(Collection<ItemWidget> widgets,
-      Element element) {
+  public static ItemWidget findWidget(Collection<ItemWidget> widgets, Element element) {
     if (widgets.isEmpty() || element == null) {
       return null;
     }
@@ -156,6 +236,15 @@ public final class CalendarUtils {
     for (ItemWidget widget : widgets) {
       if (widget.getElement().isOrHasChild(element)) {
         return widget;
+      }
+    }
+    return null;
+  }
+
+  public static CalendarPanel getCalendarPanel(Widget widget) {
+    for (Widget p = widget; p != null; p = p.getParent()) {
+      if (p instanceof CalendarPanel) {
+        return (CalendarPanel) p;
       }
     }
     return null;
@@ -196,8 +285,7 @@ public final class CalendarUtils {
     return result;
   }
 
-  public static int getEndPixels(CalendarSettings settings,
-      Collection<ItemWidget> widgets) {
+  public static int getEndPixels(CalendarSettings settings, Collection<ItemWidget> widgets) {
     Assert.notNull(settings);
 
     int hour = settings.getWorkingHourEnd();
@@ -266,8 +354,7 @@ public final class CalendarUtils {
     return result;
   }
 
-  public static int getStartPixels(CalendarSettings settings,
-      Collection<ItemWidget> widgets) {
+  public static int getStartPixels(CalendarSettings settings, Collection<ItemWidget> widgets) {
     Assert.notNull(settings);
 
     int hour = settings.getScrollToHour();
@@ -287,7 +374,6 @@ public final class CalendarUtils {
     int diff = TimeUtils.dayDiff(date, TimeUtils.today());
     return BeeUtils.betweenExclusive(diff, 0, days) ? diff : BeeConst.UNDEF;
   }
-
 
   public static String renderRange(Range<DateTime> range) {
     return (range == null) ? BeeConst.STRING_EMPTY

@@ -21,7 +21,7 @@
         <Label for="Status" style="&labelLeft;" />
         <FlowPanel name="Status" style="&input; font-weight:bold;" />
         <Label for="Customer" style="&labelRight; width:120px;" />
-        <DataSelector source="Customer" style="&input; width:200px;" />
+        <DataSelector source="Customer" renderColumns="CustomerName" style="&input; width:200px;" />
       </FlowPanel>
       <FlowPanel style="&section;">
         <Label for="Date" style="&labelLeft;" />
@@ -101,7 +101,7 @@
           <Label text="=income" style="&inline;" />
           <FlowPanel name="Income" style="&inline;" />
         </FlowPanel>
-        <ChildGrid name="CargoIncomes" relColumn="Cargo" source="Cargo" />
+        <ChildGrid name="CargoIncomes" relColumn="Cargo" source="Cargo" summarize="false" />
       </page>
       <page data="CargoExpenses">
         <FlowPanel>
@@ -110,7 +110,7 @@
           <Label text="=trExpenses" style="&inline;" />
           <FlowPanel name="Expense" style="&inline;" />
         </FlowPanel>
-        <ChildGrid name="CargoExpenses" relColumn="Cargo" source="Cargo" />
+        <ChildGrid name="CargoExpenses" relColumn="Cargo" source="Cargo" summarize="false" />
       </page>
       <page data="ChildAssessments">
         <text>=assessments</text>

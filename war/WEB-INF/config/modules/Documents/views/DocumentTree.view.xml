@@ -6,10 +6,11 @@
   >
   <Columns>
     <SimpleColumn name="Parent" />
-    <SimpleColumn name="Order" />
-    <SimpleColumn name="Name" />
+    <SimpleColumn name="NumberPrefix" />
+    <SimpleColumn name="Ordinal" />
+    <SimpleColumn name="Name" alias="CategoryName" />
     <SimpleJoin joinType="LEFT" name="Parent">
-      <SimpleColumn alias="ParentOrder" name="Order" />
+      <SimpleColumn alias="ParentOrdinal" name="Ordinal" />
       <SimpleColumn alias="ParentName" name="Name" />
     </SimpleJoin>
     <ExternalJoin source="Documents" joinType="LEFT" name="Category">
@@ -17,7 +18,7 @@
     </ExternalJoin>
   </Columns>
   <Order>
-    <OrderBy column="ParentOrder" />
-    <OrderBy column="Order" />
+    <OrderBy column="ParentOrdinal" />
+    <OrderBy column="Ordinal" />
   </Order>
 </View>

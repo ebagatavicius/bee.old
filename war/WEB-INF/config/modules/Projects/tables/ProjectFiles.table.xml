@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="ProjectFiles"
+  idName="ProjectFileID"
+  >
+  <Fields>
+    <Relation name="Project" notNull="true" relation="Projects" cascade="DELETE" label="=project" />
+    <Relation name="ProjectEvent" relation="ProjectEvents" cascade="DELETE" label="=prjEvent" />
+    <Relation name="File" relation="Files" notNull="true" editable="true" label="=file" />
+    <String name="Caption" precision="100" label="=caption"/>
+  </Fields>
+</Table>

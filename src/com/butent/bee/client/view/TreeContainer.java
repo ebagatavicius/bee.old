@@ -1,12 +1,14 @@
 package com.butent.bee.client.view;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Global;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.event.logical.CatchEvent;
 import com.butent.bee.client.event.logical.CatchEvent.CatchHandler;
@@ -14,13 +16,11 @@ import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.TreePresenter;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.tree.HasTreeItems;
 import com.butent.bee.client.tree.Tree;
 import com.butent.bee.client.tree.TreeItem;
 import com.butent.bee.client.ui.UiHelper;
-import com.butent.bee.client.utils.Command;
-import com.butent.bee.client.widget.Image;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.State;
@@ -42,23 +42,22 @@ import java.util.Set;
 public class TreeContainer extends Flow implements TreeView, SelectionHandler<TreeItem>,
     CatchEvent.CatchHandler<TreeItem> {
 
-  private final class ActionListener extends Command {
+  private final class ActionListener implements ClickHandler {
     private final Action action;
 
     private ActionListener(Action action) {
-      super();
       this.action = action;
     }
 
     @Override
-    public void execute() {
+    public void onClick(ClickEvent event) {
       if (getViewPresenter() != null) {
         getViewPresenter().handleAction(action);
       }
     }
   }
 
-  private static final String STYLE_NAME = StyleUtils.CLASS_NAME_PREFIX + "TreeView";
+  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "TreeView";
 
   private Presenter viewPresenter;
   private boolean enabled = true;
@@ -67,7 +66,7 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
   private final Map<Long, TreeItem> items = new HashMap<>();
 
   private final String caption;
-  private final boolean hasDnD;
+  private boolean hasDnD;
 
   private State state;
 
@@ -78,67 +77,36 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
 
     this.caption = caption;
 
+    Flow hdr = new Flow();
+    hdr.addStyleName(STYLE_NAME + "-actions");
+
+    if (!BeeUtils.isEmpty(favorite)
+        && BeeKeeper.getScreen().getUserInterface().hasComponent(Component.FAVORITES)) {
+      setFavorite(NameUtils.toList(favorite));
+
+      hdr.add(createActionWidget(Action.BOOKMARK));
+      enabledActions.add(Action.BOOKMARK);
+    }
     if (!hideActions) {
-      boolean editable = BeeKeeper.getUser().canEditData(viewName);
-      this.hasDnD = editable;
+      if (BeeKeeper.getUser().canEditData(viewName)) {
+        this.hasDnD = true;
 
-      Flow hdr = new Flow();
-      hdr.addStyleName(STYLE_NAME + "-actions");
-
-      boolean bookmarkable = !BeeUtils.isEmpty(favorite)
-          && BeeKeeper.getScreen().getUserInterface().hasComponent(Component.FAVORITES);
-
-      Image img;
-
-      if (editable && BeeKeeper.getUser().canCreateData(viewName)) {
-        img = new Image(Global.getImages().silverAdd(), new ActionListener(Action.ADD));
-        img.addStyleName(STYLE_NAME + "-add");
-        img.setTitle(Action.ADD.getCaption());
-        hdr.add(img);
-
-        enabledActions.add(Action.ADD);
-      }
-
-      if (editable && BeeKeeper.getUser().canDeleteData(viewName)) {
-        img = new Image(Global.getImages().silverDelete(), new ActionListener(Action.DELETE));
-        img.addStyleName(STYLE_NAME + "-delete");
-        img.setTitle(Action.DELETE.getCaption());
-        hdr.add(img);
-
-        enabledActions.add(Action.DELETE);
-      }
-
-      if (bookmarkable) {
-        setFavorite(NameUtils.toList(favorite));
-
-        img = new Image(Global.getImages().silverBookmarkAdd(),
-            new ActionListener(Action.BOOKMARK));
-        img.addStyleName(STYLE_NAME + "-bookmark");
-        img.setTitle(Action.BOOKMARK.getCaption());
-        hdr.add(img);
-
-        enabledActions.add(Action.BOOKMARK);
-      }
-
-      if (editable) {
-        img = new Image(Global.getImages().silverEdit(), new ActionListener(Action.EDIT));
-        img.addStyleName(STYLE_NAME + "-edit");
-        img.setTitle(Action.EDIT.getCaption());
-        hdr.add(img);
-
+        if (BeeKeeper.getUser().canCreateData(viewName)) {
+          hdr.add(createActionWidget(Action.ADD));
+          enabledActions.add(Action.ADD);
+        }
+        if (BeeKeeper.getUser().canDeleteData(viewName)) {
+          hdr.add(createActionWidget(Action.DELETE));
+          enabledActions.add(Action.DELETE);
+        }
+        hdr.add(createActionWidget(Action.EDIT));
         enabledActions.add(Action.EDIT);
       }
-
-      img = new Image(Global.getImages().silverReload(), new ActionListener(Action.REFRESH));
-      img.addStyleName(STYLE_NAME + "-refresh");
-      img.setTitle(Action.REFRESH.getCaption());
-      hdr.add(img);
-
+    }
+    if (hdr.getWidgetCount() > 0) {
+      hdr.add(createActionWidget(Action.REFRESH));
       enabledActions.add(Action.REFRESH);
-
       add(hdr);
-    } else {
-      this.hasDnD = false;
     }
     this.tree = new Tree(caption);
     add(tree);
@@ -429,6 +397,19 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
     if (getState() == State.INITIALIZED) {
       ReadyEvent.fire(this);
     }
+  }
+
+  private Widget createActionWidget(Action action) {
+    FaLabel widget = new FaLabel(action.getIcon());
+
+    widget.addStyleName(STYLE_NAME + "-action");
+    widget.addStyleName(action.getStyleName());
+
+    widget.setTitle(action.getCaption());
+
+    widget.addClickHandler(new ActionListener(action));
+
+    return widget;
   }
 
   private Tree getTree() {

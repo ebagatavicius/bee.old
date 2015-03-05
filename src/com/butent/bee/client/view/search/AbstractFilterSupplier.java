@@ -45,6 +45,7 @@ import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
@@ -76,7 +77,8 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   protected static final String NOT_NULL_VALUE_LABEL =
       Localized.getConstants().filterNotNullLabel();
 
-  protected static final String DEFAULT_STYLE_PREFIX = "bee-FilterSupplier-";
+  protected static final String DEFAULT_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX
+      + "FilterSupplier-";
 
   private static final String BIN_SIZE_CELL_STYLE_SUFFIX = "binSizeCell";
 
@@ -96,7 +98,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
 
   private int counterValue;
 
-  private final List<Integer> selectedItems = Lists.newArrayList();
+  private final List<Integer> selectedItems = new ArrayList<>();
 
   private String displayId;
 
@@ -295,11 +297,11 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   }
 
   protected List<SupplierAction> getActions() {
-    return Lists.newArrayList();
+    return new ArrayList<>();
   }
 
   protected List<? extends IdentifiableWidget> getAutocompletableWidgets() {
-    return Lists.newArrayList();
+    return new ArrayList<>();
   }
 
   protected BeeColumn getColumn() {

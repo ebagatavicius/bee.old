@@ -1,6 +1,5 @@
 package com.butent.bee.client.utils;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
@@ -11,6 +10,7 @@ import com.google.gwt.json.client.JSONValue;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +25,15 @@ public final class JsonUtils {
     } else {
       JSONBoolean value = obj.get(key).isBoolean();
       return (value == null) ? null : value.booleanValue();
+    }
+  }
+
+  public static Integer getInteger(JSONObject obj, String key) {
+    Double value = getNumber(obj, key);
+    if (value == null) {
+      return BeeConst.UNDEF;
+    } else {
+      return BeeUtils.round(value);
     }
   }
 
@@ -82,7 +91,7 @@ public final class JsonUtils {
   }
 
   public static List<String> toList(JSONValue json) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (json == null) {
       return result;
     }

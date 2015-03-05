@@ -10,15 +10,3 @@
   right: 0px;
   overflow: auto;
 }
-
-.bee-documents-childWiget * .bee-documents-parentWiget {
-  display : none;
-}
-
-.bee-documents-childWiget * .bee-Splitter {
-  display : none;
-}
-
-.bee-documents-childWiget * .bee-SplitChild {
-  left: 0px !important;
-}

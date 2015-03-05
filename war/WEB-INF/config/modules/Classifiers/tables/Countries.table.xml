@@ -3,7 +3,6 @@
 
   name="Countries"
   idName="CountryID"
-  x="59" y="262"
   >
   <Fields>
     <String name="Name" precision="60" notNull="true" unique="true" label="=country" />

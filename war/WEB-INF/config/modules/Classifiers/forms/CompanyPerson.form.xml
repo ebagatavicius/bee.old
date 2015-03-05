@@ -3,32 +3,34 @@
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
-  
-  name="CompanyPerson" viewName="CompaniesAndPersons" caption="=companyPerson"
-  height="350" width="850"
+    
+  name="CompanyPerson" viewName="CompanyPersons" caption="=companyPerson"
+  height="350" width="800"
   >
   <FlowPanel>
-    <Table style="border-spacing: 10px;">
+    <Table style="margin-top: 1ex;">
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+
       <row>
-        <Label text="=person" class="bee-required" />
-        <DataSelector source="Person" style="width: 200px" />
-        <Label text="=personPosition" />
+        <Label name="CompanyLabel" for="Company" />
+        <DataSelector name="Company" source="Company" style="width: 200px" />
+        <Label name="PersonLabel" for="Person" />
+        <DataSelector name="Person" source="Person" style="width: 200px" />
+      </row>
+      <row>
+        <Label for="Department" />
+        <DataSelector source="Department" style="width: 200px" />
+        <Label for="Position" />
         <DataSelector source="Position" style="width: 200px" />
       </row>
       <row>
-        <Label text="=personTabNo" />
-        <InputText source="TabNo" style="width: 200px" />
-        <Label text="=companyDepartment" />
-        <DataSelector source="Department" style="width: 200px" />
-      </row>
-      <row>
-        <Label text="=personAccountingCode" />
-        <InputText source="AccountingCode" style="width: 200px" />
-        <Label text="=personDateOfEmployment" />
+        <Label for="DateOfEmployment" />
         <InputDate source="DateOfEmployment" style="width: 200px" />
+        <Label for="DateOfDismissal" />
+        <InputDate source="DateOfDismissal" style="width: 200px" />
       </row>
     </Table>
-
     <xi:include href="widgets/ContactInfoOpen.widget.xml" />
   </FlowPanel>
 </f:Form>  

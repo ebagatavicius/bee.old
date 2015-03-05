@@ -13,6 +13,7 @@ import java.util.Objects;
 public final class ArrayUtils {
   /**
    * Searches the specified collection for a value.
+   * 
    * @param arr the array to search
    * @param value the value to be searched for
    * @return true if the value is found, false elsewise
@@ -47,6 +48,7 @@ public final class ArrayUtils {
 
   /**
    * Returns an object from specified index from an object array.
+   * 
    * @param arr the array returned from
    * @param idx index of the array
    * @return the object from a specified index. If the array is not one of these types: Object,
@@ -78,6 +80,7 @@ public final class ArrayUtils {
 
   /**
    * Returns an array element from the specified index.
+   * 
    * @param arr the array returned from
    * @param idx index of the element to be returned
    * @return an array element, or null if index is out of bounds.
@@ -92,6 +95,7 @@ public final class ArrayUtils {
 
   /**
    * Checks if the value is found within the array.
+   * 
    * @param arr array to be searched from
    * @param value value to search for
    * @return -1 if the value is not found, or the index of the found value.
@@ -114,6 +118,7 @@ public final class ArrayUtils {
 
   /**
    * Checks if the specified object is an array.
+   * 
    * @param obj object to be checked
    * @return true if object is an array, elsewise false.
    */
@@ -121,12 +126,13 @@ public final class ArrayUtils {
     return obj instanceof Object[] || isPrimitiveArray(obj);
   }
 
-  public static boolean isEmpty(String[] arr) {
+  public static boolean isEmpty(Object[] arr) {
     return arr == null || arr.length == 0;
   }
 
   /**
    * Checks if a specified index is found in the object.
+   * 
    * @param obj the object to check
    * @param idx index to check
    * @return true if the index in the object exists, if not false.
@@ -142,6 +148,7 @@ public final class ArrayUtils {
 
   /**
    * Checks if the specified object is an instance of any primitive type.
+   * 
    * @param obj object to check
    * @return true if the object is a primitive array, otherwise false.
    */
@@ -154,6 +161,7 @@ public final class ArrayUtils {
 
   /**
    * Joins an array with the specified separator. Each array element is joined by the separator.
+   * 
    * @param separator separator to join with
    * @param arr array to join
    * @return a new string which contains all array elements joined by the specified separator
@@ -165,6 +173,7 @@ public final class ArrayUtils {
   /**
    * Joins an array with the specified separator from the specified index. Each array element is
    * joined by the separator.
+   * 
    * @param separator separator to join with
    * @param arr array to join
    * @param fromIndex the array index to start from
@@ -177,6 +186,7 @@ public final class ArrayUtils {
   /**
    * Joins an array with the specified separator from the specified index to a specified to index.
    * Each array element is joined by the separator.
+   * 
    * @param separator separator to join with
    * @param arr array to join
    * @param fromIndex the array index to start from
@@ -210,8 +220,13 @@ public final class ArrayUtils {
     return join(BeeConst.STRING_SPACE, arr);
   }
 
+  public static String joinWords(String[] arr) {
+    return join(BeeConst.STRING_SPACE, arr);
+  }
+
   /**
    * Gets the length of the specified Object {@code arr}.
+   * 
    * @param arr an array to check
    * @return the length of the object if it is one of these types: Object, Boolean, Char, Byte,
    *         Short, Integer, Long, Float, Double. 0 if its none of these types.
@@ -243,9 +258,32 @@ public final class ArrayUtils {
     return len;
   }
 
+  public static String[] remove(String[] arr, int index) {
+    if (arr == null || index < 0 || arr.length <= index) {
+      return arr;
+    }
+
+    String[] result = new String[arr.length - 1];
+
+    if (index > 0) {
+      for (int i = 0; i < index; i++) {
+        result[i] = arr[i];
+      }
+    }
+
+    if (index < arr.length - 1) {
+      for (int i = index + 1; i < arr.length; i++) {
+        result[i - 1] = arr[i];
+      }
+    }
+
+    return result;
+  }
+
   /**
    * Copies the specified range of the {@code source} array into a new array. Implements JavaScript
    * array.slice method. Null-safe.
+   * 
    * @param source array to slice
    * @param start specifies where to start the selection (The first element has an index of 0).
    *          Negative value selects from the end of an array.
@@ -262,6 +300,7 @@ public final class ArrayUtils {
   /**
    * Copies the specified range of the {@code source} array into a new array. Implements JavaScript
    * array.slice method. Null-safe.
+   * 
    * @param source array to slice
    * @param start specifies where to start the selection (The first element has an index of 0).
    *          Negative value selects from the end of an array.

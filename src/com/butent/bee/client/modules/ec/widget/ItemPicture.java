@@ -34,7 +34,7 @@ public class ItemPicture extends Flow {
   private static final String STYLE_WRAPPER = STYLE_PREFIX + "wrapper";
 
   private static final String STYLE_MORE = STYLE_PREFIX + "more";
-  private static final String STYLE_MORE_PLAY = STYLE_PREFIX + "more_play";
+  private static final String STYLE_MORE_PLAY = STYLE_PREFIX + "more-play";
   private static final String STYLE_MORE_COUNT = STYLE_PREFIX + "more-count";
 
   private static final String STYLE_SLIDES = STYLE_PREFIX + "slides";

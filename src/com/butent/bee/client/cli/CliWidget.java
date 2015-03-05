@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Event;
 
 import com.butent.bee.client.widget.InputText;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 /**
@@ -37,6 +38,6 @@ public class CliWidget extends InputText {
 
   @Override
   protected String getDefaultStyleName() {
-    return "bee-CliWidget";
+    return BeeConst.CSS_CLASS_PREFIX + "CliWidget";
   }
 }

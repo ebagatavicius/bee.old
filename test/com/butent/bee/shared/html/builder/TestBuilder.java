@@ -1,7 +1,5 @@
 package com.butent.bee.shared.html.builder;
 
-import com.google.common.collect.Lists;
-
 import static com.butent.bee.shared.html.builder.Factory.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
@@ -23,12 +21,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TestBuilder {
 
   private static List<Td> renderCells(String label, String source, boolean required) {
-    List<Td> cells = Lists.newArrayList();
+    List<Td> cells = new ArrayList<>();
 
     cells.add(td().verticalAlign(VerticalAlign.TOP).paddingBottom(4, CssUnit.PX)
         .textAlign(TextAlign.RIGHT).paddingLeft(1, CssUnit.EM).paddingRight(1, CssUnit.EM)
@@ -72,17 +71,17 @@ public class TestBuilder {
   private final String labelRegister = "Registruotis";
 
   private final String labelQuery = "Pateikti užklausą";
-  private final List<String> loginHtml = Lists.newArrayList();
+  private final List<String> loginHtml = new ArrayList<>();
 
   private final String registrationTitle = "Registration Title";
 
   private final String registrationCaption = "Registration Caption";
 
-  private final List<Pair<Integer, String>> registerHtml = Lists.newArrayList();
+  private final List<Pair<Integer, String>> registerHtml = new ArrayList<>();
 
   @Before
   public void setUpLogin() {
-    List<String> html = Lists.newArrayList();
+    List<String> html = new ArrayList<>();
 
     html.add("<!doctype html>");
     html.add("<html>");
@@ -176,7 +175,7 @@ public class TestBuilder {
     }
 
     html.add("<div class=\"bee-SignIn-Caption\">");
-    html.add("<img class=\"bee-Copyright-logo\" src=\"images/butent.gif\" />");
+    html.add("<img class=\"bee-Copyright-logo\" src=\"images/butent_arrow.png\" />");
     html.add("<span>UAB \"Būtenta\" &copy; 2010 - " + TimeUtils.today().getYear() + "</span>");
     html.add("</div>");
     html.add("</div>");
@@ -189,7 +188,7 @@ public class TestBuilder {
 
   @Before
   public void setUpRegister() {
-    List<Pair<Integer, String>> html = Lists.newArrayList();
+    List<Pair<Integer, String>> html = new ArrayList<>();
 
     int indent = 0;
 

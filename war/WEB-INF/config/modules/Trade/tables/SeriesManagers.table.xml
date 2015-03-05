@@ -7,6 +7,8 @@
   <Fields>
     <Relation name="Series" notNull="true" relation="TradeSeries" cascade="DELETE" label="=trdSeries" />
     <Relation name="Manager" notNull="true" relation="Users" cascade="DELETE" label="=manager" />
+
+    <Boolean name="IsDefault" label="=trdSeriesDefault" />
   </Fields>
 
   <Constraints>

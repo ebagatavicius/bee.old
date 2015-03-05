@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -18,12 +17,14 @@ import com.butent.bee.client.layout.Split;
 import com.butent.bee.client.modules.transport.charts.Filterable.FilterType;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,7 +39,7 @@ final class FilterHelper {
     void onSelectionChange(HasWidgets dataContainer);
   }
 
-  static final String STYLE_PREFIX = "bee-tr-chart-filter-";
+  static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-chart-filter-";
   static final String STYLE_DATA_PREFIX = STYLE_PREFIX + "data-";
 
   private static final BeeLogger logger = LogUtils.getLogger(FilterHelper.class);
@@ -147,7 +148,7 @@ final class FilterHelper {
   static <T extends Filterable & HasDateRange> List<HasDateRange> getPersistentItems(
       Collection<T> items) {
 
-    List<HasDateRange> result = Lists.newArrayList();
+    List<HasDateRange> result = new ArrayList<>();
     if (items == null) {
       return result;
     }
@@ -161,7 +162,7 @@ final class FilterHelper {
   }
 
   static List<ChartData> getSelectedData(Collection<ChartData> data) {
-    List<ChartData> result = Lists.newArrayList();
+    List<ChartData> result = new ArrayList<>();
 
     if (data != null) {
       for (ChartData input : data) {
@@ -198,7 +199,7 @@ final class FilterHelper {
   }
 
   static List<ChartData> notEmptyData(Collection<ChartData> data) {
-    List<ChartData> result = Lists.newArrayList();
+    List<ChartData> result = new ArrayList<>();
 
     if (data != null) {
       for (ChartData cd : data) {

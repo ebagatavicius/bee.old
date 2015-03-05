@@ -5,7 +5,7 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
   
-  name="TaskTemplates" viewName="TaskTemplates" caption="=crmTaskTemplate"
+  name="TaskTemplate" viewName="TaskTemplates" caption="=crmTaskTemplate"
   width="720" height="240"
   >
   

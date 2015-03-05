@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
-  <DataColumn name="Discount" carry="true">
+  <DataColumn name="Discount" carry="true" flexGrow="0">
     <footer evaluator="discount" scale="2" />
   </DataColumn>
 </g:columns>

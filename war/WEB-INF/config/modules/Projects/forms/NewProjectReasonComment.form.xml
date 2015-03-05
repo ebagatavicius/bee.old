@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY tbl "border-collapse: collapse;">
+  <!ENTITY cell "vertical-align: top; padding-bottom: 2px;">
+  <!ENTITY col1 "text-align: right; padding-right: 8px; width: 50px;">
+
+  <!ENTITY inp2 "width: 300px;">
+  <!ENTITY inp2x "width: 495px;">
+  <!ENTITY inp2y "width: 250px;">
+]>
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
+
+  name="NewProjectReasonComment" viewName="ProjectEvents" width="600"
+  height="300">
+
+  <FlowPanel style="padding: 10px 2px 2px 10px;">
+    <Table style="&tbl;" cellStyle="&cell;">
+      <col index="0" cellStyle="&col1;" />
+      <row>
+        <cell colSpan="3">
+          <Label name="EditInfo" style="&inp2; text-align: left;" />
+        </cell>
+      </row>
+      <row>
+        <Label text="=from" />
+        <cell>
+          <FlowPanel name="From" />
+        </cell>
+        <cell style="width:15px;">
+          <Label text="=to" />
+        </cell>
+        <cell style="&inp2y;">
+          <FlowPanel name="To" />
+        </cell>
+      </row>
+      <row>
+        <Label text="=reason" class="bee-required" />
+        <cell colSpan="3">
+          <UnboundSelector name="Reason" viewName="ProjectReasons"
+            renderColumns="Name" filter="Active" order="Ordinal"
+            required="true" style="&inp2x;" />
+        </cell>
+      </row>
+      <row>
+        <Label name="DocumentLabel" text="=document" />
+        <cell colSpan="3">
+          <UnboundSelector name="Document" viewName="Documents"
+            style="&inp2x;" />
+        </cell>
+      </row>
+      <row>
+        <Label text="=comment" class="bee-required" />
+        <cell colSpan="3">
+          <InputArea name="Comment" source="Comment" required="true"
+            style="&inp2x; height: 100px; max-width: 495px; max-height: 150px;" />
+        </cell>
+      </row>
+    </Table>
+
+  </FlowPanel>
+</f:Form>

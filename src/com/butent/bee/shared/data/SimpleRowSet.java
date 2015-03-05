@@ -1,7 +1,6 @@
 package com.butent.bee.shared.data;
 
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.butent.bee.shared.Assert;
@@ -16,6 +15,8 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -166,15 +167,15 @@ public class SimpleRowSet implements Iterable<SimpleRow>, BeeSerializable {
   }
 
   private String[] columnNames = new String[0];
-  private Map<String, Integer> columns = Maps.newHashMap();
-  private List<String[]> rows = Lists.newArrayList();
+  private Map<String, Integer> columns = new HashMap<>();
+  private List<String[]> rows = new ArrayList<>();
   private Map<Integer, Map<String, Integer>> indexes;
 
   public SimpleRowSet(String[] cols) {
     Assert.isPositive(ArrayUtils.length(cols));
 
     columnNames = cols;
-    columns = Maps.newHashMap();
+    columns = new HashMap<>();
 
     for (int i = 0; i < cols.length; i++) {
       columns.put(cols[i].toLowerCase(), i);
@@ -235,7 +236,7 @@ public class SimpleRowSet implements Iterable<SimpleRow>, BeeSerializable {
           break;
 
         case ROWS:
-          rows = Lists.newArrayList();
+          rows = new ArrayList<>();
           String[] rowData = Codec.beeDeserializeCollection(value);
 
           if (!ArrayUtils.isEmpty(rowData)) {
@@ -489,6 +490,28 @@ public class SimpleRowSet implements Iterable<SimpleRow>, BeeSerializable {
     return new RowSetIterator();
   }
 
+  public boolean removeColumn(String colName) {
+    if (BeeUtils.isEmpty(colName)) {
+      return false;
+    }
+
+    String key = colName.toLowerCase();
+    if (!columns.containsKey(key)) {
+      return false;
+    }
+
+    int index = columns.remove(key);
+    columnNames = ArrayUtils.remove(columnNames, index);
+
+    for (int i = 0; i < rows.size(); i++) {
+      rows.set(i, ArrayUtils.remove(rows.get(i), index));
+    }
+
+    indexes = null;
+
+    return true;
+  }
+
   @Override
   public String serialize() {
     Serial[] members = Serial.values();
@@ -528,7 +551,7 @@ public class SimpleRowSet implements Iterable<SimpleRow>, BeeSerializable {
     int colIndex = getColumnIndex(keyName);
 
     if (indexes == null) {
-      indexes = Maps.newHashMap();
+      indexes = new HashMap<>();
     }
     if (!indexes.containsKey(colIndex)) {
       Map<String, Integer> index = Maps.newHashMapWithExpectedSize(getNumberOfRows());

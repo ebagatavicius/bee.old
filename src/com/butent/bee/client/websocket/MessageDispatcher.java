@@ -75,7 +75,8 @@ class MessageDispatcher {
 
   private static BeeLogger logger = LogUtils.getLogger(MessageDispatcher.class);
 
-  private static final String CONVERSATION_STYLE_PREFIX = "bee-Conversation-";
+  private static final String CONVERSATION_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX
+      + "Conversation-";
   private static final String CONVERSATION_MESSAGE_STYLE_PREFIX = CONVERSATION_STYLE_PREFIX
       + "message-";
 
@@ -370,14 +371,13 @@ class MessageDispatcher {
         MailMessage mailMessage = (MailMessage) message;
 
         if (mailMessage.isValid()) {
-          boolean updated = mailMessage.messagesUpdated() || mailMessage.foldersUpdated();
-          boolean refreshFolders = updated
+          boolean refreshFolders = mailMessage.messagesUpdated() || mailMessage.foldersUpdated()
               || Objects.equals(mailMessage.getFlag(), MessageFlag.SEEN);
 
           if (Global.getNewsAggregator().hasSubscription(Feed.MAIL) && refreshFolders) {
             Global.getNewsAggregator().refresh();
           }
-          MailKeeper.refreshActivePanel(refreshFolders, updated ? mailMessage.getFolderId() : null);
+          MailKeeper.refreshActivePanel(refreshFolders, mailMessage.getFolderId());
 
         } else {
           logger.severe(mailMessage.getError());
@@ -450,7 +450,7 @@ class MessageDispatcher {
               logger.warning("cannot start progress", progressId);
             }
           } else if (pm.isUpdate()) {
-            BeeKeeper.getScreen().updateProgress(progressId, pm.getValue());
+            BeeKeeper.getScreen().updateProgress(progressId, pm.getLabel(), pm.getValue());
 
           } else if (pm.isCanceled() || pm.isClosed()) {
             Endpoint.removeProgress(progressId);

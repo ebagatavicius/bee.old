@@ -3,6 +3,7 @@
 
   name="Emails" source="Emails" module="Classifiers.Contacts"
   caption="=emailAddresses" newRowCaption="=newEmailAddress"
+  editForm="Dummy"
   >
   <Columns>
     <SimpleColumn name="Email" />

@@ -16,6 +16,8 @@
 
     <Relation name="Company" relation="Companies" label="=company" />
     <Relation name="Contact" relation="CompanyPersons" label="=personContact" />
+    
+    <Relation name="Project" relation="Projects" label="=project" />
 
     <Date name="ScheduleFrom" notNull="true" label="=crmRTScheduleFrom" />
     <Date name="ScheduleUntil" label="=crmRTScheduleUntil" />

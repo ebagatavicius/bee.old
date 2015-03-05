@@ -17,11 +17,13 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.menu.Menu;
 import com.butent.bee.shared.menu.MenuConstants;
-import com.butent.bee.shared.menu.MenuConstants.BAR_TYPE;
-import com.butent.bee.shared.menu.MenuConstants.ITEM_TYPE;
+import com.butent.bee.shared.menu.MenuConstants.BarType;
+import com.butent.bee.shared.menu.MenuConstants.ItemType;
 import com.butent.bee.shared.menu.MenuEntry;
 import com.butent.bee.shared.menu.MenuItem;
 import com.butent.bee.shared.menu.MenuService;
+import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -91,32 +93,32 @@ public class MenuManager {
     IdentifiableWidget w = null;
 
     if (BeeUtils.same(layout, MenuConstants.LAYOUT_MENU_HOR)) {
-      w = new MenuBar(level, false, getBarType(false), ITEM_TYPE.LABEL);
+      w = new MenuBar(level, false, getBarType(false), ItemType.LABEL);
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_MENU_VERT)) {
-      w = new MenuBar(level, true, getBarType(true), ITEM_TYPE.LABEL);
+      w = new MenuBar(level, true, getBarType(true), ItemType.LABEL);
 
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_TREE)) {
       w = new Tree();
       ((Tree) w).addSelectionHandler(new MenuSelectionHandler());
 
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_LIST)) {
-      w = new MenuBar(level, true, BAR_TYPE.LIST, ITEM_TYPE.OPTION);
+      w = new MenuBar(level, true, BarType.LIST, ItemType.OPTION);
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_ORDERED_LIST)) {
-      w = new MenuBar(level, true, BAR_TYPE.OLIST, ITEM_TYPE.LI);
+      w = new MenuBar(level, true, BarType.OLIST, ItemType.LI);
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_UNORDERED_LIST)) {
-      w = new MenuBar(level, true, BAR_TYPE.ULIST, ITEM_TYPE.LI);
+      w = new MenuBar(level, true, BarType.ULIST, ItemType.LI);
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_DEFINITION_LIST)) {
-      w = new MenuBar(level, true, BAR_TYPE.DLIST, ITEM_TYPE.DT);
+      w = new MenuBar(level, true, BarType.DLIST, ItemType.DT);
 
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_RADIO_HOR)) {
-      w = new MenuBar(level, false, getBarType(true), ITEM_TYPE.RADIO);
+      w = new MenuBar(level, false, getBarType(true), ItemType.RADIO);
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_RADIO_VERT)) {
-      w = new MenuBar(level, true, getBarType(true), ITEM_TYPE.RADIO);
+      w = new MenuBar(level, true, getBarType(true), ItemType.RADIO);
 
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_BUTTONS_HOR)) {
-      w = new MenuBar(level, false, getBarType(true), ITEM_TYPE.BUTTON);
+      w = new MenuBar(level, false, getBarType(true), ItemType.BUTTON);
     } else if (BeeUtils.same(layout, MenuConstants.LAYOUT_BUTTONS_VERT)) {
-      w = new MenuBar(level, true, getBarType(true), ITEM_TYPE.BUTTON);
+      w = new MenuBar(level, true, getBarType(true), ItemType.BUTTON);
 
     } else {
       Assert.untouchable();
@@ -147,8 +149,26 @@ public class MenuManager {
     }
   }
 
-  private static BAR_TYPE getBarType(boolean table) {
-    return table ? BAR_TYPE.TABLE : BAR_TYPE.FLOW;
+  private static BarType getBarType(boolean table) {
+    return table ? BarType.TABLE : BarType.FLOW;
+  }
+
+  /**
+   * Conditionally hides menu items.
+   * 
+   * @param item
+   */
+  private static boolean isVisible(Menu item) {
+    switch (item.getName()) {
+      case "RefVehicles":
+      case "RefVehicleTypes":
+      case "RefDrivers":
+      case "RefTransportGroups":
+        return !BeeKeeper.getUser().isModuleVisible(ModuleAndSub.of(Module.TRANSPORT));
+
+      default:
+        return true;
+    }
   }
 
   private static void noService(Menu item) {
@@ -340,16 +360,18 @@ public class MenuManager {
     boolean lastLevel = level >= MenuConstants.MAX_MENU_DEPTH - 1;
 
     for (Menu entry : entries) {
-      List<Menu> children = null;
-      IdentifiableWidget cw = null;
+      if (isVisible(entry)) {
+        List<Menu> children = null;
+        IdentifiableWidget cw = null;
 
-      if (!lastLevel && (entry instanceof MenuEntry)) {
-        children = ((MenuEntry) entry).getItems();
+        if (!lastLevel && (entry instanceof MenuEntry)) {
+          children = ((MenuEntry) entry).getItems();
+        }
+        if (!BeeUtils.isEmpty(children)) {
+          cw = createMenu(level + 1, children, rw);
+        }
+        addEntry(rw, entry, cw);
       }
-      if (!BeeUtils.isEmpty(children)) {
-        cw = createMenu(level + 1, children, rw);
-      }
-      addEntry(rw, entry, cw);
     }
 
     prepareWidget(rw);

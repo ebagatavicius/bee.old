@@ -18,6 +18,8 @@ public class ServerDefaults extends Defaults {
   QueryServiceBean qs;
   @EJB
   ParamHolderBean prm;
+  @EJB
+  SystemBean sys;
 
   @Override
   public Object getValue(DefaultExpression defExpr, Object defValue) {
@@ -38,7 +40,8 @@ public class ServerDefaults extends Defaults {
 
         case NEXT_NUMBER:
           String prefix = (defValue == null) ? null : defValue.toString().trim();
-          value = qs.getNextNumber(tblName, fldName, prefix, null);
+          value = sys.clampValue(tblName, fldName,
+              qs.getNextNumber(tblName, fldName, prefix, null));
           break;
 
         case MAIN_CURRENCY:

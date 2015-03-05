@@ -3,22 +3,18 @@
   
   name="CompanyPersons"
   idName="CompanyPersonID"
-  x="501" y="339"
   >
   <Fields>
     <Relation name="Company" notNull="true" relation="Companies" cascade="DELETE" label="=company" />
     <Relation name="Department" relation="CompanyDepartments" label="=companyDepartment" />   
     <Relation name="Person" notNull="true" relation="Persons" cascade="DELETE" label="=person" />
-    <String name="TabNo" precision="50" label="=personTabNo" />
-    <String name="AccountingCode" precision="50" label="=personAccountingCode" />
     <Date name="DateOfEmployment" label="=personDateOfEmployment" />
+    <Date name="DateOfDismissal" label="=personUnemployment" />
     <Relation name="Position" relation="Positions" label="=personPosition" />
     <Relation name="Contact" unique="true" relation="Contacts" editable="true" label="=contacts" />
   </Fields>
 
   <Constraints>
     <Unique fields="Company Person" />
-    <Unique fields="Company TabNo" />
-    <Unique fields="Company AccountingCode" />
   </Constraints>
 </Table>

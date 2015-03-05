@@ -214,8 +214,6 @@ public interface LocalizableTransportConstants {
 
   String trExpenses();
 
-  String trImport();
-
   String trImportCosts();
 
   String trImportTracking();

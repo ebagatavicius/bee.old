@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="DepartmentEmployees" source="DepartmentEmployees" caption="=departmentEmployees" module="Administration"
+  name="DepartmentEmployees" source="DepartmentEmployees" caption="=departmentEmployees" 
+  module="Administration"
   >
   <Columns>
     <SimpleColumn name="Department" />
+    <SimpleJoin name="Department" joinType="LEFT">
+      <SimpleColumn name="DepartmentName" />
+    </SimpleJoin>
+    
     <SimpleColumn name="CompanyPerson" />
-
     <SimpleJoin name="CompanyPerson" joinType="LEFT">
+      <SimpleColumn name="Person" />
       <SimpleJoin name="Person" joinType="LEFT">
         <SimpleColumn name="FirstName" />
         <SimpleColumn name="LastName" />
+        <SimpleColumn name="Photo" />
       </SimpleJoin>
       <SimpleJoin name="Position" joinType="LEFT">
         <SimpleColumn name="Name" alias="PositionName" />
@@ -20,7 +26,7 @@
       </SimpleJoin>
     </SimpleJoin>
     <ExternalJoin name="DepartmentHead" source="Departments" joinType="LEFT">
-      <SimpleColumn name="DepartmentHead" />
+      <IdColumn name="DepartmentHead" />
     </ExternalJoin>
   </Columns>
   <Order>

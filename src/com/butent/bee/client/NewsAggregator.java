@@ -1,7 +1,5 @@
 package com.butent.bee.client;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
@@ -52,7 +50,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -239,7 +239,7 @@ public class NewsAggregator implements HandlesAllDataEvents {
     }
 
     private Map<Feed, Boolean> getOpenness() {
-      EnumMap<Feed, Boolean> result = Maps.newEnumMap(Feed.class);
+      EnumMap<Feed, Boolean> result = new EnumMap<>(Feed.class);
 
       for (Widget widget : content) {
         SubscriptionPanel subscriptionPanel = asSubscriptionPanel(widget);
@@ -450,19 +450,19 @@ public class NewsAggregator implements HandlesAllDataEvents {
 
   private static final BeeLogger logger = LogUtils.getLogger(NewsAggregator.class);
 
-  private static final String STYLE_PREFIX = "bee-News-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "News-";
   private static final String STYLE_APATHY = STYLE_PREFIX + "apathy";
 
-  private final List<Subscription> subscriptions = Lists.newArrayList();
+  private final List<Subscription> subscriptions = new ArrayList<>();
 
   private final NewsPanel newsPanel = new NewsPanel();
 
   private Badge sizeBadge;
 
   private final EnumMap<Feed, BiConsumer<GridOptions, PresenterCallback>> registeredFilterHandlers =
-      Maps.newEnumMap(Feed.class);
+      new EnumMap<>(Feed.class);
 
-  private final Map<String, HeadlineAccessor> registeredAccessHandlers = Maps.newHashMap();
+  private final Map<String, HeadlineAccessor> registeredAccessHandlers = new HashMap<>();
 
   NewsAggregator() {
   }
@@ -511,7 +511,7 @@ public class NewsAggregator implements HandlesAllDataEvents {
     return findSubscription(feed) != null;
   }
 
-  public void loadSubscriptions(String serialized) {
+  public void loadSubscriptions(String serialized, boolean notify) {
     String[] arr = Codec.beeDeserializeCollection(serialized);
 
     if (ArrayUtils.isEmpty(arr)) {
@@ -521,6 +521,8 @@ public class NewsAggregator implements HandlesAllDataEvents {
       Map<Feed, Boolean> openness = newsPanel.getOpenness();
 
       clear(false);
+
+      List<String> notifyMsg = new ArrayList<>();
 
       for (String s : arr) {
         final Subscription subscription = Subscription.restore(s);
@@ -532,7 +534,16 @@ public class NewsAggregator implements HandlesAllDataEvents {
           SubscriptionPanel subscriptionPanel = new SubscriptionPanel(subscription, open);
 
           newsPanel.addSubscriptionPanel(subscriptionPanel);
+
+          if (notify) {
+            notifyMsg.add(BeeUtils.joinWords(subscription.getLabel(),
+                BeeUtils.bracket(subscription.countNew() + subscription.countUpdated())));
+          }
         }
+      }
+
+      if (!notifyMsg.isEmpty()) {
+        Global.showBrowserNotify(BeeUtils.buildLines(notifyMsg));
       }
 
       newsPanel.removeStyleName(STYLE_APATHY);
@@ -624,7 +635,7 @@ public class NewsAggregator implements HandlesAllDataEvents {
       public void onResponse(ResponseObject response) {
         if (!response.hasErrors()) {
           if (response.hasResponse()) {
-            loadSubscriptions(response.getResponseAsString());
+            loadSubscriptions(response.getResponseAsString(), true);
           } else {
             clear(true);
           }
@@ -707,7 +718,7 @@ public class NewsAggregator implements HandlesAllDataEvents {
   }
 
   private List<Subscription> filterSubscriptions(String viewName) {
-    List<Subscription> result = Lists.newArrayList();
+    List<Subscription> result = new ArrayList<>();
 
     for (Subscription subscription : subscriptions) {
       if (Data.sameTable(viewName, subscription.getHeadlineView())) {

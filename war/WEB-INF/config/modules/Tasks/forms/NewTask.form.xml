@@ -12,6 +12,7 @@
   <!ENTITY inp2 "width: 150px;">
   <!ENTITY inp2x "width: 500px;">
   <!ENTITY inp2y "width: 500px;">
+  <!ENTITY inp3 "width: 70px;margin-left: -75px">
 
   <!ENTITY dateStyle "&inline; min-width: 90px; max-width: 90px;">
   <!ENTITY timeStyle "&inline; min-width: 50px; max-width: 50px; width: 50px; margin-left: 10px;">
@@ -51,6 +52,10 @@
         </FlowPanel>
         <Label for="ExpectedDuration" />
         <InputTime name="ExpectedDuration" source="ExpectedDuration" step="&timeStep;" style="width: 50px;" />
+        <Label for="ExpectedExpenses" text="=prjExpenses" style="margin-left:-140px;" />
+        <InputDecimal source="ExpectedExpenses" style="&inp3;" disablable="true" scale="2"/>
+        <DataSelector source="Currency" for="ExpectedExpenses" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" readOnly="true" />
       </row>
 
       <row>
@@ -115,30 +120,42 @@
 
       <row>
         <Label name="ExecutorsLabel" class="bee-required" text="=crmTaskExecutors" />
-        <MultiSelector viewName="Users" property="Executors" renderColumns="FirstName LastName"
+        <MultiSelector name="Executors"
+          viewName="Users" property="Executors" renderColumns="FirstName LastName"
           editPopup="true" newRowEnabled="false" editSource="CompanyPerson" style="&inp2x;"
           label="=crmTaskExecutors" />
       </row>
 
-      <row data="UserGroupSettings">
+      <row>
         <Label text="=crmTaskExecutorGroups" />
-        <MultiSelector name="UserGroupSettings" viewName="UserGroupSettings" property="ExecutorGroups" renderColumns="Name"
-          editPopup="true" newRowEnabled="false" style="&inp2y;" label="=crmTaskExecutorGroups"
-          filter="Owner {u} or Visibility 1" />
+        <MultiSelector name="UserGroupSettings" viewName="UserGroupSettings"
+          property="ExecutorGroups" renderColumns="Name" editPopup="true" newRowEnabled="false"
+          style="&inp2y;" label="=crmTaskExecutorGroups" filter="Owner {u} or Visibility 1">
+        </MultiSelector>
       </row>
 
       <row>
         <Label text="=crmTaskObservers" />
-        <MultiSelector viewName="Users" property="Observers" renderColumns="FirstName LastName"
+        <MultiSelector name="Observers" viewName="Users" property="Observers" renderColumns="FirstName LastName"
           editPopup="true" newRowEnabled="false" editSource="CompanyPerson" style="&inp2x;"
           label="=crmTaskObservers" />
       </row>
 
-      <row data="UserGroupSettings">
+      <row>
         <Label text="=crmTaskObserverGroups" />
-        <MultiSelector viewName="UserGroupSettings" property="ObserverGroups" renderColumns="Name"
+        <MultiSelector name="ObserverGroups" viewName="UserGroupSettings" property="ObserverGroups" renderColumns="Name"
           editPopup="true" newRowEnabled="false" style="&inp2y;" label="=crmTaskObserverGroups"
           filter="Owner {u} or Visibility 1" />
+      </row>
+      
+      <row module="Projects" data="Projects" >
+        <Label text="=project" name="ProjectLabel"/>
+        <DataSelector source="Project" style="&inp2x;" disablable="true" readOnly="true" 
+        editPopup="false" />
+      </row>         
+      <row  module="Projects" data="ProjectStages">
+        <Label text="=prjStage" name="ProjectStageLabel"/>
+        <DataSelector source="ProjectStage" style="&inp2x;" />
       </row>
     </Table>
 
@@ -183,6 +200,13 @@
         <Label text="=svcObjects" />
         <MultiSelector viewName="ServiceObjects" property="ServiceObjects"
           renderColumns="Address" choiceColumns="Address CustomerName"
+          newRowEnabled="false" editPopup="true" style="&inp2x;" />
+      </row>
+
+      <row data="Relations" for="Projects" module="Projects">
+        <Label text="=projects" />
+        <MultiSelector viewName="Projects" property="Projects"
+          renderColumns="Name" choiceColumns="Name"
           newRowEnabled="false" editPopup="true" style="&inp2x;" />
       </row>
 

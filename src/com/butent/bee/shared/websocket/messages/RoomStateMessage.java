@@ -1,13 +1,12 @@
 package com.butent.bee.shared.websocket.messages;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.State;
 import com.butent.bee.shared.communication.ChatRoom;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoomStateMessage extends Message {
@@ -93,7 +92,7 @@ public class RoomStateMessage extends Message {
 
   @Override
   protected String serialize() {
-    List<Object> values = Lists.newArrayList();
+    List<Object> values = new ArrayList<>();
 
     values.add(getRoom());
     values.add(Codec.pack(getState()));

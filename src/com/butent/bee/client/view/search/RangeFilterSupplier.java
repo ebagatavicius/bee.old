@@ -1,6 +1,5 @@
 package com.butent.bee.client.view.search;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler;
@@ -27,6 +26,7 @@ import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RangeFilterSupplier extends AbstractFilterSupplier {
 
@@ -205,8 +205,8 @@ public class RangeFilterSupplier extends AbstractFilterSupplier {
     String lower = getLowerValue();
     String upper = getUpperValue();
 
-    boolean changed = !Objects.equal(lower, oldValue.getA())
-        || !Objects.equal(upper, oldValue.getB()) || getEmptiness() != null;
+    boolean changed = !Objects.equals(lower, oldValue.getA())
+        || !Objects.equals(upper, oldValue.getB()) || getEmptiness() != null;
     update(changed);
   }
 
@@ -320,7 +320,7 @@ public class RangeFilterSupplier extends AbstractFilterSupplier {
 
   private void onEmptiness(Boolean value) {
     boolean changed = !BeeUtils.isEmpty(oldValue.getA()) || !BeeUtils.isEmpty(oldValue.getB())
-        || !Objects.equal(getEmptiness(), value);
+        || !Objects.equals(getEmptiness(), value);
     setValue(null, value);
     update(changed);
   }

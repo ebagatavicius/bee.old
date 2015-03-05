@@ -339,6 +339,7 @@
     <xs:restriction base="xs:string">
       <xs:enumeration value="add" />
       <xs:enumeration value="audit" />
+      <xs:enumeration value="auto_fit" />
       <xs:enumeration value="bookmark" />
       <xs:enumeration value="close" />
       <xs:enumeration value="configure" />
@@ -350,6 +351,7 @@
       <xs:enumeration value="print" />
       <xs:enumeration value="refresh" />
       <xs:enumeration value="remove_filter" />
+      <xs:enumeration value="reset_settings" />
       <xs:enumeration value="rights" />
       <xs:enumeration value="save" />
     </xs:restriction>
@@ -402,11 +404,12 @@
       <xs:enumeration value="total" />
       <xs:enumeration value="vat" />
       <xs:enumeration value="discount" />
+      <xs:enumeration value="branch" />
     </xs:restriction>
   </xs:simpleType>
   
   <xs:complexType name="renderableToken">
-    <xs:attribute name="source" type="type:nameType" use="required" />
+    <xs:attribute name="source" type="type:fieldNameType" use="required" />
     <xs:attribute name="prefix" type="xs:string" />
     <xs:attribute name="suffix" type="xs:string" />
     <xs:attribute name="addPrefixWhenEmpty" type="xs:boolean" />
@@ -429,11 +432,11 @@
       <xs:element name="render" type="calcType" />
       <xs:element name="renderToken" type="renderableToken" maxOccurs="unbounded" />
     </xs:choice>
-    <xs:attribute name="source" type="type:nameType" use="required" />
+    <xs:attribute name="source" type="type:fieldNameType" use="required" />
     <xs:attributeGroup ref="appearance" />
     <xs:attributeGroup ref="alignment" />
     <xs:attribute name="enumKey" type="xs:normalizedString" />
-    <xs:attribute name="renderColumns" type="type:nameList" />
+    <xs:attribute name="renderColumns" type="type:fieldNames" />
   </xs:complexType>
 
   <xs:simpleType name="relationCaching">
@@ -446,10 +449,10 @@
   </xs:simpleType>
   
   <xs:attributeGroup name="relation">
-    <xs:attribute name="choiceColumns" type="type:nameList" />
-    <xs:attribute name="searchableColumns" type="type:nameList" />
+    <xs:attribute name="choiceColumns" type="type:fieldNames" />
+    <xs:attribute name="searchableColumns" type="type:fieldNames" />
     <xs:attribute name="filter" type="xs:normalizedString" />
-    <xs:attribute name="currentUserFilter" type="type:nameType" />
+    <xs:attribute name="currentUserFilter" type="type:fieldNameType" />
     <xs:attribute name="order" type="xs:normalizedString" />
     <xs:attribute name="caching" type="relationCaching" />
     <xs:attribute name="operator" type="type:operatorType" />
@@ -459,16 +462,16 @@
     <xs:attribute name="minQueryLength" type="xs:positiveInteger" />
     <xs:attribute name="instant" type="xs:boolean" />
     <xs:attribute name="newRowForm" type="type:nameType" />
-    <xs:attribute name="newRowColumns" type="type:nameList" />
+    <xs:attribute name="newRowColumns" type="type:fieldNames" />
     <xs:attribute name="newRowCaption" type="xs:string" />
     <xs:attribute name="newRowEnabled" type="xs:boolean" />
     <xs:attribute name="editForm" type="type:nameType" />
     <xs:attribute name="editPopup" type="xs:boolean" />
     <xs:attribute name="editEnabled" type="xs:boolean" />
     <xs:attribute name="editKey" type="xs:int" />
-    <xs:attribute name="editSource" type="type:nameType" />
+    <xs:attribute name="editSource" type="type:fieldNameType" />
     <xs:attribute name="editViewName" type="type:dataView" />
-    <xs:attribute name="valueSource" type="type:nameType" />
+    <xs:attribute name="valueSource" type="type:fieldNameType" />
     <xs:attribute name="strict" type="xs:boolean" />
   </xs:attributeGroup>
   
@@ -533,6 +536,8 @@
       <xs:enumeration value="th" />
       <xs:enumeration value="th_list" />
       <xs:enumeration value="check" />
+      <xs:enumeration value="remove" />
+      <xs:enumeration value="close" />
       <xs:enumeration value="times" />
       <xs:enumeration value="search_plus" />
       <xs:enumeration value="search_minus" />
@@ -649,6 +654,7 @@
       <xs:enumeration value="arrows_v" />
       <xs:enumeration value="arrows_h" />
       <xs:enumeration value="bar_chart_o" />
+      <xs:enumeration value="bar_chart" />
       <xs:enumeration value="twitter_square" />
       <xs:enumeration value="facebook_square" />
       <xs:enumeration value="camera_retro" />
@@ -951,7 +957,6 @@
       <xs:enumeration value="stumbleupon" />
       <xs:enumeration value="delicious" />
       <xs:enumeration value="digg" />
-      <xs:enumeration value="pied_piper_square" />
       <xs:enumeration value="pied_piper" />
       <xs:enumeration value="pied_piper_alt" />
       <xs:enumeration value="drupal" />
@@ -996,6 +1001,7 @@
       <xs:enumeration value="codepen" />
       <xs:enumeration value="jsfiddle" />
       <xs:enumeration value="life_bouy" />
+      <xs:enumeration value="life_buoy" />
       <xs:enumeration value="life_saver" />
       <xs:enumeration value="support" />
       <xs:enumeration value="life_ring" />
@@ -1023,6 +1029,49 @@
       <xs:enumeration value="share_alt" />
       <xs:enumeration value="share_alt_square" />
       <xs:enumeration value="bomb" />
+      <xs:enumeration value="soccer_ball_o" />
+      <xs:enumeration value="futbol_o" />
+      <xs:enumeration value="tty" />
+      <xs:enumeration value="binoculars" />
+      <xs:enumeration value="plug" />
+      <xs:enumeration value="slideshare" />
+      <xs:enumeration value="twitch" />
+      <xs:enumeration value="yelp" />
+      <xs:enumeration value="newspaper_o" />
+      <xs:enumeration value="wifi" />
+      <xs:enumeration value="calculator" />
+      <xs:enumeration value="paypal" />
+      <xs:enumeration value="google_wallet" />
+      <xs:enumeration value="cc_visa" />
+      <xs:enumeration value="cc_mastercard" />
+      <xs:enumeration value="cc_discover" />
+      <xs:enumeration value="cc_amex" />
+      <xs:enumeration value="cc_paypal" />
+      <xs:enumeration value="cc_stripe" />
+      <xs:enumeration value="bell_slash" />
+      <xs:enumeration value="bell_slash_o" />
+      <xs:enumeration value="trash" />
+      <xs:enumeration value="copyright" />
+      <xs:enumeration value="at" />
+      <xs:enumeration value="eyedropper" />
+      <xs:enumeration value="paint_brush" />
+      <xs:enumeration value="birthday_cake" />
+      <xs:enumeration value="area_chart" />
+      <xs:enumeration value="pie_chart" />
+      <xs:enumeration value="line_chart" />
+      <xs:enumeration value="lastfm" />
+      <xs:enumeration value="lastfm_square" />
+      <xs:enumeration value="toggle_off" />
+      <xs:enumeration value="toggle_on" />
+      <xs:enumeration value="bicycle" />
+      <xs:enumeration value="bus" />
+      <xs:enumeration value="ioxhost" />
+      <xs:enumeration value="angellist" />
+      <xs:enumeration value="cc" />
+      <xs:enumeration value="shekel" />
+      <xs:enumeration value="sheqel" />
+      <xs:enumeration value="ils" />
+      <xs:enumeration value="meanpath" />
     </xs:restriction>
   </xs:simpleType>
   

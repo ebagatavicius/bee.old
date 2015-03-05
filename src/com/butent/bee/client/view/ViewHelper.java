@@ -1,12 +1,15 @@
 package com.butent.bee.client.view;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Provider;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dom.DomUtils;
@@ -18,7 +21,10 @@ import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.navigation.PagerView;
 import com.butent.bee.client.view.search.SearchView;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.logging.BeeLogger;
+import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -28,6 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 
 public final class ViewHelper {
+
+  private static final BeeLogger logger = LogUtils.getLogger(ViewHelper.class);
 
   private static final ImmutableSet<String> NO_EXCLUSIONS = ImmutableSet.of();
 
@@ -110,6 +118,32 @@ public final class ViewHelper {
     }
   }
 
+  public static GridView getChildGrid(FormView form, String gridName) {
+    if (form == null) {
+      return null;
+
+    } else {
+      Widget gridWidget = form.getWidgetByName(gridName);
+
+      if (gridWidget instanceof HasGridView) {
+        return ((HasGridView) gridWidget).getGridView();
+      } else {
+        return null;
+      }
+    }
+  }
+
+  public static GridView getChildGrid(Widget root, String gridName) {
+    Collection<GridView> grids = getGrids(root);
+
+    for (GridView grid : grids) {
+      if (BeeUtils.same(grid.getGridName(), gridName)) {
+        return grid;
+      }
+    }
+    return null;
+  }
+
   public static List<View> getChildViews(Widget parent, boolean include) {
     List<View> views = new ArrayList<>();
 
@@ -127,6 +161,25 @@ public final class ViewHelper {
     }
 
     return views;
+  }
+
+  public static DataView getDataView(Widget widget) {
+    if (widget == null) {
+      return null;
+    }
+
+    Widget p = widget;
+    for (int i = 0; i < DomUtils.MAX_GENERATIONS; i++) {
+      if (p instanceof DataView) {
+        return (DataView) p;
+      }
+
+      p = p.getParent();
+      if (p == null) {
+        break;
+      }
+    }
+    return null;
   }
 
   public static Filter getFilter(HasSearch container, Provider dataProvider) {
@@ -154,6 +207,43 @@ public final class ViewHelper {
     return Filter.and(filters);
   }
 
+  public static FormView getForm(IsWidget widget) {
+    if (widget == null) {
+      return null;
+    } else {
+      return getForm(widget.asWidget());
+    }
+  }
+
+  public static FormView getForm(Widget widget) {
+    if (widget == null) {
+      return null;
+    }
+
+    Widget p = widget;
+    for (int i = 0; i < DomUtils.MAX_GENERATIONS; i++) {
+      if (p instanceof FormView) {
+        return (FormView) p;
+      }
+
+      p = p.getParent();
+      if (p == null) {
+        break;
+      }
+    }
+    return null;
+  }
+
+  public static IsRow getFormRow(IsWidget widget) {
+    FormView form = getForm(widget);
+    return (form == null) ? null : form.getActiveRow();
+  }
+
+  public static Long getFormRowId(IsWidget widget) {
+    FormView form = getForm(widget);
+    return (form == null) ? null : form.getActiveRowId();
+  }
+
   public static Collection<GridView> getGrids(Widget root) {
     Collection<GridView> grids = new HashSet<>();
 
@@ -173,6 +263,20 @@ public final class ViewHelper {
     }
 
     return grids;
+  }
+
+  public static GridView getGrid(Widget widget) {
+    DataView dataView = getDataView(widget);
+
+    if (dataView == null) {
+      return null;
+    } else if (dataView instanceof GridView) {
+      return (GridView) dataView;
+    } else if (dataView.getViewPresenter() instanceof HasGridView) {
+      return ((HasGridView) dataView.getViewPresenter()).getGridView();
+    } else {
+      return null;
+    }
   }
 
   public static HeaderView getHeader(Widget container) {
@@ -205,6 +309,45 @@ public final class ViewHelper {
     return pagers;
   }
 
+  public static IsRow getParentRow(Widget widget, String viewName) {
+    if (BeeUtils.isEmpty(viewName)) {
+      return null;
+    }
+
+    DataView dataView = getDataView(widget);
+    if (dataView == null) {
+      return null;
+
+    } else if (BeeUtils.same(viewName, dataView.getViewName())) {
+      return dataView.getActiveRow();
+
+    } else if (dataView.getViewPresenter() instanceof HasGridView) {
+      GridView gridView = ((HasGridView) dataView.getViewPresenter()).getGridView();
+      FormView formView = getForm(gridView);
+
+      if (formView == null) {
+        return null;
+      } else if (BeeUtils.same(viewName, formView.getViewName())) {
+        return formView.getActiveRow();
+      } else {
+        return getParentRow(formView.asWidget().getParent(), viewName);
+      }
+
+    } else {
+      return null;
+    }
+  }
+
+  public static Long getParentRowId(Widget widget, String viewName) {
+    IsRow row = getParentRow(widget, viewName);
+    return (row == null) ? null : row.getId();
+  }
+
+  public static Long getParentValueLong(Widget widget, String viewName, String colName) {
+    IsRow row = getParentRow(widget, viewName);
+    return (row == null) ? null : Data.getLong(viewName, row, colName);
+  }
+
   public static PresenterCallback getPresenterCallback() {
     if (BeeKeeper.getUser().openInNewTab()) {
       return PresenterCallback.SHOW_IN_NEW_TAB;
@@ -230,6 +373,16 @@ public final class ViewHelper {
       }
     }
     return searchers;
+  }
+
+  public static Widget getSiblingByName(Widget widget, String name) {
+    FormView form = getForm(widget);
+    return (form == null) ? null : form.getWidgetByName(name);
+  }
+
+  public static GridView getSiblingGrid(Widget widget, String gridName) {
+    FormView form = getForm(widget);
+    return getChildGrid(form, gridName);
   }
 
   public static View getView(Widget widget) {
@@ -265,6 +418,38 @@ public final class ViewHelper {
 
       return header != null && header.isActionEnabled(action);
     }
+  }
+
+  public static void maybeResizeForm(Widget widget) {
+    final FormView form = getForm(widget);
+
+    if (form != null) {
+      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+        @Override
+        public void execute() {
+          form.onResize();
+        }
+      });
+    }
+  }
+
+  public static void updateForm(String widgetId, String columnId, String value) {
+    Assert.notEmpty(widgetId);
+    Assert.notEmpty(columnId);
+
+    Widget widget = DomUtils.getWidget(widgetId);
+    if (widget == null) {
+      logger.severe("update form:", widgetId, "widget not found");
+      return;
+    }
+
+    FormView form = getForm(widget);
+    if (form == null) {
+      logger.severe("update form:", widgetId, columnId, value, "form not found");
+      return;
+    }
+
+    form.updateCell(columnId, value);
   }
 
   private static View getFacade(View baseView) {

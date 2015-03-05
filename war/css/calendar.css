@@ -151,7 +151,6 @@
   overflow: hidden;
   border: 1px solid #444;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
 }
 
 .bee-cal .appointment-multiday {
@@ -159,7 +158,6 @@
   overflow: hidden;
   border: 1px solid #444;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
   cursor: pointer;
 }
 
@@ -341,7 +339,9 @@
   top: 0;
   bottom: 0;
 }
-.bee-cal-MonthView .appointment .movable {
+
+.bee-cal-MonthView .appointment .movable,
+.bee-cal-MonthView .appointment-multiday .movable {
   cursor: move;
 }
 
@@ -354,6 +354,8 @@
 .bee-cal-MonthView .appointment-multiday .header {
   padding-left: 2px;
   display: inline-block;
+  max-width: 70%;
+  overflow: hidden;
 }
 .bee-cal-MonthView .appointment-multiday .body {
   padding-left: 8px;
@@ -393,6 +395,7 @@
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
+  overflow: hidden;
 }
 
 .bee-cal-Panel-controls {
@@ -460,6 +463,12 @@
   right: 0;
   top: 0;
   bottom: 0;
+}
+.bee-cal-Panel-todo-container.target {
+  background-color: rgba(255, 238, 238, 0.5);
+}
+.bee-cal-Panel-todo-container.target > * {
+  opacity: 0.2;
 }
 
 .bee-cal-ReportOptions-container {
@@ -708,4 +717,8 @@
 }
 .bee-cal-MonthView .positioner {
   background-color: rgba(255, 238, 238, 0.5) !important;
+}
+
+.bee-cal-Panel .status-completed {
+  background-image: repeating-linear-gradient(330deg, rgba(211,211,211,1) 10px, rgba(211,211,211,0) 20px);
 }

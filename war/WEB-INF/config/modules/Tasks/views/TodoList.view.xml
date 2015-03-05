@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+   xmlns:x="http://www.butent.com/expression"
+
+  name="TodoList" source="TodoList" caption="=crmTodoList"
+  newRowForm="TodoItem" newRowCaption="=crmNewTodoItem" editForm="TodoItem"
+  rowCaption="Summary" 
+  >
+  <Columns>
+    <SimpleColumn name="Summary" />
+    <SimpleColumn name="Description" />
+
+    <SimpleColumn name="Created" />
+    <SimpleColumn name="Creator" />
+    <SimpleJoin name="Creator" joinType="LEFT">
+      <SimpleColumn alias="CreatorCompanyPerson" name="CompanyPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn alias="CreatorFirstName" name="FirstName" />
+          <SimpleColumn alias="CreatorLastName" name="LastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="StartTime" />
+    <SimpleColumn name="FinishTime" />
+    <SimpleColumn name="ExpectedDuration" />
+
+    <SimpleColumn name="Company" />
+    <SimpleJoin name="Company" joinType="LEFT">
+      <SimpleColumn alias="CompanyName" name="Name" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Contact" />
+    <SimpleJoin name="Contact" joinType="LEFT">
+      <SimpleColumn alias="ContactPerson" name="Person" />
+      <SimpleJoin name="Person" joinType="LEFT">
+        <SimpleColumn alias="ContactFirstName" name="FirstName" />
+        <SimpleColumn alias="ContactLastName" name="LastName" />
+      </SimpleJoin>
+      <SimpleJoin name="Company" joinType="LEFT">
+        <SimpleColumn alias="ContactCompanyName" name="Name" />
+      </SimpleJoin>
+    </SimpleJoin>
+  </Columns>
+  
+  <Order>
+    <OrderBy column="Created" />
+  </Order>
+</View>
+ 

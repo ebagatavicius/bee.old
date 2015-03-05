@@ -1,6 +1,5 @@
 package com.butent.bee.client.datepicker;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.dom.client.HasKeyDownHandlers;
@@ -27,6 +26,7 @@ import com.butent.bee.shared.time.YearMonth;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.StringList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class MonthView extends Component implements HasKeyDownHandlers {
@@ -129,7 +129,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
     }
 
     private final ElementMapperImpl<Cell> elementToCell = new ElementMapperImpl<>();
-    private final List<Cell> cellList = Lists.newArrayList();
+    private final List<Cell> cellList = new ArrayList<>();
 
     private int activeCellIndex = BeeConst.UNDEF;
 
@@ -431,7 +431,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
 
     if (newDate != null) {
       if (getDatePicker().isDateEnabled(newDate)) {
-        getDatePicker().setCurrentMonth(YearMonth.get(newDate));
+        getDatePicker().setCurrentMonth(YearMonth.of(newDate));
         cell = grid.getCell(TimeUtils.dayDiff(firstDisplayed, newDate));
       }
       ok = true;

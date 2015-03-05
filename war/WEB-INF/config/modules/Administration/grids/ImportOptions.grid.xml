@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+
+  name="ImportOptions" viewName="ImportOptions" caption="=trImportOptions"
+  filter="!(RelationOption)"
+  >
+  <g:columns>
+    <DataColumn name="Type">
+      <carry><ui:expression>row.Type</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="Description" required="true" editInPlace="true" />
+  </g:columns>
+</g:Grid>

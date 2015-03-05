@@ -6,6 +6,7 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
 
 import java.util.ArrayList;
@@ -56,6 +57,10 @@ public class Storage {
     }
 
     return lst;
+  }
+
+  public boolean getBoolean(String key) {
+    return Codec.unpack(get(key));
   }
 
   public JustDate getDate(String key) {
@@ -131,6 +136,14 @@ public class Storage {
       lsRemoveItem(key);
     } else {
       items.remove(key);
+    }
+  }
+
+  public void set(String key, Boolean value) {
+    if (BeeUtils.isTrue(value)) {
+      set(key, Codec.pack(value));
+    } else {
+      remove(key);
     }
   }
 

@@ -115,7 +115,7 @@ public class PrintServiceDefect extends AbstractFormInterceptor {
     int priceIndex = Data.getColumnIndex(VIEW_SERVICE_DEFECT_ITEMS,
         TradeConstants.COL_TRADE_ITEM_PRICE);
 
-    NumberFormat priceFormat = Format.getDefaultCurrencyFormat();
+    NumberFormat priceFormat = Format.getDefaultMoneyFormat();
 
     double total = BeeConst.DOUBLE_ZERO;
 
@@ -145,7 +145,7 @@ public class PrintServiceDefect extends AbstractFormInterceptor {
     table.setText(r, COL_QUANTITY, Localized.getConstants().total(),
         STYLE_ITEMS_FOOTER, STYLE_ITEMS_TOTAL_LABEL);
 
-    NumberFormat totalFormat = Format.getDefaultCurrencyFormat();
+    NumberFormat totalFormat = Format.getDefaultMoneyFormat();
     table.setText(r, COL_PRICE, totalFormat.format(total),
         STYLE_ITEMS_FOOTER, STYLE_ITEMS_TOTAL_VALUE);
   }

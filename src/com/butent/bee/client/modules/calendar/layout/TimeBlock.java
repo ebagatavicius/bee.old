@@ -1,15 +1,14 @@
 package com.butent.bee.client.modules.calendar.layout;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TimeBlock {
 
-  private final List<ItemAdapter> adapters = Lists.newArrayList();
-  private final Map<Integer, Integer> occupiedColumns = Maps.newHashMap();
+  private final List<ItemAdapter> adapters = new ArrayList<>();
+  private final Map<Integer, Integer> occupiedColumns = new HashMap<>();
 
   private int totalColumns = 1;
   private int order;

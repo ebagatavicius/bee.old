@@ -27,6 +27,7 @@
 
 .bee-mail-Sender {
   font-weight: bold;
+  cursor: pointer;
 }
 
 .bee-mail-Recipients {
@@ -61,6 +62,7 @@
 
 .bee-mail-Header {
   position: relative;
+  height: 100%;
 }
 
 .bee-mail-HeaderUnread .bee-mail-HeaderAddress, .bee-mail-HeaderUnread  .bee-mail-HeaderSubject {
@@ -118,16 +120,38 @@
   overflow: auto;
 }
 
-.bee-mail-AttachmentsMenu-item a {
+.bee-mail-Attachments a, .bee-mail-AttachmentsMenu-panel a {
   padding: 2px 4px;
   cursor: pointer;
   color: #0A8DE9;
   text-decoration: none;
 }
+.bee-mail-AttachmentsMenu-panel {
+  border-collapse: collapse;
+}
+.bee-mail-AttachmentsMenu-panel tr:hover {
+  background-color: #f2f2f2;
+  cursor: pointer;
+}
+.bee-mail-AttachmentsMenu-panel td {
+  padding: 4px 10px;
+}
 
-.bee-mail-AttachmentsMenu-item:hover {
-  background-color: WhiteSmoke;
-}  
+.bee-mail-MenuPopup, .bee-mail-SearchPopup {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.bee-mail-MenuTable {
+  border-collapse: collapse;
+}
+.bee-mail-MenuTable tr:hover {
+  background-color: #f2f2f2;
+  cursor: pointer;
+}
+.bee-mail-MenuTable td {
+  padding: 4px 10px;
+}
 
 .bee-mail-PartSeparator {
   height: 0;
@@ -145,44 +169,55 @@
 }
 
 .bee-mail-SysFolder, .bee-mail-Folder {
-  padding: 3px;
   cursor: pointer;
   color: #444;
   font-weight: normal;
 }
 
-.bee-mail-Folder-branch:before {
-  content: "\0025BE";
-  margin-right: 3px;
+.bee-mail-SysFolder, .bee-mail-FolderRow {
+  padding: 3px;
+}
+
+.bee-mail-FolderRow {
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  flex-direction: row;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+}
+
+.bee-mail-FolderCaption, .bee-mail-Folder {
+  flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
 }
 
 .bee-mail-FolderCaption {
+  display: inline;
   color: silver;
   font-weight: bold;
 }
 
-.bee-mail-FolderRow {
-  border-collapse: collapse;
-}
-
-.bee-mail-FolderRow tr td:first-child {
-  width: 100%;
-}
-
-.bee-mail-SysFolder:hover, .bee-mail-FolderRow tr:hover {
+.bee-mail-SysFolder:hover, .bee-mail-FolderRow:hover {
   background-color: #f2f2f2;
 }
 
-.bee-mail-FolderAction {
-  margin: 0 3px 0 3px;
+.bee-mail-FolderActions {
   visibility: hidden;
 }
 
-.bee-mail-FolderRow tr:hover .bee-mail-FolderAction {
+.bee-mail-FolderAction {
+  margin-left: 3px;
+  display: inline;
+}
+
+.bee-mail-SysFolder:hover .bee-mail-FolderActions,
+.bee-mail-FolderRow:hover .bee-mail-FolderActions {
   visibility: visible;
 }
 
-.bee-mail-SysFolder-selected, .bee-mail-FolderRow-selected .bee-mail-Folder {
+.bee-mail-SysFolder-selected, .bee-TreeItem-selected .bee-mail-Folder {
   font-weight: bold;
   color: #FD6268;
 }
@@ -195,7 +230,38 @@
   font-style: italic;
 }
 
-.bee-mail-SysFolder-dragOver, .bee-mail-Folder-dragOver {
+.bee-mail-SysFolder.dragOver, .bee-mail-Folder.dragOver {
   outline: 1px dashed red;
 }
 
+.bee-mail-SearchPanel {
+  padding: 10px;
+}
+.bee-mail-SearchPanel .bee-InputText {
+  width: 250px;
+  margin-bottom: 10px;
+}
+.bee-mail-SearchStarred, .bee-mail-SearchUnread, .bee-mail-SearchAttachments {
+  display: block;
+  margin-bottom: 5px;
+}
+.bee-mail-SearchFolder {
+  display: inline-block;
+  margin-top: 10px;
+}
+.bee-mail-SearchButton {
+  float: right;
+  display: inline-block;
+  color: #888;
+  padding: 5px 10px;
+  background-color: whitesmoke;
+  border: 1px solid silver;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+.bee-mail-SearchButton:hover {
+  color: black;
+}
+.bee-mail-SearchExtended {
+  color: red;
+}

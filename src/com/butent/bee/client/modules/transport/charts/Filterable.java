@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.google.common.collect.Maps;
-
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.EnumMap;
@@ -9,7 +7,7 @@ import java.util.EnumMap;
 abstract class Filterable {
 
   private final EnumMap<Filterable.FilterType, Boolean> filterResults =
-      Maps.newEnumMap(Filterable.FilterType.class);
+      new EnumMap<>(Filterable.FilterType.class);
 
   enum FilterType {
     TENTATIVE, PERSISTENT

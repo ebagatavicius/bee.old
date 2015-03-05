@@ -21,6 +21,7 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -327,7 +328,7 @@ public class RpcFactory {
     String content = null;
 
     if (data != null) {
-      content = CommUtils.prepareContent(ctp, data);
+      content = Codec.encodeBase64(CommUtils.prepareContent(ctp, data));
       int size = content.length();
       info.setReqSize(size);
 

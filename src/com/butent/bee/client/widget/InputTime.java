@@ -1,7 +1,6 @@
 package com.butent.bee.client.widget;
 
 import com.google.common.base.CharMatcher;
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -20,8 +19,8 @@ import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.validation.ValidationHelper;
 import com.butent.bee.client.view.edit.EditStopEvent;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.HasIntStep;
 import com.butent.bee.shared.HasBounds;
+import com.butent.bee.shared.HasIntStep;
 import com.butent.bee.shared.State;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.DateTime;
@@ -29,15 +28,16 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InputTime extends InputText implements HasBounds, HasIntStep {
 
-  private static final String STYLE_INPUT = "bee-InputTime";
+  private static final String STYLE_INPUT = BeeConst.CSS_CLASS_PREFIX + "InputTime";
   private static final String STYLE_ACTIVE = STYLE_INPUT + "-active";
 
-  private static final String STYLE_POPUP = "bee-TimeBox-popup";
-  private static final String STYLE_TIME_PICKER = "bee-TimePicker";
+  private static final String STYLE_POPUP = BeeConst.CSS_CLASS_PREFIX + "TimeBox-popup";
+  private static final String STYLE_TIME_PICKER = BeeConst.CSS_CLASS_PREFIX + "TimePicker";
 
   private static final int DEFAULT_PICKER_SIZE = 10;
 
@@ -208,7 +208,7 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
 
   @Override
   public List<String> validate(boolean checkForNull) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     messages.addAll(super.validate(checkForNull));
     if (!messages.isEmpty()) {
       return messages;
@@ -233,7 +233,7 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
 
   @Override
   public List<String> validate(String normalizedValue, boolean checkForNull) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     messages.addAll(super.validate(normalizedValue, checkForNull));
     if (!messages.isEmpty()) {
       return messages;
@@ -516,7 +516,7 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
   }
 
   private List<String> validateBounds(Long millis) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
 
     if (millis != null && !checkBounds(millis)) {
       result.add(TimeUtils.renderTime(millis, true));

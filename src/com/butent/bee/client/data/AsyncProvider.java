@@ -1,8 +1,6 @@
 package com.butent.bee.client.data;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.gwt.user.client.Timer;
 
@@ -30,6 +28,8 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.HandlesActions;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -222,7 +222,7 @@ public class AsyncProvider extends Provider {
   private final CachingPolicy cachingPolicy;
   private final boolean enablePrefetch;
 
-  private final Map<Integer, QueryCallback> pendingRequests = Maps.newLinkedHashMap();
+  private final Map<Integer, QueryCallback> pendingRequests = new LinkedHashMap<>();
   private final RequestScheduler requestScheduler = new RequestScheduler();
 
   private int lastOffset;
@@ -687,7 +687,7 @@ public class AsyncProvider extends Provider {
 
     List<BeeRow> rows;
     if (rowCount <= 0) {
-      rows = Lists.newArrayList();
+      rows = new ArrayList<>();
 
     } else if (displayLimit <= 0) {
       rows = data.getRows();
@@ -705,7 +705,7 @@ public class AsyncProvider extends Provider {
         int toIndex = Math.min(rowCount, fromIndex + displayLimit);
         rows = data.getRows().subList(fromIndex, toIndex);
       } else {
-        rows = Lists.newArrayList();
+        rows = new ArrayList<>();
       }
     }
 

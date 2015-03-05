@@ -1,7 +1,5 @@
 package com.butent.bee.server.modules.administration;
 
-import com.google.common.collect.Maps;
-
 import com.butent.bee.server.Config;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
@@ -14,13 +12,14 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 public final class ExtensionIcons {
 
   private static BeeLogger logger = LogUtils.getLogger(ExtensionIcons.class);
 
-  private static final Map<String, String> icons = Maps.newHashMap();
+  private static final Map<String, String> icons = new HashMap<>();
   private static boolean initialized;
 
   public static String getIcon(String filename) {

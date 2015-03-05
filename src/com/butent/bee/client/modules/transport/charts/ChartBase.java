@@ -1,10 +1,7 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
@@ -51,15 +48,18 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class ChartBase extends TimeBoard {
 
-  private static final String STYLE_PREFIX = "bee-tr-chart-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-chart-";
 
   private static final String STYLE_SHIPMENT_DAY_PREFIX = STYLE_PREFIX + "shipment-day-";
   private static final String STYLE_SHIPMENT_DAY_PANEL = STYLE_SHIPMENT_DAY_PREFIX + "panel";
@@ -161,7 +161,7 @@ public abstract class ChartBase extends TimeBoard {
       VIEW_CARGO_HANDLING, VIEW_CARGO_TRIPS, VIEW_TRIP_CARGO, ClassifierConstants.VIEW_COUNTRIES,
       AdministrationConstants.VIEW_COLORS, AdministrationConstants.VIEW_THEME_COLORS);
 
-  private final List<ChartData> filterData = Lists.newArrayList();
+  private final List<ChartData> filterData = new ArrayList<>();
 
   protected ChartBase() {
     super();
@@ -273,7 +273,7 @@ public abstract class ChartBase extends TimeBoard {
 
               } else {
                 Long newTheme = getColorTheme(result);
-                if (Objects.equal(oldTheme, newTheme)) {
+                if (Objects.equals(oldTheme, newTheme)) {
                   render(false);
                 } else {
                   updateColorTheme(newTheme);
@@ -405,7 +405,7 @@ public abstract class ChartBase extends TimeBoard {
     List<Range<JustDate>> voidRanges;
 
     if (BeeUtils.isEmpty(cargos)) {
-      voidRanges = Lists.newArrayList();
+      voidRanges = new ArrayList<>();
       voidRanges.add(range);
 
     } else {
@@ -541,7 +541,7 @@ public abstract class ChartBase extends TimeBoard {
 
     if (!BeeUtils.isEmpty(events)) {
       if (showPlaceInfo()) {
-        List<String> info = Lists.newArrayList();
+        List<String> info = new ArrayList<>();
 
         if (BeeUtils.isEmpty(flag) && DataUtils.isId(countryId)) {
           String countryLabel = Places.getCountryLabel(countryId);
@@ -579,7 +579,7 @@ public abstract class ChartBase extends TimeBoard {
       }
 
       if (showPlaceCities()) {
-        List<String> info = Lists.newArrayList();
+        List<String> info = new ArrayList<>();
 
         for (CargoEvent event : events) {
           String cityLabel = Places.getCityLabel(event.getCityId());
@@ -597,7 +597,7 @@ public abstract class ChartBase extends TimeBoard {
       }
 
       if (showPlaceCodes()) {
-        List<String> info = Lists.newArrayList();
+        List<String> info = new ArrayList<>();
 
         for (CargoEvent event : events) {
           String codeLabel = event.getPostIndex();
@@ -614,7 +614,7 @@ public abstract class ChartBase extends TimeBoard {
         }
       }
 
-      List<String> title = Lists.newArrayList();
+      List<String> title = new ArrayList<>();
 
       Multimap<OrderCargo, CargoEvent> eventsByCargo = LinkedListMultimap.create();
       for (CargoEvent event : events) {
@@ -622,7 +622,7 @@ public abstract class ChartBase extends TimeBoard {
       }
 
       for (OrderCargo cargo : eventsByCargo.keySet()) {
-        Map<CargoHandling, EnumSet<CargoEvent.Type>> handlingEvents = Maps.newHashMap();
+        Map<CargoHandling, EnumSet<CargoEvent.Type>> handlingEvents = new HashMap<>();
 
         for (CargoEvent event : eventsByCargo.get(cargo)) {
           if (event.isHandlingEvent()) {
@@ -683,7 +683,7 @@ public abstract class ChartBase extends TimeBoard {
 
   private void refreshFilterInfo() {
     if (isFiltered()) {
-      List<String> selection = Lists.newArrayList();
+      List<String> selection = new ArrayList<>();
       for (ChartData data : filterData) {
         Collection<String> selectedNames = data.getSelectedNames();
         if (!selectedNames.isEmpty()) {

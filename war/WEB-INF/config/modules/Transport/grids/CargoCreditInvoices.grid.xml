@@ -4,7 +4,7 @@
 
   name="CargoCreditInvoices" viewName="CargoPurchaseInvoices"
   editShowId="true" flexGrow="1"
-  disabledActions="add"
+  disabledActions="add edit"
   caption="=trCreditInvoices"
   filter="Sale"
   >
@@ -26,7 +26,7 @@
         </ui:function>
       </render>
     </DataColumn>
-    <DataColumn name="SupplierName" caption="=trdSupplier" />
+    <DataColumn name="SupplierName" />
     <DataColumn name="Amount" />
     <DataColumn name="CurrencyName" />
     <DataColumn name="Exported" />

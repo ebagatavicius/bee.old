@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="UserSettings" source="UserSettings" module="Administration"
+  name="UserSettings" source="UserSettings" module="*"
   caption="=userSettings" editForm="UserSettings"
   >
   <Columns>
@@ -32,11 +32,19 @@
     <SimpleColumn name="MailAssignedTasks" />
     <SimpleColumn name="MailNewDiscussions" />
     <SimpleColumn name="MailNewAnnouncements" />
+    <SimpleColumn name="MailCompanyActions" />
 
     <SimpleColumn name="OpenInNewTab" />
 
     <SimpleColumn name="WorkspaceContinue" />
     <SimpleColumn name="LastWorkspace" />
+
+    <SimpleColumn name="ApplianceHeaderHeight" />
+    <SimpleColumn name="ViewHeaderHeight" />
+
+    <SimpleColumn name="ClickSensitivityMillis" />
+    <SimpleColumn name="ClickSensitivityDistance" />
+    <SimpleColumn name="CompanyActionRemindBefore" />
 
     <SimpleColumn name="Style" />
   </Columns>

@@ -15,7 +15,8 @@ import java.util.Map;
 public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
 
   private enum Serial {
-    AGGREGATE, EXPRESSION, EVALUATOR, TYPE, TEXT, HTML, FORMAT, HOR_ALIGN, SCALE, OPTIONS
+    AGGREGATE, EXPRESSION, EVALUATOR, TYPE, TEXT, HTML,
+    FORMAT, HOR_ALIGN, WHITE_SPACE, SCALE, OPTIONS
   }
 
   private static final String ATTR_AGGREGATE = "aggregate";
@@ -42,6 +43,7 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
 
   private String format;
   private String horAlign;
+  private String whiteSpace;
 
   private Integer scale;
 
@@ -96,6 +98,9 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
         case HOR_ALIGN:
           setHorAlign(value);
           break;
+        case WHITE_SPACE:
+          setWhiteSpace(value);
+          break;
         case SCALE:
           setScale(BeeUtils.toIntOrNull(value));
           break;
@@ -141,6 +146,7 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
         "Html", getHtml(),
         "Format", getFormat(),
         "Horizontal Alignment", getHorAlign(),
+        "White Space", getWhiteSpace(),
         "Scale", getScale(),
         "Options", getOptions());
 
@@ -163,6 +169,10 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
 
   public String getType() {
     return type;
+  }
+
+  public String getWhiteSpace() {
+    return whiteSpace;
   }
 
   public void replaceColumn(String oldId, String newId) {
@@ -202,6 +212,9 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
           break;
         case HOR_ALIGN:
           arr[i++] = getHorAlign();
+          break;
+        case WHITE_SPACE:
+          arr[i++] = getWhiteSpace();
           break;
         case SCALE:
           arr[i++] = getScale();
@@ -291,5 +304,9 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public void setWhiteSpace(String whiteSpace) {
+    this.whiteSpace = whiteSpace;
   }
 }

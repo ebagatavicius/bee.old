@@ -23,7 +23,6 @@ import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Report;
 import com.butent.bee.client.output.ReportParameters;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasIndexedWidgets;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -50,6 +49,7 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.time.YearMonth;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -120,7 +120,7 @@ public class CompanyTypeReport extends ReportInterceptor {
 
   private static final String NAME_TYPES = "Types";
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "co-ctr-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "co-ctr-";
 
   private static final String STYLE_TABLE = STYLE_PREFIX + "table";
   private static final String STYLE_HEADER = STYLE_PREFIX + "header";
@@ -149,7 +149,7 @@ public class CompanyTypeReport extends ReportInterceptor {
       String types, String typesLabel) {
 
     List<String> labels = Lists.newArrayList(Localized.getConstants().clients());
-    List<String> filterArgs = Lists.newArrayList();
+    List<String> filterArgs = new ArrayList<>();
 
     DateTime lower = (ym == null) ? start : BeeUtils.max(ym.getDate().getDateTime(), start);
     DateTime upper = (ym == null) ? end : BeeUtils.min(ym.nextMonth().getDate().getDateTime(), end);
@@ -223,26 +223,25 @@ public class CompanyTypeReport extends ReportInterceptor {
   @Override
   public void onLoad(FormView form) {
     ReportParameters parameters = readParameters();
-    if (parameters == null) {
-      return;
-    }
 
-    Widget widget = form.getWidgetByName(NAME_START_DATE);
-    DateTime dateTime = parameters.getDateTime(NAME_START_DATE);
-    if (widget instanceof InputDateTime && dateTime != null) {
-      ((InputDateTime) widget).setDateTime(dateTime);
-    }
+    if (parameters != null) {
+      Widget widget = form.getWidgetByName(NAME_START_DATE);
+      DateTime dateTime = parameters.getDateTime(NAME_START_DATE);
+      if (widget instanceof InputDateTime && dateTime != null) {
+        ((InputDateTime) widget).setDateTime(dateTime);
+      }
 
-    widget = form.getWidgetByName(NAME_END_DATE);
-    dateTime = parameters.getDateTime(NAME_END_DATE);
-    if (widget instanceof InputDateTime && dateTime != null) {
-      ((InputDateTime) widget).setDateTime(dateTime);
-    }
+      widget = form.getWidgetByName(NAME_END_DATE);
+      dateTime = parameters.getDateTime(NAME_END_DATE);
+      if (widget instanceof InputDateTime && dateTime != null) {
+        ((InputDateTime) widget).setDateTime(dateTime);
+      }
 
-    widget = form.getWidgetByName(NAME_TYPES);
-    String idList = parameters.get(NAME_TYPES);
-    if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
-      ((MultiSelector) widget).setIds(idList);
+      widget = form.getWidgetByName(NAME_TYPES);
+      String idList = parameters.get(NAME_TYPES);
+      if (widget instanceof MultiSelector && !BeeUtils.isEmpty(idList)) {
+        ((MultiSelector) widget).setIds(idList);
+      }
     }
 
     super.onLoad(form);
@@ -301,7 +300,7 @@ public class CompanyTypeReport extends ReportInterceptor {
           SimpleRowSet data = SimpleRowSet.restore(response.getResponseAsString());
           renderData(transformData(data), start, end, types, typesLabel);
 
-          List<String> headers = Lists.newArrayList(getCaption());
+          List<String> headers = Lists.newArrayList(getReportCaption());
           if (start != null || end != null) {
             headers.add(Format.renderPeriod(start, end));
           }
@@ -329,13 +328,13 @@ public class CompanyTypeReport extends ReportInterceptor {
   @Override
   protected void export() {
     if (!sheet.isEmpty()) {
-      Exporter.maybeExport(sheet, getCaption());
+      Exporter.maybeExport(sheet, getReportCaption());
     }
   }
 
   @Override
   protected String getBookmarkLabel() {
-    return BeeUtils.joinWords(getCaption(),
+    return BeeUtils.joinWords(getReportCaption(),
         Format.renderPeriod(getDateTime(NAME_START_DATE), getDateTime(NAME_END_DATE)),
         getFilterLabel(NAME_TYPES));
   }
@@ -377,12 +376,12 @@ public class CompanyTypeReport extends ReportInterceptor {
       container.clear();
     }
 
-    List<YearMonth> yms = Lists.newArrayList(data.rowKeySet());
+    List<YearMonth> yms = new ArrayList<>(data.rowKeySet());
     if (yms.size() > 1) {
       Collections.sort(yms);
     }
 
-    final List<Column> columns = Lists.newArrayList(data.columnKeySet());
+    final List<Column> columns = new ArrayList<>(data.columnKeySet());
     if (columns.size() > 1) {
       Collections.sort(columns);
     }

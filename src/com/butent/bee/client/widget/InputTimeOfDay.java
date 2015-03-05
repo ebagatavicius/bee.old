@@ -34,6 +34,6 @@ public class InputTimeOfDay extends InputTime {
 
   @Override
   protected String getDefaultStyleName() {
-    return "bee-InputTimeOfDay";
+    return BeeConst.CSS_CLASS_PREFIX + "InputTimeOfDay";
   }
 }

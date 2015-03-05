@@ -1,8 +1,6 @@
 package com.butent.bee.client.style;
 
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.gwt.core.client.JavaScriptObject;
 
@@ -16,7 +14,9 @@ import com.butent.bee.shared.export.XSheet;
 import com.butent.bee.shared.ui.ConditionalStyleDeclaration;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +86,7 @@ public final class ConditionalStyle {
 
   private static final String STYLE_INTERPRETER_PREFIX = "=";
 
-  private static final Map<String, StyleProvider> gridRowStyleProviders = Maps.newHashMap();
+  private static final Map<String, StyleProvider> gridRowStyleProviders = new HashMap<>();
   private static final Table<String, String, StyleProvider> gridColumnStyleProviders =
       HashBasedTable.create();
 
@@ -149,7 +149,7 @@ public final class ConditionalStyle {
     gridRowStyleProviders.put(gridName, styleProvider);
   }
 
-  private final List<Entry> entries = Lists.newArrayList();
+  private final List<Entry> entries = new ArrayList<>();
   private final StyleProvider provider;
 
   private ConditionalStyle(StyleProvider provider) {

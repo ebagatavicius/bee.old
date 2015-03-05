@@ -1,17 +1,15 @@
 package com.butent.bee.client.modules.calendar.layout;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ItemStackingManager {
 
-  private final Map<Integer, List<ItemLayoutDescription>> layers = Maps.newHashMap();
+  private final Map<Integer, List<ItemLayoutDescription>> layers = new HashMap<>();
 
   private final int maxLayer;
 
@@ -56,7 +54,7 @@ public class ItemStackingManager {
   }
 
   public List<CalendarItem> getOverLimit(int day) {
-    List<CalendarItem> result = Lists.newArrayList();
+    List<CalendarItem> result = new ArrayList<>();
 
     for (int layer = 0; layer <= highestLayer; layer++) {
       List<ItemLayoutDescription> descriptions = layers.get(layer);

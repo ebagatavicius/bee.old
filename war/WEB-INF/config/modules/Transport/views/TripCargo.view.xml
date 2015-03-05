@@ -28,7 +28,7 @@
 
       <SimpleJoin name="LoadingPlace" joinType="LEFT">
         <SimpleColumn name="Date" alias="CargoLoadingDate" label="=trLoadingDate" />
-        <SimpleColumn name="Number" alias="CargoLoadingNumber" />
+        <SimpleColumn name="Number" alias="CargoLoadingNumber" label="=trLoadingNumber" />
         <SimpleColumn name="Contact" alias="CargoLoadingContact" label="=trLoadingContact" />
         <SimpleColumn name="Company" alias="CargoLoadingCompany" label="=trLoadingCompany" />
         <SimpleColumn name="Address" alias="CargoLoadingAddress" label="=trLoadingAddress" />
@@ -45,7 +45,7 @@
   
       <SimpleJoin name="UnloadingPlace" joinType="LEFT">
         <SimpleColumn name="Date" alias="CargoUnloadingDate" label="=trUnloadingDate" />
-        <SimpleColumn name="Number" alias="CargoUnloadingNumber" />
+        <SimpleColumn name="Number" alias="CargoUnloadingNumber" label="=trUnloadingNumber" />
         <SimpleColumn name="Contact" alias="CargoUnloadingContact" label="=trUnloadingContact" />
         <SimpleColumn name="Company" alias="CargoUnloadingCompany" label="=trUnloadingCompany" />
         <SimpleColumn name="Address" alias="CargoUnloadingAddress" label="=trUnloadingAddress" />
@@ -63,7 +63,8 @@
     
     <SimpleJoin name="LoadingPlace" joinType="LEFT">
       <SimpleColumn name="Date" alias="LoadingDate" label="=trLoadingDate" />
-      <SimpleColumn name="Number" alias="LoadingNumber" />
+      <SimpleColumn name="Note" alias="LoadingNote" label="=trLoadingNote" />
+      <SimpleColumn name="Number" alias="LoadingNumber" label="=trLoadingNumber" />
       <SimpleColumn name="Contact" alias="LoadingContact" label="=trLoadingContact" />
       <SimpleColumn name="Company" alias="LoadingCompany" label="=trLoadingCompany" />
       <SimpleColumn name="Address" alias="LoadingAddress" label="=trLoadingAddress" />
@@ -82,7 +83,8 @@
 
     <SimpleJoin name="UnloadingPlace" joinType="LEFT">
       <SimpleColumn name="Date" alias="UnloadingDate" label="=trUnloadingDate" />
-      <SimpleColumn name="Number" alias="UnloadingNumber" />
+      <SimpleColumn name="Note" alias="UnloadingNote" label="=trUnloadingNote" />
+      <SimpleColumn name="Number" alias="UnloadingNumber" label="=trUnloadingNumber" />
       <SimpleColumn name="Contact" alias="UnloadingContact" label="=trUnloadingContact" />
       <SimpleColumn name="Company" alias="UnloadingCompany" label="=trUnloadingCompany" />
       <SimpleColumn name="Address" alias="UnloadingAddress" label="=trUnloadingAddress" />

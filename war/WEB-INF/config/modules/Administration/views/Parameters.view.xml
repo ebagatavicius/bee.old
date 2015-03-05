@@ -2,16 +2,11 @@
 <View xmlns="http://www.butent.com/view"
 
   name="Parameters" source="Parameters" module="Administration"
-  caption="=parameters"
+  caption="=parameters" readOnly="true"
   >
   <Columns>
-    <SimpleColumn name="Module" />
     <SimpleColumn name="Name" />
     <SimpleColumn name="Value" />
   </Columns>
-  <Order>
-    <OrderBy column="Module" />
-    <OrderBy column="Name" />
-  </Order>
 </View>
  

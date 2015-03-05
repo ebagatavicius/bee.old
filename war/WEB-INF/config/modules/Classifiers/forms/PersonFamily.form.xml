@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY lbl1 "margin-left: 1em; text-align: right; padding-right: 9px;">
+  <!ENTITY inp1 "width: 180px;">
+]>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  
+  name="PersonFamily" viewName="PersonFamily" caption="=contactFamily" width="800" height="250"
+  >
+  <FlowPanel class="flexBox-vertical">
+    <Table>
+        <row>
+          <Label text="=firstName" style="&lbl1;" class="bee-required" />
+          <InputText style="&inp1;" source="FirstName" />
+          <Label text="=lastName" style="&lbl1;"   />
+          <InputText style="&inp1;" source="LastName" class="bee-required" />
+          <Label text="=contactFamilyRelation" style="&lbl1;"   />
+          <DataSelector source="Relation" style="&inp1;" summarize="true" />
+        </row>
+        <row>
+          <Label text="=dateOfBirth" style="&lbl1;" />
+          <InputDate source="DateOfBirth" style="&inp1;" minValue="1900" maxValue="2000" />
+          <Label text="=phone" style="&lbl1;" for="Phone" />
+          <InputText style="&inp1;" source="Phone" />
+        </row>
+    </Table>
+  </FlowPanel>
+</f:Form>  

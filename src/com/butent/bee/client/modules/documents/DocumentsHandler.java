@@ -1,9 +1,7 @@
 package com.butent.bee.client.modules.documents;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.shared.HasHandlers;
 
 import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
@@ -21,7 +19,6 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.modules.trade.TradeUtils;
-import com.butent.bee.client.presenter.GridFormPresenter;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.render.FileLinkRenderer;
@@ -29,9 +26,8 @@ import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.FileUtils;
-import com.butent.bee.client.view.add.ReadyForInsertEvent;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -52,17 +48,18 @@ import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
-import com.butent.bee.shared.logging.BeeLogger;
-import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -70,28 +67,20 @@ public final class DocumentsHandler {
 
   private static final class DocumentBuilder extends AbstractFormInterceptor {
 
-    private static final BeeLogger logger = LogUtils.getLogger(DocumentBuilder.class);
-
-    private static void copyValues(FormView form, IsRow oldRow, IsRow newRow,
-        List<String> colNames) {
-      for (String colName : colNames) {
-        int index = form.getDataIndex(colName);
-        if (index >= 0) {
-          newRow.setValue(index, oldRow.getString(index));
-        } else {
-          logger.warning("copyValues: column", colName, "not found");
-        }
-      }
-    }
-
     private FileCollector collector;
 
-    private DocumentBuilder() {
+    @Override
+    public void afterInsertRow(IsRow result, boolean forced) {
+      if (collector != null && !collector.isEmpty()) {
+        sendFiles(result.getId(), collector.getFiles(), null);
+        collector.clear();
+      }
     }
 
     @Override
     public void afterCreateWidget(String name, IdentifiableWidget widget,
         WidgetDescriptionCallback callback) {
+
       if (widget instanceof FileCollector) {
         this.collector = (FileCollector) widget;
         this.collector.bindDnd(getFormView());
@@ -102,67 +91,6 @@ public final class DocumentsHandler {
     public FormInterceptor getInstance() {
       return new DocumentBuilder();
     }
-
-    @Override
-    public void onReadyForInsert(HasHandlers listener, final ReadyForInsertEvent event) {
-      Assert.notNull(event);
-      event.consume();
-
-      if (getCollector() == null) {
-        event.getCallback().onFailure("File collector not found");
-        return;
-      }
-
-      if (getCollector().isEmpty()) {
-        event.getCallback().onFailure(Localized.getConstants().chooseFiles());
-        return;
-      }
-
-      Queries.insert(VIEW_DOCUMENTS, event.getColumns(), event.getValues(),
-          event.getChildren(), new RowCallback() {
-            @Override
-            public void onFailure(String... reason) {
-              event.getCallback().onFailure(reason);
-            }
-
-            @Override
-            public void onSuccess(BeeRow result) {
-              event.getCallback().onSuccess(result);
-              sendFiles(result.getId(), getCollector().getFiles(), null);
-            }
-          });
-    }
-
-    @Override
-    public void onStartNewRow(final FormView form, IsRow oldRow, final IsRow newRow) {
-      if (getCollector() != null) {
-        getCollector().clear();
-      }
-
-      if (oldRow != null) {
-        copyValues(form, oldRow, newRow,
-            Lists.newArrayList(COL_DOCUMENT_CATEGORY, ALS_CATEGORY_NAME,
-                COL_DOCUMENT_TYPE, ALS_TYPE_NAME,
-                COL_DOCUMENT_PLACE, ALS_PLACE_NAME));
-
-      } else if (form.getViewPresenter() instanceof GridFormPresenter) {
-        GridInterceptor gcb = ((GridFormPresenter) form.getViewPresenter()).getGridInterceptor();
-
-        if (gcb instanceof DocumentsGrid) {
-          IsRow category = ((DocumentsGrid) gcb).getSelectedCategory();
-
-          if (category != null) {
-            newRow.setValue(form.getDataIndex(COL_DOCUMENT_CATEGORY), category.getId());
-            newRow.setValue(form.getDataIndex(ALS_CATEGORY_NAME),
-                ((DocumentsGrid) gcb).getCategoryValue(category, COL_DOCUMENT_NAME));
-          }
-        }
-      }
-    }
-
-    private FileCollector getCollector() {
-      return collector;
-    }
   }
 
   private static final class FileGridHandler extends AbstractGridInterceptor {
@@ -170,7 +98,7 @@ public final class DocumentsHandler {
     private static Collection<FileInfo> sanitize(GridView gridView,
         Collection<? extends FileInfo> input) {
 
-      Collection<FileInfo> result = Lists.newArrayList();
+      Collection<FileInfo> result = new ArrayList<>();
       if (BeeUtils.isEmpty(input)) {
         return result;
       }
@@ -186,13 +114,13 @@ public final class DocumentsHandler {
       int sizeIndex = gridView.getDataIndex(AdministrationConstants.ALS_FILE_SIZE);
       int typeIndex = gridView.getDataIndex(AdministrationConstants.ALS_FILE_TYPE);
 
-      Set<FileInfo> oldFiles = Sets.newHashSet();
+      Set<FileInfo> oldFiles = new HashSet<>();
       for (IsRow row : data) {
         oldFiles.add(new FileInfo(row.getLong(fileIndex), row.getString(nameIndex),
             row.getLong(sizeIndex), row.getString(typeIndex)));
       }
 
-      List<String> messages = Lists.newArrayList();
+      List<String> messages = new ArrayList<>();
 
       for (FileInfo fi : input) {
         if (oldFiles.contains(fi)) {
@@ -278,7 +206,7 @@ public final class DocumentsHandler {
 
         gridView.add(collector);
 
-        FormView form = UiHelper.getForm(gridView.asWidget());
+        FormView form = ViewHelper.getForm(gridView.asWidget());
         if (form != null) {
           collector.bindDnd(form);
         }
@@ -353,7 +281,7 @@ public final class DocumentsHandler {
   public static void register() {
     GridFactory.registerGridInterceptor(VIEW_DOCUMENT_TEMPLATES, new DocumentTemplatesGrid());
 
-    GridFactory.registerGridInterceptor(VIEW_DOCUMENTS, new DocumentsGrid());
+    GridFactory.registerGridInterceptor(VIEW_DOCUMENTS, new DocumentTemplatesGrid());
     GridFactory.registerGridInterceptor(VIEW_DOCUMENT_FILES, new FileGridHandler());
 
     GridFactory.registerGridInterceptor("RelatedDocuments", new RelatedDocumentsHandler());
@@ -361,7 +289,7 @@ public final class DocumentsHandler {
     FormFactory.registerFormInterceptor(TBL_DOCUMENT_TREE, new DocumentTreeForm());
 
     FormFactory.registerFormInterceptor("DocumentTemplate", new DocumentTemplateForm());
-    FormFactory.registerFormInterceptor("Document", new DocumentForm());
+    FormFactory.registerFormInterceptor(FORM_DOCUMENT, new DocumentForm());
     FormFactory.registerFormInterceptor("DocumentItem", new DocumentDataForm());
 
     FormFactory.registerFormInterceptor("NewDocument", new DocumentBuilder());
@@ -412,7 +340,8 @@ public final class DocumentsHandler {
           Data.setValue(viewName, row, COL_DOCUMENT, docId);
           Data.setValue(viewName, row, AdministrationConstants.COL_FILE, result);
 
-          Data.setValue(viewName, row, COL_FILE_DATE, fileInfo.getFileDate());
+          Data.setValue(viewName, row, COL_FILE_DATE,
+              fileInfo.getFileDate() == null ? new DateTime() : fileInfo.getFileDate());
           Data.setValue(viewName, row, COL_FILE_VERSION, fileInfo.getFileVersion());
 
           Data.setValue(viewName, row, COL_FILE_CAPTION,

@@ -1,7 +1,5 @@
 package com.butent.bee.server;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.server.sql.SqlBuilderFactory;
 import com.butent.bee.server.utils.BeeDataSource;
 import com.butent.bee.shared.Assert;
@@ -40,12 +38,8 @@ public class DataSourceBean {
     if (!bds.isEmpty()) {
       for (BeeDataSource z : bds) {
         if (z.isOpen()) {
-          try {
-            z.close();
-            logger.info("DSN closed:", z.getDsn());
-          } catch (Exception ex) {
-            logger.warning(ex);
-          }
+          z.close();
+          logger.info("DSN closed:", z.getDsn());
         }
       }
     }
@@ -69,7 +63,7 @@ public class DataSourceBean {
   }
 
   public List<String> getDsns() {
-    List<String> dsns = Lists.newArrayList();
+    List<String> dsns = new ArrayList<>();
 
     if (!bds.isEmpty()) {
       for (BeeDataSource z : bds) {

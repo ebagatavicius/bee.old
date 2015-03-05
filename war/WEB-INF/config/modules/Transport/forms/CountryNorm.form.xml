@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  
+  name="CountryNorm" viewName="CountryNorms" caption="=trCountryNorm"
+  >
+  <FlowPanel class="flexBox-vertical">
+    <Table style="margin: 10px;">
+      <col index="0" kind="label" />
+
+      <row for="Country">
+        <Label for="Country" />
+        <DataSelector source="Country" newRowEnabled="false" />
+      </row>
+      <row for="DailyCostsItem">
+        <Label for="DailyCostsItem" />
+        <DataSelector source="DailyCostsItem" style="width: 200px;" newRowEnabled="false" />
+      </row>
+      <row for="RoadCostsItem">
+        <Label for="RoadCostsItem" />
+        <DataSelector source="RoadCostsItem" style="width: 200px;" newRowEnabled="false" />
+      </row>
+    </Table>
+
+    <br/>
+    <ChildGrid class="flexible" name="CountryDailyCosts" relColumn="CountryNorm" />
+  </FlowPanel>
+</f:Form>  

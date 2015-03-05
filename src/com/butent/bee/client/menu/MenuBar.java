@@ -23,8 +23,8 @@ import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.menu.MenuConstants;
-import com.butent.bee.shared.menu.MenuConstants.BAR_TYPE;
-import com.butent.bee.shared.menu.MenuConstants.ITEM_TYPE;
+import com.butent.bee.shared.menu.MenuConstants.BarType;
+import com.butent.bee.shared.menu.MenuConstants.ItemType;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
@@ -47,8 +47,8 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
 
   private static AbstractImagePrototype subMenuIcon;
 
-  private static final String STYLENAME_DEFAULT = "bee-MenuBar";
-  private static final String STYLENAME_ROOT = "bee-MenuRoot";
+  private static final String STYLENAME_DEFAULT = BeeConst.CSS_CLASS_PREFIX + "MenuBar";
+  private static final String STYLENAME_ROOT = BeeConst.CSS_CLASS_PREFIX + "MenuRoot";
 
   static {
     Resources resources = GWT.create(Resources.class);
@@ -68,8 +68,8 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
   private final int level;
   private final boolean vertical;
 
-  private final BAR_TYPE barType;
-  private final ITEM_TYPE itemType;
+  private final BarType barType;
+  private final ItemType itemType;
   private final String name = NameUtils.createUniqueName("mb-");
 
   public MenuBar() {
@@ -84,19 +84,19 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
     this(level, vert, null);
   }
 
-  public MenuBar(int level, boolean vert, BAR_TYPE bt) {
+  public MenuBar(int level, boolean vert, BarType bt) {
     this(level, vert, bt, null);
   }
 
-  public MenuBar(int level, boolean vert, BAR_TYPE bt, ITEM_TYPE it) {
+  public MenuBar(int level, boolean vert, BarType bt, ItemType it) {
     this(level, vert, bt, it, false);
   }
 
-  public MenuBar(int level, boolean vert, BAR_TYPE bt, ITEM_TYPE it, boolean wheel) {
+  public MenuBar(int level, boolean vert, BarType bt, ItemType it, boolean wheel) {
     this.level = level;
     this.vertical = vert;
 
-    this.barType = (bt == null) ? BAR_TYPE.TABLE : bt;
+    this.barType = (bt == null) ? BarType.TABLE : bt;
     this.itemType = (it == null) ? MenuItem.DEFAULT_TYPE : it;
 
     init(wheel);
@@ -107,11 +107,11 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
     return insertItem(item, allItems.size());
   }
 
-  public MenuItem addItem(String text, ITEM_TYPE type, MenuBar mb) {
+  public MenuItem addItem(String text, ItemType type, MenuBar mb) {
     return addItem(new MenuItem(this, text, type, mb));
   }
 
-  public MenuItem addItem(String text, ITEM_TYPE type, MenuCommand cmd) {
+  public MenuItem addItem(String text, ItemType type, MenuCommand cmd) {
     return addItem(new MenuItem(this, text, type, cmd));
   }
 
@@ -177,7 +177,7 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
     return items;
   }
 
-  public ITEM_TYPE getItemType() {
+  public ItemType getItemType() {
     return itemType;
   }
 
@@ -392,7 +392,7 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
   }
 
   public void prepare() {
-    if (barType == BAR_TYPE.LIST && items.size() > 1) {
+    if (barType == BarType.LIST && items.size() > 1) {
       SelectElement.as(body).setSize(items.size());
     }
   }
@@ -433,7 +433,7 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
   }
 
   public void updateSubmenuIcon(MenuItem item) {
-    if (barType != BAR_TYPE.TABLE) {
+    if (barType != BarType.TABLE) {
       return;
     }
     if (!vertical) {
@@ -493,7 +493,7 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
   }
 
   private void addItemElement(int beforeIndex, Element elem) {
-    if (barType != BAR_TYPE.TABLE) {
+    if (barType != BarType.TABLE) {
       DOM.insertChild(body, elem, beforeIndex);
       return;
 

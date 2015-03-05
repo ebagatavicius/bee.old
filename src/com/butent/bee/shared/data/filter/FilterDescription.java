@@ -1,8 +1,5 @@
 package com.butent.bee.shared.data.filter;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
@@ -14,7 +11,9 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,7 +69,7 @@ public class FilterDescription implements BeeSerializable, HasInfo {
     Assert.notEmpty(key);
     Assert.notEmpty(value);
 
-    Map<String, String> values = Maps.newHashMap();
+    Map<String, String> values = new HashMap<>();
     values.put(key, value);
 
     return createValue(values);
@@ -87,7 +86,7 @@ public class FilterDescription implements BeeSerializable, HasInfo {
 
   public static List<FilterComponent> restoreComponents(String serialized) {
     Assert.notEmpty(serialized);
-    List<FilterComponent> result = Lists.newArrayList();
+    List<FilterComponent> result = new ArrayList<>();
 
     String[] arr = Codec.beeDeserializeCollection(serialized);
     if (ArrayUtils.isEmpty(arr)) {
@@ -105,7 +104,7 @@ public class FilterDescription implements BeeSerializable, HasInfo {
 
   public static List<FilterDescription> restoreList(String serialized) {
     Assert.notEmpty(serialized);
-    List<FilterDescription> result = Lists.newArrayList();
+    List<FilterDescription> result = new ArrayList<>();
 
     String[] arr = Codec.beeDeserializeCollection(serialized);
     if (ArrayUtils.isEmpty(arr)) {
@@ -141,7 +140,7 @@ public class FilterDescription implements BeeSerializable, HasInfo {
   private String name;
 
   private String label;
-  private final List<FilterComponent> components = Lists.newArrayList();
+  private final List<FilterComponent> components = new ArrayList<>();
 
   private Boolean initial;
 

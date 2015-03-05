@@ -18,6 +18,7 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.PreviewHandler;
 import com.butent.bee.client.event.Previewer;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.style.StyleUtils;
@@ -31,6 +32,8 @@ import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.edit.EditorAssistant;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.State;
+import com.butent.bee.shared.data.value.IntegerValue;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -46,11 +49,12 @@ import elemental.js.dom.JsElement;
 public class RichTextEditor extends Flow implements Editor, AdjustmentListener, PreviewHandler,
     HasKeyDownHandlers {
 
-  private static final String STYLE_CONTAINER = "bee-RichTextEditor";
-  private static final String STYLE_CONTAINER_EMBEDDED = "bee-RichTextEditor-embedded";
-  private static final String STYLE_TOOLBAR = "bee-RichTextToolbar";
-  private static final String STYLE_PANEL = "bee-RichTextPanel";
-  private static final String STYLE_AREA = "bee-RichTextArea";
+  private static final String STYLE_CONTAINER = BeeConst.CSS_CLASS_PREFIX + "RichTextEditor";
+  private static final String STYLE_CONTAINER_EMBEDDED = BeeConst.CSS_CLASS_PREFIX
+      + "RichTextEditor-embedded";
+  private static final String STYLE_TOOLBAR = BeeConst.CSS_CLASS_PREFIX + "RichTextToolbar";
+  private static final String STYLE_PANEL = BeeConst.CSS_CLASS_PREFIX + "RichTextPanel";
+  private static final String STYLE_AREA = BeeConst.CSS_CLASS_PREFIX + "RichTextArea";
 
   private final RichTextToolbar toolbar;
   private final RichTextArea area;
@@ -64,6 +68,8 @@ public class RichTextEditor extends Flow implements Editor, AdjustmentListener, 
   private String options;
 
   private boolean handlesTabulation;
+
+  private boolean summarize;
 
   public RichTextEditor(boolean embedded) {
     super();
@@ -123,6 +129,11 @@ public class RichTextEditor extends Flow implements Editor, AdjustmentListener, 
   }
 
   @Override
+  public HandlerRegistration addSummaryChangeHandler(SummaryChangeEvent.Handler handler) {
+    return addHandler(handler, SummaryChangeEvent.getType());
+  }
+
+  @Override
   public void adjust(Element source) {
     if (source != null) {
       StyleUtils.copyProperties(source, getElement(), StyleUtils.STYLE_LEFT, StyleUtils.STYLE_TOP);
@@ -157,6 +168,11 @@ public class RichTextEditor extends Flow implements Editor, AdjustmentListener, 
   @Override
   public String getOptions() {
     return options;
+  }
+
+  @Override
+  public Value getSummary() {
+    return new IntegerValue(BeeUtils.countLines(getValue()));
   }
 
   @Override
@@ -272,6 +288,11 @@ public class RichTextEditor extends Flow implements Editor, AdjustmentListener, 
   }
 
   @Override
+  public void setSummarize(boolean summarize) {
+    this.summarize = summarize;
+  }
+
+  @Override
   public void setTabIndex(int index) {
     getArea().setTabIndex(index);
   }
@@ -297,6 +318,11 @@ public class RichTextEditor extends Flow implements Editor, AdjustmentListener, 
         }
       });
     }
+  }
+
+  @Override
+  public boolean summarize() {
+    return summarize;
   }
 
   @Override

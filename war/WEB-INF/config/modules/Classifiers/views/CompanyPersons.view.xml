@@ -3,27 +3,34 @@
   xmlns:xpr="http://www.butent.com/expression"
   
   name="CompanyPersons" source="CompanyPersons" module="Classifiers.Contacts"
-  caption="=personContacts"
-  newRowForm="CompanyAndPerson" newRowCaption="=newCompanyPerson"
-  editForm="CompanyAndPerson"
+  caption="=companyPersons"
+  newRowForm="CompanyPerson" newRowCaption="=newCompanyPerson"
+  editForm="CompanyPerson"
   >
   <Columns>
-    <SimpleColumn name="Position" />
-    <SimpleJoin name="Position" joinType="LEFT">
-      <SimpleColumn name="Name" alias="PositionName" />
-    </SimpleJoin>
-      
     <SimpleColumn name="Company" />
     <SimpleJoin name="Company" joinType="LEFT">
-      <SimpleColumn alias="CompanyName" name="Name" />
+      <SimpleColumn name="Name" alias="CompanyName" />
     </SimpleJoin>
 
     <SimpleColumn name="Person" />
     <SimpleJoin name="Person" joinType="LEFT">
-      <SimpleColumn name="FirstName" editable="true" />
-      <SimpleColumn name="LastName" editable="true" />
-      <SimpleColumn name="DateOfBirth" editable="true" />
+      <SimpleColumn name="FirstName" />
+      <SimpleColumn name="LastName" />
     </SimpleJoin>
+    
+    <SimpleColumn name="Department" />
+    <SimpleJoin name="Department" joinType="LEFT">
+        <SimpleColumn name="Name" alias="DepartmentName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Position" />
+    <SimpleJoin name="Position" joinType="LEFT">
+      <SimpleColumn name="Name" alias="PositionName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="DateOfEmployment" />
+    <SimpleColumn name="DateOfDismissal" />
 
     <SimpleJoin name="Contact" joinType="LEFT">
       <SimpleColumn name="Phone" />

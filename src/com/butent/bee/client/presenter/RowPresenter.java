@@ -8,13 +8,13 @@ import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.ElementSize;
 import com.butent.bee.client.output.Printable;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.view.form.FormAndHeader;
 import com.butent.bee.client.view.form.FormView;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -65,9 +65,9 @@ public class RowPresenter extends AbstractPresenter implements Printable, SaveCh
     }
   }
 
-  public static final String STYLE_CONTAINER = StyleUtils.CLASS_NAME_PREFIX + "RowContainer";
-  public static final String STYLE_HEADER = StyleUtils.CLASS_NAME_PREFIX + "RowHeader";
-  public static final String STYLE_CAPTION = StyleUtils.CLASS_NAME_PREFIX + "RowCaption";
+  public static final String STYLE_CONTAINER = BeeConst.CSS_CLASS_PREFIX + "RowContainer";
+  public static final String STYLE_HEADER = BeeConst.CSS_CLASS_PREFIX + "RowHeader";
+  public static final String STYLE_CAPTION = BeeConst.CSS_CLASS_PREFIX + "RowCaption";
 
   private static HeaderView createHeader(String caption, Set<Action> enabledActions,
       Set<Action> disabledActions) {

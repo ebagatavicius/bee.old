@@ -23,18 +23,6 @@
         <SimpleColumn name="ForwarderVehicle" editable="true" />
         <SimpleColumn name="Notes" label="=transportOtherDetails" editable="true" />
       </SimpleJoin>
-  
-      <SimpleJoin name="LoadingPlace" joinType="LEFT">
-        <SimpleColumn name="Date" alias="LoadingDate" editable="true" label="=trLoadingDate" />
-        <SimpleColumn name="Contact" alias="LoadingContact" editable="true" label="=trLoadingContact" />
-        <SimpleColumn name="Address" alias="LoadingAddress" editable="true" label="=trLoadingAddress" />
-      </SimpleJoin>
-  
-      <SimpleJoin name="UnloadingPlace" joinType="LEFT">
-        <SimpleColumn name="Date" alias="UnloadingDate" editable="true" label="=trUnloadingDate" />
-        <SimpleColumn name="Contact" alias="UnloadingContact" editable="true" label="=trUnloadingContact" />
-        <SimpleColumn name="Address" alias="UnloadingAddress" editable="true" label="=trUnloadingAddress" />
-      </SimpleJoin>
     </SimpleJoin>
 
     <SimpleJoin joinType="INNER" name="CargoExpense">
@@ -49,6 +37,9 @@
       <SimpleJoin joinType="LEFT" name="Currency">
         <SimpleColumn name="Name" alias="CurrencyName" />
       </SimpleJoin>
+      <SimpleColumn name="VatPlus" />
+      <SimpleColumn name="Vat" />
+      <SimpleColumn name="VatPercent" />
       <SimpleColumn name="Supplier" editable="true" />
       <SimpleJoin name="Supplier" joinType="LEFT">
         <SimpleColumn name="Name" alias="SupplierName" />

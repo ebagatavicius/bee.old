@@ -8,7 +8,11 @@ name="Administration" label="=administration" order="1000" module="Administratio
 
   <Item name="UserGroupSettings" label="=userGroups" service="grid"
     parameters="UserGroupSettings" separator="true" />
-  <Item name="Departments" label="=departments" service="grid" parameters="Departments" />
+
+  <Item name="Departments" label="=departments" service="grid" parameters="Departments"
+    separator="true" />
+  <Item name="CompanyStructure" label="=companyStructure" service="form"
+    parameters="CompanyStructure" data="Departments" />
 
   <Item name="Parameters" label="=systemParameters" service="parameters" parameters="Administration"
     separator="true" />
@@ -21,5 +25,11 @@ name="Administration" label="=administration" order="1000" module="Administratio
     separator="true" />
 
   <Item name="Autocomplete" label="=autocompletion" service="grid" parameters="Autocomplete"
+    separator="true" />
+
+  <Item name="ImportOptions" label="=dataImport" service="grid" parameters="ImportOptions" 
+    separator="true" />
+
+  <Item name="GridSettings" label="=gridSettings" service="grid" parameters="GridSettings" 
     separator="true" />
 </Entry>

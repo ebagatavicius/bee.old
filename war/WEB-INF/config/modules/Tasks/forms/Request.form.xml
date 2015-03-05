@@ -36,7 +36,7 @@
     &separator;
     <FlowPanel style="&section;" class="flexBox-horizontal">
       <Label text="=manager" style="&inline; width:85px; padding-top:1px;" />
-      <DataSelector source="Manager" style="&inline; width:200px;" editSource="ManagerPerson"
+      <DataSelector name="Manager" source="Manager" style="&inline; width:200px;" editSource="ManagerPerson"
         newRowEnabled="false" />
     </FlowPanel>
 
@@ -50,14 +50,19 @@
 
     <FlowPanel style="&section;" class="flexBox-horizontal">
       <Label text="=createdOn" style="&inline; width:78px; padding-top:1px; padding-right: 8px; text-align: right;" />
-      <DateTimeLabel source="Created" style="&inline; width:110px;" />
-      <TextLabel style="&inline; margin-left:20px; font-weight:bold;">
-        <renderToken source="Finished" prefix="Baigtas " />
-      </TextLabel>
+      <DateTimeLabel source="Created" style="&inline; width:110px;" />      
+    </FlowPanel>
+    <FlowPanel>
+      <Label text="=crmRequestCompleted" style="&inline; width:78px; padding-top:1px; padding-right: 8px; text-align: right;" />
+      <DateTimeLabel source="Finished" format="date_time_short" style="&inline; width:110px;" />
     </FlowPanel>
     <FlowPanel style="&section;" class="flexBox-horizontal">
       <Label text="=result" style="&inline; width:78px; padding-top:1px; padding-right: 8px; text-align: right; vertical-align:top;" />
       <TextLabel source="Result" />
+    </FlowPanel>
+    
+    <FlowPanel name="ResultProperties" data="Tasks" style="&section;" class="flexBox-horizontal">
+     
     </FlowPanel>
 
     &separator;

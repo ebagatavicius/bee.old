@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
+
+  name="TradeActInvoices" viewName="TradeActInvoices"
+  flexGrow="1" disabledActions="add delete"
+  >
+  <g:columns>
+    <DataColumn name="DateFrom" visible="true" />
+    <DataColumn name="DateTo" visible="true" />
+
+    <DataColumn name="Item" />
+    <DataColumn name="ItemName" visible="true" />
+    <DataColumn name="Article" />
+    <DataColumn name="TimeUnit" />
+
+    <RelColumn name="Sale" renderColumns="Sale" label="=trdInvoiceId"
+      editEnabled="true" editPopup="true" editViewName="Sales" editSource="Sale" readOnly="true" />
+    <DataColumn name="Date" />
+
+    <DataColumn name="InvoicePrefix" />
+    <DataColumn name="InvoiceNo" />
+
+    <DataColumn name="CustomerName" label="=trdCustomer" />
+
+    <DataColumn name="Amount" />
+    <DataColumn name="CurrencyName" />
+
+    <DataColumn name="Term" />
+    <DataColumn name="PaymentTime" />
+
+    <DataColumn name="Paid" />
+    <DataColumn name="Debt" format="0.00" />
+
+    <DataColumn name="Exported" />
+  </g:columns>
+
+  <g:rowStyle>
+    <ui:inline>="color:red"</ui:inline>
+    <ui:expression>row.Debt &gt; 0 &amp;&amp; row.Term &lt; new Date().getTime()</ui:expression>
+  </g:rowStyle>
+  <g:rowStyle>
+    <ui:inline>="color:green"</ui:inline>
+    <ui:expression>row.Debt == 0</ui:expression>
+  </g:rowStyle>
+</g:Grid>

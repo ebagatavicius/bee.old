@@ -104,7 +104,7 @@ public class InputFile extends Widget implements HasName, HasChangeHandlers, Ena
 
   protected void init() {
     DomUtils.createId(this, getIdPrefix());
-    setStyleName("bee-InputFile");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "InputFile");
   }
 
   private InputElement getInputElement() {

@@ -3,7 +3,7 @@
   caption="=trdInvoice" disabledActions="save" width="75" widthUnit="%" height="75" heightUnit="%">
   <f:properties currencies="EUR, Lt" />
 
-  <FlowPanel class="bee-PrintableForm bee-trade-print-document">
+  <FlowPanel class="bee-PrintableForm bee-trade-print-document" contentEditable="true">
     <br/>
     <FlowPanel class="bee-trade-print-document-header flexBox-horizontal">
       <FlowPanel class="flexible">
@@ -47,7 +47,7 @@
       <row>
         <text/>
         <cell colSpan="2">
-          <Label name="SupplierWebsite" class="bee-trade-print-" />
+          <Label name="SupplierWebsite" class="bee-trade-print-company-website" />
         </cell>
       </row>
       

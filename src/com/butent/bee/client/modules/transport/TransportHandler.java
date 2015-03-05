@@ -1,8 +1,6 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -28,6 +26,7 @@ import com.butent.bee.client.grid.ColumnHeader;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.grid.column.AbstractColumn;
+import com.butent.bee.client.modules.trade.InvoicesGrid;
 import com.butent.bee.client.modules.trade.TradeUtils;
 import com.butent.bee.client.modules.transport.charts.ChartBase;
 import com.butent.bee.client.presenter.GridPresenter;
@@ -64,8 +63,6 @@ import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.RowTransformEvent;
 import com.butent.bee.shared.data.filter.Filter;
-import com.butent.bee.shared.data.value.LongValue;
-import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
@@ -77,8 +74,11 @@ import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public final class TransportHandler {
@@ -124,7 +124,7 @@ public final class TransportHandler {
 
           } else if (response.hasArrayResponse(String.class)) {
             String[] arr = Codec.beeDeserializeCollection(response.getResponseAsString());
-            List<String> messages = Lists.newArrayList();
+            List<String> messages = new ArrayList<>();
 
             if (arr != null && arr.length % 2 == 0) {
               for (int i = 0; i < arr.length; i += 2) {
@@ -260,12 +260,12 @@ public final class TransportHandler {
               Double updValue;
               double newVal = BeeUtils.toDouble(cv.getNewValue());
 
-              if (Objects.equal(columnId, "Kilometers")) {
+              if (Objects.equals(columnId, "Kilometers")) {
                 updValue = row.getDouble(speedFromIndex);
                 updColumn = speedToColumn;
                 updIndex = speedToIndex;
               } else {
-                if (Objects.equal(columnId, "SpeedometerFrom")) {
+                if (Objects.equals(columnId, "SpeedometerFrom")) {
                   newVal = 0 - newVal;
                   updValue = row.getDouble(speedToIndex);
                 } else {
@@ -334,85 +334,6 @@ public final class TransportHandler {
     }
   }
 
-  private static class VehiclesGridHandler extends AbstractGridInterceptor
-      implements SelectionHandler<IsRow> {
-
-    private static final String FILTER_KEY = "f1";
-    private IsRow selectedModel;
-    private TreePresenter modelTree;
-
-    @Override
-    public void afterCreateWidget(String name, IdentifiableWidget widget,
-        WidgetDescriptionCallback callback) {
-      if (widget instanceof TreeView && BeeUtils.same(name, "VehicleModels")) {
-        ((TreeView) widget).addSelectionHandler(this);
-        modelTree = ((TreeView) widget).getTreePresenter();
-      }
-    }
-
-    @Override
-    public VehiclesGridHandler getInstance() {
-      return new VehiclesGridHandler();
-    }
-
-    @Override
-    public void onSelection(SelectionEvent<IsRow> event) {
-      if (event == null) {
-        return;
-      }
-      if (getGridPresenter() != null) {
-        Long model = null;
-        setSelectedModel(event.getSelectedItem());
-
-        if (getSelectedModel() != null) {
-          model = getSelectedModel().getId();
-        }
-        getGridPresenter().getDataProvider().setParentFilter(FILTER_KEY, getFilter(model));
-        getGridPresenter().refresh(true);
-      }
-    }
-
-    @Override
-    public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
-      IsRow model = getSelectedModel();
-
-      if (model != null) {
-        List<BeeColumn> cols = getGridPresenter().getDataColumns();
-        newRow.setValue(DataUtils.getColumnIndex("Model", cols), model.getId());
-        newRow.setValue(DataUtils.getColumnIndex("ParentModelName", cols),
-            getModelValue(model, "ParentName"));
-        newRow.setValue(DataUtils.getColumnIndex("ModelName", cols),
-            getModelValue(model, "Name"));
-      }
-      return true;
-    }
-
-    private static Filter getFilter(Long model) {
-      if (model == null) {
-        return null;
-      } else {
-        Value value = new LongValue(model);
-
-        return Filter.or(Filter.isEqual("ParentModel", value),
-            Filter.isEqual("Model", value));
-      }
-    }
-
-    private String getModelValue(IsRow model, String colName) {
-      if (BeeUtils.allNotNull(model, modelTree, modelTree.getDataColumns())) {
-        return model.getString(DataUtils.getColumnIndex(colName, modelTree.getDataColumns()));
-      }
-      return null;
-    }
-
-    private IsRow getSelectedModel() {
-      return selectedModel;
-    }
-
-    private void setSelectedModel(IsRow selectedModel) {
-      this.selectedModel = selectedModel;
-    }
-  }
 
   public static ParameterList createArgs(String method) {
     return BeeKeeper.getRpc().createParameters(Module.TRANSPORT, method);
@@ -443,7 +364,6 @@ public final class TransportHandler {
 
     SelectorEvent.register(new TransportSelectorHandler());
 
-    GridFactory.registerGridInterceptor(VIEW_VEHICLES, new VehiclesGridHandler());
     GridFactory.registerGridInterceptor(VIEW_SPARE_PARTS, new SparePartsGridHandler());
     GridFactory.registerGridInterceptor(TBL_TRIP_ROUTES, new TripRoutesGridHandler());
     GridFactory.registerGridInterceptor(VIEW_CARGO_TRIPS, new CargoTripsGrid());
@@ -487,16 +407,14 @@ public final class TransportHandler {
     GridFactory.registerGridInterceptor(VIEW_CARGO_SALES, new CargoSalesGrid());
     GridFactory.registerGridInterceptor(VIEW_CARGO_CREDIT_SALES, new CargoCreditSalesGrid());
     GridFactory.registerGridInterceptor(VIEW_CARGO_PURCHASES, new CargoPurchasesGrid());
-    GridFactory.registerGridInterceptor(VIEW_CARGO_INVOICES, new CargoInvoicesGrid());
-    GridFactory.registerGridInterceptor(VIEW_CARGO_CREDIT_INVOICES, new CargoInvoicesGrid());
-    GridFactory.registerGridInterceptor(VIEW_CARGO_PURCHASE_INVOICES, new CargoInvoicesGrid());
+    GridFactory.registerGridInterceptor(VIEW_CARGO_INVOICES, new InvoicesGrid());
+    GridFactory.registerGridInterceptor(VIEW_CARGO_CREDIT_INVOICES, new InvoicesGrid());
+    GridFactory.registerGridInterceptor(VIEW_CARGO_PURCHASE_INVOICES, new InvoicesGrid());
 
     GridFactory.registerGridInterceptor(VIEW_CARGO_REQUESTS, new CargoRequestsGrid());
     GridFactory.registerGridInterceptor(VIEW_CARGO_REQUEST_FILES,
         new FileGridInterceptor(COL_CRF_REQUEST, AdministrationConstants.COL_FILE,
             AdministrationConstants.COL_FILE_CAPTION, AdministrationConstants.ALS_FILE_NAME));
-
-    GridFactory.registerGridInterceptor(TBL_IMPORT_OPTIONS, new ImportOptionsGrid());
 
     FormFactory.registerFormInterceptor(FORM_ORDER, new TransportationOrderForm());
     FormFactory.registerFormInterceptor(FORM_TRIP, new TripForm());
@@ -516,8 +434,6 @@ public final class TransportHandler {
     FormFactory.registerFormInterceptor(FORM_SHIPMENT_REQUEST, new ShipmentRequestForm());
     FormFactory.registerFormInterceptor(FORM_NEW_CARGO_REQUEST, new CargoRequestForm());
     FormFactory.registerFormInterceptor(FORM_CARGO_REQUEST, new CargoRequestForm());
-
-    FormFactory.registerFormInterceptor(FORM_IMPORT_OPTION, new ImportOptionForm());
 
     BeeKeeper.getBus().registerRowActionHandler(new TransportActionHandler(), false);
 
@@ -550,7 +466,7 @@ public final class TransportHandler {
             Filter.notNull(COL_DEPARTMENT_HEAD)), new RowSetCallback() {
           @Override
           public void onSuccess(BeeRowSet result) {
-            Set<Long> departments = Sets.newHashSet();
+            Set<Long> departments = new HashSet<>();
             Long user = BeeKeeper.getUser().getUserId();
 
             for (BeeRow row : result) {

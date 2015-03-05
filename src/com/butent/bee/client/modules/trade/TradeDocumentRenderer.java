@@ -239,7 +239,7 @@ public class TradeDocumentRenderer extends AbstractFormInterceptor {
   private static final NumberFormat PRICE_FORMAT = Format.getDecimalFormat(2);
   private static final NumberFormat AMOUNT_FORMAT = Format.getDecimalFormat(2);
 
-  private static final String STYLE_PREFIX = "bee-trade-print-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "trade-print-";
 
   private static Long getCompany(FormView form, IsRow row, String colName, boolean checkDefault) {
     int index = form.getDataIndex(colName);

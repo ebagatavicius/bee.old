@@ -3,10 +3,9 @@
 
   name="TripCosts"
   idName="CostID"
-  x="0" y="0"
   >
   <Fields>
-    <Relation name="Trip" relation="Trips" cascade="DELETE" />
+    <Relation name="Trip" relation="Trips" cascade="DELETE" label="=trip" />
     <Date name="Date" notNull="true" defExpr="CURRENT_DATE" label="=date" />
 
     <Relation name="Item" notNull="true" relation="Items" label="=productService" />

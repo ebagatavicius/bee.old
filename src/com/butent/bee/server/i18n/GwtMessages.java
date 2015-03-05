@@ -1,6 +1,5 @@
 package com.butent.bee.server.i18n;
 
-import com.google.common.collect.Maps;
 import com.google.gwt.i18n.client.LocalizableResource.Key;
 import com.google.gwt.i18n.client.Messages.AlternateMessage;
 import com.google.gwt.i18n.client.Messages.DefaultMessage;
@@ -13,6 +12,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -46,7 +46,7 @@ public class GwtMessages extends GwtLocalizable {
     Annotation[][] paramsAnnotations = method.getParameterAnnotations();
     Class<?>[] paramTypes = method.getParameterTypes();
 
-    Map<String, String> alternates = Maps.newHashMap();
+    Map<String, String> alternates = new HashMap<>();
     if (altAnnotation != null) {
       String[] pairs = altAnnotation.value();
       for (int i = 0; (i + 1) < pairs.length; i += 2) {

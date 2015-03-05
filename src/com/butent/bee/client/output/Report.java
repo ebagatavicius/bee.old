@@ -1,69 +1,248 @@
 package com.butent.bee.client.output;
 
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
+
 import com.butent.bee.client.Callback;
+import com.butent.bee.client.data.Data;
 import com.butent.bee.client.modules.classifiers.CompanyTypeReport;
 import com.butent.bee.client.modules.classifiers.CompanyUsageReport;
 import com.butent.bee.client.modules.trade.acts.TradeActItemsByCompanyReport;
 import com.butent.bee.client.modules.trade.acts.TradeActServicesReport;
 import com.butent.bee.client.modules.trade.acts.TradeActStockReport;
+import com.butent.bee.client.modules.trade.acts.TradeActTransferReport;
 import com.butent.bee.client.modules.transport.AssessmentQuantityReport;
 import com.butent.bee.client.modules.transport.AssessmentTurnoverReport;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.form.interceptor.ExtendedReportInterceptor;
 import com.butent.bee.client.view.form.interceptor.ReportInterceptor;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.i18n.LocalizableConstants;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.modules.projects.ProjectConstants;
+import com.butent.bee.shared.modules.projects.ProjectPriority;
+import com.butent.bee.shared.modules.projects.ProjectStatus;
+import com.butent.bee.shared.modules.tasks.TaskConstants;
+import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
+import com.butent.bee.shared.modules.transport.TransportConstants;
+import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
+import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public enum Report implements HasWidgetSupplier {
-  COMPANY_TYPES("CompanyTypes", "CompanyRelationTypeReport") {
+  COMPANY_TYPES(ModuleAndSub.of(Module.CLASSIFIERS), "CompanyTypes", "CompanyRelationTypeReport") {
     @Override
     protected ReportInterceptor getInterceptor() {
       return new CompanyTypeReport();
     }
   },
-  COMPANY_USAGE("CompanyUsage", "CompanyUsageReport") {
+  COMPANY_USAGE(ModuleAndSub.of(Module.CLASSIFIERS), "CompanyUsage", "CompanyUsageReport") {
     @Override
     protected ReportInterceptor getInterceptor() {
       return new CompanyUsageReport();
     }
   },
 
-  ASSESSMENT_QUANTITY("AssessmentQuantity", "AssessmentQuantityReport") {
+  ASSESSMENT_QUANTITY(ModuleAndSub.of(Module.TRANSPORT), "AssessmentQuantity",
+      "AssessmentQuantityReport") {
     @Override
     protected ReportInterceptor getInterceptor() {
       return new AssessmentQuantityReport();
     }
   },
-  ASSESSMENT_TURNOVER("AssessmentTurnover", "AssessmentTurnoverReport") {
+  ASSESSMENT_TURNOVER(ModuleAndSub.of(Module.TRANSPORT), "AssessmentTurnover",
+      "AssessmentTurnoverReport") {
     @Override
     protected ReportInterceptor getInterceptor() {
       return new AssessmentTurnoverReport();
     }
   },
 
-  TRADE_ACT_ITEMS_BY_COMPANY("TradeActItemsByCompany", "TradeActItemsByCompanyReport") {
+  TRADE_ACT_ITEMS_BY_COMPANY(ModuleAndSub.of(Module.TRADE, SubModule.ACTS),
+      "TradeActItemsByCompany", "TradeActItemsByCompanyReport") {
     @Override
     protected ReportInterceptor getInterceptor() {
       return new TradeActItemsByCompanyReport();
     }
   },
-  TRADE_ACT_STOCK("TradeActStock", "TradeActStockReport") {
+  TRADE_ACT_STOCK(ModuleAndSub.of(Module.TRADE, SubModule.ACTS), "TradeActStock",
+      "TradeActStockReport") {
     @Override
     protected ReportInterceptor getInterceptor() {
       return new TradeActStockReport();
     }
   },
-  TRADE_ACT_SERVICES("TradeActServices", "TradeActServicesReport") {
+  TRADE_ACT_SERVICES(ModuleAndSub.of(Module.TRADE, SubModule.ACTS), "TradeActServices",
+      "TradeActServicesReport") {
     @Override
     protected ReportInterceptor getInterceptor() {
       return new TradeActServicesReport();
     }
+  },
+  TRADE_ACT_TRANSFER(ModuleAndSub.of(Module.TRADE, SubModule.ACTS), "TradeActTransfer",
+      "TradeActTransferReport") {
+    @Override
+    protected ReportInterceptor getInterceptor() {
+      return new TradeActTransferReport();
+    }
+  },
+
+  TRANSPORT_TRIP_PROFIT(ModuleAndSub.of(Module.TRANSPORT),
+      TransportConstants.SVC_TRIP_PROFIT_REPORT) {
+
+    @Override
+    public Multimap<String, ReportItem> getDefaults() {
+      Map<String, ReportItem> items = new HashMap<>();
+
+      for (ReportItem item : getItems()) {
+        items.put(item.getName(), item);
+      }
+      Multimap<String, ReportItem> map = LinkedListMultimap.create();
+
+      for (String item : new String[] {TransportConstants.COL_TRIP, TransportConstants.COL_TRIP_NO,
+          TransportConstants.COL_TRIP_DATE_FROM, TransportConstants.COL_TRIP_DATE_TO,
+          TransportConstants.COL_TRAILER}) {
+        map.put(PROP_ROWS, items.get(item).create());
+      }
+      map.put(PROP_ROW_GROUP, items.get(TransportConstants.COL_VEHICLE).create());
+
+      for (String item : new String[] {"Kilometers", "FuelCosts", "Incomes"}) {
+        map.put(PROP_COLUMNS, items.get(item).create().enableCalculation());
+      }
+      return map;
+    }
+
+    @Override
+    public List<ReportItem> getItems() {
+      LocalizableConstants loc = Localized.getConstants();
+
+      return Arrays.asList(
+          new ReportTextItem(TransportConstants.COL_TRIP,
+              Data.getColumnLabel(TransportConstants.TBL_TRIP_COSTS, TransportConstants.COL_TRIP)),
+          new ReportTextItem(TransportConstants.COL_TRIP_NO,
+              Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_TRIP_NO)),
+          new ReportDateItem(TransportConstants.COL_TRIP_DATE_FROM, loc.dateFrom()),
+          new ReportDateTimeItem(TransportConstants.COL_TRIP_DATE_TO, loc.dateTo()),
+          new ReportTextItem(TransportConstants.COL_VEHICLE,
+              Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_VEHICLE)),
+          new ReportTextItem(TransportConstants.COL_TRAILER,
+              Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_TRAILER)),
+          new ReportNumericItem("Kilometers", "Kilometrai", 0),
+          new ReportNumericItem("FuelCosts", "Kuro išl.", 2),
+          new ReportNumericItem("DailyCosts", "Dienpinigių išl.", 2),
+          new ReportNumericItem("RoadCosts", "Kelių išl.", 2),
+          new ReportNumericItem("OtherCosts", "Kitos išl.", 2),
+          new ReportNumericItem("Incomes", "Pajamos", 2));
+    }
+  },
+
+  PROJECT_REPORT(ModuleAndSub.of(Module.PROJECTS), ProjectConstants.SVC_PROJECT_REPORT) {
+
+    @Override
+    public Multimap<String, ReportItem> getDefaults() {
+      Map<String, ReportItem> items = new HashMap<>();
+
+      for (ReportItem item : getItems()) {
+        items.put(item.getName(), item);
+      }
+      Multimap<String, ReportItem> map = LinkedListMultimap.create();
+
+      for (String item : new String[] {
+          ProjectConstants.COL_PROJECT_NAME,
+          ProjectConstants.COL_PROJECT_OWNER,
+          ProjectConstants.COL_PROJECT_STATUS,
+          ProjectConstants.ALS_TERM
+      }) {
+        map.put(PROP_ROWS, items.get(item).create());
+      }
+
+      map.put(Report.PROP_ROW_GROUP, items.get(ClassifierConstants.ALS_COMPANY_NAME).create());
+
+      for (String item : new String[] {
+          TaskConstants.COL_EXPECTED_DURATION,
+          TaskConstants.COL_ACTUAL_DURATION,
+          TaskConstants.COL_EXPECTED_EXPENSES,
+          TaskConstants.COL_ACTUAL_EXPENSES,
+          ProjectConstants.ALS_PROFIT
+      }) {
+        map.put(PROP_COLUMNS, items.get(item).create().enableCalculation());
+      }
+
+      map.put(Report.PROP_COLUMN_GROUP, items.get(ProjectConstants.ALS_TASK_STATUS).create());
+
+      return map;
+    }
+
+    @Override
+    public List<ReportItem> getItems() {
+      LocalizableConstants loc = Localized.getConstants();
+
+      return Arrays.asList(
+          new ReportTextItem(ProjectConstants.COL_PROJECT_NAME, Data.getColumnLabel(
+              ProjectConstants.VIEW_PROJECTS, ProjectConstants.COL_PROJECT_NAME)),
+          new ReportTextItem(ClassifierConstants.ALS_COMPANY_NAME, loc.client()),
+          new ReportTextItem(ProjectConstants.ALS_STAGE_NAME, loc.prjStage()),
+          new ReportTextItem(ProjectConstants.COL_PROJECT_OWNER, Data.getColumnLabel(
+              ProjectConstants.VIEW_PROJECTS, ProjectConstants.COL_PROJECT_OWNER)),
+          new ReportNumericItem(ProjectConstants.COL_PROJECT, loc.project(), 0),
+          new ReportEnumItem<>(ProjectConstants.COL_PROJECT_STATUS, Data.getColumnLabel(
+              ProjectConstants.VIEW_PROJECTS, ProjectConstants.COL_PROJECT_STATUS),
+              ProjectStatus.class),
+          new ReportTextItem(ProjectConstants.COL_PROJECT_TYPE, Data.getColumnLabel(
+              ProjectConstants.VIEW_PROJECTS, ProjectConstants.COL_PROJECT_TYPE)),
+          new ReportEnumItem<>(ProjectConstants.COL_PROJECT_PRIORITY, Data.getColumnLabel(
+              ProjectConstants.VIEW_PROJECTS, ProjectConstants.COL_PROJECT_PRIORITY),
+              ProjectPriority.class),
+          new ReportTextItem(ProjectConstants.ALS_TERM, loc.prjTerm()),
+
+          /* calc */
+          new ReportNumericItem(TaskConstants.COL_ACTUAL_DURATION,
+              BeeUtils
+                  .join(BeeConst.DEFAULT_LIST_SEPARATOR, Data.getColumnLabel(
+                      TaskConstants.VIEW_TASKS, TaskConstants.COL_ACTUAL_DURATION), loc
+                      .unitHourShort()), 2),
+
+          new ReportNumericItem(TaskConstants.COL_EXPECTED_DURATION, BeeUtils
+              .join(BeeConst.DEFAULT_LIST_SEPARATOR, Data.getColumnLabel(
+                  TaskConstants.VIEW_TASKS, TaskConstants.COL_EXPECTED_DURATION), loc
+                  .unitHourShort()), 2),
+          new ReportNumericItem(TaskConstants.COL_EXPECTED_EXPENSES, loc.crmTaskExpectedExpenses(),
+              2),
+
+          new ReportNumericItem(TaskConstants.COL_ACTUAL_EXPENSES, Data.getColumnLabel(
+              TaskConstants.VIEW_TASKS, TaskConstants.COL_ACTUAL_EXPENSES), 2),
+
+          new ReportNumericItem(TaskConstants.COL_TASK, loc.crmTask(), 0),
+          new ReportNumericItem(ProjectConstants.ALS_PROFIT, loc.profit(), 2),
+
+          new ReportEnumItem<>(ProjectConstants.ALS_TASK_STATUS, BeeUtils.joinWords(Data
+              .getColumnLabel(
+                  TaskConstants.VIEW_TASKS, TaskConstants.COL_STATUS), BeeUtils.parenthesize(loc
+              .crmTasks())),
+              TaskStatus.class)
+          );
+    }
   };
+
+  public static final String PROP_ROWS = "ROWS";
+  public static final String PROP_ROW_GROUP = "ROW_GROUP";
+  public static final String PROP_COLUMNS = "COLUMNS";
+  public static final String PROP_COLUMN_GROUP = "COLUMN_GROUP";
 
   private static BeeLogger logger = LogUtils.getLogger(Report.class);
 
@@ -100,16 +279,34 @@ public enum Report implements HasWidgetSupplier {
     return null;
   }
 
+  private final ModuleAndSub moduleAndSub;
   private final String reportName;
   private final String formName;
 
-  private Report(String reportName, String formName) {
+  private Report(ModuleAndSub module, String reportName) {
+    this(module, reportName, "ExtendedReport");
+  }
+
+  private Report(ModuleAndSub moduleAndSub, String reportName, String formName) {
+    this.moduleAndSub = Assert.notNull(moduleAndSub);
     this.reportName = reportName;
     this.formName = formName;
   }
 
   public String getFormName() {
     return formName;
+  }
+
+  public Multimap<String, ReportItem> getDefaults() {
+    return null;
+  }
+
+  public List<ReportItem> getItems() {
+    return new ArrayList<>();
+  }
+
+  public ModuleAndSub getModuleAndSub() {
+    return moduleAndSub;
   }
 
   public String getReportName() {
@@ -132,5 +329,7 @@ public enum Report implements HasWidgetSupplier {
     FormFactory.openForm(formName, interceptor);
   }
 
-  protected abstract ReportInterceptor getInterceptor();
+  protected ReportInterceptor getInterceptor() {
+    return new ExtendedReportInterceptor(this);
+  }
 }

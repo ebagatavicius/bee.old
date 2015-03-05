@@ -1,6 +1,5 @@
 package com.butent.bee.client.output;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -16,10 +15,12 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.utils.LayoutEngine;
 import com.butent.bee.client.widget.Frame;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import elemental.client.Browser;
@@ -150,13 +151,13 @@ public final class Printer {
       targetBody.addClassName(className);
     }
 
-    targetBody.addClassName(StyleUtils.CLASS_NAME_PREFIX + "Print");
-    targetBody.addClassName(StyleUtils.CLASS_NAME_PREFIX + "Print-"
+    targetBody.addClassName(BeeConst.CSS_CLASS_PREFIX + "Print");
+    targetBody.addClassName(BeeConst.CSS_CLASS_PREFIX + "Print-"
         + (useFrame ? "Frame" : "Window"));
   }
 
   private static void prepareElements(NodeList<Element> elements, Printable widget) {
-    List<Element> hide = Lists.newArrayList();
+    List<Element> hide = new ArrayList<>();
 
     for (int i = 0; i < elements.getLength(); i++) {
       Element element = elements.getItem(i);

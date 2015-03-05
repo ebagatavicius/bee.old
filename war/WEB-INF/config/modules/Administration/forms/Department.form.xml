@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
+  xmlns:ui="http://www.butent.com/ui"
   
   name="Department" viewName="Departments" caption="=department"
-  width="500" height="300"
+  width="500" height="350"
   >
   <FlowPanel class="flexBox-vertical">
     <Table style="margin: 10px;">
       <col index="0" kind="label" />
-      <row for="DepartmentName">
+
+      <row>
         <Label for="DepartmentName" />
         <InputText source="DepartmentName" style="width: 200px;" />
       </row>
+      <row for="Parent">
+        <Label for="Parent" />
+        <DataSelector name="Parent" source="Parent" renderColumns="ParentName" 
+          choiceColumns="FullName" searchableColumns="DepartmentName" visibleLines="7"
+          selectorClass="bee-BranchSelector" style="width: 200px;" 
+          newRowEnabled="false" editEnabled="false">
+          <ui:rowRenderer type="branch" />
+        </DataSelector>
+      </row>
+
       <row for="DepartmentHead">
         <Label for="DepartmentHead" />
         <DataSelector name="DepartmentHead" source="DepartmentHead" style="width: 200px;"
           newRowEnabled="false" editSource="CompanyPerson" renderColumns="FirstName LastName" />
+      </row>
+      <row for="Role">
+        <Label for="Role" />
+        <DataSelector source="Role" style="width: 200px;" newRowEnabled="false" />
       </row>
     </Table>
 

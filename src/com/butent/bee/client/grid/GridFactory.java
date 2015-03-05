@@ -160,6 +160,7 @@ public final class GridFactory {
   private static final Map<String, GridInterceptor> gridInterceptors = new HashMap<>();
 
   private static final Map<String, Consumer<ScheduledCommand>> gridPreloaders = new HashMap<>();
+  private static final Map<String, Filter> immutableFilters = new HashMap<>();
 
   private static final Multimap<String, String> hiddenColumns = HashMultimap.create();
 
@@ -290,6 +291,7 @@ public final class GridFactory {
 
     if (preloader == null) {
       loadDescription(name, callback);
+
     } else {
       preloader.accept(new ScheduledCommand() {
         @Override
@@ -297,6 +299,8 @@ public final class GridFactory {
           loadDescription(name, callback);
         }
       });
+
+      gridPreloaders.remove(name);
     }
   }
 
@@ -330,11 +334,12 @@ public final class GridFactory {
     Filter f1 = gridDescription.getFilter();
     Filter f2 = BeeUtils.isEmpty(gridDescription.getCurrentUserFilter()) ? null
         : BeeKeeper.getUser().getFilter(gridDescription.getCurrentUserFilter());
+    Filter f3 = immutableFilters.get(gridDescription.getName());
 
     if (gridOptions == null || !gridOptions.hasFilter()) {
-      return Filter.and(f1, f2);
+      return Filter.and(f1, f2, f3);
     } else {
-      return Filter.and(f1, f2, gridOptions.buildFilter(gridDescription.getViewName()));
+      return Filter.and(f1, f2, f3, gridOptions.buildFilter(gridDescription.getViewName()));
     }
   }
 
@@ -420,6 +425,16 @@ public final class GridFactory {
   public static ViewSupplier registerGridSupplier(String key, String gridName,
       GridInterceptor interceptor, GridOptions gridOptions) {
     return registerGridSupplier(key, gridName, interceptor, EnumSet.of(UiOption.ROOT), gridOptions);
+  }
+
+  public static void registerImmutableFilter(String gridName, Filter filter) {
+    Assert.notEmpty(gridName);
+
+    if (filter == null) {
+      immutableFilters.remove(gridName);
+    } else {
+      immutableFilters.put(gridName, filter);
+    }
   }
 
   private static GridInterceptor getInterceptorInstance(GridInterceptor interceptor) {

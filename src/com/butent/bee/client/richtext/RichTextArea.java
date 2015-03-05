@@ -53,7 +53,7 @@ class RichTextArea extends CustomWidget implements HasHtml, HasAllFocusHandlers,
 
     void insertHorizontalRule();
 
-    void insertHTML(String html);
+    void insertHtml(String html);
 
     void insertImage(String url);
 

@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui"
   
-  name="Parameters" caption="=parameters" enabledActions="refresh" disabledActions="audit"
+  name="Parameters" viewName="Parameters" disabledActions="add delete filter audit rights"
   >
   <g:columns>
-    <DataColumn name="Name" caption="=parameter" />
-    <DataColumn name="Value"  caption="=valueParameter" />
-    <DataColumn name="Description" caption="=description" />
+    <DataColumn name="Name" visible="true">
+      <dynStyle>
+        <ui:inline>font-weight:bold</ui:inline>
+        <ui:expression>row.User</ui:expression>
+      </dynStyle>
+    </DataColumn>
+    <DataColumn name="Value" visible="true">
+      <dynStyle>
+        <ui:inline>color:silver</ui:inline>
+        <ui:expression>!row.HasValue</ui:expression>
+      </dynStyle>
+    </DataColumn>
+    <PropColumn type="string" name="Description" caption="=description">
+      <render>
+        <ui:expression>$wnd.Bee_translate(row.Name ? 'prm' + row.Name : null)</ui:expression>
+      </render>
+    </PropColumn>
   </g:columns>
 </g:Grid>

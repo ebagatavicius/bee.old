@@ -2,6 +2,8 @@
 <!DOCTYPE Form[
   <!ENTITY foritem "<dynStyle><ui:inline>display: none;</ui:inline><ui:expression>row.IsService</ui:expression></dynStyle>">
   <!ENTITY forservice "<dynStyle><ui:inline>display: none;</ui:inline><ui:expression>!row.IsService</ui:expression></dynStyle>">
+  <!ENTITY pricescale "2">
+  <!ENTITY costscale "2">
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
@@ -35,7 +37,7 @@
         <InputText source="Article" />
 
         <Label for="Unit" text="=unitShort" />
-        <DataSelector source="Unit" visible="true" newRowEnabled="false" style="width: 80px;" />
+        <DataSelector source="Unit" visible="true" editEnabled="false" style="width: 80px;" />
 
         <CheckBox source="Vat" text="=vat" />
         <cell style="padding-left: 6px;">
@@ -50,23 +52,12 @@
         <Label for="Barcode" />
         <InputText source="Barcode" />
 
-        <FlowPanel>
-          <Label for="Weight">
-            &foritem;
-          </Label>
-          <Label for="TimeUnit" module="Trade.Acts">
-            &forservice;
-          </Label>
-        </FlowPanel>
-
-        <FlowPanel>
-          <InputDecimal source="Weight" style="width: 80px;">
-            &foritem;
-          </InputDecimal>
-          <ListBox source="TimeUnit" style="width: 80px;" module="Trade.Acts">
-            &forservice;
-          </ListBox>
-        </FlowPanel>
+        <Label for="TimeUnit" module="Trade.Acts">
+          &forservice;
+        </Label>
+        <ListBox source="TimeUnit" style="width: 80px;" module="Trade.Acts">
+          &forservice;
+        </ListBox>
       </row>
 
       <row data="ItemCategories">
@@ -89,26 +80,41 @@
 
           <row>
             <Label for="Price" />
-            <InputDecimal source="Price" currencySource="Currency" />
+            <InputDecimal source="Price" currencySource="Currency" scale="&pricescale;"
+              summarize="true" />
             <DataSelector source="Currency" for="Price" newRowEnabled="false" editEnabled="false"
               style="width: 50px;" />
           </row>
+
           <row>
             <Label for="Cost" />
-            <InputDecimal source="Cost" currencySource="CostCurrency" />
+            <InputDecimal source="Cost" currencySource="CostCurrency" scale="&costscale;"
+              summarize="true" />
             <DataSelector source="CostCurrency" for="Cost" newRowEnabled="false" editEnabled="false"
               style="width: 50px;" />
           </row>
+
           <row>
             <Label for="Price1" />
-            <InputDecimal source="Price1" currencySource="Currency1" />
+            <InputDecimal source="Price1" currencySource="Currency1" scale="&pricescale;"
+              summarize="true" />
             <DataSelector source="Currency1" for="Price1" newRowEnabled="false" editEnabled="false"
               style="width: 50px;" />
           </row>
+
           <row>
             <Label for="Price2" />
-            <InputDecimal source="Price2" currencySource="Currency2" />
+            <InputDecimal source="Price2" currencySource="Currency2" scale="&pricescale;"
+              summarize="true" />
             <DataSelector source="Currency2" for="Price2" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" />
+          </row>
+
+          <row>
+            <Label for="Price3" />
+            <InputDecimal source="Price3" currencySource="Currency3" scale="&pricescale;"
+              summarize="true" />
+            <DataSelector source="Currency3" for="Price3" newRowEnabled="false" editEnabled="false"
               style="width: 50px;" />
           </row>
         </Table>
@@ -123,47 +129,98 @@
           <row>
             <Label for="Name2" />
             <cell colSpan="3">
-              <InputText source="Name2" autocomplete="true" visible="true" style="width: 100%;" />
+              <InputText source="Name2" autocomplete="true" visible="true" style="width: 100%;"
+                summarize="true" />
             </cell>
           </row>
-
+          <row>
+            <Label for="Name3" />
+            <cell colSpan="3">
+              <InputText source="Name3" autocomplete="true" visible="true" style="width: 100%;"
+                summarize="true" />
+            </cell>
+          </row>
           <row>
             <Label for="Article2" />
-            <InputText source="Article2" />
+            <InputText source="Article2" summarize="true" />
 
             <Label for="Ordinal" />
-            <InputInteger source="Ordinal" />
+            <InputInteger source="Ordinal" style="width: 80px;" summarize="true" />
           </row>
 
           <row>
-            <Label for="Department" />
-            <DataSelector source="Department" />
+            <Label for="Department" data="Departments" />
+            <DataSelector source="Department" data="Departments" renderColumns="DepartmentName"
+              choiceColumns="FullName" searchableColumns="DepartmentName" visibleLines="7"
+              selectorClass="bee-BranchSelector" newRowEnabled="false" summarize="true">
+              <ui:rowRenderer type="branch" />
+            </DataSelector>
 
             <Label for="ExternalCode" />
-            <InputText source="ExternalCode" />
+            <InputText source="ExternalCode" summarize="true" />
           </row>
 
           <row>
-            <Label for="ActivityType" />
-            <DataSelector source="ActivityType" />
+            <Label for="ActivityType" data="ActivityTypes" />
+            <DataSelector source="ActivityType" data="ActivityTypes" summarize="true" />
 
-            <Label for="CostCenter" />
-            <DataSelector source="CostCenter" />
+            <Label for="CostCenter" data="CostCenters" />
+            <DataSelector source="CostCenter" data="CostCenters" summarize="true" />
+          </row>
+
+          <row>
+            <Label for="Weight">
+              &foritem;
+            </Label>
+            <InputDecimal source="Weight" style="width: 80px;" summarize="true">
+              &foritem;
+            </InputDecimal>
+
+            <Label for="Area">
+              &foritem;
+            </Label>
+            <InputDecimal source="Area" style="width: 80px;" summarize="true">
+              &foritem;
+            </InputDecimal>
+          </row>
+
+          <row>
+            <Label for="DaysPerWeek" module="Trade.Acts">
+              &forservice;
+            </Label>
+            <InputInteger source="DaysPerWeek" maxValue="7" style="width: 20px;"
+              module="Trade.Acts" summarize="true">
+              &forservice;
+            </InputInteger>
+
+            <Label for="MinTerm" module="Trade.Acts">
+              &forservice;
+            </Label>
+            <InputInteger source="MinTerm" style="width: 40px;" module="Trade.Acts"
+              summarize="true">
+              &forservice;
+            </InputInteger>
           </row>
         </Table>
       </page>  
 
+      <page>
+        <text>=pictures</text>
+        <Gallery viewName="ItemGraphics" relColumn="Item" pictureColumn="Picture"
+          orderColumn="Ordinal" />
+      </page>
+
       <page for="Description">
         <text>=description</text>
         <SimplePanel>
-          <InputArea source="Description" class="occupy-1" />
+          <InputArea source="Description" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>
 
       <page for="Notes">
         <text>=notes</text>
         <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" />
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>  
     </TabbedPages>

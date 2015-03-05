@@ -64,12 +64,22 @@ class ItemsGrid extends AbstractGridInterceptor implements SelectionHandler<IsRo
   public ColumnDescription beforeCreateColumn(GridView gridView,
       ColumnDescription columnDescription) {
 
+    String id = columnDescription.getId();
+
     if (showServices()) {
-      if (COL_ITEM_WEIGHT.equals(columnDescription.getId())) {
-        return null;
+      switch (id) {
+        case COL_ITEM_WEIGHT:
+        case COL_ITEM_AREA:
+          return null;
       }
-    } else if (COL_TIME_UNIT.equals(columnDescription.getId())) {
-      return null;
+
+    } else {
+      switch (id) {
+        case COL_TIME_UNIT:
+        case COL_ITEM_DPW:
+        case COL_ITEM_MIN_TERM:
+          return null;
+      }
     }
 
     return super.beforeCreateColumn(gridView, columnDescription);

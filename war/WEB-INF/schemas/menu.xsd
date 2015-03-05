@@ -42,7 +42,6 @@
       <xs:enumeration value="task_reports" />
       <xs:enumeration value="discuss_list" />
       <xs:enumeration value="open_mail" />
-      <xs:enumeration value="restart_proxy" />
       <xs:enumeration value="ensure_categories_and_open_grid" />
       <xs:enumeration value="edit_terms_of_delivery" />
       <xs:enumeration value="edit_ec_contacts" />

@@ -8,7 +8,6 @@
   flexGrow="1"
   >
   <g:columns>
-    <DataColumn name="LoadingDate" width="80" format="DATE_SHORT" />
     <DataColumn name="ForwarderName" />
     <DataColumn name="ForwarderVehicle" />
     <RelColumn name="Expedition" />

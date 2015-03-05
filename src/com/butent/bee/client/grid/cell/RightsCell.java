@@ -11,10 +11,10 @@ import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.CellContext;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.grid.GridMenu;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.EventState;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class RightsCell extends AbstractCell<String> implements HasViewName {
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "RightsCell-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "RightsCell-";
 
   private static final String STYLE_SUFFIX_ON = "-on";
   private static final String STYLE_SUFFIX_OFF = "-off";

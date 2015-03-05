@@ -70,9 +70,7 @@ final class DataRightsHandler extends MultiStateForm {
     for (DataInfo view : views) {
       ModuleAndSub ms = getFirstVisibleModule(view.getModule());
 
-      if (ms == null) {
-        warning("view", view.getViewName(), "module", view.getModule(), "not recognized");
-      } else {
+      if (ms != null) {
         String viewName = view.getViewName();
         String caption = BeeUtils.notEmpty(Localized.maybeTranslate(view.getCaption()), viewName);
 

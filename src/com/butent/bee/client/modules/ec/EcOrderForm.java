@@ -1,7 +1,6 @@
 package com.butent.bee.client.modules.ec;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -59,6 +58,8 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -145,7 +146,7 @@ class EcOrderForm extends AbstractFormInterceptor {
       }
     };
 
-    final Set<RowInfo> delete = Sets.newHashSet();
+    final Set<RowInfo> delete = new HashSet<>();
 
     for (Long id : selectedIds) {
       BeeRow row = rowSet.getRowById(id);
@@ -187,7 +188,9 @@ class EcOrderForm extends AbstractFormInterceptor {
   }
 
   private void finishOrder() {
-    List<String> messages = Lists.newArrayList(Localized.getConstants().ecOrderFinishConfirm());
+    List<String> messages =
+        Collections.singletonList(Localized.getConstants().ecOrderFinishConfirm());
+
     Global.confirm(null, Icon.QUESTION, messages, new ConfirmationCallback() {
       @Override
       public void onConfirm() {
@@ -223,7 +226,9 @@ class EcOrderForm extends AbstractFormInterceptor {
     String caption = EcUtils.formatPerson(row.getString(getDataIndex(ALS_ORDER_CLIENT_FIRST_NAME)),
         row.getString(getDataIndex(ALS_ORDER_CLIENT_LAST_NAME)),
         row.getString(getDataIndex(ALS_ORDER_CLIENT_COMPANY_NAME)));
-    List<String> messages = Lists.newArrayList(Localized.getConstants().ecOrderMailConfirm());
+
+    List<String> messages =
+        Collections.singletonList(Localized.getConstants().ecOrderMailConfirm());
 
     Global.confirm(caption, Icon.QUESTION, messages, new ConfirmationCallback() {
       @Override
@@ -270,7 +275,7 @@ class EcOrderForm extends AbstractFormInterceptor {
     table.setWidgetAndStyle(row, 0, label, styleName + STYLE_SUFFIX_LABEL);
 
     final UnboundSelector selector = UnboundSelector.create(VIEW_REJECTION_REASONS,
-        Lists.newArrayList(COL_REJECTION_REASON_NAME));
+        Collections.singletonList(COL_REJECTION_REASON_NAME));
     table.setWidgetAndStyle(row, 1, selector, styleName + STYLE_SUFFIX_INPUT);
     row++;
 
@@ -325,7 +330,9 @@ class EcOrderForm extends AbstractFormInterceptor {
   }
 
   private void sendToErp() {
-    List<String> messages = Lists.newArrayList(Localized.getConstants().ecOrderSendToERPConfirm());
+    List<String> messages =
+        Collections.singletonList(Localized.getConstants().ecOrderSendToERPConfirm());
+
     Global.confirm(null, Icon.QUESTION, messages, new ConfirmationCallback() {
       @Override
       public void onConfirm() {
@@ -384,7 +391,7 @@ class EcOrderForm extends AbstractFormInterceptor {
     int qtyIndex = rowSet.getColumnIndex(COL_UNSUPPLIED_ITEM_QUANTITY);
     int priceIndex = rowSet.getColumnIndex(COL_UNSUPPLIED_ITEM_PRICE);
 
-    final Set<Long> selectedIds = Sets.newHashSet();
+    final Set<Long> selectedIds = new HashSet<>();
 
     Flow container = new Flow(STYLE_UNSUPPLIED + "container");
 
@@ -407,8 +414,9 @@ class EcOrderForm extends AbstractFormInterceptor {
           }
         }
 
-        Collection<Widget> children =
-            UiHelper.getChildrenByStyleName(table, Sets.newHashSet(STYLE_UNSUPPLIED_SELECTION));
+        Collection<Widget> children = UiHelper.getChildrenByStyleName(table,
+            Collections.singleton(STYLE_UNSUPPLIED_SELECTION));
+
         for (Widget child : children) {
           if (child instanceof SimpleCheckBox) {
             ((SimpleCheckBox) child).setValue(select, true);

@@ -10,6 +10,8 @@
 
     <String name="Summary" precision="100" label="=summary" />
     <Text name="Description" label="=description" />
+    <Text name="ActionResult" label="=calActionResult" />
+    <Boolean name="ActionReminded" label="=crmReminderSent"/>
 
     <String name="Location" precision="100" label="=location" />
 
@@ -28,6 +30,7 @@
     <Enum name="Visibility" key="CalendarVisibility" label="=calVisibility" />
 
     <Relation name="Company" relation="Companies" label="=company" />
+    <Relation name="CompanyPerson" relation="CompanyPersons" label="=contact" />
     <Relation name="Vehicle" relation="Vehicles" label="=calCar" />
   </Fields>
 </Table>

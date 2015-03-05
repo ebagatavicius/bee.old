@@ -46,7 +46,7 @@
       </row>
       <row>
         <Label text="=trdTerm" style="&lbl; text-align:right;" />
-        <InputDate source="Term" style="width:75px;" />
+        <InputDate source="Term" style="width:150px;" />
         <Label text="=trdManager" style="&lbl;" />
         <DataSelector source="Manager" editSource="ManagerPerson" />
       </row>

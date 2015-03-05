@@ -1,15 +1,15 @@
 package com.butent.bee.shared.modules.ec;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.SelectableValue;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,9 +21,9 @@ public class EcGroupFilters implements BeeSerializable {
     return groupFilters;
   }
 
-  private final List<EcBrand> brands = Lists.newArrayList();
+  private final List<EcBrand> brands = new ArrayList<>();
 
-  private final List<EcCriterion> criteria = Lists.newArrayList();
+  private final List<EcCriterion> criteria = new ArrayList<>();
 
   public EcGroupFilters() {
     super();
@@ -76,7 +76,7 @@ public class EcGroupFilters implements BeeSerializable {
   }
 
   public Set<Long> getSelectedBrands() {
-    Set<Long> selectedBrands = Sets.newHashSet();
+    Set<Long> selectedBrands = new HashSet<>();
 
     for (EcBrand brand : brands) {
       if (brand.isSelected()) {

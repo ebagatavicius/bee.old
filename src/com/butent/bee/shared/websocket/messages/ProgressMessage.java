@@ -1,12 +1,11 @@
 package com.butent.bee.shared.websocket.messages;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.State;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProgressMessage extends Message {
@@ -27,8 +26,9 @@ public class ProgressMessage extends Message {
     return new ProgressMessage(progressId, State.OPEN);
   }
 
-  public static ProgressMessage update(String progressId, double value) {
+  public static ProgressMessage update(String progressId, String label, double value) {
     ProgressMessage message = new ProgressMessage(progressId, State.UPDATING);
+    message.setLabel(label);
     message.setValue(value);
     return message;
   }
@@ -36,6 +36,7 @@ public class ProgressMessage extends Message {
   private String progressId;
 
   private State state;
+  private String label;
   private Double value;
 
   ProgressMessage() {
@@ -52,6 +53,10 @@ public class ProgressMessage extends Message {
   @Override
   public String brief() {
     return (getValue() == null) ? string(getState()) : string(getValue());
+  }
+
+  public String getLabel() {
+    return label;
   }
 
   public String getProgressId() {
@@ -105,23 +110,29 @@ public class ProgressMessage extends Message {
   @Override
   protected void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
-    Assert.lengthEquals(arr, 3);
+    Assert.lengthEquals(arr, 4);
 
     int i = 0;
     setProgressId(arr[i++]);
     setState(Codec.unpack(State.class, arr[i++]));
+    setLabel(arr[i++]);
     setValue(BeeUtils.toDoubleOrNull(arr[i++]));
   }
 
   @Override
   protected String serialize() {
-    List<Object> values = Lists.newArrayList();
+    List<Object> values = new ArrayList<>();
 
     values.add(getProgressId());
     values.add(Codec.pack(getState()));
+    values.add(getLabel());
     values.add(getValue());
 
     return Codec.beeSerialize(values);
+  }
+
+  private void setLabel(String label) {
+    this.label = label;
   }
 
   private void setProgressId(String progressId) {

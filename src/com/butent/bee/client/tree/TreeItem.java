@@ -1,6 +1,5 @@
 package com.butent.bee.client.tree;
 
-import com.google.gwt.animation.client.Animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.DragEndEvent;
 import com.google.gwt.event.dom.client.DragEnterEvent;
@@ -14,6 +13,7 @@ import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.animation.Animation;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasIdentity;
@@ -105,7 +105,7 @@ public class TreeItem extends UIObject implements HasTreeItems, HasIdentity {
 
   private static final TreeItemAnimation itemAnimation = new TreeItemAnimation();
 
-  private static final String STYLE_PREFIX = "bee-TreeItem-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "TreeItem-";
   private static final String STYLE_BRANCH_CONTAINER = STYLE_PREFIX + "branchContainer";
   private static final String STYLE_LEAF_CONTAINER = STYLE_PREFIX + "leafContainer";
 

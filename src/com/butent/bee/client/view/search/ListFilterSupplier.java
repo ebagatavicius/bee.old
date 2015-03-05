@@ -138,7 +138,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
         }
       }
 
-      if (!ids.isEmpty()) {
+      if (labels.isEmpty() && !ids.isEmpty()) {
         labels.addAll(ids);
       }
 

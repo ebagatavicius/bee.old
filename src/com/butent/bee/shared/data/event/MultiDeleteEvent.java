@@ -1,6 +1,5 @@
 package com.butent.bee.shared.data.event;
 
-import com.google.common.collect.Sets;
 import com.google.web.bindery.event.shared.EventBus;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -55,7 +54,7 @@ public class MultiDeleteEvent extends ModificationEvent<MultiDeleteEvent.Handler
 
   private MultiDeleteEvent(String viewName, Collection<RowInfo> rows) {
     this.viewName = viewName;
-    this.rows = Sets.newHashSet(rows);
+    this.rows = new HashSet<>(rows);
   }
 
   MultiDeleteEvent() {
@@ -67,7 +66,7 @@ public class MultiDeleteEvent extends ModificationEvent<MultiDeleteEvent.Handler
     Assert.lengthEquals(arr, 2);
 
     this.viewName = arr[0];
-    this.rows = Sets.newHashSet();
+    this.rows = new HashSet<>();
 
     String[] rowInfos = Codec.beeDeserializeCollection(arr[1]);
     if (!ArrayUtils.isEmpty(rowInfos)) {

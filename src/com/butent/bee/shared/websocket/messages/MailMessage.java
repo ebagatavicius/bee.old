@@ -21,10 +21,10 @@ public class MailMessage extends Message {
 
   public MailMessage(Long folderId) {
     this();
-    this.folderId = folderId;
+    this.folderId = Assert.notNull(folderId);
   }
 
-  MailMessage() {
+  protected MailMessage() {
     super(Type.MAIL);
   }
 

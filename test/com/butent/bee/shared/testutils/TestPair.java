@@ -61,12 +61,12 @@ public class TestPair {
   @Test
   public final void testToString() {
     Pair p = Pair.of(1.2, "a");
-    assertEquals("1.2,a", p.toString());
+    assertEquals("1.2:a", p.toString());
 
     p = Pair.of(5, null);
     assertEquals("5", p.toString());
 
     p = Pair.of(7, '\0');
-    assertEquals("7,\0", p.toString());
+    assertEquals("7:\0", p.toString());
   }
 }

@@ -190,7 +190,7 @@ public final class XmlUtils {
     return getCalculation(element);
   }
 
-  public static List<Property> getCDATAInfo(CDATASection cdata) {
+  public static List<Property> getCDataInfo(CDATASection cdata) {
     Assert.notNull(cdata);
     return PropertyUtils.createProperties("Length", cdata.getLength(), "Data", cdata.getData());
   }
@@ -557,7 +557,7 @@ public final class XmlUtils {
         }
         break;
       case Node.CDATA_SECTION_NODE:
-        tpInf = getCDATAInfo((CDATASection) nd);
+        tpInf = getCDataInfo((CDATASection) nd);
         break;
       case Node.PROCESSING_INSTRUCTION_NODE:
         tpInf = getProcessingInstructionInfo((ProcessingInstruction) nd);

@@ -4,6 +4,7 @@ import com.google.common.base.CharMatcher;
 import com.google.gwt.dom.client.Element;
 
 import com.butent.bee.client.ui.FormWidget;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 /**
@@ -42,6 +43,6 @@ public class InputLong extends InputNumber {
 
   @Override
   protected String getDefaultStyleName() {
-    return "bee-InputLong";
+    return BeeConst.CSS_CLASS_PREFIX + "InputLong";
   }
 }

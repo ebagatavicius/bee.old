@@ -15,6 +15,7 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Event;
 
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.layout.Absolute;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormWidget;
@@ -22,6 +23,9 @@ import com.butent.bee.client.view.edit.EditChangeHandler;
 import com.butent.bee.client.view.edit.EditStopEvent;
 import com.butent.bee.client.view.edit.EditStopEvent.Handler;
 import com.butent.bee.client.view.edit.Editor;
+import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.data.value.BooleanValue;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -96,6 +100,8 @@ public class VolumeSlider extends Absolute implements Editor, HasValueChangeHand
 
   private boolean handlesTabulation;
 
+  private boolean summarize;
+
   private SpinnerListener listener = new SpinnerListener() {
     @Override
     public void onSpinning(long value) {
@@ -114,7 +120,7 @@ public class VolumeSlider extends Absolute implements Editor, HasValueChangeHand
 
   public VolumeSlider(long value, long min, long max, int minStep, int maxStep) {
     super(Position.RELATIVE, Overflow.HIDDEN);
-    setStyleName("bee-VolumeSlider");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "VolumeSlider");
 
     progressBar = new ProgressBar(min, max, value);
     spinner = new VolumeSpinner(listener, value, min, max, minStep, maxStep, true);
@@ -148,6 +154,11 @@ public class VolumeSlider extends Absolute implements Editor, HasValueChangeHand
   @Override
   public HandlerRegistration addFocusHandler(FocusHandler handler) {
     return progressBar.addFocusHandler(handler);
+  }
+
+  @Override
+  public HandlerRegistration addSummaryChangeHandler(SummaryChangeEvent.Handler handler) {
+    return addHandler(handler, SummaryChangeEvent.getType());
   }
 
   @Override
@@ -198,6 +209,11 @@ public class VolumeSlider extends Absolute implements Editor, HasValueChangeHand
 
   public VolumeSpinner getSpinner() {
     return spinner;
+  }
+
+  @Override
+  public Value getSummary() {
+    return BooleanValue.of(BeeUtils.isMore(spinner.getValue(), spinner.getMin()));
   }
 
   @Override
@@ -317,6 +333,11 @@ public class VolumeSlider extends Absolute implements Editor, HasValueChangeHand
   }
 
   @Override
+  public void setSummarize(boolean summarize) {
+    this.summarize = summarize;
+  }
+
+  @Override
   public void setTabIndex(int index) {
     progressBar.setTabIndex(index);
   }
@@ -329,6 +350,11 @@ public class VolumeSlider extends Absolute implements Editor, HasValueChangeHand
   @Override
   public void startEdit(String oldValue, char charCode, EditorAction onEntry,
       Element sourceElement) {
+  }
+
+  @Override
+  public boolean summarize() {
+    return summarize;
   }
 
   @Override

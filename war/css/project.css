@@ -1,0 +1,65 @@
+.bee-prj-chart-stage-row {
+  position: absolute;
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  align-items: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  overflow: hidden;
+}
+
+.bee-prj-chart-stage-row-label {
+  word-wrap: break-word;
+  min-width: 100%;
+}
+
+.bee-prj-chart-stage-row-label:hover {
+  text-decoration: underline;
+  color: #00e;
+  cursor: pointer;
+}
+
+.bee-prj-chart-stage-flow {
+  position: absolute;
+  display: flex;
+  cursor: pointer;
+  background-color: #89C5D8;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.bee-prj-chart-stage-row-separator,
+.bee-prj-chart-data-row-separator {
+  position: absolute;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.bee-prj-chart-stage-row-separator {
+
+}
+
+.bee-prj-chart-data-row-separator {
+	
+}
+
+.bee-prj-chart-stage-flow-Tasks-Late {
+  background-color: red;
+}
+
+.bee-prj-chart-stage-flow-Tasks-Active {
+  background-color: green;
+}
+
+.bee-prj-chart-stage-flow-Tasks-Completed {
+  background-color: grey;
+}
+
+.bee-prj-chart-stage-flow-Tasks-Sheduled {
+  background-color: yellow;
+}

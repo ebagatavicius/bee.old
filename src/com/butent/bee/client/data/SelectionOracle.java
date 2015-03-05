@@ -3,6 +3,7 @@ package com.butent.bee.client.data;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Consumer;
@@ -358,11 +359,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
   }
 
   public void onUnload() {
-    for (HandlerRegistration entry : handlerRegistry) {
-      if (entry != null) {
-        entry.removeHandler();
-      }
-    }
+    EventUtils.clearRegistry(handlerRegistry);
 
     rowCountChangeHandlers.clear();
     dataReceivedHandlers.clear();
@@ -385,13 +382,16 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
     processRequest(request, callback);
   }
 
-  public void setAdditionalFilter(Filter additionalFilter) {
-    if (Objects.equals(additionalFilter, this.additionalFilter)) {
-      return;
-    }
-    this.additionalFilter = additionalFilter;
+  public boolean setAdditionalFilter(Filter filter, boolean force) {
+    if (force || !Objects.equals(filter, this.additionalFilter)) {
+      this.additionalFilter = filter;
+      clearData();
 
-    clearData();
+      return true;
+
+    } else {
+      return false;
+    }
   }
 
   public void setExclusions(Collection<Long> rowIds) {

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form[
+  <!ENTITY inline "display: inline-block;">
+  <!ENTITY lbl "margin-left: 1em; margin-right: 1em; text-align: right">
+  <!ENTITY lbl2 "margin-left: 1em; margin-right: 1em; text-align: left">
+  <!ENTITY lbl3 "margin-left: 4em; margin-right: 1em; text-align: right">
+  <!ENTITY lbl4 "margin-left: 8em; margin-right: 1em; text-align: left">
+  <!ENTITY inp1 "&inline; width: 350px;"> 
+  <!ENTITY inp2 "&inline; width: 200px;">
+  <!ENTITY inp3 "&inline; width: 150px;">
+  <!ENTITY inp4 "&inline; width: 100px;">
+  <!ENTITY inp5 "&inline; width: 100px; ">
+  <!ENTITY inp6 "&inline; width: 110px;">
+  <!ENTITY inp7 "&inline; width: 795px; height:100px; max-height: 200px; max-width: 795px;">
+]>
+
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude" name="Project" viewName="Projects"
+  caption="=project">
+  <FlowPanel class="flexBox-vertical">
+    <Table class="bee-ProjectTable">
+      <row>
+        <Label for="Name" text="=name" style="&lbl;" class="bee-required" />
+        <InputText source="Name" style="&inp1;" />
+
+        <Label for="StartDate" text="=crmStartDate" style="&lbl;" class="bee-required" />
+        <InputDate source="StartDate" required="true" style="&inp4;" />
+
+        <Label for="EndDate" text="=prjTerm" style="&lbl3;" class="bee-required" />
+        <InputDate source="EndDate" required="true" style="&inp4;" />
+      </row>
+
+      <row>
+        <Label for="Company" text="=client" style="&lbl;" class="bee-required" />
+        <DataSelector source="Company" style="&inp2;" required="true" />
+
+        <Label for="ContactPerson" text="=personContact"
+          style="margin-right: 1em; text-align: left; margin-left: -110px;" />
+        <DataSelector source="ContactPerson"
+          style="display: inline-block; width: 200px; margin-left: -100px;"
+          renderColumns="ContactFirstName ContactLastName" choiceColumns="FirstName LastName CompanyName"
+          options="Company" module="Classifiers.Contacts" />
+
+        <Label for="Status" text="=status" style="&lbl2;" />
+        <ListBox source="Status" name="Status"
+          style="display: inline-block; width: 150px; margin-left: -50px;" />
+      </row>
+    </Table>
+
+    <Disclosure open="true">
+      <Label text="=relatedInformation" style="text-transform: uppercase; " />
+      <Table>
+        <Table>
+          <row>
+            <Label for="Owner" text="=prjManager" style="&lbl;" class="bee-required" />
+            <DataSelector source="Owner" style="&inp2;" />
+
+            <Label for="Priority" text="=priority" style="&lbl4;" />
+            <Radio source="Priority" style="width: 201px" />
+          </row>
+
+          <row>
+            <Label for="Category" text="=category" style="&lbl;" class="bee-required" />
+            <DataSelector source="Category" style="&inp2;" />
+
+            <Label for="Type" text="=type" style="&lbl4;" />
+            <DataSelector source="Type" style="&inp2;" />
+          </row>
+        </Table>
+
+        <Table>
+          <row>
+            <Label for="ExpectedTasksDuration" text="=prjExpectedTaskDuration" style="&lbl;" />
+            <InputText name="ExpectedTasksDuration"  readOnly="true" style="&inp5;" />
+
+            <Label for="ActualTasksDuration" text="=prjActualTaskDuration" style="&lbl;" />
+            <InputText name="ActualTasksDuration" readOnly="true" style="&inp5;" />
+            
+            <Label for="Price" text="=prjPrice" style="&lbl;" />
+            
+            <InputDecimal source="Price" scale="2" style="&inp6;" />
+            <DataSelector source="Currency" for="Price" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" readOnly="true" />
+           
+            <Label for="ContractPrice" text="=salePrice" style="&lbl;" />
+            <InputDecimal source="ContractPrice" scale="2" style="&inp6;" />
+            <DataSelector source="Currency" for="ContractPrice" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" readOnly="true" />
+          </row>
+
+          <row>
+            <Label for="Progress" text="=progress" style="&lbl;" />
+            <InputText source="Progress" style="&inp5;" />
+
+            <Label for="ExpectedDuration" text="=expectedDuration" style="&lbl;" />
+            <InputDecimal source="ExpectedDuration" style="&inp5;" />
+            
+            <cell colSpan="2">
+              <DataSelector name="TimeUnit" source="TimeUnit" renderColumns="UnitName" style="&inp5;" /> 
+            </cell>
+            
+            <Label for="ContractNumber" text="=contractNo" style="&lbl;" />
+            <InputText source="ContractNumber" style="&inp6;"
+              readOnly="true" />
+          </row>
+        </Table>
+
+        <Table>
+          <row>
+            <Label for="Description" text="=description" style="&lbl;" />
+            <InputArea source="Description" placeholder="=prjDescriptionContent" style="&inp7;" />
+          </row>
+        </Table>
+
+      </Table>
+    </Disclosure>
+
+     <TabbedPages class="flexible">
+      <page>
+        <text>=prjComments</text>
+        <FlowPanel name="ProjectComments" class="flex-horizontal"/>
+      </page>
+      <page>
+        <text>=prjTeam</text>
+        <ChildGrid name="ProjectUsers" relColumn="Project" />
+      </page>
+      <page>
+        <text>=prjStages</text>
+        <ChildGrid name="ProjectStages" relColumn="Project" />
+      </page>
+      <page module="Documents">
+        <text>=documents</text>
+        <FlowPanel>
+          <Table style="margin-bottom: 5px;">
+            <row>
+              <Label text="=personContact" style="margin-right: 1em; text-align: left;" />
+              <DataSelector source="ContactPerson"
+                style="display: inline-block; width: 200px;"
+                renderColumns="ContactFirstName ContactLastName" choiceColumns="FirstName LastName CompanyName"
+                options="Company" module="Classifiers.Contacts" />
+
+              <Label text="=signDate" style="&lbl;" />
+              <InputDate source="ContractSigned" style="&inp4;" />
+
+              <Label text="=prjTerm" style="&lbl;" />
+              <InputDate source="EndDate" style="&inp4;" />
+            </row>
+
+            <row>
+              <Label text="=contract" style="margin-right: 1em; text-align: left;" />
+              <DataSelector name="Contract" source="Contract"
+              renderColumns="ContractName ContractNumber" 
+               choiceColumns="Name Number DocumentDate Expires" viewName="Documents" 
+               caching="none" module="Documents"
+               newRowEnabled="false" style="&inp2;" />
+
+              <Label text="=salePrice" style="&lbl;" />
+              <InputText source="ContractPrice" style="&inp4;" />
+              <DataSelector source="Currency" for="ContractPrice" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" readOnly="true" />
+
+              <Label for="OtherExpenses" text="=prjOtherExpenses" style="&lbl;" />
+              <InputText source="OtherExpenses" style="&inp4;" />
+              <DataSelector source="Currency" for="OtherExpenses" newRowEnabled="false" editEnabled="false"
+              style="width: 50px;" readOnly="true" />
+            </row>
+          </Table>
+          <ChildGrid name="RelatedDocuments" relColumn="Project"
+            class="flexible" style="height: 170px;"/>
+        </FlowPanel>
+      </page>
+      <page module="Tasks">
+        <text>=crmTasks</text>
+        <ChildGrid name="ChildTasks" relColumn="Project" />
+      </page>
+      <page module="Tasks">
+        <text>=crmRecurringTasks</text>
+        <ChildGrid name="ChildRecurringTasks" relColumn="Project" />
+      </page>
+      <page>
+        <text>=prjDates</text>
+        <ChildGrid name="ProjectDates" relColumn="Project" />
+      </page>
+      <page>
+        <text>=prjIncomePlan</text>
+        <ChildGrid name="ProjectIncomes" relColumn="Project" />
+      </page>
+      <page>
+        <text>=trdInvoices</text>
+        <ChildGrid name="ProjectInvoices" relColumn="Project" />
+      </page>
+      <page>
+        <text>=prjSchedule</text>
+        <FlowPanel name="ChartData" />
+      </page>
+   </TabbedPages>
+   </FlowPanel>
+</f:Form> 

@@ -15,7 +15,7 @@ public final class EcWidgetFactory {
   private static final String STYLE_FIELD_CONTAINER = "-container";
   private static final String STYLE_FIELD_LABEL = "-label";
 
-  public static Widget createStockWidget(int stock) {
+  public static Widget createStockWidget(double stock) {
     InlineLabel widget = new InlineLabel();
     widget.getElement().setInnerText(EcKeeper.formatStock(stock));
 

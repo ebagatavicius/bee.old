@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui" xmlns:w="http://www.butent.com/widget"
+
+  name="ProjectUsers" viewName="ProjectUsers" caption="=prjTeam"  >
+
+  <g:columns>
+    <RelColumn name="User"  >
+      <renderToken source="FirstName" suffix=" " />
+      <renderToken source="LastName" />
+    </RelColumn>
+    <DataColumn name="Phone" />
+    <DataColumn name="Mobile" />
+    <DataColumn name="Fax" visible="false"/>
+    <DataColumn name="Email"/>
+    <CalcColumn name="PositionName" type="string" filterOptions="PositionName" 
+      searchBy="PositionName" caption="=personPosition">
+      <render>
+          <ui:function>
+            var isOwner = (row.Owner == row.User);
+            if (isOwner &amp;&amp; row.PositionName != null) {
+              return row.PositionName + ' (' + $wnd.Bee_maybeTranslate('=prjManagerPosition') + ')';
+            } else if (isOwner) {
+              return $wnd.Bee_maybeTranslate('=prjManagerPosition');
+            }
+
+            return row.PositionName;
+          </ui:function>
+        </render>
+    </CalcColumn>
+    <DataColumn name="Rate" scale="2" />
+    <DataColumn name="Notes" />
+  </g:columns>
+  <g:rowStyle>
+    <ui:inline>="font-weight: bolder"</ui:inline>
+    <ui:expression>row.Owner == row.User</ui:expression>
+  </g:rowStyle>
+</g:Grid>

@@ -52,7 +52,7 @@ public abstract class Value implements Comparable<Value>, BeeSerializable {
         val = (Value) value;
 
       } else if (value instanceof Boolean) {
-        val = BooleanValue.getInstance((Boolean) value);
+        val = BooleanValue.of((Boolean) value);
 
       } else if (value instanceof Integer) {
         val = new IntegerValue((Integer) value);
@@ -90,7 +90,7 @@ public abstract class Value implements Comparable<Value>, BeeSerializable {
 
     switch (type) {
       case BOOLEAN:
-        return BooleanValue.getInstance(BeeUtils.toBooleanOrNull(value));
+        return BooleanValue.of(BeeUtils.toBooleanOrNull(value));
       case TEXT:
       case BLOB:
         return new TextValue(value);

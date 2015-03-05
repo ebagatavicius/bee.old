@@ -1,6 +1,5 @@
 package com.butent.bee.client.dom;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.UIObject;
@@ -16,6 +15,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -163,7 +163,7 @@ public class Dimensions implements HasInfo, HasDimensions {
 
   @Override
   public List<Property> getInfo() {
-    List<Property> info = Lists.newArrayList();
+    List<Property> info = new ArrayList<>();
 
     if (getWidthValue() != null) {
       info.add(new Property(StyleUtils.STYLE_WIDTH,

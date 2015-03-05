@@ -7,6 +7,7 @@
   <Fields>
     <String name="Name" precision="100" notNull="true"  label="=documentCategory" />
     <Relation name="Parent" relation="DocumentTree" />
-    <Integer name="Order" />
+    <String name="NumberPrefix" precision="10" label="=documentNumberPrefix" />
+    <Numeric name="Ordinal" precision="3" label="=ordinal" />
   </Fields>
 </Table>

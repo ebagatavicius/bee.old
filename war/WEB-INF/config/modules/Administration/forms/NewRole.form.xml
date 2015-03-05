@@ -12,8 +12,8 @@
         <InputText source="Name" />
       </row>
       <row>
-        <Label text="=rightsInheritedFrom" />
-        <UnboundSelector name="Role" viewName="Roles" newRowEnabled="false"/>
+        <Label name="RoleCaption" text="=rightsInheritedFrom" />
+        <UnboundSelector name="Role" viewName="Roles" newRowEnabled="false" />
       </row>
     </Table>
   </FlowPanel>

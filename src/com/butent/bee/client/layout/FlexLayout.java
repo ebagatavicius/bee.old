@@ -1,8 +1,5 @@
 package com.butent.bee.client.layout;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 import com.butent.bee.client.dom.Rulers;
 import com.butent.bee.client.style.Font;
 import com.butent.bee.shared.BeeConst;
@@ -12,7 +9,9 @@ import com.butent.bee.shared.ui.Flexible;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -99,7 +98,7 @@ public final class FlexLayout {
       return changed;
     }
 
-    List<Adapter> adapters = Lists.newArrayList();
+    List<Adapter> adapters = new ArrayList<>();
     int totHypothetical = 0;
     int totUsed = 0;
 
@@ -269,7 +268,7 @@ public final class FlexLayout {
       return changed;
     }
 
-    Set<Integer> freeze = Sets.newHashSet();
+    Set<Integer> freeze = new HashSet<>();
     if (!BeeUtils.isEmpty(frozen)) {
       freeze.addAll(frozen);
     }

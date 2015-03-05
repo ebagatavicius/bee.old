@@ -1,6 +1,5 @@
 package com.butent.bee.client.modules.ec;
 
-import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
@@ -30,10 +29,12 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.ec.EcConstants;
+import com.butent.bee.shared.modules.ec.EcConstants.EcClientType;
 import com.butent.bee.shared.ui.UserInterface;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 class EcRegistrationForm extends AbstractFormInterceptor {
@@ -105,7 +106,7 @@ class EcRegistrationForm extends AbstractFormInterceptor {
     final String personCode = getStringValue(COL_REGISTRATION_PERSON_CODE);
     final String activity = getStringValue(COL_REGISTRATION_ACTIVITY);
 
-    Map<String, String> userFields = Maps.newHashMap();
+    Map<String, String> userFields = new HashMap<>();
     userFields.put(ClassifierConstants.COL_EMAIL, email);
     userFields.put(ClassifierConstants.COL_FIRST_NAME, firstName.trim());
     userFields.put(ClassifierConstants.ALS_COMPANY_NAME, companyName.trim());

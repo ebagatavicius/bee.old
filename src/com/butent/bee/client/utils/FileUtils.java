@@ -7,6 +7,7 @@ import com.google.gwt.dom.client.DataTransfer;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.Response;
+import com.google.gwt.http.client.URL;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
@@ -32,13 +33,16 @@ import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.io.FileNameUtils;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +61,7 @@ public final class FileUtils {
 
   private static final BeeLogger logger = LogUtils.getLogger(FileUtils.class);
 
-  private static final String OPEN_URL = "file";
-  private static final String UPLOAD_URL = "upload";
+  public static final String UPLOAD_URL = "upload";
 
   private static final long MIN_FILE_SIZE_FOR_PROGRESS = 100000;
 
@@ -188,13 +191,27 @@ public final class FileUtils {
     return result;
   }
 
-  public static String getUrl(String fileName, Long fileId) {
-    Map<String, String> parameters = new HashMap<>();
-    parameters.put(Service.VAR_FILE_ID, BeeUtils.toString(fileId));
-    parameters.put(Service.VAR_FILE_NAME, fileName);
+  public static String getUrl(Long fileId) {
+    return GWT.getHostPageBaseURL() + AdministrationConstants.FILE_URL
+        + (DataUtils.isId(fileId) ? "/" + BeeUtils.toString(fileId) : "");
+  }
 
-    return CommUtils.addQueryString(GWT.getHostPageBaseURL() + OPEN_URL,
-        CommUtils.buildQueryString(parameters, true));
+  public static String getUrl(String fileName, Long fileId) {
+    Assert.notEmpty(fileName);
+    return getUrl(fileId) + "/" + URL.encode(fileName);
+  }
+
+  public static String getUrl(String fileName, String filePath) {
+    Assert.notEmpty(filePath);
+    return CommUtils.addQueryString(getUrl(fileName, (Long) null),
+        CommUtils.buildQueryString(Collections.singletonMap(Service.VAR_FILES, filePath), true));
+  }
+
+  public static String getUrl(String fileName, Map<Long, String> files) {
+    Assert.notEmpty(files);
+    return CommUtils.addQueryString(getUrl(fileName, (Long) null),
+        CommUtils.buildQueryString(Collections.singletonMap(Service.VAR_FILES,
+            Codec.beeSerialize(files)), true));
   }
 
   public static void readAsDataURL(File file, final Consumer<String> consumer) {
@@ -401,7 +418,7 @@ public final class FileUtils {
       xhr.getUpload().setOnprogress(new EventListener() {
         @Override
         public void handleEvent(Event evt) {
-          BeeKeeper.getScreen().updateProgress(progressId, ((ProgressEvent) evt).getLoaded());
+          BeeKeeper.getScreen().updateProgress(progressId, null, ((ProgressEvent) evt).getLoaded());
         }
       });
     }

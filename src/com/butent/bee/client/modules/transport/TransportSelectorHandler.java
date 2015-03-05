@@ -11,8 +11,8 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.event.logical.SelectorEvent.Handler;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.DataView;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeColumn;
@@ -51,7 +51,7 @@ public class TransportSelectorHandler implements Handler {
     if (!event.isChanged()) {
       return;
     }
-    final DataView dataView = UiHelper.getDataView(event.getSelector());
+    final DataView dataView = ViewHelper.getDataView(event.getSelector());
 
     if (dataView == null || !BeeUtils.same(dataView.getViewName(), "CargoInvoices")
         || !dataView.isFlushable()) {
@@ -108,7 +108,7 @@ public class TransportSelectorHandler implements Handler {
       return;
     }
 
-    FormView form = UiHelper.getForm(selector);
+    FormView form = ViewHelper.getForm(selector);
     if (form == null) {
       return;
     }
@@ -172,7 +172,7 @@ public class TransportSelectorHandler implements Handler {
     if (source == null) {
       return;
     }
-    final DataView dataView = UiHelper.getDataView(event.getSelector());
+    final DataView dataView = ViewHelper.getDataView(event.getSelector());
 
     if (dataView == null || BeeUtils.isEmpty(dataView.getViewName()) || !dataView.isFlushable()) {
       return;

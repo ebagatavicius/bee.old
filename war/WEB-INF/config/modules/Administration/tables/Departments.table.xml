@@ -5,7 +5,12 @@
   idName="DepartmentID"
   >
   <Fields>
-    <String name="DepartmentName" precision="100" notNull="true" unique="true" label="=department" />   
-    <Relation name="DepartmentHead" unique="true" relation="DepartmentEmployees" label="=departmentHead" />
+    <String name="DepartmentName" precision="100" notNull="true" unique="true"
+      label="=department" />   
+    <Relation name="Parent" relation="Departments" label="=departmentParent" />
+
+    <Relation name="DepartmentHead" unique="true" relation="DepartmentEmployees"
+      label="=departmentHead" />
+    <Relation name="Role" relation="Roles" label="=role" />
   </Fields>
 </Table>

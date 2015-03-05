@@ -1,8 +1,6 @@
 package com.butent.bee.client.render;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.HasItems;
@@ -14,7 +12,9 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public class MapRenderer extends AbstractCellRenderer implements HasItems {
 
   public static final String DEFAULT_SEPARATOR = "=";
 
-  private final Map<String, String> map = Maps.newHashMap();
+  private final Map<String, String> map = new HashMap<>();
 
   private final String separator;
   private final Splitter splitter;
@@ -77,7 +77,7 @@ public class MapRenderer extends AbstractCellRenderer implements HasItems {
 
   @Override
   public List<String> getItems() {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     for (Map.Entry<String, String> entry : map.entrySet()) {
       String key = Value.parseValue(getValueType(), entry.getKey(), false).toString();
       if (!BeeUtils.isEmpty(key)) {

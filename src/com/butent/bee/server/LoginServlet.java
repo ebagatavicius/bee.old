@@ -59,7 +59,7 @@ public class LoginServlet extends HttpServlet {
 
   protected static final String FORM_NAME = "login";
 
-  protected static final String STYLE_PREFIX = "bee-SignIn-";
+  protected static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "SignIn-";
 
   private static BeeLogger logger = LogUtils.getLogger(LoginServlet.class);
 
@@ -158,7 +158,10 @@ public class LoginServlet extends HttpServlet {
           : resource(contextPath, Paths.getScriptPath(script));
       doc.getHead().append(script().src(src));
     }
-    doc.getHead().append(script().src(resource(contextPath, "bee/bee.nocache.js")));
+
+    doc.getHead().append(script().src(
+        CommUtils.addTimeStamp(Paths.buildPath(contextPath, "bee/bee.nocache.js"),
+            new DateTime())));
 
     return doc.buildLines();
   }

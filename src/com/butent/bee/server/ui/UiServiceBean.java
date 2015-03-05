@@ -1,6 +1,5 @@
 package com.butent.bee.server.ui;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -9,15 +8,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
+import static com.butent.bee.shared.Service.*;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 
 import com.butent.bee.server.Config;
 import com.butent.bee.server.DataSourceBean;
 import com.butent.bee.server.InitializationBean;
 import com.butent.bee.server.data.BeeTable;
-import com.butent.bee.server.data.BeeTable.BeeField;
-import com.butent.bee.server.data.BeeTable.BeeRelation;
 import com.butent.bee.server.data.BeeView;
 import com.butent.bee.server.data.DataEditorBean;
 import com.butent.bee.server.data.IdGeneratorBean;
@@ -38,14 +35,10 @@ import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
-import com.butent.bee.server.ui.XmlSqlDesigner.DataType;
-import com.butent.bee.server.ui.XmlSqlDesigner.DataTypeGroup;
 import com.butent.bee.server.utils.XmlUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
-import com.butent.bee.shared.Resource;
-import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
@@ -54,21 +47,16 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.RowChildren;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
-import com.butent.bee.shared.data.SqlConstants.SqlDataType;
-import com.butent.bee.shared.data.XmlTable;
-import com.butent.bee.shared.data.XmlTable.XmlField;
-import com.butent.bee.shared.data.XmlTable.XmlRelation;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.data.view.RowInfo;
+import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.rights.RightsObjectType;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.rights.RightsUtils;
-import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.DecoratorConstants;
 import com.butent.bee.shared.ui.GridDescription;
@@ -86,11 +74,7 @@ import com.butent.bee.shared.utils.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -144,117 +128,177 @@ public class UiServiceBean {
   NewsBean news;
 
   public ResponseObject doService(RequestInfo reqInfo) {
-    ResponseObject response = null;
+    ResponseObject response;
 
-    String svc = reqInfo.getService();
+    String svc = BeeUtils.trim(reqInfo.getService());
 
-    if (BeeUtils.same(svc, Service.GET_GRID)) {
-      response = getGrid(reqInfo);
-    } else if (BeeUtils.same(svc, Service.GET_FORM)) {
-      response = getForm(reqInfo);
+    switch (svc) {
+      case GET_GRID:
+        response = getGrid(reqInfo);
+        break;
+      case GET_FORM:
+        response = getForm(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.REBUILD)) {
-      response = rebuildData(reqInfo);
-    } else if (BeeUtils.same(svc, Service.DO_SQL)) {
-      response = doSql(reqInfo);
-    } else if (BeeUtils.same(svc, Service.QUERY)) {
-      response = getViewData(reqInfo);
-    } else if (BeeUtils.same(svc, Service.GET_VALUE)) {
-      response = getValue(reqInfo);
-    } else if (BeeUtils.same(svc, Service.GET_DATA)) {
-      response = getData(reqInfo);
+      case REBUILD:
+        response = rebuildData(reqInfo);
+        break;
+      case DO_SQL:
+        response = doSql(reqInfo);
+        break;
+      case QUERY:
+        response = getViewData(reqInfo);
+        break;
+      case GET_VALUE:
+        response = getValue(reqInfo);
+        break;
+      case GET_DATA:
+        response = getData(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.GET_DATA_INFO)) {
-      response = getDataInfo(reqInfo);
-    } else if (BeeUtils.same(svc, Service.GENERATE)) {
-      response = generateData(reqInfo);
-    } else if (BeeUtils.same(svc, Service.COUNT_ROWS)) {
-      response = getViewSize(reqInfo);
+      case GET_DATA_INFO:
+        response = getDataInfo(reqInfo);
+        break;
+      case GENERATE:
+        response = generateData(reqInfo);
+        break;
+      case COUNT_ROWS:
+        response = getViewSize(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.DELETE_ROWS)) {
-      response = deleteRows(reqInfo);
-    } else if (BeeUtils.same(svc, Service.DELETE)) {
-      response = delete(reqInfo);
-    } else if (BeeUtils.same(svc, Service.UPDATE_CELL)) {
-      response = updateCell(reqInfo);
-    } else if (BeeUtils.same(svc, Service.UPDATE_ROW)) {
-      response = updateRow(reqInfo);
-    } else if (BeeUtils.same(svc, Service.UPDATE)) {
-      response = update(reqInfo);
-    } else if (BeeUtils.same(svc, Service.INSERT_ROW)) {
-      response = insertRow(reqInfo);
-    } else if (BeeUtils.same(svc, Service.INSERT_ROWS)) {
-      response = insertRows(reqInfo);
-    } else if (BeeUtils.same(svc, Service.INSERT_ROW_SILENTLY)) {
-      response = insertRowSilently(reqInfo);
+      case DELETE_ROWS:
+        response = deleteRows(reqInfo);
+        break;
+      case DELETE:
+        response = delete(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.GET_VIEW_INFO)) {
-      response = getViewInfo(reqInfo);
-    } else if (BeeUtils.same(svc, Service.GET_TABLE_INFO)) {
-      response = getTableInfo(reqInfo);
+      case UPDATE_CELL:
+        response = updateCell(reqInfo);
+        break;
+      case UPDATE_ROW:
+        response = updateRow(reqInfo);
+        break;
+      case UPDATE_ROWS:
+        response = updateRows(reqInfo);
+        break;
+      case UPDATE:
+        response = update(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.GET_DSNS)) {
-      response = getDsns();
-    } else if (BeeUtils.same(svc, Service.SWITCH_DSN)) {
-      response = switchDsn(reqInfo.getParameter(Service.VAR_DSN));
+      case INSERT_ROW:
+        response = insertRow(reqInfo);
+        break;
+      case INSERT_ROWS:
+        response = insertRows(reqInfo);
+        break;
+      case INSERT_ROW_SILENTLY:
+        response = insertRowSilently(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.SEARCH)) {
-      response = search.processQuery(reqInfo.getParameter(0));
-    } else if (BeeUtils.same(svc, Service.HISTOGRAM)) {
-      response = getHistogram(reqInfo);
+      case GET_VIEW_INFO:
+        response = getViewInfo(reqInfo);
+        break;
+      case GET_TABLE_INFO:
+        response = getTableInfo(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.GET_RELATED_VALUES)) {
-      response = getRelatedValues(reqInfo);
-    } else if (BeeUtils.same(svc, Service.UPDATE_RELATED_VALUES)) {
-      response = updateRelatedValues(reqInfo);
+      case GET_DSNS:
+        response = getDsns();
+        break;
+      case SWITCH_DSN:
+        response = switchDsn(reqInfo.getParameter(VAR_DSN));
+        break;
 
-    } else if (BeeUtils.same(svc, Service.GET_DECORATORS)) {
-      response = getDecorators();
+      case SEARCH:
+        response = search.processQuery(reqInfo.getParameter(0));
+        break;
+      case HISTOGRAM:
+        response = getHistogram(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.GET_AUTOCOMPLETE)) {
-      response = getAutocomplete();
-    } else if (BeeUtils.same(svc, Service.UPDATE_AUTOCOMPLETE)) {
-      response = updateAutocomplete(reqInfo);
+      case GET_RELATED_VALUES:
+        response = getRelatedValues(reqInfo);
+        break;
+      case UPDATE_RELATED_VALUES:
+        response = updateRelatedValues(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.GET_NEWS)) {
-      response = news.getNews();
-    } else if (BeeUtils.same(svc, Service.SUBSCRIBE_TO_FEEDS)) {
-      response = news.subscribe(reqInfo);
-    } else if (BeeUtils.same(svc, Service.ACCESS)) {
-      response = news.onAccess(reqInfo);
+      case GET_DECORATORS:
+        response = getDecorators();
+        break;
 
-    } else if (BeeUtils.same(svc, Service.GET_STATE_RIGHTS)) {
-      response = usr.getStateRights(
-          EnumUtils.getEnumByIndex(RightsObjectType.class, reqInfo.getParameter(COL_OBJECT_TYPE)),
-          EnumUtils.getEnumByIndex(RightsState.class, reqInfo.getParameter(COL_STATE)));
+      case GET_AUTOCOMPLETE:
+        response = getAutocomplete();
+        break;
+      case UPDATE_AUTOCOMPLETE:
+        response = updateAutocomplete(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.GET_ROLE_RIGHTS)) {
-      response = usr.getRoleRights(
-          EnumUtils.getEnumByIndex(RightsObjectType.class, reqInfo.getParameter(COL_OBJECT_TYPE)),
-          BeeUtils.toLongOrNull(reqInfo.getParameter(COL_ROLE)));
+      case GET_NEWS:
+        response = news.getNews();
+        break;
+      case SUBSCRIBE_TO_FEEDS:
+        response = news.subscribe(reqInfo);
+        break;
+      case ACCESS:
+        response = news.onAccess(reqInfo);
+        break;
 
-    } else if (BeeUtils.same(svc, Service.SET_STATE_RIGHTS)) {
-      response = usr.setStateRights(
-          EnumUtils.getEnumByIndex(RightsObjectType.class, reqInfo.getParameter(COL_OBJECT_TYPE)),
-          EnumUtils.getEnumByIndex(RightsState.class, reqInfo.getParameter(COL_STATE)),
-          Codec.deserializeMap(reqInfo.getParameter(COL_OBJECT)));
+      case GET_STATE_RIGHTS:
+        response =
+            usr.getStateRights(
+                EnumUtils.getEnumByIndex(RightsObjectType.class, reqInfo
+                    .getParameter(COL_OBJECT_TYPE)),
+                EnumUtils.getEnumByIndex(RightsState.class, reqInfo.getParameter(COL_STATE)));
+        break;
 
-    } else if (BeeUtils.same(svc, Service.SET_ROLE_RIGHTS)) {
-      response = usr.setRoleRights(
-          EnumUtils.getEnumByIndex(RightsObjectType.class, reqInfo.getParameter(COL_OBJECT_TYPE)),
-          BeeUtils.toLongOrNull(reqInfo.getParameter(COL_ROLE)),
-          Codec.deserializeMap(reqInfo.getParameter(COL_OBJECT)));
+      case GET_ROLE_RIGHTS:
+        response =
+            usr.getRoleRights(
+                EnumUtils.getEnumByIndex(RightsObjectType.class, reqInfo
+                    .getParameter(COL_OBJECT_TYPE)),
+                BeeUtils.toLongOrNull(reqInfo.getParameter(COL_ROLE)));
+        break;
 
-    } else if (BeeUtils.same(svc, Service.SET_ROW_RIGHTS)) {
-      response = setRowRights(reqInfo);
+      case SET_STATE_RIGHTS:
+        response =
+            usr.setStateRights(
+                EnumUtils.getEnumByIndex(RightsObjectType.class, reqInfo
+                    .getParameter(COL_OBJECT_TYPE)),
+                EnumUtils.getEnumByIndex(RightsState.class, reqInfo.getParameter(COL_STATE)),
+                Codec.deserializeMap(reqInfo.getParameter(COL_OBJECT)));
+        break;
 
-    } else if (BeeUtils.same(svc, Service.IMPORT_CSV_COMPANIES)) {
-      response = importCSVCompanies(reqInfo);
-    } else {
-      String msg = BeeUtils.joinWords("data service not recognized:", svc);
-      logger.warning(msg);
-      response = ResponseObject.error(msg);
+      case SET_ROLE_RIGHTS:
+        response =
+            usr.setRoleRights(
+                EnumUtils.getEnumByIndex(RightsObjectType.class, reqInfo
+                    .getParameter(COL_OBJECT_TYPE)),
+                BeeUtils.toLongOrNull(reqInfo.getParameter(COL_ROLE)),
+                Codec.deserializeMap(reqInfo.getParameter(COL_OBJECT)));
+        break;
+
+      case SET_ROW_RIGHTS:
+        response = setRowRights(reqInfo);
+        break;
+
+      case GET_GRID_SETTINGS:
+        response = getGridAndColumnSettings();
+        break;
+      case ENSURE_GRID_SETTINGS:
+        response = ensureGridSettings(reqInfo);
+        break;
+      case COPY_GRID_SETTINGS:
+        response = copyGridSettings(reqInfo);
+        break;
+
+      default:
+        String msg = BeeUtils.joinWords("data service not recognized:", svc);
+        logger.warning(msg);
+        response = ResponseObject.error(msg);
     }
+
     return response;
   }
 
@@ -337,15 +381,19 @@ public class UiServiceBean {
     return qs.getViewData(VIEW_FILTERS, usr.getCurrentUserFilter(COL_FILTER_USER), order);
   }
 
-  public Pair<BeeRowSet, BeeRowSet> getGridAndColumnSettings() {
-    Filter userFilter = usr.getCurrentUserFilter(GridDescription.COL_GRID_SETTING_USER);
+  public ResponseObject getGridAndColumnSettings() {
+    BeeRowSet gridSettings = qs.getViewData(GridDescription.VIEW_GRID_SETTINGS,
+        usr.getCurrentUserFilter(GridDescription.COL_GRID_SETTING_USER));
 
-    BeeRowSet gridSettings =
-        DataUtils.emptyToNull(qs.getViewData(GridDescription.VIEW_GRID_SETTINGS, userFilter));
-    BeeRowSet columnSettings =
-        DataUtils.emptyToNull(qs.getViewData(ColumnDescription.VIEW_COLUMN_SETTINGS, userFilter));
+    if (DataUtils.isEmpty(gridSettings)) {
+      return ResponseObject.emptyResponse();
 
-    return Pair.of(gridSettings, columnSettings);
+    } else {
+      BeeRowSet columnSettings = qs.getViewData(ColumnDescription.VIEW_COLUMN_SETTINGS,
+          Filter.any(ColumnDescription.COL_GRID_SETTING, gridSettings.getRowIds()));
+
+      return ResponseObject.response(Pair.of(gridSettings, DataUtils.emptyToNull(columnSettings)));
+    }
   }
 
   public BeeRowSet getReportSettings() {
@@ -356,99 +404,57 @@ public class UiServiceBean {
     return qs.getViewData(VIEW_WORKSPACES, usr.getCurrentUserFilter(COL_USER));
   }
 
-  private void buildDbList(String rootTable, Set<String> tables, boolean initial) {
-    boolean recurse = BeeUtils.isSuffix(rootTable, '*');
-    String root = BeeUtils.normalize(BeeUtils.removeSuffix(rootTable, '*'));
-
-    if (!initial && tables.contains(root) || !sys.isTable(root)) {
-      return;
+  private ResponseObject copyGridSettings(RequestInfo reqInfo) {
+    Long id = reqInfo.getParameterLong(VAR_ID);
+    if (!DataUtils.isId(id)) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(), VAR_ID);
     }
-    tables.add(root);
 
-    for (String tbl : sys.getTableNames()) {
-      if (!tables.contains(BeeUtils.normalize(tbl))) {
-        for (BeeField field : sys.getTableFields(tbl)) {
-          if (field instanceof BeeRelation
-              && BeeUtils.same(((BeeRelation) field).getRelation(), root)) {
-            if (recurse) {
-              buildDbList(tbl + '*', tables, false);
-            } else {
-              tables.add(BeeUtils.normalize(tbl));
-            }
-          }
-        }
+    List<Long> users =
+        DataUtils.parseIdList(reqInfo.getParameter(GridDescription.COL_GRID_SETTING_USER));
+    if (BeeUtils.isEmpty(users)) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(),
+          GridDescription.COL_GRID_SETTING_USER);
+    }
+
+    BeeRowSet source = qs.getViewData(GridDescription.VIEW_GRID_SETTINGS, Filter.compareId(id));
+    if (DataUtils.isEmpty(source)) {
+      return ResponseObject.error(reqInfo.getService(), GridDescription.VIEW_GRID_SETTINGS, id,
+          "not found");
+    }
+
+    BeeRow row = source.getRow(0);
+    int index = source.getColumnIndex(GridDescription.COL_GRID_SETTING_USER);
+
+    boolean hasChildren = qs.sqlExists(ColumnDescription.TBL_COLUMN_SETTINGS,
+        SqlUtils.equals(ColumnDescription.TBL_COLUMN_SETTINGS, ColumnDescription.COL_GRID_SETTING,
+            id));
+
+    for (Long user : users) {
+      row.setValue(index, user);
+
+      BeeRowSet insert = DataUtils.createRowSetForInsert(source.getViewName(), source.getColumns(),
+          row);
+      ResponseObject response = deb.commitRow(insert);
+
+      if (response.hasErrors()) {
+        return response;
+      }
+
+      if (hasChildren && response.hasResponse(BeeRow.class)) {
+        long newId = ((BeeRow) response.getResponse()).getId();
+        qs.copyData(ColumnDescription.TBL_COLUMN_SETTINGS, ColumnDescription.COL_GRID_SETTING,
+            id, newId);
       }
     }
-  }
 
-  private ResponseObject buildDbSchema(Iterable<String> roots) {
-    XmlSqlDesigner designer = new XmlSqlDesigner();
-    designer.types = new ArrayList<>();
-    designer.tables = new ArrayList<>();
-
-    for (int i = 0; i < 2; i++) {
-      boolean extMode = i > 0;
-      DataTypeGroup typeGroup = new DataTypeGroup();
-      typeGroup.label = BeeUtils.joinWords("SQL", extMode ? "extended" : "", "types");
-      typeGroup.color = extMode ? "rgb(0,255,0)" : "rgb(255,255,255)";
-      typeGroup.types = new ArrayList<>();
-
-      for (SqlDataType type : SqlDataType.values()) {
-        String typeName = type.name();
-        DataType dataType = new DataType();
-        dataType.label = (extMode ? "Extended " : "") + typeName;
-        dataType.sql = typeName + (extMode ? XmlSqlDesigner.EXT : "");
-        typeGroup.types.add(dataType);
-      }
-      designer.types.add(typeGroup);
-    }
-    DataTypeGroup typeGroup = new DataTypeGroup();
-    typeGroup.label = "Table states";
-    typeGroup.color = "rgb(255,0,0)";
-
-    DataType dataType = new DataType();
-    dataType.label = "STATE";
-    dataType.sql = XmlSqlDesigner.STATE;
-    typeGroup.types = Lists.newArrayList(dataType);
-
-    designer.types.add(typeGroup);
-
-    Set<String> tables = new HashSet<>();
-    Iterable<String> r;
-
-    if (roots == null || !roots.iterator().hasNext()) {
-      r = sys.getTableNames();
-    } else {
-      r = roots;
-    }
-    for (String root : r) {
-      buildDbList(root, tables, true);
-    }
-    for (String tableName : tables) {
-      XmlTable xmlTable = sys.getXmlTable(sys.getTable(tableName).getModule(), tableName);
-
-      if (xmlTable != null) {
-        Collection<XmlField> fields = new ArrayList<>();
-
-        if (!BeeUtils.isEmpty(xmlTable.fields)) {
-          fields.addAll(xmlTable.fields);
-        }
-        for (XmlField xmlField : fields) {
-          if (xmlField instanceof XmlRelation) {
-            XmlRelation xmlRelation = (XmlRelation) xmlField;
-            xmlRelation.relationField = sys.getIdName(xmlRelation.relation);
-          }
-        }
-        designer.tables.add(xmlTable);
-      }
-    }
-    return ResponseObject.response(new Resource(null, XmlUtils.marshal(designer, null)));
+    return ResponseObject.response(users.size());
   }
 
   private ResponseObject delete(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
     Assert.notEmpty(viewName);
-    String where = reqInfo.getParameter(Service.VAR_VIEW_WHERE);
+    String where = reqInfo.getParameter(VAR_VIEW_WHERE);
     Assert.notEmpty(where);
 
     BeeView view = sys.getView(viewName);
@@ -465,9 +471,9 @@ public class UiServiceBean {
   }
 
   private ResponseObject deleteRows(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
     Assert.notEmpty(viewName);
-    String[] entries = Codec.beeDeserializeCollection(reqInfo.getParameter(Service.VAR_VIEW_ROWS));
+    String[] entries = Codec.beeDeserializeCollection(reqInfo.getParameter(VAR_VIEW_ROWS));
     Assert.isPositive(ArrayUtils.length(entries));
     RowInfo[] rows = new RowInfo[entries.length];
 
@@ -497,6 +503,46 @@ public class UiServiceBean {
     }
   }
 
+  private ResponseObject ensureGridSettings(RequestInfo reqInfo) {
+    String key = reqInfo.getParameter(GridDescription.COL_GRID_SETTING_KEY);
+    if (BeeUtils.isEmpty(key)) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(),
+          GridDescription.COL_GRID_SETTING_KEY);
+    }
+
+    Long user = reqInfo.getParameterLong(GridDescription.COL_GRID_SETTING_USER);
+    if (!DataUtils.isId(user)) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(),
+          GridDescription.COL_GRID_SETTING_USER);
+    }
+
+    Filter filter = Filter.and(
+        Filter.equals(GridDescription.COL_GRID_SETTING_KEY, key),
+        Filter.equals(GridDescription.COL_GRID_SETTING_USER, user));
+
+    BeeRowSet rowSet = qs.getViewData(GridDescription.VIEW_GRID_SETTINGS, filter);
+
+    if (DataUtils.isEmpty(rowSet)) {
+      SqlInsert insert = new SqlInsert(GridDescription.TBL_GRID_SETTINGS)
+          .addConstant(GridDescription.COL_GRID_SETTING_KEY, key)
+          .addConstant(GridDescription.COL_GRID_SETTING_USER, user);
+
+      ResponseObject response = qs.insertDataWithResponse(insert);
+      if (response.hasErrors()) {
+        return response;
+      }
+
+      rowSet = qs.getViewData(GridDescription.VIEW_GRID_SETTINGS, filter);
+    }
+
+    if (DataUtils.isEmpty(rowSet)) {
+      return ResponseObject.error(reqInfo.getService(), GridDescription.VIEW_GRID_SETTINGS, filter,
+          "not found");
+    } else {
+      return ResponseObject.response(rowSet.getRow(0));
+    }
+  }
+
   private ResponseObject generateData(RequestInfo reqInfo) {
     ResponseObject response;
 
@@ -520,9 +566,9 @@ public class UiServiceBean {
   }
 
   private ResponseObject getData(RequestInfo reqInfo) {
-    String viewList = reqInfo.getParameter(Service.VAR_VIEW_LIST);
+    String viewList = reqInfo.getParameter(VAR_VIEW_LIST);
     if (BeeUtils.isEmpty(viewList)) {
-      return ResponseObject.parameterNotFound(Service.VAR_VIEW_LIST);
+      return ResponseObject.parameterNotFound(VAR_VIEW_LIST);
     }
 
     List<String> viewNames = NameUtils.toList(viewList);
@@ -536,7 +582,7 @@ public class UiServiceBean {
   }
 
   private ResponseObject getDataInfo(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
     if (BeeUtils.isEmpty(viewName)) {
       return ResponseObject.response(sys.getDataInfo());
     } else {
@@ -560,11 +606,11 @@ public class UiServiceBean {
   }
 
   private ResponseObject getHistogram(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
-    String columns = reqInfo.getParameter(Service.VAR_VIEW_COLUMNS);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
+    String columns = reqInfo.getParameter(VAR_VIEW_COLUMNS);
 
-    String where = reqInfo.getParameter(Service.VAR_VIEW_WHERE);
-    String order = reqInfo.getParameter(Service.VAR_VIEW_ORDER);
+    String where = reqInfo.getParameter(VAR_VIEW_WHERE);
+    String order = reqInfo.getParameter(VAR_VIEW_ORDER);
 
     Filter filter = BeeUtils.isEmpty(where) ? null : Filter.restore(where);
 
@@ -574,24 +620,24 @@ public class UiServiceBean {
   }
 
   private ResponseObject getRelatedValues(RequestInfo reqInfo) {
-    String tableName = reqInfo.getParameter(Service.VAR_TABLE);
+    String tableName = reqInfo.getParameter(VAR_TABLE);
     if (BeeUtils.isEmpty(tableName)) {
-      return ResponseObject.parameterNotFound(Service.VAR_TABLE);
+      return ResponseObject.parameterNotFound(VAR_TABLE);
     }
 
-    String filterColumn = reqInfo.getParameter(Service.VAR_FILTER_COLUMN);
+    String filterColumn = reqInfo.getParameter(VAR_FILTER_COLUMN);
     if (BeeUtils.isEmpty(filterColumn)) {
-      return ResponseObject.parameterNotFound(Service.VAR_FILTER_COLUMN);
+      return ResponseObject.parameterNotFound(VAR_FILTER_COLUMN);
     }
 
-    Long filterValue = BeeUtils.toLongOrNull(reqInfo.getParameter(Service.VAR_VALUE));
+    Long filterValue = BeeUtils.toLongOrNull(reqInfo.getParameter(VAR_VALUE));
     if (!DataUtils.isId(filterValue)) {
-      return ResponseObject.parameterNotFound(Service.VAR_VALUE);
+      return ResponseObject.parameterNotFound(VAR_VALUE);
     }
 
-    String resultColumn = reqInfo.getParameter(Service.VAR_VALUE_COLUMN);
+    String resultColumn = reqInfo.getParameter(VAR_VALUE_COLUMN);
     if (BeeUtils.isEmpty(resultColumn)) {
-      return ResponseObject.parameterNotFound(Service.VAR_VALUE_COLUMN);
+      return ResponseObject.parameterNotFound(VAR_VALUE_COLUMN);
     }
 
     Long[] values = qs.getRelatedValues(tableName, filterColumn, filterValue, resultColumn);
@@ -659,9 +705,9 @@ public class UiServiceBean {
   }
 
   private ResponseObject getValue(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
-    String rowId = reqInfo.getParameter(Service.VAR_VIEW_ROW_ID);
-    String column = reqInfo.getParameter(Service.VAR_COLUMN);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
+    String rowId = reqInfo.getParameter(VAR_VIEW_ROW_ID);
+    String column = reqInfo.getParameter(VAR_COLUMN);
 
     Filter filter = Filter.compareId(BeeUtils.toLong(rowId));
 
@@ -678,19 +724,19 @@ public class UiServiceBean {
   }
 
   private ResponseObject getViewData(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
-    String columns = reqInfo.getParameter(Service.VAR_VIEW_COLUMNS);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
+    String columns = reqInfo.getParameter(VAR_VIEW_COLUMNS);
 
-    int limit = BeeUtils.toInt(reqInfo.getParameter(Service.VAR_VIEW_LIMIT));
-    int offset = BeeUtils.toInt(reqInfo.getParameter(Service.VAR_VIEW_OFFSET));
+    int limit = BeeUtils.toInt(reqInfo.getParameter(VAR_VIEW_LIMIT));
+    int offset = BeeUtils.toInt(reqInfo.getParameter(VAR_VIEW_OFFSET));
 
-    String where = reqInfo.getParameter(Service.VAR_VIEW_WHERE);
-    String sort = reqInfo.getParameter(Service.VAR_VIEW_ORDER);
+    String where = reqInfo.getParameter(VAR_VIEW_WHERE);
+    String sort = reqInfo.getParameter(VAR_VIEW_ORDER);
 
-    String getSize = reqInfo.getParameter(Service.VAR_VIEW_SIZE);
-    String rowId = reqInfo.getParameter(Service.VAR_VIEW_ROW_ID);
+    String getSize = reqInfo.getParameter(VAR_VIEW_SIZE);
+    String rowId = reqInfo.getParameter(VAR_VIEW_ROW_ID);
 
-    String rights = reqInfo.getParameter(Service.VAR_RIGHTS);
+    String rights = reqInfo.getParameter(VAR_RIGHTS);
 
     Filter filter = null;
     if (!BeeUtils.isEmpty(rowId)) {
@@ -712,8 +758,7 @@ public class UiServiceBean {
     BeeRowSet res = qs.getViewData(viewName, filter, order, limit, offset, colNames);
 
     if (cnt >= 0 && res != null) {
-      res.setTableProperty(Service.VAR_VIEW_SIZE,
-          BeeUtils.toString(Math.max(cnt, res.getNumberOfRows())));
+      res.setTableProperty(VAR_VIEW_SIZE, BeeUtils.toString(Math.max(cnt, res.getNumberOfRows())));
     }
 
     if (!BeeUtils.isEmpty(rights) && !DataUtils.isEmpty(res)) {
@@ -806,197 +851,14 @@ public class UiServiceBean {
   }
 
   private ResponseObject getViewSize(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
-    String where = reqInfo.getParameter(Service.VAR_VIEW_WHERE);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
+    String where = reqInfo.getParameter(VAR_VIEW_WHERE);
 
     Filter filter = null;
     if (!BeeUtils.isEmpty(where)) {
       filter = Filter.restore(where);
     }
     return ResponseObject.response(qs.getViewSize(viewName, filter));
-  }
-
-  @Deprecated
-  private ResponseObject importCSVCompanies(RequestInfo reqInfo) {
-    String fileId = reqInfo.getContent();
-
-    logger.info("File ID", fileId);
-
-    String path = fileId;
-
-    try {
-      SqlInsert insert;
-
-      FileInputStream fstream = new FileInputStream(path);
-
-      DataInputStream in = new DataInputStream(fstream);
-      BufferedReader br = new BufferedReader(new InputStreamReader(in));
-      String strLine;
-      boolean firstLine = true;
-      while ((strLine = br.readLine()) != null) {
-        if (firstLine) {
-          firstLine = false;
-          continue;
-        }
-
-        Splitter splitter = Splitter.on(';');
-        List<String> lst = Lists.newArrayList(splitter.split(strLine));
-
-        String[] data = ArrayUtils.toArray(lst);
-
-        logger.info("Current data row", data);
-
-        String companyName = BeeUtils.isEmpty(data[0]) ? null : data[0];
-        String companyCode = BeeUtils.isEmpty(data[1]) ? null : data[1];
-        String companyVatCode = BeeUtils.isEmpty(data[2]) ? null : data[2];
-        String companyPostCode = BeeUtils.isEmpty(data[3]) ? null : data[3];
-        String companyAddress = BeeUtils.isEmpty(data[4]) ? null : data[4];
-        String companyCity = BeeUtils.isEmpty(data[5]) ? null : data[5];
-        String companyCountry = BeeUtils.isEmpty(data[6]) ? "#" : data[6];
-        String companyPhone = BeeUtils.isEmpty(data[7]) ? null : data[7];
-        String companyEMail = BeeUtils.isEmpty(data[8]) ? null : data[8];
-
-        if (BeeUtils.isEmpty(companyName)) {
-          logger.warning("Record was skipped");
-        }
-
-        Filter filterCompany = Filter.contains(COL_COMPANY_NAME, companyName);
-
-        if (!BeeUtils.isEmpty(companyCode)) {
-          filterCompany = Filter.or(Filter.contains(COL_COMPANY_CODE, companyCode),
-              Filter.contains(COL_COMPANY_NAME, companyName));
-        }
-
-        BeeRowSet listFilteredCompanies =
-            qs.getViewData(ClassifierConstants.VIEW_COMPANIES, filterCompany);
-
-        if (!listFilteredCompanies.isEmpty()) {
-          logger.warning("Company ", companyName, companyCode, "allready exists !");
-          continue;
-        }
-
-        insert = new SqlInsert(TBL_COMPANIES)
-            .addFields(COL_COMPANY_CODE, COL_COMPANY_NAME, COL_COMPANY_VAT_CODE, "Notes")
-            .addValues(companyCode, companyName, companyVatCode, "Imported "
-                + (new DateTime().toTimeStamp()));
-
-        logger.info("do sql", insert.getQuery());
-
-        long companyId = qs.insertData(insert);
-
-        insert = new SqlInsert(TBL_CONTACTS)
-            .addFields(COL_ADDRESS, COL_POST_INDEX, COL_PHONE)
-            .addValues(companyAddress, companyPostCode, companyPhone);
-
-        logger.info("do sql", insert.getQuery());
-
-        long contactId = qs.insertData(insert);
-
-        SqlUpdate update = new SqlUpdate(TBL_COMPANIES)
-            .addConstant(COL_CONTACT, contactId)
-            .setWhere(SqlUtils.equals(TBL_COMPANIES,
-                sys.getIdName(TBL_COMPANIES), companyId));
-
-        logger.info("do sql", update.getQuery());
-
-        qs.updateData(update);
-
-        BeeRowSet filteredCities = new BeeRowSet();
-        if (!BeeUtils.isEmpty(companyCity)) {
-          Filter filterCity = Filter.contains("Name", companyCity);
-          filteredCities = qs.getViewData(VIEW_CITIES, filterCity);
-        }
-
-        if (!filteredCities.isEmpty()) {
-
-          long countryId =
-              filteredCities.getRow(0).getLong(filteredCities.getColumnIndex(COL_COUNTRY));
-
-          update = new SqlUpdate(TBL_CONTACTS)
-              .addConstant(COL_CITY, filteredCities.getRowIds().get(0))
-              .addConstant(COL_COUNTRY, countryId)
-              .setWhere(SqlUtils.equals(TBL_CONTACTS, sys.getIdName(TBL_CONTACTS), contactId));
-
-          logger.info("do sql", update.getQuery());
-          qs.updateData(update);
-        } else {
-
-          Filter filterCountry = Filter.contains("Name", companyCountry);
-          BeeRowSet filteredCounties = qs.getViewData(VIEW_COUNTRIES, filterCountry);
-
-          if (!filteredCounties.isEmpty() && !BeeUtils.isEmpty(companyCity)) {
-            insert = new SqlInsert(TBL_CITIES)
-                .addFields("Name", COL_COUNTRY)
-                .addValues(companyCity, filteredCounties.getRowIds().get(0));
-
-            logger.info("do sql", insert.getQuery());
-            long cityId = qs.insertData(insert);
-
-            update = new SqlUpdate(TBL_CONTACTS)
-                .addConstant(COL_CITY, cityId)
-                .addConstant(
-                    COL_COUNTRY, filteredCounties.getRowIds().get(0))
-                .setWhere(SqlUtils.equals(TBL_CONTACTS, sys.getIdName(TBL_CONTACTS), contactId));
-
-            logger.info("do sql", update.getQuery());
-            qs.updateData(update);
-          } else if (filteredCounties.isEmpty()) {
-
-            insert = new SqlInsert(TBL_COUNTRIES).addConstant("Name", companyCountry);
-
-            logger.info("do sql", insert.getQuery());
-            long countryId = qs.insertData(insert);
-
-            Long cityId = null;
-            if (!BeeUtils.isEmpty(companyCity)) {
-              insert = new SqlInsert(TBL_CITIES).addConstant("Name", companyCity)
-                  .addConstant(COL_COUNTRY, countryId);
-
-              logger.info("do sql", insert.getQuery());
-              cityId = qs.insertData(insert);
-            }
-
-            update = new SqlUpdate(TBL_CONTACTS)
-                .addConstant(COL_CITY, cityId)
-                .addConstant(COL_COUNTRY, countryId)
-                .setWhere(SqlUtils.equals(TBL_CONTACTS, sys.getIdName(TBL_CONTACTS), contactId));
-
-            logger.info("do sql", update.getQuery());
-            qs.updateData(update);
-          }
-        }
-
-        if (!BeeUtils.isEmpty(companyEMail)) {
-          Filter filterEMail = Filter.contains(COL_EMAIL, companyEMail);
-          BeeRowSet filteredEMails = qs.getViewData("Emails", filterEMail);
-
-          if (filteredEMails.isEmpty()) {
-            insert = new SqlInsert(TBL_EMAILS)
-                .addConstant(COL_EMAIL, companyEMail)
-                .addConstant("Label", companyName);
-
-            logger.info("do sql", insert.getQuery());
-            long emailId = qs.insertData(insert);
-
-            update = new SqlUpdate(TBL_CONTACTS)
-                .addConstant(COL_EMAIL, emailId)
-                .setWhere(SqlUtils.equals(TBL_CONTACTS, sys.getIdName(TBL_CONTACTS), contactId));
-
-            logger.info("do sql", update.getQuery());
-            qs.updateData(update);
-
-          }
-
-        }
-
-      }
-      in.close();
-    } catch (Exception e) {
-      logger.severe(e);
-      return ResponseObject.error(e);
-    }
-
-    return ResponseObject.info("Data imported");
   }
 
   private ResponseObject insertRow(RequestInfo reqInfo) {
@@ -1009,18 +871,20 @@ public class UiServiceBean {
       return ResponseObject.error(reqInfo.getService(), "row set is empty");
     }
 
-    int count = 0;
+    RowInfoList result = new RowInfoList(rowSet.getNumberOfRows());
 
     for (int i = 0; i < rowSet.getNumberOfRows(); i++) {
       ResponseObject response = deb.commitRow(rowSet, i, RowInfo.class);
+
       if (response.hasErrors()) {
         return response;
-      }
 
-      count++;
+      } else if (response.hasResponse(RowInfo.class)) {
+        result.add((RowInfo) response.getResponse());
+      }
     }
 
-    return ResponseObject.response(count);
+    return ResponseObject.response(result);
   }
 
   private ResponseObject insertRowSilently(RequestInfo reqInfo) {
@@ -1076,7 +940,7 @@ public class UiServiceBean {
         }
       }
       if (BeeUtils.isEmpty(err)) {
-        String progressId = tbls.isEmpty() ? reqInfo.getParameter(Service.VAR_PROGRESS) : null;
+        String progressId = tbls.isEmpty() ? reqInfo.getParameter(VAR_PROGRESS) : null;
         List<Property> resp = sys.checkTables(tbls, progressId);
 
         if (BeeUtils.isEmpty(resp)) {
@@ -1087,22 +951,16 @@ public class UiServiceBean {
       } else {
         response.addError(err);
       }
-    } else if (BeeUtils.startsSame(cmd, "schema")) {
-      String schema = cmd.substring("schema".length()).trim();
-
-      response = buildDbSchema(Splitter.onPattern("[ ,]").trimResults().omitEmptyStrings()
-          .split(schema));
-
     } else if (BeeUtils.same(cmd, "tecdoc")) {
       tcd.suckTecdoc();
       response = ResponseObject.info("TecDoc SUCKS NOW...");
 
     } else if (BeeUtils.same(cmd, "motonet")) {
-      tcd.suckMotonet();
+      tcd.suckMotonet(true);
       response = ResponseObject.info("Motonet...");
 
     } else if (BeeUtils.same(cmd, "butent")) {
-      tcd.suckButent();
+      tcd.suckButent(true);
       response = ResponseObject.info("Butent...");
 
     } else if (!BeeUtils.isEmpty(cmd)) {
@@ -1121,18 +979,18 @@ public class UiServiceBean {
   }
 
   private ResponseObject setRowRights(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
     if (BeeUtils.isEmpty(viewName)) {
-      return ResponseObject.parameterNotFound(reqInfo.getService(), Service.VAR_VIEW_NAME);
+      return ResponseObject.parameterNotFound(reqInfo.getService(), VAR_VIEW_NAME);
     }
 
     if (!sys.isView(viewName)) {
       return ResponseObject.error(reqInfo.getService(), viewName, "not a view");
     }
 
-    Long id = BeeUtils.toLongOrNull(reqInfo.getParameter(Service.VAR_ID));
+    Long id = BeeUtils.toLongOrNull(reqInfo.getParameter(VAR_ID));
     if (!DataUtils.isId(id)) {
-      return ResponseObject.parameterNotFound(reqInfo.getService(), Service.VAR_ID);
+      return ResponseObject.parameterNotFound(reqInfo.getService(), VAR_ID);
     }
 
     Long role = BeeUtils.toLongOrNull(reqInfo.getParameter(COL_ROLE));
@@ -1146,7 +1004,7 @@ public class UiServiceBean {
       return ResponseObject.parameterNotFound(reqInfo.getService(), COL_STATE);
     }
 
-    boolean value = Codec.unpack(reqInfo.getParameter(Service.VAR_VALUE));
+    boolean value = Codec.unpack(reqInfo.getParameter(VAR_VALUE));
 
     BeeView view = sys.getView(viewName);
     String tblName = view.getSourceName();
@@ -1167,24 +1025,24 @@ public class UiServiceBean {
   }
 
   private ResponseObject update(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
     if (BeeUtils.isEmpty(viewName)) {
-      return ResponseObject.parameterNotFound(Service.VAR_VIEW_NAME);
+      return ResponseObject.parameterNotFound(VAR_VIEW_NAME);
     }
 
-    String where = reqInfo.getParameter(Service.VAR_VIEW_WHERE);
+    String where = reqInfo.getParameter(VAR_VIEW_WHERE);
     if (BeeUtils.isEmpty(where)) {
-      return ResponseObject.parameterNotFound(Service.VAR_VIEW_WHERE);
+      return ResponseObject.parameterNotFound(VAR_VIEW_WHERE);
     }
 
-    String[] cols = Codec.beeDeserializeCollection(reqInfo.getParameter(Service.VAR_COLUMN));
+    String[] cols = Codec.beeDeserializeCollection(reqInfo.getParameter(VAR_COLUMN));
     if (ArrayUtils.isEmpty(cols)) {
-      return ResponseObject.parameterNotFound(Service.VAR_COLUMN);
+      return ResponseObject.parameterNotFound(VAR_COLUMN);
     }
 
-    String[] values = Codec.beeDeserializeCollection(reqInfo.getParameter(Service.VAR_VALUE));
+    String[] values = Codec.beeDeserializeCollection(reqInfo.getParameter(VAR_VALUE));
     if (ArrayUtils.isEmpty(values)) {
-      return ResponseObject.parameterNotFound(Service.VAR_VALUE);
+      return ResponseObject.parameterNotFound(VAR_VALUE);
     }
     List<String> newValues = Lists.newArrayList(values);
 
@@ -1272,19 +1130,19 @@ public class UiServiceBean {
   }
 
   private ResponseObject updateRelatedValues(RequestInfo reqInfo) {
-    String viewName = reqInfo.getParameter(Service.VAR_VIEW_NAME);
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
     if (BeeUtils.isEmpty(viewName)) {
-      return ResponseObject.parameterNotFound(Service.VAR_VIEW_NAME);
+      return ResponseObject.parameterNotFound(VAR_VIEW_NAME);
     }
 
-    Long parentId = BeeUtils.toLongOrNull(reqInfo.getParameter(Service.VAR_VIEW_ROW_ID));
+    Long parentId = BeeUtils.toLongOrNull(reqInfo.getParameter(VAR_VIEW_ROW_ID));
     if (!DataUtils.isId(parentId)) {
-      return ResponseObject.parameterNotFound(Service.VAR_VIEW_ROW_ID);
+      return ResponseObject.parameterNotFound(VAR_VIEW_ROW_ID);
     }
 
-    String serialized = reqInfo.getParameter(Service.VAR_CHILDREN);
+    String serialized = reqInfo.getParameter(VAR_CHILDREN);
     if (BeeUtils.isEmpty(serialized)) {
-      return ResponseObject.parameterNotFound(Service.VAR_CHILDREN);
+      return ResponseObject.parameterNotFound(VAR_CHILDREN);
     }
 
     Collection<RowChildren> children = new ArrayList<>();
@@ -1318,5 +1176,27 @@ public class UiServiceBean {
 
   private ResponseObject updateRow(RequestInfo reqInfo) {
     return deb.commitRow(BeeRowSet.restore(reqInfo.getContent()));
+  }
+
+  private ResponseObject updateRows(RequestInfo reqInfo) {
+    BeeRowSet rowSet = BeeRowSet.restore(reqInfo.getContent());
+    if (DataUtils.isEmpty(rowSet)) {
+      return ResponseObject.error(reqInfo.getService(), "row set is empty");
+    }
+
+    RowInfoList result = new RowInfoList(rowSet.getNumberOfRows());
+
+    for (int i = 0; i < rowSet.getNumberOfRows(); i++) {
+      ResponseObject response = deb.commitRow(rowSet, i, RowInfo.class);
+
+      if (response.hasErrors()) {
+        return response;
+
+      } else if (response.hasResponse(RowInfo.class)) {
+        result.add((RowInfo) response.getResponse());
+      }
+    }
+
+    return ResponseObject.response(result);
   }
 }

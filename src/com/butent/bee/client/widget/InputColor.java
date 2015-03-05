@@ -23,6 +23,7 @@ import com.butent.bee.client.event.InputHandler;
 import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -152,7 +153,7 @@ public class InputColor extends Widget implements EnablableWidget, IdentifiableW
 
   protected void init() {
     DomUtils.createId(this, getIdPrefix());
-    setStyleName("bee-InputColor");
+    setStyleName(BeeConst.CSS_CLASS_PREFIX + "InputColor");
   }
 
   private InputElement getInputElement() {

@@ -25,6 +25,7 @@ import com.butent.bee.client.event.Binder;
 import com.butent.bee.client.event.InputEvent;
 import com.butent.bee.client.event.InputHandler;
 import com.butent.bee.client.event.logical.SelectorEvent;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.render.HandlesRendering;
@@ -49,6 +50,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.value.IntegerValue;
 import com.butent.bee.shared.data.value.TextValue;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.font.FontAwesome;
@@ -188,7 +190,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
   public static final String ATTR_SEPARATORS = "separators";
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "MultiSelector-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "MultiSelector-";
   private static final String STYLE_CONTAINER = STYLE_PREFIX + "container";
   private static final String STYLE_CONTAINER_ACTIVE = STYLE_CONTAINER + "-active";
 
@@ -200,7 +202,6 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
   private static final String STYLE_PLUS = STYLE_PREFIX + "plus";
 
   private static final int MIN_INPUT_WIDTH = 25;
-  private static final int MAX_INPUT_LENGTH = 30;
 
   public static MultiSelector autonomous(Relation relation, AbstractCellRenderer renderer) {
     Assert.notNull(relation);
@@ -313,6 +314,8 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
     clearChoices();
     setExclusions(null);
+
+    SummaryChangeEvent.maybeFire(this);
   }
 
   public CellSource getCellSource() {
@@ -366,6 +369,11 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
     BeeRow row = data.getRowById(rowId);
     return (row == null) ? null : getRenderer().render(row);
+  }
+
+  @Override
+  public Value getSummary() {
+    return new IntegerValue(getChoices().size());
   }
 
   /**
@@ -495,6 +503,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
         if (fire) {
           SelectorEvent.fire(this, State.INSERTED);
+          SummaryChangeEvent.maybeFire(this);
         }
       }
 
@@ -534,7 +543,9 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
     } else {
       updateValues(null);
       clearChoices();
+
       setExclusions(null);
+      SummaryChangeEvent.maybeFire(this);
     }
   }
 
@@ -591,7 +602,6 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
   protected void init(final InputWidget inputWidget, boolean embed) {
     final Flow container = new Flow(STYLE_CONTAINER);
 
-    inputWidget.setMaxLength(MAX_INPUT_LENGTH);
     inputWidget.addStyleName(STYLE_INPUT);
 
     container.add(inputWidget);
@@ -878,6 +888,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
     if (removed) {
       SelectorEvent.fire(this, State.REMOVED);
+      SummaryChangeEvent.maybeFire(this);
     }
   }
 
@@ -893,12 +904,15 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
     }
 
     setExclusions(choices);
+    SummaryChangeEvent.maybeFire(this);
   }
 
   private void renderChoices(final Collection<Choice> choices) {
     if (choices.isEmpty()) {
       clearChoices();
+
       setExclusions(null);
+      SummaryChangeEvent.maybeFire(this);
 
     } else if (cache.keySet().containsAll(choices)) {
       renderCachedChoices(choices);

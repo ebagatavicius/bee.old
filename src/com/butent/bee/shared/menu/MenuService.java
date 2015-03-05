@@ -53,8 +53,6 @@ public enum MenuService {
 
   @XmlEnumValue("open_mail")
   OPEN_MAIL(EnumSet.noneOf(RightsState.class)),
-  @XmlEnumValue("restart_proxy")
-  RESTART_PROXY(EnumSet.noneOf(RightsState.class)),
 
   @XmlEnumValue("ensure_categories_and_open_grid")
   ENSURE_CATEGORIES_AND_OPEN_GRID(RightsState.VIEW, true),

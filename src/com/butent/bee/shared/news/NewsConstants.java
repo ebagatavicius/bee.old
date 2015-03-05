@@ -1,7 +1,6 @@
 package com.butent.bee.shared.news;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import com.butent.bee.shared.data.IsColumn;
@@ -10,10 +9,12 @@ import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
 import com.butent.bee.shared.modules.documents.DocumentConstants;
 import com.butent.bee.shared.modules.ec.EcConstants;
+import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.modules.transport.TransportConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public final class NewsConstants {
 
   public static final String GRID_USER_FEEDS = "UserFeeds";
 
-  private static final Map<String, String> usageTables = Maps.newHashMap();
+  private static final Map<String, String> usageTables = new HashMap<>();
   private static final Multimap<String, String> observedColumns = HashMultimap.create();
 
   static {
@@ -167,6 +168,9 @@ public final class NewsConstants {
 
     usageTables.put(DiscussionsConstants.TBL_DISCUSSIONS,
         DiscussionsConstants.TBL_DISCUSSIONS_USAGE);
+
+    usageTables.put(ProjectConstants.TBL_PROJECTS,
+        ProjectConstants.TBL_PROJECT_USAGE);
   }
 
   private NewsConstants() {

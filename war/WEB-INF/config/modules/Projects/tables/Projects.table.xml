@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="Projects"
+  idName="ProjectID"
+  >
+  <Fields>
+    <Enum name="Priority" key="ProjectPriority" notNull="true" defValue="1" label="=priority" />
+    <Enum name="Status" key="ProjectStatus" notNull="true" defValue="1" label="=status" />
+    <String name="Name" precision="255" notNull="true" label="=name" />
+    <Relation name="Type" relation="ProjectTypes"  label="=type" />
+    <Relation name="Company" relation="Companies"  label="=company" />
+    <Relation name="Contact" relation="CompanyPersons"  label="=personContact" />
+    <Relation name="Owner" relation="Users" notNull="true"  label="=prjManager" />    
+    <Relation name="Category" relation="ProjectTree" notNull="true" label="=category" />
+    
+    <Date name="StartDate"  label="=crmStartDate" />
+    <Date name="EndDate" label="=crmFinishDate" />
+    <Numeric name="ExpectedDuration" precision="10" label="=expectedDuration" />
+    <Relation name="TimeUnit" relation="Units" label="=taTimeUnit" />
+    <Numeric name="Progress" precision="3" label="=progress" />
+    <Numeric name="Price" precision="15" scale="5" label="=prjPrice" />
+    <Numeric name="Expenses" precision="15" scale="5" label="=prjExpenses" />
+    <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
+    <Text name="Description" />
+    <Relation name="Contract" relation="Documents" label="=contract" />
+    <Numeric name="ContractPrice" precision="15" scale="5" label="=salePrice" />
+    <Date name="ContractSigned" label="=signDate"/>
+    <DateTime name="Created"  defExpr="CURRENT_TIME"/>
+  </Fields>
+</Table>

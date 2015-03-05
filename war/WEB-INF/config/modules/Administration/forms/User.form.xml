@@ -44,11 +44,10 @@
       
       <br/>
       <row data="UserRoles">
-        <Label text="=roles" class="bee-required" />
+        <Label text="=roles" />
         <cell colSpan="3">
           <ChildSelector childTable="UserRoles" viewName="Roles"
-            targetRelColumn="User" sourceRelColumn="Role"
-            style="width: 400px;" required="true" />
+            targetRelColumn="User" sourceRelColumn="Role" style="width: 400px;" />
         </cell>
       </row>  
 

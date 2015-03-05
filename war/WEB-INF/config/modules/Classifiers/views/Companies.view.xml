@@ -62,14 +62,16 @@
       <SimpleColumn alias="InfoSourceName" name="Name" />
     </SimpleJoin>
 
-    <SimpleColumn name="Rating" />
-
-    <SimpleColumn name="CompanyRelationTypeState" />
-    <SimpleJoin joinType="LEFT" name="CompanyRelationTypeState">
-      <SimpleColumn alias="RelationTypeStateName" name="Name" />
+    <SimpleColumn name="Turnover" />
+    <SimpleJoin joinType="LEFT" name="Turnover">
+      <SimpleColumn alias="TurnoversName" name="Name" />
     </SimpleJoin>
-
-    <SimpleColumn name="ExchangeCode" />
+    
+    <SimpleColumn name="TurnoverCurrency" />
+    <SimpleJoin joinType="LEFT" name="TurnoverCurrency">
+      <SimpleColumn name="Name" alias="TurnoverCurrencyName" />
+    </SimpleJoin>
+    <SimpleColumn name="CompanyRelationTypeState" />
 
     <SimpleColumn name="CreditLimit" />
     <SimpleColumn name="LimitCurrency" />
@@ -84,6 +86,17 @@
       <SimpleColumn alias="FinancialStateName" name="Name" />
     </SimpleJoin>
     <SimpleColumn name="DefaultBankAccount" />
+    <SimpleColumn name="DefaultCompanyUser" />
+    <SimpleJoin name="DefaultCompanyUser" joinType="LEFT" >
+     <SimpleJoin name="User" joinType="LEFT">
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" alias="ResponsibleUserFirstName" />
+          <SimpleColumn name="LastName" alias="ResponsibleUserLastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+     </SimpleJoin>
+    </SimpleJoin>
     <SimpleColumn name="DaysAsBuyer" />
     <SimpleColumn name="DaysAsSupplier" />
     

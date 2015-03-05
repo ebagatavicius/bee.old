@@ -1,7 +1,6 @@
 package com.butent.bee.client.modules.calendar;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
@@ -26,12 +25,13 @@ import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
-import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.InputDate;
 import com.butent.bee.client.widget.InputDateTime;
 import com.butent.bee.client.widget.InputSpinner;
 import com.butent.bee.client.widget.InputText;
+import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.data.BeeRow;
@@ -45,19 +45,20 @@ import com.butent.bee.shared.modules.calendar.CalendarConstants.Report;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.ColumnDescription;
+import com.butent.bee.shared.ui.ColumnDescription.ColType;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.ui.Relation;
-import com.butent.bee.shared.ui.ColumnDescription.ColType;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 
 class ReportManager {
 
-  private static final String STYLE_PREFIX = "bee-cal-ReportOptions-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "cal-ReportOptions-";
 
   private static void addStyle(Widget widget, String styleName) {
     widget.addStyleName(STYLE_PREFIX + styleName);
@@ -165,7 +166,7 @@ class ReportManager {
     BeeKeeper.getScreen().show(presenter.getMainView());
   }
 
-  private final Map<Report, BeeRow> reportOptions = Maps.newHashMap();
+  private final Map<Report, BeeRow> reportOptions = new HashMap<>();
 
   ReportManager() {
     super();

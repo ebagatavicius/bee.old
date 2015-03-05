@@ -19,8 +19,6 @@
           <SimpleColumn name="FirstName" />
           <SimpleColumn name="LastName" />
         </SimpleJoin>
-
-        <SimpleColumn name="AccountingCode" />
       </SimpleJoin>
     </SimpleJoin>
    
@@ -28,6 +26,10 @@
     <SimpleJoin name="Responsibility" joinType="LEFT">
       <SimpleColumn name="Name" alias="ResponsibilityName"/>
     </SimpleJoin>
+
+    <ExternalJoin name="DefaultCompanyUser" source="Companies" joinType="LEFT">
+      <AggregateColumn name="DefaultCompanyUser" aggregate="MAX" />
+    </ExternalJoin>
   </Columns>
   <Order>
     <OrderBy column="LastName" />

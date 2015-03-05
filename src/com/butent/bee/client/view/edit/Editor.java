@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.HasAllFocusHandlers;
 import com.google.gwt.user.client.ui.Focusable;
 
 import com.butent.bee.client.dialog.TabulationHandler;
+import com.butent.bee.client.event.logical.HasSummaryChangeHandlers;
 import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public interface Editor extends IdentifiableWidget, HasStringValue, Focusable,
     HasAllFocusHandlers, HasEditChangeHandlers, HasEditState, HasEditStopHandlers,
-    EnablableWidget, HasOptions, TabulationHandler {
+    EnablableWidget, HasOptions, TabulationHandler, HasSummaryChangeHandlers {
 
   void clearValue();
 

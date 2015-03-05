@@ -2,9 +2,7 @@ package com.butent.bee.server.data;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.common.collect.TreeMultimap;
 
 import com.butent.bee.server.sql.HasConditions;
@@ -30,6 +28,7 @@ import com.butent.bee.shared.data.SqlConstants.SqlTriggerEvent;
 import com.butent.bee.shared.data.SqlConstants.SqlTriggerScope;
 import com.butent.bee.shared.data.SqlConstants.SqlTriggerTiming;
 import com.butent.bee.shared.data.SqlConstants.SqlTriggerType;
+import com.butent.bee.shared.data.BeeObject;
 import com.butent.bee.shared.data.XmlTable;
 import com.butent.bee.shared.data.XmlTable.XmlEnum;
 import com.butent.bee.shared.data.XmlTable.XmlField;
@@ -45,8 +44,12 @@ import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -658,7 +661,7 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
     @Override
     public void initState(RightsState state, Collection<String> flds) {
       Assert.state(hasState(state));
-      Set<String> fldList = Sets.newHashSet();
+      Set<String> fldList = new HashSet<>();
 
       if (flds != null) {
         for (String fld : flds) {
@@ -797,7 +800,7 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
     }
 
     private Map<String, Integer> getMasks(RightsState state, long... bits) {
-      Map<String, Integer> bitMasks = Maps.newHashMap();
+      Map<String, Integer> bitMasks = new HashMap<>();
 
       if (bits != null) {
         for (long bit : bits) {
@@ -970,12 +973,12 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
   private final boolean auditable;
   private final BeeUniqueKey primaryKey;
 
-  private final Map<String, BeeField> fields = Maps.newLinkedHashMap();
-  private final Map<String, BeeForeignKey> foreignKeys = Maps.newLinkedHashMap();
-  private final Map<String, BeeIndex> indexes = Maps.newLinkedHashMap();
-  private final Map<String, BeeUniqueKey> uniqueKeys = Maps.newLinkedHashMap();
-  private final Map<String, BeeCheck> checks = Maps.newLinkedHashMap();
-  private final Map<String, BeeTrigger> triggers = Maps.newLinkedHashMap();
+  private final Map<String, BeeField> fields = new LinkedHashMap<>();
+  private final Map<String, BeeForeignKey> foreignKeys = new LinkedHashMap<>();
+  private final Map<String, BeeIndex> indexes = new LinkedHashMap<>();
+  private final Map<String, BeeUniqueKey> uniqueKeys = new LinkedHashMap<>();
+  private final Map<String, BeeCheck> checks = new LinkedHashMap<>();
+  private final Map<String, BeeTrigger> triggers = new LinkedHashMap<>();
 
   private final HasExtFields extSource;
   private final HasStates stateSource;
@@ -1040,7 +1043,7 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
 
       if (pair != null) {
         if (defaults == null) {
-          defaults = Maps.newHashMap();
+          defaults = new HashMap<>();
         }
         defaults.put(field.getName(), pair);
       }
@@ -1050,7 +1053,7 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
 
   @Override
   public List<ExtendedProperty> getExtendedInfo() {
-    List<ExtendedProperty> info = Lists.newArrayList();
+    List<ExtendedProperty> info = new ArrayList<>();
     PropertyUtils.addProperties(info, false, "Module", getModule(), "Name", getName(),
         "Id Chunk", getIdChunk(), "Id Name", getIdName(), "Version Name", getVersionName(),
         "Active", isActive(), "Auditable", isAuditable());
@@ -1164,7 +1167,7 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
   }
 
   public Collection<String> getFieldNames() {
-    List<String> names = Lists.newArrayList();
+    List<String> names = new ArrayList<>();
     for (BeeField field : fields.values()) {
       names.add(field.getName());
     }
@@ -1192,7 +1195,7 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
   }
 
   public Collection<BeeField> getMainFields() {
-    Collection<BeeField> flds = Lists.newArrayList();
+    Collection<BeeField> flds = new ArrayList<>();
 
     for (BeeField field : getFields()) {
       if (field.isUnique() || field.isNotNull()) {
@@ -1350,7 +1353,7 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
 
     Assert.state(!hasField(fieldName)
         && !BeeUtils.inListSame(fieldName, getIdName(), getVersionName()),
-        BeeUtils.joinWords("Dublicate field name:", getName(), fieldName));
+        BeeUtils.joinWords("Duplicate field name:", getName(), fieldName));
 
     fields.put(BeeUtils.normalize(fieldName), field);
   }

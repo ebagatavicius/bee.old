@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="Holidays"
+  idName="HolidayID"
+  >
+  <Fields>
+    <Relation name="Country" relation="Countries" notNull="true" label="=country" />
+    <Integer name="Date" notNull="true" label="=date" />
+  </Fields>
+
+  <Constraints>
+    <Unique fields="Country Date" />
+  </Constraints>
+</Table>

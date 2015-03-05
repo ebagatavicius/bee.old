@@ -3,7 +3,6 @@ package com.butent.bee.client;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.StyleInjector;
@@ -25,6 +24,7 @@ import com.butent.bee.client.dialog.InputBoxes;
 import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.dialog.MessageBoxes;
 import com.butent.bee.client.dialog.StringCallback;
+import com.butent.bee.client.dom.Features;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.images.Images;
@@ -36,11 +36,14 @@ import com.butent.bee.client.screen.Spaces;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.WidgetInitializer;
+import com.butent.bee.client.utils.JsUtils;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.search.Filters;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.BiConsumer;
 import com.butent.bee.shared.Consumer;
+import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.CssProperties;
 import com.butent.bee.shared.css.CssUnit;
@@ -57,11 +60,12 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.DateTime;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,7 +85,7 @@ public final class Global {
 
   private static final Images.Resources images = Images.createResources();
 
-  private static final Map<String, String> styleSheets = Maps.newHashMap();
+  private static final Map<String, String> styleSheets = new HashMap<>();
 
   private static final Favorites favorites = new Favorites();
   private static final Spaces spaces = new Spaces();
@@ -242,6 +246,26 @@ public final class Global {
     });
   }
 
+  public static void getRelationParameter(String prm, final BiConsumer<Long, String> prmConsumer) {
+    Assert.notEmpty(prm);
+    Assert.notNull(prmConsumer);
+
+    ParameterList args = AdministrationKeeper.createArgs(SVC_GET_RELATION_PARAMETER);
+    args.addDataItem(VAR_PARAMETER, prm);
+
+    BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        response.notify(BeeKeeper.getScreen());
+
+        if (!response.hasErrors()) {
+          Pair<String, String> pair = Pair.restore(response.getResponseAsString());
+          prmConsumer.accept(BeeUtils.toLongOrNull(pair.getA()), pair.getB());
+        }
+      }
+    });
+  }
+
   public static ReportSettings getReportSettings() {
     return reportSettings;
   }
@@ -375,9 +399,8 @@ public final class Global {
       StyleUtils.setProperty(cell, CssProperties.FONT_WEIGHT, FontWeight.BOLD);
     }
 
-    Range<Long> maybeTime = Range.closed(
-        TimeUtils.startOfYear(TimeUtils.today(), -10).getTime(),
-        TimeUtils.startOfYear(TimeUtils.today(), 100).getTime());
+    Range<Long> maybeTime = Range.closedOpen(new DateTime(2000, 1, 1).getTime(),
+        new DateTime(2100, 1, 1).getTime());
 
     for (IsRow row : data) {
       r++;
@@ -444,12 +467,18 @@ public final class Global {
     });
   }
 
+  public static void showBrowserNotify(String msg) {
+    if (Features.supportsNotifications()) {
+      JsUtils.showBrowserNotification(BeeKeeper.getScreen().getUserInterface().getTitle(), msg);
+    }
+  }
+
   public static void showError(List<String> messages) {
     showError(Localized.getConstants().error(), messages, null, null);
   }
 
   public static void showError(String message) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     if (!BeeUtils.isEmpty(message)) {
       messages.add(message);
     }
@@ -475,7 +504,7 @@ public final class Global {
   }
 
   public static void showInfo(String message) {
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
     if (!BeeUtils.isEmpty(message)) {
       messages.add(message);
     }
@@ -548,10 +577,11 @@ public final class Global {
 //@formatter:off
   // CHECKSTYLE:OFF
   private static native void exportMethods() /*-{
-    $wnd.Bee_updateForm = $entry(@com.butent.bee.client.ui.UiHelper::updateForm(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
+    $wnd.Bee_updateForm = $entry(@com.butent.bee.client.view.ViewHelper::updateForm(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     $wnd.Bee_debug = $entry(@com.butent.bee.client.Global::debug(Ljava/lang/String;));
     $wnd.Bee_updateActor = $entry(@com.butent.bee.client.decorator.TuningHelper::updateActor(Lcom/google/gwt/core/client/JavaScriptObject;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;));
     $wnd.Bee_maybeTranslate = $entry(@com.butent.bee.shared.i18n.Localized::maybeTranslate(Ljava/lang/String;));
+    $wnd.Bee_translate = $entry(@Localized::translate(Ljava/lang/String;));
   }-*/;
   // CHECKSTYLE:ON
 //@formatter:on

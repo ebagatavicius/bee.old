@@ -14,6 +14,7 @@ import com.butent.bee.client.ui.WidgetInterceptor;
 import com.butent.bee.client.view.HasGridView;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
+import com.butent.bee.client.view.edit.EditEndEvent;
 import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.view.form.FormView;
@@ -26,9 +27,10 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.Action;
 
 import java.util.List;
+import java.util.Set;
 
 public interface FormInterceptor extends WidgetInterceptor, HasGridView, HandlesStateChange,
-    HasDomain, HasActiveRow, HasViewName {
+    HasDomain, HasActiveRow, HasViewName, EditEndEvent.Handler {
 
   void afterAction(Action action, Presenter presenter);
 
@@ -58,6 +60,10 @@ public interface FormInterceptor extends WidgetInterceptor, HasGridView, Handles
 
   DateTime getDateTimeValue(String source);
 
+  Set<Action> getDisabledActions(Set<Action> defaultActions);
+
+  Set<Action> getEnabledActions(Set<Action> defaultActions);
+
   FormView getFormView();
 
   HeaderView getHeaderView();
@@ -79,6 +85,8 @@ public interface FormInterceptor extends WidgetInterceptor, HasGridView, Handles
   boolean hasFooter(int rowCount);
 
   boolean isRowEditable(IsRow row);
+
+  boolean isWidgetEditable(EditableWidget editableWidget, IsRow row);
 
   void notifyRequired(String message);
 

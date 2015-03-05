@@ -1,11 +1,10 @@
 package com.butent.bee.server.sql;
 
-import com.google.common.collect.Maps;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.data.filter.Operator;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 class FullTextCondition implements IsCondition {
@@ -31,7 +30,7 @@ class FullTextCondition implements IsCondition {
   @Override
   public String getSqlString(SqlBuilder builder) {
     Assert.notNull(builder);
-    Map<String, String> params = Maps.newHashMap();
+    Map<String, String> params = new HashMap<>();
     params.put("expression", expression.getSqlString(builder));
     params.put("value0", value);
 

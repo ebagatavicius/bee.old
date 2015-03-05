@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="ProjectTree"
+  source="ProjectTree"
+  >
+  <Columns>
+    <SimpleColumn name="Parent" />
+    <SimpleColumn name="Order" />
+    <SimpleColumn name="Name" />
+    <SimpleJoin joinType="LEFT" name="Parent">
+      <SimpleColumn alias="ParentOrder" name="Order" />
+      <SimpleColumn alias="ParentName" name="Name" />
+    </SimpleJoin>
+    <ExternalJoin source="Projects" joinType="LEFT" name="Category">
+      <AggregateColumn alias="ProjectCount" aggregate="COUNT" name="Category" />
+    </ExternalJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="ParentOrder" />
+    <OrderBy column="Order" />
+  </Order>
+</View>

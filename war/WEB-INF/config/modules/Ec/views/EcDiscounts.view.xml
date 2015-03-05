@@ -20,6 +20,8 @@
       <SimpleColumn name="BrandName" />
     </SimpleJoin>
 
+    <SimpleColumn name="Supplier" />
+
     <SimpleColumn name="Article" />
     <SimpleJoin name="Article" joinType="LEFT">
       <SimpleColumn name="ArticleName" />

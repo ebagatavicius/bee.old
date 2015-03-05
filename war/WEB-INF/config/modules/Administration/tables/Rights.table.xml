@@ -3,7 +3,6 @@
 
   name="Rights"
   idName="RightID"
-  x="0" y="0"
   >
   <Fields>
     <Relation name="Object" relation="Objects" notNull="true" cascade="DELETE" label="=object"/>

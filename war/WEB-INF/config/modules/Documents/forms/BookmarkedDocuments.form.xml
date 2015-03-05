@@ -13,13 +13,13 @@
     <Table style="width:100%;">
       <row>
         <Label style="&lblRight;" text="=name" />
-        <InputText style="&inpLeft;" source="Name" readOnly="true" />
+        <InputText style="&inpLeft;" source="CategoryName" readOnly="true" />
         <Label style="&lblRight;" text="=documentParentCategory" /> 
         <InputText style="&inpLeft;" source="ParentName" readOnly="true" />
         <Label style="&lblRight;" text="=documentCount" /> 
         <InputInteger style="&inpLeft;" source="DocumentCount" readOnly="true" />
       </row>
     </Table>
-    <ChildGrid class="bee-documents-childWiget" style="margin-top: 40px;" name="Documents" relColumn="Category" caption="=documents" />
+    <ChildGrid class="bee-documents-childWiget" style="margin-top: 40px;" name="AllDocuments" relColumn="Category" caption="=documents" />
   </FlowPanel>
 </f:Form>  

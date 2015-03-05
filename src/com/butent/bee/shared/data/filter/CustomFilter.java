@@ -11,6 +11,7 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomFilter extends Filter {
@@ -36,7 +37,7 @@ public class CustomFilter extends Filter {
       return null;
     }
 
-    List<String> list = Lists.newArrayList(splitter.split(s));
+    List<String> list = splitter.splitToList(s);
     if (list.isEmpty()) {
       return null;
     }
@@ -54,7 +55,7 @@ public class CustomFilter extends Filter {
   }
 
   private String key;
-  private final List<String> args = Lists.newArrayList();
+  private final List<String> args = new ArrayList<>();
 
   protected CustomFilter() {
     super();

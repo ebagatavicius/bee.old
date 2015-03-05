@@ -284,7 +284,6 @@ public final class RelationUtils {
 
     Collection<ViewColumn> targetColumns = targetInfo.getDescendants(targetColumn, false);
     if (targetColumns.isEmpty()) {
-      logger.warning(targetInfo.getViewName(), targetColumn, "no descendants found");
       return result;
     }
 

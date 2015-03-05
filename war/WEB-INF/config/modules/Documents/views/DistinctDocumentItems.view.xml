@@ -4,11 +4,6 @@
   name="DistinctDocumentItems" source="DocumentItems"
   >
   <Columns>
-    <HiddenColumn name="Document" />
-    <SimpleJoin name="Document" joinType="INNER">
-      <HiddenColumn name="Category" />
-    </SimpleJoin>
-
     <SimpleColumn name="Description" />
   </Columns>
   <GroupBy columns="Description" />

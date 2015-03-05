@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" 
+        xmlns:g="http://www.butent.com/grid"
+
+  name="CompanyProjects" viewName="Projects" flexGrow="1" caption="=projects">
+  <g:columns>
+    <IdColumn name="ID" />
+    <DataColumn name="Priority" visible="true"/>
+    <DataColumn name="Status" visible="true"/>
+    <DataColumn name="Name" visible="true" />
+    <RelColumn name="Type" />
+    <RelColumn name="Company" caption="=client"/>
+    <RelColumn name="Owner" />
+    <DataColumn name="StartDate" />
+    <DataColumn name="EndDate" />
+    <DataColumn name="Progress" />
+    <RelColumn name="Category" />
+  </g:columns>
+</g:Grid>

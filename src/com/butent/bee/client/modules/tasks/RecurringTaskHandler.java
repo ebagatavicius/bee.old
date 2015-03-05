@@ -2,9 +2,7 @@ package com.butent.bee.client.modules.tasks;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -47,6 +45,7 @@ import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.FaLabel;
+import com.butent.bee.client.widget.InputDate;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.Toggle;
 import com.butent.bee.shared.Assert;
@@ -70,11 +69,13 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
-import com.butent.bee.shared.modules.tasks.TaskUtils;
+import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
+import com.butent.bee.shared.modules.tasks.TaskUtils;
 import com.butent.bee.shared.time.CronExpression;
 import com.butent.bee.shared.time.CronExpression.Field;
 import com.butent.bee.shared.time.DateRange;
+import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.ScheduleDateMode;
 import com.butent.bee.shared.time.ScheduleDateRange;
@@ -87,8 +88,12 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.Property;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -144,7 +149,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
 
     private final boolean scheduled;
 
-    private final List<String> styleNames = Lists.newArrayList();
+    private final List<String> styleNames = new ArrayList<>();
 
     private DayOfMonth(JustDate date, boolean scheduled) {
       this.dom = date.getDom();
@@ -240,6 +245,34 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
     });
   }
 
+  private static void setProjectScheduleTimeLimit(FormView form, IsRow row) {
+    Widget wScheduleStart = form.getWidgetBySource(COL_RT_SCHEDULE_FROM);
+    Widget wScheduleUntil = form.getWidgetBySource(COL_RT_SCHEDULE_UNTIL);
+    Widget wScheduleUntilLabel = form.getWidgetByName(COL_RT_SCHEDULE_UNTIL);
+
+    HasDateValue projectStart =
+        row.getDate(form.getDataIndex(ProjectConstants.ALS_PROJECT_START_DATE));
+    HasDateValue projectEnd = row.getDate(form.getDataIndex(ProjectConstants.ALS_PROJECT_END_DATE));
+
+    if (wScheduleStart instanceof InputDate && projectStart != null) {
+      InputDate start = (InputDate) wScheduleStart;
+      start.setMinDate(projectStart);
+      start.setMaxDate(projectEnd);
+    }
+
+    if (wScheduleUntil instanceof InputDate && projectEnd != null) {
+      InputDate end = (InputDate) wScheduleUntil;
+      end.setMinDate(projectStart);
+      end.setMaxDate(projectEnd);
+      end.setNullable(false);
+    }
+
+    if (wScheduleUntilLabel != null && projectEnd != null) {
+      wScheduleUntilLabel.setStyleName(StyleUtils.NAME_REQUIRED);
+    }
+
+  }
+
   private static void showExamples(Element target, List<Property> examples) {
     HtmlTable table = new HtmlTable(STYLE_CRON_EXAMPLES);
 
@@ -257,10 +290,10 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
   private final Multimap<Integer, BeeRow> offspring = ArrayListMultimap.create();
 
   private BeeRowSet executors;
-  private final Map<Integer, String> dayElementIds = Maps.newHashMap();
+  private final Map<Integer, String> dayElementIds = new HashMap<>();
 
-  private final EnumMap<Cron, Flow> toggleContainers = Maps.newEnumMap(Cron.class);
-  private final EnumMap<Cron, HasHtml> errorLabels = Maps.newEnumMap(Cron.class);
+  private final EnumMap<Cron, Flow> toggleContainers = new EnumMap<>(Cron.class);
+  private final EnumMap<Cron, HasHtml> errorLabels = new EnumMap<>(Cron.class);
 
   RecurringTaskHandler() {
   }
@@ -375,7 +408,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
             }
 
           } else {
-            List<ScheduleDateRange> scheduleDateRanges = Lists.newArrayList();
+            List<ScheduleDateRange> scheduleDateRanges = new ArrayList<>();
             timeCube(scheduleDateRanges, false);
           }
         }
@@ -383,6 +416,8 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
 
       header.addCommandItem(schedule);
     }
+
+    setProjectScheduleTimeLimit(form, row);
 
     for (Cron cron : Cron.values()) {
       refreshValues(row.getId(), cron, row.getString(form.getDataIndex(cron.source)));
@@ -637,7 +672,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
 
       case DELETE:
         Global.confirmDelete(getOffspringLabel(dataId), Icon.WARNING,
-            Lists.newArrayList(Localized.getConstants().crmTaskDeleteQuestion()),
+            Collections.singletonList(Localized.getConstants().crmTaskDeleteQuestion()),
             new ConfirmationCallback() {
               @Override
               public void onConfirm() {
@@ -685,7 +720,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
       final Runnable callback) {
     String caption = Format.renderDateFull(new JustDate(dayNumber));
 
-    List<String> messages = Lists.newArrayList();
+    List<String> messages = new ArrayList<>();
 
     List<Integer> indexes = Lists.newArrayList(
         getExecutors().getColumnIndex(ClassifierConstants.COL_FIRST_NAME),
@@ -889,7 +924,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
       table.clear();
     }
 
-    Set<Long> taskExecutors = Sets.newHashSet();
+    Set<Long> taskExecutors = new HashSet<>();
     int r = 0;
 
     Collection<BeeRow> taskData = offspring.get(dayNumber);
@@ -1037,7 +1072,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
         clearOffspring();
         setExecutors(null);
 
-        List<ScheduleDateRange> scheduleDateRanges = Lists.newArrayList();
+        List<ScheduleDateRange> scheduleDateRanges = new ArrayList<>();
 
         if (response.hasResponse()) {
           Map<String, String> data = Codec.deserializeMap(response.getResponseAsString());
@@ -1122,7 +1157,8 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
       int domMin = (i == 0) ? min.getDom() : 1;
       int domMax = (i == monthCount) ? max.getDom() : TimeUtils.monthLength(ym);
 
-      List<DayOfMonth> days = Lists.newArrayList();
+      List<DayOfMonth> days = new ArrayList<>();
+
       for (int dom = domMin; dom <= domMax; dom++) {
         JustDate date = new JustDate(ym.getYear(), ym.getMonth(), dom);
         ScheduleDateMode mode = cron.getDateMode(date);

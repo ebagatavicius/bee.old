@@ -6,6 +6,7 @@ import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.event.logical.ActiveRowChangeEvent;
 import com.butent.bee.client.event.logical.ParentRowEvent;
 import com.butent.bee.client.event.logical.RenderingEvent;
+import com.butent.bee.client.event.logical.RowCountChangeEvent;
 import com.butent.bee.client.grid.ColumnFooter;
 import com.butent.bee.client.grid.ColumnHeader;
 import com.butent.bee.client.grid.column.AbstractColumn;
@@ -14,6 +15,7 @@ import com.butent.bee.client.render.ProvidesGridColumnRenderer;
 import com.butent.bee.client.style.StyleProvider;
 import com.butent.bee.client.ui.WidgetInterceptor;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
+import com.butent.bee.client.view.edit.EditEndEvent;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.edit.EditableColumn;
 import com.butent.bee.client.view.edit.EditorConsumer;
@@ -43,8 +45,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface GridInterceptor extends WidgetInterceptor, ActiveRowChangeEvent.Handler,
-    ParentRowEvent.Handler, EditStartEvent.Handler, ProvidesGridColumnRenderer,
-    DynamicColumnEnumerator, HasViewName, EditorConsumer, RowUpdateEvent.Handler {
+    ParentRowEvent.Handler, EditStartEvent.Handler, EditEndEvent.Handler,
+    ProvidesGridColumnRenderer, DynamicColumnEnumerator, HasViewName, EditorConsumer,
+    RowUpdateEvent.Handler {
 
   public enum DeleteMode {
     CANCEL, DEFAULT, SILENT, CONFIRM, SINGLE, MULTI;
@@ -68,7 +71,8 @@ public interface GridInterceptor extends WidgetInterceptor, ActiveRowChangeEvent
 
   void afterRender(GridView gridView, RenderingEvent event);
 
-  void afterUpdateCell(IsColumn column, IsRow result, boolean rowMode);
+  void afterUpdateCell(IsColumn column, String oldValue, String newValue, IsRow result,
+      boolean rowMode);
 
   void afterUpdateRow(IsRow result);
 
@@ -152,6 +156,8 @@ public interface GridInterceptor extends WidgetInterceptor, ActiveRowChangeEvent
   void onReadyForInsert(GridView gridView, ReadyForInsertEvent event);
 
   void onReadyForUpdate(GridView gridView, ReadyForUpdateEvent event);
+
+  boolean onRowCountChange(GridView gridView, RowCountChangeEvent event);
 
   boolean onRowInsert(RowInsertEvent event);
 

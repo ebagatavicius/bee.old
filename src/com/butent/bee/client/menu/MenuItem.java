@@ -8,7 +8,8 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.ui.HasIdentity;
 import com.butent.bee.shared.Assert;
-import com.butent.bee.shared.menu.MenuConstants.ITEM_TYPE;
+import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.menu.MenuConstants.ItemType;
 import com.butent.bee.shared.utils.BeeUtils;
 
 /**
@@ -17,9 +18,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 public class MenuItem extends UIObject implements HasIdentity {
 
-  public static final ITEM_TYPE DEFAULT_TYPE = ITEM_TYPE.LABEL;
+  public static final ItemType DEFAULT_TYPE = ItemType.LABEL;
 
-  private static final String STYLENAME_DEFAULT = "bee-MenuItem";
+  private static final String STYLENAME_DEFAULT = BeeConst.CSS_CLASS_PREFIX + "MenuItem";
   private static final String STYLENAME_SELECTED = "selected";
 
   private Scheduler.ScheduledCommand command;
@@ -27,19 +28,19 @@ public class MenuItem extends UIObject implements HasIdentity {
   private MenuBar parentMenu;
   private MenuBar subMenu;
 
-  private ITEM_TYPE itemType;
+  private ItemType itemType;
 
   public MenuItem(MenuBar parent, String text, MenuBar subMenu) {
     init(parent, text, getDefaultType(parent));
     setSubMenu(subMenu);
   }
 
-  public MenuItem(MenuBar parent, String text, ITEM_TYPE type, MenuBar subMenu) {
+  public MenuItem(MenuBar parent, String text, ItemType type, MenuBar subMenu) {
     init(parent, text, type);
     setSubMenu(subMenu);
   }
 
-  public MenuItem(MenuBar parent, String text, ITEM_TYPE type, Scheduler.ScheduledCommand cmd) {
+  public MenuItem(MenuBar parent, String text, ItemType type, Scheduler.ScheduledCommand cmd) {
     init(parent, text, type);
     setCommand(cmd);
   }
@@ -63,7 +64,7 @@ public class MenuItem extends UIObject implements HasIdentity {
     return "menuitem";
   }
 
-  public ITEM_TYPE getItemType() {
+  public ItemType getItemType() {
     return itemType;
   }
 
@@ -84,7 +85,7 @@ public class MenuItem extends UIObject implements HasIdentity {
     DomUtils.setId(this, id);
   }
 
-  public void setItemType(ITEM_TYPE it) {
+  public void setItemType(ItemType it) {
     this.itemType = it;
   }
 
@@ -121,8 +122,8 @@ public class MenuItem extends UIObject implements HasIdentity {
     }
   }
 
-  private static ITEM_TYPE getDefaultType(MenuBar parent) {
-    ITEM_TYPE w = null;
+  private static ItemType getDefaultType(MenuBar parent) {
+    ItemType w = null;
 
     if (parent != null) {
       w = parent.getItemType();
@@ -134,7 +135,7 @@ public class MenuItem extends UIObject implements HasIdentity {
     return w;
   }
 
-  private void init(MenuBar parent, String text, ITEM_TYPE type) {
+  private void init(MenuBar parent, String text, ItemType type) {
     Element elem;
 
     switch (type) {

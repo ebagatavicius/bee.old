@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+  
+  name="ItemGraphics"
+  idName="ItemGraphicsID"
+  audit="false"
+  >
+  <Fields>
+    <Relation name="Item" notNull="true" relation="Items" cascade="DELETE" label="=item" />
+    <Integer name="Ordinal" label="=ordinal" />
+    <Text name="Picture" notNull="true" label="=picture" />
+  </Fields>
+</Table>

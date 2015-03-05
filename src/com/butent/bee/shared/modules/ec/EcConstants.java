@@ -155,9 +155,25 @@ public final class EcConstants {
       this.shortName = shortName;
     }
 
+    public String getBasePriceListColumnName() {
+      return "BasePriceList" + ordinal();
+    }
+
+    public String getBasePriceListParameterName() {
+      return "BasePriceList" + shortName;
+    }
+
     @Override
     public String getCaption() {
       return name();
+    }
+
+    public String getClientPriceListColumnName() {
+      return "ClientPriceList" + ordinal();
+    }
+
+    public String getClientPriceListParameterName() {
+      return "ClientPriceList" + shortName;
     }
 
     public String getShortName() {
@@ -283,6 +299,9 @@ public final class EcConstants {
 
   public static final String TBL_TCD_ARTICLES = "TcdArticles";
   public static final String TBL_TCD_ARTICLE_CODES = "TcdArticleCodes";
+  public static final String TBL_TCD_ARTICLE_PRICES = "TcdArticlePrices";
+
+  public static final String TBL_TCD_PRICELISTS = "TcdPriceLists";
 
   public static final String TBL_TCD_CATEGORIES = "TcdCategories";
   public static final String TBL_TCD_TECDOC_CATEGORIES = "TcdTecDocCategories";
@@ -368,6 +387,7 @@ public final class EcConstants {
   public static final String COL_DISCOUNT_DATE_TO = "DateTo";
   public static final String COL_DISCOUNT_CATEGORY = "Category";
   public static final String COL_DISCOUNT_BRAND = "Brand";
+  public static final String COL_DISCOUNT_SUPPLIER = "Supplier";
   public static final String COL_DISCOUNT_ARTICLE = "Article";
   public static final String COL_DISCOUNT_PERCENT = "Percent";
   public static final String COL_DISCOUNT_PRICE = "Price";
@@ -516,6 +536,9 @@ public final class EcConstants {
 
   public static final String COL_TCD_REMAINDER = "Remainder";
 
+  public static final String COL_TCD_PRICELIST = "PriceList";
+  public static final String COL_TCD_PRICELIST_NAME = "PriceListName";
+
   public static final String COL_TCD_PRICE = "Price";
   public static final String COL_TCD_COST = "Cost";
   public static final String COL_TCD_UPDATED_COST = "UpdatedCost";
@@ -540,7 +563,7 @@ public final class EcConstants {
   public static final String COL_CW_WAREHOUSE = "Warehouse";
 
   public static final String PRM_BUTENT_INTERVAL = "ButentIntervalInMinutes";
-  public static final String PRM_BUTENT_PRICE = "ButentPrice";
+  public static final String PRM_BUTENT_PRICES = "ButentPrices";
   public static final String PRM_MOTONET_HOURS = "MotoprofilRefreshHours";
   public static final String PRM_PROMO_FEATURED = "PromoFeatured";
   public static final String PRM_PROMO_NOVELTY = "PromoNovelty";
@@ -557,7 +580,7 @@ public final class EcConstants {
   public static final String CATEGORY_ID_SEPARATOR = ",";
   public static final char CATEGORY_NAME_SEPARATOR = '\n';
 
-  public static final String CURRENCY = "Lt";
+  public static final String CURRENCY = "Eur";
 
   public static final String WEIGHT_UNIT = "kg";
   public static final int WEIGHT_SCALE = 3;
@@ -571,8 +594,6 @@ public final class EcConstants {
   public static final String PICTURE_PREFIX = "data:image/";
 
   public static final String CLIENT_STYLE_SHEET = "ec";
-
-  public static final String PRP_SUPPLIER_PRICE = "SupplPrice";
 
   public static final String NAME_PREFIX = "ec-";
 

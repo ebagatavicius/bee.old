@@ -3,7 +3,6 @@
 
   name="CargoTrips"
   idName="CargoTripID"
-  x="0" y="0"
   >
   <Fields>
     <Relation name="Cargo" notNull="true" relation="OrderCargo" cascade="DELETE" label="=cargo" />

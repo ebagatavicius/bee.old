@@ -3,13 +3,13 @@ package com.butent.bee.shared.utils;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -190,7 +190,7 @@ public final class NameUtils {
   }
 
   public static List<String> rename(List<String> names, String oldName, String newName) {
-    List<String> result = Lists.newArrayList();
+    List<String> result = new ArrayList<>();
     if (!BeeUtils.isEmpty(names)) {
       return result;
     }
@@ -265,17 +265,17 @@ public final class NameUtils {
 
   public static List<String> toList(String s) {
     if (BeeUtils.isEmpty(s)) {
-      return Lists.newArrayList();
+      return new ArrayList<>();
     } else {
-      return Lists.newArrayList(NAME_SPLITTER.split(s));
+      return NAME_SPLITTER.splitToList(s);
     }
   }
 
   public static Set<String> toSet(String s) {
     if (BeeUtils.isEmpty(s)) {
-      return Sets.newHashSet();
+      return new HashSet<>();
     } else {
-      return Sets.newHashSet(NAME_SPLITTER.split(s));
+      return new HashSet<>(NAME_SPLITTER.splitToList(s));
     }
   }
 

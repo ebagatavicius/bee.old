@@ -7,8 +7,6 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.BeeLoggerFactory;
 import com.butent.bee.shared.logging.LogLevel;
 
-import java.util.logging.Level;
-
 public class ClientLogManager implements BeeLoggerFactory {
 
   private static final ClientLogger rootLogger = createLogger();
@@ -49,9 +47,13 @@ public class ClientLogManager implements BeeLoggerFactory {
     ClientLogger logger = new ClientLogger(BeeConst.STRING_EMPTY);
 
     LogLevel logLevel = Settings.getLogLevel();
-    Level level = (logLevel == null) ? Level.FINEST : logLevel.getLevel();
+    if (logLevel == null) {
+      logLevel = LogLevel.DEBUG;
+    }
 
-    logger.addHandler(new PanelHandler(level));
+    logger.setLevel(logLevel);
+    logger.addHandler(new PanelHandler(logLevel.getLevel()));
+
     return logger;
   }
 

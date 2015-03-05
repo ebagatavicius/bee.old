@@ -5,7 +5,8 @@
   idName="TradeActServiceID"
   >
   <Fields>
-    <Relation name="TradeAct" notNull="true" relation="TradeActs" cascade="DELETE" />
+    <Relation name="TradeAct" notNull="true" relation="TradeActs" cascade="DELETE"
+      label="=tradeAct" />
 
     <Relation name="Item" notNull="true" relation="Items" label="=service" />
 

@@ -5,8 +5,9 @@
   idName="TradeActTemplateID"
   >
   <Fields>
-    <String name="Template" precision="100" notNull="true" unique="true" label="=name" />
+    <String name="Template" precision="100" notNull="true" unique="true" label="=template" />
 
+    <Relation name="Name" relation="TradeActNames" label="=tradeActName" />
     <DateTime name="Until" label="=taUntil" />
 
     <Relation name="Series" relation="TradeSeries" label="=trdSeries" />
@@ -15,7 +16,8 @@
     <Relation name="Status" relation="TradeStatuses" label="=status" />
 
     <Relation name="Company" relation="Companies" label="=client" />
-    <Relation name="ServiceObject" relation="ServiceObjects" label="=svcObject" />
+    <Relation name="Contact" relation="CompanyPersons" label="=contact" />
+    <Relation name="Object" relation="CompanyObjects" label="=object" />
     <Relation name="Manager" relation="Users" label="=manager" />
 
     <Relation name="Currency" relation="Currencies" label="=currency" />

@@ -22,9 +22,8 @@
 
     <DataColumn name="Description" visible="false" />
 
-    <PropColumn name="Remainder" type="integer" dynamic="true" />
+    <PropColumn name="Remainder" type="double" dynamic="true" />
     <PropColumn name="Cost" type="decimal" scale="2" caption="=ecItemCost" dynamic="true" />
-    <PropColumn name="SupplPrice" type="decimal" scale="2" caption="=ecItemPrice" dynamic="true" />
     <PropColumn name="SupplierID" type="string" caption="=code" dynamic="true" />
   </g:columns>
 </g:Grid>

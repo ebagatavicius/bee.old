@@ -1,6 +1,5 @@
 package com.butent.bee.client.event;
 
-import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -92,9 +91,9 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.dom.DomUtils;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.JsFunction;
 import com.butent.bee.client.utils.JsUtils;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -108,6 +107,7 @@ import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -186,9 +186,11 @@ public final class EventUtils {
   public static final String EFFECT_MOVE = "move";
   public static final String EFFECT_COPY_MOVE = "copyMove";
 
-  public static final String DEFAULT_DND_DATA_FORMAT = "text/plain";
+  public static final String DEFAULT_DND_DATA_FORMAT = "text";
 
-  private static final Map<String, JsFunction> domHandlers = Maps.newHashMap();
+  private static final Map<String, JsFunction> domHandlers = new HashMap<>();
+
+  private static final String DATA_KEY_CLICK_SENSITIVITY_MILLIS = "click-sens-ms";
 
   public static void addClassName(HasNativeEvent ev, String className) {
     Assert.notNull(ev);
@@ -600,7 +602,9 @@ public final class EventUtils {
   public static void clearRegistry(Collection<? extends HandlerRegistration> registry) {
     if (!BeeUtils.isEmpty(registry)) {
       for (HandlerRegistration hr : registry) {
-        hr.removeHandler();
+        if (hr != null) {
+          hr.removeHandler();
+        }
       }
       registry.clear();
     }
@@ -646,6 +650,10 @@ public final class EventUtils {
   public static void fireKeyUp(EventTarget target, int keyCode) {
     Assert.notNull(target);
     fireKeyUp(Element.as(target), keyCode);
+  }
+
+  public static Integer getClickSensitivityMillis(Element element) {
+    return DomUtils.getDataPropertyInt(element, DATA_KEY_CLICK_SENSITIVITY_MILLIS);
   }
 
   public static String getCurrentTargetId(NativeEvent ev) {
@@ -994,6 +1002,14 @@ public final class EventUtils {
     return true;
   }
 
+  public static void preventClickDebouncer(Element element) {
+    setClickSensitivityMillis(element, 0);
+  }
+
+  public static void preventClickDebouncer(UIObject obj) {
+    setClickSensitivityMillis(obj, 0);
+  }
+
   public static void removeClassName(HasNativeEvent ev, String className) {
     Assert.notNull(ev);
     removeClassName(ev.getNativeEvent(), className);
@@ -1017,6 +1033,15 @@ public final class EventUtils {
 
   public static void selectDropNone(DragOverEvent event) {
     setDropEffect(event, EFFECT_NONE);
+  }
+
+  public static void setClickSensitivityMillis(Element element, int millis) {
+    DomUtils.setDataProperty(element, DATA_KEY_CLICK_SENSITIVITY_MILLIS, millis);
+  }
+
+  public static void setClickSensitivityMillis(UIObject obj, int millis) {
+    Assert.notNull(obj);
+    setClickSensitivityMillis(obj.getElement(), millis);
   }
 
   public static void setDndData(DragStartEvent event, Long id) {
@@ -1194,7 +1219,7 @@ public final class EventUtils {
     double rowId;
     double rowVersion;
 
-    FormView form = UiHelper.getForm(widget);
+    FormView form = ViewHelper.getForm(widget);
     IsRow data = (form == null) ? null : form.getActiveRow();
 
     if (data == null) {

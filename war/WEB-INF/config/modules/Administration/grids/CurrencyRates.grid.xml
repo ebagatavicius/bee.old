@@ -5,8 +5,13 @@
   name="CurrencyRates" viewName="CurrencyRates" caption="=currencyRates"
   >
   <g:columns>
-    <DataColumn name="Date" source="Date" visible="true" minWidth="120" />
+    <DataColumn name="Date" source="Date" visible="true" minWidth="100" />
     <DataColumn name="Quantity" source="Quantity" visible="true" carry="true" minWidth="80" />
-    <DataColumn name="Rate" source="Rate" visible="true" minWidth="100" />
+
+    <DataColumn name="Rate" source="Rate" visible="true" minWidth="200" format="#.###############" />
+    <CalcColumn name="Inverse" type="double" label="=currencyRateInverse" minWidth="140"
+      format="#.##########">
+      <render><ui:expression>(row.Rate > 0) ? 1 / row.Rate : 0</ui:expression></render>
+    </CalcColumn>
   </g:columns>
 </g:Grid>

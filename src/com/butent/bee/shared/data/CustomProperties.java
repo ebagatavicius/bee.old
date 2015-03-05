@@ -1,7 +1,5 @@
 package com.butent.bee.shared.data;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
@@ -11,6 +9,7 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,7 @@ public class CustomProperties extends HashMap<String, String> implements HasInfo
 
   @Override
   public List<Property> getInfo() {
-    List<Property> lst = Lists.newArrayList();
+    List<Property> lst = new ArrayList<>();
     if (isEmpty()) {
       return lst;
     }

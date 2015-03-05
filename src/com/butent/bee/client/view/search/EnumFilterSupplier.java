@@ -19,6 +19,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -47,8 +48,8 @@ public class EnumFilterSupplier extends AbstractFilterSupplier {
   private final List<String> captions;
   private final int nullIndex;
 
-  private final List<DataItem> data = Lists.newArrayList();
-  private final List<Integer> values = Lists.newArrayList();
+  private final List<DataItem> data = new ArrayList<>();
+  private final List<Integer> values = new ArrayList<>();
 
   public EnumFilterSupplier(String viewName, BeeColumn column, String label, String options,
       String key) {
@@ -69,7 +70,7 @@ public class EnumFilterSupplier extends AbstractFilterSupplier {
       return null;
     }
 
-    List<String> labels = Lists.newArrayList();
+    List<String> labels = new ArrayList<>();
     for (int index : values) {
       labels.add(getCaption(index));
     }
@@ -148,7 +149,7 @@ public class EnumFilterSupplier extends AbstractFilterSupplier {
 
   @Override
   protected void doCommit() {
-    List<Integer> newValues = Lists.newArrayList();
+    List<Integer> newValues = new ArrayList<>();
     for (int row : getSelectedItems()) {
       newValues.add(data.get(row).getIndex());
     }
@@ -169,7 +170,7 @@ public class EnumFilterSupplier extends AbstractFilterSupplier {
       return null;
     }
 
-    List<Filter> filters = Lists.newArrayList();
+    List<Filter> filters = new ArrayList<>();
 
     for (Integer ordinal : ordinals) {
       if (ordinal != null) {

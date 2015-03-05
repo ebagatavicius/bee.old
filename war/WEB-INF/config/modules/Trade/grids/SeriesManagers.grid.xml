@@ -9,5 +9,7 @@
     <DataColumn name="LastName" visible="true" />
     <DataColumn name="CompanyName" label="=company" />
     <DataColumn name="PositionName" label="=personPosition" />
+
+    <DataColumn name="IsDefault" />
   </g:columns>
 </g:Grid>

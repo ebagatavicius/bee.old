@@ -1,6 +1,5 @@
 package com.butent.bee.client.dialog;
 
-import com.google.gwt.animation.client.Animation;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -24,6 +23,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasAnimation;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.animation.Animation;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Edges;
 import com.butent.bee.client.dom.Stacking;
@@ -104,8 +104,6 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
 
   private final class ResizeAnimation extends Animation {
 
-    private final Popup curPanel;
-
     private boolean show;
     private boolean isUnloading;
 
@@ -114,26 +112,25 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
 
     private Timer showTimer;
 
-    private ResizeAnimation(Popup panel) {
-      this.curPanel = panel;
+    private ResizeAnimation() {
     }
 
     @Override
     protected void onComplete() {
       if (!show) {
         if (!isUnloading) {
-          BodyPanel.get().remove(curPanel);
+          BodyPanel.get().remove(Popup.this);
         }
       }
-      StyleUtils.clearClip(curPanel);
-      curPanel.getElement().getStyle().clearOverflow();
+      StyleUtils.clearClip(getElement());
+      getElement().getStyle().clearOverflow();
     }
 
     @Override
     protected void onStart() {
-      offsetHeight = curPanel.getOffsetHeight();
-      offsetWidth = curPanel.getOffsetWidth();
-      curPanel.getElement().getStyle().setOverflow(Overflow.HIDDEN);
+      offsetHeight = getOffsetHeight();
+      offsetWidth = getOffsetWidth();
+      getElement().getStyle().setOverflow(Overflow.HIDDEN);
       super.onStart();
     }
 
@@ -149,7 +146,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
       int height = (int) (p * offsetHeight);
       int width = (int) (p * offsetWidth);
 
-      switch (curPanel.getAnimationType()) {
+      switch (getAnimationType()) {
         case ROLL_DOWN:
           right = offsetWidth;
           bottom = height;
@@ -167,22 +164,22 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
           bottom = top + height;
           break;
       }
-      StyleUtils.setClip(curPanel, top, right, bottom, left);
+      StyleUtils.setClip(getElement(), top, right, bottom, left);
     }
 
     private void onInstantaneousRun() {
       if (show) {
-        curPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
-        if (!BeeConst.isUndef(curPanel.getTopPosition())) {
-          curPanel.setPopupPosition(curPanel.getLeftPosition(), curPanel.getTopPosition());
+        getElement().getStyle().setPosition(Position.ABSOLUTE);
+        if (!BeeConst.isUndef(getTopPosition())) {
+          setPopupPosition(getLeftPosition(), getTopPosition());
         }
-        BodyPanel.get().add(curPanel);
+        BodyPanel.get().add(Popup.this);
       } else {
         if (!isUnloading) {
-          BodyPanel.get().remove(curPanel);
+          BodyPanel.get().remove(Popup.this);
         }
       }
-      curPanel.getElement().getStyle().clearOverflow();
+      getElement().getStyle().clearOverflow();
     }
 
     private void setState(boolean sh, boolean unl) {
@@ -196,22 +193,22 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
         onComplete();
       }
 
-      curPanel.setShowing(sh);
+      setShowing(sh);
 
-      boolean animate = !unl && curPanel.isAnimationEnabled();
-      if (curPanel.getAnimationType() != AnimationType.CENTER && !sh) {
+      boolean animate = !unl && isAnimationEnabled();
+      if (getAnimationType() != AnimationType.CENTER && !sh) {
         animate = false;
       }
 
       this.show = sh;
       if (animate) {
         if (sh) {
-          curPanel.getElement().getStyle().setPosition(Position.ABSOLUTE);
-          if (!BeeConst.isUndef(curPanel.getTopPosition())) {
-            curPanel.setPopupPosition(curPanel.getLeftPosition(), curPanel.getTopPosition());
+          getElement().getStyle().setPosition(Position.ABSOLUTE);
+          if (!BeeConst.isUndef(getTopPosition())) {
+            setPopupPosition(getLeftPosition(), getTopPosition());
           }
-          StyleUtils.setClip(curPanel, 0, 0, 0, 0);
-          BodyPanel.get().add(curPanel);
+          StyleUtils.setClip(getElement(), 0, 0, 0, 0);
+          BodyPanel.get().add(Popup.this);
 
           showTimer = new Timer() {
             @Override
@@ -230,7 +227,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     }
   }
 
-  private static final String STYLE_POPUP = "bee-Popup";
+  private static final String STYLE_POPUP = BeeConst.CSS_CLASS_PREFIX + "Popup";
 
   private static final int ANIMATION_DURATION = 250;
 
@@ -291,7 +288,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
   private PreviewConsumer onEscape;
 
   private boolean isAnimationEnabled;
-  private final ResizeAnimation resizeAnimation = new ResizeAnimation(this);
+  private final ResizeAnimation resizeAnimation = new ResizeAnimation();
 
   private boolean dragging;
 
@@ -506,7 +503,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
         }
       }
 
-      if (!event.isCanceled()) {
+      if (!event.isCanceled() && !UiHelper.isCopy(nativeEvent)) {
         if (eventTargetsPopup || getKeyboardPartner() != null && targetNode != null
             && getKeyboardPartner().isOrHasChild(targetNode)) {
           event.consume();

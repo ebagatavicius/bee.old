@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+  
+  name="CompanyObjects" source="CompanyObjects" module="Classifiers.Contacts"
+  caption="=companyObjects" newRowCaption="=newObject"
+  >
+  <Columns>
+    <SimpleColumn name="Company" />
+    <SimpleJoin name="Company" joinType="LEFT">
+      <SimpleColumn alias="CompanyName" name="Name" />
+    </SimpleJoin>   
+    
+    <SimpleColumn name="ObjectName" />
+    <SimpleColumn name="ObjectAddress" />
+
+    <SimpleColumn name="DateFrom" />
+    <SimpleColumn name="DateUntil" />
+
+    <SimpleColumn name="ObjectPerson" />
+    <SimpleJoin name="ObjectPerson" joinType="LEFT">
+      <SimpleColumn name="FirstName" />
+      <SimpleColumn name="LastName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Notes" /> 
+  </Columns>
+
+  <Order>
+    <OrderBy column="CompanyName" />
+    <OrderBy column="ObjectName" />
+  </Order>
+</View>

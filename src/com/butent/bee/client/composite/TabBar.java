@@ -1,6 +1,5 @@
 package com.butent.bee.client.composite;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -35,6 +34,7 @@ import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -114,7 +114,7 @@ public class TabBar extends Composite implements HasBeforeSelectionHandlers<Inte
     }
   }
 
-  private static final String DEFAULT_STYLE_PREFIX = "bee-TabBar-";
+  private static final String DEFAULT_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "TabBar-";
 
   private static final String STYLE_PANEL = "panel";
   private static final String STYLE_ITEM = "item";
@@ -229,7 +229,7 @@ public class TabBar extends Composite implements HasBeforeSelectionHandlers<Inte
 
   @Override
   public List<String> getItems() {
-    List<String> items = Lists.newArrayList();
+    List<String> items = new ArrayList<>();
     for (int i = 0; i < getItemCount(); i++) {
       items.add(getTabWidget(i).getElement().getInnerHTML());
     }

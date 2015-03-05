@@ -29,7 +29,6 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.TabbedPages;
 import com.butent.bee.client.layout.Vertical;
 import com.butent.bee.client.screen.TilePanel.Tile;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.utils.JsonUtils;
 import com.butent.bee.client.widget.CustomDiv;
@@ -57,6 +56,7 @@ import com.butent.bee.shared.utils.PropertyUtils;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -484,7 +484,7 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
 
   private static final BeeLogger logger = LogUtils.getLogger(Workspace.class);
 
-  private static final String STYLE_PREFIX = StyleUtils.CLASS_NAME_PREFIX + "Workspace-";
+  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "Workspace-";
 
   private static final String STYLE_NEW_TAB = STYLE_PREFIX + "new-tab";
 
@@ -496,12 +496,14 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
   private static final String STYLE_ACTION_DISABLED = STYLE_ACTION_PREFIX + "disabled";
   private static final String STYLE_ACTION_SEPARATOR = STYLE_ACTION_PREFIX + "separator";
 
+  static final String KEY_CONTENT = "content";
   static final String KEY_DIRECTION = "direction";
   static final String KEY_SIZE = "size";
 
   private static final String KEY_SELECTED = "selected";
   private static final String KEY_HIDDEN = "hidden";
   private static final String KEY_TABS = "tabs";
+  private static final String KEY_FORCE = "force";
 
   private static final int SIZE_FACTOR = 1_000_000;
 
@@ -512,12 +514,95 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
 
   private static final int RESTORATION_TIMEOUT = TimeUtils.MILLIS_PER_MINUTE * 5;
 
+  public static boolean isForced(JSONObject json) {
+    return json != null && json.containsKey(KEY_FORCE);
+  }
+
+  public static List<String> maybeForceSpace(List<String> input, JSONObject json) {
+    List<String> result = new ArrayList<>();
+
+    if (json == null) {
+      if (!BeeUtils.isEmpty(input)) {
+        result.addAll(input);
+      }
+
+    } else if (BeeUtils.isEmpty(input)) {
+      result.add(json.toString());
+
+    } else if (!json.containsKey(KEY_FORCE)) {
+      result.addAll(input);
+
+    } else {
+      List<JSONObject> spaces = new ArrayList<>();
+      Set<String> contents = new HashSet<>();
+
+      for (String s : input) {
+        JSONObject space = JsonUtils.parse(s);
+
+        if (space != null) {
+          spaces.add(space);
+          contents.addAll(getContentValues(space));
+        }
+      }
+
+      if (contents.containsAll(getContentValues(json))) {
+        result.addAll(input);
+
+      } else {
+        String force = JsonUtils.getString(json, KEY_FORCE);
+        boolean last = BeeUtils.inListSame(force, "end", "+", ">");
+
+        if (!last) {
+          result.add(json.toString());
+        }
+
+        for (JSONObject space : spaces) {
+          space.put(KEY_SELECTED, new JSONNumber(BeeConst.UNDEF));
+          result.add(space.toString());
+        }
+
+        if (last) {
+          result.add(json.toString());
+        }
+      }
+    }
+
+    return result;
+  }
+
   static int restoreSize(double size, int max) {
     return BeeUtils.round(size * max / SIZE_FACTOR);
   }
 
   static int scaleSize(int size, int max) {
     return BeeUtils.round((double) size * SIZE_FACTOR / max);
+  }
+
+  private static Set<String> getContentValues(JSONObject json) {
+    Set<String> values = new HashSet<>();
+
+    if (json.containsKey(KEY_CONTENT)) {
+      String value = JsonUtils.getString(json, KEY_CONTENT);
+      if (!BeeUtils.isEmpty(value)) {
+        values.add(value);
+      }
+    }
+
+    if (json.containsKey(KEY_TABS)) {
+      JSONArray tabs = json.get(KEY_TABS).isArray();
+
+      if (tabs != null) {
+        for (int i = 0; i < tabs.size(); i++) {
+          JSONObject tab = tabs.get(i).isObject();
+          String value = JsonUtils.getString(tab, KEY_CONTENT);
+          if (!BeeUtils.isEmpty(value)) {
+            values.add(value);
+          }
+        }
+      }
+    }
+
+    return values;
   }
 
   private static Set<Direction> getHiddenDirections(JSONObject json) {
@@ -1023,7 +1108,7 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
     TilePanel panel = new TilePanel(this);
     TabWidget tab = new TabWidget(Localized.getConstants().newTab());
 
-    insert(panel, tab, before);
+    insert(panel, tab, null, null, before);
 
     selectPage(before, SelectionOrigin.INSERT);
     return panel;
@@ -1073,10 +1158,8 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
         }
 
         if (json.containsKey(KEY_SELECTED) && getPageCount() == oldPageCount + tabs.size()) {
-          Double value = JsonUtils.getNumber(json, KEY_SELECTED);
-          int index = (value == null) ? BeeConst.UNDEF : BeeUtils.round(value);
-
-          if (BeeUtils.betweenExclusive(index, 0, tabs.size())) {
+          Integer index = JsonUtils.getInteger(json, KEY_SELECTED);
+          if (index != null && BeeUtils.betweenExclusive(index, 0, tabs.size())) {
             activePage.set(oldPageCount + index);
           }
         }
@@ -1084,7 +1167,17 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
 
     } else {
       panel = insertEmptyPanel(getPageCount());
-      activePage.set(getSelectedIndex());
+
+      boolean select;
+      if (json.containsKey(KEY_SELECTED)) {
+        select = BeeUtils.isZero(JsonUtils.getNumber(json, KEY_SELECTED));
+      } else {
+        select = true;
+      }
+
+      if (select) {
+        activePage.set(getSelectedIndex());
+      }
 
       Map<String, String> contentByTile = panel.restore(this, json);
       if (!BeeUtils.isEmpty(contentByTile)) {

@@ -9,6 +9,7 @@
     <Relation name="Message" relation="Messages" notNull="true" editable="true" />
     <Integer name="Flags" />
     <Long name="MessageUID" />
+    <Relation name="Replied" relation="Places" unique="true" cascade="SET_NULL" />
   </Fields>
 
   <Indexes>

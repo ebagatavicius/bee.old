@@ -75,6 +75,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
   public static Relation create(Map<String, String> attributes,
       List<SelectorColumn> selectorColumns, RendererDescription rowRendererDescription,
       Calculation rowRender, List<RenderableToken> rowRenderTokens) {
+
     Relation relation = new Relation();
     relation.setAttributes(attributes);
 
@@ -184,6 +185,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
 
   private static List<String> deriveRenderColumns(DataInfo targetInfo, String original,
       String resolved) {
+
     if (!BeeUtils.same(original, resolved) && targetInfo.containsColumn(original)) {
       ViewColumn vc = targetInfo.getViewColumn(original);
       if (vc != null && vc.getLevel() > 0) {
@@ -212,6 +214,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
 
   private static String resolveTarget(DataInfo targetInfo, String target,
       List<String> renderColumns) {
+
     String result = null;
 
     if (!BeeUtils.isEmpty(target)) {
@@ -256,7 +259,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
 
   private String selectorClass;
 
-  private MenuConstants.ITEM_TYPE itemType;
+  private MenuConstants.ItemType itemType;
 
   private Integer visibleLines;
 
@@ -440,7 +443,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     return instant;
   }
 
-  public MenuConstants.ITEM_TYPE getItemType() {
+  public MenuConstants.ItemType getItemType() {
     return itemType;
   }
 
@@ -566,7 +569,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     }
     String it = getAttribute(ATTR_ITEM_TYPE);
     if (!BeeUtils.isEmpty(it)) {
-      setItemType(EnumUtils.getEnumByName(MenuConstants.ITEM_TYPE.class, it));
+      setItemType(EnumUtils.getEnumByName(MenuConstants.ItemType.class, it));
     }
     String lines = getAttribute(HasVisibleLines.ATTR_VISIBLE_LINES);
     if (BeeUtils.isPositiveInt(lines)) {
@@ -617,7 +620,13 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     }
 
     if (targetInfo != null) {
-      String rt = resolveTarget(targetInfo, target.get(), renderColumns.get());
+      String rt;
+      if (BeeUtils.anyEmpty(valSrc, target.get())) {
+        rt = resolveTarget(targetInfo, target.get(), renderColumns.get());
+      } else {
+        rt = target.get();
+      }
+
       if (BeeUtils.isEmpty(renderColumns.get()) && renderTarget()) {
         renderColumns.set(deriveRenderColumns(targetInfo, target.get(), rt));
       }
@@ -679,7 +688,10 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     if (getChoiceColumns().isEmpty() && getSearchableColumns().isEmpty()) {
       List<String> colNames = new ArrayList<>();
 
-      if (!BeeUtils.isEmpty(renderColumns.get())) {
+      if (!BeeUtils.isEmpty(valSrc)) {
+        colNames.add(valSrc);
+
+      } else if (!BeeUtils.isEmpty(renderColumns.get())) {
         if (sourceInfo != null && targetInfo != null && renderTarget()) {
           int tcLevel = Math.max(targetInfo.getViewColumnLevel(target.get()), 0);
 
@@ -846,7 +858,7 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     this.instant = instant;
   }
 
-  public void setItemType(MenuConstants.ITEM_TYPE itemType) {
+  public void setItemType(MenuConstants.ItemType itemType) {
     this.itemType = itemType;
   }
 

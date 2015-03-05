@@ -42,13 +42,13 @@
       </row>
       <row>
         <Label text="=trdSupplier" class="bee-required" style="&lbl;" />
-        <DataSelector source="Supplier" required="true" />
+        <DataSelector source="Supplier" required="true" renderColumns="SupplierName" />
         <Label text="=trdCustomer" style="&lbl;" />
-        <DataSelector source="Customer" />
+        <DataSelector source="Customer" renderColumns="CustomerName" />
       </row>
       <row>
         <Label text="=trdTerm" style="&lbl; text-align:right;" />
-        <InputDate source="Term" style="width:70px;" />
+        <InputDate source="Term" style="width:150px;" />
         <Label text="=trdManager" style="&lbl;" />
         <DataSelector source="Manager" editSource="ManagerPerson" />
       </row>
@@ -62,7 +62,7 @@
       <page>
         <text>=trdNotes</text>
         <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" />
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>
       <page module="Transport">

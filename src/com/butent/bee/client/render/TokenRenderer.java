@@ -1,19 +1,18 @@
 package com.butent.bee.client.render;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TokenRenderer extends AbstractCellRenderer {
 
   public static final String DEFAULT_SEPARATOR = BeeConst.STRING_SPACE;
 
-  private final List<ColumnToken> tokens = Lists.newArrayList();
+  private final List<ColumnToken> tokens = new ArrayList<>();
 
   public TokenRenderer(List<ColumnToken> tokens) {
     super(null);

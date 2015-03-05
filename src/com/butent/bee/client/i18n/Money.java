@@ -8,6 +8,7 @@ import com.google.common.collect.Table;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -15,6 +16,7 @@ import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.CellUpdateEvent;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.DataEvent;
@@ -30,8 +32,10 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -43,6 +47,11 @@ public final class Money implements HandlesAllDataEvents {
 
   private static final Money INSTANCE = new Money();
 
+  public static boolean canExchange(Long from, Long to) {
+    return DataUtils.isId(from) && DataUtils.isId(to) && !Objects.equals(from, to)
+        && INSTANCE.containsCurrency(from) && INSTANCE.containsCurrency(to);
+  }
+
   public static double exchange(long from, long to, double v, DateTime dt) {
     if (from == to) {
       return v;
@@ -51,6 +60,48 @@ public final class Money implements HandlesAllDataEvents {
       long time = (dt == null) ? System.currentTimeMillis() : dt.getTime();
       return v * INSTANCE.getRate(from, time) / INSTANCE.getRate(to, time);
     }
+  }
+
+  public static int exchange(long from, long to, DateTime dt,
+      String viewName, Collection<? extends IsRow> rows, String colName) {
+
+    Assert.notEmpty(viewName);
+    Assert.notNull(rows);
+    Assert.notEmpty(colName);
+
+    int index = Data.getColumnIndex(viewName, colName);
+    Assert.nonNegative(index);
+
+    Integer scale = Data.getColumnScale(viewName, colName);
+    Assert.notNull(scale);
+
+    BeeRowSet rowSet = new BeeRowSet(viewName,
+        Collections.singletonList(Data.getColumns(viewName).get(index)));
+
+    for (IsRow row : rows) {
+      if (DataUtils.hasId(row)) {
+        Double v = row.getDouble(index);
+
+        if (BeeUtils.nonZero(v)) {
+          String oldValue = row.getString(index);
+          String newValue = BeeUtils.toString(exchange(from, to, v, dt), scale);
+
+          if (!Objects.equals(oldValue, newValue)) {
+            BeeRow upd = new BeeRow(row.getId(), row.getVersion(),
+                Collections.singletonList(oldValue));
+            upd.preliminaryUpdate(0, newValue);
+
+            rowSet.addRow(upd);
+          }
+        }
+      }
+    }
+
+    if (!rowSet.isEmpty()) {
+      Queries.updateRows(rowSet);
+    }
+
+    return rowSet.getNumberOfRows();
   }
 
   public static List<ExtendedProperty> getExtendedInfo() {
@@ -136,6 +187,10 @@ public final class Money implements HandlesAllDataEvents {
   @Override
   public void onRowUpdate(RowUpdateEvent event) {
     onDataEvent(event);
+  }
+
+  private boolean containsCurrency(Long currency) {
+    return rates.containsKey(currency);
   }
 
   private double getRate(long currency, long time) {

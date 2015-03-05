@@ -1,6 +1,5 @@
 package com.butent.bee.client.grid.column;
 
-import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Event;
@@ -24,6 +23,7 @@ import com.butent.bee.shared.export.XStyle;
 import com.butent.bee.shared.ui.ColumnDescription.ColType;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,16 +38,17 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
   private List<String> searchBy;
   private List<String> sortBy;
 
-  private boolean isSortable;
+  private boolean sortable;
 
   private TextAlign hAlign;
   private WhiteSpace whiteSpace;
 
   private String options;
 
-  private final List<String> classes = Lists.newArrayList();
+  private final List<String> classes = new ArrayList<>();
 
   private boolean instantKarma;
+  private boolean draggable;
 
   public AbstractColumn(AbstractCell<C> cell) {
     this.cell = cell;
@@ -161,8 +162,12 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
     return instantKarma && getValue(row) != null;
   }
 
+  public boolean isDraggable() {
+    return draggable;
+  }
+
   public boolean isSortable() {
-    return isSortable;
+    return sortable;
   }
 
   public EventState onBrowserEvent(CellContext context, Element elem, IsRow row, Event event) {
@@ -171,6 +176,10 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
 
   public void render(CellContext context, SafeHtmlBuilder sb) {
     cell.render(context, getValue(context.getRow()), sb);
+  }
+
+  public void setDraggable(boolean draggable) {
+    this.draggable = draggable;
   }
 
   public void setInstantKarma(boolean instantKarma) {
@@ -187,7 +196,7 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
   }
 
   public void setSortable(boolean sortable) {
-    this.isSortable = sortable;
+    this.sortable = sortable;
   }
 
   public void setSortBy(List<String> sortBy) {

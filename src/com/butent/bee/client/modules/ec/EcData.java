@@ -2,9 +2,7 @@ package com.butent.bee.client.modules.ec;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import static com.butent.bee.shared.modules.ec.EcConstants.*;
 
@@ -33,9 +31,12 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,26 +53,26 @@ class EcData {
     }
   }
 
-  private final List<String> carManufacturers = Lists.newArrayList();
-  private final Map<String, List<EcCarModel>> carModelsByManufacturer = Maps.newHashMap();
-  private final Map<Long, List<EcCarType>> carTypesByModel = Maps.newHashMap();
+  private final List<String> carManufacturers = new ArrayList<>();
+  private final Map<String, List<EcCarModel>> carModelsByManufacturer = new HashMap<>();
+  private final Map<Long, List<EcCarType>> carTypesByModel = new HashMap<>();
 
-  private final Map<Long, String> categoryNames = Maps.newHashMap();
+  private final Map<Long, String> categoryNames = new HashMap<>();
   private final CategoryComparator categoryComparator = new CategoryComparator();
 
-  private final Set<Long> categoryRoots = Sets.newHashSet();
+  private final Set<Long> categoryRoots = new HashSet<>();
   private final Multimap<Long, Long> categoryByParent = HashMultimap.create();
-  private final Map<Long, Long> categoryByChild = Maps.newHashMap();
+  private final Map<Long, Long> categoryByChild = new HashMap<>();
 
-  private final List<EcBrand> itemBrands = Lists.newArrayList();
-  private final Map<Long, String> brandNames = Maps.newHashMap();
+  private final List<EcBrand> itemBrands = new ArrayList<>();
+  private final Map<Long, String> brandNames = new HashMap<>();
 
-  private final List<DeliveryMethod> deliveryMethods = Lists.newArrayList();
+  private final List<DeliveryMethod> deliveryMethods = new ArrayList<>();
 
-  private final Map<String, String> configuration = Maps.newHashMap();
+  private final Map<String, String> configuration = new HashMap<>();
 
-  private final Map<String, String> clientInfo = Maps.newHashMap();
-  private final List<String> clientStockLabels = Lists.newArrayList();
+  private final Map<String, String> clientInfo = new HashMap<>();
+  private final List<String> clientStockLabels = new ArrayList<>();
 
   private BeeRowSet warehouses;
 
@@ -80,7 +81,7 @@ class EcData {
   }
 
   Tree buildCategoryTree(Set<Long> ids) {
-    List<Long> roots = Lists.newArrayList();
+    List<Long> roots = new ArrayList<>();
     Multimap<Long, Long> data = HashMultimap.create();
 
     for (long id : ids) {
@@ -260,7 +261,7 @@ class EcData {
           String[] arr = Codec.beeDeserializeCollection(response.getResponseAsString());
 
           if (arr != null) {
-            List<EcCarModel> carModels = Lists.newArrayList();
+            List<EcCarModel> carModels = new ArrayList<>();
             for (String s : arr) {
               carModels.add(EcCarModel.restore(s));
             }
@@ -288,7 +289,7 @@ class EcData {
           String[] arr = Codec.beeDeserializeCollection(response.getResponseAsString());
 
           if (arr != null) {
-            List<EcCarType> carTypes = Lists.newArrayList();
+            List<EcCarType> carTypes = new ArrayList<>();
             for (String s : arr) {
               carTypes.add(EcCarType.restore(s));
             }
@@ -302,7 +303,7 @@ class EcData {
   }
 
   String getCategoryFullName(long categoryId, String separator) {
-    List<String> names = Lists.newArrayList();
+    List<String> names = new ArrayList<>();
 
     for (Long parent = categoryId; parent != null; parent = categoryByChild.get(parent)) {
       String name = getCategoryName(parent);
@@ -325,7 +326,7 @@ class EcData {
   }
 
   List<String> getCategoryNames(EcItem item) {
-    List<String> names = Lists.newArrayList();
+    List<String> names = new ArrayList<>();
 
     Set<Long> categoryIds = item.getCategorySet();
     for (Long categoryId : categoryIds) {
@@ -360,7 +361,7 @@ class EcData {
       });
 
     } else {
-      List<String> values = Lists.newArrayList();
+      List<String> values = new ArrayList<>();
       for (String key : keys) {
         values.add(clientInfo.get(key));
       }
@@ -504,7 +505,7 @@ class EcData {
 
   private void fillTree(Multimap<Long, Long> data, long parent, TreeItem parentItem) {
     if (data.containsKey(parent)) {
-      List<Long> children = Lists.newArrayList(data.get(parent));
+      List<Long> children = new ArrayList<>(data.get(parent));
       if (children.size() > 1) {
         Collections.sort(children, categoryComparator);
       }

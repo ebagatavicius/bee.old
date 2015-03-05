@@ -15,8 +15,12 @@
     <HorizontalPanel>
       <Image  url="images/logo.png" />
       <cell width="100" widthUnit="%">
-        <FlowPanel style="text-align:center;">
-          <Label html="PVM Sąskaita-faktūra" style="&bold;" />
+        <FlowPanel style="text-align:center; font-size:medium;">
+          <TextLabel style="&bold;">
+            <render>
+              <ui:expression>row.Proforma ? 'Sąskaita išankstiniam apmokėjimui' : 'PVM Sąskaita-faktūra'</ui:expression>
+            </render>
+          </TextLabel>
           <TextLabel source="InvoiceNo">
             <renderToken source="InvoicePrefix" prefix="Serija " suffix=" " />
             <renderToken source="InvoiceNo" prefix="Nr. " />
@@ -59,7 +63,6 @@
     <DateTimeLabel source="Date" format="DATE_LONG" horizontalAlignment="right" />
 
     <Table name="InvoiceDetails" style="&section; width:100%">
-      <properties rateCurrency="EUR" />
       <row>
         <Label text="Paslauga">
           <properties name="Name" />
@@ -76,18 +79,13 @@
         <Label text="=trdVat" horizontalAlignment="right">
           <properties name="Vat" />
         </Label>
-        <FlowPanel>
-          <properties name="RateAmount" />
-          <InlineLabel text="=trdAmount" />
-          <InlineLabel html="EUR" style="padding-left:3px;" />
-        </FlowPanel>
       </row>
       <row>
         <cell colSpan="3">
           <FlowPanel style="text-align:right;">
             <Label text="Bendra suma:" />
             <Label text="PVM suma:" />
-            <Label text="VISO:" />
+            <Label text="VISO:" style="&bold;" />
           </FlowPanel>
         </cell>
         <FlowPanel>
@@ -97,7 +95,7 @@
           <Label>
             <properties name="VatTotal" />
           </Label>
-          <Label>
+          <Label style="&bold;">
             <properties name="Total" />
           </Label>
          </FlowPanel>
@@ -108,19 +106,8 @@
           <Label>
             <properties name="Currency" />
           </Label>
-          <Label>
+          <Label style="&bold;">
             <properties name="Currency" />
-          </Label>
-        </FlowPanel>
-        <FlowPanel>
-          <Label>
-            <properties name="RateAmountTotal" />
-          </Label>
-          <Label>
-            <properties name="RateVatTotal" />
-          </Label>
-          <Label>
-            <properties name="RateTotal" />
           </Label>
         </FlowPanel>
       </row>

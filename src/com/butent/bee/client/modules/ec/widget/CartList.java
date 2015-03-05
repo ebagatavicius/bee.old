@@ -1,7 +1,6 @@
 package com.butent.bee.client.modules.ec.widget;
 
 import com.google.common.collect.EnumHashBiMap;
-import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -82,7 +81,7 @@ public class CartList extends HtmlTable implements ValueChangeHandler<Boolean> {
     }
   }
 
-  private final EnumMap<CartType, Cart> carts = Maps.newEnumMap(CartType.class);
+  private final EnumMap<CartType, Cart> carts = new EnumMap<>(CartType.class);
 
   private final EnumHashBiMap<CartType, Integer> typesToRows = EnumHashBiMap.create(CartType.class);
 

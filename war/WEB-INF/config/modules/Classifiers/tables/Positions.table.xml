@@ -5,6 +5,7 @@
   idName="PositionID"
   >
   <Fields>
-    <String name="Name" precision="50" notNull="true" label="=personPosition" />
+    <String name="Name" precision="100" notNull="true" unique="true" label="=personPosition" />
+    <Relation name="Role" relation="Roles" label="=role" />
   </Fields>
 </Table>

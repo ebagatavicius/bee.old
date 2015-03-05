@@ -3,7 +3,6 @@
 
   name="Assessments"
   idName="AssessmentID"
-  x="0" y="0"
   >
   <Fields>
     <Relation name="Assessment" relation="Assessments" cascade="DELETE" label="=trAssessment" />

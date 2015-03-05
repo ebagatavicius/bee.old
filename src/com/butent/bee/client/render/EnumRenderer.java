@@ -1,7 +1,5 @@
 package com.butent.bee.client.render;
 
-import com.google.common.collect.Lists;
-
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -11,6 +9,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EnumRenderer extends AbstractCellRenderer implements HasValueStartIndex {
@@ -19,7 +18,7 @@ public class EnumRenderer extends AbstractCellRenderer implements HasValueStartI
 
   public static final int DEFAULT_VALUE_START_INDEX = 0;
 
-  private final List<String> captions = Lists.newArrayList();
+  private final List<String> captions = new ArrayList<>();
   private int valueStartIndex;
 
   public EnumRenderer(CellSource cellSource, String key) {

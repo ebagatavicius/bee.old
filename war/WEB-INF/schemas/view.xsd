@@ -31,21 +31,34 @@
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="module" type="type:modules" />
+      <xs:attribute name="module" type="viewModule" />
       <xs:attribute name="name" type="type:dataView" use="required" />
       <xs:attribute name="source" type="type:tableNameType" use="required" />
       <xs:attribute name="filter" type="xs:string" />
       <xs:attribute name="readOnly" type="xs:boolean" />
       <xs:attribute name="caption" type="xs:string" />
       <xs:attribute name="editForm" type="type:nameType" />
-      <xs:attribute name="rowCaption" type="type:nameList" />
+      <xs:attribute name="rowCaption" type="type:fieldNames" />
       <xs:attribute name="newRowForm" type="type:nameType" />
-      <xs:attribute name="newRowColumns" type="type:nameList" />
+      <xs:attribute name="newRowColumns" type="type:fieldNames" />
       <xs:attribute name="newRowCaption" type="xs:string" />
       <xs:attribute name="cacheMaximumSize" type="xs:int" />
       <xs:attribute name="cacheEviction" type="type:replacementPolicy" />
     </xs:complexType>
   </xs:element>
+  
+  <xs:simpleType name="viewModule">
+    <xs:union>
+      <xs:simpleType>
+        <xs:list itemType="type:module" />
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="*" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
 
   <xs:element name="Column" abstract="true" />
   <xs:element name="Join" abstract="true" />

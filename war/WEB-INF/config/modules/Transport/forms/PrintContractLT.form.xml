@@ -18,10 +18,11 @@
       .&form;-table td {border:1px solid black; padding:2px;}
       .&form;-forwarder .bee-co-companyInfo-name .bee-co-companyInfo-item:before {content: "Vežėjas: "; font-weight:normal;}
       .&form;-customer .bee-co-companyInfo-name .bee-co-companyInfo-item:before {content: "Užsakovas: "; font-weight:normal;}
+      .&form;-customer .bee-co-companyInfo-bankaccount {display:none;}
     </css>
     <Image url="images/logo.png" style="display:block; margin:auto;" />
     <TextLabel style="text-align:center; &bold;">
-      <render><ui:expression>'Krovinio pervežimo sutartis Nr. ' + rowId + (row.Number ? '-' + row.Number : '')</ui:expression></render>
+      <render><ui:expression>'Krovinio pervežimo sutartis Nr. ' + row.Assessment + '-' + (row.Number ? row.Number : rowId)</ui:expression></render>
     </TextLabel>
     <DateLabel source="Date" style="text-align:center;" />
 
@@ -47,19 +48,19 @@
       </row>
       <row>
         <Label html="Pasikrovimo vieta" />
-        <TextLabel source="LoadingAddress" />
+        <FlowPanel name="LoadingAddress" />
       </row>
       <row>
         <Label html="Pasikrovimo data" />
-        <DateTimeLabel source="LoadingDate" />
+        <FlowPanel name="LoadingDate" />
       </row>
       <row>
         <Label html="Pristatymo vieta" />
-        <TextLabel source="UnloadingAddress" />
+        <FlowPanel name="UnloadingAddress" />
       </row>
       <row>
         <Label html="Pristatymo data" />
-        <DateTimeLabel source="UnloadingDate" />
+        <FlowPanel name="UnloadingDate" />
       </row>
       <row>
         <Label html="Automobilio numeris" />
@@ -85,27 +86,30 @@
       </row>
       <row>
         <cell colSpan="2">
-          <HtmlPanel style="&section;">
-            <span style="white-space:pre-wrap;">Šalių įsipareigojimai 
-1. Pervežimas vykdomas CMR Konvencijos sąlygomis. Vežėjas šios Pervežimo sutarties vykdymo metu privalo turėti galiojantį vežėjo CMR draudimo polisą, licenсijas ir leidimus, reikalingus teisėtam aukščiau nurodyto pervežimo vykdymui.
-2. Užsakovas įsipareigoja organizuoti pakrovimą ir muitinės įforminimą (esant būtinybei) per 24 val. (NVS 48 val.) nuo automobilio atvykimo į pakrovimo vietą momento, įskaitant krovinio tvirtinimo ir plombavimo darbus. 
-3. Užsakovas įsipareigoja įvykdyti iškrovimą ir muitinės formalumus (esant būtinybei) per 24 val. (NVS 48 val.) nuo automobilio atvykimo į muitinės paskirties vietą arba pristatymo vietą momento. 
-4. Jeigu 2-3 p. nurodyti terminai yra viršijami, Užsakovas apmoka Vežėjui prastovas - po 100 eur už kiekvieną darbo dieną. 
-5. Vežėjas privalo nedelsiant pranešti Užsakovui apie visas pervežimo aplinkybes, kai įtaria grėsmę savalaikiam ir saugiam krovinio pristatymui.
-6. Vežėjas įsipareigoja pakrovimui/iškrovimui suteikti švarią, be šalutinių kvapų, geros techninės būklės transporto priemonę. Nepateikus transporto priemones pasikrovimui, Vežėjas sumoka bauda 20 % nuo pervežimo kainos. Vežėjas įsipareigoja turėti su savimi TIR Carnet (esant būtinybei), tarptautinį CMR važtaraštį, galiojantį CMR draudimo polisą, visus tarptautiniam pervežimui būtinus leidimus.
-7. Vežėjas įsipareigoja atvykti į iškrovimo/pakrovimo vietą nustatytu laiku. Vežėjas privalo kontroliuoti pakrovimą/iškrovimą. Krovinys turi atitikti CMR įrašus. Vežėjas atsako už sugadintą krovinį, neteisingą krovinio išdėstymą. Jeigu Vežėjas pavėluoja į pakrovimą, jis privalo sumokėti baudą 100 eur už kiekvieną darbo dieną. 
+          <HtmlPanel>
+            <span style="white-space:pre-wrap; font-size:smaller;">Šalių įsipareigojimai 
+
+1. Pervežimas vykdomas CMR Konvencijos sąlygomis. Vežėjas šios Pervežimo sutarties vykdymo metu privalo turėti galiojantį vežėjo CMR draudimo polisą, licencijas ir leidimus, reikalingus teisėtam aukščiau nurodyto pervežimo vykdymui. 
+2. Užsakovas įsipareigoja organizuoti pakrovimą ir muitinės įforminimą (esant būtinybei) per  24 val. (NVS 48 val.) nuo automobilio atvykimo į pakrovimo vietą momento, įskaitant krovinio tvirtinimo ir plombavimo darbus. Ši sąlyga galioja automobiliui atvykus į krovos vietą ne vėliau kaip iki 10:00 pakrovimo vietos laiku.
+3. Užsakovas įsipareigoja įvykdyti iškrovimą ir muitinės formalumus (esant būtinybei) per  24 val. (NVS 48 val.) nuo automobilio atvykimo į muitinės paskirties vietą arba pristatymo vietą momento. Laikas skaičiuojamas automobiliui atvykus į muitinę/išsikrovimo vietą iki 10:00 vietos laiku.
+4. Jeigu 2-3 p. nurodyti terminai yra viršijami, Užsakovas apmoka Vežėjui prastovas - po 100 eur  už kiekvieną darbo dieną. 
+5. Vežėjas privalo nedelsiant pranešti Užsakovui apie visas pervežimo aplinkybes, kai įtaria grėsmę savalaikiam ir saugiam krovinio pristatymui. 
+6. Vežėjas įsipareigoja pakrovimui/iškrovimui suteikti švarią, be šalutinių kvapų, geros techninės būklės transporto priemonę. Nepateikus transporto priemonės pasikrovimui, Vežėjas sumoka baudą 20 % nuo pervežimo kainos. Vežėjas įsipareigoja turėti su savimi TIR Carnet (esant būtinybei), tarptautinį CMR važtaraštį, galiojantį CMR draudimo polisą, visus tarptautiniam pervežimui būtinus leidimus. 
+7. Vežėjas įsipareigoja atvykti į iškrovimo/pakrovimo vietą nustatytu laiku. Vežėjas privalo kontroliuoti pakrovimą/iškrovimą. Krovinys turi atitikti CMR įrašus. Vežėjas atsako už sugadintą krovinį, neteisingą krovinio išdėstymą. Jeigu Vežėjas pavėluoja į pakrovimą/iškrovimą, jis privalo sumokėti baudą  100 eur  už kiekvieną darbo dieną. 
 8. Vežėjas yra atsakingas už krovinį nuo jo priėmimo iki perdavimo momento, o taip pat krovinio pristatymo vėlavimą pagal CMR Konvencijos sąlygas. Vežėjas nėra atsakingas už krovinio kiekį, jeigu jis pristatytas su nepažeistomis plombomis, už vidinę būklę ir krovinio vienetų kiekį, jeigu krovinio įpakavimas nepažeistas. 
-9. Užsakovas yra atsakingas už tinkamą krovinio pateikimą pakrovimui, pakrovimą, iškrovimą, transporto priemonės pažeidimą pakrovimo ar iškrovimo metu, muitinės ir kitų formalumų įvykdymą, dokumentų įforminimą, Vežėjo instruktavimą dėl krovinio savybių ir priemonių, užtikrinančių saugų krovinio transportavimą (krovinio tvirtinimas ir t.t.), Vežėjo darbo apmokėjimą ir t.t.
-10. Užsakovas turi teisę atšaukti užsakymą likus 12 val. iki pasikrovimo. Kitu atveju už krovinio nepateikimą pakrovimui Užsakovas Vežėjui sumoka baudą 20 % nuo pervežimo kainos, jei nesutariama kitaip.
+9. Užsakovas yra atsakingas už tinkamą krovinio pateikimą pakrovimui, pakrovimą, iškrovimą, transporto priemonės pažeidimą pakrovimo ar iškrovimo metu, muitinės ir kitų formalumų įvykdymą, dokumentų įforminimą, Vežėjo instruktavimą dėl krovinio savybių ir priemonių, užtikrinančių saugų krovinio transportavimą (krovinio tvirtinimas ir t.t.), Vežėjo darbo apmokėjimą ir t.t. 
+10. Užsakovas turi teisę atšaukti užsakymą likus 12 val. iki pasikrovimo. Kitu atveju už krovinio nepateikimą pakrovimui Užsakovas Vežėjui sumoka baudą 20 % nuo pervežimo kainos, jei nesutariama kitaip. 
 11. Vežėjas neturi teisės vykdyti jokių apmokėjimų užsakovo vardu, negavęs įgaliojimo patvirtinančio fakso.
-12. Užsakymas negali būti taisomas ranka. Bet koks sutarties koregavimas turi būti patvirtintas abiejų šalių antspaudais, priešingu atveju pataisymai neturi jokios galios.</span>
+12. Užsakymas negali būti taisomas ranka. Bet koks sutarties koregavimas turi būti patvirtintas abiejų šalių antspaudais, priešingu atveju pataisymas neturi jokios juridinės galios.
+13. Vеžėjui nepatvirtinus užsakymo per 24 val. laikoma, kad užsakymas priimtas ir jame nurodytos sąlygos tinkamos.
+</span>
           </HtmlPanel>
         </cell>
       </row>
     </Table>
     
     <Label html="Ši sutartis, pasirašyta faksu turi tokią pačią juridinę galią kaip ir originalas. Prašome patvirtinti sutartį."
-           style="&section; font-style:italic; font-size:x-small;" />
+           style="&section; font-style:italic; font-weight:bold; font-size:smaller;" />
 
     <Table style="width:100%; margin-top:10px;">
       <row style="&bold;">

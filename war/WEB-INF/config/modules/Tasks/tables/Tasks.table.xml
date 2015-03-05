@@ -11,12 +11,14 @@
     <Enum name="Priority" key="TaskPriority" notNull="true" defValue="1" label="=crmTaskPriority" />
     <Relation name="Type" relation="TaskTypes" label="=crmTaskType" />
 
-    <DateTime name="Created" defExpr="CURRENT_TIME" label="=crmTaskCreated" />
+    <DateTime name="Created" label="=crmTaskCreated" />
     <DateTime name="StartTime" notNull="true" label="=crmStartDate" />
     <DateTime name="FinishTime" notNull="true" label="=crmFinishDate" />
     <DateTime name="Completed" label="=crmTaskCompleteDate" />
     <DateTime name="Approved" label="=crmTaskConfirmDate" />
     <String name="ExpectedDuration" precision="10" label="=crmTaskExpectedDuration" />
+    <Numeric name="ExpectedExpenses" precision="15" scale="5" label="=prjExpenses" />
+    <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
 
     <Relation name="Owner" notNull="true" relation="Users" defExpr="CURRENT_USER"
       label="=crmTaskManager" />
@@ -33,5 +35,8 @@
     
     <Relation name="RecurringTask" relation="RecurringTasks" cascade="SET_NULL"
       label="=crmRecurringTask" />
+
+    <Relation name="Project" relation="Projects" cascade="SET_NULL" label="=project" />
+    <Relation name="ProjectStage" relation="ProjectStages" cascade="SET_NULL" label="=prjStage" />
   </Fields>
 </Table>

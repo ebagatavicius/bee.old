@@ -1,6 +1,5 @@
 package com.butent.bee.server.modules.mail;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
@@ -15,6 +14,7 @@ import com.butent.bee.shared.modules.mail.AccountInfo;
 import com.butent.bee.shared.modules.mail.MailConstants.Protocol;
 import com.butent.bee.shared.modules.mail.MailConstants.SystemFolder;
 import com.butent.bee.shared.modules.mail.MailFolder;
+import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 
 import javax.mail.Flags;
@@ -446,16 +447,16 @@ public class MailAccount {
     return accountInfo.isSystemFolder(folder.getId());
   }
 
-  void processMessages(long[] uids, MailFolder source, MailFolder target, boolean move)
+  boolean processMessages(long[] uids, MailFolder source, MailFolder target, boolean move)
       throws MessagingException {
 
     if (!isStoredRemotedly(source)) {
-      return;
+      return false;
     }
     boolean isTarget = target != null && target.isConnected();
 
-    if (!move && !isTarget) {
-      return;
+    if (!move && !isTarget || ArrayUtils.length(uids) == 0) {
+      return true;
     }
     Store store = null;
     Folder remoteSource = null;
@@ -467,7 +468,7 @@ public class MailAccount {
       logger.debug("Checking folder", remoteSource.getName(), "UIDValidity with",
           source.getUidValidity());
 
-      if (!Objects.equal(((UIDFolder) remoteSource).getUIDValidity(), source.getUidValidity())) {
+      if (!Objects.equals(((UIDFolder) remoteSource).getUIDValidity(), source.getUidValidity())) {
         throw new MessagingException("Folder out of sync: " + source.getName());
       }
       logger.debug("Opening folder:", remoteSource.getName());
@@ -513,6 +514,7 @@ public class MailAccount {
       }
       disconnectFromStore(store);
     }
+    return true;
   }
 
   boolean renameRemoteFolder(MailFolder source, String name) throws MessagingException {
@@ -554,7 +556,7 @@ public class MailAccount {
       logger.debug("Checking folder", folder.getName(), "UIDValidity with",
           source.getUidValidity());
 
-      if (!Objects.equal(((UIDFolder) folder).getUIDValidity(), source.getUidValidity())) {
+      if (!Objects.equals(((UIDFolder) folder).getUIDValidity(), source.getUidValidity())) {
         throw new MessagingException("Folder out of sync: " + source.getName());
       }
       logger.debug("Opening folder:", folder.getName());

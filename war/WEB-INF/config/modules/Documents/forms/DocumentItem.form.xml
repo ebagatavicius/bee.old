@@ -7,6 +7,40 @@
   >
   <TabbedPages>
     <page>
+      <text>=mainInformation</text>
+      <Table>
+        <row>
+          <Label for="Ordinal" />
+          <InputInteger source="Ordinal" />
+        </row>
+        <row>
+          <Label for="Description" />
+          <DataSelector source="Description"  viewName="DistinctDocumentItems"
+            valueSource="Description" strict="false"/>
+        </row>
+        <row>
+          <Label for="Quantity" />
+          <InputDecimal source="Quantity" />
+        </row>
+        <row>
+          <Label for="Price" />
+          <InputDecimal source="Price" />
+        </row>
+        <row>
+          <Label for="VatPlus" />
+          <CheckBox source="VatPlus" html="-" />
+        </row>
+        <row>
+          <Label for="Vat" />
+          <InputDecimal source="Vat" />
+        </row>
+        <row>
+          <Label for="VatPercent" />
+          <CheckBox source="VatPercent" html="-" />
+        </row>
+      </Table>
+    </page>
+    <page>
       <text>=criteria</text>
       <xi:include href="widgets/Criteria.widget.xml" />
     </page>

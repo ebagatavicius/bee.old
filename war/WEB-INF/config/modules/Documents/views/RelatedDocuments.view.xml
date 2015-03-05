@@ -20,6 +20,7 @@
     <SimpleColumn name="Discussion" />
     <SimpleColumn name="ServiceObject" />
     <SimpleColumn name="Message" />
+    <SimpleColumn name="Project" />
 
     <SimpleJoin name="Document" joinType="INNER">
 

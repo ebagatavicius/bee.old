@@ -1,17 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Grid[
+  <!ENTITY qty "(row.Quantity - (row.returned_qty ? Number(row.returned_qty) : 0))">
+]>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   xmlns:ui="http://www.butent.com/ui"
   xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="TradeActItems" viewName="TradeActItems"
-  flexGrow="1"
+  flexGrow="1" renderMode="full"
   newRowCaption="=newItem"
   >
   <xi:include href="columns/TradeActItem.columns.xml" />
 
   <xi:include href="columns/TradeActQuantity.columns.xml" />
-  <xi:include href="columns/TradeActWeight.columns.xml" />
-  <xi:include href="columns/TradeActPrice.columns.xml" />
+
+  <g:columns>
+    <PropColumn name="returned_qty" type="double" label="=taQuantityReturned" visible="true">
+      <style>
+        <bodyStyle><ui:inline>color: red;</ui:inline></bodyStyle>
+        <footerStyle><ui:inline>color: red;</ui:inline></footerStyle>
+      </style>
+      <footer aggregate="sum" />
+    </PropColumn>
+    
+    <CalcColumn name="remaining_qty" type="double" label="=taQuantityRemained" visible="true">
+      <render>
+        <ui:expression>&qty;</ui:expression>
+      </render>
+      <footer aggregate="sum" />
+    </CalcColumn>
+    
+    <DataColumn name="Weight">
+      <footer expression="&qty; * row.Weight" />
+    </DataColumn>
+    <DataColumn name="Area">
+      <footer expression="&qty; * row.Area" />
+    </DataColumn>
+
+    <DataColumn name="Price" visible="true">
+      <footer expression="&qty; * row.Price" />
+    </DataColumn>
+    
+    <CalcColumn name="ItemPrices" type="string" cellType="html" label="=taItemPrices" width="100" />
+  </g:columns>
 
   <xi:include href="columns/TradeActDiscount.columns.xml" />
   <xi:include href="columns/TradeActVat.columns.xml" />

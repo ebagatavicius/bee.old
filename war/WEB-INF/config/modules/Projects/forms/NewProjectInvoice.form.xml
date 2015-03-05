@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+    <!ENTITY lbl "width:100px; text-align: right; padding-right: 9px;">
+	<!ENTITY lbl2 "text-align: right; padding-right: 9px;">
+    <!ENTITY separator "<hr style=&#34; background-color: blue; color: blue; height: 1px;&#34;/>">
+  ]>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  
+  name="NewProjectInvoice" viewName="ProjectInvoices" caption="=trdNewInvoice"
+  width="710" height="280"
+  >
+  <FlowPanel style="padding: 1px 1px 1px 1px;">
+    <Table  style="border-spacing: 5px;">
+      <row>
+	   <cell colSpan="4">
+         &separator;
+	   </cell>
+	  </row>
+      <row>	  
+        <cell colSpan="4">
+          <CheckBox source="Proforma" text="=trdProformaInvoice" style="float:right;" />
+		</cell>
+      </row>
+      <row>
+        <Label text="=trdDate" class="bee-required" style="&lbl2; width:143px;" />
+        <InputDateTime source="Date" style="width:110px;" />
+      </row>
+      <row>
+        <Label text="=currency" class="bee-required" style="&lbl2; width:143px; margin-right: 5px;" />
+        <DataSelector source="CurrencyName" style="width:40px;" editEnabled="false" />        
+	    <cell colSpan="2">
+	      <Table style="border-spacing: 0px;">
+            <row>              
+              <Label text="=trdInvoicePrefix" style="&lbl2; width: 42px; "/>
+              <InputText source="InvoicePrefix" upperCase="true" style="width:50px; margin-right: 4px;"/>
+              <InlineLabel text="=trdInvoiceNo" style="&lbl2; margin-right: 5px;" />
+              <InputText source="InvoiceNo" />
+		    </row>
+          </Table>
+	    </cell>
+      </row>
+	  <row>		
+      <Label text="=trdTerm" style="&lbl2; width:143px; text-align:right; margin-right: 5px;"/>
+      <InputDate source="Term" style="width:150px;" />
+      <!-- 
+      <Label name="MainItemCaption" text="=transportMainItemCaption" style="&lbl2; width:185px; margin-right: 5px;"/>
+      <UnboundSelector name="MainItem" viewName="Items" renderColumns="Name" />
+		  -->
+	  </row>
+      <row>
+        <Label text="=trdSupplier" style="&lbl2; width:143px;" />
+        <DataSelector source="Supplier" />
+        <Label text="=trdCustomer" class="bee-required" style="&lbl2;" />
+        <DataSelector source="Customer" required="true" />
+      </row>
+      <row>
+        <Label text="=trdManager" style="&lbl2; width:143px;" />
+        <DataSelector source="Manager" editEnabled="false" />
+        <Label text="=trdPayer" style="&lbl2;" />
+        <DataSelector source="Payer" />
+      </row>
+    </Table>
+  </FlowPanel>
+</f:Form>

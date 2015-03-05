@@ -9,7 +9,6 @@
   xmlns:f="http://www.butent.com/form"
   
   name="TradeActStockReport" caption="=taReportStock"
-  enabledActions="filter bookmark export"
   >
   <FlowPanel>
     <br/>
@@ -23,41 +22,51 @@
         <Label text="=dateTo" />
       </cell>
       <InputDateTime name="EndDate" style="width: 120px;" />
+      
+      <cell style="padding-left: 3em;">
+        <CheckBox name="Quantity" text="=quantity" />
+      </cell>
+      <cell style="padding-left: 1em;">
+        <CheckBox name="Weight" text="=weight" />
+      </cell>
     </HorizontalPanel>
 
     <Disclosure open="true">
       <Label text="=filters" />
-      <Table style="margin-left: 0;">
+      <Table>
         <col index="0" kind="label" />
 
         <row>
           <Label text="=clients" style="&c1;" />
-          <MultiSelector name="Companies" viewName="Companies" renderColumns="Name"
-            newRowEnabled="false" style="&multi;" />
+          <MultiSelector name="Company" viewName="Companies" renderColumns="Name"
+            newRowEnabled="false" editPopup="true" style="&multi;" summarize="true" />
         </row>
         <row>
-          <Label text="=svcObjects" />
-          <MultiSelector name="ServiceObjects" viewName="ServiceObjects" 
-            renderColumns="Address" choiceColumns="Address CustomerName"
-            newRowEnabled="false" editPopup="true" style="&multi;" />
+          <Label text="=objects" />
+          <MultiSelector name="Object" viewName="CompanyObjects" 
+            renderColumns="ObjectName" choiceColumns="CompanyName ObjectName ObjectAddress"
+            newRowEnabled="false" editPopup="true" style="&multi;" summarize="true" />
         </row>
     
         <row>
           <Label text="=warehouses" />
-          <MultiSelector name="Warehouses" viewName="Warehouses" renderColumns="Code"
-            choiceColumns="Code Name" newRowEnabled="false" style="&multi;" />
+          <MultiSelector name="Warehouse" viewName="Warehouses" renderColumns="Code"
+            choiceColumns="Code Name" newRowEnabled="false" editPopup="true"
+            style="&multi;" summarize="true" />
         </row>
 
         <row>
           <Label text="=categories" />
-          <MultiSelector name="CategoryTree" viewName="CategoryTree" renderColumns="Name"
-            choiceColumns="ParentName Name" newRowEnabled="false" style="&multi;" />
+          <MultiSelector name="Category" viewName="CategoryTree" renderColumns="Name"
+            choiceColumns="ParentName Name" newRowEnabled="false"
+            style="&multi;" summarize="true" />
         </row>
         <row>
           <Label text="=goods" />
-          <MultiSelector name="Items" viewName="Items" filter="!(IsService)"
+          <MultiSelector name="Item" viewName="Items" filter="!(IsService)"
             renderColumns="Name Article"
-            newRowEnabled="false" style="&multi;" />
+            newRowEnabled="false" editPopup="true"
+            style="&multi;" summarize="true" />
         </row>
       </Table>
     </Disclosure>

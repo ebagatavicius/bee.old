@@ -2,11 +2,17 @@
 <View xmlns="http://www.butent.com/view"
 
   name="Places" source="Places" caption="=mails"
+  editForm="MailMessage"
   >
   <Columns>
-    <HiddenColumn name="Folder" />
+    <SimpleColumn name="Folder" />
+    <SimpleJoin name="Folder" joinType="INNER">
+      <HiddenColumn name="Account" />
+    </SimpleJoin>
+    
     <SimpleColumn name="Flags" />
     <SimpleColumn name="Message" />
+    <SimpleColumn name="Replied" />
 
     <SimpleJoin name="Message" joinType="INNER">
       <SimpleColumn name="Date" />

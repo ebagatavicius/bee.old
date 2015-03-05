@@ -6,17 +6,18 @@
   >
   <Columns>
     <SimpleColumn name="Parent" />
-    <SimpleColumn name="Order" />
+    <SimpleColumn name="Ordinal" />
     <SimpleColumn name="Name" alias="CategoryName" />
     <SimpleJoin joinType="LEFT" name="Parent">
-      <SimpleColumn alias="ParentOrder" name="Order" />
+      <SimpleColumn alias="ParentOrdinal" name="Ordinal" />
+      <SimpleColumn alias="ParentName" name="Name" />
     </SimpleJoin>
     <ExternalJoin source="DocumentTemplates" joinType="LEFT" name="Category">
       <AggregateColumn alias="TemplateCount" aggregate="COUNT" name="Category" />
     </ExternalJoin>
   </Columns>
   <Order>
-    <OrderBy column="ParentOrder" />
-    <OrderBy column="Order" />
+    <OrderBy column="ParentOrdinal" />
+    <OrderBy column="Ordinal" />
   </Order>
 </View>

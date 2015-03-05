@@ -1,6 +1,5 @@
 package com.butent.bee.client.grid.cell;
 
-import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -25,11 +24,12 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.EventState;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public abstract class AbstractCell<C> implements HasClickHandlers, HasAllKeyHandlers {
 
-  private Set<String> consumedEvents = Sets.newHashSet();
+  private Set<String> consumedEvents = new HashSet<>();
   private HandlerManager handlerManager;
 
   private CellContext eventContext;

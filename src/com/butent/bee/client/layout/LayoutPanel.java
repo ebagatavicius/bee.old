@@ -15,6 +15,7 @@ import com.butent.bee.client.layout.Layout.AnimationCallback;
 import com.butent.bee.client.layout.Layout.Layer;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -47,7 +48,8 @@ public class LayoutPanel extends ComplexPanel implements AnimatedLayout, Require
     insert(widget, getWidgetCount());
 
     DomUtils.createId(getWidgetContainerElement(widget), "container");
-    getWidgetContainerElement(widget).setClassName("bee-LayoutContainer");
+    getWidgetContainerElement(widget)
+        .setClassName(BeeConst.CSS_CLASS_PREFIX + "LayoutContainer");
   }
 
   public void add(Widget widget, boolean scroll) {

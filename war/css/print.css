@@ -1,0 +1,66 @@
+@font-face {
+  font-family: arial;
+  src: url("../fonts/Arial.ttf");
+  -fs-pdf-font-encoding: Identity-H; 
+}
+@font-face {
+  font-family: arial;
+  src: url("../fonts/ArialBold.ttf");
+  font-weight: bold;
+  -fs-pdf-font-encoding: Identity-H; 
+}
+@font-face {
+  font-family: arial;
+  src: url("../fonts/ArialItalic.ttf");
+  font-style: italic;
+  -fs-pdf-font-encoding: Identity-H; 
+}
+@font-face {
+  font-family: arial;
+  src: url("../fonts/ArialBoldItalic.ttf");
+  font-weight: bold;
+  font-style: italic;
+  -fs-pdf-font-encoding: Identity-H; 
+}
+@font-face {
+  font-family: times;
+  src: url("../fonts/TimesNewRoman.ttf");
+  -fs-pdf-font-encoding: Identity-H; 
+}
+@font-face {
+  font-family: times;
+  src: url("../fonts/TimesNewRomanBold.ttf");
+  font-weight: bold;
+  -fs-pdf-font-encoding: Identity-H; 
+}
+@font-face {
+  font-family: times;
+  src: url("../fonts/TimesNewRomanItalic.ttf");
+  font-style: italic;
+  -fs-pdf-font-encoding: Identity-H; 
+}
+@font-face {
+  font-family: times;
+  src: url("../fonts/TimesNewRomanBoldItalic.ttf");
+  font-weight: bold;
+  font-style: italic;
+  -fs-pdf-font-encoding: Identity-H; 
+}
+body {
+  font-family: arial;
+}
+@page {
+  size: A4;
+
+  @top-center {
+    content: element(PrintPageHeader);
+  }
+  @bottom-center {
+    content: element(PrintPageFooter);
+  }
+  @bottom-right-corner {
+    font-family: arial;
+    white-space: nowrap;
+    content: counter(page) "/" counter(pages);
+  }
+}

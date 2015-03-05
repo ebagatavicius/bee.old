@@ -61,11 +61,9 @@ public final class StyleUtils {
     NONE, HORIZONTAL, VERTICAL, BOTH
   }
 
-  public static final String CLASS_NAME_PREFIX = "bee-";
-
-  public static final String DND_SOURCE = CLASS_NAME_PREFIX + "dndSource";
-  public static final String DND_OVER = CLASS_NAME_PREFIX + "dndOver";
-  public static final String DROP_AREA = CLASS_NAME_PREFIX + "dropArea";
+  public static final String DND_SOURCE = BeeConst.CSS_CLASS_PREFIX + "dndSource";
+  public static final String DND_OVER = BeeConst.CSS_CLASS_PREFIX + "dndOver";
+  public static final String DROP_AREA = BeeConst.CSS_CLASS_PREFIX + "dropArea";
 
   public static final String STYLE_WIDTH = "width";
   public static final String STYLE_MIN_WIDTH = "minWidth";
@@ -163,16 +161,16 @@ public final class StyleUtils {
   public static final String NAME_FLEX_BOX_CENTER = "flexBox-center";
   public static final String NAME_FLEXIBLE = "flexible";
 
-  public static final String NAME_ERROR = CLASS_NAME_PREFIX + "error";
-  public static final String NAME_REQUIRED = CLASS_NAME_PREFIX + "required";
-  public static final String NAME_HAS_DEFAULTS = CLASS_NAME_PREFIX + "hasDefaults";
-  public static final String NAME_RESIZABLE = CLASS_NAME_PREFIX + "resizable";
-  public static final String NAME_FOCUSABLE = CLASS_NAME_PREFIX + "focusable";
-  public static final String NAME_DISABLED = CLASS_NAME_PREFIX + SUFFIX_DISABLED;
+  public static final String NAME_ERROR = BeeConst.CSS_CLASS_PREFIX + "error";
+  public static final String NAME_REQUIRED = BeeConst.CSS_CLASS_PREFIX + "required";
+  public static final String NAME_HAS_DEFAULTS = BeeConst.CSS_CLASS_PREFIX + "hasDefaults";
+  public static final String NAME_RESIZABLE = BeeConst.CSS_CLASS_PREFIX + "resizable";
+  public static final String NAME_FOCUSABLE = BeeConst.CSS_CLASS_PREFIX + "focusable";
+  public static final String NAME_DISABLED = BeeConst.CSS_CLASS_PREFIX + SUFFIX_DISABLED;
 
-  public static final String NAME_TEXT_BOX = CLASS_NAME_PREFIX + "TextBox";
+  public static final String NAME_TEXT_BOX = BeeConst.CSS_CLASS_PREFIX + "TextBox";
 
-  public static final String NAME_INFO_TABLE = CLASS_NAME_PREFIX + "info-table";
+  public static final String NAME_INFO_TABLE = BeeConst.CSS_CLASS_PREFIX + "info-table";
 
   public static final String TRANSFORM_ROTATE = "rotate";
   public static final String TRANSFORM_SCALE = "scale";
@@ -502,8 +500,8 @@ public final class StyleUtils {
 
   public static <E extends Enum<?> & HasCssName> String className(E value) {
     Assert.notNull(value);
-    return CLASS_NAME_PREFIX + NameUtils.getClassName(value.getDeclaringClass()) + NAME_DELIMITER
-        + value.getCssName().replace(BeeConst.CHAR_SPACE, NAME_DELIMITER);
+    return BeeConst.CSS_CLASS_PREFIX + NameUtils.getClassName(value.getDeclaringClass())
+        + NAME_DELIMITER + value.getCssName().replace(BeeConst.CHAR_SPACE, NAME_DELIMITER);
   }
 
   public static void clearClip(Element el) {

@@ -1,9 +1,8 @@
 package com.butent.bee.client.ui;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.XMLParser;
@@ -22,6 +21,7 @@ import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -37,7 +37,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,10 +47,6 @@ import java.util.Map;
  * Creates and handles user interface forms.
  */
 
-/**
- * @author Marius
- *
- */
 public final class FormFactory {
 
   public abstract static class FormViewCallback {
@@ -71,9 +69,11 @@ public final class FormFactory {
 
   public static final String TAG_FORM = "Form";
 
-  private static final Map<String, FormDescription> descriptionCache = Maps.newHashMap();
+  private static final Map<String, FormDescription> descriptionCache = new HashMap<>();
   private static final Map<String, Pair<FormInterceptor, Integer>> formInterceptors =
-      Maps.newHashMap();
+      new HashMap<>();
+
+  private static final Map<String, Consumer<ScheduledCommand>> formPreloaders = new HashMap<>();
 
   private static final Multimap<String, String> hiddenWidgets = HashMultimap.create();
 
@@ -113,6 +113,7 @@ public final class FormFactory {
   public static void createFormView(final String formName, final String viewName,
       final List<BeeColumn> columns, final boolean addStyle, final FormInterceptor formInterceptor,
       final FormViewCallback viewCallback) {
+
     Assert.notEmpty(formName);
     Assert.notNull(viewCallback);
 
@@ -179,35 +180,27 @@ public final class FormFactory {
     return descriptionCache.get(getFormKey(Assert.notEmpty(formName)));
   }
 
-  public static void getFormDescription(final String formName,
+  public static void getFormDescription(final String name,
       final Callback<FormDescription> callback) {
-    Assert.notEmpty(formName);
+
+    Assert.notEmpty(name);
     Assert.notNull(callback);
 
-    final String key = getFormKey(formName);
-    if (descriptionCache.containsKey(key)) {
-      callback.onSuccess(descriptionCache.get(key));
-      return;
-    }
+    Consumer<ScheduledCommand> preloader = formPreloaders.get(name);
 
-    BeeKeeper.getRpc().sendText(Service.GET_FORM, BeeUtils.trim(formName), new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        if (response.hasResponse(String.class)) {
-          FormDescription fd = parseFormDescription((String) response.getResponse());
-          if (fd == null) {
-            callback.onFailure("form", formName, "decription not created");
-          } else {
-            if (fd.cacheDescription()) {
-              descriptionCache.put(key, fd);
-            }
-            callback.onSuccess(fd);
-          }
-        } else {
-          callback.onFailure("get form description", formName, "response not a string");
+    if (preloader == null) {
+      loadDescription(name, callback);
+
+    } else {
+      preloader.accept(new ScheduledCommand() {
+        @Override
+        public void execute() {
+          loadDescription(name, callback);
         }
-      }
-    });
+      });
+
+      formPreloaders.remove(name);
+    }
   }
 
   public static FormInterceptor getFormInterceptor(String formName) {
@@ -226,7 +219,7 @@ public final class FormFactory {
   }
 
   public static List<Property> getInfo() {
-    List<Property> info = Lists.newArrayList();
+    List<Property> info = new ArrayList<>();
 
     info.add(new Property("Registered Callbacks", BeeUtils.bracket(formInterceptors.size())));
     for (Map.Entry<String, Pair<FormInterceptor, Integer>> entry : formInterceptors.entrySet()) {
@@ -363,6 +356,12 @@ public final class FormFactory {
     formInterceptors.put(getFormKey(formName), Pair.of(interceptor, 0));
   }
 
+  public static void registerPreloader(String formName, Consumer<ScheduledCommand> preloader) {
+    Assert.notEmpty(formName);
+    Assert.notNull(preloader);
+    formPreloaders.put(formName, preloader);
+  }
+
   private static String getFormKey(String formName) {
     return formName.trim().toLowerCase();
   }
@@ -386,6 +385,33 @@ public final class FormFactory {
                 interceptor, presenterCallback);
           }
         });
+  }
+
+  private static void loadDescription(final String name, final Callback<FormDescription> callback) {
+    final String key = getFormKey(name);
+    if (descriptionCache.containsKey(key)) {
+      callback.onSuccess(descriptionCache.get(key));
+      return;
+    }
+
+    BeeKeeper.getRpc().sendText(Service.GET_FORM, BeeUtils.trim(name), new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        if (response.hasResponse(String.class)) {
+          FormDescription fd = parseFormDescription((String) response.getResponse());
+          if (fd == null) {
+            callback.onFailure("form", name, "decription not created");
+          } else {
+            if (fd.cacheDescription()) {
+              descriptionCache.put(key, fd);
+            }
+            callback.onSuccess(fd);
+          }
+        } else {
+          callback.onFailure("get form description", name, "response not a string");
+        }
+      }
+    });
   }
 
   private static void showForm(FormDescription formDescription, FormInterceptor interceptor,

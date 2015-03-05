@@ -1,16 +1,16 @@
 package com.butent.bee.client.timeboard;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 
 import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class TimeBoardRowLayout {
@@ -53,7 +53,7 @@ public class TimeBoardRowLayout {
 
   public static final class RowData {
     private final Long groupId;
-    private final List<HasDateRange> rowItems = Lists.newArrayList();
+    private final List<HasDateRange> rowItems = new ArrayList<>();
 
     private RowData(Long groupId, HasDateRange item) {
       this.groupId = groupId;
@@ -80,7 +80,7 @@ public class TimeBoardRowLayout {
     }
 
     boolean hasGroup(Long id) {
-      return Objects.equal(id, groupId);
+      return Objects.equals(id, groupId);
     }
 
     private void add(HasDateRange item) {
@@ -112,7 +112,7 @@ public class TimeBoardRowLayout {
   private static Set<Range<JustDate>> clash(Collection<Range<JustDate>> ranges,
       Range<JustDate> range) {
 
-    Set<Range<JustDate>> result = Sets.newHashSet();
+    Set<Range<JustDate>> result = new HashSet<>();
     if (ranges == null || range == null) {
       return result;
     }
@@ -131,7 +131,7 @@ public class TimeBoardRowLayout {
   private static Set<Range<JustDate>> intersection(Collection<? extends HasDateRange> items,
       Range<JustDate> range) {
 
-    Set<Range<JustDate>> result = Sets.newHashSet();
+    Set<Range<JustDate>> result = new HashSet<>();
     if (items == null || range == null) {
       return result;
     }
@@ -149,11 +149,11 @@ public class TimeBoardRowLayout {
 
   private final int dataIndex;
 
-  private final Set<HasDateRange> inactivity = Sets.newHashSet();
+  private final Set<HasDateRange> inactivity = new HashSet<>();
 
-  private final List<RowData> rows = Lists.newArrayList();
+  private final List<RowData> rows = new ArrayList<>();
 
-  private final Set<Range<JustDate>> overlap = Sets.newHashSet();
+  private final Set<Range<JustDate>> overlap = new HashSet<>();
 
   public TimeBoardRowLayout(int dataIndex) {
     this.dataIndex = dataIndex;
@@ -194,7 +194,7 @@ public class TimeBoardRowLayout {
         overlap.addAll(over);
 
       } else {
-        List<HasDateRange> incompatible = Lists.newArrayList();
+        List<HasDateRange> incompatible = new ArrayList<>();
         for (HasDateRange rowItem : rowData.getRowItems()) {
           if (!blender.willItBlend(item, rowItem)) {
             incompatible.add(rowItem);
@@ -230,7 +230,7 @@ public class TimeBoardRowLayout {
   }
 
   public List<GroupLayout> getGroups() {
-    List<GroupLayout> result = Lists.newArrayList();
+    List<GroupLayout> result = new ArrayList<>();
     if (rows.isEmpty()) {
       return result;
     }
@@ -245,7 +245,7 @@ public class TimeBoardRowLayout {
       if (rowIndex == 0) {
         lastGroup = currentGroup;
 
-      } else if (!Objects.equal(lastGroup, currentGroup)) {
+      } else if (!Objects.equals(lastGroup, currentGroup)) {
         result.add(new GroupLayout(lastGroup, firstRow, rowIndex - 1, over));
 
         lastGroup = currentGroup;

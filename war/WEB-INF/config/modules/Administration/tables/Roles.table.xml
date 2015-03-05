@@ -4,7 +4,6 @@
   name="Roles"
   idChunk="1"
   idName="RoleID"
-  x="41" y="121"
   >
   <Fields>
     <String name="Name" precision="30" notNull="true" unique="true" label="=role" />

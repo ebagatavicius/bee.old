@@ -1,7 +1,6 @@
 package com.butent.bee.client.modules.ec.widget;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -38,6 +37,7 @@ import com.butent.bee.shared.modules.ec.EcItem;
 import com.butent.bee.shared.modules.ec.EcUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemList extends Flow implements KeyDownHandler {
@@ -258,7 +258,7 @@ public class ItemList extends Flow implements KeyDownHandler {
     return panel;
   }
 
-  private static Widget renderStock(int stock, String unit) {
+  private static Widget renderStock(double stock, String unit) {
     Flow wrapper = new Flow(STYLE_STOCK_WRAPPER);
 
     Widget stockWidget = EcWidgetFactory.createStockWidget(stock);
@@ -278,7 +278,7 @@ public class ItemList extends Flow implements KeyDownHandler {
   private final HtmlTable table;
   private final Button moreWidget;
 
-  private final List<EcItem> data = Lists.newArrayList();
+  private final List<EcItem> data = new ArrayList<>();
 
   private final String primaryStockLabel;
   private final String secondaryStockLabel;

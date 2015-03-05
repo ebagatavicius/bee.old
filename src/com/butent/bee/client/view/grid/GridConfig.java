@@ -1,8 +1,5 @@
 package com.butent.bee.client.view.grid;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
@@ -24,6 +21,8 @@ import com.butent.bee.shared.ui.StyleDeclaration;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ class GridConfig {
 
   private static final BeeLogger logger = LogUtils.getLogger(GridConfig.class);
 
-  private static final List<BeeColumn> dataColumns = Lists.newArrayList();
+  private static final List<BeeColumn> dataColumns = new ArrayList<>();
 
   private static int userIndex;
   private static int keyIndex;
@@ -81,7 +80,7 @@ class GridConfig {
       List<String> names = DataUtils.getColumnNames(columns);
 
       userIndex = GridUtils.getIndex(names, GridDescription.COL_GRID_SETTING_USER);
-      keyIndex = GridUtils.getIndex(names, "Key");
+      keyIndex = GridUtils.getIndex(names, GridDescription.COL_GRID_SETTING_KEY);
       captionIndex = GridUtils.getIndex(names, "Caption");
       columnsIndex = GridUtils.getIndex(names, "Columns");
       orderIndex = GridUtils.getIndex(names, "Order");
@@ -198,9 +197,9 @@ class GridConfig {
     return result;
   }
 
-  final BeeRow row;
+  private BeeRow row;
 
-  final Map<String, ColumnConfig> columnSettings = Maps.newHashMap();
+  final Map<String, ColumnConfig> columnSettings = new HashMap<>();
 
   GridConfig(BeeRow row) {
     this.row = row;
@@ -256,7 +255,7 @@ class GridConfig {
     List<String> visibleColumnNames = getColumns();
 
     if (!visibleColumnNames.isEmpty() || !columnSettings.isEmpty()) {
-      List<String> names = Lists.newArrayList();
+      List<String> names = new ArrayList<>();
       for (ColumnDescription columnDescription : gridDescription.getColumns()) {
         names.add(columnDescription.getId());
       }
@@ -271,7 +270,7 @@ class GridConfig {
       }
 
       if (!visibleColumnNames.isEmpty()) {
-        List<Integer> indexes = Lists.newArrayList();
+        List<Integer> indexes = new ArrayList<>();
 
         for (String name : visibleColumnNames) {
           int index = names.indexOf(name);
@@ -284,7 +283,7 @@ class GridConfig {
         }
 
         if (!indexes.isEmpty()) {
-          List<ColumnDescription> columnDescriptions = Lists.newArrayList();
+          List<ColumnDescription> columnDescriptions = new ArrayList<>();
 
           for (int index : indexes) {
             ColumnDescription columnDescription = gridDescription.getColumns().get(index);
@@ -324,7 +323,25 @@ class GridConfig {
     }
   }
 
+  ColumnConfig findColumnConfig(long id) {
+    for (ColumnConfig columnConfig : columnSettings.values()) {
+      if (columnConfig.getRowId() == id) {
+        return columnConfig;
+      }
+    }
+    return null;
+  }
+
+  BeeRow getRow() {
+    return row;
+  }
+
+  long getRowId() {
+    return row.getId();
+  }
+
   boolean hasVisibleColumns() {
+    ensureFields();
     return !BeeUtils.isEmpty(row.getString(columnsIndex));
   }
 
@@ -354,6 +371,17 @@ class GridConfig {
         && getFlexBasis() == null && getFlexBasisUnit() == null;
   }
 
+  boolean maybeRemoveColumn(long id) {
+    String key = findColumnKey(id);
+
+    if (key == null) {
+      return false;
+    } else {
+      columnSettings.remove(key);
+      return true;
+    }
+  }
+
   void saveColumnSetting(String name, int index, String value) {
     Assert.notEmpty(name);
     Assert.isIndex(ColumnConfig.getDataColumns(), index);
@@ -366,7 +394,7 @@ class GridConfig {
 
     if (columnConfig == null) {
       if (newValue != null) {
-        List<BeeColumn> columns = Lists.newArrayList();
+        List<BeeColumn> columns = new ArrayList<>();
         columns.add(ColumnConfig.getDataColumns().get(ColumnConfig.getGridIndex()));
         columns.add(ColumnConfig.getDataColumns().get(ColumnConfig.getNameIndex()));
         columns.add(dataColumn);
@@ -383,11 +411,10 @@ class GridConfig {
             });
       }
 
-    } else if (!BeeUtils.equalsTrim(columnConfig.row.getString(index), newValue)) {
-      columnConfig.row.setValue(index, newValue);
+    } else if (columnConfig.setValue(index, newValue)) {
 
       Queries.update(ColumnDescription.VIEW_COLUMN_SETTINGS,
-          Filter.compareId(columnConfig.row.getId()), dataColumn.getId(),
+          Filter.compareId(columnConfig.getRowId()), dataColumn.getId(),
           new TextValue(newValue), new Queries.IntCallback() {
             @Override
             public void onSuccess(Integer result) {
@@ -402,115 +429,165 @@ class GridConfig {
     }
   }
 
+  void setRow(BeeRow row) {
+    this.row = row;
+  }
+
+  boolean setValue(int index, String value) {
+    if (!BeeUtils.equalsTrim(row.getString(index), value)) {
+      row.setValue(index, value);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private String findColumnKey(long id) {
+    for (Map.Entry<String, ColumnConfig> entry : columnSettings.entrySet()) {
+      if (entry.getValue().getRowId() == id) {
+        return entry.getKey();
+      }
+    }
+    return null;
+  }
+
   private Boolean getAutoFit() {
+    ensureFields();
     return row.getBoolean(autoFitIndex);
   }
 
   private String getBodyBorderWidth() {
+    ensureFields();
     return row.getString(bodyBorderIndex);
   }
 
   private String getBodyFont() {
+    ensureFields();
     return row.getString(bodyFontIndex);
   }
 
   private String getBodyMargin() {
+    ensureFields();
     return row.getString(bodyMarginIndex);
   }
 
   private String getBodyPadding() {
+    ensureFields();
     return row.getString(bodyPaddingIndex);
   }
 
   private String getBodyStyle() {
+    ensureFields();
     return row.getString(bodyStyleIndex);
   }
 
   private String getCaption() {
+    ensureFields();
     return row.getString(captionIndex);
   }
 
   private List<String> getColumns() {
+    ensureFields();
     return NameUtils.toList(row.getString(columnsIndex));
   }
 
   private Integer getFlexBasis() {
+    ensureFields();
     return row.getInteger(flexBasisIndex);
   }
 
   private String getFlexBasisUnit() {
+    ensureFields();
     return row.getString(flexUnitIndex);
   }
 
   private Integer getFlexGrow() {
+    ensureFields();
     return row.getInteger(flexGrowIndex);
   }
 
   private Integer getFlexShrink() {
+    ensureFields();
     return row.getInteger(flexShrinkIndex);
   }
 
   private String getFooterBorderWidth() {
+    ensureFields();
     return row.getString(footerBorderIndex);
   }
 
   private String getFooterFont() {
+    ensureFields();
     return row.getString(footerFontIndex);
   }
 
   private Integer getFooterHeight() {
+    ensureFields();
     return row.getInteger(footerHeightIndex);
   }
 
   private String getFooterMargin() {
+    ensureFields();
     return row.getString(footerMarginIndex);
   }
 
   private String getFooterPadding() {
+    ensureFields();
     return row.getString(footerPaddingIndex);
   }
 
   private String getFooterStyle() {
+    ensureFields();
     return row.getString(footerStyleIndex);
   }
 
   private String getHeaderBorderWidth() {
+    ensureFields();
     return row.getString(headerBorderIndex);
   }
 
   private String getHeaderFont() {
+    ensureFields();
     return row.getString(headerFontIndex);
   }
 
   private Integer getHeaderHeight() {
+    ensureFields();
     return row.getInteger(headerHeightIndex);
   }
 
   private String getHeaderMargin() {
+    ensureFields();
     return row.getString(headerMarginIndex);
   }
 
   private String getHeaderPadding() {
+    ensureFields();
     return row.getString(headerPaddingIndex);
   }
 
   private String getHeaderStyle() {
+    ensureFields();
     return row.getString(headerStyleIndex);
   }
 
   private Integer getMaxColumnWidth() {
+    ensureFields();
     return row.getInteger(maxColumnWidthIndex);
   }
 
   private Integer getMinColumnWidth() {
+    ensureFields();
     return row.getInteger(minColumnWidthIndex);
   }
 
   private String getOrder() {
+    ensureFields();
     return row.getString(orderIndex);
   }
 
   private Integer getRowHeight() {
+    ensureFields();
     return row.getInteger(rowHeightIndex);
   }
 }

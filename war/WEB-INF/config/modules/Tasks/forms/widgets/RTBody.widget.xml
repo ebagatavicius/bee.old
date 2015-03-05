@@ -29,7 +29,7 @@
     <row>
       <Label for="ScheduleFrom" />
       <InputDate source="ScheduleFrom" style="width: 100px;" />
-      <Label for="ScheduleUntil" />
+      <Label name="ScheduleUntil" for="ScheduleUntil" />
       <InputDate source="ScheduleUntil" style="width: 100px;" />
     </row>
 
@@ -87,6 +87,11 @@
         targetRelColumn="RecurringTask" sourceRelColumn="Group"      
         property="ObserverGroups" renderColumns="Name" editPopup="true" newRowEnabled="false"
         style="&inp2y;" label="=crmTaskObserverGroups" filter="Owner {u} or Visibility 1" />
+    </row>
+    
+    <row>
+      <Label text="=project" />
+      <DataSelector source="Project" style="&inp2y;" disablable="true" readOnly="true"/>
     </row>
   </Table>
   

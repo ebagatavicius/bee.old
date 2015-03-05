@@ -68,6 +68,10 @@ public abstract class Filter implements BeeSerializable, RowFilter {
     return and(and(f1, f2), f3);
   }
 
+  public static Filter and(Filter f1, Filter f2, Filter f3, Filter f4) {
+    return and(and(f1, f2), and(f3, f4));
+  }
+
   public static Filter any(String column, Collection<Long> values) {
     Assert.notEmpty(column);
     Assert.notNull(values);
@@ -117,7 +121,7 @@ public abstract class Filter implements BeeSerializable, RowFilter {
     Assert.notNull(clazz);
     Assert.notEmpty(value);
 
-    List<Filter> filters = Lists.newArrayList();
+    List<Filter> filters = new ArrayList<>();
 
     String item;
     for (Enum<?> constant : clazz.getEnumConstants()) {
@@ -236,8 +240,16 @@ public abstract class Filter implements BeeSerializable, RowFilter {
     return new CustomFilter(key, Lists.newArrayList(arg1, arg2));
   }
 
+  public static Filter equals(String column, Integer value) {
+    return compareWithValue(column, Operator.EQ, new IntegerValue(value));
+  }
+
   public static Filter equals(String column, Long value) {
     return compareWithValue(column, Operator.EQ, new LongValue(value));
+  }
+
+  public static Filter equals(String column, String value) {
+    return compareWithValue(column, Operator.EQ, new TextValue(value));
   }
 
   public static Filter equals(String column, Enum<?> value) {
@@ -246,6 +258,11 @@ public abstract class Filter implements BeeSerializable, RowFilter {
     } else {
       return compareWithValue(column, Operator.EQ, new IntegerValue(value.ordinal()));
     }
+  }
+
+  public static Filter exclude(String column, Collection<Long> values) {
+    Filter flt = any(column, values);
+    return (flt == null) ? null : isNot(flt);
   }
 
   public static Filter idIn(Collection<Long> values) {
@@ -259,11 +276,7 @@ public abstract class Filter implements BeeSerializable, RowFilter {
 
   public static Filter idNotIn(Collection<Long> values) {
     Filter flt = idIn(values);
-
-    if (flt != null) {
-      flt = isNot(flt);
-    }
-    return flt;
+    return (flt == null) ? null : isNot(flt);
   }
 
   public static Filter in(String column, String inView, String inColumn) {
@@ -314,6 +327,10 @@ public abstract class Filter implements BeeSerializable, RowFilter {
   public static Filter isNull(String column) {
     Assert.notEmpty(column);
     return new ColumnIsNullFilter(column);
+  }
+
+  public static Filter isPositive(String column) {
+    return isMore(column, IntegerValue.ZERO);
   }
 
   public static Filter isTrue() {

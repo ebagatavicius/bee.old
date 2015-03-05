@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+	xmlns:ui="http://www.butent.com/ui" xmlns:w="http://www.butent.com/widget"
+	xmlns:xi="http://www.w3.org/2001/XInclude"
+
+	name="Projects" viewName="Projects" caption="=projects" favorite="Name"
+	order="ProjectID desc">
+	
+	<g:west size="200" splitterSize="2">
+	 <w:DataTree name="ProjectTree" caption="=categories" viewName="ProjectTree"
+        parentColumn="Parent">
+      <w:calc>
+        <ui:expression>row.Name + (row.ObjectCount > 0 ? ' [' + row.ProjectCount + ']' : '')</ui:expression>
+      </w:calc>
+      <w:form>
+        <w:HorizontalPanel>
+          <w:Label text="=category" class="bee-required" style="padding-right: 1em;" />
+          <w:InputText source="Name" />
+        </w:HorizontalPanel>
+      </w:form>
+    </w:DataTree>
+	</g:west>
+	
+	<xi:include href="columns/Project.columns.xml" />
+	
+	<g:predefinedFilter name="projects_active" label="=prjFilterActive" initial="true">
+		<g:column name="Status" value="0" />
+	</g:predefinedFilter>
+	<g:predefinedFilter name="projects_all"	label="=prjFilterAll">
+		<g:column name="Status" emptyValues="false" />
+	</g:predefinedFilter>
+
+</g:Grid>

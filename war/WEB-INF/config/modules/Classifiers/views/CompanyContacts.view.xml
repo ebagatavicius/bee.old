@@ -38,7 +38,8 @@
         <SimpleColumn alias="CountryCode" name="Code" />
       </SimpleJoin>
 
-      <SimpleColumn name="SocialContacts" /> 
+      <SimpleColumn name="SocialContacts" />
+      <SimpleColumn name="Notes" />
     </SimpleJoin>
   </Columns>
   <Order>
