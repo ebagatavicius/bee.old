@@ -1,12 +1,10 @@
 package com.butent.bee.client.dialog;
 
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Overflow;
-import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -18,12 +16,12 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasAnimation;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.butent.bee.client.animation.Animation;
+import com.butent.bee.client.animation.AnimationState;
+import com.butent.bee.client.animation.RafCallback;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Edges;
 import com.butent.bee.client.dom.Stacking;
@@ -42,15 +40,10 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHandlers,
     OpenEvent.HasOpenHandlers, PreviewHandler {
-
-  public enum AnimationType {
-    CENTER, ONE_WAY_CORNER, ROLL_DOWN
-  }
 
   public enum OutsideClick {
     CLOSE, IGNORE
@@ -61,6 +54,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
   }
 
   private final class MouseHandler implements MouseDownHandler, MouseUpHandler, MouseMoveHandler {
+
     private int startX;
     private int startY;
 
@@ -102,134 +96,99 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     }
   }
 
-  private final class ResizeAnimation extends Animation {
+  public abstract static class Animation extends RafCallback {
 
-    private boolean show;
-    private boolean isUnloading;
+    private Popup popup;
+    private AnimationState state;
 
-    private int offsetHeight = BeeConst.UNDEF;
-    private int offsetWidth = BeeConst.UNDEF;
+    protected Animation(double duration) {
+      super(duration);
+    }
 
-    private Timer showTimer;
+    @Override
+    public void start() {
+      setState(AnimationState.RUNNING);
+      if (popup.isShowing()) {
+        popup.getElement().getStyle().clearVisibility();
+      }
+      super.start();
+    }
 
-    private ResizeAnimation() {
+    protected double getFactor(double elapsed) {
+      if (popup.isShowing()) {
+        return normalize(elapsed);
+      } else {
+        return BeeConst.DOUBLE_ONE - normalize(elapsed);
+      }
+    }
+
+    protected Popup getPopup() {
+      return popup;
+    }
+
+    protected AnimationState getState() {
+      return state;
+    }
+
+    protected boolean isCanceled() {
+      return getState() == AnimationState.CANCELED;
+    }
+
+    protected boolean isRunning() {
+      return getState() == AnimationState.RUNNING;
     }
 
     @Override
     protected void onComplete() {
-      if (!show) {
-        if (!isUnloading) {
-          BodyPanel.get().remove(Popup.this);
-        }
+      setState(AnimationState.FINISHED);
+      if (!popup.isShowing()) {
+        BodyPanel.get().remove(popup);
       }
-      StyleUtils.clearClip(getElement());
-      getElement().getStyle().clearOverflow();
+    }
+
+    private void setPopup(Popup popup) {
+      this.popup = popup;
+    }
+
+    private void setState(AnimationState state) {
+      this.state = state;
+    }
+  }
+
+  private static class DefaultAnimation extends Animation {
+
+    protected DefaultAnimation(double duration) {
+      super(duration);
     }
 
     @Override
-    protected void onStart() {
-      offsetHeight = getOffsetHeight();
-      offsetWidth = getOffsetWidth();
-      getElement().getStyle().setOverflow(Overflow.HIDDEN);
-      super.onStart();
+    public void start() {
+      if (getPopup().isShowing()) {
+        StyleUtils.setOpacity(getPopup(), BeeConst.DOUBLE_ZERO);
+      }
+      super.start();
     }
 
     @Override
-    protected void onUpdate(double progress) {
-      double p = show ? progress : (1.0 - progress);
-
-      int top = 0;
-      int left = 0;
-      int right = 0;
-      int bottom = 0;
-
-      int height = (int) (p * offsetHeight);
-      int width = (int) (p * offsetWidth);
-
-      switch (getAnimationType()) {
-        case ROLL_DOWN:
-          right = offsetWidth;
-          bottom = height;
-          break;
-
-        case CENTER:
-          top = (offsetHeight - height) >> 1;
-          left = (offsetWidth - width) >> 1;
-          right = left + width;
-          bottom = top + height;
-          break;
-
-        case ONE_WAY_CORNER:
-          right = left + width;
-          bottom = top + height;
-          break;
-      }
-      StyleUtils.setClip(getElement(), top, right, bottom, left);
+    protected void onComplete() {
+      getPopup().getElement().getStyle().clearOpacity();
+      super.onComplete();
     }
 
-    private void onInstantaneousRun() {
-      if (show) {
-        getElement().getStyle().setPosition(Position.ABSOLUTE);
-        if (!BeeConst.isUndef(getTopPosition())) {
-          setPopupPosition(getLeftPosition(), getTopPosition());
-        }
-        BodyPanel.get().add(Popup.this);
+    @Override
+    protected boolean run(double elapsed) {
+      if (isCanceled()) {
+        return false;
       } else {
-        if (!isUnloading) {
-          BodyPanel.get().remove(Popup.this);
-        }
-      }
-      getElement().getStyle().clearOverflow();
-    }
-
-    private void setState(boolean sh, boolean unl) {
-      this.isUnloading = unl;
-
-      cancel();
-
-      if (showTimer != null) {
-        showTimer.cancel();
-        showTimer = null;
-        onComplete();
-      }
-
-      setShowing(sh);
-
-      boolean animate = !unl && isAnimationEnabled();
-      if (getAnimationType() != AnimationType.CENTER && !sh) {
-        animate = false;
-      }
-
-      this.show = sh;
-      if (animate) {
-        if (sh) {
-          getElement().getStyle().setPosition(Position.ABSOLUTE);
-          if (!BeeConst.isUndef(getTopPosition())) {
-            setPopupPosition(getLeftPosition(), getTopPosition());
-          }
-          StyleUtils.setClip(getElement(), 0, 0, 0, 0);
-          BodyPanel.get().add(Popup.this);
-
-          showTimer = new Timer() {
-            @Override
-            public void run() {
-              showTimer = null;
-              ResizeAnimation.this.run(ANIMATION_DURATION);
-            }
-          };
-          showTimer.schedule(1);
-        } else {
-          run(ANIMATION_DURATION);
-        }
-      } else {
-        onInstantaneousRun();
+        StyleUtils.setOpacity(getPopup(), getFactor(elapsed));
+        return true;
       }
     }
   }
 
   private static final String STYLE_POPUP = BeeConst.CSS_CLASS_PREFIX + "Popup";
 
-  private static final int ANIMATION_DURATION = 250;
+  private static final double DEFAULT_ANIMATION_DURATION = 250;
 
   public static Popup getActivePopup() {
     int widgetCount = BodyPanel.get().getWidgetCount();
@@ -244,7 +203,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     return null;
   }
 
-  public static Collection<Popup> getVisiblePopups() {
+  public static List<Popup> getVisiblePopups() {
     List<Popup> popups = new ArrayList<>();
 
     for (Widget child : BodyPanel.get()) {
@@ -270,16 +229,8 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     return Math.max(Math.min(top, windowBottom - height), windowTop);
   }
 
-  private AnimationType animationType = AnimationType.CENTER;
-
   private final OutsideClick onOutsideClick;
   private boolean showing;
-
-  private String desiredHeight;
-  private String desiredWidth;
-
-  private int leftPosition = BeeConst.UNDEF;
-  private int topPosition = BeeConst.UNDEF;
 
   private boolean hideOnEscape;
   private boolean hideOnSave;
@@ -287,8 +238,9 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
   private PreviewConsumer onSave;
   private PreviewConsumer onEscape;
 
-  private boolean isAnimationEnabled;
-  private final ResizeAnimation resizeAnimation = new ResizeAnimation();
+  private boolean animationEnabled;
+  private double animationDuration = DEFAULT_ANIMATION_DURATION;
+  private Animation animation;
 
   private boolean dragging;
 
@@ -305,9 +257,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
 
     this.onOutsideClick = onOutsideClick;
 
-    setPopupPosition(0, 0);
-    DomUtils.createId(this, getIdPrefix());
-
+    StyleUtils.makeAbsolute(getElement());
     if (styleName != null) {
       setStyleName(styleName);
     }
@@ -323,22 +273,28 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     return addHandler(handler, OpenEvent.getType());
   }
 
-  public void attachAmendDetach(ScheduledCommand command) {
+  public void attachAmendDetach(final Scheduler.ScheduledCommand command, final Runnable callback) {
     Assert.notNull(command);
+
     Assert.state(!isShowing());
+    Assert.state(!isAttached());
 
-    boolean animationEnabled = isAnimationEnabled();
-    boolean visible = isVisible();
+    getElement().getStyle().setVisibility(Visibility.HIDDEN);
+    BodyPanel.get().add(this);
 
-    setAnimationEnabled(false);
-    setVisible(false);
-    show();
+    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+      @Override
+      public void execute() {
+        command.execute();
 
-    command.execute();
+        BodyPanel.get().remove(Popup.this);
+        getElement().getStyle().clearVisibility();
 
-    hide(false);
-    setAnimationEnabled(animationEnabled);
-    setVisible(visible);
+        if (callback != null) {
+          callback.run();
+        }
+      }
+    });
   }
 
   public void cascade() {
@@ -357,44 +313,28 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
   }
 
   public void center() {
-    boolean initiallyShowing = isShowing();
-    boolean initiallyAnimated = isAnimationEnabled();
+    setPopupPositionAndShow(new PositionCallback() {
+      @Override
+      public void setPosition(int offsetWidth, int offsetHeight) {
+        int left = (Window.getClientWidth() - offsetWidth) >> 1;
+        int top = (Window.getClientHeight() - offsetHeight) >> 1;
 
-    if (!initiallyShowing) {
-      setVisible(false);
-      setAnimationEnabled(false);
-      show();
-    }
-
-    Style style = getElement().getStyle();
-    StyleUtils.setLeft(style, 0);
-    StyleUtils.setTop(style, 0);
-
-    int left = (Window.getClientWidth() - getOffsetWidth()) >> 1;
-    int top = (Window.getClientHeight() - getOffsetHeight()) >> 1;
-    setPopupPosition(Math.max(Window.getScrollLeft() + left, 0),
-        Math.max(Window.getScrollTop() + top, 0));
-
-    if (!initiallyShowing) {
-      setAnimationEnabled(initiallyAnimated);
-      if (initiallyAnimated) {
-        StyleUtils.setClip(this, 0, 0, 0, 0);
-        setVisible(true);
-        resizeAnimation.run(ANIMATION_DURATION);
-      } else {
-        setVisible(true);
+        setPopupPosition(Math.max(Window.getScrollLeft() + left, 0),
+            Math.max(Window.getScrollTop() + top, 0));
       }
-    }
-
-    OpenEvent.fire(this);
+    });
   }
 
   public void close() {
     hide(true);
   }
 
-  public AnimationType getAnimationType() {
-    return animationType;
+  public Animation getAnimation() {
+    return animation;
+  }
+
+  public double getAnimationDuration() {
+    return animationDuration;
   }
 
   public Widget getContent() {
@@ -436,7 +376,7 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
 
   @Override
   public boolean isAnimationEnabled() {
-    return isAnimationEnabled;
+    return animationEnabled;
   }
 
   @Override
@@ -446,11 +386,6 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
 
   public boolean isShowing() {
     return showing;
-  }
-
-  @Override
-  public boolean isVisible() {
-    return !BeeUtils.same(getElement().getStyle().getVisibility(), Visibility.HIDDEN.getCssName());
   }
 
   @Override
@@ -530,22 +465,17 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     super.onResize();
   }
 
+  public void setAnimation(Animation animation) {
+    this.animation = animation;
+  }
+
   @Override
   public void setAnimationEnabled(boolean enable) {
-    isAnimationEnabled = enable;
+    animationEnabled = enable;
   }
 
-  public void setAnimationType(AnimationType animationType) {
-    this.animationType = animationType;
-  }
-
-  @Override
-  public void setHeight(String height) {
-    setDesiredHeight(height);
-    maybeUpdateSize();
-    if (BeeUtils.isEmpty(height)) {
-      setDesiredHeight(null);
-    }
+  public void setAnimationDuration(double animationDuration) {
+    this.animationDuration = animationDuration;
   }
 
   public void setHideOnEscape(boolean hideOnEscape) {
@@ -569,41 +499,14 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
   }
 
   public void setPopupPosition(int left, int top) {
-    setLeftPosition(left);
-    setTopPosition(top);
-
     Style style = getElement().getStyle();
     StyleUtils.setLeft(style, left);
     StyleUtils.setTop(style, top);
   }
 
   public void setPopupPositionAndShow(PositionCallback callback) {
-    setVisible(false);
-    show();
-    callback.setPosition(getOffsetWidth(), getOffsetHeight());
-    setVisible(true);
-
+    show(callback);
     OpenEvent.fire(this);
-  }
-
-  @Override
-  public void setVisible(boolean visible) {
-    getElement().getStyle().setVisibility(visible ? Visibility.VISIBLE : Visibility.HIDDEN);
-  }
-
-  @Override
-  public void setWidget(Widget w) {
-    super.setWidget(w);
-    maybeUpdateSize();
-  }
-
-  @Override
-  public void setWidth(String width) {
-    setDesiredWidth(width);
-    maybeUpdateSize();
-    if (BeeUtils.isEmpty(width)) {
-      setDesiredWidth(null);
-    }
   }
 
   public void showAt(final int x, final int y) {
@@ -665,14 +568,18 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
   }
 
   protected void hide(CloseEvent.Cause cause, Node target, boolean fireEvent) {
-    if (!isShowing()) {
-      return;
-    }
-    Stacking.removeContext(this);
+    if (isShowing()) {
+      setShowing(false);
 
-    resizeAnimation.setState(false, false);
-    if (fireEvent) {
-      CloseEvent.fire(this, cause, target);
+      Stacking.removeContext(this);
+
+      if (!maybeAnimate()) {
+        BodyPanel.get().remove(this);
+      }
+
+      if (fireEvent) {
+        CloseEvent.fire(this, cause, target);
+      }
     }
   }
 
@@ -692,31 +599,16 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
   @Override
   protected void onUnload() {
     super.onUnload();
-
     Previewer.ensureUnregistered(this);
+
     if (isShowing()) {
-      resizeAnimation.setState(false, true);
+      setShowing(false);
+      Stacking.removeContext(this);
     }
-  }
-
-  private String getDesiredHeight() {
-    return desiredHeight;
-  }
-
-  private String getDesiredWidth() {
-    return desiredWidth;
-  }
-
-  private int getLeftPosition() {
-    return leftPosition;
   }
 
   private MouseHandler getMouseHandler() {
     return mouseHandler;
-  }
-
-  private int getTopPosition() {
-    return topPosition;
   }
 
   private boolean handleTabulation(Element target) {
@@ -750,15 +642,21 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     return dragging;
   }
 
-  private void maybeUpdateSize() {
-    Widget w = super.getWidget();
-    if (w != null) {
-      if (!BeeUtils.isEmpty(getDesiredHeight())) {
-        w.setHeight(getDesiredHeight());
+  private boolean maybeAnimate() {
+    if (isAnimationEnabled()) {
+      if (getAnimation() == null) {
+        setAnimation(new DefaultAnimation(getAnimationDuration()));
+      } else if (getAnimation().isRunning()) {
+        getAnimation().setState(AnimationState.CANCELED);
+        return false;
       }
-      if (!BeeUtils.isEmpty(getDesiredWidth())) {
-        w.setWidth(getDesiredWidth());
-      }
+
+      getAnimation().setPopup(this);
+      getAnimation().start();
+      return true;
+
+    } else {
+      return false;
     }
   }
 
@@ -810,20 +708,8 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     setPopupPosition(left, top);
   }
 
-  private void setDesiredHeight(String desiredHeight) {
-    this.desiredHeight = desiredHeight;
-  }
-
-  private void setDesiredWidth(String desiredWidth) {
-    this.desiredWidth = desiredWidth;
-  }
-
   private void setDragging(boolean dragging) {
     this.dragging = dragging;
-  }
-
-  private void setLeftPosition(int leftPosition) {
-    this.leftPosition = leftPosition;
   }
 
   private void setMouseHandler(MouseHandler mouseHandler) {
@@ -834,19 +720,31 @@ public class Popup extends Simple implements HasAnimation, CloseEvent.HasCloseHa
     this.showing = showing;
   }
 
-  private void setTopPosition(int topPosition) {
-    this.topPosition = topPosition;
-  }
+  private void show(final PositionCallback callback) {
+    if (!isShowing()) {
+      if (isAttached()) {
+        this.removeFromParent();
+      }
 
-  private void show() {
-    if (isShowing()) {
-      return;
-    }
-    if (isAttached()) {
-      this.removeFromParent();
-    }
+      setShowing(true);
 
-    Stacking.addContext(this);
-    resizeAnimation.setState(true, false);
+      Stacking.addContext(this);
+
+      getElement().getStyle().setVisibility(Visibility.HIDDEN);
+      BodyPanel.get().add(this);
+
+      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+        @Override
+        public void execute() {
+          if (callback != null) {
+            callback.setPosition(getOffsetWidth(), getOffsetHeight());
+          }
+
+          if (!maybeAnimate()) {
+            getElement().getStyle().clearVisibility();
+          }
+        }
+      });
+    }
   }
 }

@@ -1,7 +1,11 @@
 package com.butent.bee.client.data;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Document;
 import com.google.gwt.xml.client.Element;
 import com.google.gwt.xml.client.XMLParser;
@@ -10,9 +14,12 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.dialog.ModalForm;
+import com.butent.bee.client.dialog.Popup;
+import com.butent.bee.client.dialog.Popup.OutsideClick;
 import com.butent.bee.client.event.Previewer.PreviewConsumer;
 import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.event.logical.SelectorEvent;
+import com.butent.bee.client.layout.Vertical;
 import com.butent.bee.client.presenter.NewRowPresenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormDescription;
@@ -23,6 +30,7 @@ import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.form.CloseCallback;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
+import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeColumn;
@@ -34,6 +42,12 @@ import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
+import com.butent.bee.shared.modules.documents.DocumentConstants;
+import com.butent.bee.shared.modules.tasks.TaskConstants;
+import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.HandlesActions;
 import com.butent.bee.shared.ui.UiConstants;
@@ -55,10 +69,14 @@ public final class RowFactory {
   public static final String STYLE_NEW_ROW_INPUT_CELL = STYLE_PREFIX + "inputCell";
   public static final String STYLE_NEW_ROW_INPUT = STYLE_PREFIX + "input";
 
-  public static final int GENERATED_FORM_WIDTH = 360;
-  public static final int GENERATED_HEADER_HEIGHT = 30;
-  public static final int GENERATED_ROW_HEIGHT = 32;
+  public static final int GENERATED_FORM_WIDTH = 500;
+  public static final int GENERATED_HEADER_HEIGHT = 40;
+  public static final int GENERATED_ROW_HEIGHT = 60;
   public static final int GENERATED_HEIGHT_MARGIN = 20;
+
+  private static final String STYLE_MENU_POPUP = STYLE_PREFIX + "menu-popup";
+  private static final String STYLE_MENU_PANEL = STYLE_PREFIX + "menu-panel";
+  private static final String STYLE_MENU_ITEM = STYLE_PREFIX + "menu-item";
 
   private static final int GENERATED_AREA_HEIGHT = 60;
 
@@ -188,6 +206,85 @@ public final class RowFactory {
   public static void createRow(String formName, String caption, DataInfo dataInfo, BeeRow row,
       RowCallback rowCallback) {
     createRow(formName, caption, dataInfo, row, null, null, rowCallback);
+  }
+
+  public static void showMenu(Widget target) {
+    Vertical panel = new Vertical();
+    panel.addStyleName(STYLE_MENU_PANEL);
+
+    addMenuItem(panel, Module.TASKS, TaskConstants.VIEW_TASKS,
+        Localized.getConstants().crmNewTask());
+
+    addMenuItem(panel, Module.CLASSIFIERS, ClassifierConstants.VIEW_COMPANIES,
+        Localized.getConstants().newClient());
+
+    addMenuItem(panel, Module.DOCUMENTS, DocumentConstants.VIEW_DOCUMENTS,
+        Localized.getConstants().documentNew());
+
+    addMenuItem(panel, Module.TASKS, TaskConstants.VIEW_TODO_LIST,
+        Localized.getConstants().crmNewTodoItem());
+
+    addMenuItem(panel, Module.DISCUSSIONS, DiscussionsConstants.VIEW_DISCUSSIONS,
+        Localized.getConstants().announcementNew(), new Runnable() {
+          @Override
+          public void run() {
+            DataInfo dataInfo = Data.getDataInfo(DiscussionsConstants.VIEW_DISCUSSIONS);
+            BeeRow row = createEmptyRow(dataInfo, true);
+
+            BeeColumn column = dataInfo.getColumn(DiscussionsConstants.COL_TOPIC);
+            if (column != null) {
+              column.setNullable(false);
+            }
+
+            RowFactory.createRow(DiscussionsConstants.FORM_NEW_DISCUSSION,
+                Localized.getConstants().announcementNew(), dataInfo, row, null);
+          }
+        });
+
+    if (!panel.isEmpty()) {
+      Popup popup = new Popup(OutsideClick.CLOSE, STYLE_MENU_POPUP);
+
+      popup.setWidget(panel);
+      popup.setHideOnEscape(true);
+
+      if (target == null) {
+        popup.center();
+      } else {
+        popup.showRelativeTo(target.getElement());
+      }
+    }
+  }
+
+  private static void addMenuItem(HasWidgets panel, Module module, final String viewName,
+      String text) {
+
+    addMenuItem(panel, module, viewName, text, new Runnable() {
+      @Override
+      public void run() {
+        createRow(viewName);
+      }
+    });
+  }
+
+  private static void addMenuItem(HasWidgets panel, Module module, String viewName, String text,
+      final Runnable command) {
+
+    if (BeeKeeper.getUser().isModuleVisible(ModuleAndSub.of(module))
+        && BeeKeeper.getUser().canCreateData(viewName)) {
+
+      Label label = new Label(text);
+      label.addStyleName(STYLE_MENU_ITEM);
+
+      label.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          UiHelper.closeDialog((Widget) event.getSource());
+          command.run();
+        }
+      });
+
+      panel.add(label);
+    }
   }
 
   public static int setDefaults(BeeRow row, DataInfo dataInfo) {

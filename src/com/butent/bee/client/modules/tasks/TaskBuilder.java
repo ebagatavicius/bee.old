@@ -13,6 +13,7 @@ import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
+import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.DataSelector;
@@ -38,6 +39,7 @@ import com.butent.bee.client.widget.InputTime;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.State;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
@@ -53,6 +55,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
+import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskEvent;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateValue;
@@ -264,6 +267,8 @@ class TaskBuilder extends AbstractFormInterceptor {
     }
 
     DateTime end = newRow.getDateTime(getDataIndex(COL_FINISH_TIME));
+    DateTime endTime = newRow.getDateTime(getDataIndex(COL_FINISH_TIME));
+
     if (end != null) {
       widget = getFormView().getWidgetByName(NAME_END_DATE);
       if (widget instanceof InputDate) {
@@ -271,9 +276,21 @@ class TaskBuilder extends AbstractFormInterceptor {
       }
       widget = getFormView().getWidgetByName(NAME_END_TIME);
       if (widget instanceof InputTime) {
-        ((InputTime) widget).setTime(end);
+        ((InputTime) widget).setTime(endTime);
       }
     }
+
+    Global.getParameter(TaskConstants.PRM_END_OF_WORK_DAY, new Consumer<String>() {
+      @Override
+      public void accept(String input) {
+
+        Widget w = getFormView().getWidgetByName(NAME_END_TIME);
+        if (w instanceof InputTime) {
+          ((InputTime) w).setValue(input);
+        }
+      }
+    });
+
   }
 
   @Override

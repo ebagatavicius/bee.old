@@ -78,13 +78,20 @@ public class ProjectIncomesGrid extends AbstractGridInterceptor {
           RowFunction<Long> currencyFunction = new RowFunction<Long>() {
 
             @Override
-            public Long apply(IsRow arg0) {
+            public Long apply(IsRow activeRow) {
               if (getGridPresenter() == null) {
                 return null;
               }
 
-              return ViewHelper.getParentValueLong(getGridPresenter().getMainView().asWidget(),
+              GridView grid = getGridPresenter().getGridView();
+
+              if (grid == null && activeRow == null) {
+                return ViewHelper.getParentValueLong(getGridPresenter().getMainView().asWidget(),
                   VIEW_PROJECTS, COL_PROJECT_CURENCY);
+              }
+
+              return activeRow.getLong(
+                  grid.getDataIndex(COL_PROJECT_INCOME_CURENCY));
             }
           };
 

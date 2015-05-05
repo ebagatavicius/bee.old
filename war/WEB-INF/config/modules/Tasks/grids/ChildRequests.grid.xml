@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  xmlns:ui="http://www.butent.com/ui"
-  
+
   name="ChildRequests" viewName="Requests" enabledActions="copy"
-  order="Data, RequestID desc" maxColumnWidth="160" caption="=crmRequests"
+  order="Date desc, RequestID desc" maxColumnWidth="160" caption="=crmRequests"
   >
 
-  <g:columns>
-    <IdColumn name="Id" />
-  </g:columns>
-  
   <g:columns>
     <IdColumn name="ID" width="50" />
     <DataColumn name="Date" caption="=date" width="100" visible="true" />
     <DataColumn name="Finished" caption="=crmRequestFinish" width="100" format="DATE_TIME_SHORT" />
     <RelColumn name="Customer" caption="=client" minWidth="100" visible="true" />
 
-    <DataColumn name="Content" caption="Užklausa" minWidth="100" flexShrink="1" 
+    <DataColumn name="Content" caption="Užklausa" minWidth="100" flexShrink="1"
       whiteSpace="nowrap" visible="true" />
 
     <RelColumn name="Manager" caption="=responsiblePerson" minWidth="100" />

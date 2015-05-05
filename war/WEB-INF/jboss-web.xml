@@ -1,10 +1,4 @@
 <?xml version="1.0"?>
 <jboss-web>
-  <security-domain>jaspitest</security-domain>
-  <valve>
-    <param>
-      <param-name>characterEncoding</param-name>
-      <param-value>UTF-8</param-value>
-    </param>
-  </valve>
+  <security-domain>Bee</security-domain>
 </jboss-web>

@@ -10,16 +10,16 @@ import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
-import com.butent.bee.client.Settings;
 import com.butent.bee.client.cli.Shell;
 import com.butent.bee.client.event.logical.ActiveWidgetChangeEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.layout.Stack;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Theme;
 import com.butent.bee.client.websocket.Endpoint;
 import com.butent.bee.client.widget.CustomDiv;
-import com.butent.bee.client.widget.Image;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -50,9 +50,8 @@ class CentralScrutinizer extends Stack implements CloseHandler<IdentifiableWidge
       addStyleName(STYLE_NAME);
       addStyleName(STYLE_NAME + BeeUtils.proper(domain.name()));
 
-      if (domain.getImageResource() != null) {
-        Image icon = new Image(domain.getImageResource());
-        icon.addStyleName(STYLE_NAME + "-icon");
+      if (domain.getIcon() != null) {
+        FaLabel icon = new FaLabel(domain.getIcon(), STYLE_NAME + "-icon");
         add(icon);
       }
 
@@ -105,11 +104,7 @@ class CentralScrutinizer extends Stack implements CloseHandler<IdentifiableWidge
   private static final int DEFAULT_HEADER_HEIGHT = 25;
 
   private static int getHeaderHeight() {
-    int height = BeeKeeper.getUser().getApplianceHeaderHeight();
-    if (height <= 0) {
-      height = Settings.getApplianceHeaderHeight();
-    }
-
+    int height = Theme.getApplianceHeaderHeight();
     return (height > 0) ? height : DEFAULT_HEADER_HEIGHT;
   }
 
@@ -212,15 +207,15 @@ class CentralScrutinizer extends Stack implements CloseHandler<IdentifiableWidge
     Appliance appliance = new Appliance(domain, key, caption);
     appliance.addCloseHandler(this);
 
+    if (domain.getMinHeight() > 0) {
+      setMinHeight(widget.asWidget(), domain.getMinHeight());
+    }
+
     insert(widget.asWidget(), appliance, getHeaderHeight(), before);
   }
 
   boolean contains(Domain domain, Long key) {
     return find(domain, key) >= 0;
-  }
-
-  boolean maybeUpdateHeaders() {
-    return updateHeaderSize(getHeaderHeight());
   }
 
   boolean remove(Domain domain, Long key) {
@@ -233,14 +228,7 @@ class CentralScrutinizer extends Stack implements CloseHandler<IdentifiableWidge
   }
 
   void start() {
-    if (BeeKeeper.getUser().isWidgetVisible(RegulatedWidget.NEWS)) {
-      add(Domain.NEWS, Global.getNewsAggregator().getNewsPanel());
-    }
-
     if (Endpoint.isEnabled()) {
-      if (BeeKeeper.getUser().isWidgetVisible(RegulatedWidget.ONLINE)) {
-        add(Domain.ONLINE, Global.getUsers().getOnlinePanel());
-      }
       if (BeeKeeper.getUser().isWidgetVisible(RegulatedWidget.ROOMS)) {
         add(Domain.ROOMS, Global.getRooms().getRoomsPanel());
       }

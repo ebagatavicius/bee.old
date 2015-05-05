@@ -12,10 +12,10 @@ import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.trade.acts.TradeActConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.composite.FileCollector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.IdCallback;
@@ -92,8 +92,7 @@ public class TradeActItemsGrid extends AbstractGridInterceptor implements
       @Override
       public void accept(final String newStatus) {
         if (DataUtils.isId(newStatus)) {
-          Queries.getValue(VIEW_TRADE_ACTS, actId, COL_TA_STATUS, new Callback<String>() {
-
+          Queries.getValue(VIEW_TRADE_ACTS, actId, COL_TA_STATUS, new RpcCallback<String>() {
             @Override
             public void onSuccess(String oldStatus) {
               if (!newStatus.equals(oldStatus)) {
@@ -396,7 +395,7 @@ public class TradeActItemsGrid extends AbstractGridInterceptor implements
       rowSet.addRow(row);
     }
 
-    Queries.insertRows(rowSet, new Callback<RowInfoList>() {
+    Queries.insertRows(rowSet, new RpcCallback<RowInfoList>() {
       @Override
       public void onSuccess(RowInfoList result) {
         DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getViewName());

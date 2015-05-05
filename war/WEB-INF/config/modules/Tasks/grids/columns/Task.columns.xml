@@ -5,7 +5,7 @@
   <RelColumn name="Type" renderColumns="TypeName" />
   <DataColumn name="Priority" />
 
-  <DataColumn name="Summary" visible="true" />
+  <DataColumn name="Summary" visible="true" minWidth="150" maxWidth="500"/>
   <DataColumn name="Description" visible="false" />
 
   <RelColumn name="Company" />

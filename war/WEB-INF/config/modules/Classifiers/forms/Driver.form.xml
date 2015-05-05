@@ -10,6 +10,7 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
   name="Driver" viewName="Drivers" caption="=vehicleDriver"
+  width="1050" height="800"  
   >
   <FlowPanel class="flexBox-vertical" style="padding: 5px 1em 45px 1em; min-width: 1000px;">
     <FlowPanel style="margin-top: 1ex;">

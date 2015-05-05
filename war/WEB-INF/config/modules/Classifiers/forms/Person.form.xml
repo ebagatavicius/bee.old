@@ -1,125 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Form [
-  <!ENTITY lbl1 "margin-left: 1em; text-align: right; padding-right: 9px;">
-  <!ENTITY lbl "margin-left: 1em; margin-right: 1em; text-align: right">
-  <!ENTITY inp1 "width: 180px;">
+  <!ENTITY lbl "text-align: right; padding: 0 10px 0 30px;">
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   xmlns:xi="http://www.w3.org/2001/XInclude"
-  
-  name="Person" viewName="Persons" caption="=person" width="800" height="455"
-  >
-  <FlowPanel class="flexBox-vertical">
-    <Table>
-      <row>
-        <cell rowSpan="4">
-          <Image name="PhotoImg" style="max-height: 100px; max-width: 100px; border: 1px dashed silver; cursor: default;" />
-        </cell> 
-        <Label text="=firstName" style="&lbl1;" class="bee-required"/>
-        <InputText style="&inp1;" source="FirstName" />
-        <Label text="=lastName" style="&lbl1;" />
-        <InputText style="&inp1;" source="LastName" />
-      </row>
-      <row>
-        <Table>
-          <row>       
-            <Label text="=photo" horizontalAlignment="right" />
-            <FileCollector name="PhotoFile" editableColumns="none" accept="image/*">
-              <face resource="attachment" />
-            </FileCollector>              
-          </row>
-        </Table>
-        <FlowPanel class="flexBox-horizontal" style="font-style:italic; font-size: smaller;">
-          <Image name="unsetPhoto" resource="silverMinus" />
-          <Label html="(" style="margin-left: 8px;" />
-          <Label text="=allowPhotoSize" style="text-transform: lowercase; " />
-          <Label html="1.2 MB)" style="margin-left: 0.2em;" />
-        </FlowPanel>
-      </row>
-    </Table>
-    
-    <Disclosure open="false">
-       <Label text="Kita informacija" style="text-transform: uppercase; " />
-       <FlowPanel>
-         <Table>
-           <row>
-            <Label text="=phone" style="&lbl;" for="Phone" />
-            <InputText style="width: 100%" source="Phone" />
-            <Label style="&lbl;" for="Mobile" />
-            <InputText style="width: 100%" source="Mobile" />
-            <Label for="EmailId" style="&lbl;" />
-           <DataSelector style="width: 100%" source="EmailId" maxLength="50" />
-          </row>
-          <row for="Address">
-            <Label text="=address" style="&lbl;" />
-            <cell colSpan="5">
-              <InputText source="Address" style="width: 100%;" />
-            </cell>
-          </row>
-          <row>
-            <Label text="=city" style="&lbl;" for="City" />
-            <DataSelector source="City" style="width: 100%;">
-              <selectorColumn source="Name" />
-              <selectorColumn source="CountryName" />
-              <selectorColumn source="CountryCode">
-                <ui:renderer type="flag" />
-              </selectorColumn>
-            </DataSelector>
-            <Label text="=country" style="&lbl;" for="Country" />
-            <Table for="Country">
-              <row>
-                <DataSelector source="Country" style="width: 100%;">
-                  <renderToken source="CountryName" />
-                  <renderToken source="CountryCode" prefix=" (" suffix=")" />
-                  <selectorColumn source="Name" />
-                  <selectorColumn source="Code">
-                    <ui:renderer type="flag" />
-                  </selectorColumn>
-                </DataSelector>
-                <Flag source="CountryCode" style="width: 22px;" />
-              </row>
-            </Table>
-            <Label text="=postIndex" style="&lbl;" for="PostIndex" />
-            <InputText source="PostIndex" style="width: 100%;" />
-          </row>
-          <row>
-            <Label text="=website" style="&lbl;" for="Website" />
-            <InputText source="Website" style="width: 100%" />
-            <Label text="=socialContacts" style="&lbl;" />
-            <InputText source="SocialContacts" style="width: 100%;" />
-            <Label text="=dateOfBirth" style="&lbl;" />
-            <InputDate source="DateOfBirth" style="width: 80px;" minValue="1900" maxValue="2000" />
-         </row>
-       </Table>
-       </FlowPanel>
-    </Disclosure>
-    
-    <Disclosure open="false">
-       <Label text="=contactFamily" style="text-transform: uppercase; " />
-       <FlowPanel>
-         <ChildGrid name="PersonFamily" relColumn="Person" />
-       </FlowPanel>
-    </Disclosure>
-    
-    <TabbedPages class="flexible" style="margin-top: 1ex;" >
-      <page for="CompanyPersons">
-        <text>=personCompanies</text>
-        <ChildGrid name="CompanyPersons" relColumn="Person" />
-      </page>
 
-      <page module="Documents" data="RelatedDocuments" for="Person">
-        <text>=documents</text>
-        <ChildGrid name="RelatedDocuments" relColumn="Person" />
-      </page>
-      
-      <page for="Notes">
-        <text>=notes</text>
-        <SimplePanel>
-          <InputArea source="Notes" class="occupy-1" summarize="true" />
-        </SimplePanel>
-      </page>  
-    </TabbedPages>
-  </FlowPanel>
+  name="Person" viewName="Persons" caption="=person" width="800" height="455">
+  <FlowPanel class="flexBox-vertical">
+    <FlowPanel style="overflow:scroll;">
+      <Table style="margin: 0 0 25px 30px;">
+        <row>
+          <cell rowSpan="4">
+            <Image name="PhotoImg"
+              style="max-height: 100px; max-width: 100px; border: 1px dashed silver; cursor: default;" />
+          </cell>
+          <Label text="=firstName" style="&lbl;" class="bee-required" />
+          <InputText source="FirstName" style="width: 135px;" />
+          <Label text="=lastName" style="&lbl;" />
+          <InputText source="LastName" style="width: 135px;" />
+          <FlowPanel name="qrFlowPanel" style="margin-left: 10px" />
+        </row>
+        <row>
+          <Table>
+            <row>
+              <Label text="=photo" horizontalAlignment="right" />
+              <FileCollector name="PhotoFile"
+                editableColumns="none" accept="image/*">
+                <face resource="attachment" />
+              </FileCollector>
+            </row>
+          </Table>
+          <FlowPanel class="flexBox-horizontal"
+            style="font-style:italic; font-size: smaller;">
+            <Image name="unsetPhoto" resource="silverMinus" />
+            <Label html="(" style="margin-left: 8px;" />
+            <Label text="=allowPhotoSize" style="text-transform: lowercase; " />
+            <Label html="1.2 MB)" style="margin-left: 0.2em;" />
+          </FlowPanel>
+        </row>
+      </Table>
+
+      <Disclosure open="false">
+        <Label text="=otherInfo" style="text-transform: uppercase; " />
+        <FlowPanel style="padding-bottom: 40px;">
+          <Table>
+            <row>
+              <Label text="=phone" style="&lbl;" for="Phone" />
+              <InputText style="width: 205px" source="Phone" />
+              <Label style="&lbl;" for="Mobile" />
+              <InputText style="width: 205px" source="Mobile" />
+              <Label for="EmailId" style="&lbl;" />
+              <DataSelector style="width: 220px" source="EmailId"
+                maxLength="50" />
+            </row>
+            <row for="Address">
+              <Label text="=address" style="&lbl;" />
+              <cell colSpan="6">
+                <InputText source="Address" style="width: 883px;" />
+              </cell>
+            </row>
+            <row>
+              <Label text="=city" style="&lbl;" for="City" />
+              <DataSelector source="City" style="width: 205px;">
+                <selectorColumn source="Name" />
+                <selectorColumn source="CountryName" />
+                <selectorColumn source="CountryCode">
+                  <ui:renderer type="flag" />
+                </selectorColumn>
+              </DataSelector>
+              <Label text="=country" style="&lbl;"
+                for="Country" />
+              <DataSelector source="Country" style="width: 205px;">
+                <renderToken source="CountryName" />
+                <renderToken source="CountryCode" prefix=" ("
+                  suffix=")" />
+                <selectorColumn source="Name" />
+                <selectorColumn source="Code">
+                  <ui:renderer type="flag" />
+                </selectorColumn>
+              </DataSelector>
+              <Label text="=postIndex" style="&lbl;"
+                for="PostIndex" />
+              <InputText source="PostIndex" style="width: 120px;" />
+            </row>
+            <row>
+              <Label text="=website" style="&lbl; min-width: 115px;" for="Website" />
+              <InputText source="Website" style="width: 205px" />
+              <Label text="=socialContacts" style="&lbl; min-width: 85px;" />
+              <InputText source="SocialContacts" style="width: 205px;" />
+              <Label text="=dateOfBirth" style="&lbl;" />
+              <InputDate source="DateOfBirth" style="width: 120px;"
+                minValue="1900" maxValue="2000" />
+            </row>
+          </Table>
+        </FlowPanel>
+      </Disclosure>
+
+      <Disclosure open="false">
+        <Label text="=contactFamily" style="text-transform: uppercase; " />
+        <FlowPanel>
+          <ChildGrid name="PersonFamily" relColumn="Person" style="min-height: 250px;"/>
+        </FlowPanel>
+      </Disclosure>
+    </FlowPanel>
+    
+      <TabbedPages class="flexible" style="margin-top: 1ex;">
+        <page for="CompanyPersons">
+          <text>=personCompanies</text>
+          <ChildGrid name="CompanyPersons" relColumn="Person" />
+        </page>
+
+        <page module="Documents" data="RelatedDocuments" for="Person">
+          <text>=documents</text>
+          <ChildGrid name="RelatedDocuments" relColumn="Person" />
+        </page>
+
+        <page for="Notes">
+          <text>=notes</text>
+          <SimplePanel>
+            <InputArea source="Notes" class="occupy-1"
+              summarize="true" />
+          </SimplePanel>
+        </page>
+      </TabbedPages>
+    </FlowPanel>
 </f:Form>  

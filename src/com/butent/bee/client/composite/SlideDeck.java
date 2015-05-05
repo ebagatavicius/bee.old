@@ -504,7 +504,7 @@ public final class SlideDeck extends CustomComplex implements PreviewHandler {
     this.slides = slides;
 
     Integer eff = BeeKeeper.getStorage().getInteger(EFFECT_KEY);
-    if (!BeeUtils.isOrdinal(Effect.class, eff)) {
+    if (!EnumUtils.isOrdinal(Effect.class, eff)) {
       eff = 0;
     }
     this.effect = Effect.values()[eff];

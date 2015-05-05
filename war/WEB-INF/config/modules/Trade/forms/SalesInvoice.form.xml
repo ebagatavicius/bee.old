@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Form>
+<!DOCTYPE Form [
+  <!ENTITY inp "width: 15em;">
+]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   
   name="SalesInvoice" viewName="Sales"
   caption="=trdInvoice" showRowId="true"
-  width="800" height="600"
+  width="840" height="600"
   >
   <f:properties reports="PrintSalesInvoice" />
   <FlowPanel class="flexBox-vertical">
@@ -27,7 +29,7 @@
 
       <row>
         <Label for="Term" />
-        <InputDate source="Term" style="width: 80px;" />
+        <InputDate source="Term" style="width: 10em;" />
 
         <Label text="=trdTotal" />
         <DecimalLabel source="Amount" format="0.00" style="font-weight: bold;" />
@@ -39,19 +41,19 @@
 
       <row>
         <Label for="Supplier" />
-        <DataSelector source="Supplier" />
+        <DataSelector source="Supplier" style="&inp;" />
 
         <Label for="Customer" />
-        <DataSelector source="Customer" required="true" visible="true" />
+        <DataSelector source="Customer" required="true" visible="true" style="&inp;" />
       </row>
 
       <row>
         <Label for="Manager" />
         <DataSelector source="Manager" editSource="ManagerPerson" 
-          renderColumns="ManagerFirstName ManagerLastName" />
+          renderColumns="ManagerFirstName ManagerLastName" style="&inp;" />
 
         <Label for="Payer" />
-        <DataSelector source="Payer" />
+        <DataSelector source="Payer" style="&inp;"/>
       </row>
     </Table>
 

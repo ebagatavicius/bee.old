@@ -321,6 +321,8 @@ public class ColumnInfo implements HasValueType, Flexible {
       setAutoFitRows(BeeUtils.toInt(af));
     } else if (BeeConst.isTrue(af)) {
       setAutoFitRows(Integer.MAX_VALUE);
+    } else if (BeeConst.isFalse(af)) {
+      setAutoFitRows(0);
     }
 
     if (columnDescription.getFlexibility() != null) {
@@ -354,6 +356,10 @@ public class ColumnInfo implements HasValueType, Flexible {
 
   boolean isActionColumn() {
     return ColType.ACTION == getColumn().getColType();
+  }
+
+  boolean isAutoFitEnabled() {
+    return getAutoFitRows() != 0;
   }
 
   boolean isCalculated() {

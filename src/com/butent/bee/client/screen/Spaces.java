@@ -145,7 +145,7 @@ public class Spaces {
             public void onSuccess(String value) {
               setLabel(value);
             }
-          }, getItem().getLabel(), maxLength, getElement(), LABEL_INPUT_WIDTH,
+          }, null, getItem().getLabel(), maxLength, getElement(), LABEL_INPUT_WIDTH,
               LABEL_INPUT_WIDTH_UNIT);
         }
       });
@@ -237,7 +237,7 @@ public class Spaces {
           activate();
         }
       }
-    }, defValue, maxLength, null, LABEL_INPUT_WIDTH, LABEL_INPUT_WIDTH_UNIT);
+    }, null, defValue, maxLength, null, LABEL_INPUT_WIDTH, LABEL_INPUT_WIDTH_UNIT);
   }
 
   public IdentifiableWidget getPanel() {

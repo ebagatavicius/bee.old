@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HasHandlers;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.xml.client.Element;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
@@ -35,12 +36,16 @@ import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
+import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.data.BeeRow;
+import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.ui.ColumnDescription;
@@ -160,7 +165,7 @@ class PersonForm extends AbstractFormInterceptor {
                   new RowCallback() {
                     @Override
                     public void onSuccess(BeeRow result) {
-                      Data.onViewChange(viewName, DataChangeEvent.CANCEL_RESET_REFRESH);
+                      Data.onViewChange(viewName, DataChangeEvent.RESET_REFRESH);
                     }
                   });
             }
@@ -252,6 +257,9 @@ class PersonForm extends AbstractFormInterceptor {
   @Override
   public boolean onStartEdit(FormView form, IsRow row, ScheduledCommand focusCommand) {
     showPhoto(form, row);
+    if (!DataUtils.isNewRow(row)) {
+      createQrButton(form, row);
+    }
     return super.onStartEdit(form, row, focusCommand);
   }
 
@@ -265,6 +273,24 @@ class PersonForm extends AbstractFormInterceptor {
     if (photoImageWidget != null) {
       photoImageWidget.setUrl(DEFAULT_PHOTO_IMAGE);
     }
+  }
+
+  private static void createQrButton(final FormView form, final IsRow row) {
+    FlowPanel qrFlowPanel = (FlowPanel) Assert.notNull(form.getWidgetByName(QR_FLOW_PANEL));
+    qrFlowPanel.clear();
+    FaLabel qrCodeLabel = new FaLabel(FontAwesome.QRCODE);
+    qrCodeLabel.setTitle(Localized.getConstants().qrCode());
+    qrCodeLabel.addStyleName("bee-FontSize-x-large");
+    qrFlowPanel.add(qrCodeLabel);
+
+    qrCodeLabel.addClickHandler(new ClickHandler() {
+
+      @Override
+      public void onClick(ClickEvent arg0) {
+        ClassifierKeeper.generateQrCode(form, row);
+      }
+    });
+
   }
 
   private static String getPhotoFileName(FormView form, IsRow row) {

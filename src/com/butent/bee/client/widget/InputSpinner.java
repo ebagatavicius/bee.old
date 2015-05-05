@@ -27,6 +27,10 @@ public class InputSpinner extends InputInteger {
     super(inputType, min, max);
   }
 
+  public InputSpinner(int min, int max, int step) {
+    super(inputType, min, max, step);
+  }
+
   @Override
   public EditorAction getDefaultFocusAction() {
     return null;

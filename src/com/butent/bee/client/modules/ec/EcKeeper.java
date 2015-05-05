@@ -582,7 +582,7 @@ public final class EcKeeper {
               CartItem cartItem = CartItem.restore(s);
               Integer type = BeeUtils.toIntOrNull(cartItem.getNote());
 
-              if (BeeUtils.isOrdinal(CartType.class, type)) {
+              if (EnumUtils.isOrdinal(CartType.class, type)) {
                 CartType cartType = EnumUtils.getEnumByIndex(CartType.class, type);
                 cartList.getCart(cartType).add(cartItem.getEcItem(), cartItem.getQuantity());
 

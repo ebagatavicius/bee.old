@@ -232,6 +232,8 @@ public class AdministrationModuleBean implements BeeModule, HasTimerService {
   public void init() {
     cb.createCalendarTimer(this.getClass(), PRM_REFRESH_CURRENCY_HOURS);
 
+    imp.init();
+
     sys.registerDataEventHandler(new DataEventHandler() {
       @Subscribe
       public void refreshIpFilterCache(TableModifyEvent event) {

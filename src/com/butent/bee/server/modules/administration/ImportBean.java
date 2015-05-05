@@ -34,12 +34,16 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.SqlConstants.SqlDataType;
 import com.butent.bee.shared.data.SqlConstants.SqlFunction;
+import com.butent.bee.shared.data.filter.CompoundFilter;
+import com.butent.bee.shared.data.filter.CustomFilter;
+import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.data.view.ViewColumn;
@@ -148,7 +152,7 @@ public class ImportBean {
               Localized.maybeTranslate(view.getColumnLabel(name)), true);
 
           if (!BeeUtils.isEmpty(col.getRelation())) {
-            prop.setRelTable(col.getRelation());
+            prop.setRelation(col.getRelation());
           }
           data[prpObject] = prop;
           props.put(name, data);
@@ -286,12 +290,99 @@ public class ImportBean {
     return response;
   }
 
+  public void init() {
+    QueryServiceBean.registerViewDataProvider(TBL_IMPORT_MAPPINGS,
+        new QueryServiceBean.ViewDataProvider() {
+          @Override
+          public BeeRowSet getViewData(BeeView view, SqlSelect query, Filter filter) {
+            BeeRowSet rs = qs.getViewData(query, view);
+            Map<String, String> params = getParameters(filter);
+
+            if (!DataUtils.isEmpty(rs) && !BeeUtils.isEmpty(params)) {
+              String tbl = params.get(VAR_MAPPING_TABLE);
+
+              SimpleRowSet result = qs.getData(new SqlSelect()
+                  .addField(TBL_IMPORT_MAPPINGS, sys.getIdName(TBL_IMPORT_MAPPINGS),
+                      COL_IMPORT_MAPPING)
+                  .addField(tbl, params.get(VAR_MAPPING_FIELD), COL_IMPORT_VALUE)
+                  .addFrom(TBL_IMPORT_MAPPINGS)
+                  .addFromInner(tbl, sys.joinTables(tbl, TBL_IMPORT_MAPPINGS, COL_IMPORT_MAPPING))
+                  .setWhere(sys.idInList(TBL_IMPORT_MAPPINGS, rs.getRowIds())));
+
+              for (BeeRow row : rs) {
+                row.setProperty(COL_IMPORT_MAPPING + COL_IMPORT_VALUE,
+                    result.getValueByKey(COL_IMPORT_MAPPING, BeeUtils.toString(row.getId()),
+                        COL_IMPORT_VALUE));
+              }
+            }
+            return rs;
+          }
+
+          @Override
+          public int getViewSize(BeeView view, SqlSelect query, Filter filter) {
+            return qs.sqlCount(query);
+          }
+
+          private Map<String, String> getParameters(Filter filter) {
+            Map<String, String> params = null;
+
+            if (filter != null) {
+              if (filter instanceof CustomFilter
+                  && BeeUtils.same(((CustomFilter) filter).getKey(), TBL_IMPORT_MAPPINGS)) {
+                return Codec.deserializeMap(((CustomFilter) filter).getArg(0));
+
+              } else if (filter instanceof CompoundFilter) {
+                for (Filter flt : ((CompoundFilter) filter).getSubFilters()) {
+                  params = getParameters(flt);
+
+                  if (!BeeUtils.isEmpty(params)) {
+                    break;
+                  }
+                }
+              }
+            }
+            return params;
+          }
+        });
+  }
+
+  private static IsExpression cast(BeeView view, String tmp, String col) {
+    IsExpression xpr = SqlUtils.field(tmp, col);
+
+    switch (view.getColumnType(col)) {
+      case BOOLEAN:
+      case INTEGER:
+      case LONG:
+      case DATETIME:
+        xpr = SqlUtils.cast(xpr, SqlDataType.LONG, view.getColumnPrecision(col), 0);
+        break;
+
+      case DATE:
+        xpr = SqlUtils.multiply(SqlUtils.cast(xpr, SqlDataType.LONG, view.getColumnPrecision(col),
+            0), TimeUtils.MILLIS_PER_DAY);
+        break;
+
+      case DOUBLE:
+      case DECIMAL:
+        xpr = SqlUtils.cast(xpr, view.getColumnType(col), view.getColumnPrecision(col),
+            view.getColumnScale(col));
+        break;
+
+      case CHAR:
+      case STRING:
+      case TEXT:
+      case BLOB:
+        break;
+    }
+    return xpr;
+  }
+
   private List<ExtendedProperty> checkMappings(ImportObject imp, String prfx, String tmp) {
     List<ExtendedProperty> info = new ArrayList<>();
     PropertyUtils.addExtended(info, "NEŽINOMIEJI", null, ":");
 
     for (ImportProperty prop : imp.getProperties()) {
-      String relTable = prop.getRelTable();
+      String relTable = prop.getRelation();
 
       if (BeeUtils.isEmpty(relTable)) {
         continue;
@@ -313,11 +404,6 @@ public class ImportBean {
             .addExpression(prfx + name, SqlUtils.field(subq, COL_IMPORT_MAPPING))
             .setFrom(query, subq, SqlUtils.joinUsing(tmp, subq, name)));
       }
-      qs.updateData(new SqlUpdate(tmp)
-          .addExpression(prfx + name, SqlUtils.field(relTable, sys.getIdName(relTable)))
-          .setFrom(relTable, SqlUtils.join(tmp, name, relTable, prop.getRelField()))
-          .setWhere(SqlUtils.isNull(tmp, prfx + name)));
-
       for (SimpleRow row : qs.getData(new SqlSelect()
           .addFields(tmp, name)
           .addCount("cnt")
@@ -330,216 +416,6 @@ public class ImportBean {
       }
     }
     return info;
-  }
-
-  private ResponseObject importCosts(Long optionId, String fileName, boolean test) {
-    ImportObject imp = initImport(optionId);
-    final DateFormat dtf;
-
-    if (!BeeUtils.isEmpty(imp.getValue(VAR_IMPORT_DATE_FORMAT))) {
-      dtf = new SimpleDateFormat(imp.getValue(VAR_IMPORT_DATE_FORMAT));
-    } else {
-      dtf = null;
-    }
-    String tmp = SqlUtils.temporaryName();
-    String prfx = "_";
-
-    SqlCreate create = new SqlCreate(tmp)
-        .addBoolean(prfx, false)
-        .addBoolean(COL_FUEL, false)
-        .addLong(COL_TRIP, false);
-
-    for (ImportProperty prop : imp.getProperties()) {
-      if (prop.isDataProperty()) {
-        if (!BeeUtils.isEmpty(prop.getRelTable())) {
-          create.addLong(prfx + prop.getName(), false);
-        }
-      }
-    }
-    ResponseObject resp = loadXLSData(imp, fileName, create,
-        new Function<Map<String, String>, Boolean>() {
-          @Override
-          public Boolean apply(Map<String, String> values) {
-            double qty = BeeUtils.toDouble(values.get(COL_COSTS_QUANTITY));
-            double prc = BeeUtils.toDouble(values.get(COL_COSTS_PRICE));
-
-            if (!BeeUtils.isPositive(qty)) {
-              return false;
-            }
-            if (!BeeUtils.isPositive(prc)) {
-              prc = BeeUtils.round(BeeUtils.toDouble(values.get(COL_AMOUNT)) / qty, 5);
-            }
-            if (BeeUtils.isPositive(prc)) {
-              values.put(COL_COSTS_PRICE, BeeUtils.toString(prc));
-            } else {
-              return false;
-            }
-            String value = values.get(COL_COSTS_DATE);
-
-            if (!BeeUtils.isEmpty(value)) {
-              DateTime date;
-
-              if (dtf != null) {
-                try {
-                  date = new DateTime(dtf.parse(value));
-                } catch (ParseException e) {
-                  date = null;
-                }
-              } else {
-                date = TimeUtils.parseDateTime(value);
-              }
-              values.put(COL_COSTS_DATE,
-                  date != null ? BeeUtils.toString(date.getDate().getTime()) : null);
-            }
-            value = values.get(COL_COSTS_EXTERNAL_ID);
-
-            if (BeeUtils.isEmpty(value)) {
-              values.put(COL_COSTS_EXTERNAL_ID,
-                  Codec.md5(BeeUtils.joinItems(values.get(COL_VEHICLE), values.get(COL_COSTS_DATE),
-                      values.get(COL_COSTS_ITEM), values.get(COL_COSTS_SUPPLIER),
-                      values.get(COL_NUMBER), values.get(COL_COSTS_NOTE))));
-            }
-            return true;
-          }
-        });
-
-    if (resp.hasErrors()) {
-      return resp;
-    }
-    List<ExtendedProperty> info = checkMappings(imp, prfx, tmp);
-    int c;
-
-    if (!test) {
-      c = qs.updateData(new SqlDelete(tmp)
-          .setWhere(SqlUtils.or(SqlUtils.isNull(tmp, prfx + COL_COSTS_ITEM),
-              SqlUtils.isNull(tmp, prfx + COL_COSTS_CURRENCY),
-              SqlUtils.and(SqlUtils.notNull(tmp, COL_VEHICLE),
-                  SqlUtils.isNull(tmp, prfx + COL_VEHICLE)))));
-
-      PropertyUtils.addExtended(info, "PAŠALINTA", null, c);
-    }
-    qs.updateData(new SqlUpdate(tmp)
-        .addExpression(COL_FUEL, SqlUtils.constant(true))
-        .setFrom(TBL_FUEL_TYPES,
-            SqlUtils.join(tmp, prfx + COL_COSTS_ITEM, TBL_FUEL_TYPES, COL_ITEM)));
-
-    for (String tt : new String[] {TBL_TRIP_COSTS, TBL_TRIP_FUEL_COSTS}) {
-      HasConditions wh = SqlUtils.and(BeeUtils.same(tt, TBL_TRIP_FUEL_COSTS)
-          ? SqlUtils.notNull(tmp, COL_FUEL) : SqlUtils.isNull(tmp, COL_FUEL),
-          SqlUtils.notNull(tt, COL_COSTS_EXTERNAL_ID));
-
-      c = qs.updateData(new SqlUpdate(tmp)
-          .addExpression(prfx, SqlUtils.constant(true))
-          .setFrom(tt, SqlUtils.and(wh, SqlUtils.joinUsing(tmp, tt, COL_COSTS_EXTERNAL_ID))));
-
-      PropertyUtils.addExtended(info, "BUVO", tt, c);
-
-      if (!BeeUtils.isEmpty(imp.getValue(COL_NUMBER)) && !test) {
-        SqlSelect query = new SqlSelect()
-            .addEmptyBoolean(prfx)
-            .addField(tt, sys.getIdName(tt), "ID")
-            .addFields(tmp, COL_NUMBER)
-            .addFields(TBL_TRIPS, COL_TRIP_NO)
-            .addFrom(tmp)
-            .addFromInner(tt, SqlUtils.joinUsing(tmp, tt, COL_COSTS_EXTERNAL_ID))
-            .addFromLeft(TBL_TRIPS, sys.joinTables(TBL_TRIPS, tt, COL_TRIP))
-            .setWhere(wh);
-
-        wh = SqlUtils.and();
-        String[] flds = new String[] {COL_COSTS_QUANTITY, COL_COSTS_PRICE, COL_COSTS_VAT};
-
-        for (String fld : flds) {
-          query.addExpr(SqlUtils.nvl(SqlUtils.field(tt, fld), 0), fld)
-              .addExpr(SqlUtils.nvl(SqlUtils.cast(SqlUtils.field(tmp, fld),
-                  SqlDataType.DECIMAL, 15, 5), 0), prfx + fld);
-
-          wh.add(SqlUtils.equals(SqlUtils.name(fld), SqlUtils.name(prfx + fld)));
-        }
-        String diff = qs.sqlCreateTemp(query);
-
-        qs.updateData(new SqlUpdate(diff)
-            .addExpression(prfx, SqlUtils.constant(true))
-            .setWhere(wh));
-
-        qs.updateData(new SqlUpdate(tt)
-            .addExpression(COL_NUMBER, SqlUtils.field(diff, COL_NUMBER))
-            .setFrom(diff, sys.joinTables(tt, diff, "ID"))
-            .setWhere(SqlUtils.notNull(diff, prfx)));
-
-        for (String fld : flds) {
-          SimpleRowSet rs = qs.getData(new SqlSelect()
-              .addFields(diff, COL_TRIP_NO, fld, prfx + fld)
-              .addFrom(diff)
-              .setWhere(SqlUtils.notEqual(SqlUtils.name(fld), SqlUtils.name(prfx + fld))));
-
-          c = rs.getNumberOfRows();
-
-          if (c > 0) {
-            PropertyUtils.addExtended(info, "SKIRTUMAI", imp.getProperty(fld).getCaption(), c);
-
-            for (SimpleRow row : rs) {
-              PropertyUtils.addExtended(info, row.getValue(COL_TRIP_NO), row.getValue(fld),
-                  row.getValue(prfx + fld));
-            }
-          }
-        }
-        qs.sqlDropTemp(diff);
-      }
-    }
-    IsExpression dt = SqlUtils.cast(SqlUtils.field(tmp, COL_COSTS_DATE), SqlDataType.DATE, 0, 0);
-
-    qs.updateData(new SqlUpdate(tmp)
-        .addExpression(COL_TRIP, SqlUtils.field(TBL_TRIPS, sys.getIdName(TBL_TRIPS)))
-        .setFrom(TBL_TRIPS,
-            SqlUtils.and(SqlUtils.join(tmp, prfx + COL_VEHICLE, TBL_TRIPS, COL_VEHICLE),
-                SqlUtils.moreEqual(dt, SqlUtils.nvl(SqlUtils.field(TBL_TRIPS, COL_TRIP_DATE_FROM),
-                    SqlUtils.field(TBL_TRIPS, COL_TRIP_DATE))),
-                SqlUtils.less(dt, SqlUtils.nvl(SqlUtils.field(TBL_TRIPS, COL_TRIP_DATE_TO),
-                    SqlUtils.field(TBL_TRIPS, COL_TRIP_PLANNED_END_DATE), Long.MAX_VALUE)),
-                SqlUtils.isNull(tmp, prfx), SqlUtils.notNull(tmp, prfx + COL_VEHICLE))));
-
-    qs.updateData(new SqlUpdate(tmp)
-        .addExpression(COL_COSTS_NOTE, SqlUtils.field(tmp, COL_VEHICLE))
-        .setWhere(SqlUtils.and(SqlUtils.isNull(tmp, COL_TRIP),
-            SqlUtils.notNull(tmp, prfx + COL_VEHICLE))));
-
-    for (String tt : new String[] {TBL_TRIP_COSTS, TBL_TRIP_FUEL_COSTS}) {
-      SqlSelect query = new SqlSelect()
-          .addFields(tmp, COL_COSTS_DATE, COL_COSTS_QUANTITY, COL_COSTS_PRICE,
-              COL_TRADE_VAT_PLUS, COL_COSTS_VAT, COL_TRADE_VAT_PERC,
-              COL_NUMBER, COL_COSTS_NOTE, COL_TRIP, COL_COSTS_EXTERNAL_ID)
-          .addField(tmp, prfx + COL_COSTS_CURRENCY, COL_COSTS_CURRENCY)
-          .addField(tmp, prfx + COL_COSTS_COUNTRY, COL_COSTS_COUNTRY)
-          .addField(tmp, prfx + COL_COSTS_SUPPLIER, COL_COSTS_SUPPLIER)
-          .addFrom(tmp)
-          .setWhere(SqlUtils.isNull(tmp, prfx));
-
-      if (BeeUtils.same(tt, TBL_TRIP_COSTS)) {
-        query.addField(tmp, prfx + COL_COSTS_ITEM, COL_COSTS_ITEM)
-            .setWhere(SqlUtils.and(query.getWhere(), SqlUtils.isNull(tmp, COL_FUEL)));
-      } else {
-        query.setWhere(SqlUtils.and(query.getWhere(), SqlUtils.notNull(tmp, COL_FUEL)));
-      }
-      SimpleRowSet rs = qs.getData(query);
-
-      if (!test) {
-        for (int i = 0; i < rs.getNumberOfRows(); i++) {
-          qs.insertData(new SqlInsert(tt)
-              .addFields(rs.getColumnNames())
-              .addValues((Object[]) rs.getValues(i)));
-        }
-      }
-      PropertyUtils.addExtended(info, "IMPORTUOTA", tt, rs.getNumberOfRows());
-    }
-    Object res;
-
-    if (test) {
-      res = qs.doSql(new SqlSelect().addAllFields(tmp).addFrom(tmp).getQuery());
-    } else {
-      res = info;
-    }
-    qs.sqlDropTemp(tmp);
-    return ResponseObject.response(res);
   }
 
   private void commitData(ImportObject io, String data, String parentName, String parentCap,
@@ -665,8 +541,7 @@ public class ImportBean {
       for (String col : key) {
         condition.add(SqlUtils.notNull(tmp, col),
             cols.get(col).isNotNull() ? null : SqlUtils.notNull(vw, col),
-            SqlUtils.compare(SqlUtils.field(tmp, col), Operator.EQ,
-                SqlUtils.cast(SqlUtils.field(vw, col), SqlDataType.TEXT, 0, 0)));
+            SqlUtils.compare(cast(view, tmp, col), Operator.EQ, SqlUtils.field(vw, col)));
       }
       qs.updateData(update.setWhere(condition));
     }
@@ -675,8 +550,7 @@ public class ImportBean {
 
       for (String col : cols.keySet()) {
         IsCondition condition = SqlUtils.and(SqlUtils.notNull(tmp, col),
-            SqlUtils.compare(SqlUtils.field(tmp, col), Operator.EQ,
-                SqlUtils.cast(SqlUtils.field(vw, col), SqlDataType.TEXT, 0, 0)));
+            SqlUtils.compare(cast(view, tmp, col), Operator.EQ, SqlUtils.field(vw, col)));
 
         if (cols.get(col).isNotNull()) {
           clause.add(condition);
@@ -848,13 +722,238 @@ public class ImportBean {
     qs.sqlDropTemp(tmp);
   }
 
+  private ResponseObject importCosts(Long optionId, String fileName, boolean test) {
+    ImportObject imp = initImport(optionId);
+    final DateFormat dtf;
+
+    if (!BeeUtils.isEmpty(imp.getValue(VAR_IMPORT_DATE_FORMAT))) {
+      dtf = new SimpleDateFormat(imp.getValue(VAR_IMPORT_DATE_FORMAT));
+    } else {
+      dtf = null;
+    }
+    String tmp = SqlUtils.temporaryName();
+    String prfx = "_";
+
+    SqlCreate create = new SqlCreate(tmp)
+        .addBoolean(prfx, false)
+        .addBoolean(COL_FUEL, false)
+        .addLong(COL_TRIP, false);
+
+    for (ImportProperty prop : imp.getProperties()) {
+      if (prop.isDataProperty()) {
+        if (!BeeUtils.isEmpty(prop.getRelation())) {
+          create.addLong(prfx + prop.getName(), false);
+        }
+      }
+    }
+    ResponseObject resp = loadXLSData(imp, fileName, create,
+        new Function<Map<String, String>, Boolean>() {
+          @Override
+          public Boolean apply(Map<String, String> values) {
+            double qty = BeeUtils.toDouble(values.get(COL_COSTS_QUANTITY));
+            double prc = BeeUtils.toDouble(values.get(COL_COSTS_PRICE));
+
+            if (!BeeUtils.isPositive(qty)) {
+              return false;
+            }
+            if (!BeeUtils.isPositive(prc)) {
+              prc = BeeUtils.round(BeeUtils.toDouble(values.get(COL_AMOUNT)) / qty, 5);
+            }
+            if (BeeUtils.isPositive(prc)) {
+              values.put(COL_COSTS_PRICE, BeeUtils.toString(prc));
+            } else {
+              return false;
+            }
+            String value = values.get(COL_COSTS_DATE);
+
+            if (!BeeUtils.isEmpty(value)) {
+              DateTime date;
+
+              if (dtf != null) {
+                try {
+                  date = new DateTime(dtf.parse(value));
+                } catch (ParseException e) {
+                  date = null;
+                }
+              } else {
+                date = TimeUtils.parseDateTime(value);
+              }
+              values.put(COL_COSTS_DATE,
+                  date != null ? BeeUtils.toString(date.getDate().getTime()) : null);
+            }
+            value = values.get(COL_COSTS_EXTERNAL_ID);
+
+            if (BeeUtils.isEmpty(value)) {
+              values.put(COL_COSTS_EXTERNAL_ID,
+                  Codec.md5(BeeUtils.joinItems(values.get(COL_VEHICLE), values.get(COL_COSTS_DATE),
+                      values.get(COL_COSTS_ITEM), values.get(COL_COSTS_SUPPLIER),
+                      values.get(COL_NUMBER), values.get(COL_COSTS_NOTE))));
+            }
+            return true;
+          }
+        });
+
+    if (resp.hasErrors()) {
+      return resp;
+    }
+    List<ExtendedProperty> info = checkMappings(imp, prfx, tmp);
+    int c;
+
+    if (!test) {
+      c = qs.updateData(new SqlDelete(tmp)
+          .setWhere(SqlUtils.or(SqlUtils.isNull(tmp, prfx + COL_COSTS_ITEM),
+              SqlUtils.isNull(tmp, prfx + COL_COSTS_CURRENCY),
+              SqlUtils.and(SqlUtils.notNull(tmp, COL_VEHICLE),
+                  SqlUtils.isNull(tmp, prfx + COL_VEHICLE)))));
+
+      PropertyUtils.addExtended(info, "PAŠALINTA", null, c);
+    }
+    qs.updateData(new SqlUpdate(tmp)
+        .addExpression(COL_FUEL, SqlUtils.constant(true))
+        .setFrom(TBL_FUEL_TYPES,
+            SqlUtils.join(tmp, prfx + COL_COSTS_ITEM, TBL_FUEL_TYPES, COL_ITEM)));
+
+    for (String tt : new String[] {TBL_TRIP_COSTS, TBL_TRIP_FUEL_COSTS}) {
+      HasConditions wh = SqlUtils.and(BeeUtils.same(tt, TBL_TRIP_FUEL_COSTS)
+              ? SqlUtils.notNull(tmp, COL_FUEL) : SqlUtils.isNull(tmp, COL_FUEL),
+          SqlUtils.notNull(tt, COL_COSTS_EXTERNAL_ID));
+
+      c = qs.updateData(new SqlUpdate(tmp)
+          .addExpression(prfx, SqlUtils.constant(true))
+          .setFrom(tt, SqlUtils.and(wh, SqlUtils.joinUsing(tmp, tt, COL_COSTS_EXTERNAL_ID))));
+
+      PropertyUtils.addExtended(info, "BUVO", tt, c);
+
+      if (!BeeUtils.isEmpty(imp.getValue(COL_NUMBER)) && !test) {
+        SqlSelect query = new SqlSelect()
+            .addEmptyBoolean(prfx)
+            .addField(tt, sys.getIdName(tt), "ID")
+            .addFields(tmp, COL_NUMBER)
+            .addFields(TBL_TRIPS, COL_TRIP_NO)
+            .addFrom(tmp)
+            .addFromInner(tt, SqlUtils.joinUsing(tmp, tt, COL_COSTS_EXTERNAL_ID))
+            .addFromLeft(TBL_TRIPS, sys.joinTables(TBL_TRIPS, tt, COL_TRIP))
+            .setWhere(wh);
+
+        wh = SqlUtils.and();
+        String[] flds = new String[] {COL_COSTS_QUANTITY, COL_COSTS_PRICE, COL_COSTS_VAT};
+
+        for (String fld : flds) {
+          query.addExpr(SqlUtils.nvl(SqlUtils.field(tt, fld), 0), fld)
+              .addExpr(SqlUtils.nvl(SqlUtils.cast(SqlUtils.field(tmp, fld),
+                  SqlDataType.DECIMAL, 15, 5), 0), prfx + fld);
+
+          wh.add(SqlUtils.equals(SqlUtils.name(fld), SqlUtils.name(prfx + fld)));
+        }
+        String diff = qs.sqlCreateTemp(query);
+
+        qs.updateData(new SqlUpdate(diff)
+            .addExpression(prfx, SqlUtils.constant(true))
+            .setWhere(wh));
+
+        qs.updateData(new SqlUpdate(tt)
+            .addExpression(COL_NUMBER, SqlUtils.field(diff, COL_NUMBER))
+            .setFrom(diff, sys.joinTables(tt, diff, "ID"))
+            .setWhere(SqlUtils.notNull(diff, prfx)));
+
+        for (String fld : flds) {
+          SimpleRowSet rs = qs.getData(new SqlSelect()
+              .addFields(diff, COL_TRIP_NO, fld, prfx + fld)
+              .addFrom(diff)
+              .setWhere(SqlUtils.notEqual(SqlUtils.name(fld), SqlUtils.name(prfx + fld))));
+
+          c = rs.getNumberOfRows();
+
+          if (c > 0) {
+            PropertyUtils.addExtended(info, "SKIRTUMAI", imp.getProperty(fld).getCaption(), c);
+
+            for (SimpleRow row : rs) {
+              PropertyUtils.addExtended(info, row.getValue(COL_TRIP_NO), row.getValue(fld),
+                  row.getValue(prfx + fld));
+            }
+          }
+        }
+        qs.sqlDropTemp(diff);
+      }
+    }
+    IsExpression dt = SqlUtils.cast(SqlUtils.field(tmp, COL_COSTS_DATE), SqlDataType.DATE, 0, 0);
+
+    qs.updateData(new SqlUpdate(tmp)
+        .addExpression(COL_TRIP, SqlUtils.field(TBL_TRIPS, sys.getIdName(TBL_TRIPS)))
+        .setFrom(TBL_TRIPS,
+            SqlUtils.and(SqlUtils.join(tmp, prfx + COL_VEHICLE, TBL_TRIPS, COL_VEHICLE),
+                SqlUtils.moreEqual(dt, SqlUtils.nvl(SqlUtils.field(TBL_TRIPS, COL_TRIP_DATE_FROM),
+                    SqlUtils.field(TBL_TRIPS, COL_TRIP_DATE))),
+                SqlUtils.less(dt, SqlUtils.nvl(SqlUtils.field(TBL_TRIPS, COL_TRIP_DATE_TO),
+                    SqlUtils.field(TBL_TRIPS, COL_TRIP_PLANNED_END_DATE), Long.MAX_VALUE)),
+                SqlUtils.isNull(tmp, prfx), SqlUtils.notNull(tmp, prfx + COL_VEHICLE))));
+
+    qs.updateData(new SqlUpdate(tmp)
+        .addExpression(COL_COSTS_NOTE, SqlUtils.field(tmp, COL_VEHICLE))
+        .setWhere(SqlUtils.and(SqlUtils.isNull(tmp, COL_TRIP),
+            SqlUtils.notNull(tmp, prfx + COL_VEHICLE))));
+
+    for (String tt : new String[] {TBL_TRIP_COSTS, TBL_TRIP_FUEL_COSTS}) {
+      SqlSelect query = new SqlSelect()
+          .addFields(tmp, COL_COSTS_DATE, COL_COSTS_QUANTITY, COL_COSTS_PRICE,
+              COL_TRADE_VAT_PLUS, COL_COSTS_VAT, COL_TRADE_VAT_PERC,
+              COL_NUMBER, COL_COSTS_NOTE, COL_TRIP, COL_COSTS_EXTERNAL_ID)
+          .addField(tmp, prfx + COL_COSTS_CURRENCY, COL_COSTS_CURRENCY)
+          .addField(tmp, prfx + COL_COSTS_COUNTRY, COL_COSTS_COUNTRY)
+          .addField(tmp, prfx + COL_COSTS_SUPPLIER, COL_COSTS_SUPPLIER)
+          .addFrom(tmp)
+          .setWhere(SqlUtils.isNull(tmp, prfx));
+
+      if (BeeUtils.same(tt, TBL_TRIP_COSTS)) {
+        query.addField(tmp, prfx + COL_COSTS_ITEM, COL_COSTS_ITEM)
+            .setWhere(SqlUtils.and(query.getWhere(), SqlUtils.isNull(tmp, COL_FUEL)));
+      } else {
+        query.setWhere(SqlUtils.and(query.getWhere(), SqlUtils.notNull(tmp, COL_FUEL)));
+      }
+      SimpleRowSet rs = qs.getData(query);
+
+      if (!test) {
+        for (int i = 0; i < rs.getNumberOfRows(); i++) {
+          qs.insertData(new SqlInsert(tt)
+              .addFields(rs.getColumnNames())
+              .addValues((Object[]) rs.getValues(i)));
+        }
+      }
+      PropertyUtils.addExtended(info, "IMPORTUOTA", tt, rs.getNumberOfRows());
+    }
+    Object res;
+
+    if (test) {
+      res = qs.doSql(new SqlSelect().addAllFields(tmp).addFrom(tmp).getQuery());
+    } else {
+      res = info;
+    }
+    qs.sqlDropTemp(tmp);
+    return ResponseObject.response(res);
+  }
+
   private ResponseObject importData(Long optionId, String fileName, boolean test, String progress) {
     ImportObject io = initImport(optionId);
 
     String tmp = SqlUtils.temporaryName();
     SqlCreate create = new SqlCreate(tmp);
 
-    ResponseObject resp = loadXLSData(io, fileName, create, null);
+    ResponseObject resp = loadXLSData(io, fileName, create,
+        new Function<Map<String, String>, Boolean>() {
+          @Override
+          public Boolean apply(Map<String, String> values) {
+            BeeView view = sys.getView(io.getViewName());
+
+            for (Entry<String, String> entry : values.entrySet()) {
+              if (view.hasColumn(entry.getKey())
+                  && view.getColumnType(entry.getKey()) == SqlDataType.DATE
+                  && !BeeUtils.isEmpty(entry.getValue())) {
+                entry.setValue(TimeUtils.toDateTimeOrNull(entry.getValue()).getDate().serialize());
+              }
+            }
+            return true;
+          }
+        });
 
     if (resp.hasErrors()) {
       return resp;
@@ -1092,7 +1191,7 @@ public class ImportBean {
                   Date date = cell.getDateCellValue();
 
                   if (date != null) {
-                    value = new DateTime(date).toDateString();
+                    value = BeeUtils.toString(date.getTime());
                   }
                 } else {
                   value = BeeUtils.toString(cell.getNumericCellValue());

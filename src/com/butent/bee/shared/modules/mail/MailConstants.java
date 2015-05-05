@@ -153,6 +153,7 @@ public final class MailConstants {
   public static final String SVC_CHECK_MAIL = "check_mail";
   public static final String SVC_SEND_MAIL = "send_mail";
   public static final String SVC_STRIP_HTML = "strip_html";
+  public static final String SVC_GET_UNREAD_COUNT = "get_unread_count";
 
   public static final String TBL_SIGNATURES = "Signatures";
   public static final String TBL_ACCOUNTS = "Accounts";

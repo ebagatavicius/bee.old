@@ -126,6 +126,9 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
 
   private static final String STYLE_SHEET_NAME = "timeboard";
   private static final JustDate STYLE_SHEET_VERSION = new JustDate(2014, 5, 4);
+
+  private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
+
   private static boolean styleSheetInjected;
 
   public static void ensureStyleSheet() {
@@ -213,13 +216,16 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     super();
 
     ensureStyleSheet();
+
     addStyleName(STYLE_CONTAINER);
+    addStyleName(UiOption.getStyleName(uiOptions));
 
     Set<Action> enabledActions = getEnabledActions();
+    Set<Action> hiddenActions = getHiddenActions();
 
     this.headerView = new HeaderImpl();
-    headerView.create(getCaption(), false, true, null, EnumSet.of(UiOption.ROOT), enabledActions,
-        Action.NO_ACTIONS, Action.NO_ACTIONS);
+    headerView.create(getCaption(), false, true, null, uiOptions,
+        enabledActions, Action.NO_ACTIONS, hiddenActions);
 
     if (BeeUtils.contains(enabledActions, Action.FILTER)) {
       this.filterLabel = new CustomDiv(STYLE_FILTER_LABEL);
@@ -805,6 +811,10 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   }
 
   protected abstract Set<Action> getEnabledActions();
+
+  protected Set<Action> getHiddenActions() {
+    return Action.NO_ACTIONS;
+  }
 
   protected Widget getEndSliderLabel() {
     return endSliderLabel;

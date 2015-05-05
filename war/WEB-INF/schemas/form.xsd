@@ -2,7 +2,7 @@
 <xs:schema targetNamespace="http://www.butent.com/form" elementFormDefault="qualified"
   xmlns="http://www.butent.com/form"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:type="http://www.butent.com/type"
+  xmlns:tp="http://www.butent.com/type"
   xmlns:ui="http://www.butent.com/ui"
   xmlns:widget="http://www.butent.com/widget">
 
@@ -12,14 +12,14 @@
 
   <xs:complexType name="form">
     <xs:sequence>
-      <xs:element name="properties" type="type:customProperties" minOccurs="0" />
+      <xs:element name="properties" type="tp:customProperties" minOccurs="0" />
       <xs:element ref="widget:widget" />
       <xs:element name="rowMessage" type="ui:calcType" minOccurs="0" />
       <xs:element name="rowEditable" type="ui:calcType" minOccurs="0" />
       <xs:element name="rowValidation" type="ui:calcType" minOccurs="0" />
     </xs:sequence>
-    <xs:attribute name="name" type="type:nameType" use="required" />
-    <xs:attribute name="viewName" type="type:dataView" />
+    <xs:attribute name="name" type="tp:nameType" use="required" />
+    <xs:attribute name="viewName" type="tp:dataView" />
     <xs:attribute name="caption" type="xs:string" />
     <xs:attribute name="showRowId" type="xs:boolean" />
     <xs:attribute name="readOnly" type="xs:boolean" />
@@ -30,7 +30,7 @@
     <xs:attribute name="printFooter" type="xs:boolean" />
     <xs:attributeGroup ref="ui:dimension" />
     <xs:attribute name="options" type="xs:normalizedString" />
-    <xs:attribute name="data" type="type:dataView" />
+    <xs:attribute name="data" type="tp:dataView" />
   </xs:complexType>
 
   <xs:element name="Form" type="form">

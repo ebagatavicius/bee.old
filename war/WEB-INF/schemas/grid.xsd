@@ -3,7 +3,7 @@
   xmlns="http://www.butent.com/grid"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:col="http://www.butent.com/column"
-  xmlns:type="http://www.butent.com/type"
+  xmlns:tp="http://www.butent.com/type"
   xmlns:ui="http://www.butent.com/ui"
   xmlns:widget="http://www.butent.com/widget">
 
@@ -17,7 +17,7 @@
 
   <xs:complexType name="grid">
     <xs:sequence>
-      <xs:element name="properties" type="type:customProperties" minOccurs="0" />
+      <xs:element name="properties" type="tp:customProperties" minOccurs="0" />
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="css" type="ui:styleSheet" />
         <xs:element name="north" type="extWidget" />
@@ -40,19 +40,19 @@
     <xs:attribute name="name" type="gridName" use="required" />
     <xs:attribute name="parent" type="xs:normalizedString" />
     <xs:attribute name="caption" type="xs:string" />
-    <xs:attribute name="viewName" type="type:dataView" />
+    <xs:attribute name="viewName" type="tp:dataView" />
     <xs:attribute name="filter" type="xs:normalizedString" />
-    <xs:attribute name="currentUserFilter" type="type:fieldNameType" />
+    <xs:attribute name="currentUserFilter" type="tp:fieldNameType" />
     <xs:attribute name="order" type="xs:normalizedString" />
     <xs:attribute name="minColumnWidth" type="col:columnWidth" />
     <xs:attribute name="maxColumnWidth" type="col:columnWidth" />
-    <xs:attribute name="autoFit" type="type:intOrBoolean" />
+    <xs:attribute name="autoFit" type="tp:intOrBoolean" />
     <xs:attributeGroup ref="col:flex" />
     <xs:attribute name="headerMode" type="headerMode" />
     <xs:attribute name="footerMode" type="footerMode" />
     <xs:attribute name="cacheData" type="xs:boolean" />
     <xs:attribute name="cacheDescription" type="xs:boolean" default="true" />
-    <xs:attribute name="dataProvider" type="type:dataProvider" />
+    <xs:attribute name="dataProvider" type="tp:dataProvider" />
     <xs:attribute name="initialRowSetSize" type="xs:int" />
     <xs:attribute name="readOnly" type="xs:boolean" />
     <xs:attribute name="newRowForm" type="xs:normalizedString" />
@@ -67,6 +67,7 @@
     <xs:attribute name="editShowId" type="xs:boolean" />
     <xs:attribute name="editPopup" type="xs:boolean" />
     <xs:attribute name="editFormImmediate" type="xs:boolean" />
+    <xs:attribute name="editInPlace" type="xs:boolean" />
     <xs:attribute name="enabledActions" type="ui:viewActions" />
     <xs:attribute name="disabledActions" type="ui:viewActions" />
     <xs:attribute name="favorite" type="xs:normalizedString" />
@@ -84,7 +85,7 @@
     </xs:sequence>
     <xs:attribute ref="xml:base" />
   </xs:complexType>
-  
+
   <xs:element name="columns" type="columnList" />
 
   <xs:complexType name="extWidget">
@@ -102,7 +103,7 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
+
   <xs:simpleType name="rowHeight">
     <xs:restriction base="xs:positiveInteger">
       <xs:minInclusive value="12" />
@@ -146,11 +147,11 @@
   </xs:simpleType>
 
   <xs:simpleType name="gridName">
-    <xs:restriction base="type:nameType">
+    <xs:restriction base="tp:nameType">
       <xs:maxLength value="60" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:complexType name="filterDefinition">
     <xs:sequence minOccurs="1" maxOccurs="unbounded">
       <xs:element name="column">
@@ -167,5 +168,5 @@
     <xs:attribute name="editable" type="xs:boolean" />
     <xs:attribute name="removable" type="xs:boolean" />
   </xs:complexType>
-  
+
 </xs:schema>

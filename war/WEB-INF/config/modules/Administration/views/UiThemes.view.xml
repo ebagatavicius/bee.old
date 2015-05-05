@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="UiThemes" source="UiThemes" module="Administration"
+  caption="=uiThemes" newRowCaption="=newUiTheme"
+  >
+  <Columns>
+    <SimpleColumn name="Name" />
+    <SimpleColumn name="Description" />
+
+    <SimpleColumn name="WorkspaceMarginRight" />
+
+    <SimpleColumn name="ViewHeaderHeight" />
+    <SimpleColumn name="ChildViewHeaderHeight" />
+
+    <SimpleColumn name="ViewActionCreateNew" />
+    <SimpleColumn name="GridActionCreateNew" />
+    <SimpleColumn name="ChildActionCreateNew" />
+
+    <SimpleColumn name="GridHeaderRowHeight" />
+    <SimpleColumn name="GridBodyRowHeight" />
+    <SimpleColumn name="GridFooterRowHeight" />
+
+    <SimpleColumn name="GridMarginLeft" />
+
+    <SimpleColumn name="GridHeaderFont" />
+    <SimpleColumn name="GridBodyFont" />
+    <SimpleColumn name="GridFooterFont" />
+
+    <SimpleColumn name="ChildGridHeaderRowHeight" />
+    <SimpleColumn name="ChildGridBodyRowHeight" />
+    <SimpleColumn name="ChildGridFooterRowHeight" />
+
+    <SimpleColumn name="ChildGridMarginLeft" />
+
+    <SimpleColumn name="ChildGridHeaderFont" />
+    <SimpleColumn name="ChildGridBodyFont" />
+    <SimpleColumn name="ChildGridFooterFont" />
+
+    <SimpleColumn name="ApplianceHeaderHeight" />
+    <SimpleColumn name="SubMenuLineHeight" />
+    <SimpleColumn name="WorkspaceTabHeight" />
+    <SimpleColumn name="TabbedPagesTabHeight" />
+    <SimpleColumn name="DisclosureClosedHeight" />
+
+    <SimpleColumn name="InputLineHeight" />
+    <SimpleColumn name="InputPadding" />
+    <SimpleColumn name="ListSize1Padding" />
+    <SimpleColumn name="FormCellPaddingTop" />
+
+    <SimpleColumn name="Css" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="Name" />
+  </Order>
+</View>

@@ -175,8 +175,8 @@
         <row>
           <Label text="=trRequestDeliveryDateAndTime" />
           <FlowPanel style="display: inline-block;">
-            <InputDate source="DeliveryDate" style="width: 80px;" />
-            <InputTimeOfDay source="DeliveryTime" style="margin-left: 1em; width: 50px;" />
+            <InputDate source="DeliveryDate" style="width: 7em;" />
+            <InputTimeOfDay source="DeliveryTime" style="margin-left: 1em; width: 5em;" />
           </FlowPanel>
           <Label text="=trRequestTermsOfDelivery" />
           <InputText source="TermsOfDelivery" />
@@ -233,7 +233,7 @@
           <Label text="=trRequestCargoValue" />
           <InputMoney source="Value" />
           <Label text="=trRequestCargoCurrency" />
-          <DataSelector source="ValueCurrency" newRowEnabled="false" style="width: 60px;" />
+          <DataSelector source="ValueCurrency" newRowEnabled="false" style="width: 5em;" />
         </row>
 
       </Table>
@@ -248,7 +248,7 @@
 
         <row>
           <Label text="=trRequestResponsibleManager" />
-          <DataSelector source="Manager" newRowEnabled="false" />
+          <DataSelector source="Manager" newRowEnabled="false" style="width: 15em;"/>
           <Label text="=trRequestNotes" />
           <InputArea source="Notes" style="&area;" />
         </row>

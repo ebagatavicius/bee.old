@@ -6,7 +6,7 @@
   xmlns:f="http://www.butent.com/form"
   
   name="NewCargoCreditInvoice" viewName="CargoPurchaseInvoices" caption="=trNewCargoCreditInvoice"
-  width="700" height="250"
+  width="760" height="500"
   >
   <FlowPanel>
     <Table>
@@ -21,13 +21,13 @@
         <Label text="=trdAmount" class="bee-required" style="&lbl;" />
         <HorizontalPanel>
           <InputDecimal name="Amount" required="true" style="width:80px" />
-          <DataSelector source="CurrencyName" style="width:40px; margin-right:5px;" 
+          <DataSelector source="CurrencyName" style="width:5em; margin-right:5px;" 
             editEnabled="false" placeholder="=currencyShort" />
         </HorizontalPanel>
 
         <Label text="=trdInvoicePrefix" style="&lbl;" />
         <FlowPanel>
-          <InputText source="InvoicePrefix" upperCase="true" style="width:50px;" />
+          <InputText source="InvoicePrefix" upperCase="true" style="width:11em;" />
           <InlineLabel text="=trdInvoiceNo" style="margin-left:5px;" />
           <InputText source="InvoiceNo" />
         </FlowPanel>

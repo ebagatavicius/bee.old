@@ -42,7 +42,7 @@ public interface Configuration<T> {
    * Identifies the sides of a rectangle (top, left, ...).
    */
   public enum Location {
-    Top, Left, Bottom, Right
+    TOP, LEFT, BOTTOM, RIGHT
   }
 
   // ------------------------------------------------------------------------
@@ -77,7 +77,7 @@ public interface Configuration<T> {
    * Possible alignments of a node within a level (centered, towards or away from root).
    */
   public enum AlignmentInLevel {
-    Center, TowardsRoot, AwayFromRoot
+    CENTER, TOWARDS_ROOT, AWAY_FROM_ROOT
   }
 
   /**

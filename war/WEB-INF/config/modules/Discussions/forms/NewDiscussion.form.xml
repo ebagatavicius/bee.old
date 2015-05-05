@@ -16,7 +16,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="NewDiscussion" caption="=discussNew" width="675" height="650">
+  name="NewDiscussion" caption="=discussNew" width="700" height="700">
 
   <FlowPanel style="padding: 10px 2px 2px 10px; min-width: 660px; min-height: 590px">
     
@@ -59,8 +59,8 @@
     <FlowPanel data="Relations" for="Company" module="Classifiers.Contacts" 
     style="&section;" class="flexBox-horizontal">
       <Label text="=companies" style="&top1;min-width:80px; padding-right:18px;" />
-      <MultiSelector viewName="Companies" property="Companies" renderColumns="Name"
-        editPopup="true" style="&inp2x;" />
+      <MultiSelector viewName="Companies" property="Companies" choiceColumns="Name TypeName" 
+          renderColumns="Name TypeName" editPopup="true" style="&inp2x;" />
     </FlowPanel>
 
     <FlowPanel data="Relations" for="Person" module="Classifiers.Contacts"
@@ -82,8 +82,8 @@
     style="&section;" class="flexBox-horizontal">
       <Label text="=crmTasks" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector viewName="Tasks" property="Tasks" 
-        renderColumns="Summary ExecutorFirstName ExecutorLastName"
-        choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
+        renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
+        choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
         newRowEnabled="false" editPopup="true" style="&inp2x;" />
     </FlowPanel>
     
@@ -91,8 +91,8 @@
       style="&section;" class="flexBox-horizontal">
       <Label text="=documents" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector viewName="Documents" property="Documents" 
-        renderColumns="Name DocumentDate Number"
-        choiceColumns="Name DocumentDate Number"
+        renderColumns="Name Number RegistrationNumber DocumentDate"
+        choiceColumns="Name Number RegistrationNumber DocumentDate"
         newRowEnabled="false" editPopup="true" style="&inp2x;" />
     </FlowPanel>
     
@@ -102,7 +102,7 @@
     </FlowPanel>
     
     <FlowPanel for="Topic" style="&section;" class="flexBox-horizontal">
-      <Label text="=adTopic" style="&lbl1; min-width:150px;" />
+      <Label for="Topic" text="=adTopic" style="&lbl1; min-width:150px;" />
       <DataSelector name="Topic" source="Topic" style="&inp2x; width: 250px" 
         choiceColumns="Name" filter="Visible" />
     </FlowPanel>

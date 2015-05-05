@@ -36,6 +36,7 @@ public final class DocumentConstants {
   public static final String COL_DOCUMENT_NAME = "Name";
   public static final String COL_DOCUMENT_DATE = "DocumentDate";
   public static final String COL_DOCUMENT_COUNT = "DocumentCount";
+  public static final String COL_DOCUMENT_COMPANY = "Company";
   public static final String COL_DOCUMENT_CATEGORY = "Category";
   public static final String COL_DOCUMENT_TYPE = "Type";
   public static final String COL_DOCUMENT_PLACE = "Place";
@@ -68,6 +69,7 @@ public final class DocumentConstants {
   public static final String ALS_TYPE_NAME = "TypeName";
   public static final String ALS_PLACE_NAME = "PlaceName";
   public static final String ALS_STATUS_NAME = "StatusName";
+  public static final String ALS_DOCUMENT_COMPANY_NAME = "CompanyName";
 
   public static final String FORM_DOCUMENT = "Document";
 

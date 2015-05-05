@@ -8,7 +8,7 @@
 
   name="TradeActItems" viewName="TradeActItems"
   flexGrow="1" renderMode="full"
-  newRowCaption="=newItem"
+  newRowCaption="=newItem" disabledActions="filter"
   >
   <xi:include href="columns/TradeActItem.columns.xml" />
 
@@ -41,7 +41,8 @@
       <footer expression="&qty; * row.Price" />
     </DataColumn>
     
-    <CalcColumn name="ItemPrices" type="string" cellType="html" label="=taItemPrices" width="100" />
+    <CalcColumn name="ItemPrices" type="string" cellType="html" label="=taItemPrices" width="100"
+      exportable="false" />
   </g:columns>
 
   <xi:include href="columns/TradeActDiscount.columns.xml" />

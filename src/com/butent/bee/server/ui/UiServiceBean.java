@@ -397,7 +397,8 @@ public class UiServiceBean {
   }
 
   public BeeRowSet getReportSettings() {
-    return qs.getViewData(VIEW_REPORT_SETTINGS, usr.getCurrentUserFilter(COL_RS_USER));
+    return qs.getViewData(VIEW_REPORT_SETTINGS,
+        Filter.and(usr.getCurrentUserFilter(COL_RS_USER), Filter.notNull(COL_RS_CAPTION)));
   }
 
   public BeeRowSet getWorkspaces() {
@@ -778,11 +779,19 @@ public class UiServiceBean {
       } else {
         return ResponseObject.warning("Unknown view name:", viewName);
       }
+
     } else {
-      for (String name : sys.getViewNames()) {
-        PropertyUtils.appendWithPrefix(info, name, sys.getView(name).getExtendedInfo());
+      List<String> names = new ArrayList<>(sys.getViewNames());
+      Collections.sort(names);
+
+      for (String name : names) {
+        int cc = sys.getView(name).getColumnCount();
+        int rc = qs.getViewSize(name, null);
+
+        info.add(new ExtendedProperty(name, BeeUtils.toString(cc), BeeUtils.toString(rc)));
       }
     }
+
     return ResponseObject.collection(info, ExtendedProperty.class);
   }
 

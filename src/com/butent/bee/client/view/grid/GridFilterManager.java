@@ -18,8 +18,8 @@ import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.search.AbstractFilterSupplier;
 import com.butent.bee.client.view.search.FilterConsumer;
 import com.butent.bee.client.widget.Button;
-import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.CustomDiv;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BiConsumer;
 import com.butent.bee.shared.Consumer;
@@ -27,6 +27,7 @@ import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.FilterComponent;
 import com.butent.bee.shared.data.filter.FilterDescription;
 import com.butent.bee.shared.data.filter.FilterValue;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.html.Tags;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -311,7 +312,7 @@ public class GridFilterManager {
       }
     };
 
-    Image icon = new Image(Global.getImages().silverPlus());
+    FaLabel icon = new FaLabel(FontAwesome.PLUS);
     icon.addStyleName(STYLE_SAVE_ICON);
     icon.addClickHandler(clickHandler);
     panel.add(icon);

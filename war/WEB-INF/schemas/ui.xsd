@@ -2,7 +2,7 @@
 <xs:schema targetNamespace="http://www.butent.com/ui" elementFormDefault="qualified"
   xmlns="http://www.butent.com/ui"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:type="http://www.butent.com/type">
+  xmlns:tp="http://www.butent.com/type">
 
   <xs:import namespace="http://www.butent.com/type" schemaLocation="types.xsd" />
 
@@ -280,7 +280,7 @@
       <xs:enumeration value="silverTringleUp" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:simpleType name="eventType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="blur" />
@@ -322,7 +322,7 @@
       <xs:enumeration value="touchstart" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:complexType name="eventHandler">
     <xs:simpleContent>
       <xs:extension base="xs:string">
@@ -356,11 +356,11 @@
       <xs:enumeration value="save" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:simpleType name="viewActions">
     <xs:list itemType="viewAction" />
   </xs:simpleType>
-  
+
   <xs:simpleType name="cssRuleSet">
     <xs:restriction base="xs:string">
       <xs:pattern value="(\s*\.[a-z]\S{2,}.*\{\s*([a-z\-]{3,}:.*\S;\s*)+\}\s*)+" />
@@ -407,9 +407,9 @@
       <xs:enumeration value="branch" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:complexType name="renderableToken">
-    <xs:attribute name="source" type="type:fieldNameType" use="required" />
+    <xs:attribute name="source" type="tp:fieldNameType" use="required" />
     <xs:attribute name="prefix" type="xs:string" />
     <xs:attribute name="suffix" type="xs:string" />
     <xs:attribute name="addPrefixWhenEmpty" type="xs:boolean" />
@@ -417,7 +417,7 @@
     <xs:attribute name="format" type="xs:normalizedString" />
     <xs:attribute name="scale" type="xs:unsignedByte" />
   </xs:complexType>
-  
+
   <xs:group name="selector">
     <xs:choice>
       <xs:element name="rowRenderer" type="renderer" />
@@ -425,18 +425,18 @@
       <xs:element name="rowRenderToken" type="renderableToken" maxOccurs="unbounded" />
     </xs:choice>
   </xs:group>
-   
+
   <xs:complexType name="selectorColumn">
     <xs:choice minOccurs="0" maxOccurs="1">
       <xs:element name="renderer" type="renderer" />
       <xs:element name="render" type="calcType" />
       <xs:element name="renderToken" type="renderableToken" maxOccurs="unbounded" />
     </xs:choice>
-    <xs:attribute name="source" type="type:fieldNameType" use="required" />
+    <xs:attribute name="source" type="tp:fieldNameType" use="required" />
     <xs:attributeGroup ref="appearance" />
     <xs:attributeGroup ref="alignment" />
     <xs:attribute name="enumKey" type="xs:normalizedString" />
-    <xs:attribute name="renderColumns" type="type:fieldNames" />
+    <xs:attribute name="renderColumns" type="tp:fieldNames" />
   </xs:complexType>
 
   <xs:simpleType name="relationCaching">
@@ -447,34 +447,34 @@
       <xs:enumeration value="global" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:attributeGroup name="relation">
-    <xs:attribute name="choiceColumns" type="type:fieldNames" />
-    <xs:attribute name="searchableColumns" type="type:fieldNames" />
+    <xs:attribute name="choiceColumns" type="tp:fieldNames" />
+    <xs:attribute name="searchableColumns" type="tp:fieldNames" />
     <xs:attribute name="filter" type="xs:normalizedString" />
-    <xs:attribute name="currentUserFilter" type="type:fieldNameType" />
+    <xs:attribute name="currentUserFilter" type="tp:fieldNameType" />
     <xs:attribute name="order" type="xs:normalizedString" />
     <xs:attribute name="caching" type="relationCaching" />
-    <xs:attribute name="operator" type="type:operatorType" />
+    <xs:attribute name="operator" type="tp:operatorType" />
     <xs:attribute name="selectorClass" type="xs:normalizedString" />
     <xs:attribute name="itemType" type="menuItemType" />
     <xs:attribute name="visibleLines" type="xs:positiveInteger" />
     <xs:attribute name="minQueryLength" type="xs:positiveInteger" />
     <xs:attribute name="instant" type="xs:boolean" />
-    <xs:attribute name="newRowForm" type="type:nameType" />
-    <xs:attribute name="newRowColumns" type="type:fieldNames" />
+    <xs:attribute name="newRowForm" type="tp:nameType" />
+    <xs:attribute name="newRowColumns" type="tp:fieldNames" />
     <xs:attribute name="newRowCaption" type="xs:string" />
     <xs:attribute name="newRowEnabled" type="xs:boolean" />
-    <xs:attribute name="editForm" type="type:nameType" />
+    <xs:attribute name="editForm" type="tp:nameType" />
     <xs:attribute name="editPopup" type="xs:boolean" />
     <xs:attribute name="editEnabled" type="xs:boolean" />
     <xs:attribute name="editKey" type="xs:int" />
-    <xs:attribute name="editSource" type="type:fieldNameType" />
-    <xs:attribute name="editViewName" type="type:dataView" />
-    <xs:attribute name="valueSource" type="type:fieldNameType" />
+    <xs:attribute name="editSource" type="tp:fieldNameType" />
+    <xs:attribute name="editViewName" type="tp:dataView" />
+    <xs:attribute name="valueSource" type="tp:fieldNameType" />
     <xs:attribute name="strict" type="xs:boolean" />
   </xs:attributeGroup>
-  
+
   <xs:simpleType name="refreshType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="cell" />
@@ -489,7 +489,7 @@
       <xs:enumeration value="end" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:simpleType name="menuItemType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="label" />
@@ -510,7 +510,7 @@
       <xs:enumeration value="button" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:simpleType name="whiteSpaceType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="normal" />
@@ -1074,7 +1074,7 @@
       <xs:enumeration value="meanpath" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:simpleType name="autofillHint">
     <xs:restriction base="xs:string">
       <xs:enumeration value="shipping" />
@@ -1143,7 +1143,7 @@
       <xs:enumeration value="impp" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:attributeGroup name="autocomplete">
     <xs:attribute name="autocomplete" type="xs:boolean" />
     <xs:attribute name="autocompleteKey" type="xs:NCName" />
@@ -1152,5 +1152,5 @@
     <xs:attribute name="autocompleteContact" type="autofillContact" />
     <xs:attribute name="autocompleteField" type="autofillField" />
   </xs:attributeGroup>
-  
+
 </xs:schema>

@@ -9,6 +9,7 @@ import com.butent.bee.client.data.ParentRowCreator;
 import com.butent.bee.client.dom.ElementSize;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
+import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HasGridView;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
@@ -24,6 +25,7 @@ import com.butent.bee.shared.NotificationListener;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.ui.Action;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 public class GridFormPresenter extends AbstractPresenter implements HasGridView, Printable,
@@ -36,6 +38,8 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
 
   private static final String SUFFIX_EDIT = "-edit";
   private static final String SUFFIX_NEW_ROW = "-newRow";
+
+  private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.EDITOR);
 
   public static String getFormStyle(String base, boolean edit) {
     return base + (edit ? SUFFIX_EDIT : SUFFIX_NEW_ROW);
@@ -50,6 +54,7 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
 
   public GridFormPresenter(GridView gridView, FormView formView, String caption,
       Set<Action> actions, boolean edit, boolean editSave) {
+
     this.gridView = gridView;
 
     this.header = createHeader(caption, actions, edit);
@@ -230,6 +235,7 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
     FormAndHeader formContainer = new FormAndHeader();
     formContainer.addStyleName(STYLE_FORM_CONTAINER);
     formContainer.addStyleName(getFormStyle(STYLE_FORM_CONTAINER, edit));
+    formContainer.addStyleName(UiOption.getStyleName(uiOptions));
 
     formContainer.addTopHeightFillHorizontal(headerView.asWidget(), 0, headerView.getHeight());
     formContainer.addTopBottomFillHorizontal(formView.asWidget(), headerView.getHeight(), 0);
@@ -242,7 +248,7 @@ public class GridFormPresenter extends AbstractPresenter implements HasGridView,
     formHeader.asWidget().addStyleName(STYLE_FORM_HEADER);
     formHeader.asWidget().addStyleName(getFormStyle(STYLE_FORM_HEADER, edit));
 
-    formHeader.create(caption, false, false, null, null, actions, Action.NO_ACTIONS,
+    formHeader.create(caption, false, false, null, uiOptions, actions, Action.NO_ACTIONS,
         Action.NO_ACTIONS);
     formHeader.addCaptionStyle(STYLE_FORM_CAPTION);
     formHeader.addCaptionStyle(getFormStyle(STYLE_FORM_CAPTION, edit));

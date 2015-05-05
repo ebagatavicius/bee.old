@@ -3,7 +3,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   
-  name="DocumentTree" caption="=documentCategories" data="DocumentTree"
+  name="DocumentTree" caption="=documentTree" data="DocumentTree"
   >
   <SplitPanel>
     <west size="300" splitterSize="2">

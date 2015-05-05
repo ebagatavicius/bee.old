@@ -7,8 +7,7 @@ public final class ImportProperty {
   private final String name;
   private final String caption;
   private final boolean isDataProperty;
-  private String relTable;
-  private String relField;
+  private String relation;
 
   public ImportProperty(String name, String caption, boolean isDataProperty) {
     this.name = Assert.notEmpty(name);
@@ -24,23 +23,15 @@ public final class ImportProperty {
     return name;
   }
 
-  public String getRelField() {
-    return relField;
-  }
-
-  public String getRelTable() {
-    return relTable;
+  public String getRelation() {
+    return relation;
   }
 
   public boolean isDataProperty() {
     return isDataProperty;
   }
 
-  public void setRelField(String relField) {
-    this.relField = relField;
-  }
-
-  public void setRelTable(String relTable) {
-    this.relTable = relTable;
+  public void setRelation(String relation) {
+    this.relation = relation;
   }
 }

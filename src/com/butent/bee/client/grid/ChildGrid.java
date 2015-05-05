@@ -2,10 +2,12 @@ package com.butent.bee.client.grid;
 
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.data.Provider;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.event.logical.ParentRowEvent;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.ui.UiOption;
+import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.grid.GridSettings;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.shared.BeeConst;
@@ -18,6 +20,7 @@ import com.butent.bee.shared.data.cache.CachingPolicy;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.Order;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -156,7 +159,7 @@ public class ChildGrid extends EmbeddedGrid implements Launchable {
     }
 
     final GridView gridView = GridFactory.createGridView(getGridDescription(), getGridKey(),
-        dataInfo.getColumns(), getRelSource(), getGridInterceptor(), order);
+        dataInfo.getColumns(), getRelSource(), uiOptions, getGridInterceptor(), order);
 
     afterCreateGrid(gridView);
 
@@ -261,8 +264,24 @@ public class ChildGrid extends EmbeddedGrid implements Launchable {
 
   private void updateFilter(IsRow row) {
     if (getPresenter() != null) {
-      getPresenter().getDataProvider().setParentFilter(getId(), getFilter(row));
       getPresenter().getGridView().setRelId(getParentValue(row));
+
+      Provider provider = getPresenter().getDataProvider();
+
+      boolean changed = provider.setParentFilter(getId(), getFilter(row));
+
+      if (changed && provider.getUserFilter() != null) {
+        provider.setUserFilter(null);
+
+        if (getPresenter().getFilterManager() != null) {
+          getPresenter().getFilterManager().clearFilter();
+        }
+
+        HeaderView header = getPresenter().getHeader();
+        if (header != null && header.hasAction(Action.REMOVE_FILTER)) {
+          header.showAction(Action.REMOVE_FILTER, false);
+        }
+      }
     }
   }
 }

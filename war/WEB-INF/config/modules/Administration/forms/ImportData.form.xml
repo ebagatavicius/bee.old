@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:Form xmlns="http://www.butent.com/widget"
+        xmlns:f="http://www.butent.com/form"
+
+        name="ImportData" viewName="ImportOptions" caption="=trImportOption"
+        width="800" height="600"
+    >
+  <FlowPanel class="flexBox-horizontal">
+    <ChildGrid name="ImportProperties" relColumn="Option" class="flexible" />
+    <FlowPanel class="flexBox-vertical flexible">
+      <ChildGrid name="ImportMappings" relColumn="Option" class="flexible" />
+      <ChildGrid name="ImportConditions" relColumn="Mapping" parent="ImportMappings"
+                 style="height:200px" />
+    </FlowPanel>
+  </FlowPanel>
+</f:Form>

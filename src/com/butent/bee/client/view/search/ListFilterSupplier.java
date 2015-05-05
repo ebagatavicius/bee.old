@@ -9,7 +9,7 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.butent.bee.client.Callback;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.utils.JsonUtils;
 import com.butent.bee.shared.BeeConst;
@@ -105,7 +105,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
   public void ensureData() {
     if (getData() == null || getEffectiveFilter() != null) {
       setEffectiveFilter(null);
-      getHistogram(new Callback<SimpleRowSet>() {
+      getHistogram(new RpcCallback<SimpleRowSet>() {
         @Override
         public void onSuccess(SimpleRowSet result) {
           setData(result);
@@ -148,7 +148,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
 
   @Override
   public void onRequest(final Element target, final Scheduler.ScheduledCommand onChange) {
-    getHistogram(new Callback<SimpleRowSet>() {
+    getHistogram(new RpcCallback<SimpleRowSet>() {
       @Override
       public void onSuccess(SimpleRowSet result) {
         setData(result);

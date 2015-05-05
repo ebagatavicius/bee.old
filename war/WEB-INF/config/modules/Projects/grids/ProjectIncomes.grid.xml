@@ -25,7 +25,7 @@
     </DataColumn>
     <CalcColumn name="ItemPrices" type="string" cellType="html"
       label="=taItemPrices" width="100" />
-    <RelColumn name="ProjectCurrency" renderColumns="ProjectCurrencyName"  readOnly="true"/>
+    <RelColumn name="Currency" renderColumns="CurrencyName" caption="=currencyShort"/>
     <DataColumn name="VatPlus" width="20" sortable="false"
       caption="+" format="+" carry="true" visible="true" />
     <DataColumn name="Vat" carry="true" flexGrow="0" visible="true">

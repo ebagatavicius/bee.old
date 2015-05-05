@@ -33,6 +33,9 @@
     <SimpleColumn name="Supplier" />
     <SimpleJoin name="Supplier" joinType="LEFT">
       <SimpleColumn name="Name" alias="SupplierName" />
+       <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="SupplierTypeName" />
+      </SimpleJoin>
     </SimpleJoin>
     <SimpleColumn name="Number" />
     <SimpleColumn name="Note" />

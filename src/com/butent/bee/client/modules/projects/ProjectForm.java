@@ -3,6 +3,7 @@ package com.butent.bee.client.modules.projects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -13,21 +14,24 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.DataSelector;
+import com.butent.bee.client.composite.Disclosure;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.eventsboard.EventsBoard.EventFilesFilter;
 import com.butent.bee.client.layout.Flow;
+import com.butent.bee.client.presenter.GridFormPresenter;
+import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.validation.CellValidateEvent;
 import com.butent.bee.client.validation.CellValidateEvent.Handler;
-import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.InputText;
 import com.butent.bee.client.widget.ListBox;
 import com.butent.bee.shared.BeeConst;
@@ -35,14 +39,18 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
+import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.event.CellUpdateEvent;
 import com.butent.bee.shared.data.event.DataChangeEvent;
+import com.butent.bee.shared.data.event.HandlesUpdateEvents;
 import com.butent.bee.shared.data.event.RowInsertEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.ViewColumn;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -62,7 +70,7 @@ import java.util.Map;
 import java.util.Set;
 
 class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Handler,
-    RowInsertEvent.Handler {
+    RowInsertEvent.Handler, HandlesUpdateEvents {
 
   private static final String WIDGET_CONTRACT = "Contract";
   private static final String WIDGET_CHART_DATA = "ChartData";
@@ -71,6 +79,7 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
   private static final String WIDGET_EXPECTED_TASKS_DURATION = "ExpectedTasksDuration";
   private static final String WIDGET_ACTUAL_TASKS_DURATION = "ActualTasksDuration";
   private static final String WIDGET_STATUS = "Status";
+  private static final String WIDGET_RELATED_INFO = "RelatedInfo";
 
   private static final Set<String> AUDIT_FIELDS = Sets.newHashSet(COL_PROJECT_START_DATE,
       COL_PROJECT_END_DATE, COL_COMAPNY, COL_PROJECT_STATUS, COL_PROJECT_OWNER,
@@ -91,6 +100,7 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
   private InputText expectedTasksDuration;
   private InputText actualTasksDuration;
   private ListBox status;
+  private Disclosure relatedInfo;
 
   private BeeRowSet timeUnits;
 
@@ -126,6 +136,10 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
     if (widget instanceof ListBox && BeeUtils.same(name, WIDGET_STATUS)) {
       status = (ListBox) widget;
     }
+
+    if (widget instanceof Disclosure && BeeUtils.same(name, WIDGET_RELATED_INFO)) {
+      relatedInfo = (Disclosure) widget;
+    }
   }
 
   @Override
@@ -139,7 +153,7 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
         Filter.in(Data.getIdColumn(DocumentConstants.VIEW_DOCUMENTS),
             DocumentConstants.VIEW_RELATED_DOCUMENTS, DocumentConstants.COL_DOCUMENT, Filter
                 .equals(COL_PROJECT, row
-                .getId()));
+                    .getId()));
 
     contractSelector.getOracle().setAdditionalFilter(relDocFilter, true);
 
@@ -153,9 +167,9 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
     }
 
     if (getTimeUnits() != null && DataUtils.isId(row.getId())) {
-      showComputedTimes(form, row);
+      showComputedTimes(form, row, false);
     } else if (getTimeUnits() == null && DataUtils.isId(row.getId())) {
-      showComputedTimes(form, row);
+      showComputedTimes(form, row, false);
     } else {
       if (actualTasksDuration != null) {
         actualTasksDuration.setText(null);
@@ -194,24 +208,53 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
 
     drawComments(form, row);
     drawChart(row);
+    setCategory(form, row);
   }
 
   @Override
   public void onClose(List<String> messages, IsRow oldRow, IsRow newRow) {
     chartData.clear();
     EventUtils.clearRegistry(registry);
+    if (relatedInfo != null) {
+      relatedInfo.setOpen(true);
+    }
+  }
+
+  @Override
+  public void onCellUpdate(CellUpdateEvent event) {
+
+    if (getFormView() == null) {
+      return;
+    }
+
+    if (getActiveRow() == null) {
+      return;
+    }
+
+    if (event.hasView(TaskConstants.VIEW_TASKS)
+        || event.hasView(TaskConstants.VIEW_TASK_EVENTS)
+        || event.hasView(TaskConstants.VIEW_RELATED_TASKS)) {
+
+      showComputedTimes(getFormView(), getActiveRow(), true);
+    }
   }
 
   @Override
   public void onDataChange(DataChangeEvent event) {
-    if (event.hasView(VIEW_PROJECTS) || event.hasView(VIEW_PROJECT_USERS)
-        || event.hasView(VIEW_PROJECT_STAGES) || event.hasView(VIEW_PROJECT_DATES)
+    if (getFormView() == null) {
+      return;
+    }
+
+    if (getActiveRow() == null) {
+      return;
+    }
+
+    if (event.hasView(VIEW_PROJECT_STAGES)
         || event.hasView(TaskConstants.VIEW_TASKS)
+        || event.hasView(TaskConstants.VIEW_TASK_EVENTS)
         || event.hasView(TaskConstants.VIEW_RELATED_TASKS)) {
 
-      getFormView().refreshBySource(COL_ACTUAL_TASKS_DURATION);
-      getFormView().refreshBySource(COL_EXPECTED_TASKS_DURATION);
-      getFormView().refresh();
+      showComputedTimes(getFormView(), getActiveRow(), true);
     }
   }
 
@@ -219,6 +262,68 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
   public void onLoad(FormView form) {
     registry.add(BeeKeeper.getBus().registerRowInsertHandler(this, false));
     registry.add(BeeKeeper.getBus().registerDataChangeHandler(this, false));
+    registry.addAll(BeeKeeper.getBus().registerUpdateHandler(this, false));
+  }
+
+  @Override
+  public boolean onStartEdit(final FormView form, final IsRow row, ScheduledCommand focusCommand) {
+
+    if (!DataUtils.isId(row.getLong(form.getDataIndex(ALS_FILTERED_OWNER_USER)))) {
+      List<BeeColumn> usrColumns =
+          Data.getColumns(VIEW_PROJECT_USERS, Lists.newArrayList(COL_PROJECT,
+              AdministrationConstants.COL_USER));
+      List<String> usrValues = Lists.newArrayList(BeeUtils.toString(row.getId()),
+          row.getString(form.getDataIndex(COL_PROJECT_OWNER)));
+      Queries.insert(VIEW_PROJECT_USERS, usrColumns, usrValues, null, new RowCallback() {
+
+        @Override
+        public void onSuccess(BeeRow result) {
+          RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_PROJECT_USERS, result);
+          CellUpdateEvent.fire(BeeKeeper.getBus(), VIEW_PROJECTS, row.getId(), row.getVersion(),
+              CellSource.forColumn(Data.getColumn(VIEW_PROJECTS, ALS_FILTERED_OWNER_USER), form
+                  .getDataIndex(ALS_FILTERED_OWNER_USER)),
+              row.getString(form.getDataIndex(COL_PROJECT_OWNER)));
+
+          form.refresh();
+        }
+      });
+    }
+
+    if (!BeeUtils.isPositive(row.getInteger(form.getDataIndex(ALS_STAGES_COUNT)))) {
+      List<BeeColumn> stgColumns =
+          Data.getColumns(VIEW_PROJECT_STAGES, Lists.newArrayList(COL_PROJECT,
+              COL_STAGE_NAME, COL_STAGE_START_DATE, COL_STAGE_END_DATE));
+      List<String> stgValues =
+          Lists.newArrayList(BeeUtils.toString(row.getId()), Localized.getConstants()
+              .prjInitialStage(),
+              row.getString(form.getDataIndex(COL_PROJECT_START_DATE)),
+              row.getString(form.getDataIndex(COL_PROJECT_END_DATE)));
+      Queries.insert(VIEW_PROJECT_STAGES, stgColumns, stgValues, null, new RowCallback() {
+
+        @Override
+        public void onSuccess(BeeRow result) {
+
+          RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_PROJECT_STAGES, result);
+          CellUpdateEvent.fire(BeeKeeper.getBus(), VIEW_PROJECTS, row.getId(), row.getVersion(),
+              CellSource.forColumn(Data.getColumn(VIEW_PROJECTS, ALS_STAGES_COUNT), form
+                  .getDataIndex(ALS_STAGES_COUNT)),
+              BeeUtils.toString(BeeConst.INT_TRUE));
+
+          form.refresh();
+
+        }
+      });
+    }
+
+    if (!DataUtils.isId(row.getLong(form.getDataIndex(ALS_FILTERED_VISITED_USER)))
+        && relatedInfo != null) {
+      relatedInfo.setOpen(true);
+    } else {
+      relatedInfo.setOpen(false);
+    }
+
+    return super.onStartEdit(form, row, focusCommand);
+
   }
 
   @Override
@@ -227,52 +332,41 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
   }
 
   @Override
-  public void onReadyForInsert(HasHandlers listener, final ReadyForInsertEvent event) {
-    final String viewName = getViewName();
-    List<String> values = event.getValues();
-    List<BeeColumn> columns = event.getColumns();
-
-    if (BeeUtils.isEmpty(values) || BeeUtils.isEmpty(columns)
-        || BeeUtils.isEmpty(viewName)) {
+  public void onRowInsert(RowInsertEvent event) {
+    if (getFormView() == null) {
       return;
     }
 
-    event.consume();
+    if (getActiveRow() == null) {
+      return;
+    }
 
-    Queries.insert(viewName, columns, values, null, new RowCallback() {
+    if (event.hasView(VIEW_PROJECT_STAGES)
+        || event.hasView(TaskConstants.VIEW_TASKS)
+        || event.hasView(TaskConstants.VIEW_TASK_EVENTS)
+        || event.hasView(TaskConstants.VIEW_RELATED_TASKS)) {
 
-      @Override
-      public void onSuccess(BeeRow result) {
-        DataInfo data = Data.getDataInfo(viewName);
-        List<BeeColumn> usrColumns =
-            Data.getColumns(VIEW_PROJECT_USERS, Lists.newArrayList(COL_PROJECT,
-                AdministrationConstants.COL_USER));
-        List<String> usrValues = Lists.newArrayList(BeeUtils.toString(result.getId()),
-            result.getString(data.getColumnIndex(COL_PROJECT_OWNER)));
-        Queries.insert(VIEW_PROJECT_USERS, usrColumns, usrValues);
-
-        event.getCallback().onSuccess(result);
-        RowInsertEvent.fire(BeeKeeper.getBus(), viewName, result, event.getSourceId());
-      }
-    });
+      showComputedTimes(getFormView(), getActiveRow(), true);
+    }
 
   }
 
   @Override
-  public void onRowInsert(RowInsertEvent event) {
-    if (event.hasView(VIEW_PROJECT_USERS)
-        || event.hasView(VIEW_PROJECT_STAGES) || event.hasView(VIEW_PROJECT_DATES)
-        || event.hasView(TaskConstants.VIEW_TASKS)
-        || event.hasView(TaskConstants.VIEW_RELATED_TASKS)) {
-
-      // if (event.hasView(TaskConstants.VIEW_TASKS)) {
-      // TODO: refresh tasks times
-      // }
-      getFormView().refreshBySource(COL_ACTUAL_TASKS_DURATION);
-      getFormView().refreshBySource(COL_EXPECTED_TASKS_DURATION);
-      getFormView().refresh();
+  public void onRowUpdate(RowUpdateEvent event) {
+    if (getFormView() == null) {
+      return;
     }
 
+    if (getActiveRow() == null) {
+      return;
+    }
+
+    if (event.hasView(TaskConstants.VIEW_TASKS)
+        || event.hasView(TaskConstants.VIEW_TASK_EVENTS)
+        || event.hasView(TaskConstants.VIEW_RELATED_TASKS)) {
+
+      showComputedTimes(getFormView(), getActiveRow(), true);
+    }
   }
 
   @Override
@@ -342,6 +436,40 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
         event.getRowId(), null, newDataSent, oldDataSent);
   }
 
+  @Override
+  public boolean beforeAction(Action action, Presenter presenter) {
+
+    if (action.equals(Action.SAVE) && getFormView() != null && getActiveRow() != null) {
+      FormView form = getFormView();
+      IsRow row = getActiveRow();
+      boolean valid = true;
+      Long startDate = null;
+      Long endDate = null;
+      int idxStartDate = form.getDataIndex(COL_PROJECT_START_DATE);
+      int idxEndDate = form.getDataIndex(COL_PROJECT_END_DATE);
+
+      if (idxStartDate > -1) {
+        startDate = row.getLong(idxStartDate);
+      }
+
+      if (idxEndDate > -1) {
+        endDate = row.getLong(idxEndDate);
+      }
+
+      if (startDate != null && endDate != null) {
+        if (startDate.longValue() <= endDate.longValue()) {
+          valid = true;
+        } else {
+          form.notifySevere(
+              Localized.getConstants().crmFinishDateMustBeGreaterThanStart());
+          valid = false;
+        }
+      }
+      return valid;
+    }
+    return super.beforeAction(action, presenter);
+  }
+
   private static boolean isOwner(FormView form, IsRow row) {
     int idxOwner = form.getDataIndex(COL_PROJECT_OWNER);
 
@@ -353,6 +481,18 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
     long projectUser = BeeUtils.unbox(row.getLong(idxOwner));
 
     return currentUser == projectUser;
+  }
+
+  private static AllProjectsGrid getProjectsGrid(FormView form) {
+    if (form.getViewPresenter() instanceof GridFormPresenter) {
+      GridInterceptor gic = ((GridFormPresenter) form.getViewPresenter()).getGridInterceptor();
+
+      if (gic instanceof AllProjectsGrid) {
+        return (AllProjectsGrid) gic;
+      }
+    }
+
+    return null;
   }
 
   private static boolean isProjectScheduled(FormView form, IsRow row) {
@@ -442,6 +582,21 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
     }
   }
 
+  private static void setCategory(FormView form, IsRow row) {
+    if (DataUtils.isNewRow(row)) {
+      AllProjectsGrid gridHandler = getProjectsGrid(form);
+
+      if (gridHandler != null && gridHandler.getSelectedCategory() != null) {
+        IsRow catRow = gridHandler.getSelectedCategory();
+        row.setValue(form.getDataIndex(COL_PROJECT_CATEGORY), catRow.getId());
+        row.setValue(form.getDataIndex(ALS_CATEGORY_NAME), Data.getString(VIEW_PROJECT_TREE,
+            catRow, COL_TREE_NAME));
+
+        form.refreshBySource(COL_PROJECT_CATEGORY);
+      }
+    }
+  }
+
   private void commitData(final FormView form, final String column, final String value) {
     IsRow oldRow = form.getOldRow();
     IsRow newRow = form.getActiveRow();
@@ -459,17 +614,17 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
     Queries.update(form.getViewName(), oldRow.getId(), oldRow.getVersion(), cols, oldValues,
         newValues, null, new RowCallback() {
 
-      @Override
-      public void onSuccess(BeeRow result) {
+          @Override
+          public void onSuccess(BeeRow result) {
 
-        RowUpdateEvent.fire(BeeKeeper.getBus(), form.getViewName(), result);
+            RowUpdateEvent.fire(BeeKeeper.getBus(), form.getViewName(), result);
 
-        form.refreshBySource(column);
-        unlockValidationEvent(column);
-        form.refresh();
+            form.refreshBySource(column);
+            unlockValidationEvent(column);
+            form.refresh();
 
-      }
-    });
+          }
+        });
   }
 
   private void drawChart(IsRow row) {
@@ -639,7 +794,7 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
     }
   }
 
-  private void showComputedTimes(FormView form, IsRow row) {
+  private void showComputedTimes(final FormView form, final IsRow row, boolean requery) {
     if (form == null) {
       return;
     }
@@ -648,12 +803,30 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
       return;
     }
 
-    int idxExpTD = form.getDataIndex(COL_EXPECTED_TASKS_DURATION);
-    int idxActTD = form.getDataIndex(COL_ACTUAL_TASKS_DURATION);
+    final int idxExpTD = form.getDataIndex(COL_EXPECTED_TASKS_DURATION);
+    final int idxActTD = form.getDataIndex(COL_ACTUAL_TASKS_DURATION);
+    final int idxExpD = form.getDataIndex(COL_EXPECTED_DURATION);
     int idxUnit = form.getDataIndex(COL_PROJECT_TIME_UNIT);
 
     double factor = BeeConst.DOUBLE_ONE;
     String unitName = BeeConst.STRING_EMPTY;
+
+    if (requery) {
+
+      Queries.getRow(form.getViewName(), row.getId(), new RowCallback() {
+        @Override
+        public void onSuccess(BeeRow result) {
+          row.setValue(idxExpTD, result.getValue(idxExpTD));
+          row.setValue(idxActTD, result.getValue(idxActTD));
+          form.refreshBySource(COL_EXPECTED_TASKS_DURATION);
+          form.refreshBySource(COL_ACTUAL_TASKS_DURATION);
+
+          showComputedTimes(form, row, false);
+        }
+      });
+
+      return;
+    }
 
     if (!BeeConst.isUndef(idxUnit) && getTimeUnits() != null) {
       long idValue = BeeUtils.unbox(row.getLong(idxUnit));
@@ -715,10 +888,19 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
                         / TimeUtils.MILLIS_PER_MINUTE), true) : BeeConst.STRING_EMPTY));
       }
     }
+
+    if (!BeeConst.isUndef(idxExpTD) && !BeeConst.isUndef(idxExpD)) {
+      long valueExpTD = BeeUtils.unbox(row.getLong(idxExpTD));
+      long expDMls =
+          BeeUtils.unbox(row.getLong(idxExpD))
+              * BeeUtils.toLong(factor * TimeUtils.MILLIS_PER_HOUR);
+
+      expectedTasksDuration.setStyleName(BeeConst.CSS_CLASS_PREFIX + "prj-FieldOverSized",
+          valueExpTD > expDMls);
+    }
   }
 
   private void unlockValidationEvent(String column) {
     lockedValidations.put(column, null);
   }
-
 }

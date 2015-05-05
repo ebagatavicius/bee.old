@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+
+name="TaskClassifiers" label="=crmTaskClassifiers" order="20" parent="Tasks" module="Tasks" separator="true"
+>
+  <Item name="TaskTypes" label="=crmTaskTypes" service="grid" parameters="TaskTypes" separator="true" />
+  <Item name="DurationTypes" label="=crmTaskDurationTypes" service="grid" parameters="DurationTypes" />
+  <Item name="TaskTemplates" label="=crmTaskTemplates" service="grid" parameters="TaskTemplates" />
+  <Item name="RequestTypes" label="=crmRequestTypes" service="grid" parameters="RequestTypes" separator="true" />
+  <Item name="RequestForms" label="=crmRequestForms" service="grid" parameters="RequestForms" />
+  <Item name="TaskParameters" label="=crmTaskParameters" service="parameters" parameters="Tasks"
+    separator="true" />
+</Entry>

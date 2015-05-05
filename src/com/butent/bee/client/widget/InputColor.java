@@ -110,7 +110,7 @@ public class InputColor extends Widget implements EnablableWidget, IdentifiableW
         public boolean validate(String value) {
           return BeeUtils.isEmpty(value) || Color.validate(value);
         }
-      }, getValue(), 20);
+      }, null, getValue(), 20);
     }
   }
 

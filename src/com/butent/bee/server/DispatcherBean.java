@@ -17,10 +17,12 @@ import com.butent.bee.server.ui.UiHolderBean;
 import com.butent.bee.server.ui.UiServiceBean;
 import com.butent.bee.server.utils.Reflection;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.rights.Module;
@@ -222,7 +224,16 @@ public class DispatcherBean {
           case SETTINGS:
             BeeRowSet userSettings = userService.ensureUserSettings();
             if (!DataUtils.isEmpty(userSettings)) {
-              data.put(component.key(), userSettings);
+              Long themeId = userSettings.getLong(0, COL_UI_THEME);
+              BeeRowSet theme;
+
+              if (DataUtils.isId(themeId)) {
+                theme = qs.getViewData(VIEW_UI_THEMES, Filter.compareId(themeId));
+              } else {
+                theme = null;
+              }
+
+              data.put(component.key(), Pair.of(userSettings, theme));
             }
             break;
 

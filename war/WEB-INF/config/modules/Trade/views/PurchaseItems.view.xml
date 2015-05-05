@@ -8,7 +8,7 @@
     <SimpleColumn name="Item" />
     <SimpleJoin joinType="INNER" name="Item">
       <SimpleColumn name="Name" alias="ItemName" />
-      
+
       <SimpleJoin joinType="INNER" name="Unit">
         <SimpleColumn name="Name" alias="UnitName" />
       </SimpleJoin>
@@ -21,5 +21,9 @@
     <SimpleColumn name="VatPercent" />
     <SimpleColumn name="Note" />
     <SimpleColumn name="Parent" />
+    <SimpleColumn name="Ordinal" />
   </Columns>
+  <Order>
+    <OrderBy column="Ordinal" />
+  </Order>
 </View>

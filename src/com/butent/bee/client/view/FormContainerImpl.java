@@ -51,6 +51,8 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
 
   private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "FormContainer";
 
+  private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
+
   private Presenter viewPresenter;
 
   private String headerId;
@@ -74,7 +76,9 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
 
   public FormContainerImpl() {
     super(-1);
+
     addStyleName(STYLE_NAME);
+    addStyleName(UiOption.getStyleName(uiOptions));
   }
 
   @Override
@@ -103,6 +107,7 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
   @Override
   public void create(FormDescription formDescription, List<BeeColumn> dataColumns, int rowCount,
       FormInterceptor interceptor) {
+
     Assert.notNull(formDescription);
 
     setHasData(!BeeUtils.isEmpty(dataColumns));
@@ -116,6 +121,7 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
     if (!disabledActions.contains(Action.PRINT)) {
       enabledActions.add(Action.PRINT);
     }
+    String caption = formDescription.getCaption();
 
     if (interceptor != null) {
       Set<Action> actions = interceptor.getEnabledActions(enabledActions);
@@ -127,12 +133,12 @@ public class FormContainerImpl extends Split implements FormContainerView, HasNa
       if (!disabledActions.equals(actions)) {
         BeeUtils.overwrite(disabledActions, actions);
       }
+      caption = BeeUtils.notEmpty(interceptor.getCaption(), caption);
     }
 
     HeaderView header = new HeaderImpl();
-    header.create(formDescription.getCaption(), hasData(), formDescription.isReadOnly(),
-        formDescription.getViewName(), EnumSet.of(UiOption.ROOT),
-        enabledActions, disabledActions, Action.NO_ACTIONS);
+    header.create(caption, hasData(), formDescription.isReadOnly(), formDescription.getViewName(),
+        uiOptions, enabledActions, disabledActions, Action.NO_ACTIONS);
 
     FormView content = new FormImpl(formDescription.getName());
     content.create(formDescription, null, dataColumns, true, interceptor);

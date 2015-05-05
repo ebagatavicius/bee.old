@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY lbl1 "text-align: right; padding: 0 10px 0 30px;">
+  <!ENTITY lbl2 "padding-left: 25px; font-size: 14px; text-align: right; padding-right: 10px; padding-left: 30px">
+  <!ENTITY inp1 "width: 280px;">
+]>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:d="http://www.butent.com/decorator"
+  xmlns:ui="http://www.butent.com/ui"
+
+  name="NewCompany"
+  viewName="Companies"
+  caption="=client"
+  width="700"
+  height="700"
+  >
+  <FlowPanel class="flexBox-vertical">
+
+    <Table style="margin: 0 0 25px 30px;">
+      <Label text="=companyInfo" style="padding-bottom: 10px; padding-top:10px"></Label>
+      <row>
+        <Label text="=name" class="bee-required" style="&lbl2;" />
+        <FlowPanel>
+        <DataSelector source="CompanyType" style="width: 75px; margin-right: 10px;" required="true" />
+        <InputText source="Name" visible="true" required="true" style="&inp1;"/>
+        </FlowPanel>
+      </row>
+
+      <row for="Code">
+        <Label text="=companyCode" style="&lbl2;"/>
+        <InputText source="Code" visible="true" style="&inp1;"/>
+      </row>
+
+      <row for="VATCode">
+        <Label text="=companyVATCode" for="VATCode" style="&lbl2;" />
+        <InputText source="VATCode" upperCase="true" style="&inp1;"/>
+      </row>
+
+      <row for="CompanyPriority">
+        <Label for="CompanyPriority" style="&lbl2;" />
+        <DataSelector source="CompanyPriority" style="&inp1;"/>
+      </row>
+
+      <row>
+        <Label text="=notes" style="&lbl2;"/>
+        <InputArea source="Notes" visibleLines="5" style="width: 365px; height: 125px" />
+      </row>   
+      <Label text="=contactInfo" style="padding-bottom: 10px; padding-top:10px"></Label>
+         
+      <row for="Address" >
+        <Label text="=address" style="&lbl2;" />
+        <InputText source="Address" style="&inp1;" />     
+      </row>
+          
+      <row>
+        <Label text="=phone" for="Phone" style="&lbl2;" />
+        <InputText source="Phone" style="&inp1;" />
+      </row>
+
+      <row>
+        <Label for="Mobile" style="&lbl2;"/>
+        <InputText source="Mobile" style="&inp1;" />
+      </row>
+
+      <row>
+        <Label for="Fax" style="&lbl2;"/>
+        <InputText source="Fax" style="&inp1;" />
+      </row>
+
+      <row>
+        <Label for="EmailId" style="&lbl2;"/>
+        <DataSelector source="EmailId" maxLength="50" style="&inp1;"/>
+      </row>
+
+      <row>
+        <Label for="Website" style="&lbl2;" />
+        <InputText source="Website" style="&inp1;" />
+      </row>
+
+      <row for="City">
+        <Label for="City" style="&lbl2;" />
+        <DataSelector source="City" style="&inp1;">
+        <selectorColumn source="Name" />
+        <selectorColumn source="CountryName" />
+        <selectorColumn source="CountryCode">
+        <ui:renderer type="flag" />
+        </selectorColumn>
+        </DataSelector>
+      </row>
+
+      <row for="Country">
+        <Label for="Country" style="&lbl2;"/>
+        <DataSelector source="Country" style="&inp1;">
+        <renderToken source="CountryName" />
+        <renderToken source="CountryCode" prefix=" (" suffix=")" />
+        <selectorColumn source="Name" />
+        <selectorColumn source="Code" >
+        <ui:renderer type="flag" />
+        </selectorColumn>
+        </DataSelector>
+        <Flag source="CountryCode" style="width: 22px;" />
+      </row>
+
+      <row>
+         <Label for="PostIndex" style="&lbl2;" />
+         <InputText source="PostIndex" style="&inp1;" />
+      </row>
+
+      <Label text="=additionalInfo" style="padding-bottom: 10px; padding-top:10px"></Label>
+
+      <row>
+         <Label for="CompanySize" style="&lbl2;"/>
+         <InputText source="CompanySize" style="&inp1;" />
+      </row>
+      
+      <row for="InformationSource">
+         <Label for="InformationSource" style="&lbl2;" />
+         <InputText source="InformationSource" style="&inp1;" />
+      </row>
+      
+      <row for="CompanyRelation">
+         <Label text="=companyRelation" data="CompRelTypeStore" style="&lbl2;" />
+         <ChildSelector viewName="CompanyRelationTypes" childTable="CompRelTypeStore"
+           targetRelColumn="Company" sourceRelColumn="RelationType" newRowEnabled="true"
+           label="=companyRelationType" data="CompRelTypeStore" style="&inp1;"/>
+      </row>
+      
+      <row for="CompanyRelationTypeState">
+         <Label for="CompanyRelationTypeState" style="&lbl2;" />
+         <DataSelector source="CompanyRelationTypeState" style="&inp1;" />
+      </row>
+      
+      <row data="CompActStore">
+         <Label text="=companyActivities" style="&lbl2;" />
+         <ChildSelector viewName="CompanyActivities" childTable="CompActStore"
+          targetRelColumn="Company" sourceRelColumn="Activity"
+          label="=companyActivities" summarize="true" style="&inp1;" />
+      </row>
+      
+      <row for="Turnover">
+         <Label text="=trdTurnover" style="&lbl2;" />
+         <DataSelector source="Turnover" style="&inp1;" />
+      </row>
+      
+      <row for="CompanyGroup">
+         <Label for="CompanyGroup" style="&lbl2;" />
+         <DataSelector source="CompanyGroup" style="&inp1;" />
+      </row>
+      
+         </Table>
+     
+         <ChildGrid name="CompanyBankAccounts" relColumn="Company" style="min-height: 150px;" />
+      
+         <ChildGrid name="CompanyPersons" relColumn="Company" style="min-height: 150px;" />
+      
+         <ChildGrid name="CompanyUsers" relColumn="Company" style="min-height: 150px;" />
+
+  </FlowPanel>
+</f:Form>

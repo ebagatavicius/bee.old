@@ -41,7 +41,7 @@ import java.util.List;
  * 
  * @param <TreeNode>
  */
-public interface TreeForTreeLayout<N> {
+public interface TreeForTreeLayout<T> {
 
   /**
    * Returns the the root of the tree.
@@ -50,7 +50,7 @@ public interface TreeForTreeLayout<N> {
    * 
    * @return the root of the tree
    */
-  N getRoot();
+  T getRoot();
 
   /**
    * Tells if a node is a leaf in the tree.
@@ -60,7 +60,7 @@ public interface TreeForTreeLayout<N> {
    * @param node
    * @return true iff node is a leaf in the tree, i.e. has no children.
    */
-  boolean isLeaf(N node);
+  boolean isLeaf(T node);
 
   /**
    * Tells if a node is a child of a given parentNode.
@@ -71,7 +71,7 @@ public interface TreeForTreeLayout<N> {
    * @param parentNode
    * @return true iff the node is a child of the given parentNode
    */
-  boolean isChildOfParent(N node, N parentNode);
+  boolean isChildOfParent(T node, T parentNode);
 
   /**
    * Returns the children of a parent node.
@@ -81,7 +81,7 @@ public interface TreeForTreeLayout<N> {
    * @param parentNode [!isLeaf(parentNode)]
    * @return the children of the given parentNode, from first to last
    */
-  List<N> getChildren(N parentNode);
+  List<T> getChildren(T parentNode);
 
   /**
    * Returns the children of a parent node, in reverse order.
@@ -91,7 +91,7 @@ public interface TreeForTreeLayout<N> {
    * @param parentNode [!isLeaf(parentNode)]
    * @return the children of given parentNode, from last to first
    */
-  List<N> getChildrenReverse(N parentNode);
+  List<T> getChildrenReverse(T parentNode);
 
   /**
    * Returns the first child of a parent node.
@@ -101,7 +101,7 @@ public interface TreeForTreeLayout<N> {
    * @param parentNode [!isLeaf(parentNode)]
    * @return the first child of the parentNode
    */
-  N getFirstChild(N parentNode);
+  T getFirstChild(T parentNode);
 
   /**
    * Returns the last child of a parent node.
@@ -112,5 +112,7 @@ public interface TreeForTreeLayout<N> {
    * @param parentNode [!isLeaf(parentNode)]
    * @return the last child of the parentNode
    */
-  N getLastChild(N parentNode);
+  T getLastChild(T parentNode);
+
+  int getLevel(T node);
 }

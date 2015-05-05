@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="ImportConditions" source="ImportConditions" caption="=trImportConditions"
+    >
+  <Columns>
+    <SimpleColumn name="Mapping" />
+    <SimpleColumn name="Property" />
+    <SimpleJoin name="Property" joinType="INNER">
+      <SimpleJoin name="Option" joinType="INNER">
+        <SimpleColumn name="Data" />
+      </SimpleJoin>
+      <SimpleColumn name="Property" alias="PropertyValue" />
+    </SimpleJoin>
+    <SimpleColumn name="Value" />
+  </Columns>
+</View>

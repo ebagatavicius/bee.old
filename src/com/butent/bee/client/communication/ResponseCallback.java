@@ -2,11 +2,17 @@ package com.butent.bee.client.communication;
 
 import com.butent.bee.shared.communication.ResponseObject;
 
-/**
- * Requires that classes implementing this interface would have <code>ResponseCallback</code>
- * method.
- */
+public abstract class ResponseCallback {
 
-public interface ResponseCallback {
-  void onResponse(ResponseObject response);
+  private int rpcId;
+
+  public int getRpcId() {
+    return rpcId;
+  }
+
+  public abstract void onResponse(ResponseObject response);
+
+  public void setRpcId(int rpcId) {
+    this.rpcId = rpcId;
+  }
 }

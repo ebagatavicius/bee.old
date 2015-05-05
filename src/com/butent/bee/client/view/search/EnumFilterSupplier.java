@@ -5,7 +5,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.butent.bee.client.Callback;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeColumn;
@@ -85,7 +85,7 @@ public class EnumFilterSupplier extends AbstractFilterSupplier {
       return;
     }
 
-    getHistogram(new Callback<SimpleRowSet>() {
+    getHistogram(new RpcCallback<SimpleRowSet>() {
       @Override
       public void onSuccess(SimpleRowSet result) {
         data.clear();

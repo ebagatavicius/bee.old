@@ -5,8 +5,8 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.dialog.Popup;
@@ -43,7 +43,7 @@ public final class PasswordService {
     final String viewName = AdministrationConstants.VIEW_USERS;
     final String colName = AdministrationConstants.COL_PASSWORD;
 
-    Queries.getValue(viewName, userId, colName, new Callback<String>() {
+    Queries.getValue(viewName, userId, colName, new RpcCallback<String>() {
       @Override
       public void onSuccess(String result) {
         openDialog(result, new Consumer<String>() {

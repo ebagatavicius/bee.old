@@ -371,6 +371,7 @@ class MessageDispatcher {
         MailMessage mailMessage = (MailMessage) message;
 
         if (mailMessage.isValid()) {
+          MailKeeper.getUnreadCount();
           boolean refreshFolders = mailMessage.messagesUpdated() || mailMessage.foldersUpdated()
               || Objects.equals(mailMessage.getFlag(), MessageFlag.SEEN);
 

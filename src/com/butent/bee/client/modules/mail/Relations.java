@@ -14,7 +14,6 @@ import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.xml.client.Document;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 
@@ -39,7 +38,6 @@ import com.butent.bee.client.ui.HandlesValueChange;
 import com.butent.bee.client.ui.HasFosterParent;
 import com.butent.bee.client.ui.HasRowChildren;
 import com.butent.bee.client.ui.UiHelper;
-import com.butent.bee.client.utils.XmlUtils;
 import com.butent.bee.client.view.edit.EditChangeHandler;
 import com.butent.bee.client.view.edit.EditStopEvent;
 import com.butent.bee.client.view.edit.Editor;
@@ -63,7 +61,6 @@ import com.butent.bee.shared.modules.mail.MailConstants;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.EditorAction;
 import com.butent.bee.shared.ui.Relation;
-import com.butent.bee.shared.ui.UiConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -642,18 +639,8 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
     Relation relation = rel;
 
     if (relation == null) {
-      String relationInfo = Data.getDataInfo(viewName).getRelationInfo();
+      relation = Data.getRelation(viewName);
 
-      if (!BeeUtils.isEmpty(relationInfo)) {
-        Document doc = XmlUtils.parse(relationInfo);
-
-        if (doc != null) {
-          Map<String, String> attributes = XmlUtils.getAttributes(doc.getDocumentElement());
-          attributes.put(UiConstants.ATTR_VIEW_NAME, viewName);
-          relation = FormWidget.createRelation(null, attributes,
-              XmlUtils.getChildrenElements(doc.getDocumentElement()), Relation.RenderMode.SOURCE);
-        }
-      }
       if (relation == null) {
         LogUtils.getRootLogger().severe("Missing relation info:", viewName);
         return null;

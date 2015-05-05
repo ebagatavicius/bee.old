@@ -13,7 +13,7 @@
     <Table>
       <row>
         <Label text="=trTripDate" class="bee-hasDefaults bee-required" />
-        <InputDateTime source="Date" style="width:110px;"  />
+        <InputDateTime source="Date" />
         <Label text="=trTripNo" class="bee-hasDefaults bee-required" horizontalAlignment="right" />
         <InputText source="TripNo" />
         <Label text="=trExpeditionType" class="bee-required" horizontalAlignment="right" />
@@ -21,13 +21,13 @@
       </row>
       <row>
         <Label text="=carrier" class="bee-required" />
-        <DataSelector source="Forwarder" required="true" />
+        <DataSelector source="Forwarder" required="true" renderColumns="ForwarderName ForwarderTypeName"
+          choiceColumns="Name TypeName"/>
         <Label text="=status" class="bee-hasDefaults bee-required" horizontalAlignment="right" />
-        <ListBox source="Status" />
-        <cell colSpan="2" rowSpan="3">
+        <ListBox source="Status" style="width: 152px; height: 29px;"/>
+        <cell colSpan="2" rowSpan="2">
           <FlowPanel>
-            <Label text="=notes" />
-            <InputArea source="Notes" style="width:280px;" visibleLines="3" />
+            <InputArea source="Notes" placeholder="=notes" style="width:280px;" visibleLines="3" />
           </FlowPanel>
         </cell>
       </row>

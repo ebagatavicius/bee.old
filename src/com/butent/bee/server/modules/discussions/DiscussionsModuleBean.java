@@ -887,6 +887,8 @@ public class DiscussionsModuleBean implements BeeModule {
             COL_PHOTO)
         .addCount(TBL_DISCUSSIONS_FILES, AdministrationConstants.COL_FILE,
             AdministrationConstants.COL_FILE)
+        .addCount(TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION,
+                COL_DISCUSSION_COMMENTS)
         .addExpr(
             SqlUtils.sqlIf(
                 SqlUtils.isNull(TBL_DISCUSSIONS_USAGE, NewsConstants.COL_USAGE_ACCESS),
@@ -911,6 +913,8 @@ public class DiscussionsModuleBean implements BeeModule {
                 COL_PERSON))
         .addFromLeft(TBL_DISCUSSIONS_FILES,
             sys.joinTables(TBL_DISCUSSIONS, TBL_DISCUSSIONS_FILES, COL_DISCUSSION))
+        .addFromLeft(TBL_DISCUSSIONS_COMMENTS,
+                sys.joinTables(TBL_DISCUSSIONS, TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION))
         .addFromLeft(TBL_DISCUSSIONS_USERS,
             sys.joinTables(TBL_DISCUSSIONS, TBL_DISCUSSIONS_USERS, COL_DISCUSSION))
         .setWhere(SqlUtils.and(

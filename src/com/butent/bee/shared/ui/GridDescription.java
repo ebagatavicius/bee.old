@@ -38,7 +38,7 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
     NEW_ROW_FORM, NEW_ROW_COLUMNS, NEW_ROW_DEFAULTS, NEW_ROW_CAPTION, NEW_ROW_POPUP,
     NEW_ROW_FORM_IMMEDIATE,
     EDIT_FORM, EDIT_MODE, EDIT_SAVE, EDIT_MESSAGE, EDIT_SHOW_ID, EDIT_POPUP,
-    EDIT_FORM_IMMEDIATE,
+    EDIT_FORM_IMMEDIATE, EDIT_IN_PLACE,
     ENABLED_ACTIONS, DISABLED_ACTIONS, STYLE_SHEETS, HEADER, BODY, FOOTER,
     ROW_STYLES, ROW_MESSAGE, ROW_EDITABLE, ROW_VALIDATION, MIN_COLUMN_WIDTH, MAX_COLUMN_WIDTH,
     COLUMNS, WIDGETS, AUTO_FIT, FLEXIBILITY, FAVORITE, ENABLE_COPY, CACHE_DATA, CACHE_DESCRIPTION,
@@ -105,6 +105,7 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
   private Boolean editShowId;
   private Boolean editPopup;
   private Boolean editFormImmediate;
+  private Boolean editInPlace;
 
   private Map<String, String> styleSheets;
 
@@ -396,6 +397,10 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
           setEditFormImmediate(BeeUtils.toBooleanOrNull(value));
           break;
 
+        case EDIT_IN_PLACE:
+          setEditInPlace(BeeUtils.toBooleanOrNull(value));
+          break;
+
         case PREDEFINED_FILTERS:
           setPredefinedFilters(FilterDescription.restoreList(value));
           break;
@@ -467,6 +472,10 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
     return editFormImmediate;
   }
 
+  public Boolean getEditInPlace() {
+    return editInPlace;
+  }
+
   public Calculation getEditMessage() {
     return editMessage;
   }
@@ -528,6 +537,7 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
         "Edit Show Id", getEditShowId(),
         "Edit Popup", getEditPopup(),
         "Edit Form Immediate", getEditFormImmediate(),
+        "Edit In Place", getEditInPlace(),
         "Enabled Actions", getEnabledActions(),
         "Disabled Actions", getDisabledActions(),
         "Min Column Width", getMinColumnWidth(),
@@ -969,6 +979,9 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
         case EDIT_FORM_IMMEDIATE:
           arr[i++] = getEditFormImmediate();
           break;
+        case EDIT_IN_PLACE:
+          arr[i++] = getEditInPlace();
+          break;
         case PREDEFINED_FILTERS:
           arr[i++] = getPredefinedFilters();
           break;
@@ -1026,6 +1039,10 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
 
   public void setEditFormImmediate(Boolean editFormImmediate) {
     this.editFormImmediate = editFormImmediate;
+  }
+
+  public void setEditInPlace(Boolean editInPlace) {
+    this.editInPlace = editInPlace;
   }
 
   public void setEditMessage(Calculation editMessage) {

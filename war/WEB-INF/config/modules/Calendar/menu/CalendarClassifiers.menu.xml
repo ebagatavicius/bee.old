@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+
+name="CalendarClassifiers" label="=classifiers" parent="Calendar" order="20" separator="true" 
+>
+   <Item name="AppointmentTypes" label="=calAppointmentTypes" service="grid" parameters="AppointmentTypes" separator="true" />
+   <Item name="AttendeeTypes" label="=calAttendeeTypes" service="grid" parameters="AttendeeTypes" />
+  
+</Entry>

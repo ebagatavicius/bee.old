@@ -7,10 +7,10 @@ import static com.butent.bee.shared.modules.administration.AdministrationConstan
 import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.DataCache;
 import com.butent.bee.client.data.Queries;
@@ -405,7 +405,7 @@ public final class CalendarKeeper {
   }
 
   public static void openCalendar(final long id, final ViewCallback callback) {
-    Queries.getValue(VIEW_CALENDARS, id, COL_CALENDAR_NAME, new Callback<String>() {
+    Queries.getValue(VIEW_CALENDARS, id, COL_CALENDAR_NAME, new RpcCallback<String>() {
       @Override
       public void onSuccess(String result) {
         if (!BeeUtils.isEmpty(result)) {

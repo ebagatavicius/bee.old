@@ -1,34 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="Tasks" label="=crmTasks" order="30" module="Tasks"
+name="Tasks" label="=crmTasks" order="20" module="Tasks"
 >
   <Item name="Requests" label="=crmRequests" service="grid" parameters="Requests" />
-  <Item name="NewRequest" label="=crmNewRequest" service="new" parameters="Requests" />
 
-  <Item name="TodoList" label="=crmTodoList" service="grid" parameters="TodoList"
+  <Item name="AssignedTasks" label="=crmTasksAssignedTasks" service="task_list" parameters="Assigned"
     separator="true" />
-
-  <Item name="NewTask" label="=crmNewTask" service="new" parameters="Tasks" separator="true" />
-  <Item name="AssignedTasks" label="=crmTasksAssigned" service="task_list" parameters="Assigned" 
-    separator="true" />
-  <Item name="DelegatedTasks" label="=crmTasksDelegated" service="task_list"
+  <Item name="DelegatedTasks" label="=crmTasksDelegatedTasks" service="task_list"
     parameters="Delegated" />
-  <Item name="ObservedTasks" label="=crmTasksObserved" service="task_list" parameters="Observed" />
-
-  <Item name="AllTasks" label="=crmTasksAll" service="task_list" parameters="All"
-    module="Administration" separator="true" />
-
-  <Item name="NewRecurringTask" label="=crmNewRecurringTask" service="new"
-    parameters="RecurringTasks" separator="true" />
+  <Item name="ObservedTasks" label="=crmTasksObservedTasks" service="task_list" parameters="Observed" />
   <Item name="RecurringTasks" label="=crmRecurringTasks" service="grid" 
     parameters="RecurringTasks" />
-
-  <Item name="TaskTemplates" label="=crmTaskTemplates" service="grid" parameters="TaskTemplates"
+  <Item name="AllTasks" label="=crmTasksAll" service="task_list" parameters="All"
+    module="Administration" separator="true" />
+    
+  <Item name="TodoList" label="=crmTodoList" service="grid" parameters="TodoList"
     separator="true" />
-
-  <Item name="TaskTypes" label="=crmTaskTypes" service="grid"
-    parameters="TaskTypes" separator="true" />
-  <Item name="DurationTypes" label="=crmTaskDurationTypes" service="grid" 
-    parameters="DurationTypes" />
 </Entry>

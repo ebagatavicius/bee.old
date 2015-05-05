@@ -4,7 +4,7 @@
 
   name="CargoCreditInvoices" viewName="CargoPurchaseInvoices"
   editShowId="true" flexGrow="1"
-  disabledActions="add edit"
+  disabledActions="add"
   caption="=trCreditInvoices"
   filter="Sale"
   >

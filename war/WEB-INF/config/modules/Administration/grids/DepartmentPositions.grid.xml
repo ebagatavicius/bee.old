@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="DepartmentPositions" viewName="DepartmentPositions"
+  >
+  <g:columns>
+    <DataColumn name="PositionName" label="=personPosition" flexGrow="2" visible="true" />
+    <DataColumn name="NumberOfEmployees" />
+    <RelColumn name="Role" flexGrow="2" />
+  </g:columns>
+</g:Grid>

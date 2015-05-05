@@ -5,7 +5,7 @@
   idName="CalendarID"
   >
   <Fields>
-    <String name="Name" precision="30" notNull="true" unique="true" label="=calName" />
+    <String name="Name" precision="150" notNull="true" unique="true" label="=calName" />
     <Text name="Description" label="=description" />
 
     <Enum name="Visibility" key="CalendarVisibility" label="=calVisibility" />

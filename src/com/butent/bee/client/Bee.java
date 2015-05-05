@@ -26,6 +26,7 @@ import com.butent.bee.client.modules.administration.AdministrationKeeper;
 import com.butent.bee.client.screen.BodyPanel;
 import com.butent.bee.client.screen.Workspace;
 import com.butent.bee.client.ui.AutocompleteProvider;
+import com.butent.bee.client.ui.Theme;
 import com.butent.bee.client.utils.LayoutEngine;
 import com.butent.bee.client.view.grid.GridSettings;
 import com.butent.bee.client.websocket.Endpoint;
@@ -153,7 +154,10 @@ public class Bee implements EntryPoint, ClosingHandler {
 
     String userSettings = data.get(Component.SETTINGS.key());
     if (!BeeUtils.isEmpty(userSettings)) {
-      BeeKeeper.getUser().loadSettings(userSettings);
+      Pair<String, String> pair = Pair.restore(userSettings);
+
+      Theme.load(pair.getB());
+      BeeKeeper.getUser().loadSettings(pair.getA());
     }
 
     Module.setEnabledModules(data.get(Service.PROPERTY_MODULES));

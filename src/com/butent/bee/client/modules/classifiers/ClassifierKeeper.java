@@ -8,7 +8,9 @@ import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
+import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
@@ -18,9 +20,12 @@ import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.TreeView;
 import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.widget.Image;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
@@ -28,6 +33,9 @@ import com.butent.bee.shared.data.event.RowTransformEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.LongValue;
 import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.logging.BeeLogger;
+import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.rights.Module;
@@ -36,6 +44,8 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.List;
 
 public final class ClassifierKeeper {
+
+  private static BeeLogger logger = LogUtils.getLogger(ClassifierKeeper.class);
 
   private static class RowTransformHandler implements RowTransformEvent.Handler {
     @Override
@@ -137,6 +147,62 @@ public final class ClassifierKeeper {
     }
   }
 
+  public static void generateQrCode(FormView form, IsRow row) {
+    final Image qrCodeImage = new Image();
+    ParameterList prm = ClassifierKeeper.createArgs(SVC_GENERATE_QR_CODE);
+
+    int idxMobile = form.getDataIndex(COL_MOBILE);
+    int idxEmail = form.getDataIndex(COL_EMAIL);
+    int idxAddress = form.getDataIndex(COL_ADDRESS);
+
+    if (form.getViewName().equals(VIEW_COMPANIES)) {
+      int idxName = form.getDataIndex(COL_COMPANY_NAME);
+      String name = row.getString(idxName);
+      prm.addDataItem(QR_TYPE, QR_COMPANY);
+      if (!BeeUtils.isEmpty(name)) {
+        prm.addDataItem(COL_COMPANY_NAME, name);
+      }
+    } else if (form.getViewName().equals(VIEW_PERSONS)
+        || form.getViewName().equals(VIEW_COMPANY_PERSONS)) {
+      int idxFirstName = form.getDataIndex(COL_FIRST_NAME);
+      int idxLastName = form.getDataIndex(COL_LAST_NAME);
+      String userName = row.getString(idxFirstName);
+      prm.addDataItem(QR_TYPE, QR_PERSON);
+      if (!BeeUtils.isEmpty(userName)) {
+        prm.addDataItem(COL_FIRST_NAME, userName);
+      }
+      String userLastName = row.getString(idxLastName);
+      if (!BeeUtils.isEmpty(userLastName)) {
+        prm.addDataItem(COL_LAST_NAME, userLastName);
+      }
+    } else {
+      logger.info("Qr Code cannot be generated");
+    }
+    String mobile = row.getString(idxMobile);
+    if (!BeeUtils.isEmpty(mobile)) {
+      prm.addDataItem(COL_MOBILE, mobile);
+    }
+    String email = row.getString(idxEmail);
+    if (!BeeUtils.isEmpty(email)) {
+      prm.addDataItem(COL_EMAIL, email);
+    }
+    String address = row.getString(idxAddress);
+    if (!BeeUtils.isEmpty(address)) {
+      prm.addDataItem(COL_ADDRESS, address);
+    }
+
+    BeeKeeper.getRpc().makePostRequest(prm, new ResponseCallback() {
+
+      @Override
+      public void onResponse(ResponseObject response) {
+        String qrBase64 = response.getResponseAsString();
+        qrCodeImage.setUrl("data:image/png;base64," + qrBase64);
+        Global.showModalWidget(Localized.getConstants().qrCode(), qrCodeImage);
+      }
+    });
+
+  }
+
   public static void register() {
     GridFactory.registerGridSupplier(ItemsGrid.getSupplierKey(false), GRID_ITEMS,
         new ItemsGrid(false));
@@ -158,6 +224,8 @@ public final class ClassifierKeeper {
     FormFactory.registerFormInterceptor(FORM_COMPANY, new CompanyForm());
     FormFactory.registerFormInterceptor("Holidays", new HolidaysForm());
     FormFactory.registerFormInterceptor(FORM_COMPANY_ACTION, new CompanyActionForm());
+    FormFactory.registerFormInterceptor(FORM_NEW_COMPANY, new CompanyForm());
+    FormFactory.registerFormInterceptor(FORM_COMPANY_PERSON, new CompanyPersonForm());
 
     SelectorEvent.register(new ClassifierSelector());
 

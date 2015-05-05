@@ -43,6 +43,9 @@
     <SimpleColumn name="Owner" />
     <SimpleJoin name="Owner" joinType="LEFT">
       <SimpleColumn name="Name" alias="OwnerName" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="CompanyTypeName" />
+      </SimpleJoin>
     </SimpleJoin>
     <SimpleColumn name="Notes" />
 

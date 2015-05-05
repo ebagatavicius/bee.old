@@ -472,8 +472,8 @@
 }
 
 .bee-cal-ReportOptions-container {
-  width: 480px;
-  height: 340px;
+  width: 650px;
+  height: 200px;
   position: relative;
 }
 
@@ -484,7 +484,8 @@
 }
 .bee-cal-ReportOptions-caption {
   position: absolute;
-  left: 100px;
+  left: 150px;
+  width: 160px !important;
   top: 0;
   right: 0;
 }
@@ -496,54 +497,52 @@
 }
 .bee-cal-ReportOptions-lowerDate {
   position: absolute;
-  left: 100px;
+  left: 90px;
   top: 40px;
   width: 80px;
 }
 .bee-cal-ReportOptions-udLabel {
   position: absolute;
-  left: 260px;
+  left: 330px;
   top: 42px;
 }
 .bee-cal-ReportOptions-upperDate {
   position: absolute;
-  left: 360px;
+  left: 390px;
   top: 40px;
   width: 80px;
 }
 
 .bee-cal-ReportOptions-lhLabel {
   position: absolute;
-  left: 0;
-  top: 82px;
+  left: 330px;
+  top: 2px;
 }
 .bee-cal-ReportOptions-lowerHour {
   position: absolute;
-  left: 100px;
-  top: 80px;
+  left: 410px;
   width: 50px;
 }
 .bee-cal-ReportOptions-uhLabel {
   position: absolute;
-  left: 260px;
-  top: 82px;
+  left: 470px;
+  top: 2px;
 }
 .bee-cal-ReportOptions-upperHour {
   position: absolute;
-  left: 360px;
-  top: 80px;
+  left: 540px;
   width: 50px;
 }
 
 .bee-cal-ReportOptions-atpLabel {
   position: absolute;
   left: 0;
-  top: 120px;
+  top: 72px;
 }
 .bee-cal-ReportOptions-attendeeTypes {
   position: absolute;
-  left: 0;
-  top: 140px;
+  left: 90px;
+  top: 70px;
   width: 220px;
   max-height: 160px;
   overflow: auto;
@@ -551,13 +550,13 @@
 
 .bee-cal-ReportOptions-attLabel {
   position: absolute;
-  left: 260px;
-  top: 120px;
+  left: 330px;
+  top: 72px;
 }
 .bee-cal-ReportOptions-attendees {
   position: absolute;
-  left: 260px;
-  top: 140px;
+  left: 390px;
+  top: 70px;
   width: 220px;
   max-height: 160px;
   overflow: auto;
@@ -565,7 +564,7 @@
 
 .bee-cal-ReportOptions-tableCommand {
   position: absolute;
-  left: 200px;
+  left: 275px;
   bottom: 0;
   width: 100px;
   font-size: medium;

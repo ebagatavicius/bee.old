@@ -261,6 +261,7 @@ public class RpcFactory {
 
   private int makeRequest(RequestBuilder.Method meth, ParameterList params,
       ContentType type, String reqData, ResponseCallback callback, int timeout) {
+
     Assert.notNull(meth);
     Assert.notNull(params);
 

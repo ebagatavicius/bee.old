@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="Calendar" label="=calendar" order="70" module="Calendar"
+name="Calendar" label="=calendar" order="60" module="Calendar"
 >
   <Item name="Calendars" label="=calendars" service="grid" parameters="Calendars" />
     
   <Item name="Appointments" label="=calAppointments" service="grid" parameters="Appointments" separator="true" />
     
-  <Item name="AppointmentTypes" label="=calAppointmentTypes" service="grid" parameters="AppointmentTypes" separator="true" />
-    
   <Item name="Attendees" label="=calAttendees" service="grid" parameters="Attendees" separator="true" />
-  <Item name="AttendeeTypes" label="=calAttendeeTypes" service="grid" parameters="AttendeeTypes" />
 
   <Item name="AppointmentProperties" label="=calAppointmentProperties" service="grid" parameters="ExtendedProperties" separator="true" />
   <Item name="PropertyGroups" label="=calAppointmentPropertyGroups" service="grid" parameters="PropertyGroups" />

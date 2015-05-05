@@ -32,15 +32,18 @@ public class MapContainer extends Flow implements Presenter, View, HasWidgetSupp
 
   private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "MapContainer";
 
+  private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
+
   private final HeaderView headerView;
 
   private boolean enabled = true;
 
   public MapContainer(String caption, MapWidget mapWidget) {
     super(STYLE_NAME);
+    addStyleName(UiOption.getStyleName(uiOptions));
 
     this.headerView = new HeaderImpl();
-    headerView.create(caption, false, true, null, EnumSet.of(UiOption.ROOT),
+    headerView.create(caption, false, true, null, uiOptions,
         EnumSet.of(Action.CLOSE), Action.NO_ACTIONS, Action.NO_ACTIONS);
 
     headerView.setViewPresenter(this);

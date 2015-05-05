@@ -6,7 +6,6 @@
 		
 	<g:columns>
 		<DataColumn name="StartDate" />
-		<DataColumn name="EndDate" />
 		<DataColumn name="Color" width="100" visible="true">
       <dynStyle>
         <ui:inline>background-color: [row.Color];</ui:inline>

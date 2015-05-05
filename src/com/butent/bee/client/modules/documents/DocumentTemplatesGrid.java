@@ -63,7 +63,7 @@ public class DocumentTemplatesGrid extends AbstractGridInterceptor implements
       if (category != null) {
         flt = Filter.equals(COL_DOCUMENT_CATEGORY, category);
       } else {
-        flt = Filter.isFalse();
+        flt = null;
       }
       getGridPresenter().getDataProvider().setParentFilter(FILTER_KEY, flt);
       getGridPresenter().refresh(true);

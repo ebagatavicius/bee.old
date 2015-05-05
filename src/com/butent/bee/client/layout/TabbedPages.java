@@ -1,9 +1,13 @@
 package com.butent.bee.client.layout;
 
+import com.google.common.base.Predicate;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
@@ -17,6 +21,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.ElementSize;
+import com.butent.bee.client.event.DndHelper;
+import com.butent.bee.client.event.DndTarget;
 import com.butent.bee.client.event.logical.HasSummaryChangeHandlers;
 import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.event.logical.VisibilityChangeEvent;
@@ -26,12 +32,17 @@ import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.BiConsumer;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.logging.BeeLogger;
+import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -193,8 +204,12 @@ public class TabbedPages extends Flow implements
     }
   }
 
+  private static final BeeLogger logger = LogUtils.getLogger(TabbedPages.class);
+
   private static final String DEFAULT_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "TabbedPages-";
   private static final String CONTENT_STYLE_SUFFIX = "content";
+
+  private static final String RESIZER_CONTENT_TYPE = "tabbed_pages";
 
   private final String stylePrefix;
   private final Orientation orientation;
@@ -205,6 +220,9 @@ public class TabbedPages extends Flow implements
   private int selectedIndex = BeeConst.UNDEF;
 
   private ElementSize tabBarSize;
+
+  private boolean resizable;
+  private boolean resizerInitialized;
 
   public TabbedPages() {
     this(DEFAULT_STYLE_PREFIX);
@@ -314,6 +332,10 @@ public class TabbedPages extends Flow implements
     return BeeUtils.betweenExclusive(index, 0, getPageCount());
   }
 
+  public boolean isResizable() {
+    return resizable;
+  }
+
   public void removePage(int index) {
     checkIndex(index);
 
@@ -365,6 +387,14 @@ public class TabbedPages extends Flow implements
     SelectionEvent.fire(this, data);
   }
 
+  public void setResizable(boolean resizable) {
+    this.resizable = resizable;
+
+    if (resizable && !resizerInitialized && isAttached()) {
+      maybeInitResizer();
+    }
+  }
+
   public void setTabStyle(int index, String style, boolean add) {
     checkIndex(index);
     getTab(index).setStyleName(style, add);
@@ -405,6 +435,15 @@ public class TabbedPages extends Flow implements
 
   protected Flow getTabBar() {
     return tabBar;
+  }
+
+  @Override
+  protected void onLoad() {
+    super.onLoad();
+
+    if (resizable && !resizerInitialized) {
+      maybeInitResizer();
+    }
   }
 
   protected void saveLayout() {
@@ -491,6 +530,53 @@ public class TabbedPages extends Flow implements
     }
 
     checkLayout();
+  }
+
+  private void maybeInitResizer() {
+    Widget target = getParent();
+    Element offsetParent = getElement().getOffsetParent();
+
+    if (target instanceof DndTarget && target.getElement().equals(offsetParent)) {
+      DndHelper.makeSource(tabBar, RESIZER_CONTENT_TYPE, getId(), getStylePrefix() + "drag");
+
+      DndHelper.makeTarget((DndTarget) target, Collections.singleton(RESIZER_CONTENT_TYPE), null,
+          new Predicate<Object>() {
+            @Override
+            public boolean apply(Object input) {
+              return getId().equals(input);
+            }
+          },
+          new BiConsumer<DropEvent, Object>() {
+            @Override
+            public void accept(DropEvent t, Object u) {
+              int dy = t.getNativeEvent().getClientY() - DndHelper.getStartY();
+
+              int top = getElement().getOffsetTop();
+              int height = getOffsetHeight();
+
+              if (dy != 0 && top + dy >= 0 && height > dy) {
+                int left = getElement().getOffsetLeft();
+                int width = getOffsetWidth();
+
+                Style style = getElement().getStyle();
+
+                StyleUtils.setTop(style, top + dy);
+                StyleUtils.setHeight(style, height - dy);
+
+                StyleUtils.setLeft(style, left);
+                StyleUtils.setWidth(style, width);
+
+                StyleUtils.makeAbsolute(style);
+
+                addStyleName(getStylePrefix() + "resized");
+              }
+            }
+          });
+
+    } else {
+      logger.warning(NameUtils.getName(this), getId(), "not resizable, parent",
+          NameUtils.getName(target), target.getElement().getId());
+    }
   }
 
   private void setSelectedIndex(int selectedIndex) {

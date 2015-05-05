@@ -110,7 +110,8 @@
           <FlowPanel data="Relations" for="Company" module="Classifiers.Contacts">
             <Label text="=companies" style="&relCompaniesLbl;" />
             <MultiSelector viewName="Companies" property="Companies"
-              renderColumns="Name" style="&relCompaniesInp;" />
+              choiceColumns="Name TypeName" renderColumns="Name TypeName"
+              style="&relCompaniesInp;" />
           </FlowPanel>
   
           <FlowPanel data="Relations" for="Person" module="Classifiers.Contacts">
@@ -129,15 +130,15 @@
           <FlowPanel data="Relations" for="Task" module="Tasks">
             <Label text="=crmTasks" style="&relTasksLbl;" />
             <MultiSelector viewName="Tasks" property="Tasks"
-              renderColumns="Summary ExecutorFirstName ExecutorLastName"
-              choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
+              renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
+              choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
               newRowEnabled="false" style="&relTasksInp;" />
           </FlowPanel>
   
           <FlowPanel data="Relations" for="Document" module="Documents">
             <Label text="=documents" style="&relDocumentsLbl;" />
             <MultiSelector viewName="Documents" property="Documents"
-              renderColumns="Name DocumentDate Number" choiceColumns="Name DocumentDate Number"
+              renderColumns="Name DocumentDate Number" choiceColumns="Name Number RegistrationNumber DocumentDate"
               newRowEnabled="false" style="&relDocumentsInp;" />
           </FlowPanel>
     

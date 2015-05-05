@@ -9,6 +9,8 @@
       label="=department" />
     <Relation name="CompanyPerson" notNull="true" relation="CompanyPersons" cascade="DELETE"
       label="=companyPerson" />
+
+    <Relation name="Position" relation="Positions" label="=personPositionInDepartment" />
   </Fields>
 
   <Constraints>

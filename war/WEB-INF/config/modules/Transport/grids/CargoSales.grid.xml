@@ -14,7 +14,7 @@
     <RelColumn name="OrderNo" editEnabled="true" editSource="Order" />
     <DataColumn name="Status" />    
     <DataColumn name="CustomerName" />
-    <DataColumn name="Payer">
+    <DataColumn name="Payer" searchBy="CompanyName PayerName" >
       <render>
         <ui:expression>row.Company ? row.CompanyName : row.PayerName</ui:expression>
       </render>

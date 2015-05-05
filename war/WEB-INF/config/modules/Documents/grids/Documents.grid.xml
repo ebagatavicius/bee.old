@@ -3,7 +3,7 @@
   xmlns:ui="http://www.butent.com/ui"
   xmlns:w="http://www.butent.com/widget"
 
-  name="Documents" viewName="Documents" caption="=documentTree"
+  name="Documents" viewName="Documents" caption="=documents"
   newRowForm="NewDocument" editForm="Document" parent="Tree" favorite="Name"
   flexGrow="1" order="DocumentID desc"
   >
@@ -20,6 +20,7 @@
   <g:columns>
     <DataColumn name="Name" visible="true" />
     <RelColumn name="Company" />
+    <RelColumn name="Category" />
     <DataColumn name="DocumentDate" />
     <DataColumn name="Expires" />
     <DataColumn name="Number" />
@@ -31,14 +32,9 @@
     <DataColumn name="RegistrationNumber" visible="false" />
     <DataColumn name="Received" visible="false" />
     <DataColumn name="Sent" visible="false" />
-    <DataColumn name="Returned" visible="false" />
     <DataColumn name="Description" visible="false" />
   </g:columns>
 
-  <g:predefinedFilter name="not_returned" label="=documentFilterNotReturned">
-    <g:column name="Sent" emptyValues="false" />
-    <g:column name="Returned" emptyValues="true" />
-  </g:predefinedFilter>
   <g:predefinedFilter name="received" label="=documentFilterReceived">
     <g:column name="Received" emptyValues="false" />
   </g:predefinedFilter>

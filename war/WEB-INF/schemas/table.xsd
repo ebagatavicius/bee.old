@@ -2,7 +2,7 @@
 <xs:schema targetNamespace="http://www.butent.com/table" elementFormDefault="qualified"
   xmlns="http://www.butent.com/table"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:type="http://www.butent.com/type">
+  xmlns:tp="http://www.butent.com/type">
 
   <xs:import namespace="http://www.butent.com/type" schemaLocation="types.xsd" />
 
@@ -39,10 +39,10 @@
         </xs:complexType>
       </xs:element>
     </xs:sequence>
-    <xs:attribute name="name" type="type:tableNameType" use="required" />
+    <xs:attribute name="name" type="tp:tableNameType" use="required" />
     <xs:attribute name="idChunk" type="xs:positiveInteger" default="50" />
-    <xs:attribute name="idName" type="type:fieldNameType" default="ID" />
-    <xs:attribute name="versionName" type="type:fieldNameType" default="VERSION" />
+    <xs:attribute name="idName" type="tp:fieldNameType" default="ID" />
+    <xs:attribute name="versionName" type="tp:fieldNameType" default="VERSION" />
     <xs:attribute name="audit" type="xs:boolean" default="true" />
   </xs:complexType>
 
@@ -76,11 +76,11 @@
   <xs:complexType name="fieldType" abstract="true">
     <xs:complexContent>
       <xs:extension base="checkType">
-        <xs:attribute name="name" type="type:fieldNameType" use="required" />
+        <xs:attribute name="name" type="tp:fieldNameType" use="required" />
         <xs:attribute name="notNull" type="xs:boolean" />
         <xs:attribute name="unique" type="xs:boolean" />
-        <xs:attribute name="defExpr" type="defaultType" />          
-        <xs:attribute name="defValue" type="type:notEmptyString" />          
+        <xs:attribute name="defExpr" type="defaultType" />
+        <xs:attribute name="defValue" type="tp:notEmptyString" />
         <xs:attribute name="translatable" type="xs:boolean" />
         <xs:attribute name="label" type="xs:string" />
         <xs:attribute name="audit" type="xs:boolean" default="true" />
@@ -99,7 +99,7 @@
   <xs:complexType name="abstractBooleanType" abstract="true">
     <xs:complexContent>
       <xs:extension base="fieldType">
-        <xs:attribute name="type" type="type:dataType" fixed="BOOLEAN" />
+        <xs:attribute name="type" type="tp:dataType" fixed="BOOLEAN" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -115,7 +115,7 @@
   <xs:complexType name="integerType">
     <xs:complexContent>
       <xs:extension base="fieldType">
-        <xs:attribute name="type" type="type:dataType" fixed="INTEGER" />
+        <xs:attribute name="type" type="tp:dataType" fixed="INTEGER" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -123,7 +123,7 @@
   <xs:complexType name="longType">
     <xs:complexContent>
       <xs:extension base="fieldType">
-        <xs:attribute name="type" type="type:dataType" fixed="LONG" />
+        <xs:attribute name="type" type="tp:dataType" fixed="LONG" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -131,7 +131,7 @@
   <xs:complexType name="doubleType">
     <xs:complexContent>
       <xs:extension base="fieldType">
-        <xs:attribute name="type" type="type:dataType" fixed="DOUBLE" />
+        <xs:attribute name="type" type="tp:dataType" fixed="DOUBLE" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -139,7 +139,7 @@
   <xs:complexType name="numericType">
     <xs:complexContent>
       <xs:extension base="hasPrecisionType">
-        <xs:attribute name="type" type="type:dataType" fixed="DECIMAL" />
+        <xs:attribute name="type" type="tp:dataType" fixed="DECIMAL" />
         <xs:attribute name="scale" type="xs:byte" default="0" />
       </xs:extension>
     </xs:complexContent>
@@ -148,7 +148,7 @@
   <xs:complexType name="charType">
     <xs:complexContent>
       <xs:extension base="hasPrecisionType">
-        <xs:attribute name="type" type="type:dataType" fixed="CHAR" />
+        <xs:attribute name="type" type="tp:dataType" fixed="CHAR" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -156,7 +156,7 @@
   <xs:complexType name="stringType">
     <xs:complexContent>
       <xs:extension base="hasPrecisionType">
-        <xs:attribute name="type" type="type:dataType" fixed="STRING" />
+        <xs:attribute name="type" type="tp:dataType" fixed="STRING" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -164,7 +164,7 @@
   <xs:complexType name="textType">
     <xs:complexContent>
       <xs:extension base="fieldType">
-        <xs:attribute name="type" type="type:dataType" fixed="TEXT" />
+        <xs:attribute name="type" type="tp:dataType" fixed="TEXT" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -172,7 +172,7 @@
   <xs:complexType name="blobType">
     <xs:complexContent>
       <xs:extension base="fieldType">
-        <xs:attribute name="type" type="type:dataType" fixed="BLOB" />
+        <xs:attribute name="type" type="tp:dataType" fixed="BLOB" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -180,7 +180,7 @@
   <xs:complexType name="dateType">
     <xs:complexContent>
       <xs:extension base="fieldType">
-        <xs:attribute name="type" type="type:dataType" fixed="DATE" />
+        <xs:attribute name="type" type="tp:dataType" fixed="DATE" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -188,7 +188,7 @@
   <xs:complexType name="datetimeType">
     <xs:complexContent>
       <xs:extension base="fieldType">
-        <xs:attribute name="type" type="type:dataType" fixed="DATETIME" />
+        <xs:attribute name="type" type="tp:dataType" fixed="DATETIME" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -196,7 +196,7 @@
   <xs:complexType name="relationType">
     <xs:complexContent>
       <xs:extension base="longType">
-        <xs:attribute name="relation" type="type:tableNameType" use="required" />
+        <xs:attribute name="relation" type="tp:tableNameType" use="required" />
         <xs:attribute name="cascade" type="cascadeType" />
         <xs:attribute name="editable" type="xs:boolean" />
       </xs:extension>
@@ -206,7 +206,7 @@
   <xs:complexType name="enumType">
     <xs:complexContent>
       <xs:extension base="fieldType">
-        <xs:attribute name="type" type="type:dataType" fixed="DECIMAL" />
+        <xs:attribute name="type" type="tp:dataType" fixed="DECIMAL" />
         <xs:attribute name="key" type="xs:string" use="required" />
         <xs:attribute name="precision" type="xs:positiveInteger" default="1" />
         <xs:attribute name="scale" type="xs:byte" fixed="0" />
@@ -215,7 +215,7 @@
   </xs:complexType>
 
   <xs:simpleType name="fieldListType">
-    <xs:list itemType="type:fieldNameType" />
+    <xs:list itemType="tp:fieldNameType" />
   </xs:simpleType>
 
   <xs:complexType name="checkType">
@@ -232,7 +232,7 @@
 
   <xs:complexType name="referenceType">
     <xs:attribute name="fields" type="fieldListType" use="required" />
-    <xs:attribute name="refTable" type="type:tableNameType" use="required" />
+    <xs:attribute name="refTable" type="tp:tableNameType" use="required" />
     <xs:attribute name="refFields" type="fieldListType" />
     <xs:attribute name="cascade" type="cascadeType" />
   </xs:complexType>

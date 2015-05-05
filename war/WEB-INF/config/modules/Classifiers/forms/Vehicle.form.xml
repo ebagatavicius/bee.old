@@ -4,7 +4,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="Vehicle" viewName="Vehicles" caption="=trVehicle"
+  name="Vehicle" viewName="Vehicles" caption="=trVehicle" width="1000" height="700"
   >
   <FlowPanel class="flexBox-vertical">
     <xi:include href="widgets/VehicleDescription.widget.xml" />
@@ -30,7 +30,7 @@
           <layer left="260" right="0" top="0" height="50" heightUnit="%">
              <ChildGrid name="FuelConsumptions" relColumn="Vehicle" />
           </layer>
-          <layer left="300" right="0" top="51" topUnit="%" bottom="0">
+          <layer left="260" right="0" top="51" topUnit="%" bottom="0">
              <ChildGrid name="FuelTemperatures" parent="FuelConsumptions" relColumn="Consumption" 
                summarize="false" />
           </layer>

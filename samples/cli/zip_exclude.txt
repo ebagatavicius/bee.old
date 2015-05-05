@@ -1,4 +1,4 @@
-.svn
+.git
 gwt-unitCache
 lib
 war\bee

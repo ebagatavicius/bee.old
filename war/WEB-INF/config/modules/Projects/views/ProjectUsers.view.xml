@@ -39,6 +39,10 @@
 				<SimpleJoin name="Position" joinType="LEFT">
 				  <SimpleColumn name="Name" alias="PositionName" />
 				</SimpleJoin>
+        
+        <SimpleJoin name="Department" joinType="LEFT">
+          <SimpleColumn name="Name" alias="DepartmentName" />
+        </SimpleJoin>
 				
 			</SimpleJoin>
 		</SimpleJoin>

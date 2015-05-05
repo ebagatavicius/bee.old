@@ -132,7 +132,6 @@ public abstract class ReportInterceptor extends AbstractFormInterceptor implemen
   public boolean beforeAction(Action action, Presenter presenter) {
     switch (action) {
       case REFRESH:
-      case FILTER:
         doReport();
         return false;
 
@@ -161,8 +160,7 @@ public abstract class ReportInterceptor extends AbstractFormInterceptor implemen
 
   @Override
   public Set<Action> getEnabledActions(Set<Action> defaultActions) {
-    EnumSet<Action> actions =
-        EnumSet.of(Action.REFRESH, Action.FILTER, Action.EXPORT, Action.PRINT);
+    EnumSet<Action> actions = EnumSet.of(Action.REFRESH, Action.EXPORT, Action.PRINT);
 
     if (BeeKeeper.getScreen().getUserInterface().hasComponent(Component.REPORTS)) {
       actions.add(Action.BOOKMARK);
@@ -192,8 +190,7 @@ public abstract class ReportInterceptor extends AbstractFormInterceptor implemen
     }
 
     HeaderView header = form.getViewPresenter().getHeader();
-    if (header != null && header.hasAction(Action.FILTER)
-        && !header.hasAction(Action.REMOVE_FILTER)) {
+    if (header != null && !header.hasAction(Action.REMOVE_FILTER)) {
 
       Button clearFilter = new Button(Localized.getConstants().clearFilter());
       clearFilter.addClickHandler(new ClickHandler() {
@@ -296,6 +293,7 @@ public abstract class ReportInterceptor extends AbstractFormInterceptor implemen
 
   protected HasIndexedWidgets getDataContainer() {
     Widget widget = getFormView().getWidgetByName(NAME_DATA_CONTAINER);
+
     if (widget instanceof HasIndexedWidgets) {
       return (HasIndexedWidgets) widget;
     } else {
@@ -585,7 +583,7 @@ public abstract class ReportInterceptor extends AbstractFormInterceptor implemen
 
     if (parameters != null && validateParameters(parameters)) {
       String caption = BeeUtils.notEmpty(getBookmarkLabel(), getReportCaption());
-      Global.getReportSettings().bookmark(getReport(), caption, getReportParameters());
+      Global.getReportSettings().bookmark(getReport(), caption, parameters);
     }
   }
 

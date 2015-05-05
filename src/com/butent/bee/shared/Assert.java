@@ -237,6 +237,15 @@ public final class Assert {
     noNullElements(ASSERTION_FAILED + "arguments must not be null", obj);
   }
 
+  public static <T> T notContain(Map<T, ?> map, T key) {
+    notNull(map);
+    notNull(key);
+    if (map.containsKey(key)) {
+      throw new BeeRuntimeException(ASSERTION_FAILED + "key (" + key + ") already exists");
+    }
+    return key;
+  }
+
   public static <T extends Collection<?>> T notEmpty(T col) {
     return notEmpty(col, IS_EMPTY);
   }

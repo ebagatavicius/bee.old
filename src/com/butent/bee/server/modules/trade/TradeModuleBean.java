@@ -262,8 +262,7 @@ public class TradeModuleBean implements BeeModule {
 
   public static IsExpression getTotalExpression(String tblName, IsExpression amount) {
     return SqlUtils.plus(amount,
-        SqlUtils.sqlIf(SqlUtils.or(SqlUtils.isNull(tblName, COL_TRADE_VAT_PLUS),
-            SqlUtils.isNull(tblName, COL_TRADE_VAT)), 0,
+        SqlUtils.sqlIf(SqlUtils.isNull(tblName, COL_TRADE_VAT_PLUS), 0,
             getVatExpression(tblName, amount)));
   }
 
@@ -280,6 +279,16 @@ public class TradeModuleBean implements BeeModule {
         SqlUtils.multiply(SqlUtils.divide(amount,
             SqlUtils.plus(100, SqlUtils.field(tblName, COL_TRADE_VAT))),
             SqlUtils.field(tblName, COL_TRADE_VAT)));
+  }
+
+  public static IsExpression getWithoutVatExpression(String tblName) {
+    return getWithoutVatExpression(tblName, getAmountExpression(tblName));
+  }
+
+  public static IsExpression getWithoutVatExpression(String tblName, IsExpression amount) {
+    return SqlUtils.minus(amount,
+        SqlUtils.sqlIf(SqlUtils.notNull(tblName, COL_TRADE_VAT_PLUS), 0,
+            getVatExpression(tblName, amount)));
   }
 
   @Override
@@ -353,7 +362,7 @@ public class TradeModuleBean implements BeeModule {
         .addFromInner(TBL_UNITS, sys.joinTables(TBL_UNITS, TBL_ITEMS, COL_UNIT))
         .addFromInner(TBL_CURRENCIES, sys.joinTables(TBL_CURRENCIES, trade, COL_CURRENCY))
         .setWhere(SqlUtils.equals(tradeItems, itemsRelation, id))
-        .addOrder(tradeItems, sys.getIdName(tradeItems));
+        .addOrder(tradeItems, COL_TRADE_ITEM_ORDINAL, sys.getIdName(tradeItems));
 
     if (!BeeUtils.isEmpty(currencyTo)) {
       String currAlias = SqlUtils.uniqueName();

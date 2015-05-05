@@ -10,8 +10,7 @@ import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
-import com.butent.bee.client.imports.ImportOptionForm;
-import com.butent.bee.client.imports.ImportOptionsGrid;
+import com.butent.bee.client.imports.ImportsForm;
 import com.butent.bee.client.rights.RightsForm;
 import com.butent.bee.client.style.ColorStyleProvider;
 import com.butent.bee.client.style.ConditionalStyle;
@@ -63,9 +62,8 @@ public final class AdministrationKeeper {
     FormFactory.registerFormInterceptor(FORM_DEPARTMENT, new DepartmentForm());
     FormFactory.registerFormInterceptor(FORM_COMPANY_STRUCTURE, new CompanyStructureForm());
     FormFactory.registerFormInterceptor(FORM_NEW_ROLE, new NewRoleForm());
-    FormFactory.registerFormInterceptor(FORM_IMPORT_OPTION, new ImportOptionForm());
+    FormFactory.registerFormInterceptor(FORM_IMPORTS, new ImportsForm());
 
-    GridFactory.registerGridInterceptor(TBL_IMPORT_OPTIONS, new ImportOptionsGrid());
     GridFactory.registerGridInterceptor(NewsConstants.GRID_USER_FEEDS, new UserFeedsInterceptor());
 
     GridFactory.registerGridSupplier(

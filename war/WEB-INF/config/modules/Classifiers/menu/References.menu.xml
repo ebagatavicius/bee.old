@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="References" label="=references" order="10" module="Classifiers"
+name="References" label="=references" order="900" module="Classifiers"
 >
   <Item name="Goods" label="=goods" service="items" parameters="g" />
   <Item name="Services" label="=services" service="items" parameters="s" />

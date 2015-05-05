@@ -40,9 +40,6 @@ public class UserInfo implements HasInfo {
 
   private boolean openInNewTab;
 
-  private int applianceHeaderHeight;
-  private int viewHeaderHeight;
-
   private int clickSensitivityMillis;
   private int clickSensitivityDistance;
 
@@ -62,10 +59,6 @@ public class UserInfo implements HasInfo {
 
   public boolean canEditData(String object) {
     return isLoggedIn() && userData.canEditData(object);
-  }
-
-  public int getApplianceHeaderHeight() {
-    return applianceHeaderHeight;
   }
 
   public int getClickSensitivityDistance() {
@@ -162,10 +155,6 @@ public class UserInfo implements HasInfo {
       return null;
     }
     return userData.getUserSign();
-  }
-
-  public int getViewHeaderHeight() {
-    return viewHeaderHeight;
   }
 
   public boolean is(Long id) {
@@ -342,10 +331,6 @@ public class UserInfo implements HasInfo {
     return styleId;
   }
 
-  private void setApplianceHeaderHeight(int applianceHeaderHeight) {
-    this.applianceHeaderHeight = applianceHeaderHeight;
-  }
-
   private void setClickSensitivityDistance(int clickSensitivityDistance) {
     this.clickSensitivityDistance = clickSensitivityDistance;
   }
@@ -362,15 +347,8 @@ public class UserInfo implements HasInfo {
     this.styleId = styleId;
   }
 
-  private void setViewHeaderHeight(int viewHeaderHeight) {
-    this.viewHeaderHeight = viewHeaderHeight;
-  }
-
   private void updateFields() {
     setOpenInNewTab(getBooleanSetting(COL_OPEN_IN_NEW_TAB));
-
-    setApplianceHeaderHeight(getIntSetting(COL_APPLIANCE_HEADER_HEIGHT));
-    setViewHeaderHeight(getIntSetting(COL_VIEW_HEADER_HEIGHT));
 
     setClickSensitivityMillis(getIntSetting(COL_CLICK_SENSITIVITY_MILLIS));
     setClickSensitivityDistance(getIntSetting(COL_CLICK_SENSITIVITY_DISTANCE));

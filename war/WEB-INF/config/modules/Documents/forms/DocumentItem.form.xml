@@ -3,9 +3,9 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="DocumentItem" caption="=documentItem"
+  name="DocumentItem" caption="=documentItem" width="850"
   >
-  <TabbedPages>
+  <TabbedPages resizable="false">
     <page>
       <text>=mainInformation</text>
       <Table>

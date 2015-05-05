@@ -4,9 +4,9 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="NewDocument" width="500" height="400"
+  name="NewDocument" width="700" height="700"
   >
-  <TabbedPages>
+  <TabbedPages resizable="false">
     <page>
       <text>=mainInformation</text>
       <FlowPanel>

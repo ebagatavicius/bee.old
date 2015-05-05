@@ -9,6 +9,19 @@
   <Columns>
     <SimpleColumn name="Project" />
     <SimpleJoin name="Project" joinType="LEFT">
+      <ExternalJoin name="Project" source="ProjectStages" joinType="LEFT" >
+        <IdColumn  name="StagesCount" aggregate="COUNT"></IdColumn>
+      </ExternalJoin>
+    </SimpleJoin>
+    
+    <ExternalJoin name="ProjectStage" source="Tasks" joinType="LEFT">     
+      <IdColumn  name="TaskCount" aggregate="COUNT_DISTINCT"></IdColumn>
+      <AggregateColumn alias="ExpectedTasksExpenses" name="ExpectedExpenses" aggregate="SUM" />
+      <AggregateColumn alias="LowTasksDate" name="StartTime" aggregate="MIN" />
+      <AggregateColumn alias="HighTasksDate" name="FinishTime" aggregate="MAX" />
+    </ExternalJoin>
+    
+    <SimpleJoin name="Project" joinType="LEFT">
       <SimpleColumn name="Company" />
       <SimpleJoin name="Company" joinType="LEFT">
         <SimpleColumn name="Name" alias="CompanyName" />
@@ -35,13 +48,7 @@
       {...}.fillProjectsTimeData(ViewQueryEvent event)
       -->
     </SimpleColumn>
-    
-    <ExternalJoin source="Tasks" joinType="LEFT" name="ProjectStage">    
-      <AggregateColumn alias="ExpectedTasksExpenses" name="ExpectedExpenses" aggregate="SUM" />
-      <AggregateColumn alias="LowTasksDate" name="StartTime" aggregate="MIN" />
-      <AggregateColumn alias="HighTasksDate" name="FinishTime" aggregate="MAX" />
-    </ExternalJoin>
-    
+        
     <SimpleColumn name="ActualTasksDuration" label="=prjActualTaskDuration">
       <x:number>0</x:number> 
       <!-- 
@@ -69,7 +76,12 @@
     <SimpleJoin name="Project" joinType="LEFT">
       <SimpleColumn name="Name" alias="ProjectName" />
     </SimpleJoin>
-       
+    
+    <SimpleJoin name="Project" joinType="LEFT">
+      <SimpleColumn alias="ProjectOwner" name="Owner"/>
+      <SimpleColumn alias="ProjectStatus" name="Status"/>
+    </SimpleJoin>
+      
   </Columns>  
   <Order>
 	  <OrderBy column="StartDate"/>

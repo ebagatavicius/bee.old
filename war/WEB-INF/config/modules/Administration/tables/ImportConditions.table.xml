@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="ImportConditions"
+       idName="ConditionID"
+    >
+  <Fields>
+    <Relation name="Mapping" notNull="true" relation="ImportMappings" cascade="DELETE"
+              label="=trImportMapping" />
+    <Relation name="Property" notNull="true" relation="ImportProperties" cascade="DELETE"
+              label="=trImportProperty" />
+    <String name="Value" precision="100" label="=trImportValue" />
+  </Fields>
+  <Constraints>
+    <Unique fields="Mapping Property" />
+  </Constraints>
+</Table>

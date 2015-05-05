@@ -14,6 +14,7 @@ import com.butent.bee.shared.html.builder.Document;
 import com.butent.bee.shared.html.builder.Node;
 import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.html.builder.elements.Form;
+import com.butent.bee.shared.html.builder.elements.Input;
 import com.butent.bee.shared.html.builder.elements.Input.Type;
 import com.butent.bee.shared.html.builder.elements.Link.Rel;
 import com.butent.bee.shared.html.builder.elements.Meta;
@@ -27,10 +28,12 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.ui.UiConstants;
 import com.butent.bee.shared.ui.UserInterface;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -42,6 +45,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 // CHECKSTYLE:OFF
 @WebServlet(urlPatterns = {"/index.html", "/index.htm", "/index.jsp"})
@@ -60,16 +64,19 @@ public class LoginServlet extends HttpServlet {
   protected static final String FORM_NAME = "login";
 
   protected static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "SignIn-";
-
-  private static BeeLogger logger = LogUtils.getLogger(LoginServlet.class);
-
   private static final String FAV_ICON = "favicon.ico";
-  private static final String LOGO = "logo.png";
-
+  private static final String LOGO = "bs-logo.png";
   private static final String USER_NAME_LABEL_ID = "user-name-label";
   private static final String PASSWORD_LABEL_ID = "password-label";
   private static final String ERROR_MESSAGE_ID = "error";
   private static final String SUBMIT_BUTTON_ID = "submit";
+  private static final String INFO_LABEL_ID = "info-label";
+  private static final String INFO_HELP_ID = "info-help";
+  private static final String USER_NAME_INPUT_ID = "user";
+  private static final String PASSWORD_INPUT_ID = "pswd";
+  private static BeeLogger logger = LogUtils.getLogger(LoginServlet.class);
+  @EJB
+  UserServiceBean usr;
 
   protected static String event(String func, String param) {
     return func + BeeConst.STRING_LEFT_PARENTHESIS + BeeConst.STRING_QUOT + param
@@ -119,6 +126,10 @@ public class LoginServlet extends HttpServlet {
         .add(SUBMIT_BUTTON_ID, constants.loginSubmit())
         .add(COMMAND_REGISTER_ID, constants.loginCommandRegister())
         .add(COMMAND_QUERY_ID, constants.loginCommandQuery())
+        .add(INFO_LABEL_ID, constants.loginInfoLabel())
+        .add(INFO_HELP_ID, constants.loginInfoHelp())
+        .add(USER_NAME_INPUT_ID, constants.loginUserName())
+        .add(PASSWORD_INPUT_ID, constants.loginPassword())
         .build();
 
     StringWriter strWriter = new StringWriter();
@@ -146,6 +157,8 @@ public class LoginServlet extends HttpServlet {
         title().text(ui.getTitle()),
         link().rel(Rel.SHORTCUT_ICON)
             .href(resource(contextPath, Paths.getImagePath(LoginServlet.FAV_ICON))),
+        link().rel(Rel.STYLE_SHEET).href(
+            "//fonts.googleapis.com/css?family=Open+Sans:700,300,800,400"),
         base().targetBlank());
 
     for (String styleSheet : ui.getStyleSheets()) {
@@ -179,10 +192,10 @@ public class LoginServlet extends HttpServlet {
     return doc.buildLines();
   }
 
-  @EJB
-  UserServiceBean userService;
-
   public String getLoginForm(HttpServletRequest request, String userName) {
+
+    Input user = new Input();
+    Input pass = new Input();
     String contextPath = request.getServletContext().getContextPath();
     String requestLanguage = SupportedLocale.normalizeLanguage(HttpUtils.getLanguage(request));
 
@@ -207,9 +220,8 @@ public class LoginServlet extends HttpServlet {
         .methodPost();
 
     form.append(
-        div().addClass(STYLE_PREFIX + "Logo-container").append(
-            img().addClass(STYLE_PREFIX + "Logo")
-                .src(resource(contextPath, Paths.getImagePath(LOGO))).alt("logo")));
+        img().addClass(STYLE_PREFIX + "Logo").src(resource(contextPath,
+            Paths.getImagePath(LOGO))).alt("logo"));
 
     Div localeContainer = div().addClass(STYLE_PREFIX + "Locale-container");
     Script dictionaries = script();
@@ -218,38 +230,38 @@ public class LoginServlet extends HttpServlet {
       String language = locale.getLanguage();
 
       localeContainer.append(
-          label().addClass(STYLE_PREFIX + "Locale-label").append(
-              input().addClass(STYLE_PREFIX + "Locale-input").type(Type.RADIO)
-                  .id(language).name(HttpConst.PARAM_LOCALE).value(language)
-                  .onChange("onSelectLanguage(this.value)"),
-              img().addClass(STYLE_PREFIX + "Locale-flag").title(locale.getCaption())
-                  .src(resource(contextPath, Paths.getLangIconPath(locale.getIconName())))
-                  .alt(locale.getCaption())));
+          label().addClass(STYLE_PREFIX + "Locale-label").id(language).text(locale.getCaption())
+              .append(
+                  input().addClass(STYLE_PREFIX + "Locale-input").type(Type.RADIO)
+                      .id(language).name(HttpConst.PARAM_LOCALE).value(language)
+                      .onChange("onSelectLanguage(this.id)")));
 
       String dictionary = generateDictionary(locale);
       dictionaries.text("var dictionary" + language + " = " + dictionary + ";");
     }
 
-    form.append(localeContainer);
-    doc.getHead().append(dictionaries);
+    panel.append(label().addClass(STYLE_PREFIX + "infoLabel").id(INFO_LABEL_ID));
 
     form.append(
-        div().addClass(STYLE_PREFIX + "Label").addClass(STYLE_PREFIX + "Label-user")
-            .id(USER_NAME_LABEL_ID),
-        input().addClass(STYLE_PREFIX + "Input").addClass(STYLE_PREFIX + "Input-user")
+        user.addClass(
+            STYLE_PREFIX + "Input").addClass(STYLE_PREFIX + "Input-user")
             .name(HttpConst.PARAM_USER).id("user").value(Strings.emptyToNull(userName))
             .maxLength(100).onKeyDown("return goPswd(event)").autofocus().required(),
-        div().addClass(STYLE_PREFIX + "Label").addClass(STYLE_PREFIX + "Label-password")
-            .id(PASSWORD_LABEL_ID),
-        input().addClass(STYLE_PREFIX + "Input").addClass(STYLE_PREFIX + "Input-password")
+        pass.addClass(STYLE_PREFIX + "Input").addClass(STYLE_PREFIX + "Input-password")
             .type(Type.PASSWORD).name(HttpConst.PARAM_PASSWORD).id("pswd")
             .maxLength(UiConstants.MAX_PASSWORD_LENGTH).required()
         );
 
     if (!BeeUtils.isEmpty(userName)) {
-      form.append(div().addClass(STYLE_PREFIX + "Error").id(ERROR_MESSAGE_ID));
+      user.addClass(STYLE_PREFIX + "Input-user" + "-Invalid");
+      pass.addClass(STYLE_PREFIX + "Input-password" + "-Invalid");
     }
     form.append(button().typeSubmit().addClass(STYLE_PREFIX + "Button").id(SUBMIT_BUTTON_ID));
+
+    form.append(localeContainer);
+    form.append(a().href(UiConstants.helpURL()).targetBlank().append(
+        label().addClass(STYLE_PREFIX + "Help").id(INFO_HELP_ID)));
+    doc.getHead().append(dictionaries);
 
     panel.append(form);
 
@@ -260,7 +272,7 @@ public class LoginServlet extends HttpServlet {
 
     String wtfplUrl = UiConstants.wtfplUrl();
 
-    panel.append(
+    doc.getBody().append(
         div().addClass(STYLE_PREFIX + "Copyright").title(wtfplUrl)
             .onClick(event("window.open", wtfplUrl))
             .append(
@@ -274,13 +286,13 @@ public class LoginServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-    doService(req, resp);
+    authenticate(req, resp);
   }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-    doService(req, resp);
+    authenticate(req, resp);
   }
 
   protected void doService(HttpServletRequest req, HttpServletResponse resp) {
@@ -308,14 +320,14 @@ public class LoginServlet extends HttpServlet {
         SupportedLocale loginLocale = SupportedLocale.getByLanguage(language);
 
         if (loginLocale != null && loginLocale != userLocale) {
-          userService.updateUserLocale(remoteUser, loginLocale);
+          usr.updateUserLocale(remoteUser, loginLocale);
           userLocale = loginLocale;
         }
       }
 
       UserInterface ui = userInterface;
       if (ui == null) {
-        ui = userService.getUserInterface(remoteUser);
+        ui = usr.getUserInterface(remoteUser);
       }
       if (ui == null) {
         ui = UserInterface.DEFAULT;
@@ -335,12 +347,66 @@ public class LoginServlet extends HttpServlet {
     return null;
   }
 
+  /**
+   * @param req
+   */
+  protected boolean isProtected(HttpServletRequest req) {
+    return true;
+  }
+
+  private void authenticate(HttpServletRequest req, HttpServletResponse resp) {
+    try {
+      req.setCharacterEncoding(BeeConst.CHARSET_UTF8);
+    } catch (UnsupportedEncodingException e) {
+      logger.error(e);
+    }
+    HttpSession session = req.getSession();
+    boolean ok = !isProtected(req) || req.getUserPrincipal() != null;
+    String userName = null;
+
+    if (!ok) {
+      userName = BeeUtils.trim(req.getParameter(HttpConst.PARAM_USER));
+      String password = Codec.encodePassword(req.getParameter(HttpConst.PARAM_PASSWORD));
+      ok = BeeUtils.allNotEmpty(userName, password);
+
+      if (ok) {
+        try {
+          req.login(userName, userName);
+        } catch (ServletException e1) {
+          try {
+            logger.info(userName, "login failed, trying with password...");
+            req.login(userName, password);
+          } catch (ServletException e2) {
+            logger.error(e2);
+            ok = false;
+          }
+        }
+        if (ok) {
+          if (!usr.validateHost(req) || !usr.authenticateUser(userName, password)) {
+            try {
+              req.logout();
+              session.invalidate();
+            } catch (ServletException e) {
+              logger.error(e);
+            }
+            ok = false;
+          }
+        }
+      }
+    }
+    if (ok) {
+      doService(req, resp);
+    } else {
+      HttpUtils.sendResponse(resp, getLoginForm(req, userName));
+    }
+  }
+
   private SupportedLocale getUserLocale(String userName) {
-    return userService.isUser(userName) ? userService.getUserLocale(userName) : null;
+    return usr.isUser(userName) ? usr.getUserLocale(userName) : null;
   }
 
   private boolean isBlocked(String userName) {
-    return !BeeUtils.isEmpty(userName) && userService.isUser(userName)
-        && BeeUtils.isTrue(userService.isBlocked(userName));
+    return !BeeUtils.isEmpty(userName) && usr.isUser(userName)
+        && BeeUtils.isTrue(usr.isBlocked(userName));
   }
 }

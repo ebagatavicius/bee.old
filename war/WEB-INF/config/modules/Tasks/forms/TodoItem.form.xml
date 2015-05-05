@@ -1,56 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY inp "width: 15em;">
+]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   
   name="TodoItem" viewName="TodoList" caption="=crmTodoItem" showRowId="true"
-  width="700" height="260"
+  width="700" height="400"
   >
-  <Table style="margin-top: 2ex; margin-left: 1em;">
-       
-    <col index="0" kind="label" />
-    <col index="2" kind="label" />
+  <FlowPanel>
+    <Table style="margin-top: 2ex; margin-left: 1em;">
 
-    <row>
-      <Label for="Summary" visible="true" />
-      <cell verticalAlignment="top">
-        <InputText source="Summary" style="width: 200px;" visible="true" />
-      </cell>
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
 
-      <Label for="Description" />
-      <InputArea source="Description" style="width: 200px; height: 60px;" />
-    </row>
+      <row>
+        <Label for="Summary" visible="true" />
+        <cell verticalAlignment="top">
+          <InputText source="Summary" style="&inp;"
+            visible="true" />
+        </cell>
 
-    <row module="Classifiers.Contacts">
-      <Label for="Company" />
-	  <DataSelector source="Company" renderColumns="CompanyName" style="width: 200px;" />
+        <Label for="Description" />
+        <InputArea source="Description" style="&inp; height: 60px;" />
+      </row>
 
-      <Label for="Contact" />
-      <DataSelector source="Contact" newRowEnabled="false" style="width: 200px;"
-        renderColumns="ContactFirstName ContactLastName"
-        choiceColumns="FirstName LastName CompanyName" options="Company" />
-    </row>
+      <row module="Classifiers.Contacts">
+        <Label for="Company" />
+        <DataSelector source="Company" renderColumns="CompanyName CompanyTypeName" choiceColumns="Name TypeName" style="&inp;" />
 
-    <row>
-      <Label for="StartTime" />
-      <InputDateTime source="StartTime" />
+        <Label for="Contact" />
+        <DataSelector source="Contact" newRowEnabled="false" style="&inp;"
+          renderColumns="ContactFirstName ContactLastName"
+          choiceColumns="FirstName LastName CompanyName" options="Company" />
+      </row>
 
-      <Label for="FinishTime" />
-      <InputDateTime source="FinishTime" />
-    </row>
+      <row>
+        <Label for="StartTime" />
+        <InputDateTime source="StartTime" />
 
-    <row>
-      <Label for="ExpectedDuration" />
-      <InputTime source="ExpectedDuration" step="30" style="width: 60px;" />
-    </row>
+        <Label for="FinishTime" />
+        <InputDateTime source="FinishTime" />
+      </row>
 
-    <row>
-      <Label for="Created" />
-      <InputDateTime source="Created" />
+      <row>
+        <Label for="ExpectedDuration" />
+        <InputTime source="ExpectedDuration" step="30" style="width: 60px;" />
+      </row>
 
-      <Label for="Creator" />
-      <DataSelector source="Creator" editSource="CreatorCompanyPerson"
-        renderColumns="CreatorFirstName CreatorLastName" />
-    </row>
-  </Table>
+      <row>
+        <Label for="Created" />
+        <InputDateTime source="Created" />
+
+        <Label for="Creator" />
+        <DataSelector source="Creator" editSource="CreatorCompanyPerson"
+          renderColumns="CreatorFirstName CreatorLastName" style="&inp;"/>
+      </row>
+    </Table>
+  </FlowPanel>
 </f:Form>

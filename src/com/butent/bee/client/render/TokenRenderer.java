@@ -3,6 +3,7 @@ package com.butent.bee.client.render;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -32,6 +33,11 @@ public class TokenRenderer extends AbstractCellRenderer {
     for (ColumnToken token : cts) {
       addToken(token);
     }
+  }
+
+  @Override
+  public ValueType getExportType() {
+    return ValueType.TEXT;
   }
 
   public int getSize() {

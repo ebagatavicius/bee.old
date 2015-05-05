@@ -1,17 +1,12 @@
 package com.butent.bee.client.menu;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SelectElement;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.resources.client.ClientBundle;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -20,8 +15,10 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.CloseEvent;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.menu.MenuConstants;
 import com.butent.bee.shared.menu.MenuConstants.BarType;
 import com.butent.bee.shared.menu.MenuConstants.ItemType;
@@ -40,19 +37,14 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
   /**
    * Specifies implementing classes to have an image resource.
    */
-  public interface Resources extends ClientBundle {
-    @ImageOptions(flipRtl = true)
-    ImageResource subMenuIcon();
-  }
 
-  private static AbstractImagePrototype subMenuIcon;
+  private static Widget subMenuIcon;
 
   private static final String STYLENAME_DEFAULT = BeeConst.CSS_CLASS_PREFIX + "MenuBar";
   private static final String STYLENAME_ROOT = BeeConst.CSS_CLASS_PREFIX + "MenuRoot";
 
   static {
-    Resources resources = GWT.create(Resources.class);
-    subMenuIcon = AbstractImagePrototype.create(resources.subMenuIcon());
+    subMenuIcon = new FaLabel(FontAwesome.CARET_RIGHT);
   }
 
   private final List<UIObject> allItems = new ArrayList<>();
@@ -456,7 +448,7 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
     if (tdCount == 1) {
       Element td = DOM.createTD();
       td.setPropertyString("vAlign", "middle");
-      td.setInnerHTML(subMenuIcon.getHTML());
+      td.setInnerHTML(subMenuIcon.toString());
       setStyleName(td, "subMenuIcon");
       DOM.appendChild(tr, td);
     }

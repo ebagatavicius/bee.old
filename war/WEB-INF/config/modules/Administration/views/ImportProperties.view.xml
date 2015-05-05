@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="ImportProperties"
-  source="ImportProperties"
-  caption="=trImportProperties"
-  >
+      name="ImportProperties" source="ImportProperties" caption="=trImportProperties"
+    >
   <Columns>
-    <SimpleColumn name="Option"/>
-    <SimpleColumn name="Property"/>
-    <SimpleColumn name="Value"/>
-    <SimpleColumn name="RelationOption"/>
+    <SimpleColumn name="Option" />
+    <SimpleColumn name="Property" />
+    <SimpleColumn name="Value" />
+    <SimpleColumn name="RelationOption" />
   </Columns>
 </View>

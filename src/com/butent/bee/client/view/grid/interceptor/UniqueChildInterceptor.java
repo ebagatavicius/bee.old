@@ -19,6 +19,8 @@ import com.butent.bee.shared.data.value.IntegerValue;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.administration.AdministrationConstants.UserGroupVisibility;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -154,6 +156,18 @@ public class UniqueChildInterceptor extends AbstractGridInterceptor {
   public GridInterceptor getInstance() {
     return new UniqueChildInterceptor(dialogCaption, parentColumn, childColumn, relationViewName,
         renderColumns, choiceColumns, searchableColumns, filter);
+  }
+
+  @Override
+  public boolean initDescription(GridDescription gridDescription) {
+    if (gridDescription != null
+        && !gridDescription.getEnabledActions().contains(Action.FILTER)
+        && !gridDescription.getDisabledActions().contains(Action.FILTER)) {
+
+      gridDescription.getDisabledActions().add(Action.FILTER);
+    }
+
+    return super.initDescription(gridDescription);
   }
 
   private void addChildren(final List<Long> children) {

@@ -51,6 +51,7 @@ import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.io.FileInfo;
+import com.butent.bee.shared.io.FileNameUtils;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.DateTime;
@@ -258,6 +259,7 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
     Assert.notNull(widget);
     this.relatedId = relId;
     this.fileFilter = filesFilter;
+    clear();
     createHeaderView();
     createContent();
     refresh(true);
@@ -276,7 +278,6 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
   public Set<Action> getDisabledActions() {
     return Action.NO_ACTIONS;
   }
-
 
   public void refresh(boolean cleanCache) {
     if (content == null) {
@@ -487,6 +488,13 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
     }
 
     FileGroup fileGroup = new FileGroup();
+
+    for (FileInfo file : fileList) {
+      if (file.getRelatedId() != null) {
+        file.setIcon(FileNameUtils.getExtension(file.getName()) + ".png");
+      }
+    }
+
     fileGroup.addFiles(fileList);
 
     fileContainer.setWidget(fileGroup);

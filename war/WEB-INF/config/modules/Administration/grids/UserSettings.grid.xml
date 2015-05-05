@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  
+
   name="UserSettings" viewName="UserSettings" caption="=userSettings"
-  disabledActions="add delete"
+        disabledActions="add delete rights"
   >
   <g:columns>
     <DataColumn name="User" visible="false" />
@@ -25,8 +25,7 @@
 
     <DataColumn name="LastWorkspace" visible="false" />
 
-    <DataColumn name="ApplianceHeaderHeight" visible="false" />
-    <DataColumn name="ViewHeaderHeight" visible="false" />
+    <RelColumn name="UiTheme" />
 
     <DataColumn name="ClickSensitivityMillis" visible="false" />
     <DataColumn name="ClickSensitivityDistance" visible="false" />

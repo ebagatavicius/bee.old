@@ -5,7 +5,7 @@
 
   name="TradeActServices" viewName="TradeActServices"
   flexGrow="1"
-  newRowCaption="=newService"
+  newRowCaption="=newService" disabledActions="filter"
   >
   <xi:include href="columns/TradeActServiceLeft.columns.xml" />
 

@@ -1,10 +1,11 @@
 package com.butent.bee.server.sql;
 
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 
 /**
  * Is an abstract class for SQL queries forming classes and indicates to use SQL builder classes.
- * 
+ *
  * @param <T> used for reference getting.
  */
 
@@ -32,5 +33,10 @@ abstract class SqlQuery<T> implements IsQuery {
   @SuppressWarnings("unchecked")
   protected T getReference() {
     return (T) this;
+  }
+
+  @Override
+  public String toString() {
+    return getSqlString(SqlBuilderFactory.getBuilder(BeeConst.SqlEngine.GENERIC));
   }
 }

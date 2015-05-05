@@ -578,6 +578,12 @@ public final class TimeUtils {
     return nextHour(new DateTime(), increment);
   }
 
+  public static DateTime nextMinute(DateTime ref, int increment) {
+    Assert.notNull(ref);
+    long millis = (ref.getTime() / MILLIS_PER_MINUTE + 1) * MILLIS_PER_MINUTE;
+    return new DateTime(millis + MILLIS_PER_MINUTE * increment);
+  }
+
   public static String normalize(AbstractDate x) {
     if (x == null) {
       return null;

@@ -3,8 +3,9 @@
   xmlns:x="http://www.butent.com/expression"
 
   name="Projects" source="Projects" caption="=projects"
-  editForm="Project" newRowForm="Project"
+  editForm="Project" newRowForm="Project" newRowCaption="=prjNewProject"
   >
+  <Relation renderColumns="Name" />
   <Columns>
     <IdColumn name="ID"/>
     <SimpleColumn name="Priority" />
@@ -19,6 +20,9 @@
     <SimpleColumn name="Company" />
     <SimpleJoin name="Company" joinType="LEFT">
       <SimpleColumn alias="CompanyName" name="Name" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="CompanyTypeName" />
+      </SimpleJoin>
     </SimpleJoin>
     
     <SimpleColumn name="Contact" />
@@ -105,6 +109,18 @@
     
     <ExternalJoin name="Project" source="ProjectUsers" joinType="LEFT" filter="FilteredProjectUser={u}">
       <SimpleColumn name="User" alias="FilteredProjectUser" />
+    </ExternalJoin>
+    
+    <ExternalJoin name="Project" source="ProjectUsage" joinType="LEFT" filter="FilteredVisitedUser={u}">
+      <SimpleColumn name="User" alias="FilteredVisitedUser" />
+    </ExternalJoin>
+    
+    <ExternalJoin name="Project" source="ProjectUsers" joinType="LEFT" filter="FilteredOwnerUser=Owner">
+      <SimpleColumn name="User" alias="FilteredOwnerUser" />
+    </ExternalJoin>
+    
+    <ExternalJoin name="Project" source="ProjectStages" joinType="LEFT">
+      <AggregateColumn aggregate="COUNT" name="Name" alias="StagesCount" />
     </ExternalJoin>
   </Columns>
   

@@ -8,13 +8,13 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Settings;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Theme;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Label;
@@ -76,6 +76,8 @@ public class HeaderImpl extends Flow implements HeaderView {
 
   private final Horizontal commandPanel = new Horizontal();
 
+  private int height = DEFAULT_HEIGHT;
+
   public HeaderImpl() {
     super();
   }
@@ -115,6 +117,12 @@ public class HeaderImpl extends Flow implements HeaderView {
 
     addStyleName(STYLE_CONTAINER);
 
+    int h = UiOption.isChildOrEmbedded(options)
+        ? Theme.getChildViewHeaderHeight() : Theme.getViewHeaderHeight();
+    if (h > 0) {
+      setHeight(h);
+    }
+
     captionWidget.addStyleName(STYLE_CAPTION);
     if (Captions.isCaption(caption)) {
       setCaption(caption);
@@ -127,6 +135,16 @@ public class HeaderImpl extends Flow implements HeaderView {
     commandPanel.addStyleName(STYLE_COMMAND_PANEL);
     add(commandPanel);
 
+    boolean canAdd = hasData && !readOnly && BeeKeeper.getUser().canCreateData(viewName);
+    if (hasAction(Action.ADD, canAdd, enabledActions, disabledActions)) {
+      Label control = new Label("+ " + Localized.getConstants().createNew());
+      control.addStyleName(BeeConst.CSS_CLASS_PREFIX + "CreateNew");
+
+      initControl(control, Action.ADD, hiddenActions);
+
+      add(control);
+    }
+
     if (hasAction(Action.REFRESH, hasData, enabledActions, disabledActions)) {
       add(createFa(Action.REFRESH, hiddenActions));
     }
@@ -136,11 +154,6 @@ public class HeaderImpl extends Flow implements HeaderView {
     }
     if (hasAction(Action.REMOVE_FILTER, false, enabledActions, disabledActions)) {
       add(createFa(Action.REMOVE_FILTER, hiddenActions));
-    }
-
-    boolean canAdd = hasData && !readOnly && BeeKeeper.getUser().canCreateData(viewName);
-    if (hasAction(Action.ADD, canAdd, enabledActions, disabledActions)) {
-      add(createFa(Action.ADD, hiddenActions));
     }
 
     if (hasAction(Action.COPY, false, enabledActions, disabledActions)) {
@@ -178,6 +191,10 @@ public class HeaderImpl extends Flow implements HeaderView {
       add(createFa(Action.AUDIT, hiddenActions));
     }
 
+    if (hasAction(Action.AUTO_FIT, false, enabledActions, disabledActions)) {
+      add(createFa(Action.AUTO_FIT, hiddenActions));
+    }
+
     if (hasAction(Action.PRINT, false, enabledActions, disabledActions)) {
       add(createFa(Action.PRINT, hiddenActions));
     }
@@ -186,7 +203,7 @@ public class HeaderImpl extends Flow implements HeaderView {
       add(createFa(Action.MENU, hiddenActions));
     }
 
-    if (hasAction(Action.CLOSE, UiOption.isWindow(options), enabledActions, disabledActions)) {
+    if (hasAction(Action.CLOSE, UiOption.isClosable(options), enabledActions, disabledActions)) {
       add(createFa(Action.CLOSE, hiddenActions));
     }
   }
@@ -198,12 +215,7 @@ public class HeaderImpl extends Flow implements HeaderView {
 
   @Override
   public int getHeight() {
-    int height = BeeKeeper.getUser().getViewHeaderHeight();
-    if (height <= 0) {
-      height = Settings.getViewHeaderHeight();
-    }
-
-    return (height > 0) ? height : DEFAULT_HEIGHT;
+    return height;
   }
 
   @Override
@@ -329,6 +341,11 @@ public class HeaderImpl extends Flow implements HeaderView {
   }
 
   @Override
+  public void setHeight(int height) {
+    this.height = height;
+  }
+
+  @Override
   public void setMessage(String message) {
     messageWidget.setHtml(BeeUtils.trim(message));
   }
@@ -382,7 +399,7 @@ public class HeaderImpl extends Flow implements HeaderView {
     return commandPanel;
   }
 
-  private void initControl(FaLabel control, final Action action, Set<Action> hiddenActions) {
+  private void initControl(Label control, final Action action, Set<Action> hiddenActions) {
     control.addStyleName(STYLE_CONTROL);
     control.addStyleName(action.getStyleName());
 

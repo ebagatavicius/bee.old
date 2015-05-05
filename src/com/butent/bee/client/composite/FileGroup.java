@@ -12,15 +12,17 @@ import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.widget.Button;
-import com.butent.bee.client.widget.Image;
-import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.DateTimeLabel;
+import com.butent.bee.client.widget.FaLabel;
+import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InputArea;
 import com.butent.bee.client.widget.InputDateTime;
 import com.butent.bee.client.widget.InputText;
+import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.Link;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasOptions;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.time.DateTime;
@@ -265,7 +267,7 @@ public class FileGroup extends HtmlTable implements HasOptions {
     EDIT("edit", Localized.getConstants().actionEdit(), false, true) {
       @Override
       Widget createDisplay() {
-        Image widget = new Image(Global.getImages().silverEdit());
+        FaLabel widget = new FaLabel(FontAwesome.EDIT);
         widget.setTitle(getCaption().toLowerCase());
         return widget;
       }
@@ -288,7 +290,7 @@ public class FileGroup extends HtmlTable implements HasOptions {
     DELETE("delete", Localized.getConstants().actionRemove(), false, true) {
       @Override
       Widget createDisplay() {
-        Image widget = new Image(Global.getImages().silverMinus());
+        FaLabel widget = new FaLabel(FontAwesome.MINUS);
         widget.setTitle(getCaption().toLowerCase());
         return widget;
       }

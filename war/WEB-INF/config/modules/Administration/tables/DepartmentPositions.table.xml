@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="DepartmentPositions"
+  idName="DepartmentPositionID"
+  >
+  <Fields>
+    <Relation name="Department" notNull="true" relation="Departments" cascade="DELETE"
+      label="=department" />
+    <Relation name="Position" notNull="true" relation="Positions" label="=personPosition" />
+
+    <Integer name="NumberOfEmployees" label="=numberOfEmployees" />
+    <Relation name="Role" relation="Roles" label="=role" />
+  </Fields>
+
+  <Constraints>
+    <Unique fields="Department Position" />
+  </Constraints>
+</Table>

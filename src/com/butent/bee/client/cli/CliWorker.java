@@ -26,6 +26,7 @@ import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.geolocation.client.Position;
 import com.google.gwt.geolocation.client.Position.Coordinates;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Widget;
@@ -104,6 +105,7 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Theme;
 import com.butent.bee.client.ui.WidgetInitializer;
 import com.butent.bee.client.utils.BrowsingContext;
 import com.butent.bee.client.utils.FileUtils;
@@ -534,6 +536,10 @@ public final class CliWorker {
 
     } else if (z.startsWith("tabl") || z.startsWith("tbl")) {
       showTableInfo(v, args);
+
+    } else if (z.startsWith("theme")) {
+      JSONObject theme = Theme.getValues();
+      inform(z, (theme == null) ? BeeConst.NULL : theme.toString());
 
     } else if (z.startsWith("tile")) {
       doTiles(args);
@@ -2726,6 +2732,8 @@ public final class CliWorker {
         range = Range.closed(FontAwesome.SPACE_SHUTTLE.getCode(), FontAwesome.BOMB.getCode());
       } else if (args.startsWith("4.2")) {
         range = Range.closed(FontAwesome.SOCCER_BALL_O.getCode(), FontAwesome.MEANPATH.getCode());
+      } else if (args.startsWith("4.3")) {
+        range = Range.closed(FontAwesome.BUYSELLADS.getCode(), FontAwesome.MEDIUM.getCode());
       }
 
       styles.addAll(StyleUtils.parseStyles(args));
@@ -2986,7 +2994,7 @@ public final class CliWorker {
               return value.indexOf('x') < 0;
             }
           }
-        }, defaultValue, maxLength, null, width, widthUnit, timeout, confirmHtml, cancelHtml,
+        }, null, defaultValue, maxLength, null, width, widthUnit, timeout, confirmHtml, cancelHtml,
         new WidgetInitializer() {
           @Override
           public Widget initialize(Widget widget, String name) {
@@ -4137,8 +4145,21 @@ public final class CliWorker {
     String value = ArrayUtils.join(BeeConst.STRING_SPACE, arr, 2);
 
     if (key.equals(BeeConst.STRING_MINUS)) {
-      BeeKeeper.getStorage().remove(value);
-      inform(value, "removed");
+      if (BeeKeeper.getStorage().hasItem(value)) {
+        BeeKeeper.getStorage().remove(value);
+        inform(value, "removed");
+
+      } else {
+        int count = 0;
+        for (Property p : BeeKeeper.getStorage().getAll()) {
+          if (BeeUtils.isPrefix(p.getName(), value)) {
+            BeeKeeper.getStorage().remove(p.getName());
+            count++;
+          }
+        }
+        inform(value, "removed", BeeUtils.toString(count), "entries");
+      }
+
     } else {
       BeeKeeper.getStorage().set(key, value);
       inform("Storage", NameUtils.addName(key, value));

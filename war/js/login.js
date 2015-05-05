@@ -44,15 +44,41 @@ function setSelectedLanguage(form) {
 }
 
 function translate(lng) {
+  boldMe(lng);
   var dictionary = eval("dictionary" + lng);
+
   if (dictionary) {
     for ( var id in dictionary) {
       var el = document.getElementById(id);
+  
       if (el) {
-        el.textContent = dictionary[id];
+        if (id == "user") {
+          el.placeholder = dictionary[id];
+        } else if (id == "pswd") {
+          el.placeholder = dictionary[id];
+        } else {
+          el.textContent = dictionary[id];
+        }
       }
     }
   }
+}
+
+function boldMe(clicked_id) {
+  var elements = document.getElementsByClassName("bee-SignIn-Locale-label");
+
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].style.fontWeight = 'normal';
+  }
+  document.getElementById(clicked_id).style.fontWeight = 'bold';
+}
+
+function inputValidationStyle() {
+  var user = document.getElementsByClassName("bee-SignIn-Input-user");
+  var pasw = document.getElementsByClassName("bee-SignIn-Input-password");
+  
+  user.classList.add('-invalid');
+  pasw.classList.add('-invalid');
 }
 
 function onload(reqLng) {
@@ -71,7 +97,7 @@ function onload(reqLng) {
     }
 
     document.body.className = "bee-ready";
-    
+
     var u = document.getElementById("user");
     if (u) {
       u.focus();

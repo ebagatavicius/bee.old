@@ -24,9 +24,13 @@
 
 package com.butent.bee.shared.treelayout.util;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+
 import com.butent.bee.shared.Assert;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,70 +51,78 @@ import java.util.Map;
  * @param <TreeNode>
  */
 
-public class DefaultTreeForTreeLayout<N> extends AbstractTreeForTreeLayout<N> {
+public class DefaultTreeForTreeLayout<T> extends AbstractTreeForTreeLayout<T> {
 
-  private List<N> emptyList;
+  private List<T> emptyList;
 
-  private List<N> getEmptyList() {
+  private List<T> getEmptyList() {
     if (emptyList == null) {
       emptyList = new ArrayList<>();
     }
     return emptyList;
   }
 
-  private Map<N, List<N>> childrenMap = new HashMap<>();
-  private Map<N, N> parents = new HashMap<>();
+  private final ListMultimap<T, T> childrenMap = ArrayListMultimap.create();
+  private final Map<T, T> parents = new HashMap<>();
 
   /**
    * Creates a new instance with a given node as the root.
    * 
    * @param root the node to be used as the root.
    */
-  public DefaultTreeForTreeLayout(N root) {
+  public DefaultTreeForTreeLayout(T root) {
     super(root);
   }
 
   @Override
-  public N getParent(N node) {
+  public T getParent(T node) {
     return parents.get(node);
   }
 
   @Override
-  public List<N> getChildren(N node) {
-    List<N> result = childrenMap.get(node);
-    return result == null ? getEmptyList() : result;
+  public List<T> getChildren(T node) {
+    if (childrenMap.containsKey(node)) {
+      return childrenMap.get(node);
+    } else {
+      return getEmptyList();
+    }
   }
 
   /**
-   * 
    * @param node
    * @return true iff the node is in the tree
    */
-  public boolean hasNode(N node) {
-    return node == getRoot() || parents.containsKey(node);
+  public boolean hasNode(T node) {
+    return isRoot(node) || parents.containsKey(node);
   }
 
   /**
    * @param parentNode [hasNode(parentNode)]
    * @param node [!hasNode(node)]
    */
-  public void addChild(N parentNode, N node) {
+  public void addChild(T parentNode, T node) {
     Assert.isTrue(hasNode(parentNode), "parentNode is not in the tree");
     Assert.isTrue(!hasNode(node), "node is already in the tree");
 
-    List<N> list = childrenMap.get(parentNode);
-    if (list == null) {
-      list = new ArrayList<>();
-      childrenMap.put(parentNode, list);
-    }
-    list.add(node);
+    childrenMap.put(parentNode, node);
     parents.put(node, parentNode);
   }
 
-  @SuppressWarnings("unchecked")
-  public void addChildren(N parentNode, N... nodes) {
-    for (N node : nodes) {
+  public void addChildren(T parentNode, Collection<T> nodes) {
+    for (T node : nodes) {
       addChild(parentNode, node);
     }
+  }
+
+  @Override
+  public int getLevel(T node) {
+    Assert.isTrue(hasNode(node), "node is not in the tree");
+
+    int level = 0;
+    for (T child = node; parents.containsKey(child); child = parents.get(child)) {
+      level++;
+    }
+
+    return level;
   }
 }

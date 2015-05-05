@@ -2,6 +2,7 @@ package com.butent.bee.shared.modules.discussions;
 
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.HasCaption;
@@ -14,29 +15,29 @@ public final class DiscussionsConstants {
     CREATE_MAIL(Localized.getConstants().mailNotify(), null, null),
     VISIT(Localized.getConstants().discussEventVisited(), null, null),
     ACTIVATE(Localized.getConstants().discussEventActivated(), Localized.getConstants()
-        .discussActionActivate(), "silverDiscussActivate"),
+        .discussActionActivate(), FontAwesome.ARROW_CIRCLE_RIGHT),
     DEACTIVATE(Localized.getConstants().discussEventDeactivated(), Localized.getConstants()
         .discussActionDeactivate(), null),
     CLOSE(Localized.getConstants().discussEventClosed(), Localized.getConstants()
-        .discussActionClose(), "silverDiscussClose"),
+        .discussActionClose(), FontAwesome.CHECK_CIRCLE_O),
     COMMENT(Localized.getConstants().discussEventCommented(), Localized.getConstants()
-        .discussActionComment(), "silverDiscussComment"),
+        .discussActionComment(), FontAwesome.COMMENT_O),
     COMMENT_DELETE(Localized.getConstants().discussEventCommentDeleted(), Localized.getConstants()
-        .actionDelete(), "silverdelete"),
+        .actionDelete(), FontAwesome.TRASH),
     REPLY(Localized.getConstants().discussEventReplied(), Localized.getConstants()
-        .discussActionReply(), "replyToAll"),
+        .discussActionReply(), FontAwesome.REPLY),
     MARK(Localized.getConstants().discussEventMarked(), Localized.getConstants()
-        .discussActionMark(), null),
+        .discussActionMark(), FontAwesome.TAG),
     MODIFY(Localized.getConstants().discussEventModified(), null, null);
 
     private final String caption;
     private final String commandLabel;
-    private final String imageResource;
+    private final FontAwesome commandIcon;
 
-    private DiscussionEvent(String caption, String commandLabel, String imageResource) {
+    private DiscussionEvent(String caption, String commandLabel, FontAwesome commandIcon) {
       this.caption = caption;
       this.commandLabel = commandLabel;
-      this.imageResource = imageResource;
+      this.commandIcon = commandIcon;
     }
 
     @Override
@@ -44,8 +45,8 @@ public final class DiscussionsConstants {
       return caption;
     }
 
-    public String getImageResource() {
-      return imageResource;
+    public FontAwesome getCommandIcon() {
+      return commandIcon;
     }
 
     public static boolean in(int event, DiscussionEvent... events) {
@@ -123,6 +124,7 @@ public final class DiscussionsConstants {
   public static final String COL_MARK_NAME = "Name";
   public static final String COL_MARK_RESOURCE = "ImageResourceName";
   public static final String COL_LAST_ACCESS = "LastAccess";
+  public static final String COL_DISCUSSION_COMMENTS = "DiscussionComments";
 
   public static final String COL_MAIL_NEW_ANNOUNCEMENTS = "MailNewAnnouncements";
   public static final String COL_MAIL_NEW_DISCUSSIONS = "MailNewDiscussions";

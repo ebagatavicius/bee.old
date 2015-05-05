@@ -12,14 +12,15 @@
   xmlns:ui="http://www.butent.com/ui"  
   
   name="AssessmentForwarder" viewName="AssessmentForwarders" caption="=carrier"
-  height="600"
+  height="700"
   >
   <f:properties reports="PrintContractLT, PrintContractEN, PrintContractRU" />
 
   <FlowPanel class="flexBox-vertical" style="padding: 10px 2px 2px 10px;">
     <FlowPanel for="Forwarder" style="&section;">
       <Label for="Forwarder" class="bee-required" style="&labelLeft; width:140px;" />
-      <DataSelector source="Forwarder" required="true" style="&input; width:200px;" />
+      <DataSelector source="Forwarder" required="true" style="&input; width:200px;"
+          renderColumns="ForwarderName ForwarderTypeName" choiceColumns="Name TypeName" />
     </FlowPanel>
     <FlowPanel for="Expedition" style="&section;">
       <Label for="Expedition" class="bee-required" style="&labelLeft; width:140px;" />
@@ -39,16 +40,17 @@
       <InputText source="Number" style="&input;" />
       <Label for="Amount" style="&labelRight;" />
       <InputMoney source="Amount" style="&input; width:70px;" />
-      <DataSelector source="Currency" style="&inline; width:40px; margin-left:5px;" 
+      <DataSelector source="Currency" style="&inline; width:5em; margin-left:5px;" 
         editEnabled="false" placeholder="=currencyShort" />
       <CheckBox source="VatPlus" text="=vatPlus" style="&inline; margin-left:5px;" />
-      <InputMoney source="Vat" placeholder="=vat" style="&inline; width:40px; margin-left:5px;" />
+      <InputMoney source="Vat" placeholder="=vat" style="&inline; width:5em; margin-left:5px;" />
       <CheckBox source="VatPercent" style="&inline; margin-left:5px;" text="%" />
     </FlowPanel>
 
     <FlowPanel for="Supplier" style="&section;">
       <Label for="Supplier" style="&labelLeft;" />
-      <DataSelector source="Supplier" style="&input; width:200px;" />
+      <DataSelector source="Supplier" renderColumns="SupplierName SupplierTypeName" 
+          choiceColumns="Name TypeName" style="&input; width:200px;" />
     </FlowPanel>
 
     <FlowPanel for="Note" style="&section;">

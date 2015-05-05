@@ -21,6 +21,7 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.composite.FileGroup;
 import com.butent.bee.client.composite.MultiSelector;
@@ -143,8 +144,8 @@ class TaskEditor extends AbstractFormInterceptor {
     return (widget instanceof MultiSelector) ? (MultiSelector) widget : null;
   }
 
-  private static BeeRow getResponseRow(String caption, ResponseObject ro, Callback<?> callback) {
-    if (!Queries.checkResponse(caption, VIEW_TASKS, ro, BeeRow.class, callback)) {
+  private static BeeRow getResponseRow(String caption, ResponseObject ro, RpcCallback<?> callback) {
+    if (!Queries.checkResponse(caption, BeeConst.UNDEF, VIEW_TASKS, ro, BeeRow.class, callback)) {
       return null;
     }
 
@@ -235,7 +236,9 @@ class TaskEditor extends AbstractFormInterceptor {
     return TimeUtils.renderTime(millis, false);
   }
 
-  private static void sendRequest(ParameterList params, final Callback<ResponseObject> callback) {
+  private static void sendRequest(ParameterList params,
+      final RpcCallback<ResponseObject> callback) {
+
     BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
@@ -629,7 +632,7 @@ class TaskEditor extends AbstractFormInterceptor {
 
     ParameterList params = createParams(TaskEvent.EDIT, null);
 
-    sendRequest(params, new Callback<ResponseObject>() {
+    sendRequest(params, new RpcCallback<ResponseObject>() {
       @Override
       public void onSuccess(ResponseObject result) {
         BeeRow data = getResponseRow(TaskEvent.EDIT.getCaption(), result, this);
@@ -690,7 +693,7 @@ class TaskEditor extends AbstractFormInterceptor {
     params.addDataItem(VAR_TASK_DATA, Codec.beeSerialize(rowSet));
     params.addDataItem(VAR_TASK_USERS, getTaskUsers(form, row));
 
-    sendRequest(params, new Callback<ResponseObject>() {
+    sendRequest(params, new RpcCallback<ResponseObject>() {
       @Override
       public void onFailure(String... reason) {
         form.updateRow(row, true);
@@ -1401,7 +1404,7 @@ class TaskEditor extends AbstractFormInterceptor {
         PROP_OBSERVERS, PROP_FILES, PROP_EVENTS));
     params.addDataItem(VAR_TASK_RELATIONS, BeeConst.STRING_ASTERISK);
 
-    Callback<ResponseObject> callback = new Callback<ResponseObject>() {
+    RpcCallback<ResponseObject> callback = new RpcCallback<ResponseObject>() {
       @Override
       public void onFailure(String... reason) {
         getFormView().notifySevere(reason);
@@ -1458,7 +1461,7 @@ class TaskEditor extends AbstractFormInterceptor {
   private void sendRequest(ParameterList params, final TaskEvent event,
       final List<FileInfo> files) {
 
-    Callback<ResponseObject> callback = new Callback<ResponseObject>() {
+    RpcCallback<ResponseObject> callback = new RpcCallback<ResponseObject>() {
       @Override
       public void onFailure(String... reason) {
         getFormView().notifySevere(reason);

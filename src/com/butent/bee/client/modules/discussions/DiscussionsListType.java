@@ -18,13 +18,13 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 enum DiscussionsListType implements HasCaption, HasWidgetSupplier {
 
-  ALL(Localized.getConstants().discussAll()) {
+  ALL(Localized.getConstants().discussAllShort()) {
     @Override
     Filter getFilter(LongValue userId) {
       return null;
     }
   },
-  ACTIVE(Localized.getConstants().discussActive()) {
+  ACTIVE(Localized.getConstants().discussPublic1()) {
     @Override
     Filter getFilter(LongValue userId) {
       Filter isMemberFilter = Filter.isEqual(COL_MEMBER, BooleanValue.TRUE);
@@ -32,13 +32,14 @@ enum DiscussionsListType implements HasCaption, HasWidgetSupplier {
       Filter isPublic = Filter.notNull(COL_ACCESSIBILITY);
       Filter isUserFilter = Filter.isEqual(COL_USER, userId);
       Filter isActive = Filter.isEqual(COL_STATUS, IntegerValue.of(DiscussionStatus.ACTIVE));
+      Filter hasTopic = Filter.isNull(COL_TOPIC);
 
       Filter discussUsersFilter = Filter.in(Data.getIdColumn(VIEW_DISCUSSIONS),
           VIEW_DISCUSSIONS_USERS, COL_DISCUSSION,
           Filter.and(isUserFilter, isMemberFilter));
       return Filter.and(Filter.or(
           Filter.or(discussUsersFilter, isOwner), isPublic),
-          isActive);
+          isActive, hasTopic);
     }
   },
   CLOSED(Localized.getConstants().discussClosed()) {
@@ -49,16 +50,17 @@ enum DiscussionsListType implements HasCaption, HasWidgetSupplier {
       Filter isPublic = Filter.notNull(COL_ACCESSIBILITY);
       Filter isUserFilter = Filter.isEqual(COL_USER, userId);
       Filter isActive = Filter.isEqual(COL_STATUS, IntegerValue.of(DiscussionStatus.CLOSED));
+      Filter hasTopic = Filter.isNull(COL_TOPIC);
 
       Filter discussUsersFilter = Filter.in(Data.getIdColumn(VIEW_DISCUSSIONS),
           VIEW_DISCUSSIONS_USERS, COL_DISCUSSION,
           Filter.and(isUserFilter, isMemberFilter));
       return Filter.and(Filter.or(
           Filter.or(discussUsersFilter, isOwner), isPublic),
-          isActive);
+          isActive, hasTopic);
     }
   },
-  OBSERVED(Localized.getConstants().discussObserved()) {
+  OBSERVED(Localized.getConstants().discussPrivateShort()) {
     @Override
     Filter getFilter(LongValue userId) {
       Filter activeStatusFilter = Filter.isEqual(COL_STATUS,
@@ -66,11 +68,13 @@ enum DiscussionsListType implements HasCaption, HasWidgetSupplier {
       Filter notOwnerFilter = Filter.isNotEqual(COL_OWNER, userId);
       Filter isMemberFilter = Filter.isEqual(COL_MEMBER, BooleanValue.TRUE);
       Filter isUserFilter = Filter.isEqual(COL_USER, userId);
+      Filter hasTopic = Filter.isNull(COL_TOPIC);
+
       Filter discussUsersFilter = Filter.in(Data.getIdColumn(VIEW_DISCUSSIONS),
           VIEW_DISCUSSIONS_USERS, COL_DISCUSSION,
           Filter.and(isUserFilter, isMemberFilter));
 
-      return Filter.and(activeStatusFilter, notOwnerFilter, discussUsersFilter);
+      return Filter.and(activeStatusFilter, notOwnerFilter, discussUsersFilter, hasTopic);
     }
   },
   STARRED(Localized.getConstants().discussStarred()) {
@@ -90,10 +94,28 @@ enum DiscussionsListType implements HasCaption, HasWidgetSupplier {
       Filter notPublicIsMember = Filter.and(Filter.isNot(isPublic), isMember);
       Filter isPublicNotMember = Filter.and(isPublic, Filter.isNot(isMember));
       Filter isPublicIsMember = Filter.and(isPublic, isMember);
+      Filter hasTopic = Filter.isNull(COL_TOPIC);
 
       return Filter.and(isStarred, Filter.or(Lists.newArrayList(notPublicIsMember,
           isPublicNotMember,
-          isPublicIsMember)));
+          isPublicIsMember, hasTopic)));
+    }
+  },
+
+  ANNOUNCEMENTSBOARDLIST(Localized.getConstants().announcements()) {
+    @Override
+    Filter getFilter(LongValue userId) {
+      Filter isMemberFilter = Filter.isEqual(COL_MEMBER, BooleanValue.TRUE);
+      Filter isOwner = Filter.isEqual(COL_OWNER, userId);
+      Filter isPublic = Filter.notNull(COL_ACCESSIBILITY);
+      Filter isUserFilter = Filter.isEqual(COL_USER, userId);
+      Filter hasTopic = Filter.notNull(COL_TOPIC);
+
+      Filter discussUsersFilter = Filter.in(Data.getIdColumn(VIEW_DISCUSSIONS),
+          VIEW_DISCUSSIONS_USERS, COL_DISCUSSION,
+          Filter.and(isUserFilter, isMemberFilter));
+      return Filter.and(Filter.or(
+          Filter.or(discussUsersFilter, isOwner), isPublic), hasTopic);
     }
   };
 

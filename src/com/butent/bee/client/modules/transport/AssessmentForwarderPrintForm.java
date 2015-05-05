@@ -33,6 +33,8 @@ public class AssessmentForwarderPrintForm extends AssessmentPrintForm {
                 places.clear();
               }
               for (int i = 0; i < result.getNumberOfRows(); i++) {
+                String ordinal = result.getNumberOfRows() > 1 ? (i + 1) + "." : null;
+
                 if (dates != null) {
                   DateTime date = result.getDateTime(i, prefix + COL_PLACE_DATE);
                   String txt = result.getString(i, prefix + COL_PLACE_NOTE);
@@ -41,7 +43,7 @@ public class AssessmentForwarderPrintForm extends AssessmentPrintForm {
                     txt = BeeUtils.joinWords(date.toCompactString(), txt);
                   }
                   if (!BeeUtils.isEmpty(txt)) {
-                    Label lbl = new Label(BeeUtils.joinWords((i + 1) + ".", txt));
+                    Label lbl = new Label(BeeUtils.joinWords(ordinal, txt));
                     lbl.addStyleName(form.getFormName() + "-" + prefix + COL_PLACE_DATE);
                     dates.add(lbl);
                   }
@@ -54,7 +56,7 @@ public class AssessmentForwarderPrintForm extends AssessmentPrintForm {
                     result.getString(i, prefix + COL_PLACE_CONTACT));
 
                 if (!BeeUtils.isEmpty(txt)) {
-                  Label lbl = new Label(BeeUtils.joinWords((i + 1) + ".", txt));
+                  Label lbl = new Label(BeeUtils.joinWords(ordinal, txt));
                   lbl.addStyleName(form.getFormName() + "-" + prefix + COL_PLACE_ADDRESS);
                   places.add(lbl);
                 }

@@ -25,6 +25,7 @@
     <SimpleColumn name="Project" />
   
     <SimpleJoin name="Task" joinType="INNER">
+      <IdColumn name="Id"/>
       <SimpleColumn name="Summary" editable="true" />
       <SimpleColumn name="Description" editable="true" />
 

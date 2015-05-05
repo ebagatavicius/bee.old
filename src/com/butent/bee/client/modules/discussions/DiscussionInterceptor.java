@@ -15,7 +15,6 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HasHandlers;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -27,6 +26,7 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.composite.FileCollector;
 import com.butent.bee.client.composite.FileGroup;
@@ -60,6 +60,7 @@ import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InputArea;
 import com.butent.bee.client.widget.InputBoolean;
@@ -76,6 +77,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -84,6 +86,7 @@ import com.butent.bee.shared.modules.discussions.DiscussionsConstants.Discussion
 import com.butent.bee.shared.modules.discussions.DiscussionsUtils;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -111,17 +114,25 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
       setWidget(container);
     }
 
-    private void addAction(String caption, ScheduledCommand command) {
+    private void addSaveAction(final ScheduledCommand command) {
       String styleName = STYLE_DIALOG + "-action";
 
-      Button button = new Button(caption, command);
-      button.addStyleName(styleName);
+      FaLabel faSave = new FaLabel(FontAwesome.SAVE);
+      faSave.addClickHandler(new ClickHandler() {
+
+        @Override
+        public void onClick(ClickEvent arg0) {
+          command.execute();
+        }
+      });
 
       HtmlTable table = getContainer();
       int row = table.getRowCount();
       int col = 0;
 
-      table.setWidget(row, col, button);
+      faSave.setTitle(Action.SAVE.getCaption());
+
+      insertAction(BeeConst.INT_TRUE, faSave);
 
       table.getCellFormatter().addStyleName(row, col, styleName + STYLE_CELL);
       table.getCellFormatter().setHorizontalAlignment(row, col, TextAlign.CENTER);
@@ -527,7 +538,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
 
     ParameterList params = createParams(DiscussionEvent.MODIFY, null);
 
-    sendRequest(params, new Callback<ResponseObject>() {
+    sendRequest(params, new RpcCallback<ResponseObject>() {
 
       @Override
       public void onSuccess(ResponseObject result) {
@@ -591,7 +602,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
     params.addDataItem(VAR_DISCUSSION_DATA, Codec.beeSerialize(rowSet));
     params.addDataItem(VAR_DISCUSSION_USERS, getDiscussionMembers(form, row));
 
-    sendRequest(params, new Callback<ResponseObject>() {
+    sendRequest(params, new RpcCallback<ResponseObject>() {
       @Override
       public void onFailure(String... reason) {
         form.updateRow(row, true);
@@ -661,18 +672,18 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
 
   private Widget createEventButton(final FormView form, final IsRow row,
       final DiscussionEvent event, final String adminLogin) {
-    ImageResource imageResource = !BeeUtils.isEmpty(event.getImageResource())
-        ? Images.get(event.getImageResource()) : null;
+
+    FontAwesome icon = event.getCommandIcon();
     String label = event.getCommandLabel();
 
     Widget cmd = null;
 
-    if (imageResource != null) {
-      cmd = new Image(imageResource);
-      ((Image) cmd).setAlt(label);
-      ((Image) cmd).setTitle(label);
+    if (icon != null) {
+      cmd = new FaLabel(icon);
+      cmd.setTitle(label);
     } else {
       cmd = new Button(label);
+      cmd.setTitle(label);
     }
 
     if (cmd instanceof HasClickHandlers) {
@@ -780,8 +791,9 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
     return (widget instanceof MultiSelector) ? (MultiSelector) widget : null;
   }
 
-  private static BeeRow getResponseRow(String caption, ResponseObject ro, Callback<?> callback) {
-    if (!Queries.checkResponse(caption, VIEW_DISCUSSIONS, ro, BeeRow.class, callback)) {
+  private static BeeRow getResponseRow(String caption, ResponseObject ro, RpcCallback<?> callback) {
+    if (!Queries.checkResponse(caption, BeeConst.UNDEF, VIEW_DISCUSSIONS, ro, BeeRow.class,
+        callback)) {
       return null;
     }
 
@@ -801,7 +813,9 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
     return !BeeUtils.isEmpty(row.getString(rowSet.getColumnIndex(COL_PHOTO)));
   }
 
-  private static void sendRequest(ParameterList params, final Callback<ResponseObject> callback) {
+  private static void sendRequest(ParameterList params,
+      final RpcCallback<ResponseObject> callback) {
+
     BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
 
       @Override
@@ -820,7 +834,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
   }
 
   private void sendRequest(ParameterList params, final DiscussionEvent event) {
-    Callback<ResponseObject> callback = new Callback<ResponseObject>() {
+    RpcCallback<ResponseObject> callback = new RpcCallback<ResponseObject>() {
 
       @Override
       public void onFailure(String... reason) {
@@ -1082,7 +1096,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
           marked, markCount, i++);
     }
 
-    Image imgStats = new Image(Images.get("silverBarChart"));
+    FaLabel imgStats = new FaLabel(FontAwesome.BAR_CHART);
     imgStats.addStyleName(DISCUSSIONS_STYLE_PREFIX + STYLE_ACTIONS);
     imgStats.addStyleName(DISCUSSIONS_STYLE_PREFIX + STYLE_ACTIONS + STYLE_STATS);
     imgStats.setTitle(Localized.getConstants().discussMarkStats());
@@ -1204,7 +1218,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
     final String cid = dialog.addComment(true);
     final String fid = dialog.addFileCollector(formRow);
 
-    dialog.addAction(Localized.getConstants().actionSave(), new ScheduledCommand() {
+    dialog.addSaveAction(new ScheduledCommand() {
 
       @Override
       public void execute() {
@@ -1229,7 +1243,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
 
         dialog.close();
 
-        sendRequest(params, new Callback<ResponseObject>() {
+        sendRequest(params, new RpcCallback<ResponseObject>() {
           @Override
           public void onFailure(String... reason) {
             getFormView().notifySevere(reason);
@@ -1540,15 +1554,16 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
 
   private void renderReply(final IsRow formRow, IsRow commentRow, Flow container) {
     String label = DiscussionEvent.REPLY.getCommandLabel();
-    ImageResource res = !BeeUtils.isEmpty(DiscussionEvent.REPLY.getImageResource())
-        ? Images.get(DiscussionEvent.REPLY.getImageResource()) : null;
+    FontAwesome icon = DiscussionEvent.REPLY.getCommandIcon();
 
     Widget widgetReply;
 
-    if (res != null) {
-      widgetReply = new Image(res);
+    if (icon != null) {
+      widgetReply = new FaLabel(icon);
+      widgetReply.setTitle(label);
     } else {
       widgetReply = new Button(label);
+      widgetReply.setTitle(label);
     }
     widgetReply.addStyleName(DISCUSSIONS_STYLE_PREFIX + STYLE_ACTIONS);
     widgetReply.addStyleName(STYLE_COMMENT_COL + STYLE_ACTIONS + STYLE_REPLY);
@@ -1572,15 +1587,16 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
 
   private void renderTrash(IsRow commentRow, Flow container) {
     String label = DiscussionEvent.COMMENT_DELETE.getCommandLabel();
-    ImageResource res = !BeeUtils.isEmpty(DiscussionEvent.COMMENT_DELETE.getImageResource())
-        ? Images.get(DiscussionEvent.COMMENT_DELETE.getImageResource()) : null;
+    FontAwesome icon = DiscussionEvent.COMMENT_DELETE.getCommandIcon();
 
     Widget widgetTrash;
 
-    if (res != null) {
-      widgetTrash = new Image(res);
+    if (icon != null) {
+      widgetTrash = new FaLabel(icon);
+      widgetTrash.setTitle(label);
     } else {
       widgetTrash = new Button(label);
+      widgetTrash.setTitle(label);
     }
 
     widgetTrash.addStyleName(DISCUSSIONS_STYLE_PREFIX + STYLE_ACTIONS);
@@ -1606,7 +1622,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
     ParameterList params = DiscussionsKeeper.createArgs(SVC_GET_DISCUSSION_DATA);
     params.addDataItem(VAR_DISCUSSION_ID, discussionId);
 
-    Callback<ResponseObject> callback = new Callback<ResponseObject>() {
+    RpcCallback<ResponseObject> callback = new RpcCallback<ResponseObject>() {
       @Override
       public void onFailure(String... reason) {
         getFormView().notifySevere(reason);

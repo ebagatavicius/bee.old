@@ -17,6 +17,8 @@
 
     <RelColumn name="Manager" caption="=responsiblePerson" minWidth="100" />
     <DataColumn name="Result" visible="false" />
+    <RelColumn name="RequestType" visible="true" />
+    <RelColumn name="RequestForm" visible="true" />
   </g:columns>
   
   <g:predefinedFilter name="request_registred" label="=requestShowRegistered" initial="true" >

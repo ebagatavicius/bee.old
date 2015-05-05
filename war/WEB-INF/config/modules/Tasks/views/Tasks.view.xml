@@ -5,9 +5,10 @@
   name="Tasks" source="Tasks" caption="=crmTasks"
   newRowForm="NewTask" editForm="Task" rowCaption="Summary" 
   >
-  <Relation renderColumns="Summary ExecutorFirstName ExecutorLastName"
-    choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime" />
+  <Relation renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
+    choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime" />
   <Columns>
+    <IdColumn name="Id"/>
     <SimpleColumn name="Summary" />
     <SimpleColumn name="Description" />
 
@@ -56,6 +57,9 @@
     <SimpleColumn name="Company" />
     <SimpleJoin name="Company" joinType="LEFT">
       <SimpleColumn alias="CompanyName" name="Name" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="CompanyTypeName" />
+      </SimpleJoin>
     </SimpleJoin>
 
     <SimpleColumn name="Contact" />

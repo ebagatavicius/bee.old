@@ -1,11 +1,15 @@
 package com.butent.bee.client.output;
 
 import com.butent.bee.client.view.edit.Editor;
+import com.butent.bee.client.widget.InputDateTime;
 import com.butent.bee.client.widget.ListBox;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
+import com.butent.bee.shared.report.DateTimeFunction;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.time.TimeUtils;
-import com.butent.bee.shared.utils.EnumUtils;
+import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.EnumSet;
 
@@ -13,58 +17,95 @@ public class ReportDateTimeItem extends ReportDateItem {
 
   public ReportDateTimeItem(String name, String caption) {
     super(name, caption);
-    setOptions(DateTimeFunction.DATE.name());
+    setFormat(DateTimeFunction.DATETIME);
   }
 
   @Override
-  public ReportItem create() {
-    ReportDateTimeItem item = new ReportDateTimeItem(getName(), getCaption());
-    item.setOptions(getOptions());
-    return item;
-  }
+  public ReportValue evaluate(SimpleRow row) {
+    ReportValue value;
+    DateTime date = row.getDateTime(getName());
 
-  @Override
-  public String evaluate(SimpleRow row) {
-    String value = null;
-    DateTime dateTime = row.getDateTime(getName());
+    if (date != null) {
+      String val = BeeUtils.toString(getValue(date));
 
-    if (dateTime != null) {
-      DateTimeFunction fnc = EnumUtils.getEnumByName(DateTimeFunction.class, getOptions());
-
-      if (fnc != null) {
-        switch (fnc) {
-          case DATE:
-            value = dateTime.toDateString();
-            break;
-          case HOUR:
-            value = TimeUtils.padTwo(dateTime.getHour());
-            break;
-          case MINUTE:
-            value = TimeUtils.padTwo(dateTime.getMinute());
-            break;
-          case TIME:
-            value = dateTime.toCompactTimeString();
-            break;
-          default:
-            value = super.evaluate(row);
-            break;
-        }
-      } else {
-        value = dateTime.toCompactString();
+      switch (getFormat()) {
+        case DATETIME:
+          value = ReportValue.of(BeeUtils.padLeft(val, 15, BeeConst.CHAR_ZERO),
+              date.toCompactString());
+          break;
+        case HOUR:
+        case MINUTE:
+          value = ReportValue.of(BeeUtils.padLeft(val, 2, BeeConst.CHAR_ZERO));
+          break;
+        default:
+          value = evaluate(date.getDate());
+          break;
       }
+    } else {
+      value = ReportValue.empty();
     }
     return value;
   }
 
   @Override
-  public Editor getOptionsEditor() {
-    ListBox editor = (ListBox) super.getOptionsEditor();
+  public String getFormatedCaption() {
+    String cap = getCaption();
 
-    for (DateTimeFunction fnc : EnumSet.of(DateTimeFunction.DATE, DateTimeFunction.TIME,
-        DateTimeFunction.HOUR, DateTimeFunction.MINUTE)) {
-      editor.addItem(fnc.getCaption(), fnc.name());
+    if (getFormat() != DateTimeFunction.DATETIME) {
+      cap = BeeUtils.joinWords(cap, BeeUtils.parenthesize(getFormat().getCaption()));
     }
-    editor.setValue(getOptions());
+    return cap;
+  }
+
+  @Override
+  public boolean validate(SimpleRow row) {
+    if (!row.getRowSet().hasColumn(getName())) {
+      return true;
+    }
+    return validate(row.getDateTime(getName()));
+  }
+
+  @Override
+  protected Editor createFilterEditor() {
+    int limit = 0;
+
+    switch (getFormat()) {
+      case DATETIME:
+        return new InputDateTime();
+      case HOUR:
+        limit = 24;
+        break;
+      case MINUTE:
+        limit = 60;
+        break;
+      default:
+        return super.createFilterEditor();
+    }
+    ListBox editor = new ListBox();
+    editor.addItem("");
+
+    for (int i = 0; i < limit; i++) {
+      editor.addItem(TimeUtils.padTwo(i), BeeUtils.toString(i));
+    }
     return editor;
+  }
+
+  @Override
+  protected EnumSet<DateTimeFunction> getSupportedFunctions() {
+    return EnumSet.allOf(DateTimeFunction.class);
+  }
+
+  @Override
+  protected long getValue(HasDateValue date) {
+    switch (getFormat()) {
+      case DATETIME:
+        return date.getTime();
+      case HOUR:
+        return date.getHour();
+      case MINUTE:
+        return date.getMinute();
+      default:
+        return super.getValue(date);
+    }
   }
 }

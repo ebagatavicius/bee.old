@@ -1,6 +1,7 @@
 package com.butent.bee.client.animation;
 
 import com.butent.bee.client.dom.Features;
+import com.butent.bee.shared.utils.BeeUtils;
 
 import elemental.dom.RequestAnimationFrameCallback;
 
@@ -31,6 +32,10 @@ public abstract class RafCallback implements RequestAnimationFrameCallback {
 
   public double getStartTime() {
     return startTime;
+  }
+
+  public double normalize(double elapsed) {
+    return BeeUtils.normalize(elapsed, 0, getDuration());
   }
 
   @Override

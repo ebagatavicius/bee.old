@@ -46,6 +46,8 @@ public interface LocalizableClassifierConstants {
 
   String departments();
 
+  String employees();
+
   String goods();
 
   String group();
@@ -56,7 +58,11 @@ public interface LocalizableClassifierConstants {
 
   String itemOrService();
 
+  String newClient();
+
   String newDepartmentEmployees();
+
+  String newDepartmentPositions();
 
   String newItem();
 
@@ -79,6 +85,8 @@ public interface LocalizableClassifierConstants {
   String printBankAccount();
 
   String printBankCode();
+
+  String qrCode();
 
   String references();
 

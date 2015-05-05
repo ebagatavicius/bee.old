@@ -15,13 +15,13 @@ import com.butent.bee.server.data.IdGeneratorBean;
 import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.data.SystemBean;
 import com.butent.bee.server.modules.ParamHolderBean;
+import com.butent.bee.server.modules.ec.TecDocRemote.TcdData;
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.IsQuery;
 import com.butent.bee.server.sql.IsSql;
 import com.butent.bee.server.sql.SqlBuilder;
 import com.butent.bee.server.sql.SqlBuilderFactory;
 import com.butent.bee.server.sql.SqlCreate;
-import com.butent.bee.server.sql.SqlCreate.SqlField;
 import com.butent.bee.server.sql.SqlDelete;
 import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
@@ -39,7 +39,6 @@ import com.butent.bee.shared.exceptions.BeeException;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
-import com.butent.bee.shared.modules.ec.EcConstants.EcSupplier;
 import com.butent.bee.shared.modules.ec.EcUtils;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.time.TimeUtils;
@@ -54,6 +53,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -96,7 +96,7 @@ public class TecDocBean implements HasTimerService {
     });
   }
 
-  private class RemoteItem {
+  private static class RemoteItem {
     private final String supplierId;
     private final Double cost;
     private final String brand;
@@ -123,7 +123,7 @@ public class TecDocBean implements HasTimerService {
     }
   }
 
-  private class RemoteRemainder {
+  private static class RemoteRemainder {
     private final String supplierId;
     private final String warehouse;
     private final Double remainder;
@@ -135,33 +135,13 @@ public class TecDocBean implements HasTimerService {
     }
   }
 
-  private class TcdData {
-    private final SqlCreate base;
-    private final SqlSelect baseSource;
-    private final List<String[]> baseIndexes = new ArrayList<>();
-    private final List<IsSql> preparations = new ArrayList<>();
-
-    public TcdData(SqlCreate base, SqlSelect baseSource) {
-      this.base = base;
-      this.baseSource = baseSource;
-    }
-
-    private void addPreparation(IsSql preparation) {
-      this.preparations.add(preparation);
-    }
-
-    private void addBaseIndexes(String... fldList) {
-      this.baseIndexes.add(fldList);
-    }
-  }
-
   private static BeeLogger logger = LogUtils.getLogger(TecDocBean.class);
 
   private static Boolean supportsJPEG2000;
   private static final String JPEG = "JPG";
   private static final String JPEG2000 = "JP2";
 
-  private static final String TCD_SCHEMA = "TecDoc";
+  static final String TCD_SCHEMA = "TecDoc";
   private static final String TCD_GRAPHICS_RESOURCES = "TcdResources";
 
   private static final String TCD_TECDOC_ID = "TecDocID";
@@ -303,7 +283,8 @@ public class TecDocBean implements HasTimerService {
     }
     SqlSelect query = new SqlSelect();
 
-    String[] cols = new String[] {COL_TCD_ARTICLE_NAME, COL_TCD_ARTICLE_DESCRIPTION,
+    String[] cols = new String[] {
+        COL_TCD_ARTICLE_NAME, COL_TCD_ARTICLE_DESCRIPTION,
         COL_TCD_ARTICLE_UNIT, COL_TCD_ARTICLE_WEIGHT, COL_TCD_ARTICLE_VISIBLE};
 
     SimpleRow analog = qs.getRow(query.addFields(TBL_TCD_ARTICLES, cols)
@@ -371,7 +352,7 @@ public class TecDocBean implements HasTimerService {
       cb.asynchronousCall(new AsynchronousRunnable() {
         @Override
         public String getId() {
-          return BeeUtils.joinWords(TecDocBean.class.getName(), PRM_BUTENT_INTERVAL);
+          return BeeUtils.join("-", TecDocBean.class.getName(), PRM_BUTENT_INTERVAL);
         }
 
         @Override
@@ -421,8 +402,8 @@ public class TecDocBean implements HasTimerService {
       SimpleRowSet rows = ButentWS.connect(remoteNamespace, remoteAddress, remoteLogin,
           remotePassword)
           .getSQLData("SELECT " + fldList.toString()
-              + " FROM prekes"
-              + " WHERE " + itemsFilter,
+                  + " FROM prekes"
+                  + " WHERE " + itemsFilter,
               fields.keySet().toArray(new String[0]));
 
       if (rows.getNumberOfRows() > 0) {
@@ -443,11 +424,11 @@ public class TecDocBean implements HasTimerService {
       }
       rows = ButentWS.connect(remoteNamespace, remoteAddress, remoteLogin, remotePassword)
           .getSQLData("SELECT likuciai.sandelis AS sn, likuciai.preke AS pr,"
-              + " sum(likuciai.kiekis) AS lk"
-              + " FROM likuciai INNER JOIN sand"
-              + " ON likuciai.sandelis = sand.sandelis AND sand.sand_mode LIKE '%e%'"
-              + " INNER JOIN prekes ON likuciai.preke = prekes.preke AND " + itemsFilter
-              + " GROUP by likuciai.sandelis, likuciai.preke HAVING lk > 0",
+                  + " sum(likuciai.kiekis) AS lk"
+                  + " FROM likuciai INNER JOIN sand"
+                  + " ON likuciai.sandelis = sand.sandelis AND sand.sand_mode LIKE '%e%'"
+                  + " INNER JOIN prekes ON likuciai.preke = prekes.preke AND " + itemsFilter
+                  + " GROUP by likuciai.sandelis, likuciai.preke HAVING lk > 0",
               new String[] {"sn", "pr", "lk"});
 
       if (rows.getNumberOfRows() > 0) {
@@ -469,7 +450,7 @@ public class TecDocBean implements HasTimerService {
       cb.asynchronousCall(new AsynchronousRunnable() {
         @Override
         public String getId() {
-          return BeeUtils.joinWords(TecDocBean.class.getName(), PRM_MOTONET_HOURS);
+          return BeeUtils.join("-", TecDocBean.class.getName(), PRM_MOTONET_HOURS);
         }
 
         @Override
@@ -559,120 +540,136 @@ public class TecDocBean implements HasTimerService {
   public void suckTecdoc() {
     List<IsSql> init = new ArrayList<>();
 
-    init.add(new SqlCreate("_country_designations", false)
+    String cds = "_country_designations";
+    String des = "_designations";
+
+    init.add(new SqlCreate(cds, false)
         .setDataSource(new SqlSelect()
             .addFields("tof_country_designations", "cds_id")
-            .addMax("tof_des_texts", "tex_text")
+            .addFields("tof_des_texts", "tex_text")
             .addFrom("tof_country_designations")
             .addFromInner("tof_des_texts", SqlUtils.join("tof_country_designations",
                 "cds_tex_id", "tof_des_texts", "tex_id"))
-            .setWhere(SqlUtils.and(SqlUtils.equals("tof_country_designations", "cds_lng_id", 34),
-                SqlUtils.equals(SqlUtils.substring("tof_country_designations", "cds_ctm", 41, 1),
-                    "1"))) // Šveicarija
-            .addGroup("tof_country_designations", "cds_id")));
+            .addFromInner("tof_languages", SqlUtils.and(
+                SqlUtils.join("tof_country_designations", "cds_lng_id", "tof_languages", "lng_id"),
+                SqlUtils.equals("tof_languages", "lng_iso2", "lt")))
+            .setWhere(SqlUtils.equals(SqlUtils.expression("SUBSTRING(",
+                    SqlUtils.field("tof_country_designations", "cds_ctm"), ", LOCATE('1', (",
+                    new SqlSelect()
+                        .addFields("tof_countries", "cou_ctm")
+                        .addFrom("tof_countries")
+                        .setWhere(SqlUtils.equals("tof_countries", "cou_iso2", "LT")), ")), 1)"),
+                "1"))));
 
-    init.add(SqlUtils.createIndex("_country_designations", SqlUtils.uniqueName(),
-        Lists.newArrayList("cds_id"), false));
+    init.add(SqlUtils.createPrimaryKey(cds, SqlUtils.uniqueName(),
+        Collections.singletonList("cds_id")));
 
-    init.add(new SqlCreate("_designations", false)
+    init.add(new SqlCreate(des, false)
         .setDataSource(new SqlSelect().setUnionAllMode(true)
             .addFields("tof_designations", "des_id")
             .addFields("tof_des_texts", "tex_text")
             .addFrom("tof_designations")
             .addFromInner("tof_des_texts",
                 SqlUtils.join("tof_designations", "des_tex_id", "tof_des_texts", "tex_id"))
-            .setWhere(SqlUtils.equals("tof_designations", "des_lng_id", 34))
+            .addFromInner("tof_languages", SqlUtils.and(
+                SqlUtils.join("tof_designations", "des_lng_id", "tof_languages", "lng_id"),
+                SqlUtils.equals("tof_languages", "lng_iso2", "lt")))
             .addUnion(new SqlSelect()
                 .addFields("tof_designations", "des_id")
                 .addFields("tof_des_texts", "tex_text")
                 .addFrom("tof_designations")
-                .addFromInner("tof_des_texts",
-                    SqlUtils.join("tof_designations", "des_tex_id", "tof_des_texts", "tex_id"))
-                .setWhere(SqlUtils.and(SqlUtils.equals("tof_designations", "des_lng_id", 255),
-                    SqlUtils.not(SqlUtils.in("tof_designations", "des_id", "tof_designations",
-                        "des_id", SqlUtils.equals("tof_designations", "des_lng_id", 34))))))));
+                .addFromInner("tof_des_texts", SqlUtils.and(
+                    SqlUtils.join("tof_designations", "des_tex_id", "tof_des_texts", "tex_id"),
+                    SqlUtils.equals("tof_designations", "des_lng_id", 255)))
+                .setWhere(SqlUtils.not(SqlUtils.in("tof_designations", "des_id",
+                    new SqlSelect()
+                        .addFields("tof_designations", "des_id")
+                        .addFrom("tof_designations")
+                        .addFromInner("tof_languages", SqlUtils.and(
+                            SqlUtils.join("tof_designations", "des_lng_id", "tof_languages",
+                                "lng_id"),
+                            SqlUtils.equals("tof_languages", "lng_iso2", "lt")))
+                ))))));
 
-    init.add(SqlUtils.createIndex("_designations", SqlUtils.uniqueName(),
-        Lists.newArrayList("des_id"), false));
+    init.add(SqlUtils.createPrimaryKey(des, SqlUtils.uniqueName(),
+        Collections.singletonList("des_id")));
 
     List<TcdData> builds = new ArrayList<>();
 
     TcdData data = new TcdData(new SqlCreate(TBL_TCD_MODELS, false)
         .addInteger(TCD_MODEL_ID, true)
-        .addString(COL_TCD_MODEL_NAME, 50, true)
-        .addString(COL_TCD_MANUFACTURER_NAME, 50, true),
+        .addString(COL_TCD_MODEL_NAME, 1000, true)
+        .addString(COL_TCD_MANUFACTURER_NAME, 60, true),
         new SqlSelect()
             .addField("tof_models", "mod_id", TCD_MODEL_ID)
-            .addField("_country_designations", "tex_text", COL_TCD_MODEL_NAME)
+            .addField(cds, "tex_text", COL_TCD_MODEL_NAME)
             .addField("tof_manufacturers", "mfa_brand", COL_TCD_MANUFACTURER_NAME)
             .addFrom("tof_models")
             .addFromInner("tof_manufacturers",
                 SqlUtils.join("tof_models", "mod_mfa_id", "tof_manufacturers", "mfa_id"))
-            .addFromInner("_country_designations",
-                SqlUtils.join("tof_models", "mod_cds_id", "_country_designations", "cds_id")));
+            .addFromInner(cds, SqlUtils.join("tof_models", "mod_cds_id", cds, "cds_id")));
 
     builds.add(data);
 
     data = new TcdData(new SqlCreate(TBL_TCD_TYPES, false)
         .addInteger(TCD_TYPE_ID, true)
         .addInteger(TCD_MODEL_ID, true)
-        .addString(COL_TCD_TYPE_NAME, 50, true)
+        .addString(COL_TCD_TYPE_NAME, 1000, true)
         .addInteger(COL_TCD_PRODUCED_FROM, false)
         .addInteger(COL_TCD_PRODUCED_TO, false)
         .addInteger(COL_TCD_CCM, false)
-        .addDecimal(COL_TCD_KW_FROM, 3, 0, false)
-        .addDecimal(COL_TCD_KW_TO, 3, 0, false)
+        .addInteger(COL_TCD_KW_FROM, false)
+        .addInteger(COL_TCD_KW_TO, false)
         .addDecimal(COL_TCD_CYLINDERS, 2, 0, false)
         .addDecimal(COL_TCD_MAX_WEIGHT, 6, 2, false)
-        .addString(COL_TCD_ENGINE, 50, false)
-        .addString(COL_TCD_FUEL, 50, false)
-        .addString(COL_TCD_BODY, 50, false)
-        .addString(COL_TCD_AXLE, 50, false),
+        .addString(COL_TCD_ENGINE, 1000, false)
+        .addString(COL_TCD_FUEL, 1000, false)
+        .addString(COL_TCD_BODY, 1000, false)
+        .addString(COL_TCD_AXLE, 1000, false),
         new SqlSelect()
             .addField("tof_types", "typ_id", TCD_TYPE_ID)
             .addField("tof_types", "typ_mod_id", TCD_MODEL_ID)
-            .addField("_country_designations", "tex_text", COL_TCD_TYPE_NAME)
-            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_pcon_start"),
-                SqlUtils.constant("NULL"), null, "typ_pcon_start"), COL_TCD_PRODUCED_FROM)
-            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_pcon_end"),
-                SqlUtils.constant("NULL"), null, "typ_pcon_end"), COL_TCD_PRODUCED_TO)
-            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_ccm"),
-                SqlUtils.constant("NULL"), null, "typ_ccm"), COL_TCD_CCM)
-            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_kw_from"),
-                SqlUtils.constant("NULL"), null, "typ_kw_from"), COL_TCD_KW_FROM)
-            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_kw_upto"),
-                SqlUtils.constant("NULL"), null, "typ_kw_upto"), COL_TCD_KW_TO)
-            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_cylinders"),
-                SqlUtils.constant("NULL"), null, "typ_cylinders"), COL_TCD_CYLINDERS)
-            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_max_weight"),
-                SqlUtils.constant("NULL"), null, "typ_max_weight"), COL_TCD_MAX_WEIGHT)
+            .addField(cds, "tex_text", COL_TCD_TYPE_NAME)
+            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_pcon_start"), 0, null,
+                SqlUtils.name("typ_pcon_start")), COL_TCD_PRODUCED_FROM)
+            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_pcon_end"), 0, null,
+                SqlUtils.name("typ_pcon_end")), COL_TCD_PRODUCED_TO)
+            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_ccm"), 0, null,
+                SqlUtils.name("typ_ccm")), COL_TCD_CCM)
+            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_kw_from"), 0, null,
+                SqlUtils.name("typ_kw_from")), COL_TCD_KW_FROM)
+            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_kw_upto"), 0, null,
+                SqlUtils.name("typ_kw_upto")), COL_TCD_KW_TO)
+            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_cylinders"), 0, null,
+                SqlUtils.name("typ_cylinders")), COL_TCD_CYLINDERS)
+            .addExpr(SqlUtils.sqlCase(SqlUtils.name("typ_max_weight"), 0, null,
+                SqlUtils.name("typ_max_weight")), COL_TCD_MAX_WEIGHT)
             .addField("_engines", "tex_text", COL_TCD_ENGINE)
             .addField("_fuels", "tex_text", COL_TCD_FUEL)
             .addExpr(SqlUtils.nvl(SqlUtils.field("_bodies", "tex_text"),
                 SqlUtils.field("_models", "tex_text")), COL_TCD_BODY)
             .addField("_axles", "tex_text", COL_TCD_AXLE)
             .addFrom("tof_types")
-            .addFromInner("_country_designations",
-                SqlUtils.join("tof_types", "typ_cds_id", "_country_designations", "cds_id"))
-            .addFromLeft("_designations", "_engines",
+            .addFromInner(cds, SqlUtils.join("tof_types", "typ_cds_id", cds, "cds_id"))
+            .addFromLeft(des, "_engines",
                 SqlUtils.join("tof_types", "typ_kv_engine_des_id", "_engines", "des_id"))
-            .addFromLeft("_designations", "_fuels",
+            .addFromLeft(des, "_fuels",
                 SqlUtils.join("tof_types", "typ_kv_fuel_des_id", "_fuels", "des_id"))
-            .addFromLeft("_designations", "_bodies",
+            .addFromLeft(des, "_bodies",
                 SqlUtils.join("tof_types", "typ_kv_body_des_id", "_bodies", "des_id"))
-            .addFromLeft("_designations", "_models",
+            .addFromLeft(des, "_models",
                 SqlUtils.join("tof_types", "typ_kv_model_des_id", "_models", "des_id"))
-            .addFromLeft("_designations", "_axles",
+            .addFromLeft(des, "_axles",
                 SqlUtils.join("tof_types", "typ_kv_axle_des_id", "_axles", "des_id")));
 
     builds.add(data);
 
     data = new TcdData(new SqlCreate(TBL_TCD_ARTICLES, false)
         .addInteger(TCD_ARTICLE_ID, true)
-        .addString(COL_TCD_ARTICLE_NR, 50, true)
+        .addString(COL_TCD_ARTICLE_NR, 60, true)
         .addString(COL_TCD_SEARCH_NR, 50, true)
-        .addString(COL_TCD_ARTICLE_NAME, 50, true)
-        .addString(COL_TCD_BRAND_NAME, 50, true),
+        .addString(COL_TCD_ARTICLE_NAME, 1000, true)
+        .addString(COL_TCD_BRAND_NAME, 60, true),
         new SqlSelect().setLimit(100000)
             .addField("_articles", "art_id", TCD_ARTICLE_ID)
             .addField("_articles", "art_article_nr", COL_TCD_ARTICLE_NR)
@@ -688,35 +685,35 @@ public class TecDocBean implements HasTimerService {
         .setDataSource(new SqlSelect()
             .addFields("tof_articles", "art_id", "art_article_nr")
             .addFields("tof_art_lookup", "arl_search_number")
-            .addFields("_designations", "tex_text")
+            .addFields(des, "tex_text")
             .addFields("tof_suppliers", "sup_brand")
             .addFrom("tof_articles")
-            .addFromInner("tof_art_lookup",
-                SqlUtils.and(SqlUtils.equals("tof_art_lookup", "arl_kind", "1"),
-                    SqlUtils.join("tof_articles", "art_id", "tof_art_lookup", "arl_art_id")))
+            .addFromInner("tof_art_lookup", SqlUtils.and(
+                SqlUtils.join("tof_articles", "art_id", "tof_art_lookup", "arl_art_id"),
+                SqlUtils.equals("tof_art_lookup", "arl_kind", "1"),
+                SqlUtils.notNull("tof_art_lookup", "arl_search_number")))
             .addFromInner("tof_suppliers",
                 SqlUtils.join("tof_articles", "art_sup_id", "tof_suppliers", "sup_id"))
-            .addFromInner("_designations",
-                SqlUtils.join("tof_articles", "art_complete_des_id", "_designations", "des_id"))));
+            .addFromInner(des,
+                SqlUtils.join("tof_articles", "art_complete_des_id", des, "des_id"))));
 
     builds.add(data);
 
     data = new TcdData(new SqlCreate(TBL_TCD_CRITERIA, false)
         .addInteger(TCD_CRITERIA_ID, true)
-        .addString(COL_TCD_CRITERIA_NAME, 50, true)
-        .addString("ShortName", 50, false)
-        .addString("UnitName", 50, false),
+        .addString(COL_TCD_CRITERIA_NAME, 1000, true)
+        .addString("ShortName", 1000, false)
+        .addString("UnitName", 1000, false),
         new SqlSelect()
             .addField("tof_criteria", "cri_id", TCD_CRITERIA_ID)
-            .addField("_designations", "tex_text", COL_TCD_CRITERIA_NAME)
+            .addField(des, "tex_text", COL_TCD_CRITERIA_NAME)
             .addField("short", "tex_text", "ShortName")
             .addField("unit", "tex_text", "UnitName")
             .addFrom("tof_criteria")
-            .addFromInner("_designations",
-                SqlUtils.join("tof_criteria", "cri_des_id", "_designations", "des_id"))
-            .addFromLeft("_designations", "short",
+            .addFromInner(des, SqlUtils.join("tof_criteria", "cri_des_id", des, "des_id"))
+            .addFromLeft(des, "short",
                 SqlUtils.join("tof_criteria", "cri_short_des_id", "short", "des_id"))
-            .addFromLeft("_designations", "unit",
+            .addFromLeft(des, "unit",
                 SqlUtils.join("tof_criteria", "cri_unit_des_id", "unit", "des_id")));
 
     data.addBaseIndexes(TCD_CRITERIA_ID);
@@ -725,7 +722,7 @@ public class TecDocBean implements HasTimerService {
     data = new TcdData(new SqlCreate(TBL_TCD_ARTICLE_CRITERIA, false)
         .addInteger(TCD_ARTICLE_ID, true)
         .addInteger(TCD_CRITERIA_ID, true)
-        .addString(COL_TCD_CRITERIA_VALUE, 50, false),
+        .addString(COL_TCD_CRITERIA_VALUE, 60, false),
         new SqlSelect().setLimit(500000)
             .addField("_article_criteria", "acr_art_id", TCD_ARTICLE_ID)
             .addField("_article_criteria", "acr_cri_id", TCD_CRITERIA_ID)
@@ -738,11 +735,11 @@ public class TecDocBean implements HasTimerService {
         .setDataSource(new SqlSelect().setDistinctMode(true)
             .addFields("tof_article_criteria", "acr_art_id", "acr_cri_id")
             .addExpr(SqlUtils.sqlCase(SqlUtils.name("acr_value"),
-                SqlUtils.constant("NULL"), SqlUtils.field("_designations", "tex_text"),
-                "acr_value"), COL_TCD_CRITERIA_VALUE)
+                SqlUtils.constant("NULL"), SqlUtils.field(des, "tex_text"),
+                SqlUtils.name("acr_value")), COL_TCD_CRITERIA_VALUE)
             .addFrom("tof_article_criteria")
-            .addFromLeft("_designations", SqlUtils.join("tof_article_criteria", "acr_kv_des_id",
-                "_designations", "des_id"))));
+            .addFromLeft(des,
+                SqlUtils.join("tof_article_criteria", "acr_kv_des_id", des, "des_id"))));
 
     builds.add(data);
 
@@ -751,7 +748,7 @@ public class TecDocBean implements HasTimerService {
         .addString(COL_TCD_SEARCH_NR, 50, true)
         .addString(COL_TCD_CODE_NR, 50, true)
         .addDecimal(COL_TCD_OE_CODE, 1, 0, true)
-        .addString(COL_TCD_BRAND_NAME, 50, false)
+        .addString(COL_TCD_BRAND_NAME, 60, false)
         .addInteger(TCD_TECDOC_ID, true),
         new SqlSelect().setLimit(500000)
             .addField("_analogs", "arl_art_id", TCD_ARTICLE_ID)
@@ -766,8 +763,7 @@ public class TecDocBean implements HasTimerService {
 
     data.addPreparation(new SqlCreate("_analogs", false)
         .setDataSource(new SqlSelect()
-            .addExpr(SqlUtils.expression("CAST(arl_art_id AS UNSIGNED)"), "arl_art_id")
-            .addFields("tof_art_lookup", "arl_search_number")
+            .addFields("tof_art_lookup", "arl_art_id", "arl_search_number")
             .addExpr(SqlUtils.expression("CAST(arl_kind AS DECIMAL(1))"), "arl_kind")
             .addExpr(SqlUtils.sqlCase(SqlUtils.name("arl_kind"), "1",
                 SqlUtils.field("tof_articles", "art_article_nr"),
@@ -781,7 +777,8 @@ public class TecDocBean implements HasTimerService {
             .addFromLeft("tof_suppliers",
                 SqlUtils.join("tof_articles", "art_sup_id", "tof_suppliers", "sup_id"))
             .addFromLeft("tof_brands",
-                SqlUtils.join("tof_art_lookup", "arl_bra_id", "tof_brands", "bra_id"))));
+                SqlUtils.join("tof_art_lookup", "arl_bra_id", "tof_brands", "bra_id"))
+            .setWhere(SqlUtils.notNull("tof_art_lookup", "arl_search_number"))));
 
     data.addPreparation(new IsSql() {
       @Override
@@ -804,8 +801,7 @@ public class TecDocBean implements HasTimerService {
 
     data.addPreparation(new SqlCreate("_art", false)
         .setDataSource(new SqlSelect()
-            .addExpr(SqlUtils.expression("CAST(la_id AS UNSIGNED)"), "la_id")
-            .addExpr(SqlUtils.expression("CAST(la_art_id AS UNSIGNED)"), "la_art_id")
+            .addFields("tof_link_art", "la_id", "la_art_id")
             .addFrom("tof_link_art")));
 
     data.addPreparation(SqlUtils.createIndex("_art", SqlUtils.uniqueName(),
@@ -813,8 +809,7 @@ public class TecDocBean implements HasTimerService {
 
     data.addPreparation(new SqlCreate("_la_typ", false)
         .setDataSource(new SqlSelect()
-            .addExpr(SqlUtils.expression("CAST(lat_la_id AS UNSIGNED)"), "lat_la_id")
-            .addExpr(SqlUtils.expression("CAST(lat_typ_id AS UNSIGNED)"), "lat_typ_id")
+            .addFields("tof_link_la_typ", "lat_la_id", "lat_typ_id")
             .addFrom("tof_link_la_typ")));
 
     data.addPreparation(SqlUtils.createIndex("_la_typ", SqlUtils.uniqueName(),
@@ -833,15 +828,14 @@ public class TecDocBean implements HasTimerService {
     data = new TcdData(new SqlCreate(TBL_TCD_CATEGORIES, false)
         .addInteger(TCD_CATEGORY_ID, true)
         .addInteger(TCD_PARENT_ID, false)
-        .addString(COL_TCD_CATEGORY_NAME, 50, true),
+        .addString(COL_TCD_CATEGORY_NAME, 1000, true),
         new SqlSelect()
             .addField("tof_search_tree", "str_id", TCD_CATEGORY_ID)
-            .addExpr(SqlUtils.sqlCase(SqlUtils.name("str_id_parent"),
-                SqlUtils.constant("NULL"), null, "str_id_parent"), TCD_PARENT_ID)
-            .addField("_designations", "tex_text", COL_TCD_CATEGORY_NAME)
+            .addExpr(SqlUtils.sqlCase(SqlUtils.name("str_id_parent"), 0, null,
+                SqlUtils.name("str_id_parent")), TCD_PARENT_ID)
+            .addField(des, "tex_text", COL_TCD_CATEGORY_NAME)
             .addFrom("tof_search_tree")
-            .addFromInner("_designations",
-                SqlUtils.join("tof_search_tree", "str_des_id", "_designations", "des_id")));
+            .addFromInner(des, SqlUtils.join("tof_search_tree", "str_des_id", des, "des_id")));
 
     builds.add(data);
 
@@ -857,8 +851,7 @@ public class TecDocBean implements HasTimerService {
 
     data.addPreparation(new SqlCreate("_art_ga", false)
         .setDataSource(new SqlSelect()
-            .addExpr(SqlUtils.expression("CAST(lag_ga_id AS UNSIGNED)"), "lag_ga_id")
-            .addExpr(SqlUtils.expression("CAST(lag_art_id AS UNSIGNED)"), "lag_art_id")
+            .addFields("tof_link_art_ga", "lag_ga_id", "lag_art_id")
             .addFrom("tof_link_art_ga")));
 
     data.addPreparation(SqlUtils.createIndex("_art_ga", SqlUtils.uniqueName(),
@@ -866,8 +859,7 @@ public class TecDocBean implements HasTimerService {
 
     data.addPreparation(new SqlCreate("_ga_str", false)
         .setDataSource(new SqlSelect()
-            .addExpr(SqlUtils.expression("CAST(lgs_ga_id AS UNSIGNED)"), "lgs_ga_id")
-            .addExpr(SqlUtils.expression("CAST(lgs_str_id AS UNSIGNED)"), "lgs_str_id")
+            .addFields("tof_link_ga_str", "lgs_ga_id", "lgs_str_id")
             .addFrom("tof_link_ga_str")));
 
     data.addPreparation(SqlUtils.createIndex("_ga_str", SqlUtils.uniqueName(),
@@ -896,8 +888,8 @@ public class TecDocBean implements HasTimerService {
             .addFrom("tof_graphics")
             .addFromLeft("tof_doc_types",
                 SqlUtils.join("tof_graphics", "gra_doc_type", "tof_doc_types", "doc_type"))
-            .setWhere(SqlUtils.and(SqlUtils.equals("tof_graphics", "gra_lng_id", "255"),
-                SqlUtils.notEqual("tof_graphics", "gra_grd_id", "NULL"))));
+            .setWhere(SqlUtils.and(SqlUtils.equals("tof_graphics", "gra_lng_id", 255),
+                SqlUtils.notEqual("tof_graphics", "gra_grd_id", 0))));
 
     data.addBaseIndexes(TCD_GRAPHICS_ID);
 
@@ -917,18 +909,16 @@ public class TecDocBean implements HasTimerService {
 
     builds.add(data);
 
-    if (!qs.dbSchemaExists(sys.getDbName(), TCD_SCHEMA)) {
-      qs.updateData(SqlUtils.createSchema(TCD_SCHEMA));
-    }
     tcd.init(init);
-    importTcd(builds);
+    tcd.importTcd(builds);
     tcd.cleanup(init);
 
     builds.clear();
 
     for (String resource : qs.getColumn(new SqlSelect().setDistinctMode(true)
         .addFields(SqlUtils.table(TCD_SCHEMA, TBL_TCD_GRAPHICS), TCD_GRAPHICS_RESOURCE_NO)
-        .addFrom(SqlUtils.table(TCD_SCHEMA, TBL_TCD_GRAPHICS)))) {
+        .addFrom(SqlUtils.table(TCD_SCHEMA, TBL_TCD_GRAPHICS))
+        .addOrder(SqlUtils.table(TCD_SCHEMA, TBL_TCD_GRAPHICS), TCD_GRAPHICS_RESOURCE_NO))) {
 
       String table = "tof_gra_data_" + resource;
 
@@ -943,7 +933,7 @@ public class TecDocBean implements HasTimerService {
       data.addBaseIndexes(TCD_GRAPHICS_RESOURCE_ID);
       builds.add(data);
     }
-    importTcd(builds);
+    tcd.importTcd(builds);
   }
 
   private void analyzeQuery(IsQuery query) {
@@ -1083,11 +1073,11 @@ public class TecDocBean implements HasTimerService {
     qs.updateData(new SqlUpdate(TBL_TCD_CATEGORIES)
         .addExpression(COL_TCD_CATEGORY_PARENT, SqlUtils.field(als, COL_TCD_CATEGORY_PARENT))
         .setFrom(new SqlSelect()
-            .addFields(categ, COL_TCD_CATEGORY_PARENT)
-            .addFields(TBL_TCD_TECDOC_CATEGORIES, COL_TCD_CATEGORY)
-            .addFrom(categ)
-            .addFromInner(TBL_TCD_TECDOC_CATEGORIES,
-                SqlUtils.join(categ, TCD_CATEGORY_ID, TBL_TCD_TECDOC_CATEGORIES, TCD_TECDOC_ID)),
+                .addFields(categ, COL_TCD_CATEGORY_PARENT)
+                .addFields(TBL_TCD_TECDOC_CATEGORIES, COL_TCD_CATEGORY)
+                .addFrom(categ)
+                .addFromInner(TBL_TCD_TECDOC_CATEGORIES, SqlUtils.join(categ, TCD_CATEGORY_ID,
+                    TBL_TCD_TECDOC_CATEGORIES, TCD_TECDOC_ID)),
             als, sys.joinTables(TBL_TCD_CATEGORIES, als, COL_TCD_CATEGORY)));
 
     qs.sqlDropTemp(categ);
@@ -1260,7 +1250,7 @@ public class TecDocBean implements HasTimerService {
           .addFields(resource, COL_TCD_GRAPHICS_RESOURCE)
           .addFrom(resource)
           .addFromInner(graph, SqlUtils.and(SqlUtils.equals(graph,
-              TCD_GRAPHICS_RESOURCE_NO, part),
+                  TCD_GRAPHICS_RESOURCE_NO, part),
               SqlUtils.joinUsing(resource, graph, TCD_GRAPHICS_RESOURCE_ID)))
           .addOrder(resource, TCD_GRAPHICS_RESOURCE_ID);
 
@@ -1306,7 +1296,8 @@ public class TecDocBean implements HasTimerService {
               }
             }
           }
-          insert.addValues(new Object[] {type, image, row.getLong(TCD_TECDOC_ID),
+          insert.addValues(new Object[] {
+              type, image, row.getLong(TCD_TECDOC_ID),
               ig.getId(TBL_TCD_GRAPHICS), System.currentTimeMillis()});
 
           if (++tot % chunk == 0) {
@@ -1401,7 +1392,8 @@ public class TecDocBean implements HasTimerService {
     }
     String tmp = qs.sqlCreateTemp(query);
 
-    for (String fld : new String[] {COL_TCD_SEARCH_NR, COL_TCD_ARTICLE_NR, COL_TCD_BRAND_NAME,
+    for (String fld : new String[] {
+        COL_TCD_SEARCH_NR, COL_TCD_ARTICLE_NR, COL_TCD_BRAND_NAME,
         COL_TCD_COST, COL_TCD_SUPPLIER_ID, COL_TCD_ARTICLE_NAME, COL_TCD_ARTICLE_DESCRIPTION}) {
       fields.put(fld, null);
     }
@@ -1535,7 +1527,7 @@ public class TecDocBean implements HasTimerService {
             .addMax(tmpPrices, col, COL_TCD_PRICE)
             .addFrom(tmpPrices)
             .addFromLeft(TBL_TCD_ARTICLE_PRICES, SqlUtils.and(SqlUtils.joinUsing(tmpPrices,
-                TBL_TCD_ARTICLE_PRICES, COL_TCD_ARTICLE),
+                    TBL_TCD_ARTICLE_PRICES, COL_TCD_ARTICLE),
                 SqlUtils.equals(TBL_TCD_ARTICLE_PRICES, COL_TCD_PRICELIST, id)))
             .addGroup(tmpPrices, COL_TCD_ARTICLE)
             .addGroup(TBL_TCD_ARTICLE_PRICES, sys.getIdName(TBL_TCD_ARTICLE_PRICES)));
@@ -1563,7 +1555,7 @@ public class TecDocBean implements HasTimerService {
 
     qs.updateData(new SqlDelete(TBL_TCD_ORPHANS)
         .setWhere(SqlUtils.and(SqlUtils.not(SqlUtils.in(TBL_TCD_ORPHANS, COL_TCD_SUPPLIER_ID, tmp,
-            COL_TCD_SUPPLIER_ID)),
+                COL_TCD_SUPPLIER_ID)),
             SqlUtils.equals(TBL_TCD_ORPHANS, COL_TCD_SUPPLIER, supplier.ordinal()))));
 
     importBrands(new SqlSelect()
@@ -1599,7 +1591,7 @@ public class TecDocBean implements HasTimerService {
         .addFrom(TBL_TCD_REMAINDERS)
         .addFromInner(TBL_TCD_ARTICLE_SUPPLIERS,
             SqlUtils.and(SqlUtils.equals(TBL_TCD_ARTICLE_SUPPLIERS, COL_TCD_SUPPLIER,
-                supplier.ordinal()),
+                    supplier.ordinal()),
                 sys.joinTables(TBL_TCD_ARTICLE_SUPPLIERS, TBL_TCD_REMAINDERS,
                     COL_TCD_ARTICLE_SUPPLIER)))
         .addFromInner(TBL_WAREHOUSES,
@@ -1695,63 +1687,5 @@ public class TecDocBean implements HasTimerService {
         .addOrder(tmp, supplierWarehouse));
 
     qs.sqlDropTemp(tmp);
-  }
-
-  private void importTcd(List<TcdData> builds) {
-    for (TcdData entry : builds) {
-      SqlCreate create = entry.base;
-      SqlSelect query = entry.baseSource;
-
-      String target = create.getTarget();
-
-      if (qs.dbTableExists(sys.getDbName(), TCD_SCHEMA, target)) {
-        continue; // qs.updateData(SqlUtils.dropTable(SqlUtils.table(tcdSchema, target)));
-      }
-      tcd.init(entry.preparations);
-
-      target = SqlUtils.table(TCD_SCHEMA, target);
-      create.setTarget(target);
-
-      qs.updateData(create);
-
-      List<SqlField> fields = create.getFields();
-
-      int total = 0;
-      int chunkTotal = 0;
-      int chunk = query.getLimit();
-      int offset = 0;
-
-      do {
-        if (chunk > 0) {
-          chunkTotal = 0;
-          query.setOffset(offset);
-        }
-        SqlInsert insert = new SqlInsert(target);
-
-        for (SqlField field : fields) {
-          insert.addFields(field.getName());
-        }
-        List<StringBuilder> inserts = tcd.getRemoteData(query, insert);
-
-        boolean isDebugEnabled = qs.debugOff();
-
-        for (StringBuilder sql : inserts) {
-          int cnt = (Integer) qs.doSql(sql.toString());
-          total += cnt;
-          chunkTotal += cnt;
-          logger.debug(target, "inserted rows:", total);
-        }
-        qs.debugOn(isDebugEnabled);
-
-        if (chunk > 0) {
-          offset += chunk;
-        }
-      } while (chunk > 0 && chunkTotal == chunk);
-
-      for (String[] index : entry.baseIndexes) {
-        qs.sqlIndex(target, index);
-      }
-      tcd.cleanup(entry.preparations);
-    }
   }
 }

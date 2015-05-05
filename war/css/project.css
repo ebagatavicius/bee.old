@@ -63,3 +63,18 @@
 .bee-prj-chart-stage-flow-Tasks-Sheduled {
   background-color: yellow;
 }
+
+.bee-prj-FieldOverSized {
+  border: 1px solid #f95654;
+}
+
+.bee-prj-stage-GridFieldOverSized {
+  outline: 1px solid #f95654;
+}
+.bee-prj-stage-GridFieldNotOverSized {
+  outline: none;
+}
+
+.bee-prj-Events-Properties {
+    width: calc(100% - 2em);
+}

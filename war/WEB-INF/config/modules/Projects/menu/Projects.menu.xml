@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="Projects" label="=prjMenu" order="40" module="Projects"
+name="Projects" label="=prjMenu" order="30" module="Projects"
 >
   <Item name="Projects" label="=projects" service="grid" parameters="Projects" />
   <Item name="AllProjects" label="=projectsAll" service="grid" parameters="AllProjects" />  

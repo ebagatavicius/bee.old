@@ -151,7 +151,7 @@ public class MailModuleBean implements BeeModule, HasTimerService {
       cb.asynchronousCall(new AsynchronousRunnable() {
         @Override
         public String getId() {
-          return BeeUtils.joinWords(MailModuleBean.class.getName(), localFolder.getId());
+          return BeeUtils.join("-", MailModuleBean.class.getName(), localFolder.getId());
         }
 
         @Override
@@ -405,6 +405,18 @@ public class MailModuleBean implements BeeModule, HasTimerService {
         response = ResponseObject
             .response(HtmlUtils.stripHtml(reqInfo.getParameter(COL_HTML_CONTENT)));
 
+      } else if (BeeUtils.same(svc, SVC_GET_UNREAD_COUNT)) {
+
+        response = ResponseObject.response(qs.getData(new SqlSelect()
+            .addCount("UnreadEmailCount")
+            .addFrom(TBL_PLACES)
+            .addFromInner(TBL_FOLDERS, sys.joinTables(TBL_FOLDERS, TBL_PLACES, COL_FOLDER))
+            .addFromInner(TBL_ACCOUNTS, sys.joinTables(TBL_ACCOUNTS, TBL_FOLDERS, COL_ACCOUNT))
+            .setWhere(SqlUtils.and(SqlUtils.equals(TBL_ACCOUNTS, COL_USER, usr.getCurrentUserId()),
+                SqlUtils.or(SqlUtils.isNull(TBL_PLACES, COL_FLAGS),
+                    SqlUtils.equals(SqlUtils.bitAnd(TBL_PLACES, COL_FLAGS,
+                        MessageFlag.SEEN.getMask()), 0))))).getIntColumn("UnreadEmailCount"));
+
       } else {
         String msg = BeeUtils.joinWords("Mail service not recognized:", svc);
         logger.warning(msg);
@@ -425,12 +437,6 @@ public class MailModuleBean implements BeeModule, HasTimerService {
     List<BeeParameter> params = Lists.newArrayList(
         BeeParameter.createRelation(module, PRM_DEFAULT_ACCOUNT, false,
             TBL_ACCOUNTS, COL_ACCOUNT_DESCRIPTION),
-        BeeParameter.createText(module, "POP3Server", false, null),
-        BeeParameter.createNumber(module, "POP3ServerPort", false, null),
-        BeeParameter.createNumber(module, "POP3BindPort", false, null),
-        BeeParameter.createText(module, "SMTPServer", false, null),
-        BeeParameter.createNumber(module, "SMTPServerPort", false, null),
-        BeeParameter.createNumber(module, "SMTPBindPort", false, null),
         BeeParameter.createNumber(module, PRM_MAIL_CHECK_INTERVAL, false, null));
 
     return params;
@@ -888,11 +894,10 @@ public class MailModuleBean implements BeeModule, HasTimerService {
               loc.mailTo() + ": " + account.getAddress());
 
           for (SimpleRow part : rs) {
-            String text = part.getValue(COL_HTML_CONTENT);
+            String text = BeeUtils.notEmpty(part.getValue(COL_HTML_CONTENT),
+                part.getValue(COL_CONTENT));
 
-            if (BeeUtils.isEmpty(text)) {
-              text = part.getValue(COL_CONTENT);
-            } else {
+            if (!BeeUtils.isEmpty(text)) {
               content += "<br><br>" + text;
             }
           }

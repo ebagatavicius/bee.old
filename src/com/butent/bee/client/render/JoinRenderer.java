@@ -66,6 +66,11 @@ public class JoinRenderer extends AbstractCellRenderer implements HasItems {
   }
 
   @Override
+  public ValueType getExportType() {
+    return ValueType.TEXT;
+  }
+
+  @Override
   public int getItemCount() {
     return sources.size();
   }

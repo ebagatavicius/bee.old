@@ -24,27 +24,30 @@
         <HorizontalPanel>
           <DecimalLabel source="Amount" format="0.00" style="font-weight:bold; margin-right:5px;" />
           <DataSelector source="CurrencyName" placeholder="=currencyShort"
-            style="width:40px;" editEnabled="false" />
+            style="width:5em;" editEnabled="false" />
         </HorizontalPanel>
 
         <Label text="=trdInvoicePrefix" style="&lbl;" />
         <FlowPanel>
-          <InputText source="InvoicePrefix" upperCase="true" style="width:50px;" />
+          <InputText source="InvoicePrefix" upperCase="true" style="width:11em;" />
           <InlineLabel text="=trdInvoiceNo" style="margin-left:5px;" />
           <InputText source="InvoiceNo" />
         </FlowPanel>
       </row>
       <row>
         <Label text="=trdSupplier" style="&lbl;" />
-        <DataSelector source="Supplier" renderColumns="SupplierName" />
+        <DataSelector source="Supplier" renderColumns="SupplierName SupplierTypeName"
+            choiceColumns="Name TypeName" />
         <Label text="=trdCustomer" class="bee-required" style="&lbl;" />
-        <DataSelector source="Customer" renderColumns="CustomerName" required="true" />
+        <DataSelector source="Customer" renderColumns="CustomerName CustomerTypeName" 
+            choiceColumns="Name TypeName" required="true" />
       </row>
       <row>
         <Label text="=trdManager" style="&lbl;" />
         <DataSelector source="Manager" editSource="ManagerPerson" />
         <Label text="=trdPayer" style="&lbl;" />
-        <DataSelector source="Payer" renderColumns="PayerName" />
+        <DataSelector source="Payer" renderColumns="PayerName PayerTypeName" 
+            choiceColumns="Name TypeName" />
       </row>
       <row>
         <cell colSpan="3">

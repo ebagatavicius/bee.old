@@ -1,7 +1,9 @@
 package com.butent.bee.server.modules.ec;
 
+import com.butent.bee.server.concurrency.ConcurrencyBean;
 import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.data.QueryServiceBean.ResultSetProcessor;
+import com.butent.bee.server.data.SystemBean;
 import com.butent.bee.server.sql.IsSql;
 import com.butent.bee.server.sql.SqlBuilder;
 import com.butent.bee.server.sql.SqlBuilderFactory;
@@ -10,6 +12,7 @@ import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUtils;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
@@ -38,11 +41,35 @@ import javax.sql.DataSource;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class TecDocRemote {
 
+  static class TcdData {
+    private final SqlCreate base;
+    private final SqlSelect baseSource;
+    private final List<String[]> baseIndexes = new ArrayList<>();
+    private final List<IsSql> preparations = new ArrayList<>();
+
+    public TcdData(SqlCreate base, SqlSelect baseSource) {
+      this.base = base;
+      this.baseSource = baseSource;
+    }
+
+    public void addPreparation(IsSql preparation) {
+      this.preparations.add(preparation);
+    }
+
+    public void addBaseIndexes(String... fldList) {
+      this.baseIndexes.add(fldList);
+    }
+  }
+
   private static BeeLogger logger = LogUtils.getLogger(TecDocRemote.class);
   private static final int MAX_INSERT_BLOCK = 100000;
 
   @EJB
   QueryServiceBean qs;
+  @EJB
+  SystemBean sys;
+  @EJB
+  ConcurrencyBean cb;
 
   private DataSource dataSource;
   private DataSource crossaiDs;
@@ -55,15 +82,99 @@ public class TecDocRemote {
     }
   }
 
+  public void importTcd(List<TcdData> builds) {
+    if (!qs.dbSchemaExists(sys.getDbName(), TecDocBean.TCD_SCHEMA)) {
+      cb.synchronizedCall(new Runnable() {
+        @Override
+        public void run() {
+          qs.updateData(SqlUtils.createSchema(TecDocBean.TCD_SCHEMA));
+        }
+      });
+    }
+    for (TcdData entry : builds) {
+      SqlCreate create = entry.base;
+      SqlSelect query = entry.baseSource;
+
+      if (qs.dbTableExists(sys.getDbName(), TecDocBean.TCD_SCHEMA, create.getTarget())) {
+        continue; // qs.updateData(SqlUtils.dropTable(SqlUtils.table(tcdSchema, target)));
+      }
+      init(entry.preparations);
+
+      String target = SqlUtils.table(TecDocBean.TCD_SCHEMA, create.getTarget());
+      create.setTarget(target);
+
+      cb.synchronizedCall(new Runnable() {
+        @Override
+        public void run() {
+          qs.updateData(create);
+        }
+      });
+      List<SqlCreate.SqlField> fields = create.getFields();
+
+      int total = 0;
+      int chunkTotal = 0;
+      int chunk = query.getLimit();
+      int offset = 0;
+
+      do {
+        if (chunk > 0) {
+          chunkTotal = 0;
+          query.setOffset(offset);
+        }
+        SqlInsert insert = new SqlInsert(target);
+
+        for (SqlCreate.SqlField field : fields) {
+          insert.addFields(field.getName());
+        }
+        List<StringBuilder> inserts = getRemoteData(query, insert);
+
+        boolean isDebugEnabled = qs.debugOff();
+
+        for (StringBuilder sql : inserts) {
+          Holder<Integer> cnt = Holder.of(0);
+
+          cb.synchronizedCall(new Runnable() {
+            @Override
+            public void run() {
+              Object value = qs.doSql(sql.toString());
+
+              if (value instanceof Integer) {
+                cnt.set((Integer) value);
+              }
+            }
+          });
+          total += cnt.get();
+          chunkTotal += cnt.get();
+          logger.debug(target, "inserted rows:", total);
+        }
+        qs.debugOn(isDebugEnabled);
+
+        if (chunk > 0) {
+          offset += chunk;
+        }
+      } while (chunk > 0 && chunkTotal == chunk);
+
+      for (String[] index : entry.baseIndexes) {
+        cb.synchronizedCall(new Runnable() {
+          @Override
+          public void run() {
+            qs.sqlIndex(target, index);
+          }
+        });
+      }
+      cleanup(entry.preparations);
+    }
+  }
+
   public void init(List<IsSql> init) {
     DataSource ds = getDataSource();
     SqlBuilder builder = SqlBuilderFactory.getBuilder(qs.dbEngine(ds));
 
     for (IsSql query : init) {
       if (query instanceof SqlCreate) {
-        processSql(getDataSource(), "DROP TABLE IF EXISTS " + ((SqlCreate) query).getTarget());
+        processSql(ds, "DROP TABLE IF EXISTS " + ((SqlCreate) query).getTarget());
       }
-      processSql(getDataSource(), query.getSqlString(builder));
+      processSql(ds, query.getSqlString(builder));
     }
   }
 

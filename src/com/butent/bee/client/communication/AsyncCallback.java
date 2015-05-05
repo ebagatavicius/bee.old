@@ -51,7 +51,7 @@ public class AsyncCallback implements RequestCallback {
       return;
     }
 
-    int id = BeeUtils.toInt(qid);
+    final int id = BeeUtils.toInt(qid);
     RpcInfo info = BeeKeeper.getRpc().getRpcInfo(id);
 
     if (!Bee.isEnabled()) {
@@ -145,6 +145,7 @@ public class AsyncCallback implements RequestCallback {
     if (info != null) {
       ResponseCallback callback = info.getRespCallback();
       if (callback != null) {
+        callback.setRpcId(id);
         callback.onResponse(response);
       }
     }

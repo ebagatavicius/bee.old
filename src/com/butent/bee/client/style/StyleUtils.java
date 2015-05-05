@@ -538,6 +538,22 @@ public final class StyleUtils {
     clearHeight(obj.getElement());
   }
 
+  public static void clearProperties(Element el, String... names) {
+    Assert.notNull(el);
+    clearProperties(el.getStyle(), names);
+  }
+
+  public static void clearProperties(Style st, String... names) {
+    Assert.notNull(st);
+    Assert.notNull(names);
+
+    for (String name : names) {
+      if (!BeeUtils.isEmpty(name)) {
+        clearStyleProperty(st, name);
+      }
+    }
+  }
+
   public static void clearTableLayout(Element el) {
     Assert.notNull(el);
     clearTableLayout(el.getStyle());
@@ -1122,7 +1138,12 @@ public final class StyleUtils {
 
   public static void makeAbsolute(Element el) {
     Assert.notNull(el);
-    setProperty(el.getStyle(), CssProperties.POSITION, Position.ABSOLUTE);
+    makeAbsolute(el.getStyle());
+  }
+
+  public static void makeAbsolute(Style st) {
+    Assert.notNull(st);
+    setProperty(st, CssProperties.POSITION, Position.ABSOLUTE);
   }
 
   public static void makeAbsolute(UIObject obj) {
@@ -1393,6 +1414,22 @@ public final class StyleUtils {
   public static void setBorderSpacing(UIObject obj, int px) {
     Assert.notNull(obj);
     setBorderSpacing(obj.getElement(), px);
+  }
+
+  public static void setBorderStyle(Element el, BorderStyle value) {
+    Assert.notNull(el);
+    setBorderStyle(el.getStyle(), value);
+  }
+
+  public static void setBorderStyle(Style st, BorderStyle value) {
+    Assert.notNull(st);
+    Assert.notNull(value);
+    st.setProperty(STYLE_BORDER_STYLE, value.getCssName());
+  }
+
+  public static void setBorderStyle(UIObject obj, BorderStyle value) {
+    Assert.notNull(obj);
+    setBorderStyle(obj.getElement(), value);
   }
 
   public static void setBorderWidth(Element el, int px) {
@@ -2088,34 +2125,34 @@ public final class StyleUtils {
     setTop(obj.getElement(), px);
   }
 
-  public static void setTransformRotate(Element el, Axis axis, int value, CssAngle angle) {
+  public static void setTransformRotate(Element el, Axis axis, double value, CssAngle angle) {
     Assert.notNull(el);
     setTransformRotate(el.getStyle(), axis, value, angle);
   }
 
-  public static void setTransformRotate(Element el, int value, CssAngle angle) {
+  public static void setTransformRotate(Element el, double value, CssAngle angle) {
     Assert.notNull(el);
     setTransformRotate(el.getStyle(), value, angle);
   }
 
-  public static void setTransformRotate(Style st, Axis axis, int value, CssAngle angle) {
+  public static void setTransformRotate(Style st, Axis axis, double value, CssAngle angle) {
     Assert.notNull(st);
     Assert.notNull(axis);
     st.setProperty(getStyleTransformPropertyName(st), axis.rotate(value, angle));
   }
 
-  public static void setTransformRotate(Style st, int value, CssAngle angle) {
+  public static void setTransformRotate(Style st, double value, CssAngle angle) {
     Assert.notNull(st);
     st.setProperty(getStyleTransformPropertyName(st),
         TRANSFORM_ROTATE + BeeUtils.parenthesize(CssAngle.format(value, angle)));
   }
 
-  public static void setTransformRotate(UIObject obj, Axis axis, int value, CssAngle angle) {
+  public static void setTransformRotate(UIObject obj, Axis axis, double value, CssAngle angle) {
     Assert.notNull(obj);
     setTransformRotate(obj.getElement(), axis, value, angle);
   }
 
-  public static void setTransformRotate(UIObject obj, int value, CssAngle angle) {
+  public static void setTransformRotate(UIObject obj, double value, CssAngle angle) {
     Assert.notNull(obj);
     setTransformRotate(obj.getElement(), value, angle);
   }

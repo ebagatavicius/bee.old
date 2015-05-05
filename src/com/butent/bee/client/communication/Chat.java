@@ -126,6 +126,8 @@ public class Chat extends Flow implements Presenter, View, Printable,
 
   private static final int TIMER_PERIOD = 5000;
 
+  private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
+
   private final long roomId;
 
   private final HeaderView headerView;
@@ -142,11 +144,12 @@ public class Chat extends Flow implements Presenter, View, Printable,
 
   public Chat(ChatRoom chatRoom) {
     super(STYLE_PREFIX + "view");
+    addStyleName(UiOption.getStyleName(uiOptions));
 
     this.roomId = chatRoom.getId();
 
     this.headerView = new HeaderImpl();
-    headerView.create(chatRoom.getName(), false, true, null, EnumSet.of(UiOption.ROOT),
+    headerView.create(chatRoom.getName(), false, true, null, uiOptions,
         EnumSet.of(Action.PRINT, Action.CONFIGURE, Action.CLOSE), Action.NO_ACTIONS,
         Action.NO_ACTIONS);
     headerView.setViewPresenter(this);

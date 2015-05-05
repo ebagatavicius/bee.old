@@ -1,17 +1,38 @@
 package com.butent.bee.client.ui;
 
+import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.utils.BeeUtils;
+
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 public enum UiOption {
-  ROOT(EnumSet.of(Type.PAGING, Type.SEARCH, Type.SETTINGS, Type.WINDOW)),
-  CHILD(EnumSet.of(Type.SETTINGS)),
+  CHILD(EnumSet.of(Type.SEARCH, Type.SETTINGS)),
+  EDITOR(EnumSet.of(Type.CLOSABLE)),
   EMBEDDED(EnumSet.of(Type.PAGING, Type.SEARCH, Type.SETTINGS)),
-  REPORT(EnumSet.of(Type.WINDOW));
+  GRID(EnumSet.of(Type.PAGING, Type.SEARCH, Type.SETTINGS, Type.CLOSABLE)),
+  VIEW(EnumSet.of(Type.CLOSABLE));
 
   private enum Type {
-    PAGING, SEARCH, SETTINGS, WINDOW
+    PAGING, SEARCH, SETTINGS, CLOSABLE
+  }
+
+  public static String getStyleName(Collection<UiOption> options) {
+    if (BeeUtils.isEmpty(options)) {
+      return null;
+
+    } else {
+      Set<String> classes = new HashSet<>();
+      for (UiOption option : options) {
+        if (option != null) {
+          classes.add(BeeConst.CSS_CLASS_PREFIX + "ui-" + option.name().toLowerCase());
+        }
+      }
+      return StyleUtils.buildClasses(classes);
+    }
   }
 
   public static boolean hasPaging(Collection<UiOption> options) {
@@ -26,8 +47,12 @@ public enum UiOption {
     return hasType(options, Type.SETTINGS);
   }
 
-  public static boolean isWindow(Collection<UiOption> options) {
-    return hasType(options, Type.WINDOW);
+  public static boolean isChildOrEmbedded(Collection<UiOption> options) {
+    return options != null && (options.contains(CHILD) || options.contains(EMBEDDED));
+  }
+
+  public static boolean isClosable(Collection<UiOption> options) {
+    return hasType(options, Type.CLOSABLE);
   }
 
   private static boolean hasType(Collection<UiOption> options, Type type) {

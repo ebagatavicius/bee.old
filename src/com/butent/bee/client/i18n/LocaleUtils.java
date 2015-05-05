@@ -25,6 +25,7 @@ public final class LocaleUtils {
   private static final String LOCALE_SEPARATOR = "_";
 
   private static final String LOCALE_NAME_LT = "lt";
+  private static final String LOCALE_NAME_EN = "en";
 
   private static final String[] LT_MONTHS_FULL = {
       "sausio", "vasario", "kovo", "balandžio", "gegužės", "birželio",
@@ -32,6 +33,8 @@ public final class LocaleUtils {
 
   private static final String LT_FORMAT_MONTH_ABBREV_DAY = "MMM d";
   private static final String LT_FORMAT_MONTH_FULL_DAY = "MMMM d";
+  private static final String EN_FORMAT_MONTH_FULL_DAY = "d MMMM";
+  private static final String EN_FORMAT_MOTH_ABBREV_DAY = "d MMM";
 
   public static boolean copyDateTimeFormat(Object src, Object dst) {
     if (src instanceof HasDateTimeFormat && dst instanceof HasDateTimeFormat && src != dst) {
@@ -192,6 +195,8 @@ public final class LocaleUtils {
   static String formatMonthAbbrevDay(LocaleInfo localeInfo) {
     if (isLt(localeInfo)) {
       return LT_FORMAT_MONTH_ABBREV_DAY;
+    } else if (isEn(localeInfo)) {
+      return EN_FORMAT_MOTH_ABBREV_DAY;
     } else {
       Assert.notNull(localeInfo);
       return localeInfo.getDateTimeFormatInfo().formatMonthAbbrevDay();
@@ -201,6 +206,8 @@ public final class LocaleUtils {
   static String formatMonthFullDay(LocaleInfo localeInfo) {
     if (isLt(localeInfo)) {
       return LT_FORMAT_MONTH_FULL_DAY;
+    } else if (isEn(localeInfo)) {
+      return EN_FORMAT_MONTH_FULL_DAY;
     } else {
       Assert.notNull(localeInfo);
       return localeInfo.getDateTimeFormatInfo().formatMonthFullDay();
@@ -218,6 +225,10 @@ public final class LocaleUtils {
 
   private static boolean isLt(LocaleInfo localeInfo) {
     return localeInfo != null && BeeUtils.same(localeInfo.getLocaleName(), LOCALE_NAME_LT);
+  }
+
+  private static boolean isEn(LocaleInfo localeInfo) {
+    return localeInfo != null && BeeUtils.same(localeInfo.getLocaleName(), LOCALE_NAME_EN);
   }
 
   private LocaleUtils() {

@@ -441,11 +441,11 @@ public class Split extends ComplexPanel implements RequiresResize, ProvidesResiz
     return x;
   }
 
-  public List<Widget> getDirectionChildren(Direction dir) {
+  public List<Widget> getDirectionChildren(Direction dir, boolean includeSplitters) {
     List<Widget> lst = new ArrayList<>();
 
     for (Widget w : getChildren()) {
-      if (getWidgetDirection(w) == dir) {
+      if (getWidgetDirection(w) == dir && (includeSplitters || !isSplitter(w))) {
         lst.add(w);
       }
     }
@@ -456,7 +456,7 @@ public class Split extends ComplexPanel implements RequiresResize, ProvidesResiz
     Assert.notNull(dir);
     List<ExtendedProperty> lst = new ArrayList<>();
 
-    List<Widget> children = getDirectionChildren(dir);
+    List<Widget> children = getDirectionChildren(dir, true);
     int c = children.size();
 
     PropertyUtils.addExtended(lst, dir.toString(), "Widget Count", c);
@@ -524,6 +524,15 @@ public class Split extends ComplexPanel implements RequiresResize, ProvidesResiz
   @Override
   public State getTargetState() {
     return targetState;
+  }
+
+  public Direction getWidgetDirection(String id) {
+    for (Widget child : getChildren()) {
+      if (DomUtils.idEquals(child, id)) {
+        return getWidgetDirection(child);
+      }
+    }
+    return null;
   }
 
   public Direction getWidgetDirection(Widget child) {
@@ -635,7 +644,20 @@ public class Split extends ComplexPanel implements RequiresResize, ProvidesResiz
     }
   }
 
-  public void setWidgetSize(Widget widget, int size) {
+  public boolean setWidgetSize(String id, int size, boolean doLayout) {
+    for (Widget child : getChildren()) {
+      if (DomUtils.idEquals(child, id)) {
+        return setWidgetSize(child, size, doLayout);
+      }
+    }
+    return false;
+  }
+
+  public boolean setWidgetSize(Widget widget, int size) {
+    return setWidgetSize(widget, size, true);
+  }
+
+  public boolean setWidgetSize(Widget widget, int size, boolean doLayout) {
     LayoutData data = getLayoutData(widget);
 
     if (data != null && size != data.getSize()) {
@@ -647,7 +669,13 @@ public class Split extends ComplexPanel implements RequiresResize, ProvidesResiz
         widget.addStyleName(STYLE_HIDDEN);
       }
 
-      doLayout();
+      if (doLayout) {
+        doLayout();
+      }
+      return true;
+
+    } else {
+      return false;
     }
   }
 

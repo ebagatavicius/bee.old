@@ -2,6 +2,7 @@ package com.butent.bee.client.render;
 
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.HasValueStartIndex;
@@ -51,6 +52,11 @@ public class EnumRenderer extends AbstractCellRenderer implements HasValueStartI
 
   public List<String> getCaptions() {
     return captions;
+  }
+
+  @Override
+  public ValueType getExportType() {
+    return ValueType.TEXT;
   }
 
   @Override

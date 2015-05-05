@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="Documents" label="=documents" order="50" module="Documents"
+name="Documents" label="=documents" order="40" module="Documents"
 >
-  <Item name="DocumentList" label="=documentTree" service="grid" parameters="Documents" />
+  <Item name="DocumentList" label="=documents" service="grid" parameters="Documents" />
 
-  <Item name="DocumentCategories" label="=documentCategories" service="form" parameters="DocumentTree"
+  <Item name="DocumentCategories" label="=documentTree" service="form" parameters="DocumentTree"
     separator="true" data="DocumentTree" />
 
   <Item name="Templates" label="=documentTemplates" service="grid" parameters="DocumentTemplates"
     separator="true" module="Documents.Templates" />
   <Item name="EditorTemplates" label="=editorTemplates" service="grid" parameters="EditorTemplates"
     module="Documents.Templates" />
-
-  <Item name="Types" label="=documentTypes" service="grid" parameters="DocumentTypes"
-    separator="true" />
-  <Item name="Places" label="=documentPlaces" service="grid" parameters="DocumentPlaces" />
-  <Item name="Statuses" label="=documentStatuses" service="grid" parameters="DocumentStatuses" />
-
   <Item name="Parameters" label="=printParameters" service="parameters" parameters="Documents"
     module="Documents.Templates" separator="true" />
 </Entry>

@@ -14,9 +14,11 @@
 
       <row>
         <Label name="CompanyLabel" for="Company" />
-        <DataSelector name="Company" source="Company" style="width: 200px" />
+        <DataSelector name="Company" source="Company" style="width: 200px"
+           choiceColumns="Name TypeName " renderColumns="CompanyName CompanyTypeName"/>
         <Label name="PersonLabel" for="Person" />
         <DataSelector name="Person" source="Person" style="width: 200px" />
+        <FlowPanel name="qrFlowPanel" style="margin-left: 10px" />
       </row>
       <row>
         <Label for="Department" />

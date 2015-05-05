@@ -10,6 +10,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.ParentRowCreator;
@@ -615,7 +616,7 @@ public class Gallery extends Flow implements HasViewName, HasFosterParent, Paren
       data[0] = BeeUtils.toString(srcPicture.getOrdinal());
       rowSet.addRow(dstPicture.getRowId(), dstPicture.getVersion(), data);
 
-      Queries.updateRows(rowSet, new Callback<RowInfoList>() {
+      Queries.updateRows(rowSet, new RpcCallback<RowInfoList>() {
         @Override
         public void onSuccess(RowInfoList result) {
           if (result.size() == 2) {
@@ -754,7 +755,7 @@ public class Gallery extends Flow implements HasViewName, HasFosterParent, Paren
       }
     }
 
-    Queries.insertRows(rowSet, new Callback<RowInfoList>() {
+    Queries.insertRows(rowSet, new RpcCallback<RowInfoList>() {
       @Override
       public void onSuccess(RowInfoList result) {
         if (result.size() == rowSet.getNumberOfRows()) {

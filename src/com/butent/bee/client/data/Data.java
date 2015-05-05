@@ -2,8 +2,11 @@ package com.butent.bee.client.data;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gwt.xml.client.Document;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.ui.FormWidget;
+import com.butent.bee.client.utils.XmlUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -17,6 +20,8 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
+import com.butent.bee.shared.ui.Relation;
+import com.butent.bee.shared.ui.UiConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.math.BigDecimal;
@@ -25,6 +30,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -177,6 +183,23 @@ public final class Data {
 
   public static Long getLong(String viewName, IsRow row, String colName) {
     return COLUMN_MAPPER.getLong(viewName, row, colName);
+  }
+
+  public static Relation getRelation(String viewName) {
+    Relation relation = null;
+    String relationInfo = getDataInfo(viewName).getRelationInfo();
+
+    if (!BeeUtils.isEmpty(relationInfo)) {
+      Document doc = XmlUtils.parse(relationInfo);
+
+      if (doc != null) {
+        Map<String, String> attributes = XmlUtils.getAttributes(doc.getDocumentElement());
+        attributes.put(UiConstants.ATTR_VIEW_NAME, viewName);
+        relation = FormWidget.createRelation(null, attributes,
+            XmlUtils.getChildrenElements(doc.getDocumentElement()), Relation.RenderMode.SOURCE);
+      }
+    }
+    return relation;
   }
 
   public static String getString(String viewName, IsRow row, String colName) {

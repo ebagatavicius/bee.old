@@ -2,7 +2,6 @@ package com.butent.bee.server.http;
 
 import com.google.common.net.HttpHeaders;
 
-import com.butent.bee.server.utils.XmlUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasExtendedInfo;
@@ -96,8 +95,8 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
     }
     this.contentLen = BeeUtils.length(this.content);
 
-    if (isXml()) {
-      this.vars = XmlUtils.getElements(content, Service.VAR_DATA);
+    if (isData()) {
+      this.vars = Codec.deserializeMap(content);
     } else {
       this.vars = null;
     }
@@ -318,12 +317,12 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
     return false;
   }
 
-  public boolean isDebug() {
-    return BeeUtils.containsSame(options, CommUtils.OPTION_DEBUG);
+  public boolean isData() {
+    return getContentLen() > 0 && CommUtils.equals(getContentType(), ContentType.BINARY);
   }
 
-  public boolean isXml() {
-    return getContentLen() > 0 && CommUtils.equals(getContentType(), ContentType.XML);
+  public boolean isDebug() {
+    return BeeUtils.containsSame(options, CommUtils.OPTION_DEBUG);
   }
 
   public void logHeaders(BeeLogger logger) {
@@ -356,7 +355,7 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
 
   public void logVars(BeeLogger logger) {
     if (BeeUtils.isEmpty(getVars())) {
-      if (isXml()) {
+      if (isData()) {
         logger.warning("Vars not available");
       }
       return;

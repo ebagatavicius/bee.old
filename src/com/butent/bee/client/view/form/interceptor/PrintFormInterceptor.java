@@ -1,4 +1,4 @@
-package com.butent.bee.client.output;
+package com.butent.bee.client.view.form.interceptor;
 
 import com.google.common.collect.Lists;
 
@@ -11,8 +11,6 @@ import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.Opener;
-import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
-import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.data.DataUtils;

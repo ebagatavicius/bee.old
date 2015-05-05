@@ -47,11 +47,14 @@ import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.time.CronExpression;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.time.WorkdayTransition;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -429,8 +432,11 @@ public class ProjectsModuleBean implements BeeModule {
       return ResponseObject.error(projectId);
     }
 
-    final SimpleRowSet chartData = new SimpleRowSet(new String[] {ALS_VIEW_NAME, ALS_CHART_ID,
-        ALS_CHART_CAPTION, ALS_CHART_START, ALS_CHART_END, ALS_CHART_FLOW_COLOR, ALS_TASK_STATUS});
+    final SimpleRowSet chartData =
+        new SimpleRowSet(new String[] {
+            ALS_VIEW_NAME, ALS_CHART_ID,
+            ALS_CHART_CAPTION, ALS_CHART_START, ALS_CHART_END, ALS_CHART_FLOW_COLOR,
+            ALS_TASK_STATUS, PROP_RS});
 
     BeeRowSet rs = qs.getViewData(VIEW_PROJECT_DATES, Filter.equals(COL_PROJECT, projectId),
         Order.ascending(COL_DATES_START_DATE));
@@ -439,14 +445,18 @@ public class ProjectsModuleBean implements BeeModule {
     int idxCaption = rs.getColumnIndex(COL_DATES_NOTE);
     int idxStartDate = rs.getColumnIndex(COL_DATES_START_DATE);
 
-    for (IsRow rsRow : rs) {
+    for (BeeRow rsRow : rs) {
       DateTime startDate = rsRow.getDateTime(idxStartDate);
+
+      BeeRowSet newRow = new BeeRowSet(VIEW_PROJECT_DATES, rs.getColumns());
+      newRow.addRow(rsRow);
+
       chartData.addRow(new String[] {VIEW_PROJECT_DATES,
           null,
           rsRow.getString(idxCaption),
           startDate == null ? null : BeeUtils.toString(startDate.getDate().getDays()),
           null,
-          rsRow.getString(idxColor), null});
+          rsRow.getString(idxColor), null, Codec.beeSerialize(newRow)});
     }
 
     rs = qs.getViewData(VIEW_PROJECT_STAGES, Filter.equals(COL_PROJECT, projectId),
@@ -458,7 +468,7 @@ public class ProjectsModuleBean implements BeeModule {
     int idxTasksTimeHigh = rs.getColumnIndex(ALS_HIGH_TASKS_DATE);
     int idxTasksTimeLow = rs.getColumnIndex(ALS_LOW_TASKS_DATE);
 
-    for (IsRow rsRow : rs) {
+    for (BeeRow rsRow : rs) {
       String stage = BeeUtils.toString(rsRow.getId());
       String stageName = BeeUtils.isNegative(idxStageName) ? stage : rsRow.getString(idxStageName);
 
@@ -473,9 +483,12 @@ public class ProjectsModuleBean implements BeeModule {
         stageEnd = BeeUtils.toString(rsRow.getDateTime(idxTasksTimeHigh).getDate().getDays());
       }
 
+      BeeRowSet newRow = new BeeRowSet(VIEW_PROJECT_STAGES, rs.getColumns());
+      newRow.addRow(rsRow);
+
       chartData.addRow(new String[] {
           VIEW_PROJECT_STAGES,
-          stage, stageName, stageStart, stageEnd, null, null
+          stage, stageName, stageStart, stageEnd, null, null, Codec.beeSerialize(newRow)
       });
     }
 
@@ -489,7 +502,7 @@ public class ProjectsModuleBean implements BeeModule {
     int indTaskStatus = rs.getColumnIndex(TaskConstants.COL_STATUS);
     DateTime timeNow = new DateTime();
 
-    for (IsRow rsRow : rs) {
+    for (BeeRow rsRow : rs) {
       String stage = rsRow.getString(idxStage);
       String startTime = rsRow.getDateTime(idxStartTime) == null ? null
           : BeeUtils.toString(rsRow.getDateTime(idxStartTime).getDate().getDays());
@@ -512,11 +525,72 @@ public class ProjectsModuleBean implements BeeModule {
         taskStatus = TaskConstants.VAR_TASK_SHEDULED;
       }
 
+      BeeRowSet newRow = new BeeRowSet(VIEW_TASKS, rs.getColumns());
+      newRow.addRow(rsRow);
+
       insertOrderedChartData(chartData, new String[] {
           TaskConstants.VIEW_TASKS,
           stage, rsRow.getString(idxSummary),
-          startTime, finishTime, null, taskStatus
+          startTime, finishTime, null, taskStatus, Codec.beeSerialize(newRow)
       });
+    }
+    rs =
+        qs.getViewData(TaskConstants.VIEW_RECURRING_TASKS, Filter.equals(COL_PROJECT, projectId),
+            Order.ascending(sys.getIdName(TaskConstants.VIEW_RECURRING_TASKS),
+                TaskConstants.COL_RT_SCHEDULE_FROM));
+
+    int idxStart = rs.getColumnIndex(TaskConstants.COL_RT_SCHEDULE_FROM);
+    int idxFinish = rs.getColumnIndex(TaskConstants.COL_RT_SCHEDULE_UNTIL);
+    idxSummary = rs.getColumnIndex(TaskConstants.COL_SUMMARY);
+
+    for (BeeRow rsRow : rs) {
+
+      Long recTask = rsRow.getId();
+      JustDate from = rsRow.getDate(idxStart);
+      JustDate until = rsRow.getDate(idxFinish);
+
+      CronExpression.Builder builder = new CronExpression.Builder(from, until)
+          .id(BeeUtils.toString(recTask))
+          .dayOfMonth(DataUtils.getString(rs, rsRow, COL_RT_DAY_OF_MONTH))
+          .month(DataUtils.getString(rs, rsRow, COL_RT_MONTH))
+          .dayOfWeek(DataUtils.getString(rs, rsRow, COL_RT_DAY_OF_WEEK))
+          .year(DataUtils.getString(rs, rsRow, COL_RT_YEAR))
+          .workdayTransition(EnumUtils.getEnumByIndex(WorkdayTransition.class,
+              DataUtils.getInteger(rs, rsRow, COL_RT_WORKDAY_TRANSITION)));
+
+      CronExpression cron = builder.build();
+
+      JustDate min;
+      JustDate max;
+
+      if (from == null && until == null) {
+        min = TimeUtils.startOfMonth();
+        max = TimeUtils.endOfMonth(min, 12);
+      } else if (from == null) {
+        min = TimeUtils.startOfMonth(until);
+        max = until;
+      } else if (until == null) {
+        min = TimeUtils.max(from, TimeUtils.startOfPreviousMonth(TimeUtils.today()));
+        max = TimeUtils.endOfMonth(min, 12);
+      } else {
+        min = from;
+        max = TimeUtils.max(from, until);
+      }
+      List<JustDate> cronDates = cron.getDates(min, max);
+
+      for (JustDate date : cronDates) {
+        BeeRowSet newRow = new BeeRowSet(VIEW_RECURRING_TASKS, rs.getColumns());
+        newRow.addRow(rsRow);
+
+        insertOrderedChartData(chartData, new String[] {
+            TaskConstants.VIEW_RECURRING_TASKS,
+            null, rsRow.getString(idxSummary),
+            BeeUtils.toString(date.getDate().getDays()),
+            BeeUtils.toString(date.getDate().getDays()), null,
+            null, Codec.beeSerialize(newRow)
+        });
+      }
+
     }
 
     return ResponseObject.response(chartData);
