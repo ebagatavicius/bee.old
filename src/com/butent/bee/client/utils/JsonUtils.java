@@ -8,6 +8,8 @@ import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.data.IsColumn;
+import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public final class JsonUtils {
   public static Integer getInteger(JSONObject obj, String key) {
     Double value = getNumber(obj, key);
     if (value == null) {
-      return BeeConst.UNDEF;
+      return null;
     } else {
       return BeeUtils.round(value);
     }
@@ -88,6 +90,52 @@ public final class JsonUtils {
     } else {
       return null;
     }
+  }
+
+  public static JSONObject toJson(List<? extends IsColumn> columns, IsRow row) {
+    if (BeeUtils.isEmpty(columns) || row == null) {
+      return null;
+    }
+
+    JSONObject json = new JSONObject();
+
+    for (int i = 0; i < columns.size(); i++) {
+      if (!row.isNull(i)) {
+        String key = columns.get(i).getId();
+
+        switch (columns.get(i).getType()) {
+          case BLOB:
+          case TEXT:
+          case TIME_OF_DAY:
+            String s = row.getString(i);
+            if (!BeeUtils.isEmpty(s)) {
+              json.put(key, new JSONString(s));
+            }
+            break;
+
+          case BOOLEAN:
+            Boolean b = row.getBoolean(i);
+            if (b != null) {
+              json.put(key, JSONBoolean.getInstance(b));
+            }
+            break;
+
+          case DATE:
+          case DATE_TIME:
+          case DECIMAL:
+          case INTEGER:
+          case LONG:
+          case NUMBER:
+            Double d = row.getDouble(i);
+            if (BeeUtils.isDouble(d)) {
+              json.put(key, new JSONNumber(d));
+            }
+            break;
+        }
+      }
+    }
+
+    return json;
   }
 
   public static List<String> toList(JSONValue json) {

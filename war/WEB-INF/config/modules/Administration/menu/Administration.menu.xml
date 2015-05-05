@@ -4,7 +4,10 @@
 name="Administration" label="=administration" order="1000" module="Administration"
 >
   <Item name="Users" label="=users" service="grid" parameters="Users" />
-  <Item name="UserSettings" label="=userSettings" service="grid" parameters="UserSettings" />
+
+  <Item name="UserSettings" label="=userSettings" service="grid" parameters="UserSettings" 
+    separator="true" />
+  <Item name="UiThemes" label="=uiThemes" service="grid" parameters="UiThemes" />
 
   <Item name="UserGroupSettings" label="=userGroups" service="grid"
     parameters="UserGroupSettings" separator="true" />
@@ -27,9 +30,8 @@ name="Administration" label="=administration" order="1000" module="Administratio
   <Item name="Autocomplete" label="=autocompletion" service="grid" parameters="Autocomplete"
     separator="true" />
 
-  <Item name="ImportOptions" label="=dataImport" service="grid" parameters="ImportOptions" 
-    separator="true" />
+  <Item name="Imports" label="=dataImport" service="form" parameters="Imports" separator="true" />
 
-  <Item name="GridSettings" label="=gridSettings" service="grid" parameters="GridSettings" 
+  <Item name="GridSettings" label="=gridSettings" service="grid" parameters="GridSettings"
     separator="true" />
 </Entry>

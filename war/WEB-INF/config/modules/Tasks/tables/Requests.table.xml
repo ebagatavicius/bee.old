@@ -15,6 +15,8 @@
     <Text name="Result" label="=result" />
     <Text name="ResultProperties" label="=result" />
     <Relation name="Creator" relation="Users" defExpr="CURRENT_USER" label="=author" />
+    <Relation name="RequestType" relation="RequestTypes" label="=crmRequestType" />
+    <Relation name="RequestForm" relation="RequestForms" label="=crmRequestForm" />
     <DateTime name="Created" notNull="true" defExpr="CURRENT_TIME" label="=createdOn" />
     <DateTime name="Finished" label="=crmRequestCompleted" />
   </Fields>

@@ -25,8 +25,8 @@ public final class Settings {
   private static JSONObject settings;
   private static boolean initialized;
 
-  public static int getApplianceHeaderHeight() {
-    return getInt("applianceHeaderHeight");
+  public static boolean contains(String key) {
+    return checkSettings() && settings.containsKey(key);
   }
 
   public static String getAppName() {
@@ -134,12 +134,12 @@ public final class Settings {
     return getList("styleSheets");
   }
 
-  public static String getVersion() {
-    return getString("version");
+  public static JSONObject getTheme() {
+    return getObject("theme");
   }
 
-  public static int getViewHeaderHeight() {
-    return getInt("viewHeaderHeight");
+  public static String getVersion() {
+    return getString("version");
   }
 
   public static String getWebSocketUrl() {
@@ -194,7 +194,7 @@ public final class Settings {
   }
 
   private static JSONValue getValue(String key) {
-    if (checkSettings() && settings.containsKey(key)) {
+    if (contains(key)) {
       return settings.get(key);
     } else {
       return null;

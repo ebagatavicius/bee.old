@@ -475,6 +475,15 @@ public final class Format {
     }
   }
 
+  public static String renderDayOfWeekShort(int dow) {
+    if (TimeUtils.isDow(dow)) {
+      int index = (dow == 7) ? 0 : dow;
+      return LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().weekdaysShort()[index];
+    } else {
+      return null;
+    }
+  }
+
   public static String renderMonthFull(HasYearMonth date) {
     return (date == null)
         ? null : LocaleUtils.monthsFull(LocaleInfo.getCurrentLocale())[date.getMonth() - 1];

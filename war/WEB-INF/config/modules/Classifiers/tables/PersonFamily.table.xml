@@ -5,7 +5,7 @@
   idName="PersonFamilyID"
   >
   <Fields>
-    <Relation name="Person" unique="true" relation="Persons" editable="true" />
+    <Relation name="Person" relation="Persons" editable="true" />
     <String name="FirstName" precision="30" notNull="true" label="=firstName" />
     <String name="LastName" precision="30" label="=lastName" />
     <Relation name="Relation" relation="FamilyRelationTypes" 

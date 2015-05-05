@@ -2,7 +2,7 @@
 <xs:schema targetNamespace="http://www.butent.com/column" elementFormDefault="qualified"
   xmlns="http://www.butent.com/column"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:type="http://www.butent.com/type"
+  xmlns:tp="http://www.butent.com/type"
   xmlns:ui="http://www.butent.com/ui">
 
   <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd" />
@@ -27,29 +27,29 @@
     <xs:attribute name="width" type="columnWidth" />
     <xs:attribute name="minWidth" type="columnWidth" />
     <xs:attribute name="maxWidth" type="columnWidth" />
-    <xs:attribute name="autoFit" type="type:intOrBoolean" />
+    <xs:attribute name="autoFit" type="tp:intOrBoolean" />
     <xs:attributeGroup ref="flex" />
     <xs:attribute name="sortable" type="xs:boolean" default="true" />
     <xs:attribute name="visible" type="xs:boolean" />
-    <xs:attribute name="module" type="type:modules" />
+    <xs:attribute name="module" type="tp:modules" />
     <xs:attribute name="format" type="xs:normalizedString" />
     <xs:attribute name="scale" type="xs:unsignedByte" />
     <xs:attribute name="horizontalAlignment" type="ui:horizontalAlignmentType" />
     <xs:attribute name="whiteSpace" type="ui:whiteSpaceType" />
     <xs:attribute name="cellType" type="ui:cellType" />
     <xs:attribute name="cellResizable" type="xs:boolean" />
-    <xs:attribute name="renderColumns" type="type:fieldNames" />
-    <xs:attribute name="sortBy" type="type:fieldNames" />
-    <xs:attribute name="searchBy" type="type:fieldNames" />
-    <xs:attribute name="filterSupplier" type="type:filterSupplier" />
+    <xs:attribute name="renderColumns" type="tp:fieldNames" />
+    <xs:attribute name="sortBy" type="tp:fieldNames" />
+    <xs:attribute name="searchBy" type="tp:fieldNames" />
+    <xs:attribute name="filterSupplier" type="tp:filterSupplier" />
     <xs:attribute name="filterOptions" type="xs:normalizedString" />
     <xs:attribute name="options" type="xs:normalizedString" />
     <xs:attribute name="exportable" type="xs:boolean" />
-    <xs:attribute name="exportWidthFactor" type="type:positiveDecimal" />
+    <xs:attribute name="exportWidthFactor" type="tp:positiveDecimal" />
     <xs:attribute name="draggable" type="xs:boolean" />
     <xs:attribute ref="xml:base" />
   </xs:complexType>
-  
+
   <xs:element name="column" type="columnType" abstract="true" />
 
   <xs:element name="IdColumn" type="columnType" substitutionGroup="column" />
@@ -66,7 +66,7 @@
           <xs:element name="validation" type="ui:calcType" minOccurs="0" />
           <xs:element name="carry" type="ui:calcType" minOccurs="0" />
         </xs:sequence>
-        <xs:attribute name="source" type="type:fieldNameType" />
+        <xs:attribute name="source" type="tp:fieldNameType" />
         <xs:attribute name="required" type="xs:boolean" />
         <xs:attribute name="enumKey" type="xs:normalizedString" />
         <xs:attribute name="updateMode" type="ui:refreshType" />
@@ -97,7 +97,7 @@
             <xs:element name="selectorColumn" type="ui:selectorColumn" />
           </xs:choice>
         </xs:sequence>
-        <xs:attribute name="viewName" type="type:dataView" />
+        <xs:attribute name="viewName" type="tp:dataView" />
         <xs:attributeGroup ref="ui:relation" />
       </xs:extension>
     </xs:complexContent>
@@ -108,20 +108,20 @@
   <xs:complexType name="autocompleteColumn">
     <xs:complexContent>
       <xs:extension base="baseColumn">
-        <xs:attribute name="viewName" type="type:dataView" use="required" />
-        <xs:attribute name="viewColumn" type="type:fieldNameType" use="required" />
+        <xs:attribute name="viewName" type="tp:dataView" use="required" />
+        <xs:attribute name="viewColumn" type="tp:fieldNameType" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
 
   <xs:element name="AutoColumn" type="autocompleteColumn" substitutionGroup="column" />
-   
+
   <xs:complexType name="calculatedColumn">
     <xs:complexContent>
       <xs:extension base="columnType">
-        <xs:attribute name="type" type="type:valueType" use="required" />
+        <xs:attribute name="type" type="tp:valueType" use="required" />
         <xs:attribute name="precision" type="xs:positiveInteger" />
-        <xs:attribute name="source" type="type:fieldNameType" />
+        <xs:attribute name="source" type="tp:fieldNameType" />
         <xs:attribute name="dynamic" type="xs:boolean" />
       </xs:extension>
     </xs:complexContent>
@@ -132,7 +132,7 @@
   <xs:complexType name="actionColumn">
     <xs:complexContent>
       <xs:extension base="columnType">
-        <xs:attribute name="source" type="type:fieldNameType" />
+        <xs:attribute name="source" type="tp:fieldNameType" />
         <xs:attribute name="element" type="ui:elementType" use="required" />
         <xs:attribute name="dynamic" type="xs:boolean" />
       </xs:extension>
@@ -144,9 +144,9 @@
   <xs:complexType name="propertyColumn">
     <xs:complexContent>
       <xs:extension base="columnType">
-        <xs:attribute name="type" type="type:valueType" use="required" />
+        <xs:attribute name="type" type="tp:valueType" use="required" />
         <xs:attribute name="precision" type="xs:positiveInteger" />
-        <xs:attribute name="property" type="type:nameType" />
+        <xs:attribute name="property" type="tp:nameType" />
         <xs:attribute name="enumKey" type="xs:normalizedString" />
         <xs:attribute name="dynamic" type="xs:boolean" />
       </xs:extension>
@@ -169,7 +169,7 @@
       <xs:maxInclusive value="999" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:simpleType name="flexBasis">
     <xs:union>
       <xs:simpleType>
@@ -189,7 +189,7 @@
     <xs:attribute name="flexBasis" type="flexBasis" />
     <xs:attribute name="flexBasisUnit" type="ui:cssUnit" />
   </xs:attributeGroup>
-  
+
   <xs:simpleType name="columnName">
     <xs:restriction base="xs:ID">
       <xs:maxLength value="30" />
@@ -213,12 +213,12 @@
       <xs:enumeration value="discount" />
     </xs:restriction>
   </xs:simpleType>
-  
+
   <xs:complexType name="columnFooter">
     <xs:attribute name="aggregate" type="columnAggregate" />
     <xs:attribute name="expression" type="xs:string" />
     <xs:attribute name="evaluator" type="rowEvaluator" />
-    <xs:attribute name="type" type="type:valueType" />
+    <xs:attribute name="type" type="tp:valueType" />
     <xs:attribute name="text" type="xs:string" />
     <xs:attribute name="html" type="xs:string" />
     <xs:attribute name="format" type="xs:normalizedString" />
@@ -227,5 +227,5 @@
     <xs:attribute name="whiteSpace" type="ui:whiteSpaceType" />
     <xs:attribute name="options" type="xs:normalizedString" />
   </xs:complexType>
-  
+
 </xs:schema>

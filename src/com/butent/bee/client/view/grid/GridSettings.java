@@ -46,7 +46,6 @@ import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.ui.HasCheckedness;
@@ -328,7 +327,7 @@ public final class GridSettings implements HandlesAllDataEvents {
     return gridView != null && !gridView.isReadOnly()
         && !BeeUtils.isEmpty(gridView.getEditFormName())
         && gridView.getGridDescription() != null
-        && !gridView.getGridDescription().getDisabledActions().contains(Action.EDIT);
+        && BeeUtils.isTrue(gridView.getGridDescription().getEditInPlace());
   }
 
   private static Widget createEditInPlaceToggle(GridView gridView, ColumnInfo columnInfo) {

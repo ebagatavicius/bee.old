@@ -296,7 +296,7 @@ public class MailController extends Flow implements HasDomain, HandlesStateChang
                   MailKeeper.renameFolder(account, folderId, value);
                 }
               }
-            }, cap);
+            }, null, cap);
           }
         });
         actions.add(edit);

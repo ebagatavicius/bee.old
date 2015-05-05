@@ -15,6 +15,7 @@
     <Boolean name="VatPercent" label="=vatPercent" />
     <Text name="Note" label="=trdNote" />
     <Relation name="Parent" relation="PurchaseItems" />
+    <Numeric name="Ordinal" precision="2" label="=ordinal" />
   </Fields>
   <Triggers>
     <Trigger events="INSERT UPDATE DELETE" scope="ROW" timing="AFTER">

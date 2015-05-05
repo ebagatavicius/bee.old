@@ -22,7 +22,6 @@
 
     <DateTime name="Received" label="=documentReceived" />
     <DateTime name="Sent" label="=documentSent" />
-    <Boolean name="Returned" label="=documentReturned" />
 
     <Text name="Description" label="=documentDescription" />
 

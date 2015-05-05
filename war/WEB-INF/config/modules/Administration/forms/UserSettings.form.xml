@@ -3,7 +3,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   
-  name="UserSettings" viewName="UserSettings" caption="=userSettings"
+  name="UserSettings" viewName="UserSettings" caption="=userProfile"
   width="700" height="80" heightUnit="%"
   >
   <FlowPanel class="flexBox-vertical">
@@ -94,14 +94,8 @@
             <col index="0" cellStyle="padding-right: 6px;" />
        
             <row>
-              <Label for="ApplianceHeaderHeight" />
-              <InputSpinner source="ApplianceHeaderHeight" minValue="0" maxValue="99"
-                style="width: 60px;" summarize="true" />
-            </row>
-            <row>
-              <Label for="ViewHeaderHeight" />
-              <InputSpinner source="ViewHeaderHeight" minValue="0" maxValue="99"
-                style="width: 60px;" summarize="true" />
+              <Label for="UiTheme" />
+              <DataSelector source="UiTheme" summarize="true" />
             </row>
 
             <row>

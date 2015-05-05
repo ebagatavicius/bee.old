@@ -11,7 +11,7 @@
 }
 
 .bee-crm-taskEvent-row-new {
-	border-left-width: 5px; 
+  border-left-width: 5px; 
   border-left-color: #a1bff5; 
   border-left-style: solid; 
 }
@@ -367,11 +367,10 @@
   background-image: url(../images/checkered_background.png) !important;
 }
 
-.bee-crm-request-prop-caption{
-	margin-left: 3em;
+.bee-crm-request-prop-caption {
+  margin-left: 3em;
 }
-
 .bee-crm-request-prop-data {
-	margin-left: 1ex;
-	font-weight: bolder;
+  margin-left: 1ex;
+  font-weight: bolder;
 }

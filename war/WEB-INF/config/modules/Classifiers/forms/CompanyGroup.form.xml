@@ -4,7 +4,7 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
   name="CompanyGroup" viewName="CompanyGroups" caption="=clientsGroups"
-  height="150" width="400">
+  height="250" width="400">
   
   <FlowPanel style="padding: 15px 1em;">
     <Table style="border-spacing: 5px;">

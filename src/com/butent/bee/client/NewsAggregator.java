@@ -11,10 +11,13 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.layout.Flow;
+import com.butent.bee.client.modules.mail.MailKeeper;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.screen.Domain;
+import com.butent.bee.client.screen.ScreenImpl;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.view.ViewHelper;
@@ -94,6 +97,7 @@ public class NewsAggregator implements HandlesAllDataEvents {
         @Override
         public void onClick(ClickEvent event) {
           readHeadline(HeadlinePanel.this);
+          UiHelper.closeDialog(ScreenImpl.NOTIFICATION_CONTENT);
         }
       });
 
@@ -175,20 +179,6 @@ public class NewsAggregator implements HandlesAllDataEvents {
       });
 
       header.add(refreshWidget);
-
-      FaLabel settingsWidget = new FaLabel(FontAwesome.GEAR);
-      settingsWidget.setTitle(Localized.getConstants().actionConfigure());
-      settingsWidget.addStyleName(STYLE_PREFIX + "settings");
-
-      settingsWidget.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          ViewFactory.createAndShow(GridFactory.getSupplierKey(NewsConstants.GRID_USER_FEEDS,
-              null));
-        }
-      });
-
-      header.add(settingsWidget);
 
       this.loadingWidget = new FaLabel(FontAwesome.SPINNER);
       loadingWidget.addStyleName(STYLE_NOT_LOADING);
@@ -825,17 +815,15 @@ public class NewsAggregator implements HandlesAllDataEvents {
   }
 
   private void updateHeader() {
-    Flow header = BeeKeeper.getScreen().getDomainHeader(Domain.NEWS, null);
-    if (header == null) {
-      return;
-    }
+
+    MailKeeper.getUnreadCount();
 
     int size = countNews();
+    ScreenImpl.updateNewsSize(size);
 
     if (getSizeBadge() == null) {
       Badge badge = new Badge(size, STYLE_PREFIX + "size");
 
-      header.add(badge);
       setSizeBadge(badge);
 
     } else {

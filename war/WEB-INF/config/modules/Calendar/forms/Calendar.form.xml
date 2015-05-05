@@ -11,13 +11,13 @@
 
   name="Calendar" viewName="Calendars" caption="=calendar">
 
-  <FlowPanel>
+  <FlowPanel class="flexBox-vertical">
     <Table style="&tbl;" cellStyle="&cell;">
       <row>
         <Label for="Name" />
         <InputText source="Name" style="width: 200px;" visible="true" />
         <Label for="Owner" />
-        <DataSelector source="Owner" />
+        <DataSelector source="Owner" style="width: 14em;"/>
       </row>
       <row>
         <Label for="Description" />
@@ -27,7 +27,7 @@
       </row>
     </Table>
   
-    <TabbedPages style="position: absolute; left: 1em; right: 1em; top: 120px; bottom: 1ex;">
+    <TabbedPages class="flexible">
       <page>
         <text>=filters</text>
         <Table style="&tbl;" cellStyle="&cell;">

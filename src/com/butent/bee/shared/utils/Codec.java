@@ -858,7 +858,7 @@ public final class Codec {
     }
 
     int index = BeeUtils.toInt(value);
-    if (BeeUtils.isOrdinal(clazz, index)) {
+    if (EnumUtils.isOrdinal(clazz, index)) {
       return clazz.getEnumConstants()[index];
     } else {
       return null;

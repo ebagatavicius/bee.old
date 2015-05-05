@@ -13,7 +13,7 @@ public enum Axis {
     this.suffix = suffix;
   }
 
-  public String rotate(int value, CssAngle angle) {
+  public String rotate(double value, CssAngle angle) {
     return StyleUtils.TRANSFORM_ROTATE + suffix
         + BeeUtils.parenthesize(CssAngle.format(value, angle));
   }
@@ -22,7 +22,7 @@ public enum Axis {
     return StyleUtils.TRANSFORM_SCALE + suffix + BeeUtils.parenthesize(value);
   }
 
-  public String skew(int value, CssAngle angle) {
+  public String skew(double value, CssAngle angle) {
     return StyleUtils.TRANSFORM_SKEW + suffix
         + BeeUtils.parenthesize(CssAngle.format(value, angle));
   }

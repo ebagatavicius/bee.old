@@ -2,6 +2,8 @@ package com.butent.bee.client.modules.tasks;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
@@ -18,17 +20,21 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.edit.SimpleEditorHandler;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InputArea;
 import com.butent.bee.client.widget.InputDateTime;
 import com.butent.bee.client.widget.InputTime;
 import com.butent.bee.client.widget.Label;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -52,17 +58,28 @@ class TaskDialog extends DialogBox {
     setWidget(container);
   }
 
-  void addAction(String caption, ScheduledCommand command) {
+  void addAction(String caption, final ScheduledCommand command) {
     String styleName = STYLE_DIALOG + "-action";
 
     Button button = new Button(caption, command);
     button.addStyleName(styleName);
 
+    FaLabel faSave = new FaLabel(FontAwesome.SAVE);
+    faSave.addClickHandler(new ClickHandler() {
+
+      @Override
+      public void onClick(ClickEvent arg0) {
+        command.execute();
+      }
+    });
+
     HtmlTable table = getContainer();
     int row = table.getRowCount();
     int col = 0;
 
-    table.setWidget(row, col, button);
+    faSave.setTitle(Action.SAVE.getCaption());
+
+    insertAction(BeeConst.INT_TRUE, faSave);
 
     table.getCellFormatter().addStyleName(row, col, styleName + STYLE_CELL);
     table.getCellFormatter().setHorizontalAlignment(row, col, TextAlign.CENTER);

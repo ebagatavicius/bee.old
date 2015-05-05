@@ -101,7 +101,6 @@ public class RequestEditor extends AbstractFormInterceptor {
     super.afterCreateWidget(name, widget, callback);
   }
 
-
   @Override
   public void afterRefresh(final FormView form, final IsRow row) {
     HeaderView header = form.getViewPresenter().getHeader();
@@ -238,7 +237,7 @@ public class RequestEditor extends AbstractFormInterceptor {
             columns, oldValues, newValues, form.getChildrenForUpdate(),
             new FinishSaveCallback(form));
       }
-    }, oldValue, BeeConst.UNDEF, null, 300, CssUnit.PX);
+    }, null, oldValue, BeeConst.UNDEF, null, 300, CssUnit.PX);
   }
 
   private static void toTaskAndFinish(final FormView form, final IsRow reqRow) {

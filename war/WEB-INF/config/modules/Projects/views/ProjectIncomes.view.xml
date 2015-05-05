@@ -30,6 +30,9 @@
     
       <SimpleColumn name="Price" alias="ItemPrice" />
       <SimpleColumn name="Currency" alias="ItemCurrency" />
+      <SimpleJoin name="Currency" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ItemCurrencyName" />
+      </SimpleJoin>
          
       <SimpleColumn name="Cost" alias="ItemCost" />
       <SimpleColumn name="CostCurrency" alias="ItemCostCurrency" />
@@ -47,6 +50,11 @@
     <SimpleColumn name="VatPlus" />
     <SimpleColumn name="Vat" />
     <SimpleColumn name="VatPercent" />
+    
+    <SimpleColumn name="Currency" />
+    <SimpleJoin name="Currency" joinType="LEFT">
+        <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
 
     <SimpleColumn name="Note" />
     <SimpleColumn name="Sale" />

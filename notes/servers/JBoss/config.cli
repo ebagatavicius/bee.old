@@ -1,0 +1,19 @@
+#/wildfly/bin/jboss-cli.sh -c --file=config.cli
+
+
+module add --name=org.postgres --resources=/Applications/JavaEE/SQL/postgresql-9.3-1102.jdbc41.jar --dependencies=javax.api,javax.transaction.api
+/subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres",driver-module-name="org.postgres",driver-class-name=org.postgresql.Driver)
+data-source add --jndi-name=java:/jdbc/BeeDS --name=PostgrePool --connection-url=jdbc:postgresql://192.168.0.210/postgres --driver-name=postgres --user-name=postgres --password=admin
+
+
+/subsystem=security/security-domain=Bee:add(cache-type="default")
+/subsystem=security/security-domain=Bee/authentication=classic:add()
+/subsystem=security/security-domain=Bee/authentication=classic/login-module=Database:add( \
+    code="Database", \
+    flag="required", \
+    module-options=[ \
+        ("dsJndiName"=>"java:/jdbc/BeeDS"), \
+        ("principalsQuery"=>"SELECT ?"), \
+        ("rolesQuery"=>"SELECT ?, 'Roles'") \
+    ])
+reload

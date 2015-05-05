@@ -4,7 +4,7 @@
 
   name="ProjectInvoices" viewName="ProjectInvoices"
   editShowId="true" flexGrow="1"
-  disabledActions="add edit"
+  disabledActions="add"
   caption="=trdInvoices"
   filter="Sale"
   >

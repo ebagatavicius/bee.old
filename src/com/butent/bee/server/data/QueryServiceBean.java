@@ -300,6 +300,7 @@ public class QueryServiceBean {
   @EJB
   ParamHolderBean prm;
 
+  @TransactionAttribute(TransactionAttributeType.MANDATORY)
   public ResponseObject copyData(String tableName, String filterColumn, Object filterValue,
       Object newValue) {
 
@@ -985,6 +986,7 @@ public class QueryServiceBean {
     return tot;
   }
 
+  @TransactionAttribute(TransactionAttributeType.MANDATORY)
   public long setYearMonth(String target, String dtCol, String yearCol, String monthCol) {
     long result = 0;
 
@@ -1075,6 +1077,7 @@ public class QueryServiceBean {
     return sqlExists(source, SqlUtils.equals(source, field, value));
   }
 
+  @TransactionAttribute(TransactionAttributeType.MANDATORY)
   public void sqlIndex(String tmp, String... fields) {
     Assert.state(!sys.isTable(tmp), "Can't index a base table: " + tmp);
     updateData(SqlUtils.createIndex(tmp, SqlUtils.uniqueName(), Lists.newArrayList(fields), false));

@@ -248,7 +248,7 @@ public class DocumentDataForm extends AbstractFormInterceptor
                   Lists.newArrayList(COL_EDITOR_TEMPLATE_ORIGIN, COL_EDITOR_TEMPLATE_NAME,
                       COL_EDITOR_TEMPLATE_CONTENT)), Lists.newArrayList(ORIGIN, value, content));
             }
-          });
+          }, null);
     }
 
     public void setContent(String content) {

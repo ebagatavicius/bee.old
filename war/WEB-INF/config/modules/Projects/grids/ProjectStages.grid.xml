@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-	xmlns:ui="http://www.butent.com/ui" xmlns:w="http://www.butent.com/widget"
+  xmlns:ui="http://www.butent.com/ui" xmlns:w="http://www.butent.com/widget"
 
-	name="ProjectStages" viewName="ProjectStages" caption="=prjStages">
-		
-	<g:columns>
-		<DataColumn name="Name" />
-		<DataColumn name="StartDate" />
-		<DataColumn name="EndDate" />
-		<DataColumn name="ExpectedDuration" caption="=crmTaskExpectedDuration"
+  name="ProjectStages" viewName="ProjectStages" caption="=prjStages">
+
+  <g:columns>
+    <DataColumn name="Name" />
+    <DataColumn name="StartDate" />
+    <DataColumn name="EndDate" />
+    <DataColumn name="ExpectedDuration" caption="=crmTaskExpectedDuration"
       label="=crmTaskExpectedDuration" sortBy="ExpectedDuration">
-       <render>
+      <render>
         <ui:function>
           if (row.UnitName == null) {
             return row.ExpectedDuration;
@@ -19,14 +19,16 @@
           }
           return row.ExpectedDuration;
         </ui:function>
-       </render>
+      </render>
     </DataColumn>
-		<CalcColumn name="CalcExpectedTasksDuration" type="string" caption="=prjExpectedTaskDuration"
-      label="=prjExpectedTaskDuration" />
-		<CalcColumn name="CalcActualTasksDuration" type="string" caption="=prjActualTaskDuration"
-      label="=prjActualTaskDuration" />
-		<DataColumn name="Expenses" scale="2" />
+    <CalcColumn name="CalcExpectedTasksDuration" type="string"
+      cellType="html" caption="=prjExpectedTaskDuration" label="=prjExpectedTaskDuration" />
+    <CalcColumn name="CalcActualTasksDuration" type="string"
+      cellType="html" caption="=prjActualTaskDuration" label="=prjActualTaskDuration" />
+    <DataColumn name="Expenses" scale="2" />
     <RelColumn name="Currency" />
-		<DataColumn name="ActualExpenses"  scale="2" />
-	</g:columns>
+    <DataColumn name="ActualExpenses" scale="2">
+    </DataColumn>
+    <DataColumn name="TaskCount" label="=prjStageTaskCount" />
+  </g:columns>
 </g:Grid>

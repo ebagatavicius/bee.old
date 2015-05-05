@@ -21,6 +21,7 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -76,7 +77,30 @@ public class ClassifierSelector implements SelectorEvent.Handler {
           }
         }
       }
+
+    } else if (event.isOpened() && event.hasRelatedView(VIEW_POSITIONS)) {
+      DataView dataView = ViewHelper.getDataView(event.getSelector());
+      if (dataView != null
+          && AdministrationConstants.VIEW_DEPARTMENT_EMPLOYEES.equals(dataView.getViewName())) {
+        filterDepartmentPositions(event, dataView);
+      }
     }
+  }
+
+  private static void filterDepartmentPositions(SelectorEvent event, DataView dataView) {
+    Long department = ViewHelper.getParentRowId(dataView.asWidget(),
+        AdministrationConstants.VIEW_DEPARTMENTS);
+
+    Filter filter;
+    if (DataUtils.isId(department)) {
+      filter = Filter.in(Data.getIdColumn(VIEW_POSITIONS),
+          AdministrationConstants.VIEW_DEPARTMENT_POSITIONS, COL_POSITION,
+          Filter.equals(AdministrationConstants.COL_DEPARTMENT, department));
+    } else {
+      filter = null;
+    }
+
+    event.getSelector().setAdditionalFilter(filter, true);
   }
 
   private static void filterPersonsByCompany(SelectorEvent event, DataView dataView) {

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
   name="Companies" source="Companies" caption="=clients" module="Classifiers.Contacts"
-  editForm="Company" newRowForm="Company" newRowCaption="=newClient" rowCaption="Name"
+  editForm="Company" newRowForm="NewCompany" newRowCaption="=newClient" rowCaption="Name"
   >
-  <Relation renderColumns="Name" />
+  <Relation renderColumns="Name TypeName" />
   <Columns>
     <SimpleColumn name="Name" />
     <SimpleColumn name="Code" />
@@ -71,7 +71,11 @@
     <SimpleJoin joinType="LEFT" name="TurnoverCurrency">
       <SimpleColumn name="Name" alias="TurnoverCurrencyName" />
     </SimpleJoin>
+
     <SimpleColumn name="CompanyRelationTypeState" />
+    <SimpleJoin joinType="LEFT" name="CompanyRelationTypeState">
+      <SimpleColumn alias="RelationTypeStateName" name="Name" />
+    </SimpleJoin>
 
     <SimpleColumn name="CreditLimit" />
     <SimpleColumn name="LimitCurrency" />

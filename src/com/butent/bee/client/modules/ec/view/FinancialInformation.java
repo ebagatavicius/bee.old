@@ -3,7 +3,6 @@ package com.butent.bee.client.modules.ec.view;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -30,6 +29,7 @@ import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.CustomDiv;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.BeeConst;
@@ -37,14 +37,15 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.ec.EcConstants.EcOrderStatus;
 import com.butent.bee.shared.modules.ec.EcFinInfo;
-import com.butent.bee.shared.modules.ec.EcOrderEvent;
-import com.butent.bee.shared.modules.ec.EcUtils;
 import com.butent.bee.shared.modules.ec.EcInvoice;
 import com.butent.bee.shared.modules.ec.EcOrder;
+import com.butent.bee.shared.modules.ec.EcOrderEvent;
 import com.butent.bee.shared.modules.ec.EcOrderItem;
+import com.butent.bee.shared.modules.ec.EcUtils;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
@@ -364,9 +365,11 @@ class FinancialInformation extends EcView {
         STYLE_PREFIX_ORDER_DETAILS + "dialog");
     dialog.setWidget(panel);
 
-    Image print = new Image(Global.getImages().silverPrint(), new ScheduledCommand() {
+    FaLabel print = new FaLabel(FontAwesome.PRINT);
+    print.addClickHandler(new ClickHandler() {
+
       @Override
-      public void execute() {
+      public void onClick(ClickEvent arg0) {
         Printer.print(panel);
       }
     });
@@ -780,7 +783,7 @@ class FinancialInformation extends EcView {
       widget = new Label(EcUtils.formatCents(cents));
       table.setWidgetAndStyle(row, UNSUPPLIED_PRICE_COL, widget, STYLE_UNSUPPLIED_PRICE);
 
-      final Image remove = new Image(Global.getImages().silverDelete());
+      final FaLabel remove = new FaLabel(FontAwesome.REMOVE);
       remove.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {

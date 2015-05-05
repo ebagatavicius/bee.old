@@ -185,7 +185,7 @@ public class FormPresenter extends AbstractPresenter implements ReadyForInsertEv
           public void onSuccess(String value) {
             getFormView().applyOptions(value);
           }
-        });
+        }, null);
         break;
 
       case DELETE:

@@ -8,11 +8,11 @@
   caption="=crmRecurringTask" showRowId="true"
   width="700" height="700">
 
-  <FlowPanel class="flexBox-vertical" style="padding: 10px 2px 2px 10px;">
+  <FlowPanel style="padding: 10px 2px 2px 10px;">
     <xi:include href="widgets/RTBody.widget.xml" />
 
     <br/>
-    <TabbedPages class="flexible">
+    <TabbedPages style="height: 500px;">
       <page>
         <text>=crmRecurrence</text>
         <xi:include href="widgets/RTCron.widget.xml" />

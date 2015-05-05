@@ -6,7 +6,7 @@
   xmlns:f="http://www.butent.com/form"
   
   name="CompanyType" viewName="CompanyTypes" caption="=clientStatus"
-  height="150" width="400">
+  height="250" width="400">
 
   <FlowPanel style="padding: 15px 1em;">
     <Table style="border-spacing: 5px;">

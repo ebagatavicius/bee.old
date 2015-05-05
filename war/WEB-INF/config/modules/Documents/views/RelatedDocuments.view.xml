@@ -20,7 +20,11 @@
     <SimpleColumn name="Discussion" />
     <SimpleColumn name="ServiceObject" />
     <SimpleColumn name="Message" />
+
     <SimpleColumn name="Project" />
+    <SimpleJoin name="Project" joinType="LEFT">
+      <SimpleColumn alias = "ProjectContract" name="Contract" />
+    </SimpleJoin>
 
     <SimpleJoin name="Document" joinType="INNER">
 
@@ -54,7 +58,6 @@
 
       <SimpleColumn name="Received" />
       <SimpleColumn name="Sent" />
-      <SimpleColumn name="Returned" />
 
       <SimpleColumn name="Description" />
     </SimpleJoin>

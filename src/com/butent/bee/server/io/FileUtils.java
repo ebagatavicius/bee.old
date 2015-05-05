@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
@@ -541,7 +542,7 @@ public final class FileUtils {
 
   public static File toFile(URL url) {
     Assert.notNull(url);
-    return new File(url.getPath());
+    return new File(URI.create("file:" + url.getPath()));
   }
 
   private FileUtils() {

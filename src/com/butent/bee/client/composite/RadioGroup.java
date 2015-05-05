@@ -362,7 +362,8 @@ public class RadioGroup extends Span implements Editor, ValueChangeHandler<Boole
     if (newIndex != oldIndex) {
       if (isIndex(newIndex)) {
         getOption(newIndex).setValue(true);
-      } else if (isIndex(oldIndex)) {
+      }
+      if (isIndex(oldIndex)) {
         getOption(oldIndex).setValue(false);
       }
     }
@@ -392,7 +393,8 @@ public class RadioGroup extends Span implements Editor, ValueChangeHandler<Boole
     if (newIndex != oldIndex) {
       if (isIndex(newIndex)) {
         getOption(newIndex).setValue(true);
-      } else if (isIndex(oldIndex)) {
+      }
+      if (isIndex(oldIndex)) {
         getOption(oldIndex).setValue(false);
       }
     }

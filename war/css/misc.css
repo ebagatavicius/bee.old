@@ -1,41 +1,113 @@
 .bee-orgChart-panel {
   background-color: white;
 }
-.bee-orgChart-table {
-  margin-top: 1ex;
-  margin-left: 1em;
+
+.bee-orgChart-toggle-positions {
+  padding-right: 3px;
+}
+.bee-orgChart-toggle-employees {
+  padding-right: 3em;
 }
 
 .bee-orgChart-department-panel {
-  border: 2px solid #b5d9ea;
-  border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.5) 3px 3px 3px;
-  background-image: linear-gradient(to bottom, #edf7ff, #cde7ee);
-  min-height: 100px;
-}
-.bee-orgChart-department-label {
-  cursor: pointer;
-  border-bottom: 1px solid #ccc;
-  font-size: larger;
-  font-weight: bolder;
-  text-align: center;
+  border: 1px solid #d5d5d5;
+  box-sizing: border-box;
+  left: 0;
+  top: 0;
+  transition: left 350ms, top 350ms;
+  overflow: auto;
+  background-color: white;
 }
 
-.bee-orgChart-boss-photo,
-.bee-orgChart-employee-photo {
-  max-width: 30px;
-  max-height: 30px;
-  margin-right: 1em;
+.bee-orgChart-department-label {
+  cursor: pointer;
+  border-bottom: 1px solid #d5d5d5;
+  font-size: larger;
+  font-weight: bold;
+  text-align: center;
+  line-height: 45px;
+  background-color: #f5f5f5;
+  color: #414142;
+}
+
+.bee-orgChart-boss-table,
+.bee-orgChart-employee-table,
+.bee-orgChart-position-table,
+.bee-orgChart-pos-and-empl {
+  border-collapse: collapse;
+}
+
+.bee-Form .bee-orgChart-boss-table td,
+.bee-Form .bee-orgChart-employee-table td,
+.bee-Form .bee-orgChart-position-table td,
+.bee-Form .bee-orgChart-pos-and-empl td {
+  padding: 5px;
+}
+
+.bee-orgChart-popup-content .bee-orgChart-employee-label{
+  line-height: 60px;
+}
+
+.bee-orgChart-photo-container,
+.bee-orgChart-photo-empty {
+  width: 40px;
+}
+.bee-orgChart-photo-container {
+  height: 40px;
+}
+.bee-orgChart-photo-container img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 50%;
 }
 
 .bee-orgChart-boss-label {
-  display: inline-block;
   cursor: pointer;
-  color: red;
+  color: #1eb2d8;
+  margin-left: 10px;
+  font-size: 14px;
+  font-weight: bold;
 }
+.bee-orgChart-position-staffed,
 .bee-orgChart-employee-label {
-  display: inline-block;
   cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.bee-orgChart-employee-summary {
+  margin-left: 3em;
+}
+
+.bee-orgChart-position-actual,
+.bee-orgChart-employee-count {
+  font-weight: bold;
+  text-align: left;
+}
+
+.bee-orgChart-employee-position,
+.bee-orgChart-position-label {
+  text-transform: uppercase;
+  font-size: 11px;
+  color: #9d9d9d;
+}
+
+.bee-orgChart-position-under {
+  font-weight: bold;
+  background-color: lightpink;
+  text-align: right;
+}
+.bee-orgChart-position-planned {
+  font-weight: bold;
+  background-color: lightgreen;
+  text-align: right;
+}
+.bee-orgChart-position-over {
+  font-weight: bold;
+  background-color: yellow;
+  text-align: right;
 }
 
 .bee-orgChart-department-drag,
@@ -46,4 +118,255 @@
 .bee-orgChart-department-dragOver {
   border: 2px solid #e3ca4b;
   background: linear-gradient(to bottom, #fff7ae, #eee79e);
+}
+
+.bee-orgChart-line-straight,
+.bee-orgChart-line-horizontal {
+  height: 1px;
+}
+.bee-orgChart-line-vertical {
+  width: 1px;
+}
+.bee-orgChart-line-straight,
+.bee-orgChart-line-horizontal,
+.bee-orgChart-line-vertical {
+  background-color: #3388dd;
+}
+
+.bee-orgChart-bubble-parent,
+.bee-orgChart-bubble-child {
+  width: 0;
+  height: 0;
+  border-width: 6px;
+  border-style: solid;
+  border-radius: 50%;
+  transform: translate(-6px, -6px);  
+}
+.bee-orgChart-bubble-parent {
+  border-color: limegreen;
+}
+.bee-orgChart-bubble-child {
+  border-color: lightgray;
+}
+
+.bee-orgChart-settings-table {
+  border-collapse: collapse;
+}
+.bee-orgChart-settings-table .bee-LabelCell {
+  padding-right: 12px;
+}
+.bee-orgChart-settings-table .bee-InputSpinner {
+  width: 80px;
+}
+.bee-orgChart-settings-table .bee-RadioButton input {
+  margin: 0;
+}
+.bee-orgChart-settings-table .bee-RadioButton label {
+  padding-left: 3px;
+  padding-right: 6px;
+}
+.bee-orgChart-settings-separator {
+  height: 10px;
+}
+.bee-orgChart-settings-commands-cell {
+  padding-top: 2ex;
+  text-align: right;
+}
+.bee-orgChart-settings-cancel {
+  margin-left: 1em;
+}
+
+.bee-form-ExtendedReport .bee-HtmlTable td {
+  padding: 3px 5px;
+}
+
+.bee-rep td {
+  border: 1px solid #ddd;
+}
+.bee-rep .bee-Horizontal td {
+  border: none;
+}
+.bee-rep-date, bee-rep-num {
+  white-space: nowrap;
+}
+.bee-rep-num, .bee-rep-cgroup-hdr, .bee-rep-tot-hdr {
+  text-align: right;
+}
+.bee-rep-drill:hover {
+  cursor: pointer; 
+  background-color: lightyellow;
+}
+.bee-rep-drill-on, .bee-rep-drill-off {
+  cursor: pointer;
+}
+.bee-rep-drill-on:before, .bee-rep-drill-off:before {
+  font-family: FontAwesome;
+  content: "\f0c1";
+  margin-right: 3px;
+}
+.bee-rep-drill-off:before {
+  color: silver;
+}
+.bee-rep-cgroup {
+  text-align: center;
+}
+.bee-rep-rgroup, .bee-rep-rgroup-col-tot, .bee-rep-rgroup-tot {
+  background-color: whitesmoke;
+}
+.bee-rep-row-hdr, .bee-rep-cgroup-tot-hdr, .bee-rep-col-hdr, .bee-rep-row-tot-hdr {
+  text-align: center;
+  font-weight: bold;
+}
+.bee-rep-rgroup-tot, .bee-rep-row-tot, .bee-rep-col-tot, .bee-rep-tot, .bee-rep-tot-hdr {
+  font-weight: bold;
+}
+
+.bee-rep-item, .bee-rep-text-separator, .bee-rep-num-operator {
+  display: inline-block;
+  background-color: antiquewhite;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  padding: 2px;
+  border: 1px solid silver;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.bee-rep-text-separator, .bee-rep-num-operator {
+  background-color: transparent;
+}
+.bee-rep-text-expression, .bee-rep-num-expression {
+  max-width: 500px;
+}
+.bee-rep-item-over, .bee-rep-item:hover, .bee-rep-text-separator:hover, .bee-rep-num-operator:hover {
+  background-color: lightyellow;
+}
+.bee-rep-function {
+  display: block;
+  color: blue;
+  cursor: pointer;
+}
+.bee-rep-item-add:after {
+  font-family: FontAwesome;
+  content: "\f067";
+  cursor: pointer;
+}
+.bee-rep-summary-on:after {
+  font-family: FontAwesome;
+  content: "\f06e";
+  cursor: pointer;
+}
+.bee-rep-summary-off:after {
+  font-family: FontAwesome;
+  content: "\f070";
+  cursor: pointer;
+  color: silver;
+}
+.bee-rep-item-remove {
+  display: inline;
+  font-size: 15px;
+  margin-left: 1px;
+  cursor: pointer;
+}
+.bee-rep-item-remove:hover {
+  color: red;
+}
+.bee-rep-filter-cap, .bee-rep-option-cap {
+  text-align: right;
+  white-space: nowrap;
+}
+.bee-rep-text-filter {
+  width: 100% !important;
+}
+.bee-rep-date-filter .bee-Label {
+  display: inline-block;
+  margin-left: 5px;
+  cursor: pointer;
+}
+.bee-rep-date-filter .bee-TextBox, .bee-rep-date-filter .bee-ListBox {
+  margin-left: 5px;
+}
+.bee-rep-date-filter .bee-InputSpinner {
+  width: 70px;
+}
+.bee-rep-date-filter .bee-InputDate {
+  width: 90px;
+}
+.bee-rep-date-filter .bee-InputDateTime {
+  width: 130px;
+}
+.bee-rep-enum-filter {
+  display: inline-block;
+  cursor: pointer;
+  color: blue;
+}
+.bee-rep-enum-filter-empty:before {
+  content: "???";
+}
+.bee-rep-report {
+  border-collapse: collapse;
+}
+.bee-rep-report .bee-rep-report-normal:hover {
+  color: dodgerblue;
+  cursor: pointer;
+}
+.bee-rep-report-active {
+  color: white;
+  background-color: dodgerblue;
+}
+
+.bee-EventsBoard-content {
+  overflow: auto;
+  height: calc(100% - 35px);
+  width: 100%;
+}
+
+.bee-EventsBoard-content-row {
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  border-bottom: 1px solid #ccc;
+  padding: 2px 5px 2px;
+}
+
+.bee-EventsBoard-content-col {
+  margin-left: 1ex;
+  display: inline-block;
+  margin: 4px;
+  min-width: 150px;
+  vertical-align: top;
+  overflow: auto;
+  max-height: 9em;
+}
+
+.bee-EventsBoard-content-col-PublisherPhoto {
+  width: 2.5em;
+  height: 2.5em;
+  max-width: 2.5em;
+  min-width: 2.5em;
+  align-self: center;
+  -webkit-align-self: center;
+  -ms-flex-item-align: center;
+}
+
+.bee-EventsBoard-content-Photo {
+  text-align: center;
+  max-width: 100%;
+  max-height: 100%;
+  cursor: default;
+}
+
+.bee-EventsBoard-content-EventType {
+   font-weight: bolder;
+}
+
+.bee-EventsBoard-content-EventNote {
+  white-space: pre-wrap;
+}
+
+.bee-EventsBoard-content-col.bee-EventsBoard-content-col-EventNote.bee-prj-Events-EventNote {
+  width: 100%;
+}
+
+.bee-EventsBoard-content-col.bee-EventsBoard-content-col-EventFiles.bee-prj-Events-content-col-EventFiles {
+  width: calc(100% - 10px);
 }

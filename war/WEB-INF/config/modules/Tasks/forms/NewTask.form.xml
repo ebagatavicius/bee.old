@@ -9,20 +9,20 @@
   <!ENTITY col1 "text-align: right; padding-right: 8px; width: 128px;">
   <!ENTITY col3 "text-align: right; padding-left: 8px; padding-right: 8px; width: 128px;">
 
-  <!ENTITY inp2 "width: 150px;">
+  <!ENTITY inp2 "width: 160px;">
   <!ENTITY inp2x "width: 500px;">
   <!ENTITY inp2y "width: 500px;">
   <!ENTITY inp3 "width: 70px;margin-left: -75px">
 
   <!ENTITY dateStyle "&inline; min-width: 90px; max-width: 90px;">
-  <!ENTITY timeStyle "&inline; min-width: 50px; max-width: 50px; width: 50px; margin-left: 10px;">
+  <!ENTITY timeStyle "&inline; min-width: 60px; max-width: 60px; width: 60px; margin-left: 10px;">
   <!ENTITY timeStep "30">
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="NewTask" viewName="Tasks" caption="=crmNewTask" width="700" height="640">
+  name="NewTask" viewName="Tasks" caption="=crmNewTask" width="725" height="700">
 
   <FlowPanel style="padding: 10px 2px 2px 10px;">
   
@@ -38,7 +38,7 @@
 
       <row>
         <Label for="Type" />
-        <DataSelector source="Type" renderColumns="TypeName" newRowEnabled="false" style="&inp2;"
+        <DataSelector source="Type" renderColumns="TypeName" newRowEnabled="true" style="&inp2;"
           disablable="true" />
         <Label for="Priority" />
         <Radio source="Priority" />
@@ -51,7 +51,7 @@
           <InputTimeOfDay name="Start_Time" step="&timeStep;" style="&timeStyle;" />
         </FlowPanel>
         <Label for="ExpectedDuration" />
-        <InputTime name="ExpectedDuration" source="ExpectedDuration" step="&timeStep;" style="width: 50px;" />
+        <InputTime name="ExpectedDuration" source="ExpectedDuration" step="&timeStep;" style="width: 60px;" />
         <Label for="ExpectedExpenses" text="=prjExpenses" style="margin-left:-140px;" />
         <InputDecimal source="ExpectedExpenses" style="&inp3;" disablable="true" scale="2"/>
         <DataSelector source="Currency" for="ExpectedExpenses" newRowEnabled="false" editEnabled="false"
@@ -65,8 +65,8 @@
           <InputTimeOfDay name="End_Time" step="&timeStep;" style="&timeStyle;" />
         </FlowPanel>
         <Label for="Company" />
-        <DataSelector source="Company" editPopup="true" newRowEnabled="false"
-          style="width: 200px;" />
+        <DataSelector source="Company" editPopup="true" newRowEnabled="false" choiceColumns="Name TypeName" 
+            renderColumns="CompanyName CompanyTypeName" style="width: 200px;" />
       </row>
 
       <row>
@@ -167,7 +167,7 @@
   
       <row data="Relations" for="Company" module="Classifiers.Contacts">
         <Label text="=companies" />
-        <MultiSelector viewName="Companies" property="Companies" renderColumns="Name"
+        <MultiSelector viewName="Companies" property="Companies" renderColumns="Name TypeName"
           editPopup="true" newRowEnabled="false" style="&inp2x;" />
       </row>
 
@@ -179,7 +179,7 @@
 
       <row data="Relations" for="Document" module="Documents">
         <Label text="=documents" />
-        <MultiSelector viewName="Documents" property="Documents" renderColumns="Name"
+        <MultiSelector viewName="Documents" property="Documents" renderColumns="Name Number RegistrationNumber"
           editPopup="true" newRowEnabled="false" style="&inp2x;" />
       </row>
 
@@ -213,8 +213,8 @@
       <row data="Relations" for="Relation">
         <Label text="=crmTasks" />
         <MultiSelector viewName="Tasks" property="Tasks" 
-          renderColumns="Summary ExecutorFirstName ExecutorLastName"
-          choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
+          renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
+          choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
           newRowEnabled="false" editPopup="true" style="&inp2x;" />
         </row>
     </Table>

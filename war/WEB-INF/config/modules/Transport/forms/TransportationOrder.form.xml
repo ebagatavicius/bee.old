@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY inp "width: 15em;">
+]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -6,7 +9,7 @@
   name="TransportationOrder" viewName="TransportationOrders" caption="=trOrder"
   width="900" height="900"
   >
-  <FlowPanel class="flexBox-vertical">
+  <FlowPanel>
     <FlowPanel class="flexBox-horizontal">
       <Table style="border-spacing: 5px;">
         <row>
@@ -14,35 +17,33 @@
           <InputDateTime source="Date" />
 		  <Label text="=orderNumber" horizontalAlignment="right" class="bee-required bee-hasDefaults" />
           <InputText source="OrderNo" />
-          <Label text="=status" horizontalAlignment="right" class="bee-required bee-hasDefaults" />
-          <ListBox source="Status" />
+          <Label text="=status" horizontalAlignment="right" class="bee-required bee-hasDefaults" style="" />
+          <ListBox source="Status" style="height: 29px; width: 152px;"/>
         </row>
         <row>
           <Label text="=customer" horizontalAlignment="right" class="bee-required" />
-          <DataSelector name="Customer" source="Customer" />
+          <DataSelector name="Customer" source="Customer" choiceColumns="Name TypeName" renderColumns="CustomerName TypeName" style="&inp;" />
           <Label text="=payer" horizontalAlignment="right" />
-          <DataSelector source="Payer" />
-		  	<cell colSpan="2">
-              <Label text="=notes" />
-			</cell>  
+          <DataSelector source="Payer" choiceColumns="Name TypeName" renderColumns="PayerName PayerTypeName" style="&inp;" />
+          <Label text="=notes" horizontalAlignment="right" />
+           <cell rowSpan="2">
+             <InputArea source="Notes" visibleLines="3"/>
+           </cell>
         </row>
         <row>
           <Label text="=personContact" horizontalAlignment="right" />
           <DataSelector source="CustomerPerson" renderColumns="PersonFirstName PersonLastName"
-            choiceColumns="FirstName LastName CompanyName" options="Customer" />
+            choiceColumns="FirstName LastName CompanyName" options="Customer" style="&inp;" />
           <Label text="=manager" horizontalAlignment="right" class="bee-required bee-hasDefaults" />
-          <DataSelector source="Manager" editSource="ManagerPerson" newRowEnabled="false" />
-		  <cell colSpan="2">
-            <InputArea source="Notes" visibleLines="1" style="width:150px;" />
-          </cell>
+          <DataSelector source="Manager" editSource="ManagerPerson" newRowEnabled="false" style="&inp;" />
         </row>
       </Table>
     </FlowPanel>
 
-    <TabbedPages class="flexible" style="margin-top: 1ex;" >
+    <TabbedPages style="margin-top: 1ex; height: 600px;" >
       <page>
         <text>=cargos</text>
-        <ChildGrid name="OrderCargo" relColumn="Order" caption="-" />
+        <ChildGrid name="OrderCargo" relColumn="Order" />
       </page>
       <page>
         <text>=documents</text>

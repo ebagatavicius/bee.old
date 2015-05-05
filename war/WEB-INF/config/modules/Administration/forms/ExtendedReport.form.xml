@@ -4,55 +4,39 @@
   
   name="ExtendedReport"
   >
-  <FlowPanel>
+  <FlowPanel class="flexBox-vertical">
     <br/>
-    <HorizontalPanel>
-      <Label text="=dateFrom" />
-      <InputDateTime name="StartDate" style="width:120px;" />
-
-      <Label text="=dateTo" />
-      <InputDateTime name="EndDate" style="width:120px;" />
-      
-      <Label text="=currency" />
-      <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
-        newRowEnabled="false" editPopup="true" style="width:80px;" />
-
-      <CheckBox name="Vat" text="=trdAmountWoVat" />
-    </HorizontalPanel>
-
-    <Disclosure open="false">
-      <Label text="Dizainas" />
-
-      <FlowPanel class="flexBox-horizontal">
-        <FlowPanel class="flexible">
-          <FieldSet>
-            <Legend text="Eilutės" />
-            <FlowPanel name="DetalizationContainer" style="max-height:150px; overflow:auto;" />
-            <HorizontalPanel style="white-space:nowrap;">
-              <cell style="width:100%">
-                <FaLabel name="DetalizationAdd" char="plus" style="display:inline-block;" />
-              </cell>
-              <FlowPanel name="DetalizationGroup" />
-            </HorizontalPanel>
-          </FieldSet>
-        </FlowPanel>
+    <FlowPanel class="flexBox-horizontal">
+      <FlowPanel class="flexible">
+        <HorizontalPanel>
+          <Label text="=currency" />
+          <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
+            newRowEnabled="false" editPopup="true" style="width:80px;" />
+    
+          <CheckBox name="Vat" text="=trdAmountWoVat" />
+        </HorizontalPanel>
         
-        <FlowPanel class="flexible">
-          <FieldSet>
-            <Legend text="Stulpeliai" />
-            <FlowPanel name="CalculationContainer" style="max-height:150px; overflow:auto;" />
-            <HorizontalPanel style="white-space:nowrap;">
-              <cell style="width:100%">
-                <FaLabel name="CalculationAdd" char="plus" style="display:inline-block;" />
-              </cell>
-              <FlowPanel name="CalculationGroup" />
-            </HorizontalPanel>
-          </FieldSet>
-        </FlowPanel>
+        <Disclosure open="false">
+          <Label text="=layout" />
+          <FlowPanel name="LayoutContainer" style="overflow:auto;" />
+        </Disclosure>
+    
+        <Disclosure open="true">
+          <Label text="=filters" />
+          <FlowPanel style="overflow:auto;">
+            <FlowPanel name="FilterContainer" style="max-height:150px; overflow:auto;" />
+            <FaLabel name="FilterContainerAdd" char="plus" style="display:inline-block;" />
+          </FlowPanel>
+        </Disclosure>
       </FlowPanel>
-    </Disclosure>
+
+      <FieldSet>
+        <Legend text="=reports" />
+        <FlowPanel name="ReportContainer" style="max-height:300px; overflow:auto;" />
+      </FieldSet>
+    </FlowPanel>
 
     <br/>
-    <FlowPanel name="DataContainer" />
+    <FlowPanel name="DataContainer" class="flexible" style="overflow:auto;" />
   </FlowPanel>
 </f:Form>

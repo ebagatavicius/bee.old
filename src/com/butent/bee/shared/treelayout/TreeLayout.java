@@ -150,13 +150,13 @@ public class TreeLayout<T> {
 
   private boolean isLevelChangeInYAxis() {
     Location rootLocation = configuration.getRootLocation();
-    return rootLocation == Location.Top || rootLocation == Location.Bottom;
+    return rootLocation == Location.TOP || rootLocation == Location.BOTTOM;
   }
 
   private int getLevelChangeSign() {
     Location rootLocation = configuration.getRootLocation();
-    return rootLocation == Location.Bottom
-        || rootLocation == Location.Right ? -1 : 1;
+    return rootLocation == Location.BOTTOM
+        || rootLocation == Location.RIGHT ? -1 : 1;
   }
 
   // ------------------------------------------------------------------------
@@ -608,13 +608,12 @@ public class TreeLayout<T> {
 
     double y;
     AlignmentInLevel alignment = configuration.getAlignmentInLevel();
-    if (alignment == AlignmentInLevel.Center) {
+    if (alignment == AlignmentInLevel.CENTER) {
       y = levelStart + levelChangeSign * (levelSize / 2);
-    } else if (alignment == AlignmentInLevel.TowardsRoot) {
+    } else if (alignment == AlignmentInLevel.TOWARDS_ROOT) {
       y = levelStart + levelChangeSign * (getNodeThickness(v) / 2);
     } else {
-      y = levelStart + levelSize - levelChangeSign
-          * (getNodeThickness(v) / 2);
+      y = levelStart + levelSize - levelChangeSign * (getNodeThickness(v) / 2);
     }
 
     if (!levelChangeOnYAxis) {

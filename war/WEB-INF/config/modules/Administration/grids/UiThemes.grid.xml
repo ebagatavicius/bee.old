@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+  name="UiThemes" viewName="UiThemes" caption="=uiThemes"
+  enableCopy="-Name, Description"
+  >
+  <g:columns>
+    <DataColumn name="Name" minWidth="120" visible="true" />
+    <DataColumn name="Description" visible="false" />
+
+    <DataColumn name="WorkspaceMarginRight" carry="true" />
+
+    <DataColumn name="ViewHeaderHeight" carry="true" />
+    <DataColumn name="ChildViewHeaderHeight" carry="true" />
+
+    <DataColumn name="ViewActionCreateNew" carry="true" />
+    <DataColumn name="GridActionCreateNew" carry="true" />
+    <DataColumn name="ChildActionCreateNew" carry="true" />
+
+    <DataColumn name="GridHeaderRowHeight" carry="true" />
+    <DataColumn name="GridBodyRowHeight" carry="true" />
+    <DataColumn name="GridFooterRowHeight" carry="true" />
+
+    <DataColumn name="GridMarginLeft" carry="true" />
+
+    <DataColumn name="GridHeaderFont" carry="true" />
+    <DataColumn name="GridBodyFont" carry="true" />
+    <DataColumn name="GridFooterFont" carry="true" />
+
+    <DataColumn name="ChildGridHeaderRowHeight" carry="true" />
+    <DataColumn name="ChildGridBodyRowHeight" carry="true" />
+    <DataColumn name="ChildGridFooterRowHeight" carry="true" />
+
+    <DataColumn name="ChildGridMarginLeft" carry="true" />
+
+    <DataColumn name="ChildGridHeaderFont" carry="true" />
+    <DataColumn name="ChildGridBodyFont" carry="true" />
+    <DataColumn name="ChildGridFooterFont" carry="true" />
+
+    <DataColumn name="ApplianceHeaderHeight" carry="true" />
+    <DataColumn name="SubMenuLineHeight" carry="true" />
+    <DataColumn name="WorkspaceTabHeight" carry="true" />
+    <DataColumn name="TabbedPagesTabHeight" carry="true" />
+    <DataColumn name="DisclosureClosedHeight" carry="true" />
+
+    <DataColumn name="InputLineHeight" carry="true" />
+    <DataColumn name="InputPadding" carry="true" />
+    <DataColumn name="ListSize1Padding" carry="true" />
+    <DataColumn name="FormCellPaddingTop" carry="true" />
+
+    <DataColumn name="Css" minWidth="200" carry="true" />
+  </g:columns>
+</g:Grid>

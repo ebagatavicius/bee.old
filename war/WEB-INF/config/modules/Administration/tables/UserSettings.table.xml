@@ -20,12 +20,12 @@
     <Boolean name="WorkspaceContinue" label="=workspaceContinue" />
     <Text name="LastWorkspace" />
     
-    <Integer name="ApplianceHeaderHeight" label="=heightOfApplianceHeader" />
-    <Integer name="ViewHeaderHeight" label="=heightOfViewHeader" />
-
     <Integer name="ClickSensitivityMillis" label="=clickSensitivityMillis" />
     <Integer name="ClickSensitivityDistance" label="=clickSensitivityDistance" />
+
     <Integer name="CompanyActionRemindBefore" label="=crmRTRemindBefore" />
+
+    <Relation name="UiTheme" relation="UiThemes" label="=uiTheme" />
 
     <Text name="Style" label="=style" />
   </Fields>

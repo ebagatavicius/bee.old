@@ -154,12 +154,12 @@ public final class Pair<A, B> implements BeeSerializable {
     return Codec.beeSerialize(arr);
   }
 
-  public void setA(A a) {
-    this.a = a;
+  public void setA(A x) {
+    this.a = x;
   }
 
-  public void setB(B b) {
-    this.b = b;
+  public void setB(B x) {
+    this.b = x;
   }
 
   /**

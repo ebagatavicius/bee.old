@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Form[
   <!ENTITY inpw "width: 200px;">
-  <!ENTITY inpdt "width: 120px;">
+  <!ENTITY inpdt "width: 10em;">
   <!ENTITY forparent "<dynStyle><ui:inline>display: none;</ui:inline><ui:expression>!row.Parent</ui:expression></dynStyle>">
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
@@ -12,7 +12,7 @@
   caption="=tradeAct" showRowId="true"
   width="800" height="600"
   >
-  <FlowPanel class="flexBox-vertical">
+  <FlowPanel>
     <br/>
     <Table>
       <col index="0" kind="label" />
@@ -46,7 +46,7 @@
 
       <row>
         <Label for="Series" />
-        <DataSelector source="Series" newRowEnabled="false" style="width: 120px;" />
+        <DataSelector source="Series" newRowEnabled="false" style="width: &inpdt;" />
 
         <Label for="Number" visible="true" />
         <InputText source="Number" style="&inpw;" visible="true" />
@@ -64,7 +64,8 @@
 
       <row>
         <Label for="Company" visible="true" />
-        <DataSelector source="Company" style="&inpw;" visible="true" />
+        <DataSelector source="Company" style="&inpw;" visible="true" choiceColumns="Name TypeName" 
+          renderColumns="CompanyName TypeName"/>
 
         <Label for="Object" />
         <DataSelector source="Object" renderColumns="ObjectName" 
@@ -102,7 +103,7 @@
     </Table>
 
     <br/>
-    <TabbedPages class="flexible">
+    <TabbedPages style="height: 400px;">
       <page>
         <text>=goods</text>
         <ChildGrid name="TradeActItems" relColumn="TradeAct" />

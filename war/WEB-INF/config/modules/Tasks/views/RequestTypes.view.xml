@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="RequestTypes" source="RequestTypes"
+  caption="=crmRequestTypes" newRowCaption="=crmNewRequestType"
+  >
+  <Columns>
+    <SimpleColumn name="Name" />
+
+    <SimpleColumn name="Background" />
+    <SimpleColumn name="Foreground" />
+  </Columns>
+  
+  <Order>
+    <OrderBy column="Name" />
+  </Order>
+</View>
+ 

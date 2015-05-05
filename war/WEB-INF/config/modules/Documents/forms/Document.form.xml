@@ -3,32 +3,24 @@
   <!ENTITY row "margin:5px 5px 0 5px;">
   <!ENTITY chlabel "text-align:right; width:100px; padding-top:2px; margin-right:5px;">
 ]>
-<f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  
-  name="Document" caption="=document"
-  width="900" height="500"
-  >
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude" name="Document" caption="=document"
+  width="900" height="500">
 
-  <TabbedPages>
+  <TabbedPages resizable="false">
     <page>
       <text>=mainInformation</text>
       <FlowPanel class="flexBox-vertical">
-        <xi:include href="widgets/DocumentFields.widget.xml" />
-        <FlowPanel>
-          <Relations relColumn="Document" inline="true"
-            style="margin-left: 520px; margin-top: -265px; min-width: 300px;"
-            defaultRelations="Companies Persons Requests Tasks" />
+        <FlowPanel class="flexBox-horizontal">
+          <xi:include href="widgets/DocumentFields.widget.xml" />
+          <FlowPanel style="display: table;">
+            <Relations relColumn="Document" inline="true"
+              defaultRelations="Companies Persons Requests Tasks" style="margin-left: 15px;" />
+          </FlowPanel>
         </FlowPanel>
         <ChildGrid name="DocumentFiles" relColumn="Document" class="flexible"
           style="margin-top: 1ex;" />
       </FlowPanel>
-    </page>
-
-    <page data="Relations" for="Document">
-      <text>=relations</text>
-       <xi:include href="widgets/DocumentRelations.widget.xml" />
     </page>
 
     <page module="Documents.Templates">

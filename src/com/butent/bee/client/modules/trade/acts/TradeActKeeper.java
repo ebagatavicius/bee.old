@@ -589,7 +589,7 @@ public final class TradeActKeeper {
             }
 
             GridFactory.createGrid(GRID_TRADE_ACTS, supplierKey, new TradeActGrid(kind),
-                EnumSet.of(UiOption.ROOT), GridOptions.forCaptionAndFilter(caption, filter),
+                EnumSet.of(UiOption.GRID), GridOptions.forCaptionAndFilter(caption, filter),
                 callback);
           }
         });

@@ -13,18 +13,27 @@
   width="600"
   >
   <FlowPanel style="padding: 10px 2px 2px 10px;">
-    <FlowPanel style="&section;" class="flexBox-horizontal">
+    <FlowPanel style="&section;">
       <Label text="=date" class="bee-required" style="&inline; text-align:right; width:80px; padding-top:1px; margin-right: 5px" />
-      <InputDateTime source="Date" style="&inline; width:110px;" />
-      <Label text="=customer" class="bee-required" style="&inline; width:132px; padding-top:1px; text-align:right; margin-right: 4px" />
-      <DataSelector source="Customer" style="&inline; width:200px;" />
+      <InputDateTime source="Date" style="&inline; width:130px;" />
+      <Label text="=client" class="bee-required" style="&inline; width:130px; padding-top:1px; text-align:right; margin-right: 4px" />
+      <DataSelector source="Customer" style="&inline; width:200px;" choiceColumns="Name TypeName" renderColumns="CustomerName TypeName" />
+      <Label text="=crmRequestForm" style="&inline; width:125px; padding-top:1px; text-align:right; margin-right: 10px" />
+      <DataSelector source="RequestForm" style="&inline; width:130px;" /> 
     </FlowPanel>
-    <FlowPanel style="&section;" class="flexBox-horizontal">
-      <Label text="=contacts" style="&inline; width:75px; padding-top:1px; text-align:right; padding-right: 11px" />
-      <InputText source="Contacts" style="&inline; width:110px;" />
+    <FlowPanel style="&section;">
+      <Label text="=contacts" style="&inline; width:75px; padding-top:1px; text-align:right; padding-right: 10px" />
+      <InputText source="Contacts" style="&inline; width:130px;" />
       <Label text="=personContact" style="&inline; width:125px; padding-top:1px; text-align:right; margin-right: 10px" />
-      <DataSelector source="CustomerPerson" style="&inline; width:200px;" 
+      <DataSelector source="CustomerPerson" style="&inline; width:200px;"
         choiceColumns="FirstName LastName CompanyName" options="Customer" />
+    </FlowPanel>
+
+     <FlowPanel style="&section;">
+      <Label text="=crmRequestType" style="&inline; width:75px; padding-top:1px; text-align:right; margin-right: 10px" />
+      <DataSelector source="RequestType" style="&inline; width:130px;" />
+      <Label text="=responsiblePerson" style="&inline; width:125px; padding-top:1px; text-align:right; padding-right: 10px" />
+      <DataSelector name="Manager" source="Manager" style="&inline; width:200px;" />
     </FlowPanel>
     
     &separator;
@@ -34,12 +43,6 @@
     </FlowPanel>
 
     &separator;
-    <FlowPanel style="&section;" class="flexBox-horizontal">
-      <Label text="=manager" style="&inline; width:85px; padding-top:1px;" />
-      <DataSelector name="Manager" source="Manager" style="&inline; width:200px;" editSource="ManagerPerson"
-        newRowEnabled="false" />
-    </FlowPanel>
-
     <FlowPanel style="&section;" class="flexBox-horizontal">
       <Label text="=author" style="&inline; width:78px; padding-top:1px; padding-right: 8px; text-align: right;" />
       <TextLabel style="&inline;">

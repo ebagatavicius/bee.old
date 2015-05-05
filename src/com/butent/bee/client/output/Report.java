@@ -1,8 +1,5 @@
 package com.butent.bee.client.output;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
-
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.modules.classifiers.CompanyTypeReport;
@@ -32,6 +29,8 @@ import com.butent.bee.shared.modules.projects.ProjectStatus;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.modules.transport.TransportConstants;
+import com.butent.bee.shared.modules.transport.TransportConstants.TripStatus;
+import com.butent.bee.shared.report.ReportInfo;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.SubModule;
@@ -40,7 +39,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -106,28 +107,6 @@ public enum Report implements HasWidgetSupplier {
       TransportConstants.SVC_TRIP_PROFIT_REPORT) {
 
     @Override
-    public Multimap<String, ReportItem> getDefaults() {
-      Map<String, ReportItem> items = new HashMap<>();
-
-      for (ReportItem item : getItems()) {
-        items.put(item.getName(), item);
-      }
-      Multimap<String, ReportItem> map = LinkedListMultimap.create();
-
-      for (String item : new String[] {TransportConstants.COL_TRIP, TransportConstants.COL_TRIP_NO,
-          TransportConstants.COL_TRIP_DATE_FROM, TransportConstants.COL_TRIP_DATE_TO,
-          TransportConstants.COL_TRAILER}) {
-        map.put(PROP_ROWS, items.get(item).create());
-      }
-      map.put(PROP_ROW_GROUP, items.get(TransportConstants.COL_VEHICLE).create());
-
-      for (String item : new String[] {"Kilometers", "FuelCosts", "Incomes"}) {
-        map.put(PROP_COLUMNS, items.get(item).create().enableCalculation());
-      }
-      return map;
-    }
-
-    @Override
     public List<ReportItem> getItems() {
       LocalizableConstants loc = Localized.getConstants();
 
@@ -136,57 +115,57 @@ public enum Report implements HasWidgetSupplier {
               Data.getColumnLabel(TransportConstants.TBL_TRIP_COSTS, TransportConstants.COL_TRIP)),
           new ReportTextItem(TransportConstants.COL_TRIP_NO,
               Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_TRIP_NO)),
+          new ReportDateTimeItem(TransportConstants.COL_TRIP_DATE, loc.date()),
           new ReportDateItem(TransportConstants.COL_TRIP_DATE_FROM, loc.dateFrom()),
-          new ReportDateTimeItem(TransportConstants.COL_TRIP_DATE_TO, loc.dateTo()),
+          new ReportDateItem(TransportConstants.COL_TRIP_DATE_TO, loc.dateTo()),
           new ReportTextItem(TransportConstants.COL_VEHICLE,
               Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_VEHICLE)),
           new ReportTextItem(TransportConstants.COL_TRAILER,
               Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_TRAILER)),
-          new ReportNumericItem("Kilometers", "Kilometrai", 0),
-          new ReportNumericItem("FuelCosts", "Kuro išl.", 2),
-          new ReportNumericItem("DailyCosts", "Dienpinigių išl.", 2),
-          new ReportNumericItem("RoadCosts", "Kelių išl.", 2),
-          new ReportNumericItem("OtherCosts", "Kitos išl.", 2),
-          new ReportNumericItem("Incomes", "Pajamos", 2));
+          new ReportTextItem("Route",
+              Data.getColumnLabel(TransportConstants.TBL_TRIP_ROUTES, "Route")),
+          new ReportEnumItem(TransportConstants.COL_TRIP_STATUS,
+              Data.getColumnLabel(TransportConstants.TBL_TRIPS,
+                  TransportConstants.COL_TRIP_STATUS), TripStatus.class),
+          new ReportBooleanItem("Conditioner",
+              Data.getColumnLabel(TransportConstants.TBL_VEHICLES, "Conditioner")),
+          new ReportNumericItem("Kilometers", "Kilometrai"),
+          new ReportNumericItem("FuelCosts", "Kuro išl.").setPrecision(2),
+          new ReportNumericItem("DailyCosts", "Dienpinigių išl.").setPrecision(2),
+          new ReportNumericItem("RoadCosts", "Kelių išl.").setPrecision(2),
+          new ReportNumericItem("OtherCosts", "Kitos išl.").setPrecision(2),
+          new ReportNumericItem("TripIncome", "Pajamos").setPrecision(2));
     }
-  },
-
-  PROJECT_REPORT(ModuleAndSub.of(Module.PROJECTS), ProjectConstants.SVC_PROJECT_REPORT) {
 
     @Override
-    public Multimap<String, ReportItem> getDefaults() {
+    public String getReportCaption() {
+      return Localized.maybeTranslate("=trReportTripProfit");
+    }
+
+    @Override
+    public Collection<ReportInfo> getReports() {
       Map<String, ReportItem> items = new HashMap<>();
 
       for (ReportItem item : getItems()) {
         items.put(item.getName(), item);
       }
-      Multimap<String, ReportItem> map = LinkedListMultimap.create();
+      ReportInfo report = new ReportInfo(getReportCaption());
 
-      for (String item : new String[] {
-          ProjectConstants.COL_PROJECT_NAME,
-          ProjectConstants.COL_PROJECT_OWNER,
-          ProjectConstants.COL_PROJECT_STATUS,
-          ProjectConstants.ALS_TERM
-      }) {
-        map.put(PROP_ROWS, items.get(item).create());
+      for (String item : new String[] {TransportConstants.COL_TRIP, TransportConstants.COL_TRIP_NO,
+          TransportConstants.COL_TRIP_DATE_FROM, TransportConstants.COL_TRIP_DATE_TO,
+          TransportConstants.COL_TRAILER}) {
+        report.addRowItem(items.get(item));
       }
+      report.setRowGrouping(items.get(TransportConstants.COL_VEHICLE));
 
-      map.put(Report.PROP_ROW_GROUP, items.get(ClassifierConstants.ALS_COMPANY_NAME).create());
-
-      for (String item : new String[] {
-          TaskConstants.COL_EXPECTED_DURATION,
-          TaskConstants.COL_ACTUAL_DURATION,
-          TaskConstants.COL_EXPECTED_EXPENSES,
-          TaskConstants.COL_ACTUAL_EXPENSES,
-          ProjectConstants.ALS_PROFIT
-      }) {
-        map.put(PROP_COLUMNS, items.get(item).create().enableCalculation());
+      for (String item : new String[] {"Kilometers", "FuelCosts", "TripIncome"}) {
+        report.addColItem(items.get(item));
       }
-
-      map.put(Report.PROP_COLUMN_GROUP, items.get(ProjectConstants.ALS_TASK_STATUS).create());
-
-      return map;
+      return Arrays.asList(report);
     }
+  },
+
+  PROJECT_REPORT(ModuleAndSub.of(Module.PROJECTS), ProjectConstants.SVC_PROJECT_REPORT) {
 
     @Override
     public List<ReportItem> getItems() {
@@ -199,50 +178,75 @@ public enum Report implements HasWidgetSupplier {
           new ReportTextItem(ProjectConstants.ALS_STAGE_NAME, loc.prjStage()),
           new ReportTextItem(ProjectConstants.COL_PROJECT_OWNER, Data.getColumnLabel(
               ProjectConstants.VIEW_PROJECTS, ProjectConstants.COL_PROJECT_OWNER)),
-          new ReportNumericItem(ProjectConstants.COL_PROJECT, loc.project(), 0),
-          new ReportEnumItem<>(ProjectConstants.COL_PROJECT_STATUS, Data.getColumnLabel(
+          new ReportTextItem(ProjectConstants.COL_PROJECT, loc.project()),
+          new ReportEnumItem(ProjectConstants.COL_PROJECT_STATUS, Data.getColumnLabel(
               ProjectConstants.VIEW_PROJECTS, ProjectConstants.COL_PROJECT_STATUS),
               ProjectStatus.class),
           new ReportTextItem(ProjectConstants.COL_PROJECT_TYPE, Data.getColumnLabel(
               ProjectConstants.VIEW_PROJECTS, ProjectConstants.COL_PROJECT_TYPE)),
-          new ReportEnumItem<>(ProjectConstants.COL_PROJECT_PRIORITY, Data.getColumnLabel(
+          new ReportEnumItem(ProjectConstants.COL_PROJECT_PRIORITY, Data.getColumnLabel(
               ProjectConstants.VIEW_PROJECTS, ProjectConstants.COL_PROJECT_PRIORITY),
               ProjectPriority.class),
           new ReportTextItem(ProjectConstants.ALS_TERM, loc.prjTerm()),
 
           /* calc */
           new ReportNumericItem(TaskConstants.COL_ACTUAL_DURATION,
-              BeeUtils
-                  .join(BeeConst.DEFAULT_LIST_SEPARATOR, Data.getColumnLabel(
-                      TaskConstants.VIEW_TASKS, TaskConstants.COL_ACTUAL_DURATION), loc
-                      .unitHourShort()), 2),
+              BeeUtils.join(BeeConst.DEFAULT_LIST_SEPARATOR,
+                  Data.getColumnLabel(TaskConstants.VIEW_TASKS, TaskConstants.COL_ACTUAL_DURATION),
+                  loc.unitHourShort())).setPrecision(2),
 
-          new ReportNumericItem(TaskConstants.COL_EXPECTED_DURATION, BeeUtils
-              .join(BeeConst.DEFAULT_LIST_SEPARATOR, Data.getColumnLabel(
-                  TaskConstants.VIEW_TASKS, TaskConstants.COL_EXPECTED_DURATION), loc
-                  .unitHourShort()), 2),
-          new ReportNumericItem(TaskConstants.COL_EXPECTED_EXPENSES, loc.crmTaskExpectedExpenses(),
-              2),
+          new ReportNumericItem(TaskConstants.COL_EXPECTED_DURATION,
+              BeeUtils.join(BeeConst.DEFAULT_LIST_SEPARATOR,
+                  Data.getColumnLabel(TaskConstants.VIEW_TASKS,
+                      TaskConstants.COL_EXPECTED_DURATION), loc.unitHourShort())).setPrecision(2),
+          new ReportNumericItem(TaskConstants.COL_EXPECTED_EXPENSES, loc.crmTaskExpectedExpenses())
+              .setPrecision(2),
 
-          new ReportNumericItem(TaskConstants.COL_ACTUAL_EXPENSES, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_ACTUAL_EXPENSES), 2),
+          new ReportNumericItem(TaskConstants.COL_ACTUAL_EXPENSES,
+              Data.getColumnLabel(TaskConstants.VIEW_TASKS, TaskConstants.COL_ACTUAL_EXPENSES))
+              .setPrecision(2),
 
-          new ReportNumericItem(TaskConstants.COL_TASK, loc.crmTask(), 0),
-          new ReportNumericItem(ProjectConstants.ALS_PROFIT, loc.profit(), 2),
+          new ReportNumericItem(TaskConstants.COL_TASK, loc.crmTask()),
+          new ReportNumericItem(ProjectConstants.ALS_PROFIT, loc.profit()).setPrecision(2),
 
-          new ReportEnumItem<>(ProjectConstants.ALS_TASK_STATUS, BeeUtils.joinWords(Data
-              .getColumnLabel(
-                  TaskConstants.VIEW_TASKS, TaskConstants.COL_STATUS), BeeUtils.parenthesize(loc
-              .crmTasks())),
-              TaskStatus.class)
+          new ReportEnumItem(ProjectConstants.ALS_TASK_STATUS, BeeUtils.joinWords(Data
+              .getColumnLabel(TaskConstants.VIEW_TASKS, TaskConstants.COL_STATUS),
+              BeeUtils.parenthesize(loc.crmTasks())), TaskStatus.class)
           );
     }
-  };
 
-  public static final String PROP_ROWS = "ROWS";
-  public static final String PROP_ROW_GROUP = "ROW_GROUP";
-  public static final String PROP_COLUMNS = "COLUMNS";
-  public static final String PROP_COLUMN_GROUP = "COLUMN_GROUP";
+    @Override
+    public Collection<ReportInfo> getReports() {
+      Map<String, ReportItem> items = new HashMap<>();
+
+      for (ReportItem item : getItems()) {
+        items.put(item.getName(), item);
+      }
+      ReportInfo report = new ReportInfo(getReportCaption());
+
+      for (String item : new String[] {
+          ProjectConstants.COL_PROJECT_NAME,
+          ProjectConstants.COL_PROJECT_OWNER,
+          ProjectConstants.COL_PROJECT_STATUS,
+          ProjectConstants.ALS_TERM
+      }) {
+        report.addRowItem(items.get(item));
+      }
+      report.setRowGrouping(items.get(ClassifierConstants.ALS_COMPANY_NAME));
+
+      for (String item : new String[] {
+          TaskConstants.COL_EXPECTED_DURATION,
+          TaskConstants.COL_ACTUAL_DURATION,
+          TaskConstants.COL_EXPECTED_EXPENSES,
+          TaskConstants.COL_ACTUAL_EXPENSES,
+          ProjectConstants.ALS_PROFIT
+      }) {
+        report.addColItem(items.get(item));
+      }
+      report.setColGrouping(items.get(ProjectConstants.ALS_TASK_STATUS));
+      return Arrays.asList(report);
+    }
+  };
 
   private static BeeLogger logger = LogUtils.getLogger(Report.class);
 
@@ -289,16 +293,12 @@ public enum Report implements HasWidgetSupplier {
 
   private Report(ModuleAndSub moduleAndSub, String reportName, String formName) {
     this.moduleAndSub = Assert.notNull(moduleAndSub);
-    this.reportName = reportName;
+    this.reportName = Assert.notEmpty(reportName);
     this.formName = formName;
   }
 
   public String getFormName() {
     return formName;
-  }
-
-  public Multimap<String, ReportItem> getDefaults() {
-    return null;
   }
 
   public List<ReportItem> getItems() {
@@ -309,8 +309,16 @@ public enum Report implements HasWidgetSupplier {
     return moduleAndSub;
   }
 
+  public String getReportCaption() {
+    return getReportName();
+  }
+
   public String getReportName() {
     return reportName;
+  }
+
+  public Collection<ReportInfo> getReports() {
+    return new LinkedHashSet<>();
   }
 
   @Override

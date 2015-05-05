@@ -43,7 +43,6 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.widget.FaLabel;
-import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InputNumber;
 import com.butent.bee.client.widget.InputText;
 import com.butent.bee.client.widget.ListBox;
@@ -566,7 +565,7 @@ class TradeActItemPicker extends Flow implements HasSelectionHandlers<BeeRowSet>
     final DialogBox dialog = DialogBox.withoutCloseBox(Localized.getConstants().goods(),
         STYLE_DIALOG);
 
-    Image save = new Image(Global.getImages().silverSave());
+    FaLabel save = new FaLabel(FontAwesome.SAVE);
     save.addStyleName(STYLE_SAVE);
 
     save.addClickHandler(new ClickHandler() {
@@ -583,7 +582,7 @@ class TradeActItemPicker extends Flow implements HasSelectionHandlers<BeeRowSet>
 
     dialog.addAction(Action.SAVE, save);
 
-    Image close = new Image(Global.getImages().silverClose());
+    FaLabel close = new FaLabel(FontAwesome.CLOSE);
     close.addStyleName(STYLE_CLOSE);
 
     close.addClickHandler(new ClickHandler() {

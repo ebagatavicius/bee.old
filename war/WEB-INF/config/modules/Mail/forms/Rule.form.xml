@@ -2,7 +2,7 @@
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   
-  name="Rule" caption="=mailRule" width="400" height="200"
+  name="Rule" caption="=mailRule" width="400" height="210"
   >
   <FlowPanel>
     <Table style="margin:5px 10px 5px 10px">

@@ -1,0 +1,6 @@
+#/glassfish4/glassfish/bin/asadmin
+
+create-jdbc-connection-pool --restype=javax.sql.DataSource --datasourceclassname=org.postgresql.ds.PGSimpleDataSource --property=user=postgres:password=admin:serverName=192.168.0.210:portNumber=5432:databaseName=postgres postgreSQLJDBCPool
+create-jdbc-resource --connectionpoolid postgreSQLJDBCPool jdbc/BeeDS
+
+create-auth-realm --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm --property jaas-context=jdbcRealm:datasource-jndi=jdbc/BeeDS:user-table="'\"Users\"'":user-name-column="'\"Login\"'":password-column="'\"Password\"'":group-table="'\"Users\"'":group-name-column="\"'architect'\"":digestrealm-password-enc-algorithm="none":digest-algorithm="none" Bee

@@ -15,11 +15,24 @@
     <SimpleColumn name="Result" />
     <SimpleColumn name="ResultProperties" />
       
-      <SimpleColumn name="Customer" />
-      <SimpleJoin joinType="LEFT" name="Customer">
-        <SimpleColumn name="Name" alias="CustomerName" />
+    <SimpleColumn name="Customer" />
+    <SimpleJoin joinType="LEFT" name="Customer">
+      <SimpleColumn name="Name" alias="CustomerName" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="TypeName" />
+      </SimpleJoin>
+    </SimpleJoin>
+  
+      <SimpleColumn name="RequestType" />
+      <SimpleJoin joinType="LEFT" name="RequestType" >
+        <SimpleColumn name="Name" alias="RequestTypeName" />
       </SimpleJoin>
       
+      <SimpleColumn name="RequestForm" />
+      <SimpleJoin joinType="LEFT" name="RequestForm" >
+        <SimpleColumn name="Name" alias="RequestFormName" />
+      </SimpleJoin>
+            
       <SimpleColumn name="CustomerPerson" />
       <SimpleJoin name="CustomerPerson" joinType="LEFT">
         <SimpleJoin name="Person" joinType="LEFT">

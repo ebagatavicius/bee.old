@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="Transport" label="=transport" order="60" module="Transport"
+name="Transport" label="=transport" order="50" module="Transport"
 >
   <Item name="Orders" label="=trOrders" service="grid" parameters="TransportationOrders" separator="true" />
   <Item name="Cargo" label="=cargos" service="grid" parameters="AllCargo" />

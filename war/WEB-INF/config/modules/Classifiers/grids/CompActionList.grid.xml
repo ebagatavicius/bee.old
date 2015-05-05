@@ -3,7 +3,6 @@
   
   name="CompActionList" viewName="Appointments"
   newRowCaption="=calNewAction" newRowForm="CompanyAction" editForm="CompanyAction"
-  enabledActions="filter"
   flexGrow="1"
   >
   <g:columns>

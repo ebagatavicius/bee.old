@@ -3,7 +3,7 @@
   xmlns="http://www.butent.com/view"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:w="http://www.butent.com/widget"
-  xmlns:type="http://www.butent.com/type"
+  xmlns:tp="http://www.butent.com/type"
   xmlns:expression="http://www.butent.com/expression">
 
   <xs:import namespace="http://www.butent.com/widget" schemaLocation="widget.xsd" />
@@ -32,25 +32,25 @@
         </xs:element>
       </xs:sequence>
       <xs:attribute name="module" type="viewModule" />
-      <xs:attribute name="name" type="type:dataView" use="required" />
-      <xs:attribute name="source" type="type:tableNameType" use="required" />
+      <xs:attribute name="name" type="tp:dataView" use="required" />
+      <xs:attribute name="source" type="tp:tableNameType" use="required" />
       <xs:attribute name="filter" type="xs:string" />
       <xs:attribute name="readOnly" type="xs:boolean" />
       <xs:attribute name="caption" type="xs:string" />
-      <xs:attribute name="editForm" type="type:nameType" />
-      <xs:attribute name="rowCaption" type="type:fieldNames" />
-      <xs:attribute name="newRowForm" type="type:nameType" />
-      <xs:attribute name="newRowColumns" type="type:fieldNames" />
+      <xs:attribute name="editForm" type="tp:nameType" />
+      <xs:attribute name="rowCaption" type="tp:fieldNames" />
+      <xs:attribute name="newRowForm" type="tp:nameType" />
+      <xs:attribute name="newRowColumns" type="tp:fieldNames" />
       <xs:attribute name="newRowCaption" type="xs:string" />
       <xs:attribute name="cacheMaximumSize" type="xs:int" />
-      <xs:attribute name="cacheEviction" type="type:replacementPolicy" />
+      <xs:attribute name="cacheEviction" type="tp:replacementPolicy" />
     </xs:complexType>
   </xs:element>
-  
+
   <xs:simpleType name="viewModule">
     <xs:union>
       <xs:simpleType>
-        <xs:list itemType="type:module" />
+        <xs:list itemType="tp:module" />
       </xs:simpleType>
       <xs:simpleType>
         <xs:restriction base="xs:string">
@@ -72,7 +72,7 @@
   <xs:element name="ExternalJoin" type="joinExternal" substitutionGroup="Join" />
 
   <xs:complexType name="column" abstract="true">
-    <xs:attribute name="name" type="type:fieldNameType" use="required" />
+    <xs:attribute name="name" type="tp:fieldNameType" use="required" />
   </xs:complexType>
 
   <xs:complexType name="columnSimple">
@@ -81,7 +81,7 @@
         <xs:sequence>
           <xs:element ref="expression:expression" minOccurs="0" maxOccurs="1" />
         </xs:sequence>
-        <xs:attribute name="alias" type="type:fieldNameType" />
+        <xs:attribute name="alias" type="tp:fieldNameType" />
         <xs:attribute name="locale">
           <xs:simpleType>
             <xs:restriction base="xs:string">
@@ -98,7 +98,7 @@
   <xs:complexType name="columnAggregate">
     <xs:complexContent>
       <xs:extension base="columnSimple">
-        <xs:attribute name="aggregate" type="type:aggregateType" use="required" />
+        <xs:attribute name="aggregate" type="tp:aggregateType" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -106,7 +106,7 @@
   <xs:complexType name="columnId">
     <xs:complexContent>
       <xs:extension base="column">
-        <xs:attribute name="aggregate" type="type:aggregateType" />
+        <xs:attribute name="aggregate" type="tp:aggregateType" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -118,7 +118,7 @@
           <xs:element ref="Column" />
           <xs:element ref="Join" />
         </xs:choice>
-        <xs:attribute name="joinType" type="type:joinType" use="required" />
+        <xs:attribute name="joinType" type="tp:joinType" use="required" />
         <xs:attribute name="filter" type="xs:string" />
       </xs:extension>
     </xs:complexContent>
@@ -127,7 +127,7 @@
   <xs:complexType name="joinExternal">
     <xs:complexContent>
       <xs:extension base="joinSimple">
-        <xs:attribute name="source" type="type:tableNameType" use="required" />
+        <xs:attribute name="source" type="tp:tableNameType" use="required" />
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -135,7 +135,7 @@
   <xs:complexType name="group">
     <xs:attribute name="columns" use="required">
       <xs:simpleType>
-        <xs:list itemType="type:fieldNameType" />
+        <xs:list itemType="tp:fieldNameType" />
       </xs:simpleType>
     </xs:attribute>
   </xs:complexType>
@@ -148,7 +148,7 @@
   </xs:simpleType>
 
   <xs:complexType name="order">
-    <xs:attribute name="column" type="type:fieldNameType" use="required" />
+    <xs:attribute name="column" type="tp:fieldNameType" use="required" />
     <xs:attribute name="descending" type="xs:boolean" />
     <xs:attribute name="nulls" type="nullOrdering" />
   </xs:complexType>

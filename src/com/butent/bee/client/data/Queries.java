@@ -1,10 +1,10 @@
 package com.butent.bee.client.data;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.communication.RpcParameter;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -50,16 +50,16 @@ import java.util.List;
 
 public final class Queries {
 
-  public abstract static class DataCallback extends Callback<Collection<BeeRowSet>> {
+  public abstract static class DataCallback extends RpcCallback<Collection<BeeRowSet>> {
   }
 
-  public abstract static class IdListCallback extends Callback<String> {
+  public abstract static class IdListCallback extends RpcCallback<String> {
   }
 
-  public abstract static class IntCallback extends Callback<Integer> {
+  public abstract static class IntCallback extends RpcCallback<Integer> {
   }
 
-  public abstract static class RowSetCallback extends Callback<BeeRowSet> {
+  public abstract static class RowSetCallback extends RpcCallback<BeeRowSet> {
   }
 
   private static final BeeLogger logger = LogUtils.getLogger(Queries.class);
@@ -96,18 +96,24 @@ public final class Queries {
 
   public static boolean checkResponse(String service, String viewName, ResponseObject response,
       Class<?> clazz) {
-    return checkResponse(service, viewName, response, clazz, new Callback<Object>() {
-      @Override
-      public void onSuccess(Object result) {
-      }
-    });
+
+    return checkResponse(service, BeeConst.UNDEF, viewName, response, clazz,
+        new RpcCallback<Object>() {
+          @Override
+          public void onSuccess(Object result) {
+          }
+        });
   }
 
-  public static boolean checkResponse(String service, String viewName, ResponseObject response,
-      Class<?> clazz, Callback<?> callback) {
+  public static boolean checkResponse(String service, int rpcId, String viewName,
+      ResponseObject response, Class<?> clazz, RpcCallback<?> callback) {
+
+    if (callback != null) {
+      callback.setRpcId(rpcId);
+    }
 
     if (response == null) {
-      error(callback, service, viewName, "response is null");
+      error(callback, service, rpcId, viewName, "response is null");
       return false;
 
     } else if (response.hasErrors()) {
@@ -117,7 +123,7 @@ public final class Queries {
       return false;
 
     } else if (clazz != null && response.hasResponse() && !response.hasResponse(clazz)) {
-      error(callback, service, viewName, "response type:", response.getType(),
+      error(callback, service, rpcId, viewName, "response type:", response.getType(),
           "expected:", NameUtils.getClassName(clazz));
       return false;
 
@@ -141,7 +147,9 @@ public final class Queries {
     BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(Service.DELETE, viewName, response, Integer.class, callback)) {
+        if (checkResponse(Service.DELETE, getRpcId(), viewName, response, Integer.class,
+            callback)) {
+
           int responseCount = BeeUtils.toInt((String) response.getResponse());
           logger.info(viewName, "deleted", responseCount, "rows");
           if (callback != null) {
@@ -185,6 +193,7 @@ public final class Queries {
 
   public static void deleteRows(final String viewName, Collection<RowInfo> rows,
       final IntCallback callback) {
+
     Assert.notEmpty(viewName);
     Assert.notNull(rows);
 
@@ -199,7 +208,9 @@ public final class Queries {
         new ResponseCallback() {
           @Override
           public void onResponse(ResponseObject response) {
-            if (checkResponse(Service.DELETE_ROWS, viewName, response, Integer.class, callback)) {
+            if (checkResponse(Service.DELETE_ROWS, getRpcId(), viewName, response, Integer.class,
+                callback)) {
+
               int responseCount = BeeUtils.toInt((String) response.getResponse());
               String message;
 
@@ -224,7 +235,7 @@ public final class Queries {
         });
   }
 
-  public static void getData(Collection<String> viewNames, final CachingPolicy cachingPolicy,
+  public static int getData(Collection<String> viewNames, final CachingPolicy cachingPolicy,
       final DataCallback callback) {
 
     Assert.notEmpty(viewNames);
@@ -247,7 +258,7 @@ public final class Queries {
 
       if (notCached.isEmpty()) {
         callback.onSuccess(result);
-        return;
+        return RESPONSE_FROM_CACHE;
       }
       viewList = NameUtils.join(notCached);
 
@@ -261,13 +272,13 @@ public final class Queries {
     ParameterList parameters = new ParameterList(service);
     parameters.addDataItem(Service.VAR_VIEW_LIST, viewList);
 
-    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallback() {
+    return BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(service, viewList, response, null, callback)) {
+        if (checkResponse(service, getRpcId(), viewList, response, null, callback)) {
           String[] arr = Codec.beeDeserializeCollection((String) response.getResponse());
           if (ArrayUtils.isEmpty(arr)) {
-            error(callback, service, viewList, "response type:", response.getType());
+            error(callback, service, getRpcId(), viewList, "response type:", response.getType());
             return;
           }
 
@@ -287,6 +298,7 @@ public final class Queries {
 
   public static void getRelatedValues(final String tableName, String filterColumn,
       long filterValue, String resultColumn, final IdListCallback callback) {
+
     Assert.notEmpty(tableName);
     Assert.notEmpty(filterColumn);
     Assert.isTrue(DataUtils.isId(filterValue));
@@ -301,7 +313,8 @@ public final class Queries {
         RpcParameter.Section.QUERY, params), new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(Service.GET_RELATED_VALUES, tableName, response, String.class,
+        if (checkResponse(Service.GET_RELATED_VALUES, getRpcId(), tableName, response,
+            String.class,
             callback)) {
           callback.onSuccess((String) response.getResponse());
         }
@@ -311,6 +324,7 @@ public final class Queries {
 
   public static void getRow(final String viewName, final long rowId, List<String> columns,
       final RowCallback callback) {
+
     Assert.notEmpty(viewName);
     Assert.notNull(callback);
 
@@ -332,12 +346,14 @@ public final class Queries {
         new ResponseCallback() {
           @Override
           public void onResponse(ResponseObject response) {
-            if (checkResponse(Service.QUERY, viewName, response, BeeRowSet.class, callback)) {
+            if (checkResponse(Service.QUERY, getRpcId(), viewName, response, BeeRowSet.class,
+                callback)) {
+
               BeeRowSet rs = BeeRowSet.restore((String) response.getResponse());
               if (rs.getNumberOfRows() == 1) {
                 callback.onSuccess(rs.getRow(0));
               } else {
-                error(callback, "Get Row:", viewName, "id " + rowId,
+                error(callback, "Get Row:", getRpcId(), viewName, "id " + rowId,
                     "response number of rows: " + rs.getNumberOfRows());
               }
             }
@@ -351,6 +367,7 @@ public final class Queries {
 
   public static void getRowCount(final String viewName, final Filter filter,
       final IntCallback callback) {
+
     Assert.notEmpty(viewName);
     Assert.notNull(callback);
 
@@ -364,7 +381,9 @@ public final class Queries {
         new ResponseCallback() {
           @Override
           public void onResponse(ResponseObject response) {
-            if (checkResponse(Service.COUNT_ROWS, viewName, response, Integer.class, callback)) {
+            if (checkResponse(Service.COUNT_ROWS, getRpcId(), viewName, response, Integer.class,
+                callback)) {
+
               int rowCount = BeeUtils.toInt((String) response.getResponse());
               logger.info(viewName, filter, "row count:", rowCount);
               callback.onSuccess(rowCount);
@@ -375,6 +394,7 @@ public final class Queries {
 
   public static int getRowSet(String viewName, List<String> columns, Filter filter, Order order,
       CachingPolicy cachingPolicy, RowSetCallback callback) {
+
     return getRowSet(viewName, columns, filter, order, BeeConst.UNDEF, BeeConst.UNDEF,
         cachingPolicy, callback);
   }
@@ -428,7 +448,9 @@ public final class Queries {
         new ResponseCallback() {
           @Override
           public void onResponse(ResponseObject response) {
-            if (checkResponse(Service.QUERY, viewName, response, BeeRowSet.class, callback)) {
+            if (checkResponse(Service.QUERY, getRpcId(), viewName, response, BeeRowSet.class,
+                callback)) {
+
               BeeRowSet rs = BeeRowSet.restore((String) response.getResponse());
               if (offset >= 0 && limit > 0) {
                 rs.setTableProperty(Service.VAR_VIEW_OFFSET, BeeUtils.toString(offset));
@@ -462,22 +484,26 @@ public final class Queries {
 
   public static int getRowSet(String viewName, List<String> columns, Filter filter, Order order,
       int offset, int limit, CachingPolicy cachingPolicy, RowSetCallback callback) {
+
     return getRowSet(viewName, columns, filter, order, offset, limit, cachingPolicy, null,
         callback);
   }
 
   public static int getRowSet(String viewName, List<String> columns, Filter filter, Order order,
       int offset, int limit, RowSetCallback callback) {
+
     return getRowSet(viewName, columns, filter, order, offset, limit, CachingPolicy.NONE, callback);
   }
 
   public static int getRowSet(String viewName, List<String> columns, Filter filter, Order order,
       RowSetCallback callback) {
+
     return getRowSet(viewName, columns, filter, order, CachingPolicy.NONE, callback);
   }
 
   public static int getRowSet(String viewName, List<String> columns, Filter filter,
       RowSetCallback callback) {
+
     return getRowSet(viewName, columns, filter, null, callback);
   }
 
@@ -486,7 +512,8 @@ public final class Queries {
   }
 
   public static void getValue(final String viewName, long rowId, String column,
-      final Callback<String> callback) {
+      final RpcCallback<String> callback) {
+
     Assert.notEmpty(viewName);
     Assert.notEmpty(column);
     Assert.notNull(callback);
@@ -499,7 +526,8 @@ public final class Queries {
     BeeKeeper.getRpc().makeGetRequest(params, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(Service.GET_VALUE, viewName, response, String.class, callback)) {
+        if (checkResponse(Service.GET_VALUE, getRpcId(), viewName, response, String.class,
+            callback)) {
           callback.onSuccess(response.getResponseAsString());
         }
       }
@@ -508,6 +536,7 @@ public final class Queries {
 
   public static int insert(String viewName, List<BeeColumn> columns, IsRow row,
       RowCallback callback) {
+
     Assert.notEmpty(viewName);
     Assert.notEmpty(columns);
     Assert.notNull(row);
@@ -530,6 +559,7 @@ public final class Queries {
 
   public static void insert(String viewName, List<BeeColumn> columns, List<String> values,
       Collection<RowChildren> children, final RowCallback callback) {
+
     Assert.notEmpty(viewName);
     Assert.notEmpty(columns);
     Assert.notEmpty(values);
@@ -547,7 +577,7 @@ public final class Queries {
     insertRow(rs, callback);
   }
 
-  public static void insertRow(BeeRowSet rowSet, final Callback<RowInfo> callback) {
+  public static void insertRow(BeeRowSet rowSet, final RpcCallback<RowInfo> callback) {
     final String service = Service.INSERT_ROW_SILENTLY;
 
     if (!checkRowSet(service, rowSet, callback)) {
@@ -558,10 +588,10 @@ public final class Queries {
     BeeKeeper.getRpc().sendText(service, Codec.beeSerialize(rowSet), new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(service, viewName, response, RowInfo.class, callback)) {
+        if (checkResponse(service, getRpcId(), viewName, response, RowInfo.class, callback)) {
           RowInfo rowInfo = RowInfo.restore((String) response.getResponse());
           if (rowInfo == null) {
-            error(callback, service, viewName, "cannot restore rowInfo");
+            error(callback, service, getRpcId(), viewName, "cannot restore rowInfo");
           } else if (callback != null) {
             callback.onSuccess(rowInfo);
           }
@@ -576,13 +606,13 @@ public final class Queries {
 
   public static void insertRows(BeeRowSet rowSet) {
     if (rowSet == null) {
-      error(null, Service.INSERT_ROWS, "rowSet is null");
+      error(null, Service.INSERT_ROWS, BeeConst.UNDEF, "rowSet is null");
     } else {
       insertRows(rowSet, new DataChangeCallback(rowSet.getViewName()));
     }
   }
 
-  public static void insertRows(BeeRowSet rowSet, final Callback<RowInfoList> callback) {
+  public static void insertRows(BeeRowSet rowSet, final RpcCallback<RowInfoList> callback) {
     final String svc = Service.INSERT_ROWS;
     if (!checkRowSet(svc, rowSet, callback)) {
       return;
@@ -593,7 +623,7 @@ public final class Queries {
     BeeKeeper.getRpc().sendText(svc, Codec.beeSerialize(rowSet), new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(svc, viewName, response, RowInfoList.class, callback)) {
+        if (checkResponse(svc, getRpcId(), viewName, response, RowInfoList.class, callback)) {
           RowInfoList result = RowInfoList.restore(response.getResponseAsString());
           logger.info(viewName, "inserted", result.size(), "rows");
 
@@ -615,17 +645,20 @@ public final class Queries {
 
   public static void update(String viewName, long rowId, String column, Value value,
       IntCallback callback) {
+
     update(viewName, Filter.compareId(rowId), column, value, callback);
   }
 
   public static void update(String viewName, Filter filter, String column, Value value,
       IntCallback callback) {
+
     Assert.notNull(value);
     update(viewName, filter, column, value.getString(), callback);
   }
 
   public static void update(String viewName, Filter filter, String column, String value,
       IntCallback callback) {
+
     Assert.notEmpty(column);
     update(viewName, filter, Collections.singletonList(column), Collections.singletonList(value),
         callback);
@@ -633,6 +666,7 @@ public final class Queries {
 
   public static void update(final String viewName, Filter filter, List<String> columns,
       List<String> values, final IntCallback callback) {
+
     Assert.notEmpty(viewName);
     Assert.notNull(filter);
     Assert.notEmpty(columns);
@@ -647,7 +681,7 @@ public final class Queries {
     BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(Service.UPDATE, viewName, response, Integer.class, callback)
+        if (checkResponse(Service.UPDATE, getRpcId(), viewName, response, Integer.class, callback)
             && callback != null) {
           int responseCount = BeeUtils.toInt((String) response.getResponse());
           callback.onSuccess(responseCount);
@@ -744,6 +778,7 @@ public final class Queries {
 
   public static void updateCellAndFire(String viewName, long rowId, long version,
       String colName, String oldValue, String newValue) {
+
     updateAndFire(viewName, rowId, version, colName, oldValue, newValue,
         ModificationEvent.Kind.UPDATE_CELL);
   }
@@ -764,8 +799,9 @@ public final class Queries {
     BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(Service.UPDATE_RELATED_VALUES, viewName, response, BeeRow.class,
-            callback)) {
+        if (checkResponse(Service.UPDATE_RELATED_VALUES, getRpcId(), viewName, response,
+            BeeRow.class, callback)) {
+
           if (callback != null) {
             callback.onSuccess(BeeRow.restore((String) response.getResponse()));
           }
@@ -780,13 +816,13 @@ public final class Queries {
 
   public static void updateRows(BeeRowSet rowSet) {
     if (rowSet == null) {
-      error(null, Service.UPDATE_ROWS, "rowSet is null");
+      error(null, Service.UPDATE_ROWS, BeeConst.UNDEF, "rowSet is null");
     } else {
       updateRows(rowSet, new DataChangeCallback(rowSet.getViewName()));
     }
   }
 
-  public static void updateRows(BeeRowSet rowSet, final Callback<RowInfoList> callback) {
+  public static void updateRows(BeeRowSet rowSet, final RpcCallback<RowInfoList> callback) {
     final String svc = Service.UPDATE_ROWS;
     if (!checkRowSet(svc, rowSet, callback)) {
       return;
@@ -797,7 +833,7 @@ public final class Queries {
     BeeKeeper.getRpc().sendText(svc, Codec.beeSerialize(rowSet), new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(svc, viewName, response, RowInfoList.class, callback)) {
+        if (checkResponse(svc, getRpcId(), viewName, response, RowInfoList.class, callback)) {
           RowInfoList result = RowInfoList.restore(response.getResponseAsString());
           logger.info(viewName, "updated", result.size(), "rows");
 
@@ -809,17 +845,17 @@ public final class Queries {
     });
   }
 
-  private static boolean checkRowSet(String service, BeeRowSet rowSet, Callback<?> callback) {
+  private static boolean checkRowSet(String service, BeeRowSet rowSet, RpcCallback<?> callback) {
     if (rowSet == null) {
-      error(callback, service, "rowSet is null");
+      error(callback, service, BeeConst.UNDEF, "rowSet is null");
       return false;
 
     } else if (BeeUtils.isEmpty(rowSet.getViewName())) {
-      error(callback, service, "rowSet view name not specified");
+      error(callback, service, BeeConst.UNDEF, "rowSet view name not specified");
       return false;
 
     } else if (rowSet.getNumberOfColumns() <= 0 || rowSet.getNumberOfRows() <= 0) {
-      error(callback, service, rowSet.getViewName(), "rowSet is empty");
+      error(callback, service, BeeConst.UNDEF, rowSet.getViewName(), "rowSet is empty");
       return false;
 
     } else {
@@ -836,10 +872,10 @@ public final class Queries {
     BeeKeeper.getRpc().sendText(service, Codec.beeSerialize(rowSet), new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        if (checkResponse(service, viewName, response, BeeRow.class, callback)) {
+        if (checkResponse(service, getRpcId(), viewName, response, BeeRow.class, callback)) {
           BeeRow row = BeeRow.restore((String) response.getResponse());
           if (row == null) {
-            error(callback, service, viewName, "cannot restore row");
+            error(callback, service, getRpcId(), viewName, "cannot restore row");
           } else if (callback != null) {
             callback.onSuccess(row);
           }
@@ -848,8 +884,12 @@ public final class Queries {
     });
   }
 
-  private static void error(Callback<?> callback, String... messages) {
-    logger.severe(ArrayUtils.joinWords(messages));
+  private static void error(RpcCallback<?> callback, String service, int rpcId,
+      String... messages) {
+
+    String rpcMsg = (rpcId > 0) ? BeeUtils.toString(rpcId) : null;
+    logger.severe(service, rpcMsg, ArrayUtils.joinWords(messages));
+
     if (callback != null) {
       callback.onFailure(messages);
     }

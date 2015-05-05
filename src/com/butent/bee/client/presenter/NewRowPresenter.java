@@ -8,6 +8,7 @@ import com.butent.bee.client.data.ParentRowCreator;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.ui.AutocompleteProvider;
+import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
@@ -41,12 +42,14 @@ public class NewRowPresenter extends AbstractPresenter implements ParentRowCreat
   public static final String STYLE_HEADER = BeeConst.CSS_CLASS_PREFIX + "NewRowHeader";
   public static final String STYLE_CAPTION = BeeConst.CSS_CLASS_PREFIX + "NewRowCaption";
 
+  private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.EDITOR);
+
   private static HeaderView createHeader(String caption) {
     HeaderView formHeader = new HeaderImpl();
     formHeader.asWidget().addStyleName(STYLE_HEADER);
 
-    formHeader.create(caption, false, false, null, null, EnumSet.of(Action.SAVE, Action.CLOSE),
-        Action.NO_ACTIONS, Action.NO_ACTIONS);
+    formHeader.create(caption, false, false, null, uiOptions,
+        EnumSet.of(Action.SAVE, Action.CLOSE), Action.NO_ACTIONS, Action.NO_ACTIONS);
     formHeader.addCaptionStyle(STYLE_CAPTION);
 
     return formHeader;
@@ -180,6 +183,7 @@ public class NewRowPresenter extends AbstractPresenter implements ParentRowCreat
   private FormAndHeader createContainer(HeaderView headerView) {
     FormAndHeader formContainer = new FormAndHeader();
     formContainer.addStyleName(STYLE_CONTAINER);
+    formContainer.addStyleName(UiOption.getStyleName(uiOptions));
 
     formContainer.addTopHeightFillHorizontal(headerView.asWidget(), 0, headerView.getHeight());
     formContainer.addTopBottomFillHorizontal(formView.asWidget(), headerView.getHeight(), 0);

@@ -7,7 +7,7 @@
   <Fields>
     <Relation name="Account" relation="Accounts" notNull="true" cascade="DELETE" label="=mailAccount" />
     <Relation name="Parent" relation="Folders" cascade="DELETE" />
-    <String name="Name" precision="50" notNull="true"  label="=mailName"/>
+    <String name="Name" precision="100" notNull="true"  label="=mailName"/>
     <Long name="UIDValidity" />
   </Fields>
 

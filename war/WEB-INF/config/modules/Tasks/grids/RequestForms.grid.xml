@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="RequestForms" viewName="RequestForms" caption="=crmRequestForms"
+  minColumnWidth="120"
+  newRowPopup="true"
+  >
+  <g:columns>
+    <DataColumn name="Name" visible="true" />
+  </g:columns>
+</g:Grid>

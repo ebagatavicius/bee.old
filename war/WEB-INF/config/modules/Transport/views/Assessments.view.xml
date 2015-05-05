@@ -31,6 +31,9 @@
         <SimpleColumn name="Customer" editable="true" />
         <SimpleJoin joinType="LEFT" name="Customer">
           <SimpleColumn name="Name" alias="CustomerName" label="=customer" />
+           <SimpleJoin joinType="LEFT" name="CompanyType">
+             <SimpleColumn name="Name" alias="CustomerTypeName" />
+           </SimpleJoin>
 
           <SimpleJoin name="Contact" joinType="LEFT">
             <SimpleJoin name="Email" joinType="LEFT">

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="Discussions" label="=discussions" order="110" module="Discussions"
+name="Discussions" label="=communication" order="100" module="Discussions"
 >
- <Item name="NewDiscussion" label="=discussNew" service="new" parameters="Discussions" />
- <Item name="ActiveDiscussions" label="=discussActive" service="discuss_list" parameters="active" separator="true"/>
- <Item name="ClosedDiscussions" label="=discussClosed" service="discuss_list" parameters="closed" />
- <Item name="ObservedDiscussions" label="=discussObserved" service="discuss_list" parameters="observed" />
- <Item name="StarredDiscussions" label="=discussStarred" service="discuss_list" parameters="starred" /> 
+ <Item name="ActiveDiscussions" label="=discussPublicLong" service="discuss_list" parameters="active" separator="true"/>
+ <Item name="ObservedDiscussions" label="=discussPrivate" service="discuss_list" parameters="observed" />
+ <Item name="ClosedDiscussions" label="=discussClosedCaption" service="discuss_list" parameters="closed" />
  <Item name="AllDiscussions" label="=discussAll" service="discuss_list" parameters="all" separator="true" />
+ <Item name="AnnouncementsBoardList" label="=announcements" service="discuss_list" parameters="AnnouncementsBoardList" separator="true" />
  <Item name="AnnouncementsBoard" label="=announcementsBoard" service="form" parameters="AnnouncementsBoard" separator="true" />
 </Entry>

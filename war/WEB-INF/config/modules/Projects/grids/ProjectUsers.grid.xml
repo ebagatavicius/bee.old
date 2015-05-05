@@ -5,7 +5,7 @@
   name="ProjectUsers" viewName="ProjectUsers" caption="=prjTeam"  >
 
   <g:columns>
-    <RelColumn name="User"  >
+    <RelColumn name="User" editEnabled="true" editForm="Person" editViewName="Persons" >
       <renderToken source="FirstName" suffix=" " />
       <renderToken source="LastName" />
     </RelColumn>
@@ -28,6 +28,7 @@
           </ui:function>
         </render>
     </CalcColumn>
+    <DataColumn name="DepartmentName" />
     <DataColumn name="Rate" scale="2" />
     <DataColumn name="Notes" />
   </g:columns>

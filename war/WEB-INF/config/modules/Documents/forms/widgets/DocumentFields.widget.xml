@@ -14,7 +14,8 @@
   <row>
     <Label for="Company" visible="true" />
     <cell colSpan="3">
-      <DataSelector source="Company" style="width: 100%;"/>
+      <DataSelector source="Company" style="width: 100%;" choiceColumns="Name TypeName" 
+            renderColumns="CompanyName CompanyTypeName" />
     </cell>
   </row>
 
@@ -51,13 +52,6 @@
     <InputDateTime source="Received" />
     <Label for="Sent" />
     <InputDateTime source="Sent" />
-  </row>
-  <row>
-    <cell><text /></cell>
-    <cell><text /></cell>
-    <cell><text /></cell>
-  
-    <CheckBox source="Returned" text="=documentReturned" />
   </row>
 
   <row>

@@ -909,6 +909,11 @@ public class GridLoaderBean {
       dst.setEditFormImmediate(editFormImmediate);
     }
 
+    Boolean editInPlace = XmlUtils.getAttributeBoolean(src, ATTR_EDIT_IN_PLACE);
+    if (editInPlace != null) {
+      dst.setEditInPlace(editInPlace);
+    }
+
     List<Element> cssNodes = XmlUtils.getElementsByLocalName(src, TAG_CSS);
     if (!cssNodes.isEmpty()) {
       Map<String, String> styleSheets = new HashMap<>();

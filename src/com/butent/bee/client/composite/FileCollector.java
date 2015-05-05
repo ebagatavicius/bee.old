@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DragDropEventBase;
 import com.google.gwt.event.dom.client.DragEnterEvent;
 import com.google.gwt.event.dom.client.DragEnterHandler;
 import com.google.gwt.event.dom.client.DragLeaveEvent;
@@ -34,9 +35,10 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.utils.FileUtils;
+import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.DateTimeLabel;
-import com.butent.bee.client.widget.Image;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.InputArea;
 import com.butent.bee.client.widget.InputDateTime;
 import com.butent.bee.client.widget.InputFile;
@@ -46,6 +48,7 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.HasOptions;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.time.DateTime;
@@ -264,7 +267,7 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
     EDIT("edit", Localized.getConstants().actionEdit(), false, true) {
       @Override
       Widget createDisplay() {
-        Image widget = new Image(Global.getImages().silverEdit());
+        FaLabel widget = new FaLabel(FontAwesome.EDIT);
         widget.setTitle(getCaption().toLowerCase());
         return widget;
       }
@@ -287,7 +290,7 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
     DELETE("delete", Localized.getConstants().actionRemove(), false, true) {
       @Override
       Widget createDisplay() {
-        Image widget = new Image(Global.getImages().silverMinus());
+        FaLabel widget = new FaLabel(FontAwesome.MINUS);
         widget.setTitle(getCaption().toLowerCase());
         return widget;
       }
@@ -405,6 +408,10 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
     return columns;
   }
 
+  private static boolean isRelevant(DragDropEventBase<?> event) {
+    return DndHelper.getTargetState(event) == null;
+  }
+
   private final InputFile inputFile;
 
   private final List<FileInfo> files = new ArrayList<>();
@@ -481,12 +488,14 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
   }
 
   public void bindDnd(DndTarget target) {
-    target.addDragEnterHandler(this);
-    target.addDragLeaveHandler(this);
-    target.addDragOverHandler(this);
-    target.addDropHandler(this);
+    if (!(target instanceof FormView)) {
+      target.addDragEnterHandler(this);
+      target.addDragLeaveHandler(this);
+      target.addDragOverHandler(this);
+      target.addDropHandler(this);
 
-    setDropArea(target.getElement());
+      setDropArea(target.getElement());
+    }
   }
 
   @Override
@@ -525,35 +534,43 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
 
   @Override
   public void onDragEnter(DragEnterEvent event) {
-    setDndCounter(getDndCounter() + 1);
-    if (getDndCounter() <= 1 && DndHelper.hasFiles(event)) {
-      showDropArea();
+    if (isRelevant(event)) {
+      setDndCounter(getDndCounter() + 1);
+      if (getDndCounter() <= 1 && DndHelper.hasFiles(event)) {
+        showDropArea();
+      }
     }
   }
 
   @Override
   public void onDragLeave(DragLeaveEvent event) {
-    setDndCounter(getDndCounter() - 1);
-    if (getDndCounter() <= 0) {
-      setDndCounter(0);
-      hideDropArea();
+    if (isRelevant(event)) {
+      setDndCounter(getDndCounter() - 1);
+      if (getDndCounter() <= 0) {
+        setDndCounter(0);
+        hideDropArea();
+      }
     }
   }
 
   @Override
   public void onDragOver(DragOverEvent event) {
-    EventUtils.setDropEffect(event, EventUtils.EFFECT_COPY);
+    if (isRelevant(event)) {
+      EventUtils.setDropEffect(event, EventUtils.EFFECT_COPY);
+    }
   }
 
   @Override
   public void onDrop(DropEvent event) {
-    event.stopPropagation();
-    event.preventDefault();
+    if (isRelevant(event)) {
+      event.stopPropagation();
+      event.preventDefault();
 
-    setDndCounter(0);
-    hideDropArea();
+      setDndCounter(0);
+      hideDropArea();
 
-    addFiles(FileUtils.getNewFileInfos(FileUtils.getFiles(event.getNativeEvent())));
+      addFiles(FileUtils.getNewFileInfos(FileUtils.getFiles(event.getNativeEvent())));
+    }
   }
 
   public static void pushFiles(Collection<FileInfo> files) {

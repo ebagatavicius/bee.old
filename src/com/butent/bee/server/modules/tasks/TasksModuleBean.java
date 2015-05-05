@@ -205,7 +205,11 @@ public class TasksModuleBean implements BeeModule {
 
   @Override
   public Collection<BeeParameter> getDefaultParameters() {
-    return null;
+    String module = getModule().getName();
+    List<BeeParameter> params = Lists.newArrayList(
+        BeeParameter.createText(module, PRM_END_OF_WORK_DAY)
+        );
+    return params;
   }
 
   @Override

@@ -238,7 +238,7 @@ public class UiHolderBean {
       Menu entry = getMenu(null, Menu.restore(Codec.beeSerialize(menu)), checkRights);
 
       if (entry != null) {
-        menus.put(entry.getOrder(), entry);
+        menus.put(Assert.notContain(menus, entry.getOrder()), entry);
       }
     }
     return ResponseObject.response(menus.values());

@@ -198,7 +198,7 @@
           <Label text="=trRequestCargoValue" />
           <InputMoney source="Value" />
           <Label text="=trRequestCargoCurrency" />
-          <DataSelector source="ValueCurrency" newRowEnabled="false" editEnabled="false" style="width: 60px;" />
+          <DataSelector source="ValueCurrency" newRowEnabled="false" editEnabled="false" style="width: 5em;" />
         </row>
 
       </Table>
@@ -213,7 +213,7 @@
 
         <row>
           <Label text="=trRequestResponsibleManager" />
-          <DataSelector source="Manager" newRowEnabled="false" />
+          <DataSelector source="Manager" newRowEnabled="false" style="width: 15em;"/>
         </row>
       </Table>
     </Disclosure>

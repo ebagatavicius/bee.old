@@ -3,7 +3,7 @@
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   
-  name="City" viewName="Cities" caption="=newCity" height="100"  width="300"
+  name="City" viewName="Cities" caption="=newCity" height="200"  width="300"
   >
   <Table style="margin-left: 1em; margin-top: 1ex;">
     <col index="0" kind="label" />

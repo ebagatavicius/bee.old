@@ -11,7 +11,6 @@ import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.trade.acts.TradeActConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
@@ -20,7 +19,7 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.ui.UiHelper;
-import com.butent.bee.client.widget.Image;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Toggle;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.Service;
@@ -336,7 +335,7 @@ final class TradeActItemImporter {
 
       table.setWidget(0, 0, toggle, STYLE_TOGGLE_PREFIX + STYLE_HEADER_CELL_SUFFIX);
 
-      Image save = new Image(Global.getImages().silverSave());
+      FaLabel save = new FaLabel(FontAwesome.SAVE);
       save.addStyleName(STYLE_SAVE);
 
       save.addClickHandler(new ClickHandler() {
@@ -367,7 +366,7 @@ final class TradeActItemImporter {
       dialog.addAction(Action.SAVE, save);
     }
 
-    Image close = new Image(Global.getImages().silverClose());
+    FaLabel close = new FaLabel(FontAwesome.CLOSE);
     close.addStyleName(STYLE_CLOSE);
 
     close.addClickHandler(new ClickHandler() {

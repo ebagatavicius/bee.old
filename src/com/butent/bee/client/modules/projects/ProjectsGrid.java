@@ -24,6 +24,7 @@ class ProjectsGrid extends AllProjectsGrid {
     return true;
   }
 
+
   private static Filter getGridFilter() {
     Filter isOwner = Filter.equals(COL_PROJECT_OWNER, USER_ID);
     Filter isProjectUser =
@@ -31,4 +32,5 @@ class ProjectsGrid extends AllProjectsGrid {
             AdministrationConstants.COL_USER, USER_ID));
     return Filter.or(isOwner, isProjectUser);
   }
+
 }

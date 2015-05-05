@@ -5,7 +5,7 @@
   <!ENTITY inline "display:inline-block;">
   <!ENTITY labelLeft "&inline; width:100px; padding-top:1px;">
   <!ENTITY labelRight "&inline; width:60px; padding-top:1px; text-align:right; margin-right:10px;">
-  <!ENTITY input "&inline; width:110px;">
+  <!ENTITY input "&inline; width:10em;">
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
@@ -15,13 +15,14 @@
   >
   <f:properties reports="PrintOrderLT, PrintOrderEN, PrintOrderRU" />
 
-  <FlowPanel style="padding: 10px 2px 2px 10px;" class="flexBox-vertical bee-tr-assessment-form">
+  <FlowPanel style="padding: 10px 2px 2px 10px;" class="bee-tr-assessment-form">
     <FlowPanel style="height:65%; overflow:auto;">
       <FlowPanel style="&section;">
         <Label for="Status" style="&labelLeft;" />
         <FlowPanel name="Status" style="&input; font-weight:bold;" />
         <Label for="Customer" style="&labelRight; width:120px;" />
-        <DataSelector source="Customer" renderColumns="CustomerName" style="&input; width:200px;" />
+        <DataSelector source="Customer" renderColumns="CustomerName CustomerTypeName" 
+            choiceColumns="Name TypeName" style="&input; width:200px;" />
       </FlowPanel>
       <FlowPanel style="&section;">
         <Label for="Date" style="&labelLeft;" />
@@ -60,7 +61,7 @@
       <FlowPanel style="&section;">
         <Label for="Currency" class="bee-required" style="&labelLeft;" />
         <DataSelector name="Currency" source="Currency" required="true"
-          style="&inline; width:40px; margin-right:20px;" editEnabled="false" />
+          style="&inline; width:5em; margin-right:20px;" editEnabled="false" />
                   
         <FlowPanel style="&inline; &section;">
           <InlineLabel text="=customerPrice" style="padding-top:1px; margin-right:10px;" />
@@ -91,7 +92,7 @@
       &separator;
     </FlowPanel>
 
-    <TabbedPages class="flexible" style="&section; min-height:100px;">
+    <TabbedPages style="&section; min-height:400px;">
       <page data="AssessmentForwarders">
         <text>=carriers</text>
         <ChildGrid name="AssessmentForwarders" relColumn="Assessment" />

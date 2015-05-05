@@ -21,9 +21,15 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 class ChildTasksGrid extends TasksGrid {
 
+
   ChildTasksGrid() {
     super(TaskType.RELATED, null);
   }
+
+  // @Override
+  // public void afterInsertRow(IsRow result) {
+  // RowInsertEvent.fire(BeeKeeper.getBus(), getViewName(), new Be result, getGridView().getId());
+  // }
 
   @Override
   public boolean beforeAddRow(final GridPresenter presenter, boolean copy) {
@@ -120,4 +126,5 @@ class ChildTasksGrid extends TasksGrid {
 
     taskRow.setValue(idxTaskProject, parentRowData.getValue(idxStageProject));
   }
+
 }

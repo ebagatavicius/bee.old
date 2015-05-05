@@ -55,6 +55,8 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable, HasW
   private static final String STYLE_SUFFIX_HTML = "-html";
   private static final String STYLE_SUFFIX_TEXT = "-text";
 
+  private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
+
   private final String supplierKey;
   private final String caption;
 
@@ -81,6 +83,7 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable, HasW
       BiConsumer<String, String> onSave) {
 
     super(STYLE_VIEW);
+    addStyleName(UiOption.getStyleName(uiOptions));
 
     this.supplierKey = supplierKey;
     this.caption = caption;
@@ -94,7 +97,7 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable, HasW
     this.onSave = onSave;
 
     this.headerView = new HeaderImpl();
-    headerView.create(caption, false, true, null, EnumSet.of(UiOption.ROOT),
+    headerView.create(caption, false, true, null, uiOptions,
         EnumSet.of(Action.SAVE, Action.PRINT, Action.CLOSE), Action.NO_ACTIONS, Action.NO_ACTIONS);
 
     headerView.setViewPresenter(this);
@@ -308,7 +311,7 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable, HasW
           updateUrl(value);
         }
       }
-    }, getCurrentUrl(), 100, null, 300, CssUnit.PX);
+    }, null, getCurrentUrl(), 100, null, 300, CssUnit.PX);
   }
 
   private String getCurrentHtml() {

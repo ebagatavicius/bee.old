@@ -58,6 +58,8 @@ import com.butent.bee.client.style.StyleDescriptor;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.EnablableWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Theme;
+import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.edit.HasEditStartHandlers;
 import com.butent.bee.shared.Assert;
@@ -123,6 +125,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     @Template("<div data-row=\"{0}\" data-col=\"{1}\" class=\"{2}\" style=\"{3}\" tabindex=\"0\" draggable=\"true\">{4}</div>")
     SafeHtml cellDraggable(String rowIdx, int colIdx, String classes, SafeStyles styles,
         SafeHtml contents);
+
     // CHECKSTYLE:ON
 
     @Template("<div class=\"{0}\">{1}</div>")
@@ -208,6 +211,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
   }
 
   private final class Component {
+
     private final ComponentType type;
 
     private StyleDescriptor style;
@@ -221,14 +225,21 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     private Edges margin;
 
     private Component(ComponentType type, int cellHeight, int minHeight, int maxHeight,
-        Edges padding, Edges borderWidth, Edges margin) {
+        Edges padding, Edges borderWidth, Edges margin, String fontDeclaration) {
+
       this.type = type;
+
       this.cellHeight = cellHeight;
       this.minHeight = minHeight;
       this.maxHeight = maxHeight;
+
       this.padding = padding;
       this.borderWidth = borderWidth;
       this.margin = margin;
+
+      if (!BeeUtils.isEmpty(fontDeclaration)) {
+        this.style = new StyleDescriptor(null, null, fontDeclaration);
+      }
     }
 
     private void buildSafeStyles(SafeStylesBuilder stylesBuilder) {
@@ -652,6 +663,10 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
   private static int defaultMinCellHeight = 8;
   private static int defaultMaxCellHeight = 256;
 
+  private static String defaultBodyFont = "14px";
+  private static String defaultFooterFont = "bold 14px";
+  private static String defaultHeaderFont;
+
   private static int defaultResizerShowSensitivityMillis = 100;
   private static int defaultResizerMoveSensitivityMillis;
   private static int defaultRowChangeSensitivityMillis;
@@ -696,19 +711,40 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
   private static final String FOOTER_ROW = "footer";
   private static final Template template = GWT.create(Template.class);
 
-  public static int getDefaultBodyCellHeight() {
-    int h = Math.max(DomUtils.getTextBoxClientHeight(), 10);
-    return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1300, h - 2, h + 2);
+  public static int getDefaultBodyCellHeight(Collection<UiOption> uiOptions) {
+    int h = UiOption.isChildOrEmbedded(uiOptions)
+        ? Theme.getChildGridBodyRowHeight() : Theme.getGridBodyRowHeight();
+
+    if (h > 0) {
+      return h;
+    } else {
+      h = Math.max(DomUtils.getTextBoxClientHeight(), 10);
+      return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1300, h - 2, h + 2);
+    }
   }
 
-  public static int getDefaultFooterCellHeight() {
-    int h = Math.max(DomUtils.getTextBoxClientHeight(), 10);
-    return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1300, h, h + 2);
+  public static int getDefaultFooterCellHeight(Collection<UiOption> uiOptions) {
+    int h = UiOption.isChildOrEmbedded(uiOptions)
+        ? Theme.getChildGridFooterRowHeight() : Theme.getGridFooterRowHeight();
+
+    if (h > 0) {
+      return h;
+    } else {
+      h = Math.max(DomUtils.getTextBoxClientHeight(), 10);
+      return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1300, h, h + 2);
+    }
   }
 
-  public static int getDefaultHeaderCellHeight() {
-    int h = Math.max(DomUtils.getTextBoxClientHeight(), 10);
-    return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1300, h, h + 10);
+  public static int getDefaultHeaderCellHeight(Collection<UiOption> uiOptions) {
+    int h = UiOption.isChildOrEmbedded(uiOptions)
+        ? Theme.getChildGridHeaderRowHeight() : Theme.getGridHeaderRowHeight();
+
+    if (h > 0) {
+      return h;
+    } else {
+      h = Math.max(DomUtils.getTextBoxClientHeight(), 10);
+      return BeeUtils.resize(BeeKeeper.getScreen().getHeight(), 300, 1300, h, h + 10);
+    }
   }
 
   public static boolean isBodyRow(String rowIdx) {
@@ -888,15 +924,9 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
   private final List<ColumnInfo> predefinedColumns = new ArrayList<>();
   private final List<Integer> visibleColumns = new ArrayList<>();
 
-  private final Component headerComponent = new Component(ComponentType.HEADER,
-      getDefaultHeaderCellHeight(), defaultMinCellHeight, defaultMaxCellHeight,
-      defaultHeaderCellPadding, defaultHeaderBorderWidth, defaultHeaderCellMargin);
-  private final Component bodyComponent = new Component(ComponentType.BODY,
-      getDefaultBodyCellHeight(), defaultMinCellHeight, defaultMaxCellHeight,
-      defaultBodyCellPadding, defaultBodyBorderWidth, defaultBodyCellMargin);
-  private final Component footerComponent = new Component(ComponentType.FOOTER,
-      getDefaultFooterCellHeight(), defaultMinCellHeight, defaultMaxCellHeight,
-      defaultFooterCellPadding, defaultFooterBorderWidth, defaultFooterCellMargin);
+  private final Component headerComponent;
+  private final Component bodyComponent;
+  private final Component footerComponent;
 
   private Flexibility defaultFlexibility;
 
@@ -971,7 +1001,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
 
   private String caption;
 
-  public CellGrid() {
+  public CellGrid(Collection<UiOption> uiOptions) {
     setElement(Document.get().createDivElement());
 
     sinkEvents(Event.ONKEYDOWN | Event.ONKEYPRESS | Event.ONCLICK | Event.ONMOUSEDOWN
@@ -981,6 +1011,21 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     String id = DomUtils.createId(this, getIdPrefix());
 
     VisibilityChangeEvent.register(id, this);
+
+    this.headerComponent = new Component(ComponentType.HEADER,
+        getDefaultHeaderCellHeight(uiOptions), defaultMinCellHeight, defaultMaxCellHeight,
+        defaultHeaderCellPadding, defaultHeaderBorderWidth, defaultHeaderCellMargin,
+        defaultHeaderFont);
+
+    this.bodyComponent = new Component(ComponentType.BODY,
+        getDefaultBodyCellHeight(uiOptions), defaultMinCellHeight, defaultMaxCellHeight,
+        defaultBodyCellPadding, defaultBodyBorderWidth, defaultBodyCellMargin,
+        defaultBodyFont);
+
+    this.footerComponent = new Component(ComponentType.FOOTER,
+        getDefaultFooterCellHeight(uiOptions), defaultMinCellHeight, defaultMaxCellHeight,
+        defaultFooterCellPadding, defaultFooterBorderWidth, defaultFooterCellMargin,
+        defaultFooterFont);
   }
 
   @Override
@@ -1085,6 +1130,9 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
 
   public boolean autoFitColumn(int col, boolean fitHeader) {
     ColumnInfo columnInfo = getColumnInfo(col);
+    if (!columnInfo.isAutoFitEnabled()) {
+      return false;
+    }
 
     int oldWidth = columnInfo.getWidth();
     int newWidth = estimateColumnWidth(col);
@@ -1094,7 +1142,8 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
       String footerContent = (footerCell == null) ? null : footerCell.getInnerHTML();
 
       if (!BeeUtils.isEmpty(footerContent)) {
-        newWidth = Math.max(newWidth, Rulers.getLineWidth(Font.bold(), footerContent, true));
+        newWidth = Math.max(newWidth, Rulers.getLineWidth(getFooterComponent().getFont(),
+            footerContent, true));
       }
     }
 

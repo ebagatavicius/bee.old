@@ -559,7 +559,7 @@ public class TradeActGrid extends AbstractGridInterceptor {
                         saveAsTemplate(value.trim());
                       }
                     }
-                  }, null, maxLen);
+                  }, null, null, maxLen);
             }
           });
 

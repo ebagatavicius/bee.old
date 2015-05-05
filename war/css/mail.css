@@ -265,3 +265,7 @@
 .bee-mail-SearchExtended {
   color: red;
 }
+
+.bee-mail-WaitingForUserEmails bee-MultiSelector-container {
+  visibility: hidden;
+}

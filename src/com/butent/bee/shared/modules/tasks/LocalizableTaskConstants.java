@@ -56,6 +56,8 @@ public interface LocalizableTaskConstants {
 
   String crmNewTask();
 
+  String crmNewTodoItem();
+
   String crmRecurringTask();
 
   String crmReminderMailSubject();

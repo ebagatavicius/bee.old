@@ -4,7 +4,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="AdTopic" caption="=adTopic" height="100" width="500">
+  name="AdTopic" caption="=adTopic" height="130" width="510">
   
   <Table>
     <row>

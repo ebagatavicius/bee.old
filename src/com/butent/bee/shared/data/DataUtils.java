@@ -237,6 +237,17 @@ public final class DataUtils {
     }
   }
 
+  public static List<BeeRow> filterRows(Collection<BeeRow> rows, Collection<Long> ids) {
+    List<BeeRow> result = new ArrayList<>();
+
+    for (BeeRow row : rows) {
+      if (ids.contains(row.getId())) {
+        result.add(row);
+      }
+    }
+    return result;
+  }
+
   public static List<BeeRow> filterRows(BeeRowSet rowSet, String columnId, Long value) {
     List<BeeRow> result = new ArrayList<>();
     int index = rowSet.getColumnIndex(columnId);

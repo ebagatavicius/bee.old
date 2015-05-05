@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="RequestForms"
+  idName="RequestFormID"
+  >
+  <Fields>
+    <String name="Name" notNull="true" precision="100" label="=name" />
+  </Fields>
+</Table>

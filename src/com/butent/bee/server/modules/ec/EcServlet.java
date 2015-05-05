@@ -38,7 +38,6 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.io.Paths;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
-import com.butent.bee.shared.modules.ec.EcConstants.EcClientType;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.UserInterface;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -178,6 +177,10 @@ public class EcServlet extends LoginServlet {
             input().type(Type.HIDDEN).id("register-language").name(HttpConst.PARAM_LOCALE));
 
     return div().addClass(STYLE_PREFIX + "Command-container").append(form);
+  }
+
+  @Override protected boolean isProtected(HttpServletRequest req) {
+    return !BeeUtils.same(req.getPathInfo(), PATH_REGISTER) && super.isProtected(req);
   }
 
   private Node branchSelector(String label) {

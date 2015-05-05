@@ -3,7 +3,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   
-  name="NewAccount" viewName="Accounts" caption="=mailNewAccount" width="650" height="300"
+  name="NewAccount" viewName="Accounts" caption="=mailNewAccount" width="650" height="520"
   >
   <FlowPanel>
     <FlowPanel class="flexBox-vertical-center">

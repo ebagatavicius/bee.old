@@ -2,9 +2,12 @@ package com.butent.bee.client.modules.projects;
 
 import static com.butent.bee.shared.modules.projects.ProjectConstants.*;
 
+import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.data.Provider;
 import com.butent.bee.client.grid.ColumnFooter;
 import com.butent.bee.client.grid.ColumnHeader;
 import com.butent.bee.client.grid.column.AbstractColumn;
+import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.render.HasCellRenderer;
 import com.butent.bee.client.view.edit.EditableColumn;
@@ -16,13 +19,56 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.view.RowInfo;
+import com.butent.bee.shared.i18n.LocalizableConstants;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.modules.projects.ProjectConstants;
+import com.butent.bee.shared.modules.projects.ProjectStatus;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.Collection;
 import java.util.List;
 
 class ProjectStagesGrid extends AbstractGridInterceptor {
+
+  private static final LocalizableConstants LC = Localized.getConstants();
+
+  @Override
+  public DeleteMode getDeleteMode(GridPresenter presenter, IsRow activeRow,
+      Collection<RowInfo> selectedRows, DeleteMode defMode) {
+
+    Provider provider = presenter.getDataProvider();
+
+    int idxStagesCount = provider.getColumnIndex(ProjectConstants.ALS_STAGES_COUNT);
+    int idxTaskCount = provider.getColumnIndex(ALS_TASK_COUNT);
+    int idxOwner = provider.getColumnIndex(ProjectConstants.ALS_PROJECT_OWNER);
+    int idxStatus = provider.getColumnIndex(ProjectConstants.ALS_PROJECT_STATUS);
+
+    if (BeeUtils.unbox(activeRow.getLong(idxOwner)) == BeeKeeper.getUser().getUserId()
+        && ProjectStatus.SCHEDULED.ordinal() == BeeUtils
+            .unbox(activeRow.getInteger(idxStatus))) {
+      if (BeeUtils.unbox(activeRow.getLong(idxStagesCount)) == 1) {
+        presenter.getGridView().notifySevere(LC.prjMustBeOneStage());
+        return GridInterceptor.DeleteMode.CANCEL;
+      } else if (BeeUtils.unbox(activeRow.getLong(idxTaskCount)) > 0) {
+        presenter.getGridView().notifySevere(LC.prjStageHasTasks());
+        return GridInterceptor.DeleteMode.CANCEL;
+      } else {
+        return GridInterceptor.DeleteMode.SINGLE;
+      }
+
+    } else {
+      presenter.getGridView().notifySevere(
+          LC.project()
+              + " "
+              + EnumUtils.getEnumByIndex(ProjectStatus.class, activeRow.getInteger(idxStatus))
+                  .getCaption());
+      return GridInterceptor.DeleteMode.CANCEL;
+    }
+  }
 
   @Override
   public boolean afterCreateColumn(String columnName, List<? extends IsColumn> dataColumns,
@@ -131,9 +177,17 @@ class ProjectStagesGrid extends AbstractGridInterceptor {
                             / TimeUtils.MILLIS_PER_MINUTE), true) : BeeConst.STRING_EMPTY);
           }
 
-          return result;
-        }
+          final int idxExpD = DataUtils.getColumnIndex(COL_EXPECTED_DURATION, dataColumns);
+          long expDMls =
+              BeeUtils.unbox(row.getLong(idxExpD))
+                  * BeeUtils.toLong(factor * TimeUtils.MILLIS_PER_HOUR);
 
+          if (value > expDMls) {
+            return "<span class=\"bee-prj-stage-GridFieldOverSized\">" + result + "</span>";
+          } else {
+            return "<span class=\"bee-prj-stage-GridFieldNotOverSized\">" + result + "</span>";
+          }
+        }
         return BeeConst.STRING_EMPTY;
       }
     };

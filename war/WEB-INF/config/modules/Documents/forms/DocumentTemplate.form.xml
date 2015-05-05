@@ -3,7 +3,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
-  name="DocumentTemplate" caption="=documentTemplate"
+  name="DocumentTemplate" caption="=documentTemplate" width="850"
   >
   <FlowPanel class="flexBox-vertical">
     <HorizontalPanel style="margin-bottom: 10px;">
@@ -13,7 +13,7 @@
       <InputText source="Name" />
     </HorizontalPanel>
     
-    <TabbedPages class="flexible">
+    <TabbedPages class="flexible" resizable="false">
       <page>
         <text>=criteria</text>
         <xi:include href="widgets/Criteria.widget.xml" />

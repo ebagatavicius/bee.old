@@ -8,7 +8,7 @@
   xmlns:f="http://www.butent.com/form"
   
   name="NewCargoPurchaseInvoice" viewName="CargoPurchaseInvoices" caption="=trNewCargoPurchaseInvoice"
-  width="640" height="250"
+  width="650" height="450"
   >
   <FlowPanel style="padding: 1px 1px 1px 1px;">
     <Table style="border-spacing: 5px;">
@@ -19,7 +19,7 @@
 	  </row>
       <row>
         <Label text="=trdDate" class="bee-required" style="&lbl;" />
-        <InputDateTime source="Date" style="width:110px;" />
+        <InputDateTime source="Date" style="width:130px;" />
 
         <Label text="=orderNumber" style="&lbl;" />
         <InputText source="Number" />
@@ -28,39 +28,35 @@
 	    <cell colSpan="4">
 	      <Table style="border-spacing: 0px;">
 		    <row>
-			  <Label text="=currency" class="bee-required" style="&lbl2; width:135px; margin-right: 5px;"/>
-			  <DataSelector source="CurrencyName" style="width:40px;" editEnabled="false" />
-
-			  <Label text="=trdInvoicePrefix" style="&lbl2; width: 108px;" />
-			  <InputText source="InvoicePrefix" upperCase="true" style="width:50px; margin-right: 4px;" />
-		      <InlineLabel text="=trdInvoiceNo" style="&lbl2; margin-right: 5px;" />
+			  <Label text="=currency" class="bee-required" style="&lbl;" />
+			  <DataSelector source="CurrencyName" style="width:5em;" editEnabled="false" />
+			  <Label text="=trdInvoicePrefix" style="&lbl2; width:105px" />
+			  <InputText source="InvoicePrefix" upperCase="true" style="width:11em" />
+		      <InlineLabel text="=trdInvoiceNo" style="&lbl2; margin-left: 5px;" />
 			  <InputText source="InvoiceNo" />
 		    </row>
 		  </Table>
 	    </cell>
       </row>
 	  <row>
-	    <cell colSpan="4">
-		  <Table>
-		    <row>
-			  <Label text="=trdTerm" style="&lbl2; width:131px; text-align:right; margin-right: 5px;" />
-			  <InputDate source="Term" style="width:150px;" />
-			  <Label name="MainItemCaption" text="=transportMainItemCaption" style="&lbl2; width:214px; margin-right: 5px;" />
-			  <UnboundSelector name="MainItem" viewName="Items" renderColumns="Name" />
-			</row>
-		  </Table>
-	    </cell>
-	   </row>
+	    <Label text="=trdTerm" style="&lbl;" />
+		<InputDate source="Term" />
+	    <Label name="MainItemCaption" text="=transportMainItemCaption" style="&lbl; min-width:160px; padding-right: 12px"/>
+	    <UnboundSelector name="MainItem" viewName="Items" renderColumns="Name" />
+      </row>
+
 	   <row>
          <Label text="=trdSupplier" class="bee-required" style="&lbl;" />
-         <DataSelector source="Supplier" required="true" />
-         <Label text="=trdCustomer" style="&lbl;" />
-         <DataSelector source="Customer" />
+         <DataSelector source="Supplier" required="true" renderColumns="SupplierName SupplierTypeName"
+            choiceColumns="Name TypeName" />
+         <Label text="=trdCustomer" style="&lbl; min-width:160px;" />
+         <DataSelector source="Customer" renderColumns="CustomerName CustomerTypeName" 
+            choiceColumns="Name TypeName"/>
        </row>
       <row>
         <Label text="=trdManager" style="&lbl;" />
         <DataSelector source="Manager" editSource="ManagerPerson" />
-		<Label for="WarehouseTo" style="&lbl;" />
+		<Label for="WarehouseTo" style="&lbl; min-width:160px;" />
 		<DataSelector source="WarehouseTo" />
       </row>
     </Table>

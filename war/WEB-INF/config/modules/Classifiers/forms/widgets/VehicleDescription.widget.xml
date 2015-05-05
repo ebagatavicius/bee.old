@@ -31,7 +31,7 @@
 	  <InputDate source="ProductionDate" style="&inp1;" />
 	  <Label text="=notes" horizontalAlignment="right" style="&lbl2;"/>
       <SimplePanel style="position: relative; min-width: 5em;" class="flexible">
-        <InputArea source="Notes" class="occupy-1" style="width: 410px; height: 95px;"/>
+        <InputArea source="Notes" class="occupy-1" style="width: 155px; height: 95px;"/>
       </SimplePanel>
 	</row>
 	<row>

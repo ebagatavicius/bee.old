@@ -14,18 +14,18 @@
           <Label text="=mailTo" horizontalAlignment="right" style="white-space:nowrap;" />
           <cell style="width:100%">
             <MultiSelector name="To" viewName="UserEmails" choiceColumns="Label Email" 
-              valueSource="Email" strict="false" caching="local" maxLength="50" style="width:100%" />
+              valueSource="Email" strict="false" maxLength="50" style="width:100%" />
           </cell>
         </row>
         <row>
           <Label text="=mailCc" horizontalAlignment="right" style="white-space:nowrap;" />
           <MultiSelector name="Cc" viewName="UserEmails" choiceColumns="Label Email" 
-            valueSource="Email" strict="false" caching="local" maxLength="50" style="width:100%" />
+            valueSource="Email" strict="false" maxLength="50" style="width:100%" />
         </row>
         <row>
           <Label text="=mailBcc" horizontalAlignment="right" style="white-space:nowrap;" />
           <MultiSelector name="Bcc" viewName="UserEmails" choiceColumns="Label Email" 
-            valueSource="Email" strict="false" caching="local" maxLength="50" style="width:100%" />
+            valueSource="Email" strict="false" maxLength="50" style="width:100%" />
         </row>
       </Table>
       

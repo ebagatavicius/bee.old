@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="UiThemes"
+  idName="UiThemeID"
+  >
+  <Fields>
+    <String name="Name" precision="30" notNull="true" unique="true" label="=name" />
+    <Text name="Description" label="=description" />
+
+    <Integer name="WorkspaceMarginRight" />
+
+    <Integer name="ViewHeaderHeight" label="=heightOfViewHeader" />
+    <Integer name="ChildViewHeaderHeight" />
+
+    <Boolean name="ViewActionCreateNew" />
+    <Boolean name="GridActionCreateNew" />
+    <Boolean name="ChildActionCreateNew" />
+
+    <Integer name="GridHeaderRowHeight" />
+    <Integer name="GridBodyRowHeight" />
+    <Integer name="GridFooterRowHeight" />
+
+    <Integer name="GridMarginLeft" />
+    
+    <String name="GridHeaderFont" precision="50" />
+    <String name="GridBodyFont" precision="50" />
+    <String name="GridFooterFont" precision="50" />
+
+    <Integer name="ChildGridHeaderRowHeight" />
+    <Integer name="ChildGridBodyRowHeight" />
+    <Integer name="ChildGridFooterRowHeight" />
+
+    <Integer name="ChildGridMarginLeft" />
+
+    <String name="ChildGridHeaderFont" precision="50" />
+    <String name="ChildGridBodyFont" precision="50" />
+    <String name="ChildGridFooterFont" precision="50" />
+
+    <Integer name="ApplianceHeaderHeight" label="=heightOfApplianceHeader" />
+    <Integer name="SubMenuLineHeight" />
+    <Integer name="WorkspaceTabHeight" />
+    <Integer name="TabbedPagesTabHeight" />
+    <Integer name="DisclosureClosedHeight" />
+
+    <Integer name="InputLineHeight" />
+    <String name="InputPadding" precision="20" />
+    <String name="ListSize1Padding" precision="20" />
+    <Integer name="FormCellPaddingTop" />
+
+    <Text name="Css" />
+  </Fields>
+</Table>

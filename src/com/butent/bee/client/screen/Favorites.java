@@ -267,7 +267,7 @@ public class Favorites implements HandlesDeleteEvents {
           public void onSuccess(String value) {
             updateItem(group, key, item.getId(), value);
           }
-        }, item.getHtml(), BeeConst.UNDEF, display.getEventRowElement(event, false));
+        }, null, item.getHtml(), BeeConst.UNDEF, display.getEventRowElement(event, false));
       }
     });
 
@@ -402,7 +402,7 @@ public class Favorites implements HandlesDeleteEvents {
 
         BeeKeeper.getBus().fireEvent(new BookmarkEvent(group, row.getId()));
       }
-    }, html);
+    }, "bee-AddBookmark", html);
   }
 
   public boolean isBookmarked(String viewName, IsRow row) {

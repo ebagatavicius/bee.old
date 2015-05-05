@@ -17,6 +17,7 @@ import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.screen.Domain;
+import com.butent.bee.client.screen.ScreenImpl;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.view.ViewCallback;
@@ -215,7 +216,7 @@ public final class MailKeeper {
           }
         });
       }
-    });
+    }, null);
   }
 
   static void disconnectFolder(final AccountInfo account, final Long folderId) {
@@ -370,5 +371,22 @@ public final class MailKeeper {
   }
 
   private MailKeeper() {
+  }
+
+  public static void getUnreadCount() {
+    ParameterList params = createArgs(SVC_GET_UNREAD_COUNT);
+    params.addDataItem(COL_USER, BeeKeeper.getUser().getUserId());
+
+    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+
+        if (!BeeUtils.isEmpty(response.getResponseAsString())) {
+          ScreenImpl.updateOnlineEmails(Integer.valueOf(Codec.beeDeserializeCollection(response
+              .getResponseAsString())[0]));
+        }
+      }
+    });
+
   }
 }

@@ -36,7 +36,7 @@ import com.butent.bee.shared.treelayout.Configuration;
  * 
  * @param <TreeNode>
  */
-public class DefaultConfiguration<N> implements Configuration<N> {
+public class DefaultConfiguration<T> implements Configuration<T> {
 
   /**
    * Specifies the constants to be used for this Configuration.
@@ -61,24 +61,16 @@ public class DefaultConfiguration<N> implements Configuration<N> {
 
   /**
    * Convenience constructor, using a default for the alignmentInLevel.
-   * <p>
-   * see
-   * {@link #DefaultConfiguration(double, double, org.abego.treelayout.Configuration.Location,
-   *  org.abego.treelayout.Configuration.AlignmentInLevel)}
    */
   public DefaultConfiguration(double gapBetweenLevels, double gapBetweenNodes, Location location) {
-    this(gapBetweenLevels, gapBetweenNodes, location, AlignmentInLevel.Center);
+    this(gapBetweenLevels, gapBetweenNodes, location, AlignmentInLevel.CENTER);
   }
 
   /**
    * Convenience constructor, using a default for the rootLocation and the alignmentInLevel.
-   * <p>
-   * see
-   * {@link #DefaultConfiguration(double, double, org.abego.treelayout.Configuration.Location,
-   *  org.abego.treelayout.Configuration.AlignmentInLevel)}
    */
   public DefaultConfiguration(double gapBetweenLevels, double gapBetweenNodes) {
-    this(gapBetweenLevels, gapBetweenNodes, Location.Top, AlignmentInLevel.Center);
+    this(gapBetweenLevels, gapBetweenNodes, Location.TOP, AlignmentInLevel.CENTER);
   }
 
   // -----------------------------------------------------------------------
@@ -97,7 +89,7 @@ public class DefaultConfiguration<N> implements Configuration<N> {
   private final double gapBetweenNodes;
 
   @Override
-  public double getGapBetweenNodes(N node1, N node2) {
+  public double getGapBetweenNodes(T node1, T node2) {
     return gapBetweenNodes;
   }
 

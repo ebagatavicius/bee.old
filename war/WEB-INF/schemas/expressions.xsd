@@ -1,7 +1,7 @@
 <xs:schema targetNamespace="http://www.butent.com/expression" elementFormDefault="qualified"
   xmlns="http://www.butent.com/expression"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:type="http://www.butent.com/type">
+  xmlns:tp="http://www.butent.com/type">
 
   <xs:import namespace="http://www.butent.com/type" schemaLocation="types.xsd" />
 
@@ -15,35 +15,35 @@
     <xs:sequence>
       <xs:element ref="expression" minOccurs="1" maxOccurs="1" />
     </xs:sequence>
-    <xs:attribute name="type" type="type:dataType" use="required" />
+    <xs:attribute name="type" type="tp:dataType" use="required" />
   </xs:complexType>
 
   <xs:complexType name="hasNumber">
     <xs:sequence>
       <xs:element ref="expression" minOccurs="1" maxOccurs="1" />
     </xs:sequence>
-    <xs:attribute name="type" type="type:dataType" fixed="DOUBLE" />
+    <xs:attribute name="type" type="tp:dataType" fixed="DOUBLE" />
   </xs:complexType>
 
   <xs:complexType name="hasMembers">
     <xs:sequence>
       <xs:element ref="expression" minOccurs="2" maxOccurs="unbounded" />
     </xs:sequence>
-    <xs:attribute name="type" type="type:dataType" use="required" />
+    <xs:attribute name="type" type="tp:dataType" use="required" />
   </xs:complexType>
 
   <xs:complexType name="hasNumbers">
     <xs:sequence>
       <xs:element ref="expression" minOccurs="2" maxOccurs="unbounded" />
     </xs:sequence>
-    <xs:attribute name="type" type="type:dataType" fixed="DOUBLE" />
+    <xs:attribute name="type" type="tp:dataType" fixed="DOUBLE" />
   </xs:complexType>
 
   <xs:complexType name="hasStrings">
     <xs:sequence>
       <xs:element ref="expression" minOccurs="2" maxOccurs="unbounded" />
     </xs:sequence>
-    <xs:attribute name="type" type="type:dataType" fixed="STRING" />
+    <xs:attribute name="type" type="tp:dataType" fixed="STRING" />
   </xs:complexType>
 
   <xs:element name="expression" abstract="true" />
@@ -52,7 +52,7 @@
     <xs:complexType>
       <xs:simpleContent>
         <xs:extension base="isExpression">
-          <xs:attribute name="type" type="type:dataType" use="required" />
+          <xs:attribute name="type" type="tp:dataType" use="required" />
         </xs:extension>
       </xs:simpleContent>
     </xs:complexType>
@@ -62,7 +62,7 @@
     <xs:complexType>
       <xs:simpleContent>
         <xs:extension base="isExpression">
-          <xs:attribute name="type" type="type:dataType" fixed="DOUBLE" />
+          <xs:attribute name="type" type="tp:dataType" fixed="DOUBLE" />
         </xs:extension>
       </xs:simpleContent>
     </xs:complexType>
@@ -72,7 +72,7 @@
     <xs:complexType>
       <xs:simpleContent>
         <xs:extension base="isExpression">
-          <xs:attribute name="type" type="type:dataType" fixed="STRING" />
+          <xs:attribute name="type" type="tp:dataType" fixed="STRING" />
         </xs:extension>
       </xs:simpleContent>
     </xs:complexType>
@@ -82,7 +82,7 @@
     <xs:complexType>
       <xs:simpleContent>
         <xs:extension base="isExpression">
-          <xs:attribute name="type" type="type:dataType" fixed="BOOLEAN" />
+          <xs:attribute name="type" type="tp:dataType" fixed="BOOLEAN" />
         </xs:extension>
       </xs:simpleContent>
     </xs:complexType>
@@ -92,7 +92,7 @@
     <xs:complexType>
       <xs:simpleContent>
         <xs:extension base="isExpression">
-          <xs:attribute name="type" type="type:dataType" fixed="DATE" />
+          <xs:attribute name="type" type="tp:dataType" fixed="DATE" />
         </xs:extension>
       </xs:simpleContent>
     </xs:complexType>
@@ -102,7 +102,7 @@
     <xs:complexType>
       <xs:simpleContent>
         <xs:extension base="isExpression">
-          <xs:attribute name="type" type="type:dataType" fixed="DATETIME" />
+          <xs:attribute name="type" type="tp:dataType" fixed="DATETIME" />
         </xs:extension>
       </xs:simpleContent>
     </xs:complexType>

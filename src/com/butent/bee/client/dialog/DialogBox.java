@@ -4,18 +4,21 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.butent.bee.client.Global;
 import com.butent.bee.client.event.logical.CloseEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.CustomDiv;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -94,7 +97,8 @@ public class DialogBox extends Popup implements Printable {
   }
 
   public void addDefaultCloseBox() {
-    addCloseBox(Global.getImages().silverClose());
+    FaLabel faClose = new FaLabel(FontAwesome.CLOSE);
+    addCloseBox(faClose);
   }
 
   @Override
@@ -156,6 +160,16 @@ public class DialogBox extends Popup implements Printable {
     container.add(w);
 
     super.setWidget(container);
+  }
+
+  protected void addCloseBox(FaLabel faLabel) {
+    faLabel.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent arg0) {
+        hide(CloseEvent.Cause.MOUSE_CLOSE_BOX, null, true);
+      }
+    });
+    addAction(Action.CLOSE, faLabel);
   }
 
   protected void addCloseBox(ImageResource imageResource) {

@@ -27,7 +27,7 @@ public final class CommUtils {
   public static final String CONTENT_TYPE_HEADER = "content-type";
   public static final String CONTENT_LENGTH_HEADER = "content-length";
 
-  public static final ContentType DEFAULT_REQUEST_CONTENT_TYPE = ContentType.XML;
+  public static final ContentType DEFAULT_REQUEST_CONTENT_TYPE = ContentType.BINARY;
   public static final ContentType DEFAULT_RESPONSE_CONTENT_TYPE = ContentType.TEXT;
 
   public static final ContentType FORM_RESPONSE_CONTENT_TYPE = ContentType.HTML;

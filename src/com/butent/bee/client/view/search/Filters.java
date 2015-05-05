@@ -415,7 +415,7 @@ public class Filters implements HasExtendedInfo {
                       callback.accept(null, Action.EDIT);
                     }
                   }
-                }, oldLabel, getMaxLabelLength());
+                }, null, oldLabel, getMaxLabelLength());
           }
         });
 

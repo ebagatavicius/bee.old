@@ -2,7 +2,7 @@
 <!DOCTYPE Form>
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
 
-  name="Unit" viewName="Units" caption="=newUnit" width="320" height="160" >
+  name="Unit" viewName="Units" caption="=newUnit" width="370" height="200" >
 
   <Table style="margin-left: 1em; margin-top: 1ex;">
     <col index="0" kind="label" />

@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
   name="EcCatalog" viewName="TcdArticles" caption="=ecCatalog"
-  editShowId="true" disabledActions="export"
+  editShowId="true" disabledActions="export" editInPlace="true"
   >
   <g:columns>
     <IdColumn name="Id" width="60" />

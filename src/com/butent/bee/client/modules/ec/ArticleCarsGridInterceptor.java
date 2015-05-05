@@ -28,7 +28,6 @@ import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.FaLabel;
-import com.butent.bee.client.widget.Image;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
@@ -110,7 +109,7 @@ class ArticleCarsGridInterceptor extends AbstractGridInterceptor implements
     final DialogBox dialog = DialogBox.withoutCloseBox(getDialogCaption(presenter.getGridView()),
         STYLE_DIALOG);
 
-    Image save = new Image(Global.getImages().silverSave());
+    FaLabel save = new FaLabel(FontAwesome.SAVE);
     save.addStyleName(STYLE_SAVE);
 
     save.addClickHandler(new ClickHandler() {
@@ -123,7 +122,7 @@ class ArticleCarsGridInterceptor extends AbstractGridInterceptor implements
 
     dialog.addAction(Action.SAVE, save);
 
-    Image close = new Image(Global.getImages().silverClose());
+    FaLabel close = new FaLabel(FontAwesome.CLOSE);
     close.addStyleName(STYLE_CLOSE);
 
     close.addClickHandler(new ClickHandler() {

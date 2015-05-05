@@ -436,6 +436,8 @@ public final class TaskConstants {
   public static final String FILTER_TASKS_NEW = "tasks_new";
   public static final String FILTER_TASKS_UPDATED = "tasks_updated";
 
+  public static final String PRM_END_OF_WORK_DAY = "EndOfWorkDay";
+
   private TaskConstants() {
   }
 }

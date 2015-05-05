@@ -17,7 +17,7 @@
     <DateTime name="Completed" label="=crmTaskCompleteDate" />
     <DateTime name="Approved" label="=crmTaskConfirmDate" />
     <String name="ExpectedDuration" precision="10" label="=crmTaskExpectedDuration" />
-    <Numeric name="ExpectedExpenses" precision="15" scale="5" label="=prjExpenses" />
+    <Numeric name="ExpectedExpenses" precision="15" scale="5" label="=crmTaskExpectedExpenses" />
     <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
 
     <Relation name="Owner" notNull="true" relation="Users" defExpr="CURRENT_USER"

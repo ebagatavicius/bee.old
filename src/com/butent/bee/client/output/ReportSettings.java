@@ -122,8 +122,8 @@ public class ReportSettings {
             public void onSuccess(String value) {
               setCaption(value);
             }
-          }, getItem().getCaption(), maxLength, getElement(), CAPTION_INPUT_WIDTH,
-              CAPTION_INPUT_WIDTH_UNIT);
+          }, null, getItem().getCaption(), maxLength, getElement(),
+              CAPTION_INPUT_WIDTH, CAPTION_INPUT_WIDTH_UNIT);
         }
       });
 
@@ -209,7 +209,7 @@ public class ReportSettings {
           activate();
         }
       }
-    }, defValue, maxLength, null, CAPTION_INPUT_WIDTH, CAPTION_INPUT_WIDTH_UNIT);
+    }, null, defValue, maxLength, null, CAPTION_INPUT_WIDTH, CAPTION_INPUT_WIDTH_UNIT);
   }
 
   public IdentifiableWidget getPanel() {

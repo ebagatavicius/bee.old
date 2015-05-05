@@ -150,13 +150,13 @@ class ReportManager {
       gridDescription.addColumn(columnDescription);
     }
 
-    Collection<UiOption> uiOptions = EnumSet.of(UiOption.REPORT);
+    Collection<UiOption> uiOptions = EnumSet.of(UiOption.GRID);
 
     GridInterceptor gridInterceptor = GridFactory.getGridInterceptor(gridName);
 
     GridView gridView = GridFactory.createGridView(gridDescription,
         GridFactory.getSupplierKey(gridName, gridInterceptor), rowSet.getColumns(), null,
-        gridInterceptor, null);
+        uiOptions, gridInterceptor, null);
 
     gridView.initData(rowSet.getNumberOfRows(), rowSet);
 

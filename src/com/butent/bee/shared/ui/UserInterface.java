@@ -167,7 +167,8 @@ public enum UserInterface implements HasCaption {
     @Override
     public Collection<Component> getComponents() {
       return EnumSet.of(Component.AUTOCOMPLETE, Component.DATA_INFO, Component.DECORATORS,
-          Component.DICTIONARY, Component.FILTERS, Component.GRIDS, Component.USERS);
+          Component.DICTIONARY, Component.FILTERS, Component.GRIDS, Component.SETTINGS,
+          Component.USERS);
     }
 
     @Override
@@ -205,7 +206,8 @@ public enum UserInterface implements HasCaption {
     @Override
     public Collection<Component> getComponents() {
       return EnumSet.of(Component.AUTOCOMPLETE, Component.DATA_INFO, Component.DECORATORS,
-          Component.DICTIONARY, Component.FILTERS, Component.GRIDS, Component.USERS);
+          Component.DICTIONARY, Component.FILTERS, Component.GRIDS, Component.SETTINGS,
+          Component.USERS);
     }
 
     @Override

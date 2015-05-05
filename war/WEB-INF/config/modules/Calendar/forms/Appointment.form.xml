@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+  <!ENTITY inp "width: 14em;">
+]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
@@ -14,32 +17,33 @@
 
       <row>
         <Label for="Summary" visible="true" class="bee-required" />
-        <InputText source="Summary" visible="true" />
+        <InputText source="Summary" visible="true" style="&inp;" />
         <Label for="Location" />
-        <InputText source="Location" />
+        <InputText source="Location" style="&inp;" />
         <Label text="=type" for="Type" visible="true" class="bee-required" />
         <DataSelector source="AppointmentType" renderColumns="TypeName" visible="true"/>
       </row>
 
       <row>
         <Label for="Company" />
-        <DataSelector source="Company" renderColumns="CompanyName" />
+        <DataSelector source="Company" choiceColumns="Name TypeName" 
+            renderColumns="CompanyName CompanyTypeName" style="&inp;" />
         <Label for="CompanyPerson" />
         <DataSelector source="CompanyPerson"
           renderColumns="PersonFirstName PersonLastName"
-          choiceColumns="FirstName LastName CompanyName" options="Company" />
+          choiceColumns="FirstName LastName CompanyName" options="Company" style="&inp;" />
       </row>
  
       <row>
         <Label for="StartDateTime" visible="true" />
-        <InputDateTime source="StartDateTime" visible="true" />
+        <InputDateTime source="StartDateTime" visible="true" style="&inp;" />
         <Label for="Status" visible="true" />
-        <ListBox source="Status" visible="true" />
+        <ListBox source="Status" visible="true" style="&inp;" />
       </row>
 
       <row>
         <Label for="EndDateTime" visible="true" />
-        <InputDateTime source="EndDateTime" visible="true" />
+        <InputDateTime source="EndDateTime" visible="true" style="&inp;" />
         <cell colSpan="2">
           <Radio source="Visibility" vertical="false" />
         </cell>
@@ -47,17 +51,17 @@
 
       <row>
         <Label for="Color" />
-        <DataSelector source="Color" renderColumns="ColorName" />
+        <DataSelector source="Color" renderColumns="ColorName" style="&inp;" />
         <Label for="Style" />
-        <DataSelector source="Style" renderColumns="StyleName" />
+        <DataSelector source="Style" renderColumns="StyleName" style="&inp;" />
       </row>
 
       <row>
         <Label for="Created" />
-        <InputDateTime source="Created" />
+        <InputDateTime source="Created" style="&inp;" />
         <Label for="Creator" />
         <DataSelector source="Creator" editSource="CreatorCompanyPerson"
-          renderColumns="CreatorFirstName CreatorLastName" />
+          renderColumns="CreatorFirstName CreatorLastName" style="&inp;" />
       </row>
     </Table>
     

@@ -46,7 +46,7 @@ import java.util.List;
  * 
  * @param <TreeNode>
  */
-public abstract class AbstractTreeForTreeLayout<N> implements TreeForTreeLayout<N> {
+public abstract class AbstractTreeForTreeLayout<T> implements TreeForTreeLayout<T> {
 
   /**
    * Returns the parent of a node, if it has one.
@@ -56,44 +56,51 @@ public abstract class AbstractTreeForTreeLayout<N> implements TreeForTreeLayout<
    * @param node
    * @return [nullable] the parent of the node, or null when the node is a root.
    */
-  public abstract N getParent(N node);
+  public abstract T getParent(T node);
 
-  private final N root;
+  private final T root;
 
-  public AbstractTreeForTreeLayout(N root) {
+  public AbstractTreeForTreeLayout(T root) {
     this.root = root;
   }
 
   @Override
-  public N getRoot() {
+  public T getRoot() {
     return root;
   }
 
+  public boolean isRoot(T node) {
+    return node != null && node.equals(root);
+  }
+
   @Override
-  public boolean isLeaf(N node) {
+  public boolean isLeaf(T node) {
     return getChildren(node).isEmpty();
   }
 
   @Override
-  public boolean isChildOfParent(N node, N parentNode) {
+  public boolean isChildOfParent(T node, T parentNode) {
     return getParent(node) == parentNode;
   }
 
   @Override
-  public abstract List<N> getChildren(N node);
+  public abstract List<T> getChildren(T node);
 
   @Override
-  public List<N> getChildrenReverse(N node) {
+  public List<T> getChildrenReverse(T node) {
     return Lists.reverse(getChildren(node));
   }
 
   @Override
-  public N getFirstChild(N parentNode) {
+  public T getFirstChild(T parentNode) {
     return getChildren(parentNode).get(0);
   }
 
   @Override
-  public N getLastChild(N parentNode) {
+  public T getLastChild(T parentNode) {
     return BeeUtils.getLast(getChildren(parentNode));
   }
+
+  @Override
+  public abstract int getLevel(T node);
 }

@@ -13,7 +13,7 @@
     </row>
     <row>
       <Label text="=date" horizontalAlignment="right" style="&lbl1;"/>
-      <InputDateTime source="LoadingDate" style="width: 110px;" />
+      <InputDateTime source="LoadingDate" style="width: 11em;" />
     </row>
     <row>
       <Label text="=note" horizontalAlignment="right" style="&lbl1;"/>
@@ -75,7 +75,7 @@
     </row>
     <row>
       <Label text="=date" horizontalAlignment="right" style="&lbl1;"/>
-      <InputDateTime source="UnloadingDate" style="width: 110px;" />
+      <InputDateTime source="UnloadingDate" style="width: 11em;" />
     </row>
     <row>
       <Label text="=note" horizontalAlignment="right" style="&lbl1;"/>

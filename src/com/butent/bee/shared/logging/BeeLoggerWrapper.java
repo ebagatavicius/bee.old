@@ -26,7 +26,12 @@ public class BeeLoggerWrapper implements BeeLogger {
   @Override
   public void error(Throwable ex, Object... messages) {
     if (initLogger()) {
-      logger.error(ex, messages);
+      Throwable cause = ex;
+
+      while (cause.getCause() != null) {
+        cause = cause.getCause();
+      }
+      logger.error(cause, messages);
     }
   }
 

@@ -1,11 +1,15 @@
 package com.butent.bee.client.grid.column;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Event;
 
 import com.butent.bee.client.grid.CellContext;
 import com.butent.bee.client.grid.cell.AbstractCell;
+import com.butent.bee.client.i18n.Format;
+import com.butent.bee.client.i18n.HasNumberFormat;
+import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.render.HasCellRenderer;
 import com.butent.bee.client.style.HasTextAlign;
@@ -13,10 +17,12 @@ import com.butent.bee.client.style.HasWhiteSpace;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.shared.EventState;
 import com.butent.bee.shared.HasOptions;
+import com.butent.bee.shared.HasScale;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.css.values.WhiteSpace;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.HasValueType;
+import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.export.XCell;
 import com.butent.bee.shared.export.XSheet;
 import com.butent.bee.shared.export.XStyle;
@@ -65,29 +71,30 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
       return null;
     }
 
+    String text;
+    ValueType type = getValueType();
+
     AbstractCellRenderer renderer = getOptionalRenderer();
 
     if (renderer != null) {
-      return renderer.export(context.getRow(), context.getColumnIndex(), styleRef, sheet);
+      XCell xc = renderer.export(context.getRow(), context.getColumnIndex(), styleRef, sheet);
+      if (xc != null) {
+        return xc;
+      }
+
+      text = renderer.render(context.getRow());
+      if (renderer.getExportType() != null) {
+        type = renderer.getExportType();
+      }
 
     } else {
       SafeHtmlBuilder sb = new SafeHtmlBuilder();
       render(context, sb);
 
-      String html = sb.toSafeHtml().asString();
-
-      if (BeeUtils.isEmpty(html)) {
-        return null;
-
-      } else {
-        XCell xc = new XCell(context.getColumnIndex(), html);
-        if (styleRef != null) {
-          xc.setStyleRef(styleRef);
-        }
-
-        return xc;
-      }
+      text = sb.toSafeHtml().asString();
     }
+
+    return Exporter.createCell(text, type, context.getColumnIndex(), styleRef);
   }
 
   public AbstractCell<C> getCell() {
@@ -138,24 +145,51 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
   }
 
   public Integer initExport(XSheet sheet) {
+    Integer styleRef = null;
+
+    ValueType type = getValueType();
     AbstractCellRenderer renderer = getOptionalRenderer();
 
     if (renderer != null) {
-      return renderer.initExport(sheet);
-
-    } else if ((getTextAlign() != null || getValueType() != null) && sheet != null) {
-      TextAlign textAlign = getTextAlign();
-      if (textAlign == null) {
-        textAlign = UiHelper.getDefaultHorizontalAlignment(getValueType());
-      }
-
-      if (textAlign != null) {
-        XStyle style = new XStyle();
-        style.setTextAlign(textAlign);
-        return sheet.registerStyle(style);
+      styleRef = renderer.initExport(sheet);
+      if (renderer.getExportType() != null) {
+        type = renderer.getExportType();
       }
     }
-    return null;
+
+    if (styleRef == null && type != null && sheet != null) {
+      TextAlign textAlign = getTextAlign();
+      if (textAlign == null) {
+        textAlign = UiHelper.getDefaultHorizontalAlignment(type);
+      }
+
+      NumberFormat numberFormat = null;
+      if (ValueType.isNumeric(type)) {
+        if (this instanceof HasNumberFormat) {
+          numberFormat = ((HasNumberFormat) this).getNumberFormat();
+        }
+
+        if (numberFormat == null && (type == ValueType.DECIMAL || type == ValueType.NUMBER)) {
+          int scale = (this instanceof HasScale) ? ((HasScale) this).getScale() : 0;
+          numberFormat = Format.getDefaultNumberFormat(type, scale);
+        }
+      }
+
+      if (textAlign != null || numberFormat != null) {
+        XStyle style = new XStyle();
+
+        if (textAlign != null) {
+          style.setTextAlign(textAlign);
+        }
+        if (numberFormat != null) {
+          style.setFormat(numberFormat.getPattern());
+        }
+
+        styleRef = sheet.registerStyle(style);
+      }
+    }
+
+    return styleRef;
   }
 
   public boolean instantKarma(IsRow row) {

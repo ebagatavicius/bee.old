@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
+        xmlns:ui="http://www.butent.com/ui"
 
-  name="ImportOptions" viewName="ImportOptions" caption="=trImportOptions"
-  filter="!(RelationOption)"
-  >
+        name="ImportOptions" viewName="ImportOptions" caption="=trImportOptions"
+        filter="!(RelationOption)"
+        disabledActions="configure"
+    >
   <g:columns>
-    <DataColumn name="Type">
-      <carry><ui:expression>row.Type</ui:expression></carry>
+    <DataColumn name="Type" readOnly="true">
+      <style>
+        <bodyStyle>
+          <ui:inline>font-weight:bold;</ui:inline>
+        </bodyStyle>
+      </style>
+      <carry>
+        <ui:expression>row.Type</ui:expression>
+      </carry>
     </DataColumn>
-    <DataColumn name="Description" required="true" editInPlace="true" />
+    <DataColumn name="Description" required="true" />
   </g:columns>
 </g:Grid>

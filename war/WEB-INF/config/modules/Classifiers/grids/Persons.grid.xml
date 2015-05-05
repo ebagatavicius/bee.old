@@ -4,10 +4,10 @@
   name="Persons" viewName="Persons" caption="=persons"
   editForm="Person" flexGrow="1"
   >
-  <g:body height="30" /> 
+
   <g:columns>
     <DataColumn name="Photo" caption="-" readOnly="true" cellType="html" sortable="false"
-      width="30" horizontalAlignment="center" filterOptions="-">
+      width="30" horizontalAlignment="center" filterOptions="-" autoFit="false">
       <renderer type="photo" />
     </DataColumn>
 

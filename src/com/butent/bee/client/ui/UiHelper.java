@@ -76,6 +76,31 @@ public final class UiHelper {
     obj.setTitle(null);
   }
 
+  public static void closeChildPopups(Widget widget) {
+    Assert.notNull(widget);
+
+    List<Popup> popups = Popup.getVisiblePopups();
+    if (!popups.isEmpty()) {
+      int index = 0;
+      Popup parentPopup = getParentPopup(widget);
+
+      if (parentPopup != null) {
+        for (int i = 0; i < popups.size(); i++) {
+          if (DomUtils.sameId(popups.get(i), parentPopup)) {
+            index = i + 1;
+            break;
+          }
+        }
+      }
+
+      if (index < popups.size()) {
+        for (int i = popups.size() - 1; i >= index; i--) {
+          popups.get(i).close();
+        }
+      }
+    }
+  }
+
   public static boolean closeDialog(Widget source) {
     if (source != null) {
       Popup popup = getParentPopup(source);

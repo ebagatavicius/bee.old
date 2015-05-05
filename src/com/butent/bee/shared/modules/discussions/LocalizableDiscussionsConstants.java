@@ -4,6 +4,8 @@ public interface LocalizableDiscussionsConstants {
 
   String announcement();
 
+  String announcementNew();
+
   String announcements();
 
   String adTopic();
@@ -33,6 +35,8 @@ public interface LocalizableDiscussionsConstants {
   String discussActive();
 
   String discussAll();
+
+  String discussAllShort();
 
   String discussOwner();
 
@@ -93,6 +97,10 @@ public interface LocalizableDiscussionsConstants {
   String discussMembers();
 
   String discussNotCreated();
+
+  String discussPublic1();
+
+  String discussPrivateShort();
 
   String discussSelectMembers();
 

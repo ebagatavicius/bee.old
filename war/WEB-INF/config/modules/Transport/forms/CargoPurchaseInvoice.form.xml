@@ -24,12 +24,12 @@
         <HorizontalPanel>
           <DecimalLabel source="Amount" format="0.00" style="font-weight:bold; margin-right:5px;" />
           <DataSelector source="CurrencyName" placeholder="=currencyShort"
-            style="width:40px;" editEnabled="false" />
+            style="width:5em;" editEnabled="false" />
         </HorizontalPanel>
 
         <Label text="=trdInvoicePrefix" style="&lbl;" />
         <FlowPanel>
-          <InputText source="InvoicePrefix" upperCase="true" style="width:50px;" />
+          <InputText source="InvoicePrefix" upperCase="true" style="width:11em;" />
           <InlineLabel text="=trdInvoiceNo" style="margin-left:5px;" />
           <InputText source="InvoiceNo" />
         </FlowPanel>

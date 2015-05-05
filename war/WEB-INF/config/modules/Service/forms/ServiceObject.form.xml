@@ -5,6 +5,7 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
   
   name="ServiceObject" viewName="ServiceObjects" caption="=svcObject"
+  width="1000" height="600"
   >
   <FlowPanel class="flexBox-vertical">
     <xi:include href="widgets/ObjectHeader.widget.xml" />

@@ -4,7 +4,6 @@ import com.google.gwt.http.client.RequestBuilder;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.RpcParameter.Section;
-import com.butent.bee.client.utils.XmlUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
@@ -14,11 +13,14 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Contains and manages RPC parameter lists for individual requests.
@@ -166,7 +168,7 @@ public class ParameterList extends ArrayList<RpcParameter> {
 
     if (ctp == null) {
       prepare();
-      ctp = BeeUtils.isEmpty(dataItems) ? null : ContentType.XML;
+      ctp = BeeUtils.isEmpty(dataItems) ? null : ContentType.BINARY;
     }
     return ctp;
   }
@@ -176,17 +178,12 @@ public class ParameterList extends ArrayList<RpcParameter> {
     if (BeeUtils.isEmpty(dataItems)) {
       return null;
     }
+    Map<String, String> data = new LinkedHashMap<>();
 
-    int n = dataItems.size();
-    String[] nodes = new String[n * 2];
-    RpcParameter item;
-
-    for (int i = 0; i < n; i++) {
-      item = dataItems.get(i);
-      nodes[i * 2] = item.getName();
-      nodes[i * 2 + 1] = item.getValue();
+    for (RpcParameter item : dataItems) {
+      data.put(item.getName(), item.getValue());
     }
-    return XmlUtils.createString(Service.VAR_DATA, nodes);
+    return Codec.beeSerialize(data);
   }
 
   public void getHeadersExcept(RequestBuilder bld, String... ignore) {

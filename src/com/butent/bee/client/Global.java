@@ -306,41 +306,45 @@ public final class Global {
     inpBoxen.inputMap(caption, keyCaption, valueCaption, map, consumer);
   }
 
-  public static void inputString(String caption, String prompt, StringCallback callback) {
-    inputString(caption, prompt, callback, null);
+  public static void inputString(String caption, String prompt, StringCallback callback,
+      String styleName) {
+    inputString(caption, prompt, callback, styleName, null);
   }
 
   public static void inputString(String caption, String prompt, StringCallback callback,
-      String defaultValue) {
-    inputString(caption, prompt, callback, defaultValue, BeeConst.UNDEF);
+      String styleName, String defaultValue) {
+    inputString(caption, prompt, callback, styleName, defaultValue, BeeConst.UNDEF);
   }
 
   public static void inputString(String caption, String prompt, StringCallback callback,
-      String defaultValue, int maxLength) {
-    inputString(caption, prompt, callback, defaultValue, maxLength, null);
+      String styleName, String defaultValue, int maxLength) {
+    inputString(caption, prompt, callback, styleName, defaultValue, maxLength, null);
   }
 
   public static void inputString(String caption, String prompt, StringCallback callback,
-      String defaultValue, int maxLength, Element target) {
-    inputString(caption, prompt, callback, defaultValue, maxLength, target,
+      String styleName, String defaultValue, int maxLength, Element target) {
+    inputString(caption, prompt, callback, styleName, defaultValue, maxLength, target,
         BeeConst.DOUBLE_UNDEF, null);
   }
 
   public static void inputString(String caption, String prompt, StringCallback callback,
-      String defaultValue, int maxLength, Element target, double width, CssUnit widthUnit) {
-    inputString(caption, prompt, callback, defaultValue, maxLength, target, width, widthUnit,
+      String styleName, String defaultValue, int maxLength, Element target, double width,
+      CssUnit widthUnit) {
+    inputString(caption, prompt, callback, styleName, defaultValue, maxLength, target, width,
+        widthUnit,
         BeeConst.UNDEF, Localized.getConstants().ok(), Localized.getConstants().cancel(), null);
   }
 
   public static void inputString(String caption, String prompt, StringCallback callback,
-      String defaultValue, int maxLength, Element target, double width, CssUnit widthUnit,
-      int timeout, String confirmHtml, String cancelHtml, WidgetInitializer initializer) {
-    inpBoxen.inputString(caption, prompt, callback, defaultValue, maxLength, target,
+      String styleName, String defaultValue, int maxLength, Element target, double width,
+      CssUnit widthUnit, int timeout, String confirmHtml, String cancelHtml,
+      WidgetInitializer initializer) {
+    inpBoxen.inputString(caption, prompt, callback, styleName, defaultValue, maxLength, target,
         width, widthUnit, timeout, confirmHtml, cancelHtml, initializer);
   }
 
-  public static void inputString(String caption, StringCallback callback) {
-    inputString(caption, null, callback);
+  public static void inputString(String caption, StringCallback callback, String styleName) {
+    inputString(caption, null, callback, styleName);
   }
 
   public static DialogBox inputWidget(String caption, IsWidget input, InputCallback callback) {

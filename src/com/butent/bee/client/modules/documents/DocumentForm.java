@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -31,6 +32,7 @@ import com.butent.bee.client.modules.mail.Relations;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.GridView;
@@ -66,8 +68,26 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DocumentForm extends DocumentDataForm {
+
+  @Override
+  public void onSaveChanges(HasHandlers listener, SaveChangesEvent event) {
+    super.onSaveChanges(listener, event);
+
+    if (getFormView() != null) {
+
+      String oldValue = event.getOldRow().getString(Data.getColumnIndex(VIEW_DOCUMENTS,
+          COL_DOCUMENT_COMPANY));
+      String newValue = event.getNewRow().getString(Data.getColumnIndex(VIEW_DOCUMENTS,
+          COL_DOCUMENT_COMPANY));
+
+      if (!Objects.equals(oldValue, newValue)) {
+        DocumentsHandler.insertCompanyInfo(event.getNewRow(), oldValue);
+      }
+    }
+  }
 
   private class RelationsHandler implements SelectorEvent.Handler {
 

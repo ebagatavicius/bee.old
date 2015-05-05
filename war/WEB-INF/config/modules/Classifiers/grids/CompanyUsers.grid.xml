@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   xmlns:ui="http://www.butent.com/ui"
 
-  name="CompanyUsers" viewName="CompanyUsers"
+  name="CompanyUsers" viewName="CompanyUsers" caption="=responsibilities"
   flexGrow="1"
   >
   <g:columns>
@@ -14,12 +14,12 @@
       <renderToken source="FirstName" suffix=" " />
       <renderToken source="LastName" />
     </RelColumn>
-    
+
     <RelColumn name="Responsibility" minWidth="100" maxWidth="150" visible="true">
       <renderToken source="ResponsibilityName" />
     </RelColumn>
   </g:columns>
-  
+
   <g:rowStyle>
     <ui:inline>="font-weight: bolder"</ui:inline>
     <ui:expression>row.DefaultCompanyUser != null</ui:expression>

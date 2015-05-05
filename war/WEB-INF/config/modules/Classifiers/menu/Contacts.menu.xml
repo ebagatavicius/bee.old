@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="Contacts" label="=contacts" order="20" module="Classifiers.Contacts"
+name="Contacts" label="=contacts" order="10" module="Classifiers.Contacts"
 >
   <Item name="Companies" label="=clients" service="grid" parameters="Companies" />
   <Item name="CompanyPersons" label="=companyPersons" service="grid" parameters="CompanyPersons" />

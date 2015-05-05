@@ -111,6 +111,7 @@ import com.butent.bee.client.widget.IntegerLabel;
 import com.butent.bee.client.widget.InternalLink;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.Legend;
+import com.butent.bee.client.widget.Line;
 import com.butent.bee.client.widget.Link;
 import com.butent.bee.client.widget.ListBox;
 import com.butent.bee.client.widget.LongLabel;
@@ -234,6 +235,7 @@ public enum FormWidget {
   LABEL("Label", EnumSet.of(Type.IS_LABEL)),
   LAYOUT_PANEL("LayoutPanel", EnumSet.of(Type.HAS_LAYERS)),
   LEGEND("Legend", null),
+  LINE("Line", null),
   LINK("Link", EnumSet.of(Type.DISPLAY)),
   LIST_BOX("ListBox", EnumSet.of(Type.FOCUSABLE, Type.EDITABLE)),
   LONG_LABEL("LongLabel", EnumSet.of(Type.DISPLAY)),
@@ -1021,6 +1023,8 @@ public enum FormWidget {
 
   private static final String ATTR_SUMMARIZE = "summarize";
 
+  private static final String ATTR_RESIZABLE = "resizable";
+
   private static final String TAG_CSS = "css";
 
   private static final String TAG_HANDLER = "handler";
@@ -1494,6 +1498,18 @@ public enum FormWidget {
         widget = new Legend(html);
         break;
 
+      case LINE:
+        Double x1 = XmlUtils.getAttributeDouble(element, "x1");
+        Double y1 = XmlUtils.getAttributeDouble(element, "y1");
+        Double x2 = XmlUtils.getAttributeDouble(element, "x2");
+        Double y2 = XmlUtils.getAttributeDouble(element, "y2");
+
+        if (BeeUtils.isDouble(x1) && BeeUtils.isDouble(y1)
+            && BeeUtils.isDouble(x2) && BeeUtils.isDouble(y2)) {
+          widget = new Line(x1, y1, x2, y2);
+        }
+        break;
+
       case LINK:
         url = attributes.get(ATTR_URL);
         widget = new Link(html, url);
@@ -1717,6 +1733,9 @@ public enum FormWidget {
       case TABBED_PAGES:
         stylePrefix = attributes.get(ATTR_STYLE_PREFIX);
         widget = BeeUtils.isEmpty(stylePrefix) ? new TabbedPages() : new TabbedPages(stylePrefix);
+        if (attributes.containsKey(ATTR_RESIZABLE)) {
+          ((TabbedPages) widget).setResizable(BeeUtils.toBoolean(attributes.get(ATTR_RESIZABLE)));
+        }
         break;
 
       case TABLE:

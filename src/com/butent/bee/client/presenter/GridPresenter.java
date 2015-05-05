@@ -337,6 +337,10 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
     return (filterManager == null) ? null : filterManager.getFilterLabel(true);
   }
 
+  public GridFilterManager getFilterManager() {
+    return filterManager;
+  }
+
   @Override
   public GridView getGridView() {
     return gridContainer.getGridView();

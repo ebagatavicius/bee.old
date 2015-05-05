@@ -1,6 +1,6 @@
-@font-face {
+﻿@font-face {
   font-family: FontAwesome;
-  src: url(../fonts/fontawesome-webfont.woff?v=4.2.0);
+  src: url(../fonts/fontawesome-webfont.woff?v=4.3.0);
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 }
 
 .bee-Body {
-  font-family: Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: small;
   color: black;
   overflow: hidden;
@@ -81,7 +81,11 @@
   -ms-flex-pack: justify;
 }
 
-.flexBox-vertical, .bee-TreeView, .bee-TabbedPages-container, .bee-Workspace-container {
+.flexBox-vertical,
+.bee-TreeView,
+.bee-TabbedPages-container,
+.bee-Workspace-container,
+.bee-WestContainer {
   display: flex;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -105,7 +109,11 @@
   -ms-flex-align: center;
 }
 
-.flexible, .bee-TreeView-tree, .bee-TabbedPages-contentPanel, .bee-Workspace-contentPanel {
+.flexible,
+.bee-TreeView-tree,
+.bee-TabbedPages-contentPanel,
+.bee-Workspace-contentPanel,
+.bee-CentralScrutinizer {
   flex: 1;
   -webkit-flex: 1;
   -ms-flex: 1;
@@ -127,81 +135,52 @@
 }
 
 .bee-Screen {
-  background-color: #fbfbfb;  
+  background-color: #e3e3e3;
 }
 
-.bee-Logo {
-  position: absolute;
-  left: 1ex;
-  top: 3ex;
-  max-width: 100px;
-  height: auto;
+.bee-NorthContainer {
+  background-color: #414142;
 }
-
 .bee-NorthContainer > div {
   position: absolute;
 }
 
-.bee-MainSearchContainer {
-  left: 120px;
-  top: 20px;
-  width: 300px;
-}
-
-.bee-MainSearchBox {
-  width: 225px;
-  height: 27px;
-  border: 1px solid #bab9b9;
-  padding: 6px;
-  float: left;
-}
-
-.bee-MainSearchOptionsContainer {
-  width: 20px;
-  height: 27px;
-  float: left;
-  overflow: hidden;
-  position: relative;
-  display: none;
-}
-.bee-MainSearchOptions {
+.bee-Logo {
   position: absolute;
-}
-.bee-MainSearchOptions:hover {
-  top: -50px;
+  left: 6px;
+  top: -3ex;
+  max-width: 148px;
+  height: auto;
 }
 
-.bee-MainSearchSubmitContainer {
-  width: 40px;
+.bee-MainSearchContainer {
+  top: 10px;
+  left: 255px;
+}
+.bee-MainSearchInput.bee-MainSearchInput {
+  width: 30vw;
   height: 27px;
-  cursor: pointer;
-  background-color: #d0d0d0;
-  margin-left: 10px;
-  float: left;
-  position: relative;
-}  
-.bee-MainSearchSubmitContainer:hover {
-  background-color: #7a7a7a;
+  margin-right: 8px;
+  background-color: transparent;
+  border-color: transparent;
+  color: whitesmoke;
+  font-size: 16px;
+}
+.bee-MainSearchInput.bee-MainSearchInput:focus {
+  outline: none;
 }
 .bee-MainSearchSubmit {
-  position: absolute;
-  left: 11px;
-  top: 5px;
+  display: inline-block;
+  font-size: 17px;
+  color: #6f6f6f;
 }  
 
 .bee-MainCommandPanel {
-  left: 440px;
-  top: 28px;
-  right: 225px;
+  top: 22px;
+  right: 120px;
   display: flex;
   display: -webkit-flex;
   display: -ms-flexbox;
-  flex-direction: row;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  justify-content: space-around;
-  -webkit-justify-content: space-around;
-  -ms-flex-pack: justify;
 }
 .bee-MainCommandPanelItem {
   height: 25px;
@@ -216,35 +195,41 @@
 }  
 
 .bee-MainMenu {
-  left: 115px;
-  right: 0;
-  top: 60px;
+  left: 0px;
+  right: 0px;
+  height: 51px;
+  top: 62px;
+  background-color: #484849;
+  color: white;
+  overflow: auto;
 }
 
 .bee-UserContainer {
   position: absolute;
-  right: 10px;
-  top: 35px;
+  right: 8px;
+  top: 8px;
   border-collapse: collapse;
 }
-.bee-UserPhotoContainer {
-  margin-right: 1em;
-}
 .bee-UserPhoto {
-  max-width: 30px;
-  max-height: 30px;
-  cursor: default;
+  max-width: 39px;
+  max-height: 39px;
+  border: 2px solid #fafafa;
+  margin-right: 40px;
+  border-radius: 50px;
 }
 .bee-UserSignature {
-  cursor: pointer;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
 }
 .bee-UserExitContainer {
-  margin-left: 1em;
+  margin-right: 12px;
 }
 .bee-UserExit {
-  font-size: large;
   cursor: pointer;
-  color: #888;
+  color: #6f6f6f;
+  text-transform: uppercase;
+  text-align: right;
 }
 .bee-UserExit:hover {
   color: black;
@@ -282,44 +267,45 @@
   overflow: auto;
 }
 
-.bee-MenuRoot-flow .bee-MenuItem-label {
-  display: inline-block;
-  margin: 2px;
-  font-size: 14px;
+.bee-MenuRoot {
+  margin: 3px 19px;
 }
 
-.bee-MenuRoot-flow.bee-MenuRoot-horizontal .bee-MenuItem-label:hover,
+.bee-MenuRoot-flow .bee-MenuItem-label {
+  display: inline-block;
+  font-size: 14px;
+  padding: 0 13px;
+  line-height: 45px;
+}
+
 .bee-MenuRoot-flow.bee-MenuRoot-horizontal .bee-MenuItem-selected {
-  border-bottom: 5px solid #5a6ba3;
+  font-weight: bold;
 }
 
 .bee-MenuPopup {
   max-width: 95%;
-  background-color: white;
-  border: 1px solid #e7e7e7;
+  background-color: #3d3d3d;
   box-shadow: 6px 6px 5px DarkGray;
+  color: white;
 }
 
 .bee-MenuItem-label {
-  padding-left: 5px;
-  padding-top: 5px; 
-  padding-right: 5px;
   cursor: pointer;
-  font-family: Verdana;
 }
 
 .bee-MenuPopup .bee-MenuItem-label {
-  font-size: 13px;
-  padding-left: 25px; 
+  font-size: 12px;
+  padding: 0 20px;
+  line-height: 30px;
 }
 
-.bee-MenuPopup td:hover {
-  background-color: #f2f2f2;
+.bee-MenuBar tr:hover {
+  background-color: #343434;
 }
 
 .bee-MenuBar-vertical .bee-MenuItemSeparator {
   height: 1px;
-  background-color: #e7e7e7;
+  background-color: #484849;
 }
 
 .bee-LogSeparator {
@@ -434,12 +420,7 @@
 }
 
 .bee-Header-container {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 30px;
-  background-color: #EFF0F0;  
+  background-color: #f5f5f5;
   display: flex;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -464,9 +445,9 @@
 }
 
 .bee-Header-caption {
-  font-size: 14px;
-  font-weight: bold;
-  padding-left: 8px;
+  font-size: 24px;
+  color: #414142;
+  margin-left: 30px;
 }
 .bee-Header-message {
   padding-left: 8px;
@@ -511,7 +492,7 @@
   margin-left: 4px;
   margin-right: 4px;
   font-size: large;
-  color: #888;
+  color: #414142;
 }
 
 .bee-Header-commandPanel .bee-fa-label:active {
@@ -527,7 +508,7 @@
 .bee-Gallery-command {
   margin-right: 10px;
   font-size: large;
-  color: #888;
+  color: #414142;
 }
 .bee-Header-control:hover,
 .bee-TreeView-action:hover,
@@ -562,11 +543,15 @@
 
 .bee-CellGridCell {
   border-style: solid;
-  border-color: #ccc;
+  border-color: #ededed;
+}
+.bee-CellGridHeader,
+.bee-CellGridBody {
+  border-left-color: transparent;
+  border-right-color: transparent;
 }
 
 .bee-CellGridHeader {
-  background-color: #f5f5f5;
   display: flex;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -580,10 +565,10 @@
   align-self: center;
   -webkit-align-self: center;
   -ms-flex-item-align: center;
-  text-align: center;
-  font-weight: bold;
+  text-align: left;
   line-height: 12px;
   cursor: pointer;
+  color: #ababab;
 }
 
 .bee-HeaderCellSortInfo {
@@ -592,6 +577,7 @@
   -ms-flex-item-align: end;
   margin-right: 4px;
   cursor: pointer;
+  color: grey;
 }
 
 .bee-HeaderCellSortable:before {
@@ -608,29 +594,23 @@
 .bee-CellGridBody {
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #414142;
+  line-height: 43px;
 }
 
 .bee-CellGridFooter {
   background-color: #f0f0f0;
-  font-weight: bold;
-}
-
-.bee-CellGridEvenRow {
-  background-color: #f5f5f5;
-}
-
-.bee-CellGridOddRow {
-  background-color: #fbfbfb;
+  border-left-color: #f0f0f0;
+  border-right-color: #f0f0f0;
 }
 
 .bee-CellGridBody:hover,
 .bee-CellGridBody.bee-CellGridActiveRow:hover {
   background-color: #e1e1e1;
-  background-image: none;
 }
 
 .bee-CellGridBody.bee-CellGridActiveRow {
-  background-color: lightskyblue;
+  background-color: #fafafa;
 }
 
 .bee-CellGridBody.bee-CellGridActiveRow.bee-CellGridActiveCell {
@@ -640,13 +620,10 @@
 }
 
 .bee-CellGridSelectedRow {
-  background-image: linear-gradient(to bottom, #f0f9ff 0%, #cbebff 47%, #a1dbff 100%);  
+  background-color: #ededed;  
 }
 .bee-CellGridSelectedRow.bee-CellGridActiveRow {
-  background-image: linear-gradient(to bottom, #f8ffe8 0%, #e3f5ab 33%, #b7df2d 100%);
-}
-.bee-CellGridSelectedRow.bee-CellGridActiveCell {
-  background-image: none;
+  background-color: #ededed;  
 }
 
 .bee-CellGridResizedCell {
@@ -714,7 +691,7 @@
 .bee-ModalGrid {
   border: 1px solid #b4b4b4;
   border-radius: 2px;
-  background-color: WhiteSmoke;
+  background-color: White;
 }
 
 .bee-Dialog-header {
@@ -732,7 +709,7 @@
 .bee-Body > div.bee-DialogBox:last-of-type .bee-Dialog-header,
 .bee-Body > div.bee-ModalForm:last-of-type > .bee-ModalForm-content > .bee-Header-container,
 .bee-Body > div.bee-ModalGrid:last-of-type > .bee-ModalGrid-content > .bee-Header-container {
-  background-image: linear-gradient(to bottom, #feffff, #d2ebf9);
+  background-color: #E3E3E3;
 }
 
 .bee-Dialog-caption {
@@ -745,7 +722,7 @@
 }
 
 .bee-Dialog-header .bee-Dialog-action {
-  margin-right: 1em;
+  margin-right: 0.5em;
 }
 
 .bee-Dialog-content {
@@ -762,11 +739,12 @@
   top: 0;
   right: 0;
   height: 0;
-  border: 3px ridge #eee;
-  border-top-width: 0;
-  background-color: #cfc;
+  background-color: #9ccc65;
   text-align: center;
   overflow: hidden;
+  color: white;
+  font-weight: bold;
+  border-radius: 3px;
 }
 
 .bee-NotificationMessages {
@@ -774,11 +752,11 @@
 }
 
 .bee-Notification-error {
-  background-color: #ffcccc;
+  background-color: #ff5253;
 }
 
 .bee-Notification-warning {
-  background-color: yellow;
+  background-color: #ffb74d;
 }
 
 .bee-Toggle {
@@ -860,7 +838,7 @@
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 .bee-DataSelector-strict.bee-DataSelector-notFound {
-  text-decoration: line-through;
+  color: orangered;
 }
 .bee-DataSelector-empty {
   background-color: #ebebe4;
@@ -942,7 +920,7 @@
   top: 0;
   bottom: 0;
   overflow: auto;
-  background-color: WhiteSmoke;
+  background-color: white;
 }
 
 .bee-required:after {
@@ -1157,30 +1135,32 @@
   min-height: 120px;
 }
 
+.bee-TabbedPages-drag {
+  box-sizing: border-box;
+  border-top: 1px solid green;
+}
+.bee-TabbedPages-resized {
+  background-color: inherit;
+}
+
 .bee-TabbedPages-tabPanel {
-  font-size: 13px;
-  line-height: 25px;
+  font-size: 14px;
+  line-height: 60px;
+  text-transform: uppercase;
 }
 
 .bee-TabbedPages-tab {
   display: inline-block;
-  height: 25px;
-  border: 1px solid #e4e4e4;
-  padding: 0 10px;
+  height: 42px;
+  padding: 0 15px;
   cursor: pointer;
   margin-left: 3px;
   background-color: white;
 }
-.bee-TabbedPages-tab:hover {
-  background-color : whitesmoke;
-}
-
 .bee-TabbedPages-tabSelected {
-  border-top: 2px solid #5a6ba3;
-  background-color: #f2f2f2;
-  border-bottom-color: transparent;
-  z-index: 1;
   cursor: default;
+  font-weight: bold;
+  border-bottom: 3px solid #1CA5C7;
 }
 
 .bee-TabbedPages-tabCaption {
@@ -1201,6 +1181,7 @@
 
 .bee-StackContainer {
   position: relative;
+  overflow: auto;
 }
 .bee-StackContent {
   overflow: auto;
@@ -1208,10 +1189,7 @@
 
 .bee-StackHeader {
   cursor: pointer;
-  background-color: #EFF0F0;
-}
-.bee-StackHeader:hover {
-  background-color: #f2f2f2;
+  background-color: #e3e3e3;
 }
 
 .bee-ChoicePanel {
@@ -1249,6 +1227,10 @@
 .bee-ChoiceGroup-item-vertical {
   margin-right: 4px;
   margin-bottom: 1ex;
+}
+
+.bee-ChoiceGroup-item-vertical .bee-Button {
+  width: 100%;
 }
 
 .bee-ChoiceGroup-panel-vertical .bee-ChoiceCancel {
@@ -1358,22 +1340,16 @@
   flex-wrap: wrap;
   -webkit-flex-wrap: wrap;
   -ms-flex-wrap: wrap;
-  border-top: 1px solid #f2f2f2;
+  border-top: 1px solid #f5f5f5;
+  line-height: 36px;
+  background-color: #e8e8e8;
 }
 
 .bee-Workspace-tab {
-  height: 25px;
-  background-color: white;
-  border: 1px solid #e4e4e4;
   cursor: pointer;
 }
 .bee-Workspace-tabSelected {
-  border-top: 2px solid #5a6ba3;
-  border-bottom-style: none;
-}
-.bee-Workspace-tabPanel > div:only-of-type {
-  border-top: 1px solid #e4e4e4;
-  border-bottom-style: solid;
+  background-color: #f5f5f5;
 }
 .bee-Workspace-tabSelected .bee-Workspace-tab-caption {
   cursor: default;
@@ -1384,26 +1360,19 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  color: #414142;
+  font-size: 12px;
 }
 
 .bee-Workspace-new-tab {
-  margin-left: 1px;
   width: 25px;
-  height: 25px;
   text-align: center;
-  font-size: 24px;
-  line-height: 25px;
-  background-color: white;
-  color: #999;
-  border: 1px solid #e4e4e4;
+  font-size: 25px;
+  font-weight: bold;
+  line-height: 36px;
+  background-color: #f5f5f5;
+  color: #414142;
   cursor: pointer;
-}
-.bee-Workspace-tab:hover,
-.bee-Workspace-new-tab:hover {
-  background-color: #fbfbfb;
-}
-.bee-Workspace-new-tab:hover {
-  color: black;
 }
 
 .bee-Workspace-expander {
@@ -1430,29 +1399,26 @@
   display: flex;
   display: -webkit-flex;
   display: -ms-flexbox;
+  height: 36px;
 }
 
 .bee-Workspace-tab-drop-down {
-  color: #a1bff5;
+  color: #1EB2D8;
 }
 .bee-Workspace-tab-drop-down,
 .bee-Workspace-tab-caption {
-  line-height: 25px;
+  line-height: 36px;
   padding-right: 3px;
 }
 .bee-Workspace-tab-close {
   width: 14px;
   height: 14px;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 14px;
   text-align: center;
-  color: #777;
-}
-.bee-Workspace-tab-close:hover {
-  color: white;
-  background-color: #800;
-  opacity: 0.4;
-  border-radius: 50%;
+  color: #414142;
+  margin: 11px 15px 0 15px;
+  font-weight: bold;
 }
 
 .bee-Workspace-tabPanel > div:only-of-type .bee-Workspace-tab-drop-down {
@@ -1568,7 +1534,7 @@
 }
 
 .bee-FooterContainer {
-  background-color: #eee;
+  background-color: #e3e3e3;
   display: flex;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -1667,29 +1633,31 @@
   text-decoration: underline;
 }
 
-.bee-CentralScrutinizer {
-  width: calc(100% - 12px);
-  height: calc(100% - 24px);
-  background-color: white;
-}
-
-.bee-CentralScrutinizer > .bee-StackHeader:hover {
-  background-color: #e4e4e4;
-}
-.bee-CentralScrutinizer > .bee-StackHeader-selected {
+.bee-CentralScrutinizer > .bee-StackHeader-selected > .bee-Appliance-label {
+  background-color: #414142;
   color: white;
-  text-shadow: 1px -1px 2px rgba(22,84,122,0.75);
-  background-image: linear-gradient(#3995cd 0%,#3995cd 17%,#3792ca 31%,#318bc1 55%,#2278ac 100%);
+  font-size: 14px;
+  font-weight: bold;
+  padding: 6px 12px 6px 12px;
+  border-radius: 5px;
+  margin-left: -12px;
 }
 
 .bee-CentralScrutinizer > .bee-StackContent {
-  border: 1px solid WhiteSmoke;
+  background-color: #e3e3e3;
 }
 
+.bee-Appliance {
+  color: #666;
+}
+.bee-Appliance:hover {
+  color: #414142;
+}
 .bee-Appliance-icon {
   position: absolute;
-  top: 4px;
-  left: 15px;
+  top: 6px;
+  left: 20px;
+  font-size: 14px;
 }
 .bee-Appliance-label {
   position: absolute;
@@ -1704,12 +1672,11 @@
 }
 .bee-Appliance-close:hover {
   color: red;
-  cursor: pointer;
 }
 
 .bee-Shell {
   width: 100%;
-  height: calc(100% - 3px);
+  height: calc(100% - 5px);
 }
 
 .bee-Tile {
@@ -1744,6 +1711,8 @@
 .bee-GridContainer-no-data .bee-auto-fit {
   visibility: hidden;
 }
+.bee-GridFormContainer-newRow .bee-GridContainer .bee-Header-control.bee-Action-filter,
+.bee-NewRowContainer .bee-GridContainer .bee-Header-control.bee-Action-filter, 
 .bee-GridContainer-no-data .bee-Header-control.bee-Action-delete,
 .bee-GridContainer-no-data .bee-Header-control.bee-Action-menu {
   display: none;
@@ -1929,12 +1898,12 @@
 .bee-Filters-initial {
   width: 10px;
   height: 10px;
-  border: 1px solid #777;
+  border: 2px solid #e8e8e8;
   border-radius: 50%;
   cursor: pointer; 
 }
 .bee-Filters-initial-checked {
-  background-color: silver;
+  background-color: #1EB2D8;
 }
 
 .bee-Filters-label {
@@ -2003,11 +1972,11 @@
 }
 
 .bee-InternalLink {
-  text-decoration: underline;
+  color: #414142;
   cursor: pointer;
 }
 .bee-InternalLink:hover {
-  color: #00e;
+  text-decoration: underline;
 }
 
 .bee-ActionCellLink {
@@ -2069,12 +2038,13 @@
   margin: 0;
   background-color: white;
   color: inherit;
-  border: 1px solid silver;
+  border: 1px solid #e3e3e3;
+  line-height: 25px;
 }
 
 .bee-TextBox,
 .bee-InputArea {
-  padding: 1px 2px;
+  padding: 1px 10px;
   font-family: inherit;
   font-size: inherit;
 }
@@ -2084,8 +2054,8 @@
 }
 
 .bee-ListBox[size="1"] {
-  padding-top: 0;
-  padding-bottom: 0;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .bee-InputRange {
@@ -2103,10 +2073,6 @@
 .bee-InputDate-active,
 .bee-InputTime-active {
   outline: #80c4f9 solid 1px;
-}
-
-.bee-TreeView-tree, .bee-TabbedPages-contentPanel, .bee-Workspace-contentPanel {
-  border-top : 1px solid #edede1;
 }
 
 .bee-GridSettings-dialog {
@@ -2208,9 +2174,6 @@
 }
 
 .bee-Copyright {
-  position: absolute;
-  left: 1ex;
-  bottom: 2px;
   cursor: pointer;
 }
 .bee-Copyright-logo {
@@ -2327,16 +2290,6 @@
   margin-left: 1em;
   cursor: pointer;
 }
-
-.bee-SlideDeck-progress::-webkit-progress-bar {
-/*   background-color: #eee; */
-}
-.bee-SlideDeck-progress::-webkit-progress-value {
-/*   background-color: #bada55; */
-} 
-.bee-SlideDeck-progress::-moz-progress-bar {
-/*   background-color: #bada55; */
-} 
 
 .bee-SlideDeck-repeat {
   margin-left: 0.5em;
@@ -2750,31 +2703,27 @@
 .bee-News-header {
   position: relative;
   height: 30px;
-  background-color: #f0eeef;  
+  background-color: #e3e3e3;
 }
 
 .bee-News-disclosure,
-.bee-News-refresh,
-.bee-News-settings {
+.bee-News-refresh {
   position: absolute;
   top: 5px;
-  color: #888;
+  color: #989898;
   font-size: large;
   padding: 1px 3px;
   cursor: pointer;
 }
-.bee-News-disclosure:hover,
-.bee-News-refresh:hover,
-.bee-News-settings:hover {
-  color: white;
-  background-color: #80c4f9;
-}
 
+.bee-News-refresh:hover {
+  color: black;
+}
 .bee-News-disclosure {
-  left: 3px;
+  left: 20px;
 }
 .bee-News-refresh {
-  right: 40px;
+  right: 27px;
 }
 .bee-News-settings {
   right: 10px;
@@ -2801,7 +2750,7 @@
 
 .bee-News-content {
   position: absolute;
-  top: 30px;
+  top: 200px;
   bottom: 0;
   left: 0;
   right: 0;
@@ -2809,8 +2758,6 @@
 }
 
 .bee-News-subscription-panel {
-  padding-top: 3px;
-  padding-bottom: 5px;
   border-bottom: 1px solid #ccc;
 }
 
@@ -2821,9 +2768,12 @@
   align-items: flex-start;
   -webkit-align-items: flex-start;
   -ms-flex-align: start;
+  height: 55px;
+  background-color: white;
+  margin-top: 10px;
 }
 .bee-News-subscription-header:hover {
-  background-color: #f2f2f2;
+  background-color: #f7f7f7;
 }
 .bee-News-subscription-label {
   flex: 1;
@@ -2831,27 +2781,29 @@
   -ms-flex: 1;
   max-height: 60px;
   overflow: auto;
-  font-weight: bold;
+  font-weight: normal;
+  font-size: 20px;
   cursor: pointer;
+  line-height: 55px;
 }
 
 .bee-News-subscription-disclosure,
 .bee-News-subscription-filter {
   display: inline-block;
-  color: #888;
+  color: #989898;
   padding: 1px 3px;
   cursor: pointer;
 }
 .bee-News-subscription-disclosure:hover,
 .bee-News-subscription-filter:hover {
-  color: white;
-  background-color: #80c4f9;
+  color: black;
 }
 
 .bee-News-subscription-disclosure {
   font-size: 15px;
-  margin-left: 1px;
+  margin-left: 20px;
   margin-right: 2px;
+  margin-top: 19px;
 }
 .bee-News-subscription-filter {
   font-size: large;
@@ -2860,16 +2812,20 @@
   border-radius: 4px;
 }
 
-.bee-News-subscription-new-size,
-.bee-News-subscription-upd-size {
-  margin-left: 2px;
-  border: 2px green;
-  color: #888;
-  border-radius: 4px;
+.bee-News-subscription-new-size.bee-Badge,
+.bee-News-subscription-upd-size.bee-Badge {
+  font-weight: bold;
+  border-radius: 20px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 30px;
+  width: 30px;
+  text-align: center;
+  padding: 0;
 }
 .bee-News-subscription-new-size {
-  background-color: #aaa;
-  color: white ! important;
+  background-color: #1eb2d8;
+  color: white;
 }
 .bee-News-subscription-upd-size {
   background-color: yellow;
@@ -2883,6 +2839,10 @@
   display: none;
 }
 
+.bee-News-subscription-content {
+  background-color: white;
+}
+
 .bee-News-headline-panel {
   display: flex;
   display: -webkit-flex;
@@ -2890,9 +2850,11 @@
   align-items: center;
   -webkit-align-items: center;
   -ms-flex-align: center;
+  height: 55px;
+  border-top: 1px solid #f2f2f2;
 }
 .bee-News-headline-panel:hover {
-  background-color: #f2f2f2;
+  background-color: #f7f7f7;
 }
 .bee-News-headline-panel:hover .bee-News-headline-dismiss {
   visibility: visible;
@@ -2905,7 +2867,7 @@
   border: 2px green;
   border-radius: 50%;
   display: inline-block;
-  margin-left: 1em;
+  margin-left: 20px;
   margin-right: 4px;
 }
 .bee-News-headline-new {
@@ -2922,6 +2884,7 @@
   max-height: 60px;
   overflow: auto;
   cursor: pointer;
+  font-size: 14px;
 }
 .bee-News-headline-caption:hover {
   text-decoration: underline;
@@ -3138,7 +3101,7 @@
   -webkit-flex: 1;
   -ms-flex: 1;
   color: #555;
-  margin: 5px 1em;
+  margin: 5px 1em 5px 20px;
   cursor: pointer;
 }
 .bee-report-settings-label:hover {
@@ -3209,10 +3172,13 @@
 }
 .bee-GridMenu-popup .bee-fa-label {
   font-size: large;
-  color: #888;
+  color: #414142;
 }
 .bee-GridMenu-table tr:hover .bee-fa-label {
   color: black;
+}
+.bee-GridMenu-label-cell:hover {
+  font-weight: bold;
 }
 
 .bee-CellGridColumn-rights {
@@ -3247,11 +3213,9 @@
   align-items: center;
   -webkit-align-items: center;
   -ms-flex-align: center;
-  border-bottom: 1px solid #ddd;
+  margin-left: 17px;
 }
-.bee-spaces-item:hover {
-  background-color: #f2f2f2;
-}
+
 .bee-spaces-item:hover .bee-spaces-edit,
 .bee-spaces-item:hover .bee-spaces-delete {
   visibility: visible;
@@ -3261,21 +3225,17 @@
   flex: 1;
   -webkit-flex: 1;
   -ms-flex: 1;
-  color: #555;
+  color: #414142;
   margin: 5px 1em;
   cursor: pointer;
-}
-.bee-spaces-label:hover {
-  text-decoration: underline;
-  color: #00e;
 }
 
 .bee-spaces-startup,
 .bee-spaces-edit,
 .bee-spaces-delete {
-  font-size: large;
+  font-size: medium;
   padding: 3px;
-  color: #555;
+  color: #414142;
 }
 .bee-spaces-startup {
   cursor: pointer;
@@ -3334,7 +3294,7 @@ textarea,
   border-collapse: collapse;
 }
 .bee-Form .bee-HtmlTable td {
-  padding-top: 5px;
+  padding-top: 20px;
 }
 .bee-LabelCell {
   text-align: right;
@@ -3424,151 +3384,339 @@ textarea,
   -webkit-align-items: center;
   -ms-flex-align: center;
 }
-.bee-Disclosure-header > div {
-  margin-left: 10px;
-}
 .bee-Disclosure-toggle {
   font-size: x-large;
   color: #555;
   cursor: pointer;
+  margin-left: 30px;
 }
 .bee-Disclosure-toggle:hover {
   color: black;
 }
 .bee-Disclosure-label {
+  margin-left: 10px;
   cursor: pointer;
+  font-size: 16px;
 }
 .bee-Disclosure-summary {
+  margin-left: 10px;
   font-size: 12px;
-  align-self: flex-start;
-  -webkit-align-self: flex-start;
-  -ms-flex-item-align: start;
+  padding-bottom: 5px;
 }
 
-.bee-Disclosure-open .bee-Disclosure-content {
-  max-height: 100vh;
-  opacity: 1;
-  transition: max-height 200ms linear, opacity 200ms linear;
+.bee-Disclosure-closed .bee-Disclosure-header {
+  height: 55px;
+  background-color: #fafafa; 
 }
 .bee-Disclosure-closed .bee-Disclosure-content {
-  max-height: 0;
-  opacity: 0;
-  transition: max-height 200ms linear, opacity 200ms linear;
+  height: 0;
+  overflow: hidden;
   pointer-events: none;
 }
 
-.bee-rep td {
-  padding: 3px 5px;
-  border: 1px solid #ddd;
-}
-.bee-rep-num {
-  text-align: right;
-  white-space: nowrap;
-}
-.bee-rep-cgroup-hdr, .bee-rep-tot-hdr {
-  text-align: right;
-}
-.bee-rep-cgroup {
-  text-align: center;
-}
-.bee-rep-rgroup, .bee-rep-rgroup-col-tot, .bee-rep-rgroup-tot {
-  font-style: italic;
-}
-.bee-rep-cgroup-tot-hdr, .bee-rep-col-hdr, .bee-rep-row-tot-hdr {
-  text-align: center;
-  font-weight: bold;
-}
-.bee-rep-row-hdr, .bee-rep-rgroup-tot, .bee-rep-row-tot, .bee-rep-col-tot, .bee-rep-tot, .bee-rep-tot-hdr {
-  font-weight: bold;
+.bee-Line {
+  border: 1px solid black;
 }
 
-.bee-rep-item {
-  display: inline-block;
-  background-color: antiquewhite;
-  margin-right: 5px;
-  margin-bottom: 5px;
-  padding: 2px;
-  border: 1px solid silver;
+.bee-CreateNew {
+  background-color: #6BAE45;
+  color: white;
   border-radius: 5px;
+  padding: 4px 8px 4px 8px;
+  font-weight: bold;
+  font-size: 13px;
+  text-transform: uppercase;
   cursor: pointer;
 }
-.bee-rep-item:hover {
-  background-color: lightyellow;
+.bee-CreateNew:hover {
+  background-color: #63a140;
+  color: white;
 }
-.bee-rep-item-calc {
-  color: blue;
+.bee-CreateNew:active {
+  background-color: #578d37;
 }
-.bee-rep-item-remove {
-  display: inline;
+
+.bee-CreateButton {
+  align-self: flex-start;
+  -webkit-align-self: flex-start;
+  -ms-flex-item-align: start;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-left: 30px;
+  padding: 10px 40px;
+  border-radius: 5px;
+  background-color: #1eb2d8;
+  color: white;
+  font-weight: bold;
   font-size: 15px;
-  margin-left: 1px;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
 }
-.bee-rep-item-remove:hover {
-  color: red;
+.bee-CreateButton:hover {
+  background-color: #1ca5c7;
 }
-
-.bee-EventsBoard-content {
-  background-color: #f5f5ed;
-  overflow: auto;
-  height: calc(100% - 35px);
-  width: 100%;
+.bee-CreateButton:active {
+  background-color: #1291b4;
 }
 
-.bee-EventsBoard-content-row {
+.bee-NewRow-menu-popup {
+  background-color: #107f9c;
+  color: white;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 2px 2px 5px #939393;
+  font-size: 14px;
+}
+.bee-NewRow-menu-panel td {
+  padding: 10px 20px;
+}
+.bee-NewRow-menu-panel tr:hover {
+  background-color: #0e7089;
+}
+.bee-NewRow-menu-item {
+  cursor: pointer;
+}
+
+.bee-MyEnvironment {
   display: flex;
   display: -webkit-flex;
   display: -ms-flexbox;
-  border-bottom: 1px solid #ccc;
-  padding: 2px 5px 2px;
+  margin-left: 32px;
+  margin-bottom: 15px;
+  color: #414142;
+}
+.bee-MyEnvironment .bee-fa-label {
+  margin-top: 2px;
+  cursor: auto;
+}
+.bee-MyEnvironment .bee-Label {
+  margin-left: 10px;
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: uppercase;
 }
 
-.bee-EventsBoard-content-col {
-  margin-left: 1ex;
-  display: inline-block;
-  margin: 4px;
-  min-width: 150px;
-  vertical-align: top;
-  overflow: auto;
-  max-height: 9em;
+.bee-OnlineUsersPhoto {
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  margin-left: 20px;
 }
 
-.bee-EventsBoard-content-col-PublisherPhoto {
-  width: 2.5em;
-  height: 2.5em;
-  max-width: 2.5em;
-  min-width: 2.5em;
-  align-self: center;
-  -webkit-align-self: center;
-  -ms-flex-item-align: center;
+.bee-OnlineUsers {
+  color: #6F6F6F;
+  font-size: 17px;
+  margin-right: 27px;
+  cursor: pointer;
+}
+.bee-OnlineUsers-Selected {
+  color: white;
+  font-size: 17px;
+  margin-right: 27px;
+  cursor: pointer;
 }
 
-.bee-EventsBoard-content-Photo {
+.bee-OnlineUserSize {
+  background-color: #63A140;
+  width: 15px;
+  height: 15px;
   text-align: center;
-  max-width: 100%;
-  max-height: 100%;
-  cursor: default;
+  position: absolute;
+  margin-top: -8px;
+  margin-left: 7px;
+  color: white;
+  font-weight: bold;
+  border-radius: 3px;
+  font-size: 10px;
 }
 
-.bee-EventsBoard-content-EventType {
-   font-weight: bolder;
+.bee-OnlineUserSize-None {
+  display: none;
 }
 
-.bee-EventsBoard-content-EventPublished {
-  
+.bee-PopupUsers {
+  background-color: #ffffff;
+  max-height: 600px;
+  overflow: auto;
 }
 
-.bee-EventsBoard-content-EventPublisher {
-  
+.bee-PopupUsersContent > tbody > tr {
+  border: 1px solid #E3E3E3;
+  height: 60px;
+}
+.bee-PopupUsersContent > tbody > tr:hover {
+  background-color: #F7F7F7;
+  cursor: pointer;
 }
 
-.bee-EventsBoard-content-EventNote {
-  white-space: pre-wrap;
+.bee-PopupUsersContent {
+  width: 230px;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-.bee-EventsBoard-content-col.bee-EventsBoard-content-col-EventNote.bee-prj-Events-EventNote {
+.bee-DataSelector,
+.bee-DataSelector-editableContainer,
+.bee-MultiSelector-container {
+  background-color: #f5f5f5;
+}
+
+.bee-OnlineEmailSize {
+  background-color: #63A140;
+  width: 15px;
+  height: 15px;
+  text-align: center;
+  position: absolute;
+  margin-top: -8px;
+  margin-left: 7px;
+  color: white;
+  font-weight: bold;
+  border-radius: 3px;
+  font-size: 10px;
+}
+.bee-OnlineEmail {
+  color: #6F6F6F;
+  font-size: 17px;
+  margin-right: 27px;
+  cursor: pointer;
+}
+.bee-OnlineEmail-Selected {
+  color: white;
+  font-size: 17px;
+  margin-right: 27px;
+  cursor: pointer;
+}
+
+.bee-OnlineEmailSize-None {
+  display: none;
+}
+
+.bee-NotificationBar {
+  width: 500px;
+  height: 100%;
+  outline: 9999px solid rgba(0,0,0,0.7);
+  background-color: #f2f2f2;
+}
+
+.bee-NotificationBar-Content {
   width: 100%;
 }
 
-.bee-EventsBoard-content-col.bee-EventsBoard-content-col-EventFiles.bee-prj-Events-content-col-EventFiles {
-  width: calc(100% - 10px);
+.bee-CalendarContainer {
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  background-color: #F2F2F2;
+  height: 100px;
+}
+
+.bee-MonthDay {
+  color: #9B9B9B;
+  font-size: 55px;
+  padding-right: 20px;
+  padding: 0 20px 0 20px;
+  font-weight: lighter;
+}
+
+.bee-MonthDayToday {
+  font-weight: bold;
+}
+
+.bee-WeekDay {
+  color: #999999;
+  font-weight: bold;
+  padding-left: 20px;
+}
+
+.bee-SettingsContainer {
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  padding-top: 20px;
+}
+
+.bee-SettingsIcon {
+  font-size: 20px;
+  padding: 0 15px 0 20px;
+  color: #989898;
+}
+
+.bee-HelpIcon {
+  font-size: 20px;
+  padding: 0 10px 0 15px;
+  color: #989898;
+}
+
+.bee-SettingsIcon:hover {
+  color: black;
+}
+
+.bee-HelpIcon:hover {
+  color: black;
+}
+
+.bee-UserPanel {
+  height: 60px;
+  background-color: #e8e8e8;
+}
+
+.bee-NewsSize {
+  background-color: #1EB2D8;
+  width: 15px;
+  height: 15px;
+  text-align: center;
+  position: absolute;
+  margin-top: 5px;
+  margin-left: -11px;
+  color: white;
+  font-weight: bold;
+  border-radius: 3px;
+  font-size: 10px;
+}
+
+.bee-NewsSize-None {
+  display: none;
+}
+
+.bee-AddBookmark {
+  width: 315px;
+  height: 170px;
+  background-color: white;
+  border: 1px solid #e3e3e3;
+}
+
+.bee-AddBookmark .bee-TextBox {
+  width: calc(100% - 15px);
+  margin-top: 25px;
+  margin-left: 8px;
+}
+
+.bee-AddBookmark .bee-InputConfirm {
+  background-color: #1EB2D8;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  border: none;
+}
+
+.bee-AddBookmark .bee-InputCommandGroup {
+  margin: 20px 0 0 8px;
+  text-align: left;
+}
+
+.bee-AddBookmark .bee-InputCancel {
+  background-color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  border: none;
+  position: absolute;
+  right: 0;
+}
+
+.bee-AddBookmark .bee-InputCommand {
+  width: 90px;
+}
+
+.bee-AddBookmark .bee-Dialog-action {
+  margin-right: 15px;
 }

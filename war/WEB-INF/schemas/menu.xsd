@@ -2,7 +2,7 @@
 <xs:schema targetNamespace="http://www.butent.com/menu" elementFormDefault="qualified"
   xmlns="http://www.butent.com/menu"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:type="http://www.butent.com/type">
+  xmlns:tp="http://www.butent.com/type">
 
   <xs:import namespace="http://www.butent.com/type" schemaLocation="types.xsd" />
 
@@ -67,12 +67,12 @@
   </xs:complexType>
 
   <xs:complexType name="menuType">
-    <xs:attribute name="name" type="type:nameType" use="required" />
+    <xs:attribute name="name" type="tp:nameType" use="required" />
     <xs:attribute name="label" type="xs:string" use="required" />
     <xs:attribute name="separator" type="xs:boolean" />
     <xs:attribute name="order" type="xs:int" />
     <xs:attribute name="parent" type="xs:string" />
-    <xs:attribute name="module" type="type:modules" />
-    <xs:attribute name="data" type="type:dataView" />
+    <xs:attribute name="module" type="tp:modules" />
+    <xs:attribute name="data" type="tp:dataView" />
   </xs:complexType>
 </xs:schema>

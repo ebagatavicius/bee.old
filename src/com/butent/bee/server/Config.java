@@ -60,23 +60,25 @@ public final class Config {
   private static List<String> textExtensions;
 
   static {
-    Class<?> z = Config.class;
-    String path = z.getResource(z.getSimpleName() + ".class").getPath();
+    File path = FileUtils.toFile(Config.class);
 
-    String sub = "/WEB-INF/";
-    String w = path.substring(path.indexOf('/'), path.indexOf(sub) + sub.length() - 1);
+    while (path != null) {
+      if (BeeUtils.same(path.getName(), "WEB-INF")) {
+        break;
+      }
+      path = path.getParentFile();
+    }
+    Assert.notNull(path);
 
-    File dir = new File(w);
-
-    WAR_DIR = dir.getParentFile();
-    WEB_INF_DIR = dir;
+    WEB_INF_DIR = path;
+    WAR_DIR = WEB_INF_DIR.getParentFile();
 
     ROOT_DIR = WAR_DIR.getParentFile();
     SOURCE_DIR = new File(ROOT_DIR, "src");
 
-    SCHEMA_DIR = new File(dir, "schemas");
-    CONFIG_DIR = new File(dir, "config");
-    LOCAL_DIR = new File(dir, "local");
+    SCHEMA_DIR = new File(WEB_INF_DIR, "schemas");
+    CONFIG_DIR = new File(WEB_INF_DIR, "config");
+    LOCAL_DIR = new File(WEB_INF_DIR, "local");
 
     LOG_DIR = new File(LOCAL_DIR, "logs");
 

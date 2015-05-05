@@ -8,6 +8,7 @@ import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.ElementSize;
 import com.butent.bee.client.output.Printable;
+import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
@@ -26,6 +27,7 @@ import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.ui.HasWidgetSupplier;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 public class RowPresenter extends AbstractPresenter implements Printable, SaveChangesEvent.Handler {
@@ -69,13 +71,15 @@ public class RowPresenter extends AbstractPresenter implements Printable, SaveCh
   public static final String STYLE_HEADER = BeeConst.CSS_CLASS_PREFIX + "RowHeader";
   public static final String STYLE_CAPTION = BeeConst.CSS_CLASS_PREFIX + "RowCaption";
 
+  private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.EDITOR);
+
   private static HeaderView createHeader(String caption, Set<Action> enabledActions,
       Set<Action> disabledActions) {
 
     HeaderView formHeader = new HeaderImpl();
     formHeader.asWidget().addStyleName(STYLE_HEADER);
 
-    formHeader.create(caption, false, false, null, null, enabledActions, disabledActions,
+    formHeader.create(caption, false, false, null, uiOptions, enabledActions, disabledActions,
         Action.NO_ACTIONS);
     formHeader.addCaptionStyle(STYLE_CAPTION);
 
@@ -99,6 +103,7 @@ public class RowPresenter extends AbstractPresenter implements Printable, SaveCh
 
     this.container = new Container(dataInfo, rowId, initialCaption);
     container.addStyleName(STYLE_CONTAINER);
+    container.addStyleName(UiOption.getStyleName(uiOptions));
 
     container.addTopHeightFillHorizontal(headerView.asWidget(), 0, headerView.getHeight());
     container.addTopBottomFillHorizontal(formView.asWidget(), headerView.getHeight(), 0);

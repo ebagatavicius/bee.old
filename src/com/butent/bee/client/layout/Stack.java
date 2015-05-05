@@ -111,6 +111,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
   }
 
   private static final class Revelation extends RafCallback {
+
     private static final double FROM = 0.2;
     private static final double TO = 1.0;
 
@@ -144,9 +145,18 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
 
   private static final String SELECTED_STYLE = HEADER_STYLE + "-selected";
 
+  private static final String KEY_MIN_HEIGHT = "min-height";
+
+  public static void setMinHeight(Widget widget, int height) {
+    Assert.notNull(widget);
+    DomUtils.setDataProperty(widget.getElement(), KEY_MIN_HEIGHT, height);
+  }
+
   private final Revelation revelation = new Revelation(200);
 
   private int selectedIndex = BeeConst.UNDEF;
+
+  private int minContentHeight;
 
   public Stack() {
     setElement(Document.get().createDivElement());
@@ -189,9 +199,7 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
   public void doLayout(boolean animate) {
     if (isAttached()) {
       layoutChildren(animate);
-      if (isOpen()) {
-        onResize();
-      }
+      resizeVisibleChildren();
     }
   }
 
@@ -218,6 +226,10 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
   @Override
   public String getIdPrefix() {
     return "stack";
+  }
+
+  public int getMinContentHeight() {
+    return minContentHeight;
   }
 
   public int getSelectedIndex() {
@@ -257,6 +269,13 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
 
   @Override
   public void onResize() {
+    if (isOpen()) {
+      layoutChildren(false);
+      resizeVisibleChildren();
+    }
+  }
+
+  private void resizeVisibleChildren() {
     for (Widget child : getChildren()) {
       if (child instanceof RequiresResize && DomUtils.isVisible(child)) {
         ((RequiresResize) child).onResize();
@@ -301,6 +320,10 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
   @Override
   public void setId(String id) {
     DomUtils.setId(this, id);
+  }
+
+  public void setMinContentHeight(int minContentHeight) {
+    this.minContentHeight = minContentHeight;
   }
 
   public void showWidget(int index) {
@@ -448,6 +471,28 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
         top += header.getSize();
       }
 
+      Widget widget = getVisibleWidget();
+
+      int offsetHeight = getOffsetHeight();
+
+      int minHeight = BeeUtils.unbox(DomUtils.getDataPropertyInt(widget.getElement(),
+          KEY_MIN_HEIGHT));
+      if (minHeight <= 0) {
+        minHeight = getMinContentHeight();
+      }
+
+      if (offsetHeight > 0 && minHeight > 0) {
+        int h = 0;
+        for (int i = getStackSize() - 1; i > getSelectedIndex(); i--) {
+          h += getHeader(i).getSize();
+        }
+
+        int diff = offsetHeight - top - h - minHeight;
+        if (diff < 0) {
+          bottom = diff;
+        }
+      }
+
       for (int i = getStackSize() - 1; i > getSelectedIndex(); i--) {
         Header header = getHeader(i);
         Style style = header.getElement().getStyle();
@@ -458,7 +503,6 @@ public class Stack extends ComplexPanel implements ProvidesResize, RequiresResiz
         bottom += header.getSize();
       }
 
-      Widget widget = getVisibleWidget();
       Style style = widget.getElement().getStyle();
 
       StyleUtils.setTop(style, top);

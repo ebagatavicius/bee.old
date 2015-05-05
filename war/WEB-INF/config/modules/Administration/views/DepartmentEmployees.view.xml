@@ -18,17 +18,25 @@
         <SimpleColumn name="LastName" />
         <SimpleColumn name="Photo" />
       </SimpleJoin>
+      <SimpleColumn name="Position" alias="PrimaryPosition" />
       <SimpleJoin name="Position" joinType="LEFT">
-        <SimpleColumn name="Name" alias="PositionName" />
+        <SimpleColumn name="Name" alias="PrimaryPositionName" />
       </SimpleJoin>
       <SimpleJoin name="Company" joinType="LEFT">
         <SimpleColumn name="Name" alias="CompanyName" />
       </SimpleJoin>
     </SimpleJoin>
+
+    <SimpleColumn name="Position" />
+    <SimpleJoin name="Position" joinType="LEFT">
+      <SimpleColumn name="Name" alias="PositionName" />
+    </SimpleJoin>
+
     <ExternalJoin name="DepartmentHead" source="Departments" joinType="LEFT">
       <IdColumn name="DepartmentHead" />
     </ExternalJoin>
   </Columns>
+
   <Order>
     <OrderBy column="LastName" />
     <OrderBy column="FirstName" />

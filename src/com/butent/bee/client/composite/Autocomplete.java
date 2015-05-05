@@ -255,7 +255,7 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
         case KeyCodes.KEY_ENTER:
           consume();
           if (getSelector().isShowing()) {
-            getSelector().handleKeyboardSelection(isInstant(), hasModifiers);
+            getSelector().handleKeyboardSelection(hasModifiers);
           } else if (BeeUtils.isEmpty(getValue())) {
             askOracle();
           } else if (!isWaiting()) {
@@ -373,16 +373,16 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
       return popup;
     }
 
-    private boolean handleKeyboardSelection(boolean instant, boolean hasModifiers) {
+    private boolean handleKeyboardSelection(boolean hasModifiers) {
       if (!isShowing()) {
         return false;
       }
-      if (!instant && !hasModifiers) {
+      if (!isInstant() && !hasModifiers) {
         return false;
       }
 
       MenuItem item = getMenu().getSelectedItem();
-      if (item == null && (hasModifiers || instant && getMenu().getItemCount() == 1)) {
+      if (item == null && (hasModifiers || isInstant() && getMenu().getItemCount() == 1)) {
         for (MenuItem it : getMenu().getItems()) {
           if (!isNavigationItem(it)) {
             item = it;
@@ -527,8 +527,6 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
 
   private static final int DEFAULT_VISIBLE_LINES = 10;
 
-  private static final Operator DEFAULT_SEARCH_TYPE = Operator.CONTAINS;
-
   private static final char SHOW_SELECTOR = '*';
 
   private final Callback callback = new Callback() {
@@ -550,12 +548,12 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
   private int visibleLines = DEFAULT_VISIBLE_LINES;
 
   private final SelectionOracle oracle;
-  private final Operator searchType;
 
   private final InputWidget input;
   private final Selector selector;
 
   private final InputEvents inputEvents = new InputEvents();
+  private final boolean instant;
 
   private final boolean embedded;
   private final int columnIdx;
@@ -586,11 +584,12 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
     this.columnIdx = dataInfo.getColumnIndex(relation.getSearchableColumns().get(0));
 
     this.oracle = new SelectionOracle(relation, dataInfo);
-    this.searchType =
-        (relation.getOperator() == null) ? DEFAULT_SEARCH_TYPE : relation.getOperator();
 
     this.input = new InputWidget();
     this.selector = new Selector(input.getElement(), relation.getSelectorClass());
+
+    Operator operator = relation.nvlOperator();
+    this.instant = operator == Operator.CONTAINS || operator == Operator.STARTS;
 
     oracle.addRowCountChangeHandler(new Consumer<Integer>() {
       @Override
@@ -1004,19 +1003,17 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
 
   private void askOracle() {
     String query = BeeUtils.trim(getValue());
-    Operator type = getSearchType();
     int start = getOffset();
     int size = getVisibleLines();
 
     if (getLastRequest() != null) {
-      if (!BeeUtils.equalsTrim(query, getLastRequest().getQuery())
-          || type != getLastRequest().getSearchType()) {
+      if (!BeeUtils.equalsTrim(query, getLastRequest().getQuery())) {
         start = 0;
         setOffset(start);
       }
     }
 
-    Request request = new Request(query, type, start, size);
+    Request request = new Request(query, start, size);
     if (request.equals(getLastRequest())) {
       return;
     }
@@ -1044,10 +1041,6 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
     return offset;
   }
 
-  private Operator getSearchType() {
-    return searchType;
-  }
-
   private Selector getSelector() {
     return selector;
   }
@@ -1065,8 +1058,7 @@ public final class Autocomplete extends Composite implements Editor, HasVisibleL
   }
 
   private boolean isInstant() {
-    Operator operator = getSearchType();
-    return Operator.CONTAINS.equals(operator) || Operator.STARTS.equals(operator);
+    return instant;
   }
 
   private boolean isWaiting() {

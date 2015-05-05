@@ -48,6 +48,8 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable, 
 
   private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "ResourceEditor-";
 
+  private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
+
   public static void open(final String item, final ViewCallback callback) {
     Assert.notEmpty(item);
     Assert.notNull(callback);
@@ -80,6 +82,7 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable, 
 
   public ResourceEditor(Resource resource) {
     super(STYLE_PREFIX + "view");
+    addStyleName(UiOption.getStyleName(uiOptions));
 
     this.uri = resource.getUri();
 
@@ -92,7 +95,7 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable, 
     }
 
     this.headerView = new HeaderImpl();
-    headerView.create(caption, false, true, null, EnumSet.of(UiOption.ROOT), actions,
+    headerView.create(caption, false, true, null, uiOptions, actions,
         Action.NO_ACTIONS, Action.NO_ACTIONS);
 
     if (!BeeUtils.isEmpty(uri) && !uri.equals(caption)) {

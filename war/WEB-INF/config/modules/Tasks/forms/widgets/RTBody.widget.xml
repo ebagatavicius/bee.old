@@ -40,7 +40,8 @@
 
     <row>
       <Label for="Company" />
-      <DataSelector source="Company" editPopup="true" newRowEnabled="false" />
+      <DataSelector source="Company" editPopup="true" newRowEnabled="false" choiceColumns="Name TypeName"
+          renderColumns="CompanyName CompanyTypeName"/>
       <Label for="Contact" />
       <DataSelector source="Contact" editPopup="true" newRowEnabled="false"
         renderColumns="ContactFirstName ContactLastName"

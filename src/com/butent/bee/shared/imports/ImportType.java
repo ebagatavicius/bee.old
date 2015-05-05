@@ -2,21 +2,21 @@ package com.butent.bee.shared.imports;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.i18n.LocalizableConstants;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.trade.TradeConstants;
-import com.butent.bee.shared.modules.transport.TransportConstants;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 public enum ImportType implements HasLocalizedCaption {
-  COSTS(true) {
+  COSTS {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.trImportCosts();
@@ -24,25 +24,29 @@ public enum ImportType implements HasLocalizedCaption {
 
     @Override
     protected void init() {
-      addRelationProperty(TransportConstants.COL_VEHICLE, TransportConstants.TBL_VEHICLES,
-          TransportConstants.COL_VEHICLE_NUMBER);
-      addDataProperty(TransportConstants.COL_COSTS_DATE);
-      addRelationProperty(TransportConstants.COL_COSTS_ITEM, TBL_ITEMS, COL_ITEM_NAME);
-      addDataProperty(TransportConstants.COL_COSTS_QUANTITY);
-      addDataProperty(TransportConstants.COL_COSTS_PRICE);
-      addRelationProperty(TransportConstants.COL_COSTS_CURRENCY, TBL_CURRENCIES, COL_CURRENCY_NAME);
-      addDataProperty(TradeConstants.COL_TRADE_VAT_PLUS);
-      addDataProperty(TransportConstants.COL_COSTS_VAT);
-      addDataProperty(TradeConstants.COL_TRADE_VAT_PERC);
-      addDataProperty(TransportConstants.COL_AMOUNT);
-      addRelationProperty(TransportConstants.COL_COSTS_SUPPLIER, TBL_COMPANIES, COL_COMPANY_NAME);
-      addDataProperty(TransportConstants.COL_NUMBER);
-      addRelationProperty(TransportConstants.COL_COSTS_COUNTRY, TBL_COUNTRIES, COL_COUNTRY_NAME);
-      addDataProperty(TransportConstants.COL_COSTS_NOTE);
-      addDataProperty(TransportConstants.COL_COSTS_EXTERNAL_ID);
+      LocalizableConstants locale = Localized.getConstants();
+
+      addSimpleProperty(VAR_IMPORT_SHEET, locale.sheetName());
+      addSimpleProperty(VAR_IMPORT_START_ROW, locale.startRow());
+      addSimpleProperty(VAR_IMPORT_DATE_FORMAT, locale.dateFormat());
+      addRelationProperty(COL_VEHICLE, locale.trVehicle(), TBL_VEHICLES);
+      addDataProperty(COL_COSTS_DATE, null);
+      addRelationProperty(COL_COSTS_ITEM, locale.item(), TBL_ITEMS);
+      addDataProperty(COL_COSTS_QUANTITY, null);
+      addDataProperty(COL_COSTS_PRICE, null);
+      addRelationProperty(COL_COSTS_CURRENCY, locale.currency(), TBL_CURRENCIES);
+      addDataProperty(TradeConstants.COL_TRADE_VAT_PLUS, null);
+      addDataProperty(COL_COSTS_VAT, null);
+      addDataProperty(TradeConstants.COL_TRADE_VAT_PERC, null);
+      addDataProperty(COL_AMOUNT, null);
+      addRelationProperty(COL_COSTS_SUPPLIER, locale.supplier(), TBL_COMPANIES);
+      addDataProperty(COL_NUMBER, null);
+      addRelationProperty(COL_COSTS_COUNTRY, locale.country(), TBL_COUNTRIES);
+      addDataProperty(COL_COSTS_NOTE, null);
+      addDataProperty(COL_COSTS_EXTERNAL_ID, null);
     }
   },
-  TRACKING(false) {
+  TRACKING {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.trImportTracking();
@@ -54,12 +58,11 @@ public enum ImportType implements HasLocalizedCaption {
 
       addSimpleProperty(VAR_IMPORT_LOGIN, locale.loginUserName());
       addSimpleProperty(VAR_IMPORT_PASSWORD, locale.loginPassword());
-      addRelationProperty(TransportConstants.COL_VEHICLE, TransportConstants.TBL_VEHICLES,
-          TransportConstants.COL_VEHICLE_NUMBER);
-      addRelationProperty(COL_COUNTRY, TBL_COUNTRIES, COL_COUNTRY_NAME);
+      addRelationProperty(COL_VEHICLE, locale.trVehicle(), TBL_VEHICLES);
+      addRelationProperty(COL_COUNTRY, locale.country(), TBL_COUNTRIES);
     }
   },
-  DATA(true) {
+  DATA {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.data();
@@ -67,35 +70,30 @@ public enum ImportType implements HasLocalizedCaption {
 
     @Override
     protected void init() {
+      addSimpleProperty(VAR_IMPORT_SHEET, Localized.getConstants().sheetName());
+      addSimpleProperty(VAR_IMPORT_START_ROW, Localized.getConstants().startRow());
     }
   };
 
-  private final Map<String, ImportProperty> properties = new LinkedHashMap<>();
+  private final List<ImportProperty> properties = new ArrayList<>();
 
-  private ImportType(boolean xls) {
-    if (xls) {
-      addSimpleProperty(VAR_IMPORT_SHEET, Localized.getConstants().sheetName());
-      addSimpleProperty(VAR_IMPORT_START_ROW, Localized.getConstants().startRow());
-      addSimpleProperty(VAR_IMPORT_DATE_FORMAT, Localized.getConstants().dateFormat());
-    }
+  private ImportType() {
     init();
   }
 
-  protected ImportProperty addDataProperty(String name) {
-    ImportProperty prop = new ImportProperty(name, null, true);
-    properties.put(prop.getName(), prop);
+  protected ImportProperty addDataProperty(String name, String caption) {
+    ImportProperty prop = new ImportProperty(name, caption, true);
+    properties.add(prop);
     return prop;
   }
 
-  protected void addRelationProperty(String name, String relTbl, String relFld) {
-    ImportProperty prop = addDataProperty(name);
-    prop.setRelTable(Assert.notEmpty(relTbl));
-    prop.setRelField(Assert.notEmpty(relFld));
+  protected void addRelationProperty(String name, String caption, String relation) {
+    ImportProperty prop = addDataProperty(name, caption);
+    prop.setRelation(Assert.notEmpty(relation));
   }
 
   protected void addSimpleProperty(String name, String caption) {
-    ImportProperty prop = new ImportProperty(name, caption, false);
-    properties.put(prop.getName(), prop);
+    properties.add(new ImportProperty(name, caption, false));
   }
 
   @Override
@@ -104,11 +102,7 @@ public enum ImportType implements HasLocalizedCaption {
   }
 
   public Collection<ImportProperty> getProperties() {
-    return Collections.unmodifiableCollection(properties.values());
-  }
-
-  public ImportProperty getProperty(String name) {
-    return properties.get(name);
+    return Collections.unmodifiableCollection(properties);
   }
 
   protected abstract void init();

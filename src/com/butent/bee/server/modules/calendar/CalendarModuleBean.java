@@ -685,7 +685,7 @@ public class CalendarModuleBean implements BeeModule {
 
   private ResponseObject doReport(RequestInfo reqInfo) {
     Integer paramRep = BeeUtils.toIntOrNull(reqInfo.getParameter(PARAM_REPORT));
-    if (!BeeUtils.isOrdinal(Report.class, paramRep)) {
+    if (!EnumUtils.isOrdinal(Report.class, paramRep)) {
       return ResponseObject.parameterNotFound(reqInfo.getService(), PARAM_REPORT);
     }
 
@@ -1412,7 +1412,7 @@ public class CalendarModuleBean implements BeeModule {
 
   private ResponseObject getReportOptions(RequestInfo reqInfo) {
     Integer report = BeeUtils.toIntOrNull(reqInfo.getParameter(PARAM_REPORT));
-    if (!BeeUtils.isOrdinal(Report.class, report)) {
+    if (!EnumUtils.isOrdinal(Report.class, report)) {
       return ResponseObject.parameterNotFound(reqInfo.getService(), PARAM_REPORT);
     }
 
@@ -1667,7 +1667,7 @@ public class CalendarModuleBean implements BeeModule {
     }
 
     Integer activeView = BeeUtils.toIntOrNull(reqInfo.getParameter(PARAM_ACTIVE_VIEW));
-    if (!BeeUtils.isOrdinal(ViewType.class, activeView)) {
+    if (!EnumUtils.isOrdinal(ViewType.class, activeView)) {
       return ResponseObject.parameterNotFound(SVC_SAVE_ACTIVE_VIEW, PARAM_ACTIVE_VIEW);
     }
 

@@ -1,6 +1,5 @@
 package com.butent.bee.shared.modules.administration;
 
-import com.butent.bee.server.utils.XmlUtils;
 import com.butent.bee.shared.data.BeeObject;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -41,7 +40,7 @@ public enum SysObject {
   };
 
   public String getFileExtension() {
-    return BeeUtils.join(".", getName(), XmlUtils.DEFAULT_XML_EXTENSION);
+    return BeeUtils.join(".", getName(), "xml");
   }
 
   public String getName() {
@@ -51,7 +50,7 @@ public enum SysObject {
   public abstract String getPath();
 
   public String getSchemaName() {
-    return BeeUtils.join(".", getName(), XmlUtils.DEFAULT_XSD_EXTENSION);
+    return BeeUtils.join(".", getName(), "xsd");
   }
 
   public static <T extends BeeObject> boolean register(T object, Map<String, T> cache,

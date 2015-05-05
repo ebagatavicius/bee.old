@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
-  xmlns:x="http://www.butent.com/expression"
 
-  name="ImportMappings"
-  source="ImportMappings"
-  caption="=trImportMappings"
-  >
+      name="ImportMappings" source="ImportMappings"
+      caption="=trImportMappings" newRowCaption="=trImportNewMapping"
+    >
   <Columns>
     <SimpleColumn name="Option" />
-    <SimpleColumn name="Value" />
     <SimpleColumn name="Mapping" />
   </Columns>
 </View>

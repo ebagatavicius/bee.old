@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="PersonFamily" source="PersonFamily" caption="=personFamaly" module="Classifiers.Contacts"
+  name="PersonFamily" source="PersonFamily" caption="=personFamily" module="Classifiers.Contacts"
   newRowForm="PersonFamily" newRowCaption="=newContactFamilyMember"
   > 
   <Columns>

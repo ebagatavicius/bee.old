@@ -95,7 +95,7 @@ public class DocumentsModuleBean implements BeeModule {
     List<SearchResult> docsSr = qs.getSearchResults(VIEW_DOCUMENTS,
         Filter.anyContains(Sets.newHashSet(COL_DOCUMENT_NUMBER, COL_REGISTRATION_NUMBER,
             COL_DOCUMENT_NAME, ALS_CATEGORY_NAME, ALS_TYPE_NAME,
-            ALS_PLACE_NAME, ALS_STATUS_NAME), query));
+            ALS_PLACE_NAME, ALS_STATUS_NAME, ALS_DOCUMENT_COMPANY_NAME), query));
 
     return docsSr;
   }

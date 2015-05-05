@@ -17,6 +17,9 @@
     <SimpleColumn name="Forwarder" />
     <SimpleJoin joinType="LEFT" name="Forwarder">
       <SimpleColumn name="Name" alias="ForwarderName" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="ForwarderTypeName" />
+      </SimpleJoin>
     </SimpleJoin>
     <SimpleColumn name="ForwarderVehicle" />
     <SimpleColumn name="ForwarderDriver" />

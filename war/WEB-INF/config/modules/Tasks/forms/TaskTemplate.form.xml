@@ -6,7 +6,7 @@
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
   
   name="TaskTemplate" viewName="TaskTemplates" caption="=crmTaskTemplate"
-  width="720" height="240"
+  width="720" height="285"
   >
   
   <Table style="border-collapse: collapse; margin-top: 1ex;" 

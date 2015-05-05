@@ -534,7 +534,6 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
     }
 
     if (adjustElement != null) {
-
       int x = adjustElement.getScrollLeft();
       int maxWidth = adjustElement.getClientWidth();
       if (x > 0 && adjustElement == editorElement.getParentElement()) {
@@ -545,10 +544,12 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
       if (x > 0 || left + width + horMargins > maxWidth) {
         left -= x;
         int newWidth = width;
+
         if (left < 0) {
           newWidth += left;
           left = 0;
         }
+
         if (left + newWidth + horMargins > maxWidth) {
           if (left > 0) {
             left = Math.max(0, maxWidth - newWidth - horMargins);
@@ -557,10 +558,17 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
             newWidth = maxWidth - left - horMargins;
           }
         }
+
         StyleUtils.setLeft(editorElement, left);
         if (newWidth > 0 && newWidth != width) {
           StyleUtils.setWidth(editorElement, newWidth);
         }
+      }
+
+      x = adjustElement.getOffsetLeft();
+      if (x > 0) {
+        left += x;
+        StyleUtils.setLeft(editorElement, left);
       }
 
       int y = adjustElement.getScrollTop();
@@ -573,10 +581,12 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
       if (y > 0 || top + height + vertMargins > maxHeight) {
         top -= y;
         int newHeight = height;
+
         if (top < 0) {
           newHeight += top;
           top = 0;
         }
+
         if (top + newHeight + vertMargins > maxHeight) {
           if (top > 0) {
             top = Math.max(0, maxHeight - newHeight - vertMargins);
@@ -585,6 +595,7 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
             newHeight = maxHeight - top - vertMargins;
           }
         }
+
         StyleUtils.setTop(editorElement, top);
         if (newHeight > 0 && newHeight != height) {
           StyleUtils.setHeight(editorElement, newHeight);

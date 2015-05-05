@@ -184,6 +184,7 @@
 .bee-places-table {
   border-spacing: 0;
   font-size: smaller;
+  line-height: initial;
 }
 .bee-places-table td {
   padding-top: 0px !important;

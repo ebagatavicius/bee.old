@@ -1349,18 +1349,6 @@ public final class BeeUtils {
     return isInt(s) && toInt(s) >= 0;
   }
 
-  /**
-   * @param clazz the class to check for Enum constants
-   * @param idx the index to check
-   * @return true if an Enum with the specified index {@code idx} exists, otherwise false.
-   */
-  public static <E extends Enum<?>> boolean isOrdinal(Class<E> clazz, Integer idx) {
-    if (clazz == null || idx == null || idx < 0) {
-      return false;
-    }
-    return idx < clazz.getEnumConstants().length;
-  }
-
   public static boolean isPositive(BigDecimal x) {
     return (x == null) ? false : x.compareTo(BigDecimal.ZERO) > 0;
   }
@@ -1426,6 +1414,10 @@ public final class BeeUtils {
    */
   public static boolean isPrefixOrSuffix(CharSequence src, char ch) {
     return (isPrefix(src, ch) || isSuffix(src, ch)) && !containsOnly(src, ch);
+  }
+
+  public static boolean isQuoted(String s) {
+    return isDelimited(s, BeeConst.CHAR_QUOT) || isDelimited(s, BeeConst.CHAR_APOS);
   }
 
   /**
@@ -2515,22 +2507,10 @@ public final class BeeUtils {
     return result;
   }
 
-  /**
-   * Checks if {@code x} is a Boolean value.
-   * 
-   * @param x value to check
-   * @return true if the value is Boolean, otherwise false.
-   */
   public static boolean toBoolean(int x) {
     return x == BeeConst.INT_TRUE;
   }
 
-  /**
-   * Checks if {@code s} is a Boolean value.
-   * 
-   * @param s value to check
-   * @return true if the value is Boolean, otherwise false.
-   */
   public static boolean toBoolean(String s) {
     if (isEmpty(s)) {
       return false;
@@ -2974,7 +2954,11 @@ public final class BeeUtils {
   }
 
   public static String unquote(String s) {
-    return removePrefixAndSuffix(s, BeeConst.CHAR_QUOT);
+    if (isQuoted(s)) {
+      return s.substring(1, s.length() - 1);
+    } else {
+      return s;
+    }
   }
 
   /**

@@ -12,7 +12,7 @@
 
   <row>
     <Label for="Date" style="&lbl;" />
-    <InputDateTime source="Date" style="width: 120px;" visible="true" />
+    <InputDateTime source="Date" style="width: 10em;" visible="true" />
 
     <Label for="Number" style="&lbl;" />
     <InputText source="Number" style="width: 120px;" />

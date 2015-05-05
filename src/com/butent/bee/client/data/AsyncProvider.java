@@ -47,11 +47,11 @@ public class AsyncProvider extends Provider {
     private Range<Integer> displayRange;
     private boolean preserveActiveRow;
 
-    private Integer rpcId;
     private long startTime;
 
     private QueryCallback(Range<Integer> queryRange, Range<Integer> displayRange,
         boolean preserveActiveRow) {
+
       this.queryRange = queryRange;
       this.displayRange = displayRange;
       this.preserveActiveRow = preserveActiveRow;
@@ -59,8 +59,8 @@ public class AsyncProvider extends Provider {
 
     @Override
     public void onSuccess(BeeRowSet rowSet) {
-      Integer id = getRpcId();
-      if (id != null) {
+      int id = getRpcId();
+      if (id > 0) {
         onResponse(getStartTime());
         if (pendingRequests.containsKey(id)) {
           pendingRequests.remove(id);
@@ -98,20 +98,12 @@ public class AsyncProvider extends Provider {
       return queryRange;
     }
 
-    private Integer getRpcId() {
-      return rpcId;
-    }
-
     private long getStartTime() {
       return startTime;
     }
 
     private void setDisplayRange(Range<Integer> displayRange) {
       this.displayRange = displayRange;
-    }
-
-    private void setRpcId(Integer rpcId) {
-      this.rpcId = rpcId;
     }
 
     private void setStartTime(long startTime) {
@@ -172,6 +164,7 @@ public class AsyncProvider extends Provider {
 
     private void scheduleQuery(Filter flt, Order ord, int offset, int limit, CachingPolicy cp,
         QueryCallback cb) {
+
       cancel();
 
       this.queryFilter = flt;
@@ -238,6 +231,7 @@ public class AsyncProvider extends Provider {
   public AsyncProvider(HasDataTable display, HandlesActions actionHandler,
       NotificationListener notificationListener,
       String viewName, List<BeeColumn> columns, CachingPolicy cachingPolicy) {
+
     this(display, actionHandler, notificationListener,
         viewName, columns, null, null,
         null, cachingPolicy, null, null);

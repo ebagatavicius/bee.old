@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
-import com.butent.bee.client.Callback;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
@@ -63,7 +63,8 @@ public class TransportSelectorHandler implements Handler {
     if (target == null) {
       return;
     }
-    Callback<String> consumer = new Callback<String>() {
+
+    RpcCallback<String> consumer = new RpcCallback<String>() {
       @Override
       public void onSuccess(String result) {
         int days = BeeUtils.toInt(result);

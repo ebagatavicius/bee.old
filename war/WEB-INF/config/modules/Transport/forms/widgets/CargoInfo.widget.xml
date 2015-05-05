@@ -27,9 +27,9 @@
 
   <FlowPanel style="&section;">
     <Label text="=date" style="&labelLeft;" />
-    <InputDateTime source="LoadingDate" style="&inline; width:110px; margin-right:80px;" />
+    <InputDateTime source="LoadingDate" style="&inline; width:11em; margin-right:47px;" />
     <Label text="=date" class="bee-required" style="&labelRight;" />
-    <InputDateTime source="UnloadingDate" style="&inline; width:110px;" required="true" />
+    <InputDateTime source="UnloadingDate" style="&inline; width:11em;" required="true" />
   </FlowPanel>
 
   <FlowPanel style="&section;">
@@ -113,18 +113,18 @@
   <FlowPanel style="&section;">
     <Label text="=quantity" style="&labelLeft;" />
     <InputDecimal source="Quantity" format="#.00" style="&input;" />
-    <DataSelector source="QuantityUnit" style="&inline; width:40px; margin-left:5px;" editEnabled="false" />
+    <DataSelector source="QuantityUnit" style="&inline; width:5em; margin-left:5px;" editEnabled="false" />
     <Label text="=weight" style="&labelRight;" />
     <InputDecimal source="Weight" format="#.000" style="&input;" />
-    <DataSelector source="WeightUnit" style="&inline; width:40px; margin-left:5px;" editEnabled="false" />
+    <DataSelector source="WeightUnit" style="&inline; width:5em; margin-left:5px;" editEnabled="false" />
   </FlowPanel>
 
   <FlowPanel style="&section;">
     <Label text="=volume" style="&labelLeft;" />
     <InputDecimal source="Volume" format="#.000" style="&input;" />
-    <DataSelector source="VolumeUnit" style="&inline; width:40px; margin-left:5px;" editEnabled="false" />
+    <DataSelector source="VolumeUnit" style="&inline; width:5em; margin-left:5px;" editEnabled="false" />
     <Label text="=valuation" style="&labelRight;" />
     <InputMoney source="Value" style="&input;" />
-    <DataSelector source="ValueCurrency" style="&inline; width:40px; margin-left:5px;" editEnabled="false" />
+    <DataSelector source="ValueCurrency" style="&inline; width:5em; margin-left:5px;" editEnabled="false" />
   </FlowPanel>
 </FlowPanel>

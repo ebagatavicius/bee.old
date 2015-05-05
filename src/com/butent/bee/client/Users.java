@@ -9,6 +9,7 @@ import com.butent.bee.client.dialog.StringCallback;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.render.PhotoRenderer;
 import com.butent.bee.client.screen.Domain;
+import com.butent.bee.client.screen.ScreenImpl;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.websocket.Endpoint;
@@ -105,7 +106,7 @@ public class Users {
                     new TextMessage(fromUser, BeeUtils.trim(value))));
               }
             }
-          }, null, NotificationMessage.MAX_LENGTH);
+          }, null, null, NotificationMessage.MAX_LENGTH);
         }
       });
 
@@ -170,6 +171,7 @@ public class Users {
     OnlineWidget widget = new OnlineWidget(sessionId, userData);
     onlinePanel.add(widget);
 
+    ScreenImpl.updateOnlineUsers();
     updateHeader(initial);
   }
 
@@ -182,6 +184,7 @@ public class Users {
     return (userData == null) ? null : userData.getFirstName();
   }
 
+  @Deprecated
   public IdentifiableWidget getOnlinePanel() {
     return onlinePanel;
   }
@@ -366,6 +369,7 @@ public class Users {
         onlinePanel.remove(widget);
       }
 
+      ScreenImpl.updateOnlineUsers();
       updateHeader(false);
 
     } else {

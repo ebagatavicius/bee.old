@@ -2,7 +2,7 @@
 
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
 	xmlns:xi="http://www.w3.org/2001/XInclude" name="AnnouncementsBoard"
-	caption="=announcementsBoard" enabledActions="refresh">
+	caption="=announcements" enabledActions="refresh add" disabledActions="delete">
 
 	<Table name="AdsContent" class="bee-discuss-adsFormContent"
 		style="background-color: white; margin-left: 1em; word-wrap: normal; margin: 1ex; width: 95%; border-spacing: 0px;">
