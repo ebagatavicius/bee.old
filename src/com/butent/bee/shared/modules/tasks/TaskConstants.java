@@ -249,6 +249,7 @@ public final class TaskConstants {
 
   public static final String COL_OWNER = "Owner";
   public static final String COL_EXECUTOR = "Executor";
+  public static final String COL_TASK_EXECUTOR = "TaskExecutor";
 
   public static final String COL_TASK_ID = "TaskID";
 

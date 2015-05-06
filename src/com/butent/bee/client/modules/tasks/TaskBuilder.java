@@ -22,6 +22,7 @@ import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.Queries.RowSetCallback;
+import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -63,6 +64,7 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.HasCheckedness;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -221,6 +223,8 @@ class TaskBuilder extends AbstractFormInterceptor {
       });
     } else if (BeeUtils.same(NAME_EXECUTORS, name) && (widget instanceof MultiSelector)) {
       executors = (MultiSelector) widget;
+      executors.addSelectorHandler(getExecutorsSelectorHandler());
+
     } else if (BeeUtils.same(NAME_OBSERVERS, name) && (widget instanceof MultiSelector)) {
       observers = (MultiSelector) widget;
     } else if (BeeUtils.same(NAME_OBSERVER_GROUPS, name) && (widget instanceof MultiSelector)) {
@@ -416,6 +420,63 @@ class TaskBuilder extends AbstractFormInterceptor {
     });
   }
 
+  private static void fillObserversByUserGroups(SelectorEvent event, final FormView form,
+      final IsRow row) {
+
+    if (event == null || form == null || row == null) {
+      return;
+    }
+
+    MultiSelector selector = null;
+
+    if (event.getSelector() instanceof MultiSelector) {
+      selector = (MultiSelector) event.getSelector();
+    }
+
+    if (selector == null) {
+      return;
+    }
+
+    // LogUtils.getRootLogger().debug("usdas id", selector.getIds().);
+
+    if (BeeUtils.isEmpty(selector.getIds())) {
+      return;
+    }
+
+    Long lastId = selector.getIds().get(selector.getIds().size() - 1);
+
+    Filter observerFilter =
+        Filter.and(Filter.equals(COL_TASK_EXECUTOR, lastId), Filter.equals(
+            AdministrationConstants.COL_USER_GROUP_SETTINGS_VISIBILITY,
+            AdministrationConstants.UserGroupVisibility.PUBLIC),
+            Filter.notEquals(AdministrationConstants.COL_USER, lastId));
+
+    Queries.getRowSet(AdministrationConstants.VIEW_USER_GROUP_MEMBERS, Lists
+        .newArrayList(AdministrationConstants.COL_USER), observerFilter, new RowSetCallback() {
+
+      @Override
+      public void onSuccess(BeeRowSet result) {
+        if (result.isEmpty()) {
+          return;
+        }
+
+        List<Long> obs = DataUtils.parseIdList(row.getProperty(PROP_OBSERVERS));
+
+        for (IsRow grpRow : result) {
+          Long userId = grpRow.getLong(result.getColumnIndex(AdministrationConstants.COL_USER));
+
+          if (!obs.contains(userId)) {
+            obs.add(userId);
+          }
+        }
+
+        row.setProperty(PROP_OBSERVERS, DataUtils.buildIdList(obs));
+
+        form.refreshBySource(PROP_OBSERVERS);
+      }
+    });
+  }
+
   private static void setProjectStagesFilter(FormView form, IsRow row) {
     int idxProjectOwner = form.getDataIndex(ALS_PROJECT_OWNER);
     int idxProject = form.getDataIndex(ProjectConstants.COL_PROJECT);
@@ -521,6 +582,18 @@ class TaskBuilder extends AbstractFormInterceptor {
     } else {
       return null;
     }
+  }
+
+  private SelectorEvent.Handler getExecutorsSelectorHandler() {
+    return new SelectorEvent.Handler() {
+
+      @Override
+      public void onDataSelector(SelectorEvent event) {
+        if (EnumUtils.in(event.getState(), State.CHANGED, State.EDITED, State.INSERTED)) {
+          fillObserversByUserGroups(event, getFormView(), getActiveRow());
+        }
+      }
+    };
   }
 
   private DateTime getEnd(DateTime start, String duration) {
