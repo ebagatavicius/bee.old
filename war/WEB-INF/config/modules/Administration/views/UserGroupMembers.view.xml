@@ -6,6 +6,10 @@
   >
   <Columns>
     <SimpleColumn name="Group" />
+    <SimpleJoin name="Group" joinType="LEFT">
+      <SimpleColumn name="TaskExecutor" />
+      <SimpleColumn name="Visibility" />
+    </SimpleJoin>
     <SimpleColumn name="User" />
 
     <SimpleJoin name="User" joinType="INNER">
