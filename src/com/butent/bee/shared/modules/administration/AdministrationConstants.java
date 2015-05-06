@@ -351,6 +351,7 @@ public final class AdministrationConstants {
   public static final String FORM_DEPARTMENT = "Department";
   public static final String FORM_COMPANY_STRUCTURE = "CompanyStructure";
   public static final String FORM_NEW_ROLE = "NewRole";
+  public static final String FORM_USER_GROUP = "UserGroup";
 
   public static final String FORM_IMPORTS = "Imports";
   public static final String FORM_IMPORT_DATA = "ImportData";
