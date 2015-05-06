@@ -8,7 +8,9 @@
     <String name="Name" precision="50" notNull="true" label="=name" />
     <Relation name="Owner" notNull="true" relation="Users" cascade="DELETE"
       defExpr="CURRENT_USER" label="=owner" />
-      
+
+    <Relation name="TaskExecutor" relation="Users" cascade="SET_NULL" label="=crmTaskExecutor" />
+
     <Enum name="Visibility" key="UserGroupVisibility" notNull="true" defValue="0"
       label="=userGroupVisibility" />
 

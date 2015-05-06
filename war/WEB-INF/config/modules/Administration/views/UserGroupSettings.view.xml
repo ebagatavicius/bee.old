@@ -8,6 +8,16 @@
   <Columns>
     <SimpleColumn name="Name" />
     <SimpleColumn name="Owner" />
+    <SimpleColumn name="TaskExecutor" />
+    <SimpleJoin name="TaskExecutor" joinType="LEFT">
+      <SimpleColumn name="CompanyPerson" alias="ExecutorPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn alias="ExecutorFirstName" name="FirstName" />
+          <SimpleColumn alias="ExecutorLastName" name="LastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
 
     <SimpleColumn name="Visibility" />
     <SimpleColumn name="Notes" />

@@ -7,6 +7,7 @@
   <g:columns>
     <DataColumn name="Name" minWidth="150" flexGrow="1" />
     <DataColumn name="Visibility" width="100" />
+    <RelColumn name="TaskExecutor" />
     <DataColumn name="Notes" minWidth="100" flexGrow="2" whiteSpace="normal" />
   </g:columns>
 </g:Grid>
