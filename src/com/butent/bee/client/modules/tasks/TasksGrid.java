@@ -68,7 +68,6 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
-import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.modules.tasks.TaskType;
 import com.butent.bee.shared.modules.tasks.TaskUtils;
@@ -437,8 +436,9 @@ class TasksGrid extends AbstractGridInterceptor {
 
       @Override
       public void onSuccess(final BeeRow projectRow) {
-        final List<Long> observers =
-            DataUtils.parseIdList(selectedRow.getProperty(TaskConstants.PROP_OBSERVERS));
+        final List<Long> observers = Lists.newArrayList();
+        // Temporary disabled create project users
+        // DataUtils.parseIdList(selectedRow.getProperty(TaskConstants.PROP_OBSERVERS));
 
         if (!BeeUtils.isEmpty(observers)) {
           addProjectUsers(observers, projectRow);

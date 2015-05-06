@@ -1,7 +1,7 @@
 .bee-discuss-comment-container {
   margin-top: 2em;
   margin-bottom: 2em;
-  border-top: 1px solid #ccc;
+  border: 1px solid #ccc;
   background: white;
 }
 

@@ -8,9 +8,9 @@
   <!ENTITY inp2x "width: 500px;">
   <!ENTITY inp2y "width: 500px;">
   
-  <!ENTITY spinner "width: 40px;">
+  <!ENTITY spinner "width: 5em;">
   
-  <!ENTITY tod "width: 50px;">
+  <!ENTITY tod "width: 5em;">
   <!ENTITY timeStep "30">
 ]>
 <FlowPanel xmlns="http://www.butent.com/widget">
@@ -28,9 +28,9 @@
 
     <row>
       <Label for="ScheduleFrom" />
-      <InputDate source="ScheduleFrom" style="width: 100px;" />
+      <InputDate source="ScheduleFrom" style="width: 11em;" />
       <Label name="ScheduleUntil" for="ScheduleUntil" />
-      <InputDate source="ScheduleUntil" style="width: 100px;" />
+      <InputDate source="ScheduleUntil" style="width: 11em;" />
     </row>
 
     <row>
