@@ -369,6 +369,8 @@ public class GridLoaderBean {
           dst.setFormat(value.trim());
         } else if (BeeUtils.same(key, UiConstants.ATTR_HORIZONTAL_ALIGNMENT)) {
           dst.setHorAlign(value.trim());
+        } else if (BeeUtils.same(key, UiConstants.ATTR_VERTICAL_ALIGNMENT)) {
+          dst.setVertAlign(value.trim());
         } else if (BeeUtils.same(key, UiConstants.ATTR_WHITE_SPACE)) {
           dst.setWhiteSpace(value.trim());
 

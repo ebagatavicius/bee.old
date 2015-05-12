@@ -13,12 +13,14 @@ import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.render.HasCellRenderer;
 import com.butent.bee.client.style.HasTextAlign;
+import com.butent.bee.client.style.HasVerticalAlign;
 import com.butent.bee.client.style.HasWhiteSpace;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.shared.EventState;
 import com.butent.bee.shared.HasOptions;
 import com.butent.bee.shared.HasScale;
 import com.butent.bee.shared.css.values.TextAlign;
+import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.css.values.WhiteSpace;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.HasValueType;
@@ -37,7 +39,7 @@ import java.util.List;
  */
 
 public abstract class AbstractColumn<C> implements HasValueType, HasOptions, HasWhiteSpace,
-    HasTextAlign {
+    HasTextAlign, HasVerticalAlign {
 
   private final AbstractCell<C> cell;
 
@@ -46,7 +48,9 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
 
   private boolean sortable;
 
-  private TextAlign hAlign;
+  private TextAlign textAlign;
+  private VerticalAlign verticalAlign;
+
   private WhiteSpace whiteSpace;
 
   private String options;
@@ -134,10 +138,15 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
 
   @Override
   public TextAlign getTextAlign() {
-    return hAlign;
+    return textAlign;
   }
 
   public abstract C getValue(IsRow row);
+
+  @Override
+  public VerticalAlign getVerticalAlign() {
+    return verticalAlign;
+  }
 
   @Override
   public WhiteSpace getWhiteSpace() {
@@ -158,9 +167,9 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
     }
 
     if (styleRef == null && type != null && sheet != null) {
-      TextAlign textAlign = getTextAlign();
-      if (textAlign == null) {
-        textAlign = UiHelper.getDefaultHorizontalAlignment(type);
+      TextAlign ta = getTextAlign();
+      if (ta == null) {
+        ta = UiHelper.getDefaultHorizontalAlignment(type);
       }
 
       NumberFormat numberFormat = null;
@@ -175,11 +184,11 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
         }
       }
 
-      if (textAlign != null || numberFormat != null) {
+      if (ta != null || numberFormat != null) {
         XStyle style = new XStyle();
 
-        if (textAlign != null) {
-          style.setTextAlign(textAlign);
+        if (ta != null) {
+          style.setTextAlign(ta);
         }
         if (numberFormat != null) {
           style.setFormat(numberFormat.getPattern());
@@ -238,8 +247,13 @@ public abstract class AbstractColumn<C> implements HasValueType, HasOptions, Has
   }
 
   @Override
-  public void setTextAlign(TextAlign align) {
-    this.hAlign = align;
+  public void setTextAlign(TextAlign textAlign) {
+    this.textAlign = textAlign;
+  }
+
+  @Override
+  public void setVerticalAlign(VerticalAlign verticalAlign) {
+    this.verticalAlign = verticalAlign;
   }
 
   @Override

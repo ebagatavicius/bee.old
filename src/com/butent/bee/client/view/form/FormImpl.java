@@ -321,7 +321,6 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
   private static final BeeLogger logger = LogUtils.getLogger(FormImpl.class);
 
-  private static final String STYLE_FORM = BeeConst.CSS_CLASS_PREFIX + "Form";
   private static final String STYLE_FORM_DISABLED = BeeConst.CSS_CLASS_PREFIX + "Form-"
       + StyleUtils.SUFFIX_DISABLED;
 
@@ -576,7 +575,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
 
     if (addStyle) {
       StyleUtils.makeAbsolute(root.asWidget());
-      root.asWidget().addStyleName(STYLE_FORM);
+      root.asWidget().addStyleName(StyleUtils.NAME_FORM);
     }
     setRootWidget(root);
 

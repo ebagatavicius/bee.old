@@ -6,14 +6,14 @@
   <g:columns>
     <DataColumn name="Name" visible="true" />
     <RelColumn name="CompanyType" />
-    <RelColumn name="CompanyGroup" />
+    <RelColumn name="CompanyGroup" filterSupplier="value" />
     <RelColumn name="CompanyPriority" />
     <DataColumn name="Code" />
     <DataColumn name="VATCode" visible="false" />
     <DataColumn name="Phone" />
     <DataColumn name="Mobile" />
     <DataColumn name="Fax" visible="false" />
-    <RelColumn name="EmailId" editEnabled="true" />
+    <RelColumn name="EmailId" editEnabled="true" filterSupplier="value" />
 
     <DataColumn name="Address" />
     <DataColumn name="PostIndex" />

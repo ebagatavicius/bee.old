@@ -35,6 +35,7 @@
     <xs:attribute name="format" type="xs:normalizedString" />
     <xs:attribute name="scale" type="xs:unsignedByte" />
     <xs:attribute name="horizontalAlignment" type="ui:horizontalAlignmentType" />
+    <xs:attribute name="verticalAlignment" type="ui:verticalAlignmentType" />
     <xs:attribute name="whiteSpace" type="ui:whiteSpaceType" />
     <xs:attribute name="cellType" type="ui:cellType" />
     <xs:attribute name="cellResizable" type="xs:boolean" />
@@ -224,6 +225,7 @@
     <xs:attribute name="format" type="xs:normalizedString" />
     <xs:attribute name="scale" type="xs:unsignedByte" />
     <xs:attribute name="horizontalAlignment" type="ui:horizontalAlignmentType" />
+    <xs:attribute name="verticalAlignment" type="ui:verticalAlignmentType" />
     <xs:attribute name="whiteSpace" type="ui:whiteSpaceType" />
     <xs:attribute name="options" type="xs:normalizedString" />
   </xs:complexType>

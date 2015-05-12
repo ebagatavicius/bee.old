@@ -42,7 +42,7 @@
     </DataColumn>
     
     <CalcColumn name="ItemPrices" type="string" cellType="html" label="=taItemPrices" width="100"
-      exportable="false" />
+      exportable="false" verticalAlignment="middle" />
   </g:columns>
 
   <xi:include href="columns/TradeActDiscount.columns.xml" />

@@ -11,8 +11,8 @@
 }
 
 .bee-crm-taskEvent-row-new {
-  border-left-width: 5px; 
-  border-left-color: #a1bff5; 
+  border-left-width: 3px;
+  border-left-color: #1ca5c7;
   border-left-style: solid; 
 }
 
@@ -158,24 +158,14 @@
 
 .bee-crm-Mode-new,
 .bee-crm-Mode-upd {
-  width: 13px;
-  height: 13px;
-  border: 1px solid silver;
-  border-radius: 50%;
-  display: inline-block;
+  width: 3px;
+  height: 100%;
 }
 .bee-crm-Mode-new {
-  background-color: lightgreen;
+  background-color: #1ca5c7;
 }
 .bee-crm-Mode-upd {
-  background-color: yellow;
-}
-
-.bee-CellGridActiveRow .bee-crm-Mode-new,
-.bee-CellGridActiveRow .bee-crm-Mode-upd {
-  border: 2px dashed blue;
-  animation: rotate 2s linear infinite;
-  -webkit-animation: rotate 2s linear infinite;
+  background-color: #ffb300;
 }
 
 .bee-crm-taskEvent-col-Photo {

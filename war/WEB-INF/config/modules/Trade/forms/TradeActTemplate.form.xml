@@ -25,7 +25,7 @@
 
       <row>
         <Label for="Until" />
-        <InputDateTime source="Until" style="width: 120px;" />
+        <InputDateTime source="Until" style="width: 11em;" />
 
         <Label for="Series" />
         <DataSelector source="Series" newRowEnabled="false" style="width: 120px;" />

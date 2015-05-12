@@ -16,7 +16,7 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
 
   private enum Serial {
     AGGREGATE, EXPRESSION, EVALUATOR, TYPE, TEXT, HTML,
-    FORMAT, HOR_ALIGN, WHITE_SPACE, SCALE, OPTIONS
+    FORMAT, HOR_ALIGN, VERT_ALIGN, WHITE_SPACE, SCALE, OPTIONS
   }
 
   private static final String ATTR_AGGREGATE = "aggregate";
@@ -43,6 +43,7 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
 
   private String format;
   private String horAlign;
+  private String vertAlign;
   private String whiteSpace;
 
   private Integer scale;
@@ -98,6 +99,9 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
         case HOR_ALIGN:
           setHorAlign(value);
           break;
+        case VERT_ALIGN:
+          setVertAlign(value);
+          break;
         case WHITE_SPACE:
           setWhiteSpace(value);
           break;
@@ -146,6 +150,7 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
         "Html", getHtml(),
         "Format", getFormat(),
         "Horizontal Alignment", getHorAlign(),
+        "Vertical Alignment", getVertAlign(),
         "White Space", getWhiteSpace(),
         "Scale", getScale(),
         "Options", getOptions());
@@ -169,6 +174,10 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
 
   public String getType() {
     return type;
+  }
+
+  public String getVertAlign() {
+    return vertAlign;
   }
 
   public String getWhiteSpace() {
@@ -212,6 +221,9 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
           break;
         case HOR_ALIGN:
           arr[i++] = getHorAlign();
+          break;
+        case VERT_ALIGN:
+          arr[i++] = getVertAlign();
           break;
         case WHITE_SPACE:
           arr[i++] = getWhiteSpace();
@@ -261,6 +273,8 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
         setFormat(value);
       } else if (BeeUtils.same(key, UiConstants.ATTR_HORIZONTAL_ALIGNMENT)) {
         setHorAlign(value);
+      } else if (BeeUtils.same(key, UiConstants.ATTR_VERTICAL_ALIGNMENT)) {
+        setVertAlign(value);
       } else if (BeeUtils.same(key, UiConstants.ATTR_SCALE)) {
         setScale(BeeUtils.toIntOrNull(value));
       } else if (BeeUtils.same(key, ATTR_OPTIONS)) {
@@ -304,6 +318,10 @@ public class FooterDescription implements BeeSerializable, HasInfo, HasOptions {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public void setVertAlign(String vertAlign) {
+    this.vertAlign = vertAlign;
   }
 
   public void setWhiteSpace(String whiteSpace) {

@@ -653,7 +653,7 @@ public class DataSelector extends Composite implements Editor, HasVisibleLines, 
   private static final String STYLE_NAVIGATION = STYLE_SELECTOR + "-navigation";
   private static final String STYLE_NAVIGATION_CELL = STYLE_SELECTOR + "-navigationCell";
 
-  private static final String STYLE_EDITABLE_CONTAINER = STYLE_SELECTOR + "-editableContainer";
+  public static final String STYLE_EDITABLE_CONTAINER = STYLE_SELECTOR + "-editableContainer";
   private static final String STYLE_EDITABLE_ACTIVE = STYLE_SELECTOR + "-editable-active";
   private static final String STYLE_EDITABLE_INPUT = STYLE_SELECTOR + "-editableInput";
 

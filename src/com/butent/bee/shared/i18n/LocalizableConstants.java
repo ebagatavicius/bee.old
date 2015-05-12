@@ -137,6 +137,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String cancel();
 
+  String canceled();
+
   String captionId();
 
   String captionPid();

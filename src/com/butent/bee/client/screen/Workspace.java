@@ -29,7 +29,9 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.TabbedPages;
 import com.butent.bee.client.layout.Vertical;
 import com.butent.bee.client.screen.TilePanel.Tile;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Theme;
 import com.butent.bee.client.utils.JsonUtils;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.CustomHasHtml;
@@ -647,6 +649,13 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
     }
   }
 
+  private static void maybeSetHeight(Widget widget) {
+    int height = Theme.getWorkspaceTabHeight();
+    if (height > 0) {
+      StyleUtils.setLineHeight(widget, height);
+    }
+  }
+
   private State state;
 
   Workspace() {
@@ -939,6 +948,14 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
     return BeeConst.UNDEF;
   }
 
+  void onStart() {
+    for (Widget tab : getTabBar()) {
+      if (tab.getElement().hasClassName(STYLE_NEW_TAB) || tab instanceof TabWidget) {
+        maybeSetHeight(tab);
+      }
+    }
+  }
+
   void onWidgetChange(IdentifiableWidget widget) {
     if (widget != null) {
       Tile tile = TilePanel.getTile(widget.asWidget());
@@ -1106,7 +1123,9 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
 
   private TilePanel insertEmptyPanel(int before) {
     TilePanel panel = new TilePanel(this);
+
     TabWidget tab = new TabWidget(Localized.getConstants().newTab());
+    maybeSetHeight(tab);
 
     insert(panel, tab, null, null, before);
 

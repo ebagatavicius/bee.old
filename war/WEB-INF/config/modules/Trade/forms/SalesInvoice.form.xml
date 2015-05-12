@@ -22,7 +22,7 @@
         <InputDateTime source="Date" visible="true" />
 
         <Label for="InvoicePrefix" />
-        <InputText source="InvoicePrefix" upperCase="true" style="width: 50px;" />
+        <InputText source="InvoicePrefix" upperCase="true" style="width: 7em;" />
         <Label for="InvoiceNo" />
         <InputText source="InvoiceNo" />
       </row>

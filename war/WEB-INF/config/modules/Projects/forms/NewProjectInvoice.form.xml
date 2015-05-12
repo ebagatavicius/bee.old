@@ -8,7 +8,7 @@
   xmlns:f="http://www.butent.com/form"
   
   name="NewProjectInvoice" viewName="ProjectInvoices" caption="=trdNewInvoice"
-  width="710" height="280"
+  width="710" height="410"
   >
   <FlowPanel style="padding: 1px 1px 1px 1px;">
     <Table  style="border-spacing: 5px;">
@@ -24,11 +24,11 @@
       </row>
       <row>
         <Label text="=trdDate" class="bee-required" style="&lbl2; width:143px;" />
-        <InputDateTime source="Date" style="width:110px;" />
+        <InputDateTime source="Date" style="width:11em;" />
       </row>
       <row>
         <Label text="=currency" class="bee-required" style="&lbl2; width:143px; margin-right: 5px;" />
-        <DataSelector source="CurrencyName" style="width:40px;" editEnabled="false" />        
+        <DataSelector source="CurrencyName" style="width:5em;" editEnabled="false" />        
 	    <cell colSpan="2">
 	      <Table style="border-spacing: 0px;">
             <row>              

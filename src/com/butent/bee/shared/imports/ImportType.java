@@ -30,20 +30,20 @@ public enum ImportType implements HasLocalizedCaption {
       addSimpleProperty(VAR_IMPORT_START_ROW, locale.startRow());
       addSimpleProperty(VAR_IMPORT_DATE_FORMAT, locale.dateFormat());
       addRelationProperty(COL_VEHICLE, locale.trVehicle(), TBL_VEHICLES);
-      addDataProperty(COL_COSTS_DATE, null);
+      addDataProperty(COL_COSTS_DATE, locale.date());
       addRelationProperty(COL_COSTS_ITEM, locale.item(), TBL_ITEMS);
-      addDataProperty(COL_COSTS_QUANTITY, null);
-      addDataProperty(COL_COSTS_PRICE, null);
+      addDataProperty(COL_COSTS_QUANTITY, locale.quantity());
+      addDataProperty(COL_COSTS_PRICE, locale.price());
       addRelationProperty(COL_COSTS_CURRENCY, locale.currency(), TBL_CURRENCIES);
-      addDataProperty(TradeConstants.COL_TRADE_VAT_PLUS, null);
-      addDataProperty(COL_COSTS_VAT, null);
-      addDataProperty(TradeConstants.COL_TRADE_VAT_PERC, null);
-      addDataProperty(COL_AMOUNT, null);
+      addDataProperty(TradeConstants.COL_TRADE_VAT_PLUS, locale.vatPlus());
+      addDataProperty(COL_COSTS_VAT, locale.vat());
+      addDataProperty(TradeConstants.COL_TRADE_VAT_PERC, locale.vatPercent());
+      addDataProperty(COL_AMOUNT, locale.amount());
       addRelationProperty(COL_COSTS_SUPPLIER, locale.supplier(), TBL_COMPANIES);
-      addDataProperty(COL_NUMBER, null);
+      addDataProperty(COL_NUMBER, locale.number());
       addRelationProperty(COL_COSTS_COUNTRY, locale.country(), TBL_COUNTRIES);
-      addDataProperty(COL_COSTS_NOTE, null);
-      addDataProperty(COL_COSTS_EXTERNAL_ID, null);
+      addDataProperty(COL_COSTS_NOTE, locale.note());
+      addDataProperty(COL_COSTS_EXTERNAL_ID, locale.externalId());
     }
   },
   TRACKING {
@@ -58,8 +58,6 @@ public enum ImportType implements HasLocalizedCaption {
 
       addSimpleProperty(VAR_IMPORT_LOGIN, locale.loginUserName());
       addSimpleProperty(VAR_IMPORT_PASSWORD, locale.loginPassword());
-      addRelationProperty(COL_VEHICLE, locale.trVehicle(), TBL_VEHICLES);
-      addRelationProperty(COL_COUNTRY, locale.country(), TBL_COUNTRIES);
     }
   },
   DATA {

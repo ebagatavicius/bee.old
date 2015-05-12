@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
 
 import com.butent.bee.client.images.Flags;
+import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.export.XCell;
@@ -33,6 +34,11 @@ public class FlagRenderer extends AbstractCellRenderer {
 
     int ref = sheet.registerPicture(picture);
     return XCell.forPicture(cellIndex, ref);
+  }
+
+  @Override
+  public VerticalAlign getDefaultVerticalAlign() {
+    return VerticalAlign.MIDDLE;
   }
 
   @Override

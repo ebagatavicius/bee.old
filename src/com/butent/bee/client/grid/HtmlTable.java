@@ -280,7 +280,7 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     //@formatter:on
   }
 
-  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "HtmlTable";
+  public static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "HtmlTable";
 
   private static final String STYLE_SUFFIX_COL = "-col";
   private static final String STYLE_SUFFIX_CELL = "-cell";

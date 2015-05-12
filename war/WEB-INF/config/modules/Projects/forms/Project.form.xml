@@ -70,8 +70,8 @@
           <row>
             <Label for="ExpectedDuration" text="=expectedDuration" style="&lbl;" />
             <InputDecimal source="ExpectedDuration" style="&inp3;" />
-            <DataSelector name="TimeUnit" source="TimeUnit" renderColumns="UnitName" style="width: 50px;" /> 
-            <Label for="ExpectedTasksDuration" text="=prjExpectedTaskDuration" style="width: 265px; &lbl;" />
+            <DataSelector name="TimeUnit" source="TimeUnit" renderColumns="UnitName" style="width: 5em;" /> 
+            <Label for="ExpectedTasksDuration" text="=prjExpectedTaskDuration" style="width: 250px; &lbl;" />
             <InputText name="ExpectedTasksDuration"  readOnly="true" style="&inp3;" />            
           </row>
             
@@ -79,7 +79,7 @@
             <Label for="Price" text="=prjPrice" style="&lbl;" />
             <InputDecimal source="Price" scale="2" style="&inp3;" />
             <DataSelector source="Currency" for="Price" newRowEnabled="false" editEnabled="false"
-              style="width: 50px;" readOnly="true" />
+              style="width: 5em;" readOnly="true" />
             <Label for="ActualTasksDuration" text="=prjActualTaskDuration" style="&lbl;" />
             <InputText name="ActualTasksDuration" readOnly="true" style="&inp3;" />       
           </row>
@@ -89,7 +89,7 @@
             <Label for="ContractPrice" text="=salePrice" style="&lbl;" />
             <InputDecimal source="ContractPrice" scale="2" style="&inp3;" />
             <DataSelector source="Currency" for="ContractPrice" newRowEnabled="false" editEnabled="false"
-              style="width: 50px;" readOnly="true" />
+              style="width: 5em;" readOnly="true" />
             <Label for="Progress" text="=progress" style="&lbl;" />
             <InputDecimal source="Progress" style="&inp3;" minValue="0" maxValue="100" />
           </row>

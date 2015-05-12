@@ -64,6 +64,7 @@ import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.ui.Theme;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.ui.WidgetDescription;
@@ -99,6 +100,7 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.NotificationListener;
 import com.butent.bee.shared.State;
+import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -187,8 +189,6 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
   private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "GridView";
 
-  private static int gridMarginLeft = 10;
-
   private static void amendGeneratedSizeAndShow(final ModalForm popup, final FormView form,
       final int x, final int y) {
 
@@ -254,6 +254,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
   private final String relColumn;
 
   private final Collection<UiOption> uiOptions;
+  private final int gridMarginLeft;
 
   private final GridInterceptor gridInterceptor;
 
@@ -331,6 +332,8 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
     addStyleName(STYLE_NAME);
 
     this.uiOptions = uiOptions;
+    this.gridMarginLeft = UiOption.isChildOrEmbedded(uiOptions)
+        ? Theme.getChildGridMarginLeft() : Theme.getGridMarginLeft();
 
     createGrid();
 
@@ -633,6 +636,23 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
     if (!BeeUtils.isEmpty(cd.getHorAlign())) {
       UiHelper.setHorizontalAlignment(column, cd.getHorAlign());
     }
+
+    VerticalAlign verticalAlign = null;
+    if (!BeeUtils.isEmpty(cd.getVertAlign())) {
+      verticalAlign = StyleUtils.parseVerticalAlign(cd.getVertAlign());
+    }
+    if (verticalAlign == null && renderer != null) {
+      verticalAlign = renderer.getDefaultVerticalAlign();
+    }
+    if (verticalAlign == null
+        && (cellType == CellType.HTML
+        || cellSource != null && cellSource.isText())) {
+      verticalAlign = VerticalAlign.TOP;
+    } else {
+      verticalAlign = VerticalAlign.MIDDLE;
+    }
+    column.setVerticalAlign(verticalAlign);
+
     if (!BeeUtils.isEmpty(cd.getWhiteSpace())) {
       UiHelper.setWhiteSpace(column, cd.getWhiteSpace());
     }

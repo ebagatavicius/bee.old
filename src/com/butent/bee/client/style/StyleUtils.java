@@ -169,6 +169,7 @@ public final class StyleUtils {
   public static final String NAME_DISABLED = BeeConst.CSS_CLASS_PREFIX + SUFFIX_DISABLED;
 
   public static final String NAME_TEXT_BOX = BeeConst.CSS_CLASS_PREFIX + "TextBox";
+  public static final String NAME_FORM = BeeConst.CSS_CLASS_PREFIX + "Form";
 
   public static final String NAME_INFO_TABLE = BeeConst.CSS_CLASS_PREFIX + "info-table";
 
@@ -437,12 +438,34 @@ public final class StyleUtils {
     return buildStyle(CssProperties.LINE_HEIGHT, value);
   }
 
+  public static SafeStyles buildLineHeight(int px) {
+    return buildLineHeight(toCssLength(px, DEFAULT_UNIT));
+  }
+
   public static SafeStyles buildMargin(String value) {
     return buildStyle(STYLE_MARGIN, value);
   }
 
   public static SafeStyles buildPadding(String value) {
     return buildStyle(STYLE_PADDING, value);
+  }
+
+  public static String buildRule(String selector, SafeStyles... styles) {
+    Assert.notEmpty(selector);
+    Assert.notNull(styles);
+    Assert.parameterCount(styles.length, 1);
+
+    StringBuilder sb = new StringBuilder();
+    sb.append(selector).append(BeeConst.STRING_LEFT_BRACE);
+
+    for (SafeStyles style : styles) {
+      if (style != null) {
+        sb.append(style.asString());
+      }
+    }
+
+    sb.append(BeeConst.STRING_RIGHT_BRACE);
+    return sb.toString();
   }
 
   public static SafeStyles buildStyle(SafeStyles... styles) {
@@ -458,15 +481,19 @@ public final class StyleUtils {
     return ssb.toSafeStyles();
   }
 
-  public static SafeStyles buildStyle(String name, int value) {
-    return buildStyle(name, BeeUtils.toString(value));
-  }
-
   public static SafeStyles buildStyle(String name, String value) {
     Assert.notEmpty(name);
     Assert.notEmpty(value);
     return SafeStylesUtils.fromTrustedString(name + NAME_VALUE_SEPARATOR + value
         + DEFINITION_SEPARATOR);
+  }
+
+  public static SafeStyles buildStyle(String name, int px) {
+    return buildStyle(name, px, DEFAULT_UNIT);
+  }
+
+  public static SafeStyles buildStyle(String name, double value, CssUnit unit) {
+    return buildStyle(name, toCssLength(value, unit));
   }
 
   public static SafeStyles buildStyle(String n1, String v1, String n2, String v2) {
@@ -495,7 +522,7 @@ public final class StyleUtils {
   }
 
   public static SafeStyles buildZIndex(int value) {
-    return buildStyle(CssProperties.Z_INDEX, value);
+    return buildStyle(CssProperties.Z_INDEX, BeeUtils.toString(value));
   }
 
   public static <E extends Enum<?> & HasCssName> String className(E value) {
@@ -1745,6 +1772,35 @@ public final class StyleUtils {
     setLineHeight(obj.getElement(), value);
   }
 
+  public static void setLineHeight(Element el, double value, CssUnit unit) {
+    Assert.notNull(el);
+    setLineHeight(el.getStyle(), value, unit);
+  }
+
+  public static void setLineHeight(Element el, int px) {
+    Assert.notNull(el);
+    setLineHeight(el.getStyle(), px);
+  }
+
+  public static void setLineHeight(Style st, double value, CssUnit unit) {
+    Assert.notNull(st);
+    setProperty(st, STYLE_LINE_HEIGHT, value, unit);
+  }
+
+  public static void setLineHeight(Style st, int px) {
+    setLineHeight(st, px, DEFAULT_UNIT);
+  }
+
+  public static void setLineHeight(UIObject obj, double value, CssUnit unit) {
+    Assert.notNull(obj);
+    setLineHeight(obj.getElement(), value, unit);
+  }
+
+  public static void setLineHeight(UIObject obj, int px) {
+    Assert.notNull(obj);
+    setLineHeight(obj.getElement(), px);
+  }
+
   public static void setMaxHeight(Element el, double value, CssUnit unit) {
     Assert.notNull(el);
     setMaxHeight(el.getStyle(), value, unit);
@@ -1940,7 +1996,8 @@ public final class StyleUtils {
   }
 
   public static void setProperty(Style st, String name, double value, CssUnit unit) {
-    st.setProperty(checkPropertyName(name), value + unit.getCaption());
+    String v = (unit == null) ? BeeUtils.toString(value) : (value + unit.getCaption());
+    st.setProperty(checkPropertyName(name), v);
   }
 
   public static void setProperty(Style st, String name, HasCssName value) {

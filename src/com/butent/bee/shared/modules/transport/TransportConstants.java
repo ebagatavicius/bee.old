@@ -159,6 +159,30 @@ public final class TransportConstants {
     }
   }
 
+  public enum TripConstant implements HasLocalizedCaption {
+    AVERAGE_KM_COST {
+      @Override public String getCaption(LocalizableConstants constants) {
+        return constants.trAverageKilometerCost();
+      }
+    },
+
+    AVERAGE_FUEL_COST {
+      @Override public String getCaption(LocalizableConstants constants) {
+        return constants.trAverageFuelCost();
+      }
+    },
+
+    CONSTANT_COSTS {
+      @Override public String getCaption(LocalizableConstants constants) {
+        return constants.trConstantCosts();
+      }
+    };
+
+    @Override public String getCaption() {
+      return getCaption(Localized.getConstants());
+    }
+  }
+
   public enum VehicleType {
     TRUCK {
       @Override
@@ -197,6 +221,7 @@ public final class TransportConstants {
     EnumUtils.register(CargoRequestStatus.class);
 
     EnumUtils.register(FuelSeason.class);
+    EnumUtils.register(TripConstant.class);
   }
 
   public static final String SVC_GET_BEFORE = "GetBeforeData";
@@ -247,6 +272,7 @@ public final class TransportConstants {
   public static final String TBL_TRIP_FUEL_CONSUMPTIONS = "TripFuelConsumptions";
   public static final String TBL_TRIP_USAGE = "TripUsage";
 
+  public static final String TBL_TRIP_CONSTANTS = "TripConstants";
   public static final String TBL_TRANSPORT_SETTINGS = "TransportSettings";
 
   public static final String TBL_ORDERS = "TransportationOrders";
@@ -342,6 +368,8 @@ public final class TransportConstants {
   public static final String COL_TRIP_PERCENT = "TripPercent";
   public static final String COL_TRIP_NOTES = "Notes";
   public static final String COL_TRIP_STATUS = "Status";
+
+  public static final String COL_TRIP_CONSTANT = "Constant";
 
   public static final String COL_EXPEDITION = "Expedition";
   public static final String COL_FORWARDER = "Forwarder";

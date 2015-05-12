@@ -52,6 +52,8 @@ import elemental.js.dom.JsElement;
 public class ListBox extends CustomWidget implements Editor, HasItems, HasValueStartIndex,
     AcceptsCaptions, HasChangeHandlers, HasKeyDownHandlers {
 
+  public static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "ListBox";
+
   private boolean nullable = true;
 
   private boolean editing;
@@ -530,7 +532,7 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
   @Override
   protected void init() {
     super.init();
-    addStyleName(BeeConst.CSS_CLASS_PREFIX + "ListBox");
+    addStyleName(STYLE_NAME);
     sinkEvents(Event.ONCHANGE | Event.ONMOUSEDOWN | Event.ONMOUSEUP | Event.ONKEYDOWN);
   }
 

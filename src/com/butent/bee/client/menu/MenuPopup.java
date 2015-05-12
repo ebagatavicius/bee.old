@@ -1,6 +1,8 @@
 package com.butent.bee.client.menu;
 
 import com.butent.bee.client.dialog.Popup;
+import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.Theme;
 import com.butent.bee.shared.BeeConst;
 
 public class MenuPopup extends Popup {
@@ -14,6 +16,11 @@ public class MenuPopup extends Popup {
     super(OutsideClick.CLOSE);
     setStyleName(STYLENAME_DEFAULT);
     addStyleDependentName(item.getSubMenu().getItemType().name().toLowerCase());
+
+    int lineHeight = Theme.getSubMenuLineHeight();
+    if (lineHeight > 0) {
+      StyleUtils.setLineHeight(this, lineHeight);
+    }
 
     this.parentMenu = bar;
     this.parentItem = item;

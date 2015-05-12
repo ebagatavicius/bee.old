@@ -15,6 +15,7 @@ import com.butent.bee.client.modules.trade.VatRenderer;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.render.HasCellRenderer;
 import com.butent.bee.client.style.HasTextAlign;
+import com.butent.bee.client.style.HasVerticalAlign;
 import com.butent.bee.client.style.HasWhiteSpace;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.Evaluator;
@@ -23,6 +24,7 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasOptions;
 import com.butent.bee.shared.HasScale;
 import com.butent.bee.shared.css.values.TextAlign;
+import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.css.values.WhiteSpace;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.HasRowValue;
@@ -46,8 +48,8 @@ import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.List;
 
-public class ColumnFooter extends Header<String> implements HasTextAlign, HasWhiteSpace,
-    HasDateTimeFormat, HasNumberFormat, HasScale, HasOptions, HasValueType {
+public class ColumnFooter extends Header<String> implements HasTextAlign, HasVerticalAlign,
+    HasWhiteSpace, HasDateTimeFormat, HasNumberFormat, HasScale, HasOptions, HasValueType {
 
   public enum Aggregate {
     SUM, COUNT, MIN, MAX, AVG
@@ -85,7 +87,9 @@ public class ColumnFooter extends Header<String> implements HasTextAlign, HasWhi
   private HasRowValue rowEvaluator;
   private ValueType valueType;
 
-  private TextAlign horizontalAlignment;
+  private TextAlign textAlign;
+  private VerticalAlign verticalAlign;
+
   private WhiteSpace whiteSpace;
 
   private DateTimeFormat dateTimeFormat;
@@ -160,7 +164,7 @@ public class ColumnFooter extends Header<String> implements HasTextAlign, HasWhi
 
   @Override
   public TextAlign getTextAlign() {
-    return horizontalAlignment;
+    return textAlign;
   }
 
   @Override
@@ -171,6 +175,11 @@ public class ColumnFooter extends Header<String> implements HasTextAlign, HasWhi
   @Override
   public ValueType getValueType() {
     return valueType;
+  }
+
+  @Override
+  public VerticalAlign getVerticalAlign() {
+    return verticalAlign;
   }
 
   @Override
@@ -240,12 +249,17 @@ public class ColumnFooter extends Header<String> implements HasTextAlign, HasWhi
   }
 
   @Override
-  public void setTextAlign(TextAlign align) {
-    this.horizontalAlignment = align;
+  public void setTextAlign(TextAlign textAlign) {
+    this.textAlign = textAlign;
   }
 
   public void setValueType(ValueType valueType) {
     this.valueType = valueType;
+  }
+
+  @Override
+  public void setVerticalAlign(VerticalAlign verticalAlign) {
+    this.verticalAlign = verticalAlign;
   }
 
   @Override
@@ -351,6 +365,10 @@ public class ColumnFooter extends Header<String> implements HasTextAlign, HasWhi
       if (!BeeUtils.isEmpty(footerDescription.getHorAlign())) {
         UiHelper.setHorizontalAlignment(this, footerDescription.getHorAlign());
       }
+      if (!BeeUtils.isEmpty(footerDescription.getVertAlign())) {
+        UiHelper.setVerticalAlignment(this, footerDescription.getVertAlign());
+      }
+
       if (!BeeUtils.isEmpty(footerDescription.getWhiteSpace())) {
         UiHelper.setWhiteSpace(this, footerDescription.getWhiteSpace());
       }
@@ -436,6 +454,10 @@ public class ColumnFooter extends Header<String> implements HasTextAlign, HasWhi
       } else if (column.getTextAlign() != null) {
         setTextAlign(column.getTextAlign());
       }
+    }
+
+    if (getVerticalAlign() == null) {
+      setVerticalAlign(VerticalAlign.MIDDLE);
     }
 
     if (getWhiteSpace() == null) {

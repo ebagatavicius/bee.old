@@ -3,6 +3,7 @@ package com.butent.bee.client.render;
 import com.google.gwt.text.shared.AbstractRenderer;
 
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.HasValueType;
@@ -26,6 +27,10 @@ public abstract class AbstractCellRenderer extends AbstractRenderer<IsRow> imple
    * @param sheet
    */
   public XCell export(IsRow row, int cellIndex, Integer styleRef, XSheet sheet) {
+    return null;
+  }
+
+  public VerticalAlign getDefaultVerticalAlign() {
     return null;
   }
 

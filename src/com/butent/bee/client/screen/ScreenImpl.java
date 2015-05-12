@@ -359,6 +359,10 @@ public class ScreenImpl implements Screen {
       getScreenPanel().doLayout();
     }
 
+    if (getWorkspace() != null) {
+      getWorkspace().onStart();
+    }
+
     Global.getSearch().focus();
 
     if (!Global.getSpaces().isEmpty() && !containsDomainEntry(Domain.WORKSPACES, null)) {

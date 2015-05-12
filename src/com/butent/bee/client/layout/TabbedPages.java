@@ -165,7 +165,7 @@ public class TabbedPages extends Flow implements
         Collection<HasSummaryChangeHandlers> summarySources) {
 
       setWidget(child);
-      addStyleName(getStylePrefix() + "tab");
+      addStyleName(getStylePrefix() + TAB_STYLE_SUFFIX);
 
       this.summaryWidget = summaryWidget;
 
@@ -206,7 +206,8 @@ public class TabbedPages extends Flow implements
 
   private static final BeeLogger logger = LogUtils.getLogger(TabbedPages.class);
 
-  private static final String DEFAULT_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "TabbedPages-";
+  public static final String DEFAULT_STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "TabbedPages-";
+  public static final String TAB_STYLE_SUFFIX = "tab";
   private static final String CONTENT_STYLE_SUFFIX = "content";
 
   private static final String RESIZER_CONTENT_TYPE = "tabbed_pages";
@@ -457,8 +458,13 @@ public class TabbedPages extends Flow implements
   private Tab createTab(Widget caption, String summary,
       Collection<HasSummaryChangeHandlers> summarySources) {
 
+    Tab tab;
+
     if (BeeUtils.isEmpty(summary) && BeeUtils.isEmpty(summarySources)) {
-      return new Tab(caption);
+      if (caption != null) {
+        caption.addStyleName(getStylePrefix() + "tabSingleton");
+      }
+      tab = new Tab(caption);
 
     } else {
       Flow wrapper = new Flow(getStylePrefix() + "tabWrapper");
@@ -475,10 +481,10 @@ public class TabbedPages extends Flow implements
 
       wrapper.add(summaryWidget);
 
-      Tab tab = new Tab(wrapper, summaryWidget, summarySources);
-
-      return tab;
+      tab = new Tab(wrapper, summaryWidget, summarySources);
     }
+
+    return tab;
   }
 
   private static Widget createCaption(String text) {

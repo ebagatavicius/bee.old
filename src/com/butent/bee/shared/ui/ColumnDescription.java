@@ -73,7 +73,7 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
 
   private enum Serial {
     COL_TYPE, ID, CAPTION, LABEL, READ_ONLY, WIDTH, SOURCE, PROPERTY, RELATION,
-    MIN_WIDTH, MAX_WIDTH, SORTABLE, VISIBLE, FORMAT, HOR_ALIGN, WHITE_SPACE,
+    MIN_WIDTH, MAX_WIDTH, SORTABLE, VISIBLE, FORMAT, HOR_ALIGN, VERT_ALIGN, WHITE_SPACE,
     VALIDATION, EDITABLE, CARRY_CALC, CARRY_ON, EDITOR, MIN_VALUE, MAX_VALUE, REQUIRED, ENUM_KEY,
     RENDERER_DESCR, RENDER, RENDER_TOKENS, VALUE_TYPE, PRECISION, SCALE, RENDER_COLUMNS,
     SEARCH_BY, FILTER_SUPPLIER, FILTER_OPTIONS, SORT_BY,
@@ -125,6 +125,7 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
 
   private String format;
   private String horAlign;
+  private String vertAlign;
   private String whiteSpace;
 
   private Calculation validation;
@@ -278,6 +279,9 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
           break;
         case HOR_ALIGN:
           setHorAlign(value);
+          break;
+        case VERT_ALIGN:
+          setVertAlign(value);
           break;
         case WHITE_SPACE:
           setWhiteSpace(value);
@@ -516,6 +520,7 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
         "Visible", getVisible(),
         "Format", getFormat(),
         "Horizontal Alignment", getHorAlign(),
+        "Vertical Alignment", getVertAlign(),
         "White Space", getWhiteSpace(),
         "Min Value", getMinValue(),
         "Max Value", getMaxValue(),
@@ -702,6 +707,10 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
     return valueType;
   }
 
+  public String getVertAlign() {
+    return vertAlign;
+  }
+
   public Boolean getVisible() {
     return omniView ? null : visible;
   }
@@ -853,6 +862,9 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
           break;
         case HOR_ALIGN:
           arr[i++] = getHorAlign();
+          break;
+        case VERT_ALIGN:
+          arr[i++] = getVertAlign();
           break;
         case WHITE_SPACE:
           arr[i++] = getWhiteSpace();
@@ -1153,6 +1165,10 @@ public class ColumnDescription implements BeeSerializable, HasInfo, HasOptions, 
 
   public void setValueType(ValueType valueType) {
     this.valueType = valueType;
+  }
+
+  public void setVertAlign(String vertAlign) {
+    this.vertAlign = vertAlign;
   }
 
   public void setVisible(Boolean visible) {

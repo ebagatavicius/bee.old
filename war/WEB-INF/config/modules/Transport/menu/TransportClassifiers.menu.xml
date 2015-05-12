@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="TransportClassifiers" label="=classifiers" parent="Transport" order="20" separator="true" 
->
+       name="TransportClassifiers" label="=classifiers" parent="Transport" order="20"
+       separator="true"
+    >
   <Item name="ShippingTerms" label="=trShippingTerms" service="grid" parameters="ShippingTerms" />
   <Item name="Services" label="=trServices" service="grid" parameters="Services" />
   <Item name="AbsenceTypes" label="=trAbsenceTypes" service="grid" parameters="AbsenceTypes" />
 
-  <Item name="ExpeditionTypes" label="=trExpeditionTypes" service="grid" parameters="ExpeditionTypes" separator="true" />
-  
-  <Item name="VehicleTypes" label="=trVehicleTypes" service="grid" parameters="VehicleTypes" separator="true" />
+  <Item name="ExpeditionTypes" label="=trExpeditionTypes" service="grid"
+        parameters="ExpeditionTypes" separator="true" />
+
+  <Item name="VehicleTypes" label="=trVehicleTypes" service="grid" parameters="VehicleTypes"
+        separator="true" />
   <Item name="ServiceTypes" label="=trServiceTypes" service="grid" parameters="ServiceTypes" />
   <Item name="Fueltypes" label="=trFuelTypes" service="grid" parameters="FuelTypes" />
-  <Item name="TransportGroups" label="=trTransportGroups" service="grid" parameters="TransportGroups" />
+  <Item name="TransportGroups" label="=trTransportGroups" service="grid"
+        parameters="TransportGroups" />
 
-  <Item name="CountryNorms" label="=trCountryNorms" service="grid" parameters="CountryNorms" separator="true" />
- 
+  <Item name="CountryNorms" label="=trCountryNorms" service="grid" parameters="CountryNorms"
+        separator="true" />
+  <Item name="TripConstants" label="=trTripConstants" service="grid" parameters="TripConstants" />
+
   <Item name="Parameters" label="=trParameters" service="parameters" parameters="Transport"
-    separator="true" module="Transport.Administration" />
+        separator="true" module="Transport.Administration" />
 </Entry>
