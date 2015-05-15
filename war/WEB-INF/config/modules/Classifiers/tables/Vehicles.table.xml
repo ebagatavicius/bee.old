@@ -7,7 +7,7 @@
   <Fields>
     <Relation name="Type" notNull="true" relation="VehicleTypes" label="=vehicleType" />
     <Relation name="Model" notNull="true" relation="VehicleModels" label="=vehicleModel" />
-    <String name="Number" precision="10" unique="true" notNull="true" label="=vehicleNumber" />
+    <String name="Number" precision="20" unique="true" notNull="true" label="=vehicleNumber" />
     <String name="BodyNumber" precision="20" unique="true" label="=vehicleBodyNumber"/>
     <String name="EngineNumber" precision="20" unique="true" label="=vehicleEngineNumber" />
     <Numeric name="EngineVolume" precision="5" label="=vehicleEngineVolume" />

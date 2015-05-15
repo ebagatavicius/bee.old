@@ -211,7 +211,7 @@ public class QueryServiceBean {
             Double d = rs.getDouble(colIndex);
             if (rs.wasNull() || !BeeUtils.isDouble(d)) {
               values[i] = null;
-            } else if (column.getScale() >= 0) {
+            } else if (column.getScale() > 0) {
               values[i] = BeeUtils.toString(d, column.getScale());
             } else if (column.getType() == ValueType.DECIMAL) {
               values[i] = BeeUtils.toString(d, NumberValue.MAX_SCALE);

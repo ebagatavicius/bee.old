@@ -6,14 +6,14 @@
   flexGrow="1"
   >
   <g:columns>
-    <RelColumn name="Person" visible="true" />
-    <RelColumn name="Company" visible="true" />
+    <RelColumn name="Person" visible="true" filterSupplier="value" />
+    <RelColumn name="Company" visible="true" filterSupplier="value" />
     <RelColumn name="Department" />    
     <RelColumn name="Position" />
     <DataColumn name="Phone" />
     <DataColumn name="Mobile" />
     <DataColumn name="Fax" />
-    <RelColumn name="EmailId" editEnabled="true" />
+    <RelColumn name="EmailId" editEnabled="true" filterSupplier="value" />
     <DataColumn name="DateOfDismissal" searchBy="DateOfDismissal" filterOptions="empty">
       <style><bodyStyle><ui:inline>color:red</ui:inline></bodyStyle></style>
     </DataColumn>

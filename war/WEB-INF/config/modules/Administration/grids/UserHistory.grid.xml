@@ -44,7 +44,7 @@
         </ui:function>
       </render>
     </CalcColumn>
-    <DataColumn name="Host" />
-    <DataColumn name="Agent" visible="false" />
+    <DataColumn name="Host" verticalAlignment="middle" />
+    <DataColumn name="Agent" verticalAlignment="middle" visible="false" />
   </g:columns>
 </g:Grid>

@@ -480,6 +480,7 @@
       <xs:enumeration value="TransportSettings" />
       <xs:enumeration value="TranspRegistrations" />
       <xs:enumeration value="TripCargo" />
+      <xs:enumeration value="TripConstants" />
       <xs:enumeration value="TripCosts" />
       <xs:enumeration value="TripDrivers" />
       <xs:enumeration value="TripFuelConsumptions" />

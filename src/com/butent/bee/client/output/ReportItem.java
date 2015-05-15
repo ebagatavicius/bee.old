@@ -161,6 +161,10 @@ public abstract class ReportItem implements BeeSerializable {
   public void clearFilter() {
   }
 
+  public ReportItem clone() {
+    return restore(serialize());
+  }
+
   @Override
   public void deserialize(String data) {
   }

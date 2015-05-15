@@ -4,6 +4,7 @@ import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Document;
 
 import com.butent.bee.client.utils.FileUtils;
+import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.export.XCell;
@@ -35,6 +36,11 @@ public class FileLinkRenderer extends AbstractCellRenderer {
     } else {
       return new XCell(cellIndex, text, styleRef);
     }
+  }
+
+  @Override
+  public VerticalAlign getDefaultVerticalAlign() {
+    return VerticalAlign.MIDDLE;
   }
 
   @Override

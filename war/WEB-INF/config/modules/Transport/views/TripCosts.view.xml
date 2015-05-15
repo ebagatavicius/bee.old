@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="TripCosts"
-  source="TripCosts"
-  >
+      name="TripCosts"
+      source="TripCosts"
+      caption="=trTripCosts"
+    >
   <Columns>
-    <SimpleColumn name="Trip"/>
-    <SimpleColumn name="Date"/>
+    <SimpleColumn name="Trip" />
+    <SimpleColumn name="Date" />
 
-    <SimpleColumn name="Item"/>
+    <SimpleColumn name="Item" />
     <SimpleJoin joinType="LEFT" name="Item">
       <SimpleColumn name="Name" alias="ItemName" />
       <SimpleJoin joinType="LEFT" name="Unit">

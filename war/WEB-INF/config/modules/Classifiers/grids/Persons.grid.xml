@@ -17,7 +17,7 @@
     <DataColumn name="Phone" />
     <DataColumn name="Mobile" />
 
-    <RelColumn name="EmailId" editEnabled="true" />
+    <RelColumn name="EmailId" editEnabled="true" filterSupplier="value" />
 
     <DataColumn name="Address" />
 

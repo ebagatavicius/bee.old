@@ -37,7 +37,7 @@ var BeeSettings = {
     "DisclosureClosedHeight": 55,
     "InputLineHeight": 25,
     "InputPadding": "1px 10px",
-    "ListSize1Padding": "0 5px",
+    "ListSize1Padding": "5px 8px",
     "FormCellPaddingTop": 20
   }
 };

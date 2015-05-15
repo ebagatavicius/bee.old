@@ -176,6 +176,10 @@ public interface LocalizableTransportConstants {
 
   String trAssignTrip();
 
+  String trAverageKilometerCost();
+
+  String trAverageFuelCost();
+
   String trCargoActualPlaces();
 
   String trCargoSelectCargo();
@@ -197,6 +201,8 @@ public interface LocalizableTransportConstants {
   String trConfirmCreateNewOrder();
 
   String trConfirmProforma();
+
+  String trConstantCosts();
 
   String trCreateTransportation();
 

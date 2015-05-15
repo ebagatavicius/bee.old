@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
+
+        name="TripConstants" viewName="TripConstants" caption="=trTripConstants"
+    >
+  <g:columns>
+    <DataColumn name="Constant">
+      <carry>
+        <ui:expression>row.Constant</ui:expression>
+      </carry>
+    </DataColumn>
+    <DataColumn name="DateFrom">
+      <carry>
+        <ui:expression>row.DateTo</ui:expression>
+      </carry>
+    </DataColumn>
+    <DataColumn name="DateTo" />
+    <DataColumn name="Value" />
+    <RelColumn name="Currency" />
+  </g:columns>
+</g:Grid>

@@ -13,7 +13,6 @@ import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
-import com.butent.bee.client.composite.Thermometer;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.dialog.Popup;
@@ -32,7 +31,6 @@ import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.websocket.Endpoint;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
-import com.butent.bee.client.widget.InlineLabel;
 import com.butent.bee.client.widget.InputDate;
 import com.butent.bee.client.widget.InputFile;
 import com.butent.bee.client.widget.InternalLink;
@@ -47,6 +45,7 @@ import com.butent.bee.shared.css.values.FontWeight;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.imports.ImportType;
 import com.butent.bee.shared.time.JustDate;
@@ -63,10 +62,6 @@ public class ImportsForm extends AbstractFormInterceptor implements ClickHandler
   private final class ImportCallback extends ResponseCallback {
 
     private final String progressId;
-
-    public ImportCallback() {
-      this(null);
-    }
 
     public ImportCallback(String progressId) {
       this.progressId = progressId;
@@ -98,7 +93,12 @@ public class ImportsForm extends AbstractFormInterceptor implements ClickHandler
       for (final String viewName : data.keySet()) {
         Pair<String, String> pair = Pair.restore(data.get(viewName));
 
-        table.setText(++r, 0, Data.getViewCaption(viewName));
+        DataInfo info = Data.getDataInfo(viewName, false);
+
+        final String cap = Data.getDataInfo(viewName, false) != null
+            ? Data.getViewCaption(viewName) : viewName;
+
+        table.setText(++r, 0, cap);
         table.setText(r, 1, pair.getA());
 
         InternalLink lbl = null;
@@ -110,7 +110,7 @@ public class ImportsForm extends AbstractFormInterceptor implements ClickHandler
           lbl.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent arg0) {
-              Global.showModalGrid(Data.getViewCaption(viewName), rs);
+              Global.showModalGrid(cap, rs);
             }
           });
         }
@@ -200,41 +200,17 @@ public class ImportsForm extends AbstractFormInterceptor implements ClickHandler
             @Override
             public void onSuccess(String fileName) {
               setImporting(true);
-
               args.addDataItem(VAR_IMPORT_FILE, fileName);
-              final String progressId;
 
-              if (Endpoint.isOpen()) {
-                InlineLabel close = new InlineLabel(String.valueOf(BeeConst.CHAR_TIMES));
-                Thermometer th = new Thermometer(cap, BeeConst.DOUBLE_ONE, close);
-                progressId = BeeKeeper.getScreen().addProgress(th);
-
-                if (progressId != null) {
-                  close.addClickHandler(new ClickHandler() {
-                    @Override
-                    public void onClick(ClickEvent ev) {
-                      Endpoint.cancelProgress(progressId);
-                    }
-                  });
-                }
-              } else {
-                progressId = null;
-              }
-              if (progressId == null) {
-                BeeKeeper.getRpc().makePostRequest(args, new ImportCallback());
-              } else {
-                Endpoint.enqueuePropgress(progressId, new Consumer<String>() {
-                  @Override
-                  public void accept(String input) {
-                    if (!BeeUtils.isEmpty(input)) {
-                      args.addDataItem(Service.VAR_PROGRESS, input);
-                    } else {
-                      Endpoint.cancelProgress(progressId);
-                    }
-                    BeeKeeper.getRpc().makePostRequest(args, new ImportCallback(progressId));
+              Endpoint.initProgress(cap, new Consumer<String>() {
+                @Override
+                public void accept(String progress) {
+                  if (!BeeUtils.isEmpty(progress)) {
+                    args.addDataItem(Service.VAR_PROGRESS, progress);
                   }
-                });
-              }
+                  BeeKeeper.getRpc().makePostRequest(args, new ImportCallback(progress));
+                }
+              });
             }
           });
           break;
@@ -311,7 +287,15 @@ public class ImportsForm extends AbstractFormInterceptor implements ClickHandler
         args.addDataItem(VAR_DATE_LOW, lowDate.getDays());
         args.addDataItem(VAR_DATE_HIGH, hightDate.getDays());
 
-        BeeKeeper.getRpc().makePostRequest(args, new ImportCallback());
+        Endpoint.initProgress(ImportType.TRACKING.getCaption(), new Consumer<String>() {
+          @Override
+          public void accept(String progress) {
+            if (!BeeUtils.isEmpty(progress)) {
+              args.addDataItem(Service.VAR_PROGRESS, progress);
+            }
+            BeeKeeper.getRpc().makePostRequest(args, new ImportCallback(progress));
+          }
+        });
       }
     });
   }
@@ -319,12 +303,12 @@ public class ImportsForm extends AbstractFormInterceptor implements ClickHandler
   private void setImporting(boolean importing) {
     if (action != null) {
       action.setEnabled(!importing);
-      action.setText(importing ? Localized.getConstants().importing() :
-          Localized.getConstants().actionImport());
+      action.setText(importing
+          ? Localized.getConstants().importing() : Localized.getConstants().actionImport());
     }
   }
 
-  private void upload(final Callback<String> fileCallback) {
+  private static void upload(final Callback<String> fileCallback) {
     final Popup popup = new Popup(Popup.OutsideClick.CLOSE);
     final InputFile widget = new InputFile(false);
 

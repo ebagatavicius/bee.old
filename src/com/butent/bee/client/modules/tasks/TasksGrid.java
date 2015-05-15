@@ -159,8 +159,7 @@ class TasksGrid extends AbstractGridInterceptor {
       presenter.getHeader().addCommandItem(confirmTask);
     }
 
-    if (type.equals(TaskType.DELEGATED)
-        && BeeKeeper.getUser().canCreateData(ProjectConstants.VIEW_PROJECTS)) {
+    if (BeeKeeper.getUser().canCreateData(ProjectConstants.VIEW_PROJECTS)) {
       FaLabel createProject = new FaLabel(FontAwesome.ROCKET);
       createProject.setTitle(Localized.getConstants().prjCreateFromTasks());
       createProject.addClickHandler(new ClickHandler() {
@@ -367,6 +366,10 @@ class TasksGrid extends AbstractGridInterceptor {
   }
 
   private void createProjectClick() {
+    if (userId == null) {
+      Assert.untouchable();
+    }
+
     final GridView gridView = getGridPresenter().getGridView();
     int idxTaskProject = gridView.getDataIndex(ProjectConstants.COL_PROJECT);
     int idxTaskCompany = gridView.getDataIndex(ClassifierConstants.COL_COMPANY);
@@ -394,6 +397,12 @@ class TasksGrid extends AbstractGridInterceptor {
     if (!BeeUtils.isEmpty(selectedRow.getString(idxTaskProject))) {
       gridView.notifyWarning(Localized.getMessages().taskAssignedToProject(selectedRow.getId(),
           selectedRow.getLong(idxTaskProject)));
+      return;
+    }
+
+    if (!userId.equals(selectedRow.getLong(idxTaskOwner))) {
+      gridView
+          .notifyWarning(Localized.getMessages().projectCanCreateTaskOwner(selectedRow.getId()));
       return;
     }
 

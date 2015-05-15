@@ -57,7 +57,7 @@ public class InputArea extends CustomWidget implements Editor, TextBox, HandlesA
     HasTextDimensions, HasInputHandlers, HasTextBox, HasMaxLength, HasAutocomplete,
     HasKeyDownHandlers {
 
-  private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "InputArea";
+  public static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "InputArea";
 
   private Resource resource;
 

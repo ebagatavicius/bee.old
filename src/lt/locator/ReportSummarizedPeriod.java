@@ -30,6 +30,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="tripSummaryByCountries" type="{http://soap.wsbridge.ws.loctracker.msc/}tripSumRepData" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="tripSummaryByCountriesGrouped" type="{http://soap.wsbridge.ws.loctracker.msc/}tripSumRepData" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="tripSummaryByDays" type="{http://soap.wsbridge.ws.loctracker.msc/}tripSumRepData" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="vehicleRegistrationNumber" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -48,7 +49,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "tripSummary",
     "tripSummaryByCountries",
     "tripSummaryByCountriesGrouped",
-    "tripSummaryByDays"
+    "tripSummaryByDays",
+    "vehicleRegistrationNumber"
 })
 public class ReportSummarizedPeriod {
 
@@ -66,6 +68,7 @@ public class ReportSummarizedPeriod {
     protected List<TripSumRepData> tripSummaryByCountriesGrouped;
     @XmlElement(nillable = true)
     protected List<TripSumRepData> tripSummaryByDays;
+    protected String vehicleRegistrationNumber;
 
     /**
      * Gets the value of the deviceName property.
@@ -227,7 +230,7 @@ public class ReportSummarizedPeriod {
      */
     public List<TripSumRepData> getTripSummaryByCountries() {
         if (tripSummaryByCountries == null) {
-            tripSummaryByCountries = new ArrayList<>();
+            tripSummaryByCountries = new ArrayList<TripSumRepData>();
         }
         return this.tripSummaryByCountries;
     }
@@ -256,7 +259,7 @@ public class ReportSummarizedPeriod {
      */
     public List<TripSumRepData> getTripSummaryByCountriesGrouped() {
         if (tripSummaryByCountriesGrouped == null) {
-            tripSummaryByCountriesGrouped = new ArrayList<>();
+            tripSummaryByCountriesGrouped = new ArrayList<TripSumRepData>();
         }
         return this.tripSummaryByCountriesGrouped;
     }
@@ -285,9 +288,33 @@ public class ReportSummarizedPeriod {
      */
     public List<TripSumRepData> getTripSummaryByDays() {
         if (tripSummaryByDays == null) {
-            tripSummaryByDays = new ArrayList<>();
+            tripSummaryByDays = new ArrayList<TripSumRepData>();
         }
         return this.tripSummaryByDays;
+    }
+
+    /**
+     * Gets the value of the vehicleRegistrationNumber property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVehicleRegistrationNumber() {
+        return vehicleRegistrationNumber;
+    }
+
+    /**
+     * Sets the value of the vehicleRegistrationNumber property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVehicleRegistrationNumber(String value) {
+        this.vehicleRegistrationNumber = value;
     }
 
 }

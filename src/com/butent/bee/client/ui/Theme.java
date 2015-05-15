@@ -5,12 +5,27 @@ import com.google.gwt.dom.client.StyleElement;
 import com.google.gwt.json.client.JSONObject;
 
 import com.butent.bee.client.Settings;
+import com.butent.bee.client.composite.DataSelector;
+import com.butent.bee.client.composite.Disclosure;
+import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.dom.Selectors;
+import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.layout.TabbedPages;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.utils.JsonUtils;
+import com.butent.bee.client.widget.InputArea;
+import com.butent.bee.client.widget.ListBox;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.css.CssProperties;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.html.Attributes;
+import com.butent.bee.shared.html.Tags;
 import com.butent.bee.shared.utils.BeeUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Theme {
 
@@ -26,12 +41,18 @@ public final class Theme {
       }
     }
 
+    List<String> rules = getRules();
+
     String css = getCss();
     if (!BeeUtils.isEmpty(css)) {
+      rules.add(css);
+    }
+
+    if (!rules.isEmpty()) {
       StyleElement element = Document.get().createStyleElement();
       DomUtils.createId(element, "theme-");
 
-      element.setInnerText(css.trim());
+      element.setInnerText(BeeUtils.buildLines(rules));
       DomUtils.getHead().appendChild(element);
     }
   }
@@ -167,6 +188,60 @@ public final class Theme {
   private static int getInteger(String key) {
     Integer value = JsonUtils.getInteger(values, key);
     return (value == null) ? BeeConst.UNDEF : value;
+  }
+
+  private static List<String> getRules() {
+    List<String> rules = new ArrayList<>();
+
+    int px = getTabbedPagesTabHeight();
+    if (px > 0) {
+      String tpt = Selectors.classSelector(TabbedPages.DEFAULT_STYLE_PREFIX
+          + TabbedPages.TAB_STYLE_SUFFIX);
+      rules.add(StyleUtils.buildRule(tpt, StyleUtils.buildHeight(px)));
+    }
+
+    px = getDisclosureClosedHeight();
+    if (px > 0) {
+      String dch = Selectors.descendantCombinator(Selectors.classSelector(Disclosure.STYLE_CLOSED),
+          Selectors.classSelector(Disclosure.STYLE_HEADER));
+      rules.add(StyleUtils.buildRule(dch, StyleUtils.buildHeight(px)));
+    }
+
+    px = getInputLineHeight();
+    if (px > 0) {
+      String inp = Selectors.buildSelectors(
+          Selectors.classSelector(StyleUtils.NAME_TEXT_BOX),
+          Selectors.classSelector(ListBox.STYLE_NAME),
+          Selectors.classSelector(DataSelector.STYLE_EDITABLE_CONTAINER),
+          Selectors.classSelector(MultiSelector.STYLE_CONTAINER));
+      rules.add(StyleUtils.buildRule(inp, StyleUtils.buildLineHeight(px)));
+    }
+
+    String padding = getInputPadding();
+    if (!BeeUtils.isEmpty(padding)) {
+      String inp = Selectors.buildSelectors(
+          Selectors.classSelector(StyleUtils.NAME_TEXT_BOX),
+          Selectors.classSelector(InputArea.STYLE_NAME));
+      rules.add(StyleUtils.buildRule(inp, StyleUtils.buildPadding(padding)));
+    }
+
+    padding = getListSize1Padding();
+    if (!BeeUtils.isEmpty(padding)) {
+      String ls1 = Selectors.conjunction(Selectors.classSelector(ListBox.STYLE_NAME),
+          Selectors.attributeEquals(Attributes.SIZE, 1));
+      rules.add(StyleUtils.buildRule(ls1, StyleUtils.buildPadding(padding)));
+    }
+
+    px = getFormCellPaddingTop();
+    if (px > 0) {
+      String ftc = Selectors.descendantCombinator(
+          Selectors.classSelector(StyleUtils.NAME_FORM),
+          Selectors.classSelector(HtmlTable.STYLE_NAME),
+          Tags.TD);
+      rules.add(StyleUtils.buildRule(ftc, StyleUtils.buildStyle(CssProperties.PADDING_TOP, px)));
+    }
+
+    return rules;
   }
 
   private static String getString(String key) {

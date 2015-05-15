@@ -10,7 +10,7 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
 
-  name="NewProjectComment" viewName="ProjectEvents" width="600" height="300">
+  name="NewProjectComment" viewName="ProjectEvents" width="610" height="310">
 
   <FlowPanel style="padding: 10px 2px 2px 10px;">
     <Table style="&tbl;" cellStyle="&cell;">

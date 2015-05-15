@@ -144,11 +144,11 @@ public class ImportConditionsGrid extends AbstractGridInterceptor {
                         @Override
                         public void onSuccess(Long id) {
                           Queries.insert(getViewName(), Data.getColumns(getViewName(),
-                                  Arrays.asList(COL_IMPORT_MAPPING, COL_IMPORT_PROPERTY)),
+                              Arrays.asList(COL_IMPORT_MAPPING, COL_IMPORT_PROPERTY)),
                               Queries.asList(id, propId), null, new RowCallback() {
                                 @Override
-                                public void onSuccess(BeeRow result) {
-                                  getGridView().getGrid().insertRow(result, true);
+                                public void onSuccess(BeeRow row) {
+                                  getGridView().getGrid().insertRow(row, true);
                                 }
                               });
                         }

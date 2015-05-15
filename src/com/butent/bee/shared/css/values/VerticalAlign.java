@@ -68,5 +68,9 @@ public enum VerticalAlign implements HasCssName {
     public String getCssName() {
       return "text-bottom";
     }
+  };
+
+  public static boolean isCenter(VerticalAlign verticalAlign) {
+    return verticalAlign == MIDDLE || verticalAlign == CENTRAL;
   }
 }

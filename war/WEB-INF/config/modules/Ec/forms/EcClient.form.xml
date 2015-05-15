@@ -155,7 +155,7 @@
 
           <FlowPanel class="flexBox-horizontal" style="margin-left: 2em; margin-top: 2ex;">
             <Label for="CarTypeHistorySize" style="margin-right: 10px;" />
-            <InputSpinner source="CarTypeHistorySize" style="width: 50px;" 
+            <InputSpinner source="CarTypeHistorySize" style="width: 5em;" 
               minValue="-1" maxValue="100" summarize="true" />
           </FlowPanel>
         </FlowPanel>

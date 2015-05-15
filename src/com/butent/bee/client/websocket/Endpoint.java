@@ -3,12 +3,16 @@ package com.butent.bee.client.websocket;
 import com.google.common.base.Function;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptException;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Settings;
+import com.butent.bee.client.composite.Thermometer;
 import com.butent.bee.client.dom.Features;
 import com.butent.bee.client.utils.JsUtils;
+import com.butent.bee.client.widget.InlineLabel;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Consumer;
@@ -168,6 +172,43 @@ public final class Endpoint {
     return false;
   }
 
+  public static void initProgress(String caption, final Consumer<String> consumer) {
+    final String progressId;
+
+    if (Endpoint.isOpen()) {
+      InlineLabel close = new InlineLabel(String.valueOf(BeeConst.CHAR_TIMES));
+      Thermometer th = new Thermometer(caption, BeeConst.DOUBLE_ONE, close);
+      progressId = BeeKeeper.getScreen().addProgress(th);
+
+      if (progressId != null) {
+        close.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent ev) {
+            cancelProgress(progressId);
+          }
+        });
+      }
+    } else {
+      progressId = null;
+    }
+    if (progressId == null) {
+      consumer.accept(null);
+    } else {
+      enqueuePropgress(progressId, new Consumer<String>() {
+        @Override
+        public void accept(String input) {
+          String progress = progressId;
+
+          if (BeeUtils.isEmpty(input)) {
+            cancelProgress(progress);
+            progress = null;
+          }
+          consumer.accept(progress);
+        }
+      });
+    }
+  }
+
   public static boolean isClosed() {
     return socket != null && socket.getReadyState() == ReadyState.CLOSED.value;
   }
@@ -318,7 +359,7 @@ public final class Endpoint {
 
       String eventInfo = (event == null) ? null
           : BeeUtils.joinOptions("code", Integer.toString(event.getCode()),
-              "reason", event.getReason());
+          "reason", event.getReason());
       logger.info("close", socket.getUrl(), getReadyState(), eventInfo);
     }
   }

@@ -836,7 +836,7 @@ public final class CliWorker {
     }, delay);
   }
 
-//@formatter:off
+  //@formatter:off
   private static native void cornifyAdd() /*-{
     try {
       $wnd.cornify_add();
@@ -1948,63 +1948,48 @@ public final class CliWorker {
   }
 
   private static void rebuildSomething(final String args) {
-    final String progressId;
-
-    if (BeeUtils.same(args, "check") && Endpoint.isOpen()) {
-      InlineLabel close = new InlineLabel(String.valueOf(BeeConst.CHAR_TIMES));
-      Thermometer thermometer = new Thermometer("rebuild", BeeConst.DOUBLE_ONE, close);
-
-      progressId = BeeKeeper.getScreen().addProgress(thermometer);
-
-      if (progressId != null) {
-        close.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            Endpoint.cancelProgress(progressId);
-          }
-        });
-      }
-
-    } else {
-      progressId = null;
-    }
-
-    final ResponseCallback responseCallback = new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        Assert.notNull(response);
-
-        if (progressId != null) {
-          Endpoint.removeProgress(progressId);
-          Endpoint.send(ProgressMessage.close(progressId));
-        }
-
-        if (response.hasResponse()) {
-          showPropData(BeeUtils.joinWords("Rebuild", args),
-              PropertyUtils.restoreProperties((String) response.getResponse()));
-        }
-      }
-    };
-
-    if (progressId == null) {
-      BeeKeeper.getRpc().sendText(Service.REBUILD, args, responseCallback);
-
-    } else {
-      Endpoint.enqueuePropgress(progressId, new Consumer<String>() {
+    if (BeeUtils.same(args, "check")) {
+      Endpoint.initProgress("rebuild", new Consumer<String>() {
         @Override
-        public void accept(String input) {
+        public void accept(final String progress) {
           ParameterList params = new ParameterList(Service.REBUILD);
-          if (!BeeUtils.isEmpty(input)) {
-            params.addQueryItem(Service.VAR_PROGRESS, input);
-          }
 
-          BeeKeeper.getRpc().sendText(params, args, responseCallback);
+          if (!BeeUtils.isEmpty(progress)) {
+            params.addQueryItem(Service.VAR_PROGRESS, progress);
+          }
+          BeeKeeper.getRpc().sendText(params, args, new ResponseCallback() {
+            @Override
+            public void onResponse(ResponseObject response) {
+              Assert.notNull(response);
+
+              if (progress != null) {
+                Endpoint.removeProgress(progress);
+                Endpoint.send(ProgressMessage.close(progress));
+              }
+              if (response.hasResponse()) {
+                showPropData(BeeUtils.joinWords("Rebuild", args),
+                    PropertyUtils.restoreProperties((String) response.getResponse()));
+              }
+            }
+          });
+        }
+      });
+    } else {
+      BeeKeeper.getRpc().sendText(Service.REBUILD, args, new ResponseCallback() {
+        @Override
+        public void onResponse(ResponseObject response) {
+          Assert.notNull(response);
+
+          if (response.hasResponse()) {
+            showPropData(BeeUtils.joinWords("Rebuild", args),
+                PropertyUtils.restoreProperties((String) response.getResponse()));
+          }
         }
       });
     }
   }
 
-//@formatter:off
+  //@formatter:off
   // CHECKSTYLE:OFF
   private static native void sampleCanvas(Element el) /*-{
     var ctx = el.getContext("2d");

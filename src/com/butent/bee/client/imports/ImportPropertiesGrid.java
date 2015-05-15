@@ -19,6 +19,7 @@ import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.FaLabel;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.CellSource;
@@ -41,7 +42,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class ImportPropertiesGrid extends AbstractGridInterceptor {
@@ -66,20 +66,21 @@ public class ImportPropertiesGrid extends AbstractGridInterceptor {
   }
 
   @Override
-  public AbstractCellRenderer getRenderer(final String columnName,
+  public AbstractCellRenderer getRenderer(String columnName,
       List<? extends IsColumn> dataColumns, ColumnDescription columnDescription,
       CellSource cellSource) {
 
     if (BeeUtils.same(columnName, COL_IMPORT_PROPERTY)) {
-      return new AbstractCellRenderer(null) {
+      return new AbstractCellRenderer(cellSource) {
         @Override
         public String render(IsRow row) {
-          String name = Data.getString(getViewName(), row, columnName);
+          String name = getString(row);
           String value = propMap.containsKey(name) ? propMap.get(name).getCaption() : name;
           Long relId = Data.getLong(getViewName(), row, COL_IMPORT_RELATION_OPTION);
 
           if (DataUtils.isId(relId)) {
-            value += " " + new FaLabel(FontAwesome.SIGN_IN, true).getElement().getString();
+            value += BeeConst.CHAR_NBSP
+                + new FaLabel(FontAwesome.SIGN_IN, true).getElement().getString();
           }
           return value;
         }
@@ -139,8 +140,9 @@ public class ImportPropertiesGrid extends AbstractGridInterceptor {
         propMap.put(prop.getName(), prop);
       }
     }
-    if (Objects.equals(type, ImportType.DATA)) {
-      String viewName = Data.getString(parentView, parentRow, COL_IMPORT_DATA);
+    String viewName = Data.getString(parentView, parentRow, COL_IMPORT_DATA);
+
+    if (!BeeUtils.isEmpty(viewName)) {
       propMap.putAll(ImportDataForm.getDataProperties(viewName));
     }
     super.onParentRow(event);

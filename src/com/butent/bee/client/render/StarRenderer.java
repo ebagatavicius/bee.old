@@ -1,6 +1,7 @@
 package com.butent.bee.client.render;
 
 import com.butent.bee.client.images.star.Stars;
+import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.export.XCell;
@@ -25,6 +26,11 @@ public class StarRenderer extends AbstractCellRenderer {
     }
 
     return XCell.forPicture(cellIndex, ref);
+  }
+
+  @Override
+  public VerticalAlign getDefaultVerticalAlign() {
+    return VerticalAlign.MIDDLE;
   }
 
   @Override

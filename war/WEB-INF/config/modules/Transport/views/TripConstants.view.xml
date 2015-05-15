@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="TripConstants" caption="=trTripConstants"
+      source="TripConstants"
+    >
+  <Columns>
+    <SimpleColumn name="Constant" />
+
+    <SimpleColumn name="DateFrom" />
+    <SimpleColumn name="DateTo" />
+
+    <SimpleColumn name="Value" />
+    <SimpleColumn name="Currency" />
+    <SimpleJoin joinType="INNER" name="Currency">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="Constant" />
+    <OrderBy column="DateFrom" descending="true" />
+  </Order>
+</View>

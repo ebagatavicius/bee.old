@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="password" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="timeFrom" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="timeTo" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="vehicleRegistrationNumber" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="deviceName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="includeDaySplit" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="includeCountrySplit" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
@@ -39,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
     "password",
     "timeFrom",
     "timeTo",
+    "vehicleRegistrationNumber",
     "deviceName",
     "includeDaySplit",
     "includeCountrySplit",
@@ -51,6 +53,7 @@ public class GetSummarizedReport {
     protected String password;
     protected String timeFrom;
     protected String timeTo;
+    protected String vehicleRegistrationNumber;
     protected String deviceName;
     protected Boolean includeDaySplit;
     protected Boolean includeCountrySplit;
@@ -151,6 +154,30 @@ public class GetSummarizedReport {
      */
     public void setTimeTo(String value) {
         this.timeTo = value;
+    }
+
+    /**
+     * Gets the value of the vehicleRegistrationNumber property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVehicleRegistrationNumber() {
+        return vehicleRegistrationNumber;
+    }
+
+    /**
+     * Sets the value of the vehicleRegistrationNumber property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVehicleRegistrationNumber(String value) {
+        this.vehicleRegistrationNumber = value;
     }
 
     /**

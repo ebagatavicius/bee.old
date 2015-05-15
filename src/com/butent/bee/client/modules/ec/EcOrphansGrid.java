@@ -15,7 +15,6 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.TabBar;
-import com.butent.bee.client.composite.Thermometer;
 import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
@@ -38,9 +37,7 @@ import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.websocket.Endpoint;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.Image;
-import com.butent.bee.client.widget.InlineLabel;
 import com.butent.bee.client.widget.InputText;
-import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -117,41 +114,28 @@ public class EcOrphansGrid extends AbstractGridInterceptor implements ClickHandl
             if (filter != null) {
               args.addDataItem("filter", filter.serialize());
             }
-            InlineLabel close = new InlineLabel(String.valueOf(BeeConst.CHAR_TIMES));
-            Thermometer th = new Thermometer(Localized.getConstants().ecAnalogBinding(),
-                BeeConst.DOUBLE_ONE, close);
+            Endpoint.initProgress(Localized.getConstants().ecAnalogBinding(),
+                new Consumer<String>() {
+                  @Override
+                  public void accept(String progress) {
+                    if (!BeeUtils.isEmpty(progress)) {
+                      args.addDataItem(Service.VAR_PROGRESS, progress);
 
-            final String progressId = BeeKeeper.getScreen().addProgress(th);
-
-            close.addClickHandler(new ClickHandler() {
-              @Override
-              public void onClick(ClickEvent ev) {
-                Endpoint.cancelProgress(progressId);
-              }
-            });
-            Endpoint.enqueuePropgress(progressId, new Consumer<String>() {
-              @Override
-              public void accept(String input) {
-                if (!BeeUtils.isEmpty(input)) {
-                  args.addDataItem(Service.VAR_PROGRESS, input);
-
-                  Endpoint.registerProgressHandler(progressId,
-                      new Function<ProgressMessage, Boolean>() {
-                        @Override
-                        public Boolean apply(ProgressMessage pm) {
-                          if (pm.isClosed() || pm.isCanceled()) {
-                            getGridPresenter().refresh(true);
-                            setLoading(false);
-                          }
-                          return null;
-                        }
-                      });
-                } else {
-                  Endpoint.cancelProgress(progressId);
-                }
-                BeeKeeper.getRpc().makePostRequest(args, (ResponseCallback) null);
-              }
-            });
+                      Endpoint.registerProgressHandler(progress,
+                          new Function<ProgressMessage, Boolean>() {
+                            @Override
+                            public Boolean apply(ProgressMessage pm) {
+                              if (pm.isClosed() || pm.isCanceled()) {
+                                getGridPresenter().refresh(true);
+                                setLoading(false);
+                              }
+                              return null;
+                            }
+                          });
+                    }
+                    BeeKeeper.getRpc().makePostRequest(args, (ResponseCallback) null);
+                  }
+                });
           }
         });
   }
@@ -220,8 +204,9 @@ public class EcOrphansGrid extends AbstractGridInterceptor implements ClickHandl
     ParameterList args = EcKeeper.createArgs(SVC_CREATE_ITEM);
     args.addDataItem(COL_TCD_ARTICLE, article);
 
-    for (String col : new String[] {COL_TCD_ARTICLE_NR, COL_TCD_BRAND,
-        COL_TCD_ARTICLE_DESCRIPTION, COL_TCD_SUPPLIER, COL_TCD_SUPPLIER_ID}) {
+    for (String col : new String[] {
+        COL_TCD_ARTICLE_NR, COL_TCD_BRAND, COL_TCD_ARTICLE_DESCRIPTION, COL_TCD_SUPPLIER,
+        COL_TCD_SUPPLIER_ID}) {
 
       String value = Data.getString(getViewName(), orphan, col);
 

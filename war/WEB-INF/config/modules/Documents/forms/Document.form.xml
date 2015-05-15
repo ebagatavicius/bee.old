@@ -10,7 +10,7 @@
   <TabbedPages resizable="false">
     <page>
       <text>=mainInformation</text>
-      <FlowPanel class="flexBox-vertical">
+      <FlowPanel>
         <FlowPanel class="flexBox-horizontal">
           <xi:include href="widgets/DocumentFields.widget.xml" />
           <FlowPanel style="display: table;">
@@ -18,8 +18,7 @@
               defaultRelations="Companies Persons Requests Tasks" style="margin-left: 15px;" />
           </FlowPanel>
         </FlowPanel>
-        <ChildGrid name="DocumentFiles" relColumn="Document" class="flexible"
-          style="margin-top: 1ex;" />
+        <ChildGrid name="DocumentFiles" relColumn="Document" style="margin-top: 1ex; height: 400px;" />
       </FlowPanel>
     </page>
 

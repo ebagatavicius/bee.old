@@ -137,12 +137,28 @@ public class HeaderImpl extends Flow implements HeaderView {
 
     boolean canAdd = hasData && !readOnly && BeeKeeper.getUser().canCreateData(viewName);
     if (hasAction(Action.ADD, canAdd, enabledActions, disabledActions)) {
-      Label control = new Label("+ " + Localized.getConstants().createNew());
-      control.addStyleName(BeeConst.CSS_CLASS_PREFIX + "CreateNew");
+      boolean createNew;
 
-      initControl(control, Action.ADD, hiddenActions);
+      if (BeeUtils.isEmpty(options)) {
+        createNew = false;
+      } else if (UiOption.isChildOrEmbedded(options)) {
+        createNew = Theme.hasChildActionCreateNew();
+      } else if (options.contains(UiOption.GRID)) {
+        createNew = Theme.hasGridActionCreateNew();
+      } else {
+        createNew = Theme.hasViewActionCreateNew();
+      }
 
-      add(control);
+      if (createNew) {
+        Label control = new Label("+ " + Localized.getConstants().createNew());
+        control.addStyleName(BeeConst.CSS_CLASS_PREFIX + "CreateNew");
+
+        initControl(control, Action.ADD, hiddenActions);
+        add(control);
+
+      } else {
+        add(createFa(Action.ADD, hiddenActions));
+      }
     }
 
     if (hasAction(Action.REFRESH, hasData, enabledActions, disabledActions)) {

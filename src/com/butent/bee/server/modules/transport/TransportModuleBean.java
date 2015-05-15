@@ -2642,8 +2642,7 @@ public class TransportModuleBean implements BeeModule, HasTimerService {
     Long currency = reqInfo.getParameterLong(COL_CURRENCY);
     boolean woVat = BeeUtils.toBoolean(reqInfo.getParameter(COL_TRADE_VAT));
 
-    HasConditions clause = SqlUtils.and(SqlUtils.equals(TBL_TRIPS, COL_TRIP_STATUS,
-        TripStatus.COMPLETED.ordinal()), SqlUtils.isNull(TBL_TRIPS, COL_EXPEDITION));
+    HasConditions clause = SqlUtils.and(SqlUtils.isNull(TBL_TRIPS, COL_EXPEDITION));
 
     ReportInfo report = ReportInfo.restore(reqInfo.getParameter(Service.VAR_DATA));
 
@@ -2654,6 +2653,7 @@ public class TransportModuleBean implements BeeModule, HasTimerService {
     String fuelCosts = "FuelCosts";
     String dailyCosts = "DailyCosts";
     String roadCosts = "RoadCosts";
+    String constantCosts = "ConstantCosts";
     String otherCosts = "OtherCosts";
     String tripIncome = "TripIncome";
 
@@ -2681,6 +2681,7 @@ public class TransportModuleBean implements BeeModule, HasTimerService {
         .addEmptyDouble(fuelCosts)
         .addEmptyDouble(dailyCosts)
         .addEmptyDouble(roadCosts)
+        .addEmptyDouble(constantCosts)
         .addEmptyDouble(otherCosts)
         .addEmptyDouble(tripIncome)
         .addFrom(TBL_TRIPS)
@@ -2764,6 +2765,54 @@ public class TransportModuleBean implements BeeModule, HasTimerService {
           .addExpression(roadCosts, SqlUtils.field(costs, roadCosts))
           .addExpression(otherCosts, SqlUtils.field(costs, otherCosts))
           .addExpression(fuelCosts, SqlUtils.field(costs, fuelCosts))
+          .setFrom(costs, SqlUtils.joinUsing(tmp, costs, COL_TRIP)));
+
+      qs.sqlDropTemp(costs);
+    }
+    if (report.requiresField(constantCosts)) {
+      SqlSelect ss = new SqlSelect()
+          .addFields(tmp, COL_TRIP)
+          .addFrom(tmp)
+          .addFromInner(TBL_TRIP_CONSTANTS,
+              SqlUtils.and(SqlUtils.equals(TBL_TRIP_CONSTANTS, COL_TRIP_CONSTANT,
+                      TripConstant.CONSTANT_COSTS.ordinal()),
+                  SqlUtils.notNull(tmp, COL_TRIP_DATE_FROM),
+                  SqlUtils.notNull(tmp, COL_TRIP_DATE_TO),
+                  SqlUtils.or(SqlUtils.isNull(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_FROM),
+                      SqlUtils.joinLess(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_FROM, tmp,
+                          COL_TRIP_DATE_TO)),
+                  SqlUtils.or(SqlUtils.isNull(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_TO),
+                      SqlUtils.joinMore(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_TO, tmp,
+                          COL_TRIP_DATE_FROM))))
+          .addGroup(tmp, COL_TRIP);
+
+      IsExpression xpr = SqlUtils.multiply(SqlUtils.divide(SqlUtils.minus(
+              SqlUtils.sqlIf(SqlUtils.or(
+                      SqlUtils.isNull(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_TO),
+                      SqlUtils.joinMore(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_TO, tmp,
+                          COL_TRIP_DATE_TO)),
+                  SqlUtils.field(tmp, COL_TRIP_DATE_TO),
+                  SqlUtils.field(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_TO)),
+              SqlUtils.sqlIf(SqlUtils.or(
+                      SqlUtils.isNull(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_FROM),
+                      SqlUtils.joinLess(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_FROM, tmp,
+                          COL_TRIP_DATE_FROM)),
+                  SqlUtils.field(tmp, COL_TRIP_DATE_FROM),
+                  SqlUtils.field(TBL_TRIP_CONSTANTS, COL_TRIP_DATE_FROM))),
+          TimeUtils.MILLIS_PER_DAY), SqlUtils.field(TBL_TRIP_CONSTANTS, COL_CARGO_VALUE));
+
+      if (DataUtils.isId(currency)) {
+        xpr = ExchangeUtils.exchangeFieldTo(ss, xpr,
+            SqlUtils.field(TBL_TRIP_CONSTANTS, COL_CURRENCY), SqlUtils.field(tmp, COL_TRIP_DATE),
+            SqlUtils.constant(currency));
+      } else {
+        xpr = ExchangeUtils.exchangeField(ss, xpr,
+            SqlUtils.field(TBL_TRIP_CONSTANTS, COL_CURRENCY), SqlUtils.field(tmp, COL_TRIP_DATE));
+      }
+      String costs = qs.sqlCreateTemp(ss.addSum(xpr, constantCosts));
+
+      qs.updateData(new SqlUpdate(tmp)
+          .addExpression(constantCosts, SqlUtils.field(costs, constantCosts))
           .setFrom(costs, SqlUtils.joinUsing(tmp, costs, COL_TRIP)));
 
       qs.sqlDropTemp(costs);

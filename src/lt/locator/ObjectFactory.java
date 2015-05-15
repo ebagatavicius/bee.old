@@ -35,14 +35,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetSummarizedReport }
-     * 
-     */
-    public GetSummarizedReport createGetSummarizedReport() {
-        return new GetSummarizedReport();
-    }
-
-    /**
      * Create an instance of {@link GetSummarizedReportResponse }
      * 
      */
@@ -51,11 +43,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TripSumRepData }
+     * Create an instance of {@link GetSummarizedReport }
      * 
      */
-    public TripSumRepData createTripSumRepData() {
-        return new TripSumRepData();
+    public GetSummarizedReport createGetSummarizedReport() {
+        return new GetSummarizedReport();
     }
 
     /**
@@ -67,12 +59,20 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TripSumRepData }
+     * 
+     */
+    public TripSumRepData createTripSumRepData() {
+        return new TripSumRepData();
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetSummarizedReport }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://soap.wsbridge.ws.loctracker.msc/", name = "getSummarizedReport")
     public JAXBElement<GetSummarizedReport> createGetSummarizedReport(GetSummarizedReport value) {
-        return new JAXBElement<>(_GetSummarizedReport_QNAME, GetSummarizedReport.class, null, value);
+        return new JAXBElement<GetSummarizedReport>(_GetSummarizedReport_QNAME, GetSummarizedReport.class, null, value);
     }
 
     /**
@@ -81,7 +81,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://soap.wsbridge.ws.loctracker.msc/", name = "getSummarizedReportResponse")
     public JAXBElement<GetSummarizedReportResponse> createGetSummarizedReportResponse(GetSummarizedReportResponse value) {
-        return new JAXBElement<>(_GetSummarizedReportResponse_QNAME, GetSummarizedReportResponse.class, null, value);
+        return new JAXBElement<GetSummarizedReportResponse>(_GetSummarizedReportResponse_QNAME, GetSummarizedReportResponse.class, null, value);
     }
 
 }

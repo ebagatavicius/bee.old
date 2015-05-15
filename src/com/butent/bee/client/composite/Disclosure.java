@@ -95,9 +95,9 @@ public class Disclosure extends Flow {
 
   private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "Disclosure";
   private static final String STYLE_OPEN = STYLE_NAME + "-open";
-  private static final String STYLE_CLOSED = STYLE_NAME + "-closed";
+  public static final String STYLE_CLOSED = STYLE_NAME + "-closed";
 
-  private static final String STYLE_HEADER = STYLE_NAME + "-header";
+  public static final String STYLE_HEADER = STYLE_NAME + "-header";
   private static final String STYLE_TOGGLE = STYLE_NAME + "-toggle";
   private static final String STYLE_LABEL = STYLE_NAME + "-label";
   private static final String STYLE_SUMMARY = STYLE_NAME + "-summary";

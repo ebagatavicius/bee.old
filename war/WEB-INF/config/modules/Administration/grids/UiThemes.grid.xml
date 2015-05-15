@@ -4,6 +4,8 @@
   name="UiThemes" viewName="UiThemes" caption="=uiThemes"
   enableCopy="-Name, Description"
   >
+  <g:body height="80" />
+
   <g:columns>
     <DataColumn name="Name" minWidth="120" visible="true" />
     <DataColumn name="Description" visible="false" />

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="TripConstants"
+       idName="ConstantID"
+    >
+  <Fields>
+    <Enum name="Constant" key="TripConstant" notNull="true" label="=trTripConstant" />
+    <Date name="DateFrom" label="=dateFrom" />
+    <Date name="DateTo" label="=dateTo" />
+    <Numeric name="Value" precision="12" scale="2" notNull="true" label="=value" />
+    <Relation name="Currency" relation="Currencies" notNull="true" label="=currencyShort"
+              defExpr="MAIN_CURRENCY" />
+  </Fields>
+</Table>
