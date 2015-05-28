@@ -84,8 +84,7 @@
             <InputText name="ActualTasksDuration" readOnly="true" style="&inp3;" />       
           </row>
 
-          <row>
-            
+          <row>       
             <Label for="ContractPrice" text="=salePrice" style="&lbl;" />
             <InputDecimal source="ContractPrice" scale="2" style="&inp3;" />
             <DataSelector source="Currency" for="ContractPrice" newRowEnabled="false" editEnabled="false"
@@ -93,11 +92,20 @@
             <Label for="Progress" text="=progress" style="&lbl;" />
             <InputDecimal source="Progress" style="&inp3;" minValue="0" maxValue="100" />
           </row>
-          
+           
+          <row>
+           <Label for="Progress" text="=progress" style="&lbl;" />
+           <InputDecimal source="Progress" style="&inp3;" minValue="0" maxValue="100" />
+          </row>
         </Table>
 
-        <Table>
+        <Table>        
           <row>
+            <Label for="PerfomancePlace" text="=prjPerfomancePlace" style="width: 115px; &lbl;" />
+            <InputText source="PerfomancePlace" style="width: 100%;" />
+          </row>
+          
+           <row>
             <Label for="Description" text="=description" style="width: 115px; &lbl;" />
             <InputArea source="Description" placeholder="=prjDescriptionContent" style="&inp4;" />
           </row>

@@ -27,5 +27,6 @@
     <Numeric name="ContractPrice" precision="15" scale="5" label="=salePrice" />
     <Date name="ContractSigned" label="=signDate"/>
     <DateTime name="Created"  defExpr="CURRENT_TIME"/>
+    <Text name="PerfomancePlace" />
   </Fields>
 </Table>

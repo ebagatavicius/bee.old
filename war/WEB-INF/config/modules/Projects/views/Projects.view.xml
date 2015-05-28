@@ -12,6 +12,8 @@
     <SimpleColumn name="Status" />
     <SimpleColumn name="Name" />
     
+    <SimpleColumn name="PerfomancePlace" />
+        
     <SimpleColumn name="Type" />
     <SimpleJoin name="Type" joinType="LEFT">
       <SimpleColumn name="Name" alias="TypeName" />
