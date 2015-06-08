@@ -7,13 +7,13 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  xmlns:ui="http://www.butent.com/ui" 
-  
+  xmlns:ui="http://www.butent.com/ui"
+
   name="&form;" viewName="PrintOrder" caption="Užsakymas" disabledActions="save"
   width="70" widthUnit="%" height="90" heightUnit="%"
   >
 
-  <FlowPanel style="padding: 10px; background-color: white;">
+  <FlowPanel class="bee-PrintableForm" style="padding: 10px; background-color: white;">
     <css id="&form;">
       .&form;-table {border-collapse:collapse; width:100%;}
       .&form;-table td {border:1px solid black; padding:2px;}
@@ -46,7 +46,7 @@
         <cell style="vertical-align:top;">
           <FlowPanel name="Customer" />
         </cell>
-        
+
         <FlowPanel>
           <FlowPanel name="Forwarder" class="&form;-forwarder" />
           <br />
@@ -77,7 +77,7 @@
 
       <HorizontalPanel class="&form;-table">
         <TextLabel source="OrderNotes" style="white-space:pre-wrap;" />
-        
+
         <FlowPanel>
           <FlowPanel>
             <Label html="Pakrovimo data:" style="&inline; width:100px; text-align:right;" />
@@ -132,7 +132,7 @@
     </HorizontalPanel>
 
     <HorizontalPanel class="&form;-table" style="&section;">
-      <Label html="Kaina:" style="&bold;" />        
+      <Label html="Kaina:" style="&bold;" />
       <FlowPanel>
         <DecimalLabel name="Total" scale="2" inline="true" style="margin-right:2px;" />
         <TextLabel source="CurrencyName" inline="true" />
@@ -146,34 +146,34 @@
     </HorizontalPanel>
 
     <HtmlPanel style="&section;">
-      <span style="white-space:pre-wrap; font-size:xx-small;">Bendrosios sąlygos: 
-1. Ekspeditoriaus įsipareigojimai ir teisės: 
-1.1. Ekspeditorius įsipareigoja nuvežti jam patikėtą krovinį į šiame užsakyme nustatytą paskirties punktą ir išduoti jį gavėjui kartu su krovinio dokumentais pagal visus nustatytus norminius teisės aktus. 
-1.2. Ekspeditorius turi teisę 8 valandų laikotarpyje patvirtinti Kliento siųstą užsakymą arba jį grąžinti, nurodant objektyvias priežastis tokiam veiksmui, neprisiimant atsakomybės už Kliento galimus ar jau patirtus nuostolius; 
-1.3. Ekspeditorius turi teisę neteikti paslaugų pagal šį Kliento užsakymą, jei Klientas nepateikė pilnos informacijos, būtinos užsakymo įvykdymui iki bus pateikta trūkstama informacija, apie tai informavus Klientą; 
-1.4. Ekspeditorius turi teisę pasitelkti trečią šalį visapusiškam bei savalaikiam paslaugų atlikimui, laikantis visų šiame užsakyme numatytų sąlygų. 
+      <span style="white-space:pre-wrap; font-size:xx-small;">Bendrosios sąlygos:
+1. Ekspeditoriaus įsipareigojimai ir teisės:
+1.1. Ekspeditorius įsipareigoja nuvežti jam patikėtą krovinį į šiame užsakyme nustatytą paskirties punktą ir išduoti jį gavėjui kartu su krovinio dokumentais pagal visus nustatytus norminius teisės aktus.
+1.2. Ekspeditorius turi teisę 8 valandų laikotarpyje patvirtinti Kliento siųstą užsakymą arba jį grąžinti, nurodant objektyvias priežastis tokiam veiksmui, neprisiimant atsakomybės už Kliento galimus ar jau patirtus nuostolius;
+1.3. Ekspeditorius turi teisę neteikti paslaugų pagal šį Kliento užsakymą, jei Klientas nepateikė pilnos informacijos, būtinos užsakymo įvykdymui iki bus pateikta trūkstama informacija, apie tai informavus Klientą;
+1.4. Ekspeditorius turi teisę pasitelkti trečią šalį visapusiškam bei savalaikiam paslaugų atlikimui, laikantis visų šiame užsakyme numatytų sąlygų.
 2. Kliento įsipareigojimai ir teisės:
-2.1. Kliento įsipareigoja pateikti Ekspeditoriui atitinkamą užsakymą vienu iš jam priimtiniausių komunikacijos būdų (faksas, el. paštas, internetas) ne vėliau kaip prieš 48 valandas iki konkretaus krovinio numatomo pervežimo pradžios; 
-2.2. Kliento įsipareigoja pateikti Ekspeditoriui užsakymą, kuriame turi būti nurodyti visi reikalingi duomenys ir pridėti visi dokumentai, būtini visapusiškam paslaugų suteikimui, laikantis šio užsakymo sąlygų; 
-2.3. Kliento įsipareigoja užtikrinti saugiam transportavimui reikalingą prekių įpakavimą; 
-2.4. Kliento įsipareigoja atlyginti Ekspeditoriui patirtus nuostolius, atsiradusius dėl to, kad Klientas nepateikė, pateikė ne visus  arba netikslius duomenis ar dokumentus, reikalingus krovinio transportavimui, išskyrus atvejus, kai už tai atsako pats Ekspeditorius; 
-2.5. Kliento įsipareigoja informuoti Ekspeditorių apie bet kokius pasikeitimus bei tam tikras sąlygas ne vėliau kaip prieš 48 valandas iki krovinio transportavimo pradžios; 
-2.6. atsiskaityti su Ekspeditorium už krovinio transportavimą šiame užsakyme nustatytą tvarką. 
-3. Apmokėjimas už paslaugas: 
-3.1. už suteiktas paslaugas Klientas moka Ekspeditoriui užsakyme nustatytą kainą pagal jam pateiktą PVM sąskaitą-faktūrą šiame užsakyme numatytais terminais; 
-3.2. Klientas, pavėlavęs laiku atsiskaityti su Ekspeditorium, moka jam delspinigius po 0,2 proc. (dvi dešimtąsias procento) nuo neapmokėtos sumos už kiekvieną uždelstą sumokėti dieną. 
-4. Šalių atsakomybė 
+2.1. Kliento įsipareigoja pateikti Ekspeditoriui atitinkamą užsakymą vienu iš jam priimtiniausių komunikacijos būdų (faksas, el. paštas, internetas) ne vėliau kaip prieš 48 valandas iki konkretaus krovinio numatomo pervežimo pradžios;
+2.2. Kliento įsipareigoja pateikti Ekspeditoriui užsakymą, kuriame turi būti nurodyti visi reikalingi duomenys ir pridėti visi dokumentai, būtini visapusiškam paslaugų suteikimui, laikantis šio užsakymo sąlygų;
+2.3. Kliento įsipareigoja užtikrinti saugiam transportavimui reikalingą prekių įpakavimą;
+2.4. Kliento įsipareigoja atlyginti Ekspeditoriui patirtus nuostolius, atsiradusius dėl to, kad Klientas nepateikė, pateikė ne visus  arba netikslius duomenis ar dokumentus, reikalingus krovinio transportavimui, išskyrus atvejus, kai už tai atsako pats Ekspeditorius;
+2.5. Kliento įsipareigoja informuoti Ekspeditorių apie bet kokius pasikeitimus bei tam tikras sąlygas ne vėliau kaip prieš 48 valandas iki krovinio transportavimo pradžios;
+2.6. atsiskaityti su Ekspeditorium už krovinio transportavimą šiame užsakyme nustatytą tvarką.
+3. Apmokėjimas už paslaugas:
+3.1. už suteiktas paslaugas Klientas moka Ekspeditoriui užsakyme nustatytą kainą pagal jam pateiktą PVM sąskaitą-faktūrą šiame užsakyme numatytais terminais;
+3.2. Klientas, pavėlavęs laiku atsiskaityti su Ekspeditorium, moka jam delspinigius po 0,2 proc. (dvi dešimtąsias procento) nuo neapmokėtos sumos už kiekvieną uždelstą sumokėti dieną.
+4. Šalių atsakomybė
 4.1. Visos Klientui pagal šį užsakymą teikiamos paslaugos bei Ekspeditoriaus atsakomybė atitinka tokią veiklą reglamentuojančius nacionalinius teisės aktus ir tarptautinius teisinius dokumentus, įskaitant, bet tuo neapsiribojant:
-1929 m. Varšuvos konvenciją ir jos pakeitimus 1955 m. krovinių gabenimui oro transportu su važtaraščiu (AWB); 
-1956 m. Ženevos konvenciją krovinių gabenimui kelių transportu su važtaraščiu (CMR); 
-1968 m. Visby taisykles krovinių gabenimui jūrų transportu su važtaraščiu (B/L); 
-1964 m Berno konvenciją krovinių gabenimui geležinkeliu su važtaraščiu (SMGS). 
-4.2. Ekspeditorius nėra atsakingas už sankcionuotus muitinės ar kitų valstybinių institucijų veiksmus, susijusius su prekių patikrinimu, sulaikymu, konfiskacija ir pan. tuo metu kai Klientui yra suteikiamos paslaugos. Tuo pačiu Klientas įsipareigoja kompensuoti šių veiksmų pasekoje Ekspeditoriaus patirtus nuostolius; 
+1929 m. Varšuvos konvenciją ir jos pakeitimus 1955 m. krovinių gabenimui oro transportu su važtaraščiu (AWB);
+1956 m. Ženevos konvenciją krovinių gabenimui kelių transportu su važtaraščiu (CMR);
+1968 m. Visby taisykles krovinių gabenimui jūrų transportu su važtaraščiu (B/L);
+1964 m Berno konvenciją krovinių gabenimui geležinkeliu su važtaraščiu (SMGS).
+4.2. Ekspeditorius nėra atsakingas už sankcionuotus muitinės ar kitų valstybinių institucijų veiksmus, susijusius su prekių patikrinimu, sulaikymu, konfiskacija ir pan. tuo metu kai Klientui yra suteikiamos paslaugos. Tuo pačiu Klientas įsipareigoja kompensuoti šių veiksmų pasekoje Ekspeditoriaus patirtus nuostolius;
 5. Ginčų sprendimas
 Visi ginčai, susiję su netinkamu ar nepilnu vienos ar abiejų šalių įsipareigojimų nevykdymu pagal šį užsakymą, sprendžiami tarpusavio derybų tvarka geranoriškai, o taip nesusitarus – Lietuvos Respublikos įstatymų nustatyta tvarka Kauno miesto teisme.
       </span>
       <span style="font-size:smaller; &bold; display:block;">
-Ši sutartis, Kliento pateikta Ekspeditoriui, bei abiejų pusių patvirtinta faksu ar elektroniniu būdu turi tokią pačią juridinę galią kaip ir 
+Ši sutartis, Kliento pateikta Ekspeditoriui, bei abiejų pusių patvirtinta faksu ar elektroniniu būdu turi tokią pačią juridinę galią kaip ir
 originalas.
       </span>
     </HtmlPanel>

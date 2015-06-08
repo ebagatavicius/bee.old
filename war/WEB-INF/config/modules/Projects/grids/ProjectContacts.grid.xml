@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  xmlns:ui="http://www.butent.com/ui" xmlns:w="http://www.butent.com/widget"
+
+  name="ProjectContacts" viewName="ProjectContacts" caption="=personContacts"  >
+
+  <g:columns>
+    <RelColumn name="CompanyPerson" editEnabled="true" editForm="CompanyPerson" editViewName="CompanyPersons"
+    renderColumns="FirstName LastName CompanyName CompanyType Phone" >
+      <renderToken source="FirstName" suffix=" " />
+      <renderToken source="LastName" />
+    </RelColumn>
+    <DataColumn name="Phone" />
+    <DataColumn name="Mobile" />
+    <DataColumn name="Fax" visible="false"/>
+    <DataColumn name="Email"/>
+    <DataColumn name="PositionName" />
+    <DataColumn name="DepartmentName" />
+  </g:columns>
+</g:Grid>

@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 
 import com.butent.bee.client.Global;
+import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.widget.InputLong;
@@ -64,9 +65,7 @@ public class IdFilterSupplier extends AbstractFilterSupplier {
   @Override
   public void onRequest(Element target, Scheduler.ScheduledCommand onChange) {
     setOldValue(BeeUtils.toLongOrNull(getEditorValue()));
-
-    openDialog(target, editor.asWidget(), onChange);
-    editor.setFocus(true);
+    openDialog(target, editor, OpenEvent.focus(editor), onChange);
   }
 
   @Override

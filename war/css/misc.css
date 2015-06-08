@@ -140,7 +140,7 @@
   border-width: 6px;
   border-style: solid;
   border-radius: 50%;
-  transform: translate(-6px, -6px);  
+  transform: translate(-6px, -6px);
 }
 .bee-orgChart-bubble-parent {
   border-color: limegreen;
@@ -176,7 +176,7 @@
   margin-left: 1em;
 }
 
-.bee-form-ExtendedReport .bee-HtmlTable td {
+.bee-form-ExtendedReport .bee-HtmlTable tr td {
   padding: 3px 5px;
 }
 
@@ -186,14 +186,15 @@
 .bee-rep .bee-Horizontal td {
   border: none;
 }
-.bee-rep-date, bee-rep-num {
+
+.bee-rep-date, .bee-rep-num {
   white-space: nowrap;
 }
 .bee-rep-num, .bee-rep-cgroup-hdr, .bee-rep-tot-hdr {
   text-align: right;
 }
 .bee-rep-drill:hover {
-  cursor: pointer; 
+  cursor: pointer;
   background-color: lightyellow;
 }
 .bee-rep-drill-on, .bee-rep-drill-off {
@@ -221,7 +222,7 @@
   font-weight: bold;
 }
 
-.bee-rep-item, .bee-rep-text-separator, .bee-rep-num-operator {
+.bee-rep-item, .bee-rep-text-separator, .bee-rep-num-operator, .bee-rep-date-operator {
   display: inline-block;
   background-color: antiquewhite;
   margin-right: 5px;
@@ -231,13 +232,14 @@
   border-radius: 5px;
   cursor: pointer;
 }
-.bee-rep-text-separator, .bee-rep-num-operator {
+.bee-rep-text-separator, .bee-rep-num-operator, .bee-rep-date-operator {
   background-color: transparent;
 }
 .bee-rep-text-expression, .bee-rep-num-expression {
   max-width: 500px;
 }
-.bee-rep-item-over, .bee-rep-item:hover, .bee-rep-text-separator:hover, .bee-rep-num-operator:hover {
+.bee-rep-item-over, .bee-rep-item:hover, .bee-rep-text-separator:hover, .bee-rep-num-operator:hover,
+.bee-rep-date-operator:hover {
   background-color: lightyellow;
 }
 .bee-rep-function {

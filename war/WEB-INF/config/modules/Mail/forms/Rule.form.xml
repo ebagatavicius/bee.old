@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  
-  name="Rule" caption="=mailRule" width="400" height="210"
-  >
+        xmlns:f="http://www.butent.com/form"
+
+        name="Rule" caption="=mailRule" width="400" height="320"
+    >
   <FlowPanel>
     <Table style="margin:5px 10px 5px 10px">
       <row>
@@ -25,16 +25,17 @@
         <cell>
           <FlowPanel>
             <InputText name="ActionOptions" style="width:300px;" />
-            
-            <UnboundSelector name="Folder" viewName="Folders" newRowEnabled="false" style="width:300px;">
+
+            <UnboundSelector name="Folder" viewName="Folders" newRowEnabled="false"
+                             editEnabled="false" caching="local" style="width:300px;">
               <renderToken source="ParentName" suffix="/" />
               <renderToken source="Name" />
             </UnboundSelector>
-            
+
             <InputArea class="flexible" visibleLines="5" style="width:300px;" />
           </FlowPanel>
         </cell>
       </row>
     </Table>
   </FlowPanel>
-</f:Form>  
+</f:Form>

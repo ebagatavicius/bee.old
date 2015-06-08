@@ -497,8 +497,9 @@ public class MailPanel extends AbstractFormInterceptor {
           Popup popup = new Popup(OutsideClick.CLOSE, CSS_SEARCH_PREFIX + "Popup");
           popup.setWidget(SearchPanel.this);
           popup.setHideOnEscape(true);
+
+          popup.focusOnOpen(SearchPanel.this);
           popup.showRelativeTo(widget.asWidget().getParent().getElement());
-          UiHelper.focus(SearchPanel.this);
         }
       });
     }
@@ -906,7 +907,7 @@ public class MailPanel extends AbstractFormInterceptor {
     Icon icon = purge ? Icon.ALARM : Icon.WARNING;
 
     Global.messageBox(purge ? Localized.getConstants().actionDelete()
-            : Localized.getConstants().mailActionMoveToTrash(), icon, null, options, BeeConst.UNDEF,
+        : Localized.getConstants().mailActionMoveToTrash(), icon, null, options, BeeConst.UNDEF,
         new ChoiceCallback() {
           @Override
           public void onSuccess(int value) {

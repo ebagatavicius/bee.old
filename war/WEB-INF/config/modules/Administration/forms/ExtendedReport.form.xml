@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  
+
   name="ExtendedReport"
   >
-  <FlowPanel class="flexBox-vertical">
+  <FlowPanel class="flexBox-vertical" style="height:100%;">
     <br/>
     <FlowPanel class="flexBox-horizontal">
       <FlowPanel class="flexible">
@@ -12,15 +12,15 @@
           <Label text="=currency" />
           <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
             newRowEnabled="false" editPopup="true" style="width:80px;" />
-    
+
           <CheckBox name="Vat" text="=trdAmountWoVat" />
         </HorizontalPanel>
-        
+
         <Disclosure open="false">
           <Label text="=layout" />
           <FlowPanel name="LayoutContainer" style="overflow:auto;" />
         </Disclosure>
-    
+
         <Disclosure open="true">
           <Label text="=filters" />
           <FlowPanel style="overflow:auto;">

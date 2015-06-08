@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="AssessmentForwarders" source="AssessmentForwarders" caption="=carriers"
-  >
+      name="AssessmentForwarders" source="AssessmentForwarders" caption="=carriers"
+    >
   <Columns>
     <SimpleColumn name="Assessment" />
 
     <SimpleJoin name="CargoTrip" joinType="INNER">
       <SimpleColumn name="Cargo" />
-  
+
       <SimpleJoin joinType="LEFT" name="Trip">
         <SimpleColumn name="Expedition" editable="true" />
         <SimpleJoin joinType="LEFT" name="Expedition">
           <SimpleColumn name="Name" alias="ExpeditionType" label="=trExpeditionType" />
         </SimpleJoin>
-  
+
         <SimpleColumn name="Forwarder" editable="true" />
         <SimpleJoin joinType="LEFT" name="Forwarder">
           <SimpleColumn name="Name" alias="ForwarderName" label="=carrier" />
-           <SimpleJoin joinType="LEFT" name="CompanyType">
-             <SimpleColumn name="Name" alias="ForwarderTypeName" />
-           </SimpleJoin>
+          <SimpleJoin joinType="LEFT" name="CompanyType">
+            <SimpleColumn name="Name" alias="ForwarderTypeName" />
+          </SimpleJoin>
         </SimpleJoin>
-  
+
         <SimpleColumn name="ForwarderVehicle" editable="true" />
         <SimpleColumn name="Notes" label="=transportOtherDetails" editable="true" />
       </SimpleJoin>
@@ -46,13 +46,14 @@
       <SimpleColumn name="Supplier" editable="true" />
       <SimpleJoin name="Supplier" joinType="LEFT">
         <SimpleColumn name="Name" alias="SupplierName" />
-         <SimpleJoin joinType="LEFT" name="CompanyType">
-           <SimpleColumn name="Name" alias="SupplierTypeName" />
-         </SimpleJoin>
+        <SimpleJoin joinType="LEFT" name="CompanyType">
+          <SimpleColumn name="Name" alias="SupplierTypeName" />
+        </SimpleJoin>
       </SimpleJoin>
       <SimpleColumn name="Date" editable="true" />
       <SimpleColumn name="Number" editable="true" />
       <SimpleColumn name="Note" label="=transportConditions" editable="true" />
+      <SimpleColumn name="Income" editable="true" />
     </SimpleJoin>
   </Columns>
 </View>

@@ -385,6 +385,7 @@ public class ReportDateItem extends ReportItem {
       filterOperator = Operator.EQ;
     }
     final Label operator = new Label(filterOperator.toTextString());
+    operator.addStyleName(getStyle() + "-operator");
     operator.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {

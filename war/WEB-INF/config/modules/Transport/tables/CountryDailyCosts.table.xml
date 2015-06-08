@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="CountryDailyCosts"
-  idName="DailyCostID"
-  >
+       name="CountryDailyCosts"
+       idName="DailyCostID"
+    >
   <Fields>
-    <Relation name="CountryNorm" relation="CountryNorms" notNull="true" label="=trCountryNorm" />
+    <Relation name="CountryNorm" relation="CountryNorms" notNull="true" cascade="DELETE"
+              label="=trCountryNorm" />
     <Date name="DateFrom" label="=dateFrom" />
     <Date name="DateTo" label="=dateTo" />
     <Numeric name="Amount" precision="12" scale="2" notNull="true" label="=amount" />
-    <Relation name="Currency" relation="Currencies" notNull="true" label="=currencyShort" defExpr="MAIN_CURRENCY" />
+    <Relation name="Currency" relation="Currencies" notNull="true" label="=currencyShort"
+              defExpr="MAIN_CURRENCY" />
   </Fields>
 </Table>

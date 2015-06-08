@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="CargoHandling"
-  idName="HandlingID"
-  >
+       name="CargoHandling"
+       idName="HandlingID"
+    >
   <Fields>
     <Relation name="Cargo" notNull="true" relation="OrderCargo" cascade="DELETE" label="=cargo" />
-    <Relation name="LoadingPlace" unique="true" relation="CargoPlaces" editable="true"  label="=cargoLoadingPlace"/>
-    <Relation name="UnloadingPlace" unique="true" relation="CargoPlaces" editable="true" label="=cargoUnloadingPlace"/>
+
+    <Relation name="LoadingPlace" unique="true" relation="CargoPlaces" editable="true"
+              label="=loading" />
+    <Relation name="UnloadingPlace" unique="true" relation="CargoPlaces" editable="true"
+              label="=unloading" />
+
+    <Integer name="EmptyKilometers" label="=trEmptyKilometers" />
+    <Integer name="LoadedKilometers" label="=trLoadedKilometers" />
     <Text name="Notes" label="=notes" />
+    <Numeric name="Weight" precision="7" scale="3" label="=trWeightInTons" />
+
     <Relation name="Forwarder" relation="AssessmentForwarders" cascade="DELETE" />
   </Fields>
 </Table>

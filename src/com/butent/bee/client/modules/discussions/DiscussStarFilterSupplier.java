@@ -40,7 +40,7 @@ final class DiscussStarFilterSupplier extends AbstractFilterSupplier {
 
   @Override
   public void onRequest(Element target, ScheduledCommand onChange) {
-    openDialog(target, createWidget(), onChange);
+    openDialog(target, createWidget(), null, onChange);
   }
 
   @Override

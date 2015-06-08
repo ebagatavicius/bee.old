@@ -16,8 +16,6 @@ import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.Queries.IntCallback;
 import com.butent.bee.client.data.RowCallback;
-import com.butent.bee.client.data.RowEditor;
-import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.modules.trade.TradeUtils;
 import com.butent.bee.client.presenter.GridPresenter;
@@ -26,10 +24,8 @@ import com.butent.bee.client.render.FileLinkRenderer;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
-import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.view.ViewHelper;
-import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -215,70 +211,6 @@ public final class DocumentsHandler {
         FormView form = ViewHelper.getForm(gridView.asWidget());
         if (form != null) {
           collector.bindDnd(form);
-        }
-      }
-    }
-  }
-
-  private static final class RelatedDocumentsHandler extends AbstractGridInterceptor {
-
-    private int documentIndex = BeeConst.UNDEF;
-
-    private RelatedDocumentsHandler() {
-    }
-
-    @Override
-    public void afterCreate(GridView gridView) {
-      documentIndex = gridView.getDataIndex(COL_DOCUMENT);
-      super.afterCreate(gridView);
-    }
-
-    @Override
-    public boolean beforeAddRow(final GridPresenter presenter, boolean copy) {
-      RowFactory.createRow(VIEW_DOCUMENTS, new RowCallback() {
-        @Override
-        public void onSuccess(BeeRow result) {
-          final long docId = result.getId();
-
-          presenter.getGridView().ensureRelId(new IdCallback() {
-            @Override
-            public void onSuccess(Long relId) {
-              Queries.insert(AdministrationConstants.VIEW_RELATIONS,
-                  Data.getColumns(AdministrationConstants.VIEW_RELATIONS,
-                      Lists.newArrayList(COL_DOCUMENT, presenter.getGridView().getRelColumn())),
-                  Queries.asList(docId, relId), null, new RowCallback() {
-                    @Override
-                    public void onSuccess(BeeRow row) {
-                      presenter.handleAction(Action.REFRESH);
-                    }
-                  });
-            }
-          });
-        }
-      });
-
-      return false;
-    }
-
-    @Override
-    public GridInterceptor getInstance() {
-      return new RelatedDocumentsHandler();
-    }
-
-    @Override
-    public void onEditStart(EditStartEvent event) {
-      event.consume();
-
-      if (!BeeConst.isUndef(documentIndex) && event.getRowValue() != null) {
-        Long docId = event.getRowValue().getLong(documentIndex);
-
-        if (DataUtils.isId(docId)) {
-          RowEditor.open(VIEW_DOCUMENTS, docId, Opener.MODAL, new RowCallback() {
-            @Override
-            public void onSuccess(BeeRow result) {
-              getGridPresenter().handleAction(Action.REFRESH);
-            }
-          });
         }
       }
     }

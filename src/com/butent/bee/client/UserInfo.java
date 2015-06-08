@@ -5,6 +5,7 @@ import com.google.gwt.dom.client.StyleElement;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 
+import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasInfo;
@@ -13,6 +14,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.value.BooleanValue;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -198,6 +200,10 @@ public class UserInfo implements HasInfo {
     return userData != null;
   }
 
+  public boolean isMenuVisible() {
+    return !getBooleanSetting(COL_MENU_HIDE);
+  }
+
   public boolean isMenuVisible(String object) {
     return isLoggedIn() && userData.isMenuVisible(object);
   }
@@ -229,6 +235,21 @@ public class UserInfo implements HasInfo {
 
   public void setSessionId(String sessionId) {
     this.sessionId = sessionId;
+  }
+
+  public void setMenuVisible(boolean visible) {
+    if (isMenuVisible() != visible && !DataUtils.isEmpty(settings)) {
+      int index = getSettingsIndex(COL_MENU_HIDE);
+
+      if (!BeeConst.isUndef(index)) {
+        boolean hide = !visible;
+
+        BeeRow row = getSettingsRow();
+        row.setValue(index, hide);
+
+        Queries.update(settings.getViewName(), row.getId(), COL_MENU_HIDE, BooleanValue.of(hide));
+      }
+    }
   }
 
   public void setUserData(UserData userData) {

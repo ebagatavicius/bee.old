@@ -50,6 +50,7 @@
     </SimpleJoin>
 
     <SimpleColumn name="Style" />
+    <SimpleColumn name="MenuHide" />
   </Columns>
   
   <Order>

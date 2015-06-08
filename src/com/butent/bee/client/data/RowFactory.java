@@ -530,6 +530,8 @@ public final class RowFactory {
           formView.getFormInterceptor().onStartNewRow(formView, null, row);
         }
         formView.updateRow(row, true);
+
+        UiHelper.focus(formView.getRootWidget().asWidget());
       }
     });
 
@@ -538,8 +540,6 @@ public final class RowFactory {
     } else {
       dialog.showRelativeTo(target.getElement());
     }
-
-    UiHelper.focus(formView.getRootWidget().asWidget());
   }
 
   private RowFactory() {

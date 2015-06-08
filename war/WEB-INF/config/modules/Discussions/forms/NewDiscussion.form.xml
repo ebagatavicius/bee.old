@@ -3,13 +3,14 @@
   <!ENTITY inline "display: inline-block;">
 
   <!ENTITY section "margin-top: 4px;">
-  <!ENTITY header "font-style: italic;">
+  <!ENTITY header "font-size: 20px;">
   <!ENTITY separator "<hr/>">
 
   <!ENTITY lbl1 "&inline; max-width: 128px; min-width: 110px; text-align: right; padding-right: 18px; min-height: 20px; max-height: 20px; padding-top: 1px;">
   <!ENTITY top1 "text-align: right; padding-right: 18px; max-width: 128px; padding-top: 1px;">
   <!ENTITY inp1x "&inline; width: 450px;">
-  <!ENTITY inp2x "&inline; width: 540px;">
+  <!ENTITY inp2x "&inline; width: 710px;">
+  <!ENTITY bold "font-weight: bold;">
  
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
@@ -21,16 +22,15 @@
   <FlowPanel style="padding: 10px 2px 2px 10px; min-width: 660px; min-height: 590px">
     
     <FlowPanel for="Subject" style="&section;" class="flexBox-horizontal">
-      <Label text="=discussSubject" class="bee-required" style="&lbl1; min-width:80px;" />
-      <InputText source="Subject" style="&inp2x; width: 541px" />
+      <Label text="=discussSubject" class="bee-required" style="&lbl1; min-width:80px; &bold;" />
+      <InputText source="Subject" style="&inp2x;" />
     </FlowPanel>
 
     <FlowPanel for="Description" style="&section;" class="flexBox-horizontal">
-      <Label text="=discussDescription" style="&top1; padding-right: 18px; min-width:80px;" />
-      <RichTextEditor name="Description" style="width: 540px; height: 200px;" />
+      <Label text="=discussDescription" style="&top1; padding-right: 18px; min-width:80px; &bold;" />
+      <RichTextEditor name="Description" style="width: 710px; height: 200px;" />
     </FlowPanel>
 
-    &separator;
     <FlowPanel data="DiscussionsFiles" style="&section;" class="flexBox-horizontal">
       <Label text="=discussFiles" style="&top1; min-width:70px;" />
       <FileCollector name="Files" editableColumns="name">
@@ -38,17 +38,16 @@
       </FileCollector>
     </FlowPanel>
 
-    &separator; 
-    
-    <FlowPanel style="&section;" class="flexBox-horizontal">
-      <CheckBox data="Users" name="Accessibility" source="Accessibility" text="=discussPublic" style="&top1; min-width:70px; padding-right:18px;" />
-      <CheckBox module="Mail.Administration" name="Mail" text="=mailNotify" />
-    </FlowPanel>
-    
     <FlowPanel data="Users" style="&section;" class="flexBox-horizontal">
       <Label name="membersLabel" text="=discussMembers" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector name="Members" viewName="Users" property="Members" renderColumns="FirstName LastName"
         editPopup="true" editSource="CompanyPerson" disablable="true" style="&inp2x;" label="=discussMembers" />
+    </FlowPanel>
+
+    <FlowPanel style="&section; margin-left: 80px;" class="flexBox-horizontal">
+      <CheckBox data="Users" name="Accessibility" source="Accessibility" text="=discussPublic"
+        style="&top1; min-width:70px; padding-right:18px;" />
+      <CheckBox module="Mail.Administration" name="Mail" text="=mailNotify" />
     </FlowPanel>
 
     &separator;
@@ -57,7 +56,7 @@
     </FlowPanel>
 
     <FlowPanel data="Relations" for="Company" module="Classifiers.Contacts" 
-    style="&section;" class="flexBox-horizontal">
+    style="&section; &bold;" class="flexBox-horizontal">
       <Label text="=companies" style="&top1;min-width:80px; padding-right:18px;" />
       <MultiSelector viewName="Companies" property="Companies" choiceColumns="Name TypeName" 
           renderColumns="Name TypeName" editPopup="true" style="&inp2x;" />
@@ -65,14 +64,14 @@
 
     <FlowPanel data="Relations" for="Person" module="Classifiers.Contacts"
       style="&section;" class="flexBox-horizontal">
-      <Label text="=persons" style="&top1;min-width:80px; padding-right:18px;" />
+      <Label text="=persons" style="&top1;min-width:80px; padding-right:18px; &bold;" />
       <MultiSelector viewName="Persons" property="Persons" renderColumns="FirstName LastName"
         editPopup="true" style="&inp2x;" />
     </FlowPanel>
 
     <FlowPanel data="Relations" for="Appointment" module="Calendar"
     style="&section;" class="flexBox-horizontal">
-      <Label text="=calAppointments" style="&top1;min-width:80px; padding-right:18px;" />
+      <Label text="=calAppointments" style="&top1;min-width:80px; padding-right:18px; &bold;" />
       <MultiSelector viewName="Appointments" property="Appointments"
         renderColumns="Summary" choiceColumns="Summary StartDateTime EndDateTime"
         newRowEnabled="false" editPopup="true" style="&inp2x;" />
@@ -80,7 +79,7 @@
 
     <FlowPanel data="Relations" for="Task" module="Tasks" 
     style="&section;" class="flexBox-horizontal">
-      <Label text="=crmTasks" style="&top1;min-width:80px; padding-right:18px;" />
+      <Label text="=crmTasks" style="&top1;min-width:80px; padding-right:18px; &bold;" />
       <MultiSelector viewName="Tasks" property="Tasks" 
         renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
         choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
@@ -89,7 +88,7 @@
     
     <FlowPanel data="Relations" for="Document" module="Documents"
       style="&section;" class="flexBox-horizontal">
-      <Label text="=documents" style="&top1;min-width:80px; padding-right:18px;" />
+      <Label text="=documents" style="&top1;min-width:80px; padding-right:18px; &bold;" />
       <MultiSelector viewName="Documents" property="Documents" 
         renderColumns="Name Number RegistrationNumber DocumentDate"
         choiceColumns="Name Number RegistrationNumber DocumentDate"
@@ -102,22 +101,21 @@
     </FlowPanel>
     
     <FlowPanel for="Topic" style="&section;" class="flexBox-horizontal">
-      <Label for="Topic" text="=adTopic" style="&lbl1; min-width:150px;" />
+      <Label for="Topic" text="=adTopic" style="&lbl1; min-width:150px; &bold;" />
       <DataSelector name="Topic" source="Topic" style="&inp2x; width: 250px" 
         choiceColumns="Name" filter="Visible" />
     </FlowPanel>
     
     <FlowPanel for="Topic" style="&section;" class="flexBox-horizontal">
-      <Label for="Topic" name="DisplayInBoard" text="=displayInBoard" style="&lbl1; min-width:150px;" />
-      <Label for="VisibleFrom" text="=dateFromShort" style="text-transform: lowercase; margin-right:4px"/>
-      <InputDateTime source="VisibleFrom" style="&inp2x; width: 100px; margin-right:8px"/>
-      <Label for="VisibleTo" text="=dateToShort" style="text-transform: lowercase; margin-right:4px"/>
-      <InputDateTime source="VisibleTo" style="&inp2x; width: 100px" />
-    </FlowPanel>  
-    
-    <FlowPanel style="&section;" class="flexBox-horizontal">      
-      <CheckBox name="Important" source="Important" text="=important" style="&top1; min-width:70px; padding-right:18px;" />
-      <CheckBox name="PermitComment" text="=prohibitComment" style="&top1; min-width: 135px; padding-right:18px;" /> 
+      <Label for="Topic" name="DisplayInBoard" text="=displayInBoard" style="&lbl1; min-width:150px; &bold;" />
+      <InputDateTime source="VisibleFrom" style="&inp2x; width: 120px; margin-right:10px" placeholder="=dateFromShort" />
+      <InputDateTime source="VisibleTo" style="&inp2x; width: 120px" placeholder="=dateToShort" />
+    </FlowPanel>
+
+    <FlowPanel style="margin-top:20px;" class="flexBox-horizontal">
+      <CheckBox name="Important" source="Important" text="=important"
+        style="&top1; min-width:70px; padding-right:40px; margin-left: 160px;" />
+      <CheckBox name="PermitComment" text="=prohibitComment" style="min-width: 135px;" />
     </FlowPanel>
     
   </FlowPanel>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="CargoGroups"
+  idName="CargoGroupID"
+  >
+  <Fields>
+    <String name="CargoGroupName" precision="50" notNull="true" unique="true" label="=group" />
+  </Fields>
+</Table>

@@ -45,7 +45,7 @@ class StarFilterSupplier extends AbstractFilterSupplier {
 
   @Override
   public void onRequest(Element target, Scheduler.ScheduledCommand onChange) {
-    openDialog(target, createWidget(), onChange);
+    openDialog(target, createWidget(), null, onChange);
   }
 
   @Override

@@ -159,7 +159,8 @@ class TasksGrid extends AbstractGridInterceptor {
       presenter.getHeader().addCommandItem(confirmTask);
     }
 
-    if (BeeKeeper.getUser().canCreateData(ProjectConstants.VIEW_PROJECTS)) {
+    if (BeeKeeper.getUser().canCreateData(ProjectConstants.VIEW_PROJECTS)
+        && !presenter.getGridView().isChild()) {
       FaLabel createProject = new FaLabel(FontAwesome.ROCKET);
       createProject.setTitle(Localized.getConstants().prjCreateFromTasks());
       createProject.addClickHandler(new ClickHandler() {

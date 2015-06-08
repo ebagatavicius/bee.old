@@ -462,8 +462,8 @@ public class EditableColumn implements BlurHandler, EditChangeHandler, EditStopE
       adjustEditor(sourceElement, editorElement, adjustElement);
     }
 
+    Stacking.ensureParentContext(editorElement);
     StyleUtils.setZIndex(editorElement, zIndex);
-    Stacking.ensureLevel(zIndex);
 
     StyleUtils.unhideDisplay(editorElement);
     getEditor().setFocus(true);

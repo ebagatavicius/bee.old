@@ -1,10 +1,9 @@
 package com.butent.bee.client.modules.transport;
 
-import static com.butent.bee.shared.modules.transport.TransportConstants.*;
+import static com.butent.bee.shared.modules.transport.TransportConstants.COL_TRIP;
 
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.presenter.GridPresenter;
-import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
@@ -12,7 +11,6 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.CompoundFilter;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
-import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
 
 class CargoTripsGrid extends AbstractGridInterceptor {
@@ -40,18 +38,5 @@ class CargoTripsGrid extends AbstractGridInterceptor {
   @Override
   public GridInterceptor getInstance() {
     return new CargoTripsGrid();
-  }
-
-  @Override
-  public String getRowCaption(IsRow row, boolean edit) {
-    return Localized.getConstants().trCargoActualPlaces();
-  }
-
-  @Override
-  public void onEditStart(EditStartEvent event) {
-    if (!BeeUtils.inListSame(event.getColumnId(), "Loading", "Unloading", COL_TRIP_PERCENT)) {
-      event.consume();
-    }
-    super.onEditStart(event);
   }
 }

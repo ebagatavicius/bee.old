@@ -6,13 +6,13 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  xmlns:ui="http://www.butent.com/ui" 
-  
+  xmlns:ui="http://www.butent.com/ui"
+
   name="&form;" viewName="PrintContract" caption="Contract" disabledActions="save"
   width="70" widthUnit="%" height="90" heightUnit="%"
   >
 
-  <FlowPanel style="padding: 10px; background-color: white;">
+  <FlowPanel class="bee-PrintableForm" style="padding: 10px; background-color: white;">
     <css id="&form;">
       .&form;-table {border-collapse:collapse; width:100%;}
       .&form;-table td {border:1px solid black; padding:2px;}
@@ -33,7 +33,7 @@
             <properties locale="en" />
           </FlowPanel>
         </cell>
-        
+
         <FlowPanel name="Customer" class="&form;-customer">
           <properties locale="en" />
         </FlowPanel>
@@ -93,15 +93,15 @@
           <HtmlPanel>
             <span style="white-space:pre-wrap; font-size:smaller;">Obligations of the parties:
 
-1. Carriage is performed under conditions of CMR Convention. During performance of this Carriage Contract the Carrier must have a valid carrier’s CMR insurance policy, licenses and permits, necessary for the legal performance of above carriage. 
+1. Carriage is performed under conditions of CMR Convention. During performance of this Carriage Contract the Carrier must have a valid carrier’s CMR insurance policy, licenses and permits, necessary for the legal performance of above carriage.
 2. The Customer undertakes to organize loading and customs clearance (if needed) within  24 hours (CIS countries 48 hours) from the moment of vehicle arrival at the loading place, including cargo fixing and sealing works. This condition applies to a car on arrival at the loading location until 10:00 local time.
-3. The Customer undertakes to perform unloading and customs formalities (if needed) within  24 hours (CIS countries 48 hours) from the moment of vehicle arrival at customs destination place or delivery place. The time runs when the truck arrives to custom / unloading place until 10:00 local time. 
-4. If the terms set out in clauses 2-3 ate exceeded, the Customer shall pay to the Carrier downtimes 100 eur   for each working day. 
-5. The Carrier shall immediately inform the Customer about all circumstances of the carriage, when he suspects the threat to timely and safely delivery of cargo. 
-6. The Carrier undertakes to provide for loading/unloading a clean, without additional smells vehicle of a good technical condition. The Carrier will be obligated to pay fine of 20 % of trucking price, for not providing truck for loading. The Carrier must have TIR Carnet with him (if needed), international CMR consignment, valid CMR insurance policy, all permits necessary for international carriage. 
-7. The carrier is obliged to arrive at the loading/unloading point at a specified time. Date and time must be specified in the CMR. The carrier is obliged to monitor loading/unloading. The cargo must match the records in the CMR. The carrier is responsible for damaged cargo, incorrect placement of the cargo. In case of delay to the loading/unloading point the carrier pays a fine in value of   100 eur for each working day. 
-8. The Carrier undertakes to arrive at loading/unloading place on the indicated time. The date and time must be indicated in CMR consignment. The Carrier must supervise loading/unloading. Cargo must conform to the data written in CMR consignment. The Carrier is liable for damaged cargo, improper placement of cargo in a vehicle. 
-9. The Carrier is liable for cargo from the moment of its acceptance till transfer, as well as delay of cargo delivery under conditions of CMR Convention. The Carrier shall not be liable for quantity of cargo, if it is delivered without damaged seals, for internal state and quantity of units of cargo, if cargo packing is not damaged. 
+3. The Customer undertakes to perform unloading and customs formalities (if needed) within  24 hours (CIS countries 48 hours) from the moment of vehicle arrival at customs destination place or delivery place. The time runs when the truck arrives to custom / unloading place until 10:00 local time.
+4. If the terms set out in clauses 2-3 ate exceeded, the Customer shall pay to the Carrier downtimes 100 eur   for each working day.
+5. The Carrier shall immediately inform the Customer about all circumstances of the carriage, when he suspects the threat to timely and safely delivery of cargo.
+6. The Carrier undertakes to provide for loading/unloading a clean, without additional smells vehicle of a good technical condition. The Carrier will be obligated to pay fine of 20 % of trucking price, for not providing truck for loading. The Carrier must have TIR Carnet with him (if needed), international CMR consignment, valid CMR insurance policy, all permits necessary for international carriage.
+7. The carrier is obliged to arrive at the loading/unloading point at a specified time. Date and time must be specified in the CMR. The carrier is obliged to monitor loading/unloading. The cargo must match the records in the CMR. The carrier is responsible for damaged cargo, incorrect placement of the cargo. In case of delay to the loading/unloading point the carrier pays a fine in value of   100 eur for each working day.
+8. The Carrier undertakes to arrive at loading/unloading place on the indicated time. The date and time must be indicated in CMR consignment. The Carrier must supervise loading/unloading. Cargo must conform to the data written in CMR consignment. The Carrier is liable for damaged cargo, improper placement of cargo in a vehicle.
+9. The Carrier is liable for cargo from the moment of its acceptance till transfer, as well as delay of cargo delivery under conditions of CMR Convention. The Carrier shall not be liable for quantity of cargo, if it is delivered without damaged seals, for internal state and quantity of units of cargo, if cargo packing is not damaged.
 10. The Customer may cancel order 12 hours before loading. Otherwise, the Customer shall pay a fine to the Carrier for non-submission of cargo for loading 20 %   from the carriage price, unless otherwise agreed.
 11. The Carrier does not have the right to perform any payments on behalf of the Customer without receipt of fax, confirming such authority.
 12. The order cannot be modified manually. Any adjustment of the contract must be approved by stamps of both parties, otherwise corrections have no effect whatsoever.
@@ -111,7 +111,7 @@
         </cell>
       </row>
     </Table>
-    
+
     <Label html="This Order, signed and sent by fax, has the same legal effect as the original. Please confirm the Order."
            style="&section; font-style:italic; font-weight:bold; font-size:smaller;" />
 

@@ -63,7 +63,6 @@ public final class StyleUtils {
 
   public static final String DND_SOURCE = BeeConst.CSS_CLASS_PREFIX + "dndSource";
   public static final String DND_OVER = BeeConst.CSS_CLASS_PREFIX + "dndOver";
-  public static final String DROP_AREA = BeeConst.CSS_CLASS_PREFIX + "dropArea";
 
   public static final String STYLE_WIDTH = "width";
   public static final String STYLE_MIN_WIDTH = "minWidth";
@@ -147,6 +146,7 @@ public final class StyleUtils {
   public static final String VALUE_FIXED = "fixed";
   public static final String VALUE_HIDDEN = "hidden";
   public static final String VALUE_INHERIT = "inherit";
+  public static final String VALUE_INITIAL = "initial";
   public static final String VALUE_NONE = "none";
 
   public static final String SUFFIX_HORIZONTAL = "horizontal";

@@ -3,6 +3,7 @@ package com.butent.bee.client.view.edit;
 import com.butent.bee.shared.Consumable;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.utils.BeeUtils;
 
 /**
  * Handles edit event ending, gets old and new values of edited data.
@@ -112,5 +113,9 @@ public class EditEndEvent implements Consumable {
 
   public void setOldValue(String oldValue) {
     this.oldValue = oldValue;
+  }
+
+  public boolean valueChanged() {
+    return !BeeUtils.equalsTrim(getOldValue(), getNewValue());
   }
 }

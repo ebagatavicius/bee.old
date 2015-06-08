@@ -8,7 +8,6 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.event.logical.HasSummaryChangeHandlers;
 import com.butent.bee.client.event.logical.ParentRowEvent;
 import com.butent.bee.client.event.logical.ReadyEvent;
-import com.butent.bee.client.event.logical.ReadyEvent.HasReadyHandlers;
 import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.presenter.GridPresenter;
@@ -147,8 +146,8 @@ abstract class EmbeddedGrid extends Simple implements EnablableWidget, HasFoster
     if (w != null) {
       StyleUtils.makeAbsolute(w);
 
-      if (w instanceof HasReadyHandlers) {
-        ReadyEvent.maybeDelegate(this, (HasReadyHandlers) w);
+      if (w instanceof ReadyEvent.HasReadyHandlers) {
+        ReadyEvent.maybeDelegate(this, (ReadyEvent.HasReadyHandlers) w);
       }
     }
 

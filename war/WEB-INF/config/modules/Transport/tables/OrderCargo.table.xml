@@ -8,7 +8,7 @@
     <Relation name="Order" relation="TransportationOrders" cascade="DELETE" label="=trOrder" />
     <Text name="Description" notNull="true" label="=cargo" defValue="*" />
 
-    <Numeric name="Weight" precision="10" scale="3" label="=weight" />
+    <Numeric name="Weight" precision="10" scale="3" label="=trWeightInTons" />
     <Relation name="WeightUnit" relation="Units" label="=weightUnit" />
     <Numeric name="Volume" precision="8" scale="3" label="=volume" />
     <Relation name="VolumeUnit" relation="Units" label="=volumeUnit" />
@@ -23,7 +23,7 @@
     <Relation name="ValueCurrency" relation="Currencies" label="=trCargoValueCurrency" />
 
     <String name="Number" precision="20" label="=number" />
-    <String name="Cmr" precision="20" />
+    <Relation name="Cmr" relation="Documents" />
     <Integer name="LoadedKilometers" label="=trLoadedKilometers" />
     <Integer name="EmptyKilometers" label="=trEmptyKilometers" />
     <Boolean name="Partial" label="=partial" />
@@ -37,5 +37,8 @@
     <Text name="Notes" label="=notes" />
     <Text name="Directions" label="=trDirections" />
     <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
+
+    <Relation name="CargoType" relation="CargoTypes" label="=type" />
+    <Relation name="CargoGroup" relation="CargoGroups" label="=group" />
   </Fields>
 </Table>

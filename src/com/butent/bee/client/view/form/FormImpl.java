@@ -23,6 +23,7 @@ import com.butent.bee.client.dialog.TabulationHandler;
 import com.butent.bee.client.dom.Dimensions;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.ElementSize;
+import com.butent.bee.client.dom.Stacking;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.PreviewHandler;
 import com.butent.bee.client.event.Previewer;
@@ -2251,7 +2252,9 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   }
 
   private void showNote(LogLevel level, String... messages) {
+    Stacking.ensureParentContext(getNotification());
     StyleUtils.setZIndex(getNotification(), StyleUtils.getZIndex(getRootWidget().asWidget()) + 1);
+
     getNotification().show(level, messages);
   }
 

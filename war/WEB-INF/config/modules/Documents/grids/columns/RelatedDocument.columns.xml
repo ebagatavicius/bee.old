@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <DataColumn name="Name" visible="true" />
+  <DataColumn name="DocumentDate" />
+  <DataColumn name="Expires" />
+  <DataColumn name="Number" />
+  <DataColumn name="CategoryName" caption="=documentCategory" />
+  <DataColumn name="TypeName" />
+  <DataColumn name="PlaceName" />
+  <DataColumn name="StatusName" />
+
+  <IdColumn name="Id" visible="false" />
+  <DataColumn name="RegistrationNumber" visible="false" />
+  <DataColumn name="Received" visible="false" />
+  <DataColumn name="Sent" visible="false" />
+  <DataColumn name="Description" visible="false" />
+</g:columns>

@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  
-  name="Mail" caption="=mails" readOnly="true" enabledActions="add delete"
-  >
+        xmlns:f="http://www.butent.com/form"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="Mail" caption="=mails" readOnly="true" enabledActions="add delete"
+    >
   <SplitPanel splitterSize="1" style="margin:5px;">
     <west size="300">
       <FlowPanel class="flexBox-vertical">
         <FlowPanel style="background:white; border:1px solid silver; border-radius:4px;">
-          <InputText name="Search" placeholder="=search" style="width:280px; margin:1px; border:none; outline:none;" />
+          <InputText name="Search" placeholder="=search"
+                     style="width:280px; margin:1px; border:none; outline:none;" />
           <FaLabel name="SearchOptions" char="chevron_down" style="display:inline-block" />
         </FlowPanel>
         <GridPanel name="Places" class="bee-mail-Headers flexible" />
       </FlowPanel>
     </west>
-      
-    <center>
-      <FlowPanel class="flexBox-vertical">
-        <Label name="EmptySelection" class="bee-mail-EmptySelection" text="=mailThereIsNoMessageSelected" />
 
-        <FlowPanel name="Message" class="flexible flexBox-vertical" style="display: none;">
+    <center>
+      <FlowPanel>
+        <Label name="EmptySelection" class="bee-mail-EmptySelection"
+               text="=mailThereIsNoMessageSelected" />
+
+        <FlowPanel name="Message" style="display:none; height:calc(100% - 10px)">
           <xi:include href="widgets/Message.widget.xml" />
         </FlowPanel>
       </FlowPanel>

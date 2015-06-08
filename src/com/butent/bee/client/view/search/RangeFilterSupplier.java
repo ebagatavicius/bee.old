@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -164,9 +165,7 @@ public class RangeFilterSupplier extends AbstractFilterSupplier {
       SimpleEditorHandler.observe(null, inputTo, getWidget());
     }
 
-    openDialog(target, getWidget(), onChange);
-
-    inputFrom.setFocus(true);
+    openDialog(target, getWidget(), OpenEvent.focus(inputFrom.asWidget()), onChange);
   }
 
   @Override

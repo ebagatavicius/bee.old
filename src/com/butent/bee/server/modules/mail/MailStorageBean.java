@@ -34,15 +34,11 @@ import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.mail.MailConstants;
-import com.butent.bee.shared.modules.mail.MailConstants.AddressType;
-import com.butent.bee.shared.modules.mail.MailConstants.MessageFlag;
-import com.butent.bee.shared.modules.mail.MailConstants.SystemFolder;
 import com.butent.bee.shared.modules.mail.MailFolder;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,6 +72,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeUtility;
 import javax.mail.internet.ParseException;
+import javax.mail.util.SharedByteArrayInputStream;
 
 @Singleton
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -262,8 +259,8 @@ public class MailStorageBean {
     });
     if (placeId.isNull()) {
       if (!qs.sqlExists(TBL_PLACES, SqlUtils.and(messageUID == null
-          ? SqlUtils.isNull(TBL_PLACES, COL_MESSAGE_UID)
-          : SqlUtils.equals(TBL_PLACES, COL_MESSAGE_UID, messageUID),
+              ? SqlUtils.isNull(TBL_PLACES, COL_MESSAGE_UID)
+              : SqlUtils.equals(TBL_PLACES, COL_MESSAGE_UID, messageUID),
           SqlUtils.equals(TBL_PLACES, COL_MESSAGE, messageId.get(), COL_FOLDER, folderId)))) {
 
         placeId.set(storePlace(messageId.get(), folderId, envelope.getFlagMask(), messageUID));
@@ -284,8 +281,8 @@ public class MailStorageBean {
       try {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         message.writeTo(bos);
-        is = new ByteArrayInputStream(bos.toByteArray());
-
+        bos.close();
+        is = new SharedByteArrayInputStream(bos.toByteArray());
         fileId = fs.storeFile(is, "mail@" + envelope.getUniqueId(), "text/plain");
       } catch (MessagingException | IOException e) {
         qs.updateData(new SqlDelete(TBL_PLACES)
@@ -346,8 +343,8 @@ public class MailStorageBean {
       } catch (MessagingException | IOException e) {
         logger.error(e);
       }
-      if (!ArrayUtils.contains(new Long[] {account.getDraftsFolder().getId(),
-          account.getTrashFolder().getId()}, folderId)) {
+      if (!ArrayUtils.contains(new Long[] {
+          account.getDraftsFolder().getId(), account.getTrashFolder().getId()}, folderId)) {
 
         if (DataUtils.isId(senderId)) {
           allAddresses.add(senderId);
@@ -711,9 +708,9 @@ public class MailStorageBean {
   private void storePart(Long messageId, String content, boolean isHtml) {
     if (!BeeUtils.isEmpty(content)) {
       ResponseObject response = qs.insertDataWithResponse(new SqlInsert(TBL_PARTS)
-          .addConstant(COL_MESSAGE, messageId)
-          .addConstant(COL_CONTENT, isHtml ? HtmlUtils.stripHtml(content) : content)
-          .addConstant(COL_HTML_CONTENT, isHtml ? content : null),
+              .addConstant(COL_MESSAGE, messageId)
+              .addConstant(COL_CONTENT, isHtml ? HtmlUtils.stripHtml(content) : content)
+              .addConstant(COL_HTML_CONTENT, isHtml ? content : null),
           new Function<SQLException, ResponseObject>() {
             @Override
             public ResponseObject apply(SQLException ex) {

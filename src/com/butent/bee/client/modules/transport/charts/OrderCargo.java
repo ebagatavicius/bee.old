@@ -25,7 +25,8 @@ import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.List;
 
-class OrderCargo extends Filterable implements HasDateRange, HasColorSource, HasShipmentInfo {
+class OrderCargo extends Filterable implements HasDateRange, HasColorSource, HasShipmentInfo,
+    HasCargoType {
 
   @SuppressWarnings("unused")
   private static final String cargoLabel =
@@ -43,8 +44,8 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
             EnumUtils.getEnumByIndex(OrderStatus.class, row.getInt(COL_STATUS)),
             row.getDateTime(COL_ORDER_DATE), row.getValue(COL_ORDER_NO),
             row.getLong(COL_CUSTOMER), row.getValue(COL_CUSTOMER_NAME),
-            row.getLong(COL_CARGO_ID), row.getValue(COL_CARGO_DESCRIPTION),
-            row.getValue(COL_CARGO_NOTES),
+            row.getLong(COL_CARGO_ID), row.getLong(COL_CARGO_TYPE),
+            row.getValue(COL_CARGO_DESCRIPTION), row.getValue(COL_CARGO_NOTES),
             BeeUtils.nvl(Places.getLoadingDate(row, loadingColumnAlias(COL_PLACE_DATE)), minLoad),
             row.getLong(loadingColumnAlias(COL_PLACE_COUNTRY)),
             row.getValue(loadingColumnAlias(COL_PLACE_ADDRESS)),
@@ -80,6 +81,7 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
   private final String customerName;
   private final Long cargoId;
 
+  private final Long cargoType;
   private final String cargoDescription;
 
   private final String notes;
@@ -103,7 +105,8 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
   private Range<JustDate> range;
 
   protected OrderCargo(Long orderId, OrderStatus orderStatus, DateTime orderDate, String orderNo,
-      Long customerId, String customerName, Long cargoId, String cargoDescription, String notes,
+      Long customerId, String customerName,
+      Long cargoId, Long cargoType, String cargoDescription, String notes,
       JustDate loadingDate, Long loadingCountry, String loadingPlace, String loadingPostIndex,
       Long loadingCity, String loadingNumber,
       JustDate unloadingDate, Long unloadingCountry, String unloadingPlace,
@@ -119,6 +122,7 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
     this.customerName = customerName;
 
     this.cargoId = cargoId;
+    this.cargoType = cargoType;
     this.cargoDescription = cargoDescription;
 
     this.notes = notes;
@@ -140,6 +144,11 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
     this.orderName = BeeUtils.joinWords(TimeUtils.renderCompact(this.orderDate), this.orderNo);
 
     this.range = TimeBoardHelper.getActivity(loadingDate, unloadingDate);
+  }
+
+  @Override
+  public Long getCargoType() {
+    return cargoType;
   }
 
   @Override

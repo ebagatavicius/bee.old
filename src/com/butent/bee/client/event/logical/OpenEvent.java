@@ -4,7 +4,9 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.HasHandlers;
+import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.shared.Assert;
 
 public final class OpenEvent extends GwtEvent<OpenEvent.Handler> {
@@ -22,6 +24,15 @@ public final class OpenEvent extends GwtEvent<OpenEvent.Handler> {
   public static void fire(HasOpenHandlers source) {
     Assert.notNull(source);
     source.fireEvent(new OpenEvent());
+  }
+
+  public static Handler focus(final Widget target) {
+    return new Handler() {
+      @Override
+      public void onOpen(OpenEvent event) {
+        UiHelper.focus(target);
+      }
+    };
   }
 
   public static Type<Handler> getType() {

@@ -28,5 +28,7 @@
     <Relation name="UiTheme" relation="UiThemes" label="=uiTheme" />
 
     <Text name="Style" label="=style" />
+    
+    <Boolean name="MenuHide" />
   </Fields>
 </Table>

@@ -94,8 +94,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -849,7 +848,7 @@ public class ClassifiersModuleBean implements BeeModule {
     String email = reqInfo.getParameter(COL_EMAIL);
     if (!BeeUtils.isEmpty(email) && qs.sqlExists(TBL_EMAILS, COL_EMAIL_ADDRESS, email)) {
       logger.warning(usr.getLocalizableMesssages()
-          .valueExists(BeeUtils.joinWords(usr.getLocalizableConstants().email(), email)),
+              .valueExists(BeeUtils.joinWords(usr.getLocalizableConstants().email(), email)),
           "ignored");
       email = null;
     }
@@ -880,9 +879,14 @@ public class ClassifiersModuleBean implements BeeModule {
     ResponseObject response;
 
     if (!BeeUtils.isEmpty(email)) {
+      response = qs.insertDataWithResponse(new SqlInsert(TBL_EMAILS)
+          .addConstant(COL_EMAIL_ADDRESS, email));
+
+      if (response.hasErrors()) {
+        return response;
+      }
       row.setValue(DataUtils.getColumnIndex(ALS_EMAIL_ID, columns),
-          qs.insertData(new SqlInsert(TBL_EMAILS)
-              .addConstant(COL_EMAIL_ADDRESS, address)));
+          response.getResponseAsLong());
     }
     Long country = null;
 

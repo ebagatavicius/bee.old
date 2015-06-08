@@ -41,6 +41,7 @@ public final class ProjectConstants {
 
   public static final String ALS_PROJECT_START_DATE = "ProjectStartDate";
   public static final String ALS_PROJECT_END_DATE = "ProjectEndDate";
+  public static final String ALS_PROJECT_COMPANY_NAME = "CompanyName";
   public static final String ALS_STAGE_NAME = "StageName";
   public static final String ALS_STAGE_START = "StageStart";
   public static final String ALS_STAGE_END = "StageEnd";

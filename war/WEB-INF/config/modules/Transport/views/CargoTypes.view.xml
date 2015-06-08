@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="CargoTypes" source="CargoTypes"
+  caption="=trCargoTypes" newRowCaption="=trNewCargoType"
+  >
+  <Columns>
+    <SimpleColumn name="CargoTypeName" />
+    
+    <SimpleColumn name="Color" />
+    <SimpleJoin name="Color" joinType="LEFT">
+      <SimpleColumn alias="ColorName" name="Name" />
+      <SimpleColumn name="Background" />
+      <SimpleColumn name="Foreground" />
+    </SimpleJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="CargoTypeName" />
+  </Order>
+</View>
+ 

@@ -1,7 +1,11 @@
 package com.butent.bee.client.modules.transport;
 
+import com.google.gwt.xml.client.Element;
+
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
+import com.butent.bee.client.composite.DataSelector;
+import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.ChildGrid;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -15,6 +19,7 @@ import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.modules.transport.TransportConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -24,6 +29,21 @@ public class AssessmentForwarderForm extends PrintFormInterceptor {
   public void afterCreateWidget(String name, IdentifiableWidget widget,
       WidgetDescriptionCallback callback) {
 
+    if (BeeUtils.same(name, VAR_INCOME) && widget instanceof DataSelector) {
+      ((DataSelector) widget).addSelectorHandler(new SelectorEvent.Handler() {
+        @Override
+        public void onDataSelector(SelectorEvent event) {
+          if (event.isOpened()) {
+            FormView form = ViewHelper.getForm(getGridView());
+
+            if (form != null) {
+              event.getSelector()
+                  .setAdditionalFilter(Filter.equals(COL_CARGO, form.getLongValue(COL_CARGO)));
+            }
+          }
+        }
+      });
+    }
     if (BeeUtils.same(name, TransportConstants.TBL_CARGO_HANDLING)) {
       ((ChildGrid) widget).setGridInterceptor(new AbstractGridInterceptor() {
 
@@ -45,7 +65,8 @@ public class AssessmentForwarderForm extends PrintFormInterceptor {
 
           if (form != null && gridView.isEmpty()) {
             for (String prefix : new String[] {VAR_LOADING, VAR_UNLOADING}) {
-              for (String col : new String[] {COL_PLACE_DATE, COL_PLACE_ADDRESS,
+              for (String col : new String[] {
+                  COL_PLACE_DATE, COL_PLACE_ADDRESS,
                   COL_PLACE_POST_INDEX, COL_PLACE_COMPANY, COL_PLACE_CONTACT,
                   COL_PLACE_CITY, "CityName", COL_PLACE_COUNTRY, "CountryName", "CountryCode"}) {
 
@@ -59,6 +80,15 @@ public class AssessmentForwarderForm extends PrintFormInterceptor {
       });
     }
     super.afterCreateWidget(name, widget, callback);
+  }
+
+  @Override
+  public boolean beforeCreateWidget(String name, Element description) {
+    if (!TransportHandler.bindExpensesToIncomes
+        && BeeUtils.inListSame(name, VAR_INCOME + "Label", VAR_INCOME)) {
+      return false;
+    }
+    return super.beforeCreateWidget(name, description);
   }
 
   @Override

@@ -13,7 +13,7 @@
     <DateTime name="Expires" label="=documentExpires" />
 
     <String name="Number" precision="30" label="=documentNumber" />
-    <String name="RegistrationNumber" precision="30" label="=documentRegistrationNumber" />
+    <String name="RegistrationNumber" precision="30" defExpr="NEXT_NUMBER" label="=documentRegistrationNumber" />
 
     <Relation name="Category" notNull="true" relation="DocumentTree" label="=documentCategory" />
     <Relation name="Type" relation="DocumentTypes" label="=documentType" />

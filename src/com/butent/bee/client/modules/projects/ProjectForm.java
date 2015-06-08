@@ -20,6 +20,7 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.eventsboard.EventsBoard.EventFilesFilter;
+import com.butent.bee.client.grid.ChildGrid;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.GridFormPresenter;
 import com.butent.bee.client.presenter.Presenter;
@@ -80,6 +81,8 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
   private static final String WIDGET_ACTUAL_TASKS_DURATION = "ActualTasksDuration";
   private static final String WIDGET_STATUS = "Status";
   private static final String WIDGET_RELATED_INFO = "RelatedInfo";
+  private static final String WIDGET_RELATED_DOCUMENTS = "RelatedDocuments";
+  private static final String WIDGET_OWNER = "Owner";
 
   private static final Set<String> AUDIT_FIELDS = Sets.newHashSet(COL_PROJECT_START_DATE,
       COL_PROJECT_END_DATE, COL_COMAPNY, COL_PROJECT_STATUS, COL_PROJECT_OWNER,
@@ -101,6 +104,8 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
   private InputText actualTasksDuration;
   private ListBox status;
   private Disclosure relatedInfo;
+  private ChildGrid documents;
+  private DataSelector owner;
 
   private BeeRowSet timeUnits;
 
@@ -139,6 +144,14 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
 
     if (widget instanceof Disclosure && BeeUtils.same(name, WIDGET_RELATED_INFO)) {
       relatedInfo = (Disclosure) widget;
+    }
+
+    if (widget instanceof ChildGrid && BeeUtils.same(name, WIDGET_RELATED_DOCUMENTS)) {
+      documents = (ChildGrid) widget;
+    }
+
+    if (widget instanceof DataSelector && BeeUtils.same(name, WIDGET_OWNER)) {
+      owner = (DataSelector) widget;
     }
   }
 
@@ -195,10 +208,21 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
       }
     }
 
+    if (isProjectUser(form, row) || BeeKeeper.getUser().isMenuVisible("Projects.AllProjects")
+        || BeeKeeper.getUser().isAdministrator()) {
+      documents.setEnabled(true);
+    }
+
+    if (BeeKeeper.getUser().isAdministrator()) {
+      owner.setEnabled(true);
+    }
+
     lockedValidations.clear();
     auditSilentFields.clear();
     EventUtils.clearRegistry(reasonRegistry);
-    if (!isProjectScheduled(form, row) && form.isEnabled() && DataUtils.isId(row.getId())) {
+    if (!isProjectScheduled(form, row)
+        && (form.isEnabled() || BeeKeeper.getUser().isAdministrator())
+        && DataUtils.isId(row.getId())) {
       setFormAuditValidation(form, row);
     } else if (isProjectApproved(form, row)) {
       setFormAuditValidation(form, row);

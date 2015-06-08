@@ -19,7 +19,7 @@
         <bodyStyle><ui:font>bold</ui:font></bodyStyle>
       </style>
     </DataColumn>
-    <RelColumn name="Item" caption="=trAccountingItem">
+    <RelColumn name="Item" caption="=trAccountingItem" visible="false">
       <carry><ui:expression>row.Item</ui:expression></carry>
     </RelColumn>
   </g:columns>

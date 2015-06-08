@@ -41,7 +41,7 @@
         <Table>
           <row>
             <Label for="Owner" text="=prjManager" style=" &lbl;" class="bee-required" />
-            <DataSelector source="Owner" style="&inp2;" />
+            <DataSelector source="Owner" name="Owner" style="&inp2;" />
             <Label for="Priority" text="=priority" style="width: 120px; &lbl;" />
             <Radio source="Priority" style="width: 200px" />
           </row>
@@ -127,6 +127,10 @@
         <text>=prjStages</text>
         <ChildGrid name="ProjectStages" relColumn="Project" />
       </page>
+      <page>
+        <text>=personContacts</text>
+        <ChildGrid name="ProjectContacts" relColumn="Project" />
+      </page>
       <page module="Documents">
         <text>=documents</text>
         <FlowPanel>
@@ -161,7 +165,7 @@
             </row>
           </Table>
           <ChildGrid name="RelatedDocuments" relColumn="Project"
-            class="flexible" style="height: 170px;"/>
+            class="flexible" style="height: 400px;"/>
         </FlowPanel>
       </page>
       <page module="Tasks">

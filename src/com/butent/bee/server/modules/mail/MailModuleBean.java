@@ -53,11 +53,6 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.mail.MailConstants;
-import com.butent.bee.shared.modules.mail.MailConstants.AddressType;
-import com.butent.bee.shared.modules.mail.MailConstants.MessageFlag;
-import com.butent.bee.shared.modules.mail.MailConstants.RuleAction;
-import com.butent.bee.shared.modules.mail.MailConstants.RuleCondition;
-import com.butent.bee.shared.modules.mail.MailConstants.SystemFolder;
 import com.butent.bee.shared.modules.mail.MailFolder;
 import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.rights.Module;
@@ -728,11 +723,10 @@ public class MailModuleBean implements BeeModule, HasTimerService {
   }
 
   public Long getSenderAccountId(String logLabel) {
-    Long account = prm.getRelation(MailConstants.PRM_DEFAULT_ACCOUNT);
+    Long account = prm.getRelation(PRM_DEFAULT_ACCOUNT);
 
     if (!DataUtils.isId(account)) {
-      logger.info(logLabel, "sender account not specified",
-          BeeUtils.bracket(MailConstants.PRM_DEFAULT_ACCOUNT));
+      logger.info(logLabel, "sender account not specified", BeeUtils.bracket(PRM_DEFAULT_ACCOUNT));
     }
     return account;
   }

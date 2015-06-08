@@ -7,7 +7,7 @@
   xmlns:ui="http://www.butent.com/ui"
   xmlns:xi="http://www.w3.org/2001/XInclude"
 
-  name="Person" viewName="Persons" caption="=person" width="800" height="455">
+  name="Person" viewName="Persons" caption="=person" width="800" height="600">
   <FlowPanel class="flexBox-vertical">
     <FlowPanel style="overflow:scroll;">
       <Table style="margin: 0 0 25px 30px;">

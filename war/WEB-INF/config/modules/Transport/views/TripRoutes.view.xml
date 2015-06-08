@@ -1,32 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
-      xmlns:x="http://www.butent.com/expression"
 
-  name="TripRoutes"
-  source="TripRoutes"
-  >
+      name="TripRoutes"
+      source="TripRoutes"
+    >
   <Columns>
     <SimpleColumn name="Trip" />
-    <SimpleColumn name="Date" />
-    <SimpleColumn name="Country" />
-    <SimpleJoin name="Country" joinType="LEFT">
-      <SimpleColumn name="Name" alias="CountryName" />
+    <SimpleColumn name="TripCargo" />
+    <SimpleJoin name="TripCargo" joinType="LEFT">
+      <SimpleColumn name="Cargo" />
     </SimpleJoin>
-    <SimpleColumn name="Route" />
+
+    <SimpleColumn name="DepartureDate" />
+    <SimpleColumn name="DepartureCountry" />
+    <SimpleJoin name="DepartureCountry" joinType="LEFT">
+      <SimpleColumn name="Name" alias="DepartureCountryName" />
+    </SimpleJoin>
+    <SimpleColumn name="DepartureCity" />
+    <SimpleJoin name="DepartureCity" joinType="LEFT">
+      <SimpleColumn name="Name" alias="DepartureCityName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="ArrivalDate" />
+    <SimpleColumn name="ArrivalCountry" />
+    <SimpleJoin name="ArrivalCountry" joinType="LEFT">
+      <SimpleColumn name="Name" alias="ArrivalCountryName" />
+    </SimpleJoin>
+    <SimpleColumn name="ArrivalCity" />
+    <SimpleJoin name="ArrivalCity" joinType="LEFT">
+      <SimpleColumn name="Name" alias="ArrivalCityName" />
+    </SimpleJoin>
+
     <SimpleColumn name="SpeedometerFrom" />
     <SimpleColumn name="SpeedometerTo" />
     <SimpleColumn name="Kilometers" />
+
     <SimpleColumn name="MotoHours" />
     <SimpleColumn name="CargoWeight" />
+    <SimpleColumn name="EmptyKilometers" />
+
     <SimpleColumn name="Season" />
     <SimpleColumn name="Temperature" />
     <SimpleColumn name="Consumption" />
-    <SimpleColumn name="Item"/>
+
+    <SimpleColumn name="Item" />
     <SimpleJoin joinType="LEFT" name="Item">
       <SimpleColumn name="Name" alias="ItemName" />
     </SimpleJoin>
   </Columns>
   <Order>
-    <OrderBy column="Date" />
+    <OrderBy column="DepartureDate" />
   </Order>
 </View>

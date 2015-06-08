@@ -198,8 +198,8 @@ public class TradeModuleBean implements BeeModule {
           .addFields(TBL_SALES, COL_TRADE_DATE, COL_TRADE_TERM)
           .addFrom(TBL_SALES)
           .setWhere(SqlUtils.and(SqlUtils.or(SqlUtils.equals(TBL_SALES, COL_SALE_PAYER, companyId),
-              SqlUtils.and(SqlUtils.isNull(TBL_SALES, COL_SALE_PAYER),
-                  SqlUtils.equals(TBL_SALES, COL_TRADE_CUSTOMER, companyId))),
+                  SqlUtils.and(SqlUtils.isNull(TBL_SALES, COL_SALE_PAYER),
+                      SqlUtils.equals(TBL_SALES, COL_TRADE_CUSTOMER, companyId))),
               SqlUtils.less(SqlUtils.nvl(SqlUtils.field(TBL_SALES, COL_TRADE_PAID), 0),
                   SqlUtils.nvl(SqlUtils.field(TBL_SALES, COL_TRADE_AMOUNT), 0))));
 
@@ -276,8 +276,8 @@ public class TradeModuleBean implements BeeModule {
         SqlUtils.isNull(tblName, COL_TRADE_VAT_PERC), SqlUtils.field(tblName, COL_TRADE_VAT),
         SqlUtils.notNull(tblName, COL_TRADE_VAT_PLUS), SqlUtils.multiply(SqlUtils
             .divide(amount, 100), SqlUtils.field(tblName, COL_TRADE_VAT)),
-        SqlUtils.multiply(SqlUtils.divide(amount,
-            SqlUtils.plus(100, SqlUtils.field(tblName, COL_TRADE_VAT))),
+        SqlUtils.multiply(
+            SqlUtils.divide(amount, SqlUtils.plus(100, SqlUtils.field(tblName, COL_TRADE_VAT))),
             SqlUtils.field(tblName, COL_TRADE_VAT)));
   }
 
@@ -367,8 +367,7 @@ public class TradeModuleBean implements BeeModule {
     if (!BeeUtils.isEmpty(currencyTo)) {
       String currAlias = SqlUtils.uniqueName();
 
-      IsExpression xpr = ExchangeUtils.exchangeFieldTo(query
-          .addFromLeft(TBL_CURRENCIES, currAlias,
+      IsExpression xpr = ExchangeUtils.exchangeFieldTo(query.addFromLeft(TBL_CURRENCIES, currAlias,
               SqlUtils.equals(currAlias, COL_CURRENCY_NAME, currencyTo)),
           SqlUtils.constant(1),
           SqlUtils.field(trade, COL_CURRENCY),

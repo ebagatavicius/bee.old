@@ -6,7 +6,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_RELATION;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
@@ -14,6 +14,7 @@ import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dialog.Popup.OutsideClick;
 import com.butent.bee.client.event.logical.CloseEvent;
+import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.presenter.PresenterCallback;
@@ -345,10 +346,16 @@ public final class ParametersGrid extends AbstractGridInterceptor {
               getGridView().getGrid().refocus();
             }
           });
+          final char character = (char) event.getCharCode();
+
+          popup.addOpenHandler(new OpenEvent.Handler() {
+            @Override
+            public void onOpen(OpenEvent ev) {
+              editor.setFocus(true);
+              editor.startEdit(editor.getNormalizedValue(), character, EditorAction.REPLACE, null);
+            }
+          });
           popup.showOnTop(event.getSourceElement());
-          editor.setFocus(true);
-          editor.startEdit(editor.getNormalizedValue(), (char) event.getCharCode(),
-              EditorAction.REPLACE, null);
           break;
       }
     }

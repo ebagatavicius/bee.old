@@ -118,7 +118,7 @@ public class EnumFilterSupplier extends AbstractFilterSupplier {
           if (!BeeUtils.isEmpty(nullCount)) {
             data.add(new DataItem(nullIndex, nullCount));
           }
-          openDialog(target, createWidget(), onChange);
+          openDialog(target, createWidget(), null, onChange);
         }
       }
     });

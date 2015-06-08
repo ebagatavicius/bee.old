@@ -1,34 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
+        xmlns:ui="http://www.butent.com/ui"
 
-  name="TripCargo" viewName="TripCargo"
-  editForm="CargoPlace" editPopup="false" caption="=cargos"
-  flexGrow="1"
-  >
+        name="TripCargo" viewName="TripCargo"
+        caption="=cargos" flexGrow="1"
+    >
   <g:body height="50" />
 
   <g:columns>
-    <DataColumn name="Ordinal" editInPlace="true" />
+    <DataColumn name="Ordinal" />
     <RelColumn name="OrderNo" caption="=orderNumber" minWidth="100" editEnabled="true"
-      editPopup="false" editSource="Order" />
-    <RelColumn name="Description" caption="=cargo" editEnabled="true" editPopup="false"
-      maxWidth="300" />
-    <CalcColumn name="CargoLoading" type="string" cellType="html" caption="=cargoLoading" minWidth="140" />
-    <CalcColumn name="CargoUnloading" type="string" cellType="html" caption="=cargoUnloading" minWidth="140" />
-    <DataColumn name="Weight" caption="=weight" />
+               editPopup="false" editSource="Order" readOnly="true" />
+    <RelColumn name="Cargo" renderColumns="Cargo Description" editEnabled="true" maxWidth="300"
+               editPopup="false" editSource="Cargo" readOnly="true" />
+    <CalcColumn name="Loading" type="string" cellType="html" caption="=loading" minWidth="140">
+      <style>
+        <bodyStyle>
+          <ui:inline>overflow-y:auto;</ui:inline>
+        </bodyStyle>
+      </style>
+    </CalcColumn>
+    <CalcColumn name="Unloading" type="string" cellType="html" caption="=unloading" minWidth="140">
+      <style>
+        <bodyStyle>
+          <ui:inline>overflow-y:auto;</ui:inline>
+        </bodyStyle>
+      </style>
+    </CalcColumn>
+    <DataColumn name="Weight" caption="=trWeightInTons" />
     <DataColumn name="Volume" caption="=volume" />
     <DataColumn name="Quantity" caption="=quantity" />
     <DataColumn name="Number" caption="=cargoNumber" />
-    <DataColumn name="Cmr" caption="CMR" />
+    <DataColumn name="Cmr" caption="CMR" renderColumns="CmrName CmrNumber" />
     <DataColumn name="Notes" caption="=notes" whiteSpace="pre-wrap" />
-    <DataColumn name="CargoPercent" caption="%" minValue="0" editInPlace="true" />
-    <CalcColumn name="Loading" type="string" cellType="html" caption="=trLoaded" minWidth="140" />
-    <CalcColumn name="Unloading" type="string" cellType="html" caption="=trUnloaded" minWidth="140" />
+    <DataColumn name="CargoPercent" caption="%" minValue="0" maxValue="100" />
     <PropColumn name="Income" type="decimal" caption="=income" format="#.00">
       <style>
-        <headerStyle><ui:font>bold</ui:font></headerStyle>
-        <bodyStyle><ui:font>bold</ui:font></bodyStyle>
+        <headerStyle>
+          <ui:font>bold</ui:font>
+        </headerStyle>
+        <bodyStyle>
+          <ui:font>bold</ui:font>
+        </bodyStyle>
       </style>
     </PropColumn>
     <DataColumn name="Message" readOnly="true" />

@@ -7,13 +7,13 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  xmlns:ui="http://www.butent.com/ui" 
-  
+  xmlns:ui="http://www.butent.com/ui"
+
   name="&form;" viewName="PrintOrder" caption="Order" disabledActions="save"
   width="70" widthUnit="%" height="90" heightUnit="%"
   >
 
-  <FlowPanel style="padding: 10px; background-color: white;">
+  <FlowPanel class="bee-PrintableForm" style="padding: 10px; background-color: white;">
     <css id="&form;">
       .&form;-table {border-collapse:collapse; width:100%;}
       .&form;-table td {border:1px solid black; padding:2px;}
@@ -83,7 +83,7 @@
 
       <HorizontalPanel class="&form;-table">
         <TextLabel source="OrderNotes" style="white-space:pre-wrap;" />
-        
+
         <FlowPanel>
           <FlowPanel>
             <Label html="Date load:" style="&inline; width:100px; text-align:right;" />
@@ -138,7 +138,7 @@
     </HorizontalPanel>
 
     <HorizontalPanel class="&form;-table" style="&section;">
-      <Label html="Rates:" style="&bold;" />        
+      <Label html="Rates:" style="&bold;" />
       <FlowPanel>
         <DecimalLabel name="Total" scale="2" inline="true" style="margin-right:2px;" />
         <TextLabel source="CurrencyName" inline="true" />
@@ -152,12 +152,12 @@
     </HorizontalPanel>
 
     <HtmlPanel style="&section;">
-      <span style="white-space:pre-wrap; font-size:xx-small;">General conditions: 
-1. The Freight Forwarder obligates: 
-1.1. to provide transport services according to this booking, deliver cargo to destination point stated and hand over it to a consignee with all documents, related to it in compliance to all legal requirements. 
-1.2. confirm or return a booking to the Customer in 8 hours after a booking received, stating objective reason for this action, without any obligations to compensate possible or already occurred losses of the Customer; 
-1.3. suspend proceeding with cargo transportation requested by this booking of the Customer, if there is some essential information missing until this information in not received, sending prior notification about it to the Customer; 
-1.4. receive support from third party in providing transportation services to the Customer, following conditions of this booking. 
+      <span style="white-space:pre-wrap; font-size:xx-small;">General conditions:
+1. The Freight Forwarder obligates:
+1.1. to provide transport services according to this booking, deliver cargo to destination point stated and hand over it to a consignee with all documents, related to it in compliance to all legal requirements.
+1.2. confirm or return a booking to the Customer in 8 hours after a booking received, stating objective reason for this action, without any obligations to compensate possible or already occurred losses of the Customer;
+1.3. suspend proceeding with cargo transportation requested by this booking of the Customer, if there is some essential information missing until this information in not received, sending prior notification about it to the Customer;
+1.4. receive support from third party in providing transportation services to the Customer, following conditions of this booking.
 2. The Customer obligated to:
 2.1. transmit a booking to the Freight Forwarder by any mean of communication channel (fax, internet, e-mail, etc.) 48 hours before the Freight Forwarder is expected to take an action;
 2.2. submit to the Freight Forwarder all information necessary to carry specific cargo and all documents necessary for fulfillment of this booking;

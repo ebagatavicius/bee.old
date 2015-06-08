@@ -1,85 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Form [
-  <!ENTITY ROW_STYLE "margin-bottom: 1ex;">
-]>
+    <!ENTITY ROW_STYLE "margin-bottom: 1ex;">
+    ]>
 <f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form" 
-  xmlns:d="http://www.butent.com/decorator"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
+        xmlns:f="http://www.butent.com/form"
 
-  name="Trip" viewName="Trips" caption="=trip"
-  width="900" height="600"
-  >
+        name="Trip" viewName="Trips" caption="=trip"
+        width="900" height="600"
+    >
   <FlowPanel class="flexBox-vertical">
     <Table>
       <row>
-        <Label text="=trTripDate" class="bee-hasDefaults bee-required" />
+        <Label for="Date" class="bee-hasDefaults bee-required" />
         <InputDateTime source="Date" style="width:11em;" />
-        <Label text="=trTruck" class="bee-required" horizontalAlignment="right" />
-        <DataSelector source="Vehicle" renderColumns="VehicleNumber" filter="IsTruck" required="true" />
-        <Label text="=trailer" horizontalAlignment="right" />
+        <Label for="Vehicle" class="bee-required" horizontalAlignment="right" />
+        <DataSelector source="Vehicle" renderColumns="VehicleNumber" filter="IsTruck"
+                      required="true" />
+        <Label for="Trailer" horizontalAlignment="right" />
         <DataSelector source="Trailer" filter="IsTrailer" />
       </row>
       <row>
-        <Label text="=scheduledEndingDate" />
+        <Label for="PlannedEndDate" />
         <InputDate source="PlannedEndDate" style="width:11em;" />
-        <Label text="=trTripNo" class="bee-hasDefaults bee-required" horizontalAlignment="right" />
+        <Label for="TripNo" class="bee-hasDefaults bee-required" horizontalAlignment="right" />
         <InputText source="TripNo" />
-        <Label text="=status" class="bee-hasDefaults bee-required" horizontalAlignment="right" />
-        <ListBox source="Status" style="height: 29px; width: 152px;"/>
+        <Label for="Status" class="bee-hasDefaults bee-required" horizontalAlignment="right" />
+        <ListBox source="Status" style="height: 29px; width: 152px;" />
+      </row>
+      <row>
+        <FlowPanel class="flexBox-horizontal-center">
+          <Label for="Route" class="flexible" />
+          <FaLabel name="Route" char="magic" title="=trGenerateRoute" style="margin-left:1em;" />
+        </FlowPanel>
+        <cell colSpan="5">
+          <InputText source="Route" style="width:100%" />
+        </cell>
       </row>
     </Table>
-    <HorizontalPanel>
-      <ChildGrid name="TripDrivers" relColumn="Trip" style="width:490px; margin-right:20px" />
-      <FlowPanel style="padding-top:30px;">
-        <InputArea source="Notes" placeholder="=notes" style="width: 210px;" visibleLines="5" />
-      </FlowPanel>
-    </HorizontalPanel>
 
     <TabbedPages class="flexible" style="margin-top: 1ex;">
       <page>
         <text>=transportTripMainData</text>
         <FlowPanel class="flexBox-horizontal">
-          <FlowPanel class="flexBox-vertical" style="margin-left: 1em">
-            <FlowPanel class="flexBox-horizontal" style="&ROW_STYLE;">
-              <Label text="=transportDeparture" style="font-weight: bold; margin: 0 20px" />
-              <Label text="=transportArrival" style="font-weight: bold; margin: 0 65px" />
+          <FlowPanel style="margin-left: 1em">
+            <FlowPanel class="flexBox-horizontal-center" style="&ROW_STYLE;">
+              <Label text="=transportDeparture" style="font-weight: bold;" />
+              <Label text="=transportArrival" style="font-weight: bold;" />
             </FlowPanel>
-            
-            <FlowPanel class="flexBox-horizontal" style="&ROW_STYLE;">
+
+            <FlowPanel class="flexBox-horizontal-center" style="&ROW_STYLE;">
               <SimplePanel>
                 <InputDate source="DateFrom" style="width: 7em;" summarize="true" />
               </SimplePanel>
-              <Label text="=date"  style="margin: 0 34px 0 34px"/>
+              <Label text="=date" class="flexible" style="text-align:center; margin:0 1em;" />
               <SimplePanel>
                 <InputDate source="DateTo" style="width: 7em;" summarize="true" />
               </SimplePanel>
             </FlowPanel>
-            
-            <FlowPanel class="flexBox-horizontal" style="&ROW_STYLE;">
+
+            <FlowPanel class="flexBox-horizontal-center" style="&ROW_STYLE;">
               <SimplePanel>
                 <InputDouble source="SpeedometerBefore" style="width: 6em;" summarize="true" />
               </SimplePanel>
-              <Label text="=transportSpeedometer" style="margin: 0 23px 0 23px" />
+              <Label text="=transportSpeedometer" class="flexible"
+                     style="text-align:center; margin:0 1em;" />
               <SimplePanel>
                 <InputDouble source="SpeedometerAfter" style="width: 6em;" summarize="true" />
               </SimplePanel>
             </FlowPanel>
-            
-            <FlowPanel class="flexBox-horizontal" style="&ROW_STYLE;">
+
+            <FlowPanel class="flexBox-horizontal-center" style="&ROW_STYLE;">
               <SimplePanel>
                 <InputDecimal source="FuelBefore" style="width: 5em;" summarize="true" />
               </SimplePanel>
-              <Label text="=transportFuelBalanceInTank" style="margin: 0 24px 0 24px" />
+              <Label text="=transportFuelBalanceInTank" class="flexible"
+                     style="text-align:center; margin:0 1em;" />
               <SimplePanel>
                 <InputDecimal source="FuelAfter" style="width: 5em;" summarize="true" />
               </SimplePanel>
             </FlowPanel>
-           
+            <InputArea source="Notes" placeholder="=notes" style="width:100%;" visibleLines="5" />
           </FlowPanel>
 
           <FlowPanel class="flexBox-vertical flexible" style="margin-left: 1em;">
-            <ChildGrid name="DriverAdvances" parent="TripDrivers" relColumn="Driver" class="flexible" />
+            <ChildGrid name="TripDrivers" relColumn="Trip" style="height:200px;" />
+            <ChildGrid name="DriverAdvances" parent="TripDrivers" relColumn="Driver"
+                       class="flexible" />
           </FlowPanel>
         </FlowPanel>
       </page>
@@ -89,31 +95,31 @@
       </page>
       <page>
         <text>=transportTripCosts</text>
-        <ComplexPanel>
-          <layer top="0" bottom="40" bottomUnit="%" left="0" right="0">
-            <ChildGrid name="TripCosts" relColumn="Trip" />
-          </layer>
-          <layer top="60" topUnit="%" bottom="0" left="0" right="0">
-            <ChildGrid name="TripFuelCosts" relColumn="Trip" />
-          </layer>
-        </ComplexPanel>
+        <FlowPanel class="flexBox-vertical">
+          <ChildGrid name="TripCosts" relColumn="Trip" class="flexible" />
+          <ChildGrid name="TripFuelCosts" relColumn="Trip" class="flexible" />
+        </FlowPanel>
       </page>
       <page>
         <text>=tripRouteDocs</text>
-        <ComplexPanel>
-          <layer top="0" bottom="30" bottomUnit="%" left="0" right="0">
-            <ChildGrid name="TripRoutes" relColumn="Trip" />
-          </layer>
-          <layer top="70" topUnit="%" bottom="0" left="0" right="0" rightUnit="%">
-            <ChildGrid name="TripFuelConsumptions" relColumn="Trip" />
-          </layer>
-        </ComplexPanel>
+        <FlowPanel class="flexBox-vertical">
+          <ChildGrid name="TripRoutes" relColumn="Trip" class="flexible" />
+          <ChildGrid name="TripFuelConsumptions" relColumn="Trip" style="height:200px;" />
+        </FlowPanel>
       </page>
       <page>
-        <text>=documents</text>
+        <text>=trTripDocuments</text>
         <ChildGrid name="RelatedDocuments" relColumn="Trip" />
+      </page>
+      <page>
+        <text>=trCargoDocuments</text>
+        <GridPanel name="CargoDocuments" parent="{form}" child="true" />
+      </page>
+      <page>
+        <text>=trOrderDocuments</text>
+        <GridPanel name="TranspOrderDocuments" parent="{form}" child="true" />
       </page>
     </TabbedPages>
   </FlowPanel>
- 
+
 </f:Form>

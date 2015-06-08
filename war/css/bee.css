@@ -173,7 +173,7 @@
   display: inline-block;
   font-size: 17px;
   color: #6f6f6f;
-}  
+}
 
 .bee-MainCommandPanel {
   top: 22px;
@@ -192,7 +192,7 @@
 }
 .bee-MainCommandPanelItem:hover {
   border: 1px solid #bebebe;
-}  
+}
 
 .bee-MainMenu {
   left: 0px;
@@ -329,33 +329,8 @@
 .bee-dndSource {
   background-color: yellow;
 }
-
 .bee-dndOver {
   background-color: pink;
-}
-
-.bee-dropArea {
-  background-color: white;
-  position: relative;
-}
-
-.bee-dropArea:before {
-  content: "Krepšis";
-  font-size: xx-large;
-  letter-spacing: 5px;
-  color: #999;
-  position: absolute;
-  left: 5%;
-  right: 5%;
-  top: 5%;
-  bottom : 5%;
-  padding-left: calc(45% - 70px);
-  border: 2px dashed #aaa;
-  border-radius: 50%;
-}
-
-.bee-dropArea > * {
-  visibility: hidden;
 }
 
 .bee-VolumeSlider {
@@ -612,16 +587,16 @@
 }
 
 .bee-CellGridBody.bee-CellGridActiveRow.bee-CellGridActiveCell {
-  background-color: #fffff0;  
+  background-color: #fffff0;
   outline: #80c4f9 solid 2px;
   outline-offset: -1px;
 }
 
 .bee-CellGridSelectedRow {
-  background-color: #ededed;  
+  background-color: #ededed;
 }
 .bee-CellGridSelectedRow.bee-CellGridActiveRow {
-  background-color: #ededed;  
+  background-color: #ededed;
 }
 
 .bee-CellGridResizedCell {
@@ -792,7 +767,7 @@
 
 .bee-RichTextEditor {
   position: relative;
-  border: 1px solid #b4b4b4;  
+  border: 1px solid #b4b4b4;
 }
 
 .bee-RichTextToolbar {
@@ -859,7 +834,7 @@
 .bee-DataSelector-content {
   padding-left: 7px;
   padding-right: 3px;
-} 
+}
 
 .bee-DataSelector-navigationCell {
   text-align: center;
@@ -874,7 +849,7 @@
   border: none !important;
 }
 .bee-DataSelector-editableInput:focus {
-  outline: none !important; 
+  outline: none !important;
 }
 
 .bee-DataSelector-drill {
@@ -1215,7 +1190,7 @@
 }
 
 .bee-ChoiceContainer {
-  margin-top: 2ex;  
+  margin-top: 2ex;
   margin-bottom: 2ex;
 }
 
@@ -1528,13 +1503,12 @@
   right: 1px;
   bottom: 1px;
   padding: 1px 2px;
-  font-size: 14px;
-  color: #777;
+  font-size: 16px;
+  color: #63a140;
   cursor: pointer;
 }
 .bee-MultiSelector-plus:hover {
-  background-color: #5a6ba3;
-  color: white;
+  color: #6bae45;
 }
 
 .bee-SimplePager-container {
@@ -1552,7 +1526,7 @@
   align-items: center;
   -webkit-align-items: center;
   -ms-flex-align: center;
-  justify-content: space-between;  
+  justify-content: space-between;
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
 }
@@ -1635,6 +1609,28 @@
   visibility: hidden;
 }
 
+.bee-FileCollector-dropArea-active {
+  background-color: white;
+  position: relative;
+}
+.bee-FileCollector-dropArea-active:before {
+  content: "Krepšis";
+  font-size: xx-large;
+  letter-spacing: 5px;
+  color: #999;
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 5%;
+  bottom : 5%;
+  padding-left: calc(45% - 70px);
+  border: 2px dashed #aaa;
+  border-radius: 50%;
+}
+.bee-FileCollector-dropArea-active > * {
+  visibility: hidden;
+}
+
 .bee-EditableRelation:hover {
   text-decoration: underline;
   color: #00e;
@@ -1655,7 +1651,7 @@
 }
 
 .bee-StackHeader-selected > .bee-Appliance-icon {
-  visibility: hidden; 
+  visibility: hidden;
 }
 
 .bee-CentralScrutinizer > .bee-StackContent {
@@ -1727,7 +1723,7 @@
   visibility: hidden;
 }
 .bee-GridFormContainer-newRow .bee-GridContainer .bee-Header-control.bee-Action-filter,
-.bee-NewRowContainer .bee-GridContainer .bee-Header-control.bee-Action-filter, 
+.bee-NewRowContainer .bee-GridContainer .bee-Header-control.bee-Action-filter,
 .bee-GridContainer-no-data .bee-Header-control.bee-Action-delete,
 .bee-GridContainer-no-data .bee-Header-control.bee-Action-menu {
   display: none;
@@ -1872,10 +1868,10 @@
 }
 .bee-GridFilter-supplier-empty .bee-GridFilter-supplier-button {
   vertical-align: middle;
-}  
+}
 .bee-GridFilter-supplier-not-empty .bee-GridFilter-supplier-button {
   padding: 1px 2px;
-}  
+}
 .bee-GridFilter-supplier-clear {
   margin-left: 4px;
   font-size: 16px;
@@ -1915,7 +1911,7 @@
   height: 10px;
   border: 2px solid #e8e8e8;
   border-radius: 50%;
-  cursor: pointer; 
+  cursor: pointer;
 }
 .bee-Filters-initial-checked {
   background-color: #1EB2D8;
@@ -1926,7 +1922,7 @@
   max-width: 240px;
   max-height: 60px;
   word-break: break-all;
-  cursor: pointer; 
+  cursor: pointer;
 }
 .bee-Filters-row-active .bee-Filters-label {
   font-weight: bold;
@@ -2114,7 +2110,7 @@
 }
 .bee-GridSettings-visibility-checked,
 .bee-GridSettings-editInPlace-checked {
-  color: #555; 
+  color: #555;
 }
 .bee-GridSettings-visibility-unchecked,
 .bee-GridSettings-editInPlace-unchecked {
@@ -2213,7 +2209,7 @@
   justify-content: space-around;
   -webkit-justify-content: space-around;
   -ms-flex-pack: justify;
-  overflow-x: auto; 
+  overflow-x: auto;
 }
 .bee-SlideDeck-tn {
   margin-top: 2px;
@@ -2266,14 +2262,14 @@
   -webkit-align-items: center;
   -ms-flex-align: center;
   background-color: rgba(20, 20, 20, 0.8);
-  color: white;  
+  color: white;
 }
 
 .bee-SlideDeck-controls .bee-fa-label {
   padding: 2px;
 }
 .bee-SlideDeck-controls .bee-fa-label:hover {
-  outline: 1px solid white;  
+  outline: 1px solid white;
 }
 
 .bee-SlideDeck-play {
@@ -2332,7 +2328,7 @@
 .bee-SlideDeck-settings-panel {
   position: absolute;
   right: 0;
-  color: white;  
+  color: white;
   background-color: rgba(20, 20, 20, 0.8);
 }
 .bee-SlideDeck-settings-hidden {
@@ -2420,12 +2416,12 @@
   padding-top: 5px;
   padding-bottom: 5px;
   border-bottom: 1px solid #ccc;
-  transition: background-color 1s;  
+  transition: background-color 1s;
 }
 
 .bee-Room-headerPanel {
   margin-bottom: 5px;
-}  
+}
 
 .bee-Room-nameLabel {
   font-weight: bold;
@@ -2986,8 +2982,8 @@
 .bee-Rights-column-label-vertical.bee-Rights-role-horizontal .bee-Rights-role-label,
 .bee-Rights-column-label-vertical.bee-Rights-role-vertical .bee-Rights-object-label {
   display: inline;
-  writing-mode: vertical-rl;  
-  -webkit-writing-mode: vertical-rl;  
+  writing-mode: vertical-rl;
+  -webkit-writing-mode: vertical-rl;
   -ms-writing-mode: tb-rl;
   white-space: nowrap;
 }
@@ -3284,7 +3280,10 @@ textarea,
 
 .bee-ModalForm .bee-PrintableForm {
   background-color: white;
-  padding: 1ex 1em 0 1em; 
+  padding: 1ex 1em 0 1em;
+}
+.bee-Form.bee-PrintableForm .bee-HtmlTable td {
+  padding-top: 0;
 }
 .bee-Print .bee-PrintableForm {
   position: static !important;
@@ -3410,7 +3409,7 @@ textarea,
 }
 
 .bee-Disclosure-closed .bee-Disclosure-header {
-  background-color: #fafafa; 
+  background-color: #fafafa;
 }
 .bee-Disclosure-closed .bee-Disclosure-content {
   height: 0;
@@ -3639,23 +3638,27 @@ textarea,
   padding-top: 20px;
 }
 
-.bee-SettingsIcon {
+.bee-UserControlIcon {
   font-size: 20px;
   padding: 0 15px 0 20px;
   color: #989898;
 }
 
-.bee-HelpIcon {
+.bee-UserMenuIcon {
   font-size: 20px;
-  padding: 0 10px 0 15px;
+  padding: 0 15px 0 20px;
   color: #989898;
+  -webkit-transform: rotate(30deg);
+  transform: rotate(30deg);
 }
 
-.bee-SettingsIcon:hover {
+.bee-UserMenuIcon-Selected {
+  font-size: 20px;
+  padding: 0 15px 0 20px;
   color: black;
 }
 
-.bee-HelpIcon:hover {
+.bee-UserControlIcon:hover {
   color: black;
 }
 

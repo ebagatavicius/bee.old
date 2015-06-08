@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="CargoTypes"
+  idName="CargoTypeID"
+  >
+  <Fields>
+    <String name="CargoTypeName" precision="50" notNull="true" unique="true" label="=type" />
+    <Relation name="Color" relation="Colors" label="=color" />
+  </Fields>
+</Table>

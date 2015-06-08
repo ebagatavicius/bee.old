@@ -1,49 +1,94 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
+        xmlns:ui="http://www.butent.com/ui"
 
-  name="TripRoutes" viewName="TripRoutes" caption="=trTripRoutes"
-  >
-
+        name="TripRoutes" viewName="TripRoutes" caption="=trTripRoutes"
+    >
   <g:columns>
-    <DataColumn name="Date" caption="=date" updateMode="row">
-      <carry><ui:expression>row.Date</ui:expression></carry>
+    <RelColumn name="TripCargo" viewName="TripCargo" choiceColumns="Cargo Description"
+               renderColumns="Cargo" editSource="Cargo"
+               newRowEnabled="false" editEnabled="true" editPopup="false" />
+
+    <DataColumn name="DepartureDate" caption="=trDepartureDate" updateMode="row">
+      <carry>
+        <ui:expression>row.ArrivalDate ? row.ArrivalDate : row.DepartureDate</ui:expression>
+      </carry>
     </DataColumn>
-    <RelColumn name="Country" caption="=country">
-      <carry><ui:expression>row.Country</ui:expression></carry>
+    <RelColumn name="DepartureCountry" caption="=trDepartureCountry">
+      <carry>
+        <ui:expression>row.ArrivalCountry ? row.ArrivalCountry : row.DepartureCountry
+        </ui:expression>
+      </carry>
     </RelColumn>
-    <DataColumn name="Route" caption="=route" />
-    <DataColumn name="SpeedometerFrom" caption="=trSpeedometerFromShort" format="#.0" minValue="0" updateMode="row">
-      <carry><ui:expression>row.SpeedometerTo</ui:expression></carry>
+    <RelColumn name="DepartureCity" caption="=trDepartureCity">
+      <carry>
+        <ui:expression>row.ArrivalCity ? row.ArrivalCity : row.DepartureCity</ui:expression>
+      </carry>
+    </RelColumn>
+
+    <DataColumn name="ArrivalDate" caption="=trArrivalDate" />
+    <RelColumn name="ArrivalCountry" caption="=trArrivalCountry" />
+    <RelColumn name="ArrivalCity" caption="=trArrivalCity" />
+
+    <DataColumn name="SpeedometerFrom" caption="=trSpeedometerFromShort" format="#.0" minValue="0"
+                updateMode="row" visible="false">
+      <carry>
+        <ui:expression>row.SpeedometerTo</ui:expression>
+      </carry>
     </DataColumn>
-    <DataColumn name="SpeedometerTo" caption="=trSpeedometerToShort" format="#.0" minValue="0" updateMode="row" />
-    <DataColumn name="Kilometers" caption="=kilometersShort" format="#.0" minValue="0" updateMode="row">
+    <DataColumn name="SpeedometerTo" caption="=trSpeedometerToShort" format="#.0" minValue="0"
+                updateMode="row" visible="false" />
+    <DataColumn name="Kilometers" caption="=kilometersShort" format="#.0" minValue="0"
+                updateMode="row">
       <style>
-        <headerStyle><ui:font>bold</ui:font></headerStyle>
-        <bodyStyle><ui:font>bold</ui:font></bodyStyle>
+        <headerStyle>
+          <ui:font>bold</ui:font>
+        </headerStyle>
+        <bodyStyle>
+          <ui:font>bold</ui:font>
+        </bodyStyle>
       </style>
+      <footer aggregate="sum" />
     </DataColumn>
-    <DataColumn name="MotoHours" caption="=trMotoHourShort" format="#.00" minValue="0" updateMode="row">
+
+    <DataColumn name="MotoHours" caption="=trMotoHourShort" format="#.00" minValue="0"
+                updateMode="row" visible="false">
       <style>
-        <headerStyle><ui:font>bold</ui:font></headerStyle>
-        <bodyStyle><ui:font>bold</ui:font></bodyStyle>
+        <headerStyle>
+          <ui:font>bold</ui:font>
+        </headerStyle>
+        <bodyStyle>
+          <ui:font>bold</ui:font>
+        </bodyStyle>
       </style>
+      <footer aggregate="sum" />
     </DataColumn>
-    <DataColumn name="CargoWeight" caption="=trLoadedInTons" format="#.000" updateMode="row">
-      <carry><ui:expression>row.CargoWeight</ui:expression></carry>
+    <DataColumn name="CargoWeight" format="#.000" updateMode="row" />
+    <DataColumn name="EmptyKilometers" minValue="0" visible="false">
+      <footer aggregate="sum" />
     </DataColumn>
+
     <DataColumn name="Season" caption="=trSeason" updateMode="row">
-      <carry><ui:expression>row.Season</ui:expression></carry>
+      <carry>
+        <ui:expression>row.Season</ui:expression>
+      </carry>
     </DataColumn>
     <DataColumn name="Temperature" caption="=trTemperatureShort" updateMode="row" />
     <DataColumn name="Consumption" caption="=liters" updateMode="row">
       <style>
-        <headerStyle><ui:font>bold</ui:font></headerStyle>
-        <bodyStyle><ui:font>bold</ui:font></bodyStyle>
+        <headerStyle>
+          <ui:font>bold</ui:font>
+        </headerStyle>
+        <bodyStyle>
+          <ui:font>bold</ui:font>
+        </bodyStyle>
       </style>
+      <footer aggregate="sum" />
     </DataColumn>
-    <RelColumn name="Item" caption="=trAccountingItem">
-      <carry><ui:expression>row.Item</ui:expression></carry>
+    <RelColumn name="Item" caption="=trAccountingItem" visible="false">
+      <carry>
+        <ui:expression>row.Item</ui:expression>
+      </carry>
     </RelColumn>
   </g:columns>
 </g:Grid>

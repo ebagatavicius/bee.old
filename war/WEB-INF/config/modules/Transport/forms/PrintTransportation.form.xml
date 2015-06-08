@@ -7,13 +7,13 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  xmlns:ui="http://www.butent.com/ui" 
-  
+  xmlns:ui="http://www.butent.com/ui"
+
   name="&form;" caption="Pervežimas" disabledActions="save"
   width="70" widthUnit="%" height="90" heightUnit="%"
   >
 
-  <FlowPanel style="padding: 10px; background-color: white;">
+  <FlowPanel class="bee-PrintableForm" style="padding: 10px; background-color: white;">
     <css id="&form;">
       .&form; table {border-collapse:collapse; width:100%}
       .&form; tr:first-child {text-align:center; font-weight:bold;}
@@ -30,11 +30,11 @@
         </cell>
       </row>
     </Table>
-   
+
     <TextLabel source="TripNo" style="text-align:center; &bold;">
       <renderToken source="TripNo" prefix="Krovinio pervežimo sutartis - užsakymas Nr. " />
     </TextLabel>
-    <FlowPanel name="FirstParagraph" />      
+    <FlowPanel name="FirstParagraph" />
     <Label html="1. Transporto duomenys" style="&section;"/>
     <FlowPanel class="&form;" >
       <Table style="border-spacing: 1px; border 1px solid black;">
@@ -52,7 +52,7 @@
         </row>
       </Table>
     </FlowPanel>
-    <Label html="1.1 Kroviniai" style="&section;"/>    
+    <Label html="1.1 Kroviniai" style="&section;"/>
     <FlowPanel name="Cargo" class="&form;" />
     <Label html="2. Šalių įsipareigojimai" style="&section;"/>
     <HtmlPanel >
@@ -77,7 +77,7 @@
         <Label html="Užsakovas" />
         <Label html="Vežėjas" />
       </row>
-      <row style="vertical-align: top;" > 
+      <row style="vertical-align: top;" >
          <FlowPanel name="Customer" />
          <FlowPanel name="Forwarder"/>
       </row>
