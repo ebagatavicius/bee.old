@@ -1319,8 +1319,6 @@ public class ExtendedReportInterceptor extends ReportInterceptor {
   }
 
   private void saveReport(final ReportInfo rep) {
-    clearFilters(rep);
-
     if (DataUtils.isId(rep.getId())) {
       Queries.update(VIEW_REPORT_SETTINGS, rep.getId(), COL_RS_PARAMETERS,
           TextValue.of(rep.serialize()));

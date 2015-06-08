@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  
-  name="MailMessage" caption="=mailMessage" disabledActions="save"
-  >
-  <FlowPanel class="flexBox-vertical">
-    <xi:include href="widgets/Message.widget.xml" />
-  </FlowPanel>
+        xmlns:f="http://www.butent.com/form"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="MailMessage" caption="=mailMessage" disabledActions="save"
+    >
+  <xi:include href="widgets/Message.widget.xml" />
 </f:Form>

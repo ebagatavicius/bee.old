@@ -4,7 +4,11 @@
        name="TransportClassifiers" label="=classifiers" parent="Transport" order="20"
        separator="true"
     >
-  <Item name="ShippingTerms" label="=trShippingTerms" service="grid" parameters="ShippingTerms" />
+  <Item name="CargoTypes" label="=trCargoTypes" service="grid" parameters="CargoTypes" />
+  <Item name="CargoGroups" label="=trCargoGroups" service="grid" parameters="CargoGroups" />
+
+  <Item name="ShippingTerms" label="=trShippingTerms" service="grid" parameters="ShippingTerms"
+        separator="true" />
   <Item name="Services" label="=trServices" service="grid" parameters="Services" />
   <Item name="AbsenceTypes" label="=trAbsenceTypes" service="grid" parameters="AbsenceTypes" />
 

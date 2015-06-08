@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+  name="CargoGroups" viewName="CargoGroups" caption="=trCargoGroups"
+  >
+  <g:columns>
+    <DataColumn name="CargoGroupName" minWidth="200" />
+  </g:columns>
+</g:Grid>

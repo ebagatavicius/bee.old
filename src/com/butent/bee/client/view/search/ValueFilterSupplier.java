@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -164,12 +165,17 @@ public class ValueFilterSupplier extends AbstractFilterSupplier {
       panel.add(empty);
     }
 
-    openDialog(target, panel, onChange);
+    OpenEvent.Handler onOpen = new OpenEvent.Handler() {
+      @Override
+      public void onOpen(OpenEvent event) {
+        editor.setFocus(true);
+        if (!BeeUtils.isEmpty(getOldValue())) {
+          editor.selectAll();
+        }
+      }
+    };
 
-    if (!BeeUtils.isEmpty(getOldValue())) {
-      editor.selectAll();
-    }
-    editor.setFocus(true);
+    openDialog(target, panel, onOpen, onChange);
   }
 
   @Override

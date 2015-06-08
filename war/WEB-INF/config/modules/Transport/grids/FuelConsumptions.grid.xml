@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
 
-  name="FuelConsumptions" viewName="FuelConsumptions" caption="=trFuelConsumptions"
-  >
+        name="FuelConsumptions" viewName="FuelConsumptions" caption="=trFuelConsumptions"
+    >
 
   <g:columns>
     <DataColumn name="DateFrom" caption="=trDateFrom" />
     <DataColumn name="DateTo" caption="=trDateTo" />
-    <DataColumn name="Summer" caption="=trFuelConsumptionsSummer" format="#.00"  />
-    <DataColumn name="Winter" caption="=trFuelConsumptionsWinter" format="#.00"  />
-    <DataColumn name="TonneKilometer" caption="=trTonneKilometer" format="#.0000"  />
-    <DataColumn name="MotoHour" caption="=trMotoHour" format="#.00"  />
+    <DataColumn name="Summer" caption="=trFuelConsumptionsSummer" format="#.00" />
+    <DataColumn name="Winter" caption="=trFuelConsumptionsWinter" format="#.00" />
+    <DataColumn name="TonneKilometer" caption="=trTonneKilometer" format="#.0000" />
+    <DataColumn name="MotoHour" caption="=trMotoHour" format="#.00" visible="false" />
   </g:columns>
 </g:Grid>

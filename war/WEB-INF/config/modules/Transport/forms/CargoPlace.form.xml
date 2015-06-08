@@ -3,11 +3,11 @@
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
-  
+
   name="CargoPlace" caption="=cargoHandlingPlaces"
-  width="620" widthUnit="px" height="550" heightUnit="px"
+        width="600" height="600"
   >
-  <SimplePanel class="flexBox-vertical-center">
+  <SimplePanel style="margin:10px;">
     <xi:include href="widgets/CargoPlaces.widget.xml" />
   </SimplePanel>
 </f:Form>

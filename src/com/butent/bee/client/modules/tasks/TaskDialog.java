@@ -17,7 +17,6 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.DndTarget;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.style.StyleUtils;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.edit.SimpleEditorHandler;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.FaLabel;
@@ -223,13 +222,13 @@ class TaskDialog extends DialogBox {
   }
 
   void display() {
+    focusOnOpen(getContent());
     center();
-    UiHelper.focus(getContent());
   }
 
   void display(String focusId) {
+    focusOnOpen(getChild(focusId));
     center();
-    UiHelper.focus(getChild(focusId));
   }
 
   String getComment(String id) {

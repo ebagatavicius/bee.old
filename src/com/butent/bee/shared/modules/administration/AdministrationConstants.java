@@ -328,6 +328,8 @@ public final class AdministrationConstants {
   public static final String COL_CONFIG_OBJECT = "ObjectName";
   public static final String COL_CONFIG_DATA = "ObjectData";
 
+  public static final String COL_MENU_HIDE = "MenuHide";
+
   public static final String ALS_FILE_NAME = "FileName";
   public static final String ALS_FILE_SIZE = "FileSize";
   public static final String ALS_FILE_TYPE = "FileType";

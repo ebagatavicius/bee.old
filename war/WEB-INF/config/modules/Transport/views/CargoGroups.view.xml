@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="CargoGroups" source="CargoGroups"
+  caption="=trCargoGroups" newRowCaption="=trNewCargoGroup"
+  >
+  <Columns>
+    <SimpleColumn name="CargoGroupName" />
+  </Columns>
+  <Order>
+    <OrderBy column="CargoGroupName" />
+  </Order>
+</View>
+ 

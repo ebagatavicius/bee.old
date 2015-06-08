@@ -468,9 +468,9 @@ public class InputBoxes {
     UiHelper.setWidget(dialog, panel, initializer, DialogConstants.WIDGET_PANEL);
 
     dialog.setAnimationEnabled(true);
-    dialog.showRelativeTo(target);
 
-    UiHelper.focus(input.get());
+    dialog.focusOnOpen(input.get());
+    dialog.showRelativeTo(target);
 
     if (timer != null) {
       timer.schedule(timeout);
@@ -655,9 +655,10 @@ public class InputBoxes {
     UiHelper.setWidget(dialog, panel, initializer, DialogConstants.WIDGET_PANEL);
 
     dialog.setAnimationEnabled(true);
+
+    dialog.focusOnOpen(widget.asWidget());
     dialog.showRelativeTo(target);
 
-    UiHelper.focus(widget.asWidget());
     return dialog;
   }
 }

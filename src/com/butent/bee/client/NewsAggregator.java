@@ -815,11 +815,10 @@ public class NewsAggregator implements HandlesAllDataEvents {
   }
 
   private void updateHeader() {
-
     MailKeeper.getUnreadCount();
 
     int size = countNews();
-    ScreenImpl.updateNewsSize(size);
+    BeeKeeper.getScreen().updateNewsSize(size);
 
     if (getSizeBadge() == null) {
       Badge badge = new Badge(size, STYLE_PREFIX + "size");

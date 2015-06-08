@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+  name="CargoTypes" viewName="CargoTypes" caption="=trCargoTypes"
+  >
+  <g:columns>
+    <DataColumn name="CargoTypeName" minWidth="200" />
+    <RelColumn name="Color" renderColumns="ColorName" minWidth="80" />
+  </g:columns>
+</g:Grid>

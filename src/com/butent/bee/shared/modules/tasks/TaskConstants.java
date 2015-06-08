@@ -261,6 +261,7 @@ public final class TaskConstants {
   public static final String COL_SUMMARY = "Summary";
   public static final String COL_DESCRIPTION = "Description";
   public static final String COL_CAPTION = "Caption";
+  public static final String COL_TASK_COMPANY = "Company";
 
   public static final String COL_PARENT = "Parent";
   public static final String COL_ORDER = "Order";

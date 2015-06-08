@@ -53,8 +53,8 @@ final class Freight extends OrderCargo {
         EnumUtils.getEnumByIndex(OrderStatus.class, row.getInt(COL_STATUS)),
         row.getDateTime(ALS_ORDER_DATE), row.getValue(COL_ORDER_NO),
         row.getLong(COL_CUSTOMER), row.getValue(COL_CUSTOMER_NAME),
-        row.getLong(COL_CARGO), row.getValue(COL_CARGO_DESCRIPTION),
-        row.getValue(COL_CARGO_NOTES),
+        row.getLong(COL_CARGO), row.getLong(COL_CARGO_TYPE),
+        row.getValue(COL_CARGO_DESCRIPTION), row.getValue(COL_CARGO_NOTES),
         BeeUtils.nvl(Places.getLoadingDate(row, loadingColumnAlias(COL_PLACE_DATE)),
             Places.getLoadingDate(row, defaultLoadingColumnAlias(COL_PLACE_DATE)), minLoad),
         BeeUtils.nvl(row.getLong(loadingColumnAlias(COL_PLACE_COUNTRY)),
@@ -100,7 +100,8 @@ final class Freight extends OrderCargo {
   private boolean editable;
 
   private Freight(Long orderId, OrderStatus orderStatus, DateTime orderDate, String orderNo,
-      Long customerId, String customerName, Long cargoId, String cargoDescription, String notes,
+      Long customerId, String customerName,
+      Long cargoId, Long cargoType, String cargoDescription, String notes,
       JustDate loadingDate, Long loadingCountry, String loadingPlace, String loadingPostIndex,
       Long loadingCity, String loadingNumber,
       JustDate unloadingDate, Long unloadingCountry, String unloadingPlace,
@@ -108,9 +109,9 @@ final class Freight extends OrderCargo {
       String unloadingNumber, Long tripId, Long truckId, Long trailerId, Long cargoTripId,
       Long cargoTripVersion) {
 
-    super(orderId, orderStatus, orderDate, orderNo, customerId, customerName, cargoId,
-        cargoDescription, notes, loadingDate, loadingCountry, loadingPlace, loadingPostIndex,
-        loadingCity, loadingNumber,
+    super(orderId, orderStatus, orderDate, orderNo, customerId, customerName,
+        cargoId, cargoType, cargoDescription, notes,
+        loadingDate, loadingCountry, loadingPlace, loadingPostIndex, loadingCity, loadingNumber,
         unloadingDate, unloadingCountry, unloadingPlace, unloadingPostIndex, unloadingCity,
         unloadingNumber);
 

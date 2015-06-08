@@ -1,7 +1,5 @@
 package com.butent.bee.client.imports;
 
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_IMPORT_MAPPING;
-
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.render.AbstractCellRenderer;
@@ -74,7 +72,7 @@ public class ImportMappingsGrid extends AbstractGridInterceptor {
       List<? extends IsColumn> dataColumns, ColumnDescription columnDescription,
       CellSource cellSource) {
 
-    if (BeeUtils.same(columnName, COL_IMPORT_MAPPING)) {
+    if (BeeUtils.same(columnName, AdministrationConstants.COL_IMPORT_MAPPING)) {
       return new AbstractCellRenderer(cellSource) {
         @Override
         public String render(IsRow row) {

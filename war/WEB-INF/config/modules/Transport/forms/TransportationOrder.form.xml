@@ -46,8 +46,16 @@
         <ChildGrid name="OrderCargo" relColumn="Order" />
       </page>
       <page>
-        <text>=documents</text>
+        <text>=trOrderDocuments</text>
         <ChildGrid name="RelatedDocuments" relColumn="TransportationOrder" />
+      </page>
+      <page>
+        <text>=trCargoDocuments</text>
+        <GridPanel name="CargoDocuments" parent="{form}" child="true" />
+      </page>
+      <page>
+        <text>=trTripDocuments</text>
+        <GridPanel name="TripDocuments" parent="{form}" child="true" />
       </page>
     </TabbedPages>
 

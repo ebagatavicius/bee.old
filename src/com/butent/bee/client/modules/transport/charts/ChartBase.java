@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -24,6 +25,7 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.timeboard.TimeBoard;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.View;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.view.ViewFactory;
@@ -44,8 +46,10 @@ import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -149,6 +153,8 @@ public abstract class ChartBase extends TimeBoard {
     });
   }
 
+  private final Map<Long, Color> cargoTypeColors = new HashMap<>();
+
   private final Multimap<Long, CargoHandling> cargoHandling = ArrayListMultimap.create();
 
   private boolean showCountryFlags;
@@ -158,7 +164,8 @@ public abstract class ChartBase extends TimeBoard {
   private boolean showPlaceCodes;
 
   private final Set<String> relevantDataViews = Sets.newHashSet(VIEW_ORDER_CARGO,
-      VIEW_CARGO_HANDLING, VIEW_CARGO_TRIPS, VIEW_TRIP_CARGO, ClassifierConstants.VIEW_COUNTRIES,
+      VIEW_CARGO_TYPES, VIEW_CARGO_HANDLING, VIEW_CARGO_TRIPS, VIEW_TRIP_CARGO,
+      ClassifierConstants.VIEW_COUNTRIES,
       AdministrationConstants.VIEW_COLORS, AdministrationConstants.VIEW_THEME_COLORS);
 
   private final List<ChartData> filterData = new ArrayList<>();
@@ -463,6 +470,26 @@ public abstract class ChartBase extends TimeBoard {
       restoreColors(serialized);
     }
 
+    cargoTypeColors.clear();
+    serialized = rowSet.getTableProperty(PROP_CARGO_TYPES);
+    if (!BeeUtils.isEmpty(serialized)) {
+      BeeRowSet cargoTypes = BeeRowSet.restore(serialized);
+
+      int colorIndex = cargoTypes.getColumnIndex(COL_CARGO_TYPE_COLOR);
+      int bgIndex = cargoTypes.getColumnIndex(COL_BACKGROUND);
+      int fgIndex = cargoTypes.getColumnIndex(COL_FOREGROUND);
+
+      for (BeeRow cargoType : cargoTypes) {
+        String bg = cargoType.getString(bgIndex);
+        String fg = cargoType.getString(fgIndex);
+
+        if (!BeeUtils.isEmpty(bg)) {
+          cargoTypeColors.put(cargoType.getId(),
+              new Color(cargoType.getLong(colorIndex), bg.trim(), BeeUtils.trim(fg)));
+        }
+      }
+    }
+
     cargoHandling.clear();
     serialized = rowSet.getTableProperty(PROP_CARGO_HANDLING);
     if (!BeeUtils.isEmpty(serialized)) {
@@ -478,6 +505,20 @@ public abstract class ChartBase extends TimeBoard {
     updateFilterData();
 
     return true;
+  }
+
+  @Override
+  protected void setItemWidgetColor(HasDateRange item, Widget widget) {
+    if (item instanceof HasCargoType) {
+      Long cargoType = ((HasCargoType) item).getCargoType();
+
+      if (cargoType != null && cargoTypeColors.containsKey(cargoType)) {
+        UiHelper.setColor(widget, cargoTypeColors.get(cargoType));
+        return;
+      }
+    }
+
+    super.setItemWidgetColor(item, widget);
   }
 
   protected Multimap<JustDate, CargoEvent> splitCargoByDate(OrderCargo cargo,
@@ -533,6 +574,7 @@ public abstract class ChartBase extends TimeBoard {
     widget.addStyleName(STYLE_SHIPMENT_DAY_WIDGET);
 
     String flag = showCountryFlags() ? Places.getCountryFlag(countryId) : null;
+    String countryLabel = Places.getCountryLabel(countryId);
 
     if (!BeeUtils.isEmpty(flag)) {
       widget.addStyleName(STYLE_SHIPMENT_DAY_FLAG);
@@ -543,11 +585,8 @@ public abstract class ChartBase extends TimeBoard {
       if (showPlaceInfo()) {
         List<String> info = new ArrayList<>();
 
-        if (BeeUtils.isEmpty(flag) && DataUtils.isId(countryId)) {
-          String countryLabel = Places.getCountryLabel(countryId);
-          if (!BeeUtils.isEmpty(countryLabel)) {
-            info.add(countryLabel);
-          }
+        if (BeeUtils.isEmpty(flag) && !BeeUtils.isEmpty(countryLabel)) {
+          info.add(countryLabel);
         }
 
         for (CargoEvent event : events) {
@@ -567,7 +606,6 @@ public abstract class ChartBase extends TimeBoard {
               info.add(cityLabel);
             }
           }
-
         }
 
         if (!info.isEmpty()) {
@@ -576,9 +614,8 @@ public abstract class ChartBase extends TimeBoard {
 
           widget.add(label);
         }
-      }
 
-      if (showPlaceCities()) {
+      } else if (showPlaceCities()) {
         List<String> info = new ArrayList<>();
 
         for (CargoEvent event : events) {
@@ -604,6 +641,11 @@ public abstract class ChartBase extends TimeBoard {
           if (!BeeUtils.isEmpty(codeLabel) && !BeeUtils.containsSame(info, codeLabel)) {
             info.add(codeLabel);
           }
+        }
+
+        if (!info.isEmpty() && !BeeUtils.isEmpty(countryLabel)
+            && BeeUtils.filterContext(info, countryLabel).isEmpty()) {
+          info.add(0, countryLabel);
         }
 
         if (!info.isEmpty()) {

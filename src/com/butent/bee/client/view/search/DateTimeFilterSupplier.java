@@ -10,9 +10,9 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.Global;
+import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.edit.SimpleEditorHandler;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
@@ -190,9 +190,7 @@ public class DateTimeFilterSupplier extends AbstractFilterSupplier {
   @Override
   public void onRequest(Element target, Scheduler.ScheduledCommand onChange) {
     Widget widget = createWidget();
-    openDialog(target, widget, onChange);
-
-    UiHelper.focus(widget);
+    openDialog(target, widget, OpenEvent.focus(widget), onChange);
   }
 
   @Override

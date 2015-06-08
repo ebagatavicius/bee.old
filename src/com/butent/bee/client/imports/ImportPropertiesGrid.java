@@ -126,6 +126,9 @@ public class ImportPropertiesGrid extends AbstractGridInterceptor {
     String parentView = event.getViewName();
     IsRow parentRow = event.getRow();
 
+    if (parentRow == null) {
+      return;
+    }
     ImportType type = EnumUtils.getEnumByIndex(ImportType.class,
         Data.getInteger(parentView, parentRow, COL_IMPORT_TYPE));
 

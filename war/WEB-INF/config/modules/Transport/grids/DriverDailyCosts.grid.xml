@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+        name="DriverDailyCosts" viewName="DriverDailyCosts" caption="=trDailyCosts"
+    >
+  <g:columns>
+    <DataColumn name="DateFrom" />
+    <DataColumn name="DateTo" />
+    <DataColumn name="Value" />
+    <RelColumn name="Currency" />
+  </g:columns>
+</g:Grid>

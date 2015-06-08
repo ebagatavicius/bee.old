@@ -271,6 +271,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String exchangeCode();
 
+  String expenses();
+
   String exportToMsExcel();
 
   String expression();
@@ -405,6 +407,10 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String height();
 
+  String help();
+
+  String hideOrShowMenu();
+
   String holidays();
 
   String hour();
@@ -414,6 +420,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String importing();
 
   String imageUploadFailed();
+
+  String incomes();
 
   String initialFilter();
 
@@ -438,6 +446,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String keywords();
 
   String kilogramShort();
+
+  String kilometers();
 
   String languageTag();
 
@@ -590,6 +600,8 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String persons();
 
   String phone();
+
+  String plan();
 
   String postIndex();
 
@@ -820,5 +832,4 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String yearMonth();
 
   String yes();
-
 }

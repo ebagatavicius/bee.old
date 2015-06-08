@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="DriverDailyCosts"
+       idName="DailyCostID"
+    >
+  <Fields>
+    <Relation name="Driver" relation="Drivers" notNull="true" cascade="DELETE"
+              label="=vehicleDriver" />
+    <Date name="DateFrom" label="=dateFrom" />
+    <Date name="DateTo" label="=dateTo" />
+    <Numeric name="Value" precision="12" scale="2" notNull="true" label="=trDailyAmount" />
+    <Relation name="Currency" relation="Currencies" notNull="true" label="=currencyShort"
+              defExpr="MAIN_CURRENCY" />
+  </Fields>
+</Table>

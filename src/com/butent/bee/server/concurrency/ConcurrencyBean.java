@@ -23,6 +23,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.FutureTask;
 
 import javax.annotation.Resource;
+import javax.ejb.AccessTimeout;
 import javax.ejb.EJB;
 import javax.ejb.ScheduleExpression;
 import javax.ejb.Singleton;
@@ -34,6 +35,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedExecutorService;
 
 @Singleton
+@AccessTimeout(value = TimeUtils.MILLIS_PER_MINUTE)
 public class ConcurrencyBean {
 
   public interface HasTimerService {
@@ -63,7 +65,7 @@ public class ConcurrencyBean {
     }
 
     public String getId() {
-      return BeeUtils.joinWords(runnable.getId(), started());
+      return BeeUtils.joinWords(runnable.getId(), Integer.toHexString(hashCode()));
     }
 
     @Override
@@ -88,8 +90,12 @@ public class ConcurrencyBean {
       if (ok) {
         logger.info("Ended:", getId(), TimeUtils.elapsedSeconds(started()));
       } else {
+        if (started() > 0) {
+          logger.info("Canceled:", getId(), TimeUtils.elapsedSeconds(started()));
+        } else {
+          logger.info("Rejected:", getId());
+        }
         runnable.onError();
-        logger.info("Canceled:", getId(), TimeUtils.elapsedSeconds(started()));
       }
     }
 
@@ -125,10 +131,17 @@ public class ConcurrencyBean {
           return;
         }
       }
+      asyncThreads.remove(id);
     }
     Worker newWorker = new Worker(runnable);
-    executor.execute(newWorker);
-    asyncThreads.put(id, newWorker);
+
+    try {
+      executor.execute(newWorker);
+      asyncThreads.put(id, newWorker);
+    } catch (Exception e) {
+      logger.error(e);
+      newWorker.cancel(true);
+    }
   }
 
   public <T extends HasTimerService> void createCalendarTimer(Class<T> handler, String parameter) {
@@ -159,11 +172,15 @@ public class ConcurrencyBean {
     String hours = prm.getText(parameter);
 
     if (!BeeUtils.isEmpty(hours)) {
-      Timer timer = timerService.createCalendarTimer(new ScheduleExpression().hour(hours),
-          new TimerConfig(parameter, false));
+      try {
+        Timer timer = timerService.createCalendarTimer(new ScheduleExpression().hour(hours),
+            new TimerConfig(parameter, false));
 
-      logger.info("Created", NameUtils.getClassName(handler), parameter, "timer on hours [", hours,
-          "] starting at", timer.getNextTimeout());
+        logger.info("Created", NameUtils.getClassName(handler), parameter, "timer on hours [",
+            hours, "] starting at", timer.getNextTimeout());
+      } catch (IllegalArgumentException ex) {
+        logger.error(ex);
+      }
     }
   }
 
@@ -195,11 +212,15 @@ public class ConcurrencyBean {
     Integer minutes = prm.getInteger(parameter);
 
     if (BeeUtils.isPositive(minutes)) {
-      Timer timer = timerService.createIntervalTimer(minutes * TimeUtils.MILLIS_PER_MINUTE,
-          minutes * TimeUtils.MILLIS_PER_MINUTE, new TimerConfig(parameter, false));
+      try {
+        Timer timer = timerService.createIntervalTimer(minutes * TimeUtils.MILLIS_PER_MINUTE,
+            minutes * TimeUtils.MILLIS_PER_MINUTE, new TimerConfig(parameter, false));
 
-      logger.info("Created", NameUtils.getClassName(handler), parameter, "timer every", minutes,
-          "minutes starting at", timer.getNextTimeout());
+        logger.info("Created", NameUtils.getClassName(handler), parameter, "timer every", minutes,
+            "minutes starting at", timer.getNextTimeout());
+      } catch (IllegalArgumentException ex) {
+        logger.error(ex);
+      }
     }
   }
 

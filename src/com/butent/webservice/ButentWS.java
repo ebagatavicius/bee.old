@@ -28,8 +28,6 @@ import javax.xml.ws.soap.SOAPBinding;
 
 public final class ButentWS {
 
-  private static final String DEFAULT_NAMESPACE = "http://localhost/ButentWS/";
-
   private static BeeLogger logger = LogUtils.getLogger(ButentWS.class);
 
   public static ButentWS connect(String namespace, String address, String login, String password)
@@ -40,7 +38,7 @@ public final class ButentWS {
     }
     logger.info("Connecting to webservice:", address);
 
-    ButentWS butentWS = new ButentWS(address, BeeUtils.notEmpty(namespace, DEFAULT_NAMESPACE));
+    ButentWS butentWS = new ButentWS(address, namespace);
 
     String answer = null;
     String error = "Unknown login response";

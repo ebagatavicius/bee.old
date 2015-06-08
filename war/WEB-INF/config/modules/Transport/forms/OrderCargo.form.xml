@@ -1,158 +1,178 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Form [
-  <!ENTITY section "margin: 5px; margin-bottom: 0;">
-  <!ENTITY separator "<hr/>">
-  <!ENTITY lbl1 "width: 75px; text-align: right; padding-right: 9px;">
-]>
+    <!ENTITY separator "<hr/>">
+    <!ENTITY lbl1 "width:75px; text-align:right; padding-right:9px;">
+    ]>
 <f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  xmlns:d="http://www.butent.com/decorator"
-  
-  name="OrderCargo" viewName="OrderCargo" caption="=cargo"
-  width="900" height="870"
-  >
-  <FlowPanel class="flexBox-vertical" style="padding: 5px 1em 45px 1em; min-width: 900px;">
-    <FlowPanel class="flexBox-horizontal" style="&section; min-height:20px;">
-      <InlineLabel text="=cargo" class="bee-hasDefaults bee-required" />
-      <InputArea source="Description" visibleLines="1" class="flexible"
-        style="font-weight: bold; color: blue; display:inline-block; " />
-      <HorizontalPanel>
-        <InlineLabel text="=trTransportationPrice" style="padding-top:1px;" />
-        <DecimalLabel name="Amount" style="padding-top:1px; font-weight:bold; color:green;" />
-        <DataSelector name="Currency" source="Currency" editEnabled="false" placeholder="=currencyShort"
-          style="width:5em; font-weight:bold; display:inline-block;" />
-      </HorizontalPanel>
-    </FlowPanel>
-    <FlowPanel class="flexBox-horizontal" style="&section;">
-      <TabbedPages style="height: 900px; width: 1250px" resizable="false">
-        <page>
-          <text>=cargoInformation</text>
-          <Table style="border-spacing: 5px;">
+        xmlns:f="http://www.butent.com/form"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="OrderCargo" viewName="OrderCargo" caption="=cargo" showRowId="true"
+        width="900" height="870"
+    >
+  <FlowPanel class="flexBox-vertical">
+    <Table cellStyle="padding-top: 3px; padding-bottom: 3px;">
+      <row>
+        <cell kind="label">
+          <Label for="Description" />
+        </cell>
+        <cell colSpan="3">
+          <InputArea source="Description" visibleLines="1" class="flexible"
+                     style="font-weight: bold; color: blue; width: 100%;" />
+        </cell>
+        <cell style="padding-left: 10px; padding-right: 10px; text-align: right;">
+          <Label text="=trTransportationPrice" />
+        </cell>
+        <cell style="padding-right: 10px;">
+          <DecimalLabel name="Amount" style="font-weight: bold; color: green;" />
+        </cell>
+        <DataSelector name="Currency" source="Currency" editEnabled="false"
+                      placeholder="=currencyShort" style="width: 5em; font-weight: bold;" />
+      </row>
+      <row>
+        <cell kind="label">
+          <Label for="CargoType" class="bee-required" />
+        </cell>
+        <DataSelector source="CargoType" required="true" />
+        <cell kind="label">
+          <Label for="CargoGroup" />
+        </cell>
+        <DataSelector source="CargoGroup" />
+        <cell style="padding-left: 10px; padding-right: 10px; text-align: right;">
+          <Label text="=trLoadedKilometersTotal" />
+        </cell>
+        <cell style="padding-right: 10px;">
+          <IntegerLabel name="TotalLoaded" style="font-weight: bold;" />
+        </cell>
+        <cell style="padding-right: 10px; text-align: right;">
+          <Label text="=trEmptyKilometersTotal" />
+        </cell>
+        <IntegerLabel name="TotalEmpty" style="font-weight: bold;" />
+      </row>
+    </Table>
+
+    <TabbedPages class="flexible" resizable="false">
+      <page>
+        <text>=cargoInformation</text>
+        <FlowPanel style="overflow:auto;">
+          <FlowPanel class="flexBox-horizontal-center">
+            <xi:include href="widgets/CargoPlaces.widget.xml" />
+
+            <FlowPanel>
+              <Table>
+                <row>
+                  <Label text="=cargoChangeOfPallets" style="&lbl1;" />
+                  <InputInteger source="ExchangeOfPalettes" style="width:70px" />
+                </row>
+                <row>
+                  <Label text="=pallets" style="&lbl1;" />
+                  <InputInteger source="Palettes" style="width:70px" />
+                </row>
+              </Table>
+              <Table>
+                <row>
+                  <CheckBox source="Dangerous" text="=dangerous" />
+                </row>
+                <row>
+                  <CheckBox name="Outsized" source="Outsized" text="=outsized" />
+                </row>
+                <row>
+                  <CheckBox name="Partial" source="Partial" text="=partial" />
+                </row>
+              </Table>
+              <Table name="Metrics">
+                <row>
+                  <Label text="=length" horizontalAlignment="right" style="&lbl1;" />
+                  <InputDecimal source="Length" format="0.00" style="width:70px" />
+                </row>
+                <row>
+                  <Label text="=width" horizontalAlignment="right" style="&lbl1;" />
+                  <InputDecimal source="Width" format="0.00" style="width:70px" />
+                </row>
+                <row>
+                  <Label text="=height" horizontalAlignment="right" style="&lbl1;" />
+                  <InputDecimal source="Height" format="0.00" style="width:70px" />
+                </row>
+                <row>
+                  <Label text="=volume" horizontalAlignment="right" style="&lbl1;" />
+                  <InputDecimal source="Volume" format="0.000" style="width:70px" />
+                </row>
+                <row>
+                  <Label html="LDM" horizontalAlignment="right" style="&lbl1;" />
+                  <InputDecimal source="LDM" format="0.00" style="width:70px" />
+                </row>
+              </Table>
+            </FlowPanel>
+          </FlowPanel>
+
+          &separator;
+
+          <Table>
             <row>
-              <FlowPanel style="overflow: auto;">
-                <xi:include href="widgets/CargoPlaces.widget.xml" />
+              <Label html="CMR" horizontalAlignment="right" style="&lbl1;" module="Documents" />
+              <DataSelector source="Cmr" caching="none" newRowEnabled="false" module="Documents" />
+              <Label text="=cargoValue" horizontalAlignment="right" style="&lbl1;" />
+              <FlowPanel>
+                <InputMoney source="Value" style="width:70px" />
+                <DataSelector source="ValueCurrency" editEnabled="false"
+                              style="width:5em; display:inline-block; margin-left:5px;" />
               </FlowPanel>
-              <FlowPanel style="margin-left:10px;">
-                <Table style="border-spacing: 5px;">
-                  <row>
-                    <Label text="=trLoadedKilometers" horizontalAlignment="right" />
-                    <InputInteger source="LoadedKilometers" style="width:70px" />
-                  </row>
-                  <row>
-                    <Label text="=trEmptyKilometers" horizontalAlignment="right" />
-                    <InputInteger source="EmptyKilometers" style="width:70px" />
-                  </row>
-                  <row>
-                    <Label text="=cargoChangeOfPallets" horizontalAlignment="right" />
-                    <InputInteger source="ExchangeOfPalettes" style="width:70px" />
-                  </row>
-                  <row>
-                    <Label text="=pallets" horizontalAlignment="right" />
-                    <InputInteger source="Palettes" style="width:70px" />
-                  </row>
-                  <row>
-                    <CheckBox source="Dangerous" text="=dangerous" />
-                  </row>
-                  <row>
-                    <CheckBox name="Outsized" source="Outsized" text="=outsized" />
-                  </row>
-                  <row>
-                    <CheckBox name="Partial" source="Partial" text="=partial" />
-                  </row>
-                </Table>
+              <Label text="=notes" />
+              <Label text="=trDirections" />
+            </row>
+            <row>
+              <Label text="=number" horizontalAlignment="right" style="&lbl1;" />
+              <InputText source="Number" />
+              <Label text="=quantity" horizontalAlignment="right" style="&lbl1;" />
+              <FlowPanel>
+                <InputDecimal source="Quantity" format="0.00" style="width:70px" />
+                <DataSelector source="QuantityUnit"
+                              style="display:inline-block; width:5em; margin-left:5px;" />
               </FlowPanel>
-            </row>
-            <row>
-              <cell colSpan="2">
-                <Table name="Metrics">
-                  <row>
-                    <Label text="=length" horizontalAlignment="right" style="&lbl1;" />
-                    <InputDecimal source="Length" format="0.00" style="width:70px" />
-                    <Label text="=width" horizontalAlignment="right" style="&lbl1;" />
-                    <InputDecimal source="Width" format="0.00" style="width:70px" />
-                    <Label text="=height" horizontalAlignment="right" style="&lbl1;" />
-                    <InputDecimal source="Height" format="0.00" style="width:70px" />
-                    <Label text="=volume" horizontalAlignment="right" style="&lbl1;" />
-                    <FlowPanel>
-                      <InputDecimal source="Volume" format="0.000" style="width:70px" />
-                      <DataSelector source="VolumeUnit" style="display:inline-block; width:5em; margin-left:5px;" />
-                    </FlowPanel>
-                    <Label html="LDM" horizontalAlignment="right" style="&lbl1;" />
-                    <InputDecimal source="LDM" format="0.00" style="width:70px" />
-                  </row>
-                </Table>
+              <cell rowSpan="2">
+                <InputArea source="Notes" characterWidth="30" visibleLines="3"
+                           style="width: 150px" />
+              </cell>
+              <cell rowSpan="2">
+                <InputArea source="Directions" characterWidth="30" visibleLines="3"
+                           style="width: 150px" />
               </cell>
             </row>
             <row>
-              <cell colSpan="2">
-                &separator;
-              </cell>
-            </row>
-            <row>
-              <cell colSpan="2">
-                <Table>
-                  <row>
-                    <Label html="CMR" horizontalAlignment="right" style="&lbl1;" />
-                    <InputText source="Cmr" />
-                    <Label text="=cargoValue" horizontalAlignment="right" style="&lbl1;" />
-                    <FlowPanel>
-                      <InputMoney source="Value" style="width:70px" />
-                      <DataSelector source="ValueCurrency" editEnabled="false" style="width:5em; display:inline-block; margin-left:5px;" />
-                    </FlowPanel>
-                    <Label text="=notes" />
-                    <Label text="=trDirections" />
-                  </row>
-                  <row>
-                    <Label text="=number" horizontalAlignment="right" style="&lbl1;" />
-                    <InputText source="Number" />
-                    <Label text="=quantity" horizontalAlignment="right" style="&lbl1;" />
-                    <FlowPanel>
-                      <InputDecimal source="Quantity" format="0.00" style="width:70px" />
-                      <DataSelector source="QuantityUnit" style="display:inline-block; width:5em; margin-left:5px;" />
-                    </FlowPanel>
-                    <cell rowSpan="2">
-                      <InputArea source="Notes" characterWidth="30" visibleLines="3" style="width: 150px" />
-                    </cell>
-                    <cell rowSpan="2">
-                      <InputArea source="Directions" characterWidth="30" visibleLines="3" style="width: 150px" />
-                    </cell>
-                  </row>
-                  <row>
-                    <Label text="=cargoTermsOfService" horizontalAlignment="right" style="&lbl1;" />
-                    <DataSelector source="ShippingTerm" />
-                    <Label text="=weight" horizontalAlignment="right" style="&lbl1;" />
-                    <FlowPanel>
-                      <InputDecimal source="Weight" format="0.000" style="width:70px" />
-                      <DataSelector source="WeightUnit" style="display:inline-block; width:5em; margin-left:5px;" />
-                    </FlowPanel>
-                  </row>
-                </Table>
-              </cell>
+              <Label text="=cargoTermsOfService" horizontalAlignment="right" style="&lbl1;" />
+              <DataSelector source="ShippingTerm" />
             </row>
           </Table>
-        </page>
-        <page>
-          <text>=trOrderCargoServices</text>
-          <ChildGrid name="CargoIncomes" relColumn="Cargo" />
-        </page>
-        <page>
-          <text>=trips</text>
-          <ChildGrid name="CargoTrips" relColumn="Cargo" />
-        </page>
-        <page>
-          <text>=otherCosts</text>
-          <ChildGrid name="CargoExpenses" relColumn="Cargo" />
-        </page>
-        <page>
-          <text>=cargoMiddleHandlingPlaces</text>
-          <ChildGrid name="CargoHandling" relColumn="Cargo" />
-        </page>
-        <page>
-          <text>=documents</text>
-          <ChildGrid name="RelatedDocuments" relColumn="Cargo" />
-        </page>
-      </TabbedPages>
-    </FlowPanel>
+        </FlowPanel>
+      </page>
+      <page>
+        <text>=trOrderCargoServices</text>
+        <ChildGrid name="CargoIncomes" relColumn="Cargo" />
+      </page>
+      <page>
+        <text>=trips</text>
+        <ChildGrid name="CargoTrips" relColumn="Cargo" />
+      </page>
+      <page>
+        <text>=otherCosts</text>
+        <ChildGrid name="CargoExpenses" relColumn="Cargo" />
+      </page>
+      <page>
+        <text>=trAdditionalHandlingPlaces</text>
+        <ChildGrid name="CargoHandling" relColumn="Cargo" />
+      </page>
+      <page>
+        <text>=trCargoDocuments</text>
+        <ChildGrid name="RelatedDocuments" relColumn="Cargo" />
+      </page>
+      <page>
+        <text>=trOrderDocuments</text>
+        <GridPanel name="TranspOrderDocuments" parent="{form}" child="true" />
+      </page>
+      <page>
+        <text>=trTripDocuments</text>
+        <GridPanel name="TripDocuments" parent="{form}" child="true" />
+      </page>
+    </TabbedPages>
   </FlowPanel>
 </f:Form>

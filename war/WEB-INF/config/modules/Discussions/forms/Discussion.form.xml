@@ -8,7 +8,6 @@
   <!ENTITY inpRight "&inline; text-align: rght; margin: 3px 7px 3px 4px;" >
   <!ENTITY discussDataPanel "min-width: 550px;" >
   <!ENTITY relDataPanel "overflow: auto;" >
-  <!ENTITY commentsPanel "overflow: auto;" >
   <!ENTITY discussionHeadPanel "max-height:150px">
  
   <!ENTITY subjectLbl "&lblRight;">
@@ -48,7 +47,7 @@
   <!ENTITY relDocumentsLbl "&lblRight;">
   <!ENTITY relDocumentsInp "&inpLeft; width: 400px;">
   <!ENTITY separator "<hr/>">
-  <!ENTITY header "font-style: italic;">
+  <!ENTITY header "font-size: 20px;">
   <!ENTITY lbl1 "&inline; max-width: 128px; min-width: 110px; text-align: right; padding-right: 18px; min-height: 20px; max-height: 20px; padding-top: 1px;">
   <!ENTITY inp2x "&inline; width: 540px;">
   <!ENTITY top1 "text-align: right; padding-right: 18px; max-width: 128px; padding-top: 1px;">
@@ -163,27 +162,19 @@
         </FlowPanel>
 
         <FlowPanel for="Topic" class="flexBox-horizontal">
-          <Label name="DisplayInBoard" text="=displayInBoard"
-            style="&lbl1; min-width:150px;" />
-          <Label for="VisibleFrom" text="=dateFromShort"
-            style="text-transform: lowercase; margin-right:4px" />
-          <InputDateTime source="VisibleFrom"
-            style="&inp2x; width: 100px; margin-right:8px" />
-          <Label for="VisibleTo" text="=dateToShort"
-            style="text-transform: lowercase; margin-right:4px" />
-          <InputDateTime source="VisibleTo" style="&inp2x; width: 100px" />
+          <Label for="Topic" name="DisplayInBoard" text="=displayInBoard" style="&lbl1; min-width:150px;" />
+          <InputDateTime source="VisibleFrom" style="&inp2x; width: 120px; margin-right:10px" placeholder="=dateFromShort" />
+          <InputDateTime source="VisibleTo" style="&inp2x; width: 120px" placeholder="=dateToShort" />
         </FlowPanel>
 
-        <FlowPanel class="flexBox-horizontal">
+        <FlowPanel style="margin-top:20px;" class="flexBox-horizontal">
           <CheckBox name="Important" source="Important" text="=important"
-            style="&top1; min-width:70px; padding-right:18px;" />
-          <CheckBox name="PermitComment" text="=prohibitComment"
-            style="&top1; min-width: 135px; padding-right:18px;" />
+            style="&top1; min-width:70px; padding-right:40px; margin-left: 160px;" />
+          <CheckBox name="PermitComment" text="=prohibitComment" style="min-width: 135px;" />
         </FlowPanel>
       </FlowPanel>
     </Disclosure>
 
-    <FlowPanel data="DiscussionsComments" name="DiscussionsComments"
-      class="flexible bee-discuss-comment-container" style="&commentsPanel;" />
+    <FlowPanel data="DiscussionsComments" name="DiscussionsComments" class="flexible bee-discuss-comment-container" />
   </FlowPanel>
 </f:Form>

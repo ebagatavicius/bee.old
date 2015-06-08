@@ -6,7 +6,7 @@
   >
   <Fields>
     <Enum name="Status" key="OrderStatus" notNull="true" label="=trOrderStatus" defValue="1" />
-    <DateTime name="Date" notNull="true" defExpr="CURRENT_TIME" label="=date" />
+    <DateTime name="Date" notNull="true" defExpr="CURRENT_TIME" label="=orderDate" />
     <String name="OrderNo" precision="50" unique="true" notNull="true" label="=orderNumber"
       defExpr="NEXT_NUMBER" defValue="U/" />
     <Relation name="Customer" relation="Companies" notNull="true" label="=customer" />

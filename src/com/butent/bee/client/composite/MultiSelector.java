@@ -607,7 +607,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
     container.add(inputWidget);
 
     if (isNewRowEnabled()) {
-      FaLabel plusWidget = new FaLabel(FontAwesome.PLUS_SQUARE_O, STYLE_PLUS);
+      FaLabel plusWidget = new FaLabel(FontAwesome.PLUS_CIRCLE, STYLE_PLUS);
       plusWidget.setTitle(BeeUtils.buildLines(Localized.getConstants().actionCreate(),
           BeeUtils.bracket(getLabel())));
 

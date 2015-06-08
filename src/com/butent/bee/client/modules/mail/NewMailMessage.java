@@ -28,6 +28,7 @@ import com.butent.bee.client.dialog.DialogConstants;
 import com.butent.bee.client.dialog.InputBoxes;
 import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.dialog.Popup;
+import com.butent.bee.client.event.Previewer;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.FormFactory.FormViewCallback;
@@ -161,6 +162,7 @@ public final class NewMailMessage extends AbstractFormInterceptor
                     @Override
                     public void onSuccess(BeeRowSet result) {
                       dialog.removeStyleName(STYLE_WAITING_FOR_USER_EMAILS);
+                      Previewer.ensureUnregistered(dialog);
                     }
                   });
 

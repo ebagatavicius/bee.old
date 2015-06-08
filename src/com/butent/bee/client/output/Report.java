@@ -1,5 +1,7 @@
 package com.butent.bee.client.output;
 
+import static com.butent.bee.shared.modules.transport.TransportConstants.*;
+
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.modules.classifiers.CompanyTypeReport;
@@ -28,8 +30,6 @@ import com.butent.bee.shared.modules.projects.ProjectPriority;
 import com.butent.bee.shared.modules.projects.ProjectStatus;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
-import com.butent.bee.shared.modules.transport.TransportConstants;
-import com.butent.bee.shared.modules.transport.TransportConstants.TripStatus;
 import com.butent.bee.shared.report.ReportInfo;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
@@ -45,6 +45,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+
+//import com.butent.bee.shared.modules.transport.TransportConstants.TripStatus;
 
 public enum Report implements HasWidgetSupplier {
   COMPANY_TYPES(ModuleAndSub.of(Module.CLASSIFIERS), "CompanyTypes", "CompanyRelationTypeReport") {
@@ -104,37 +106,47 @@ public enum Report implements HasWidgetSupplier {
     }
   },
 
-  TRANSPORT_TRIP_PROFIT(ModuleAndSub.of(Module.TRANSPORT),
-      TransportConstants.SVC_TRIP_PROFIT_REPORT) {
+  TRANSPORT_TRIP_PROFIT(ModuleAndSub.of(Module.TRANSPORT), SVC_TRIP_PROFIT_REPORT) {
     @Override
     public List<ReportItem> getItems() {
       LocalizableConstants loc = Localized.getConstants();
+      String plan = BeeUtils.parenthesize(loc.plan());
 
       return Arrays.asList(
-          new ReportTextItem(TransportConstants.COL_TRIP,
-              Data.getColumnLabel(TransportConstants.TBL_TRIP_COSTS, TransportConstants.COL_TRIP)),
-          new ReportTextItem(TransportConstants.COL_TRIP_NO,
-              Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_TRIP_NO)),
-          new ReportDateTimeItem(TransportConstants.COL_TRIP_DATE, loc.date()),
-          new ReportDateItem(TransportConstants.COL_TRIP_DATE_FROM, loc.dateFrom()),
-          new ReportDateItem(TransportConstants.COL_TRIP_DATE_TO, loc.dateTo()),
-          new ReportTextItem(TransportConstants.COL_VEHICLE,
-              Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_VEHICLE)),
-          new ReportTextItem(TransportConstants.COL_TRAILER,
-              Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_TRAILER)),
-          new ReportTextItem("Route",
-              Data.getColumnLabel(TransportConstants.TBL_TRIP_ROUTES, "Route")),
-          new ReportEnumItem(TransportConstants.COL_TRIP_STATUS,
-              Data.getColumnLabel(TransportConstants.TBL_TRIPS, TransportConstants.COL_TRIP_STATUS),
+          new ReportTextItem(COL_TRIP, Data.getColumnLabel(TBL_TRIP_COSTS, COL_TRIP)),
+          new ReportTextItem(COL_TRIP_NO, Data.getColumnLabel(TBL_TRIPS, COL_TRIP_NO)),
+          new ReportDateTimeItem(COL_TRIP_DATE, loc.date()),
+          new ReportDateItem(COL_TRIP_DATE_FROM, loc.dateFrom()),
+          new ReportDateItem(COL_TRIP_DATE_TO, loc.dateTo()),
+          new ReportTextItem(COL_VEHICLE, Data.getColumnLabel(TBL_TRIPS, COL_VEHICLE)),
+          new ReportTextItem(COL_TRAILER, Data.getColumnLabel(TBL_TRIPS, COL_TRAILER)),
+          new ReportTextItem(COL_TRIP_ROUTE, loc.route()),
+          new ReportEnumItem(COL_TRIP_STATUS, Data.getColumnLabel(TBL_TRIPS, COL_TRIP_STATUS),
               TripStatus.class),
-          new ReportNumericItem("Kilometers", "Kilometrai"),
-          new ReportNumericItem("FuelCosts", "Kuro išl.").setPrecision(2),
-          new ReportNumericItem("DailyCosts", "Dienpinigių išl.").setPrecision(2),
-          new ReportNumericItem("RoadCosts", "Kelių išl.").setPrecision(2),
-          new ReportNumericItem("ConstantCosts", Localized.getConstants().trConstantCosts())
+
+          new ReportTextItem(COL_ORDER_NO, loc.orderNumber()),
+          new ReportDateTimeItem(COL_ORDER + COL_ORDER_DATE, loc.orderDate()),
+          new ReportTextItem(COL_CUSTOMER, loc.customer()),
+          new ReportTextItem(COL_ORDER_MANAGER, loc.manager()),
+          new ReportTextItem(COL_CARGO, loc.cargo()),
+          new ReportBooleanItem(COL_CARGO_PARTIAL, loc.partial()),
+
+          new ReportNumericItem(COL_ROUTE_KILOMETERS, loc.kilometers()),
+          new ReportNumericItem("TripIncome", loc.incomes()).setPrecision(2),
+          new ReportNumericItem("FuelCosts", loc.trFuelCosts()).setPrecision(2),
+          new ReportNumericItem("DailyCosts", loc.trDailyCosts()).setPrecision(2),
+          new ReportNumericItem("RoadCosts", loc.trRoadCosts()).setPrecision(2),
+          new ReportNumericItem("OtherCosts", loc.trOtherCosts()).setPrecision(2),
+          new ReportNumericItem("ConstantCosts", loc.trConstantCosts()).setPrecision(2),
+
+          new ReportNumericItem("Planned" + COL_ROUTE_KILOMETERS,
+              BeeUtils.joinWords(loc.kilometers(), plan)),
+          new ReportNumericItem("PlannedFuelCosts", BeeUtils.joinWords(loc.trFuelCosts(), plan))
               .setPrecision(2),
-          new ReportNumericItem("OtherCosts", "Kitos išl.").setPrecision(2),
-          new ReportNumericItem("TripIncome", "Pajamos").setPrecision(2));
+          new ReportNumericItem("PlannedDailyCosts", BeeUtils.joinWords(loc.trDailyCosts(), plan))
+              .setPrecision(2),
+          new ReportNumericItem("PlannedRoadCosts", BeeUtils.joinWords(loc.trRoadCosts(), plan))
+              .setPrecision(2));
     }
 
     @Override
@@ -152,29 +164,42 @@ public enum Report implements HasWidgetSupplier {
       ReportInfo report = new ReportInfo(getReportCaption());
 
       for (String item : new String[] {
-          TransportConstants.COL_TRIP, TransportConstants.COL_TRIP_NO,
-          TransportConstants.COL_TRIP_DATE_FROM, TransportConstants.COL_TRIP_DATE_TO,
-          TransportConstants.COL_TRAILER}) {
+          COL_TRIP, COL_TRIP_NO, COL_TRIP_DATE_FROM, COL_TRIP_DATE_TO, COL_TRAILER}) {
         report.addRowItem(items.get(item));
       }
-      report.setRowGrouping(items.get(TransportConstants.COL_VEHICLE));
+      report.setRowGrouping(items.get(COL_VEHICLE));
 
-      report.addColItem(items.get("Kilometers"));
+      report.addColItem(items.get(COL_ROUTE_KILOMETERS));
+      report.addColItem(items.get("Planned" + COL_ROUTE_KILOMETERS));
 
       ReportItem income = items.get("TripIncome");
-      report.addColItem(income.clone());
+      report.addColItem(income.copy());
 
-      ReportFormulaItem costs = new ReportFormulaItem("Išlaidos");
+      ReportFormulaItem costs = new ReportFormulaItem(Localized.getConstants().expenses());
       costs.setPrecision(2);
 
-      for (String item : new String[] {
-          "FuelCosts", "DailyCosts", "RoadCosts", "ConstantCosts", "OtherCosts"}) {
+      for (String item : new String[] {"FuelCosts", "DailyCosts", "RoadCosts", "OtherCosts"}) {
         costs.plus(items.get(item));
       }
-      report.addColItem(costs.clone());
-      report.addColItem(new ReportFormulaItem("Pelnas").plus(income).minus(costs).setPrecision(2));
+      report.addColItem(costs.copy());
 
-      report.getFilterItems().add(items.get(TransportConstants.COL_TRIP_STATUS)
+      ReportFormulaItem plannedCosts = new ReportFormulaItem(
+          BeeUtils.joinWords(Localized.getConstants().expenses(),
+              BeeUtils.parenthesize(Localized.getConstants().plan())));
+      plannedCosts.setPrecision(2);
+
+      for (String item : new String[] {"FuelCosts", "DailyCosts", "RoadCosts", "OtherCosts"}) {
+        plannedCosts.plus(items.get("Planned" + item));
+      }
+      report.addColItem(plannedCosts.copy());
+
+      ReportItem constantCosts = items.get("ConstantCosts");
+      report.addColItem(constantCosts.copy());
+
+      report.addColItem(new ReportFormulaItem(Localized.getConstants().profit())
+          .plus(income).minus(costs).minus(constantCosts).setPrecision(2));
+
+      report.getFilterItems().add(items.get(COL_TRIP_STATUS)
           .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
 
       return Collections.singletonList(report);

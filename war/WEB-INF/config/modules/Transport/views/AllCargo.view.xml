@@ -89,7 +89,12 @@
 
       <SimpleColumn name="Description" />
       <SimpleColumn name="Number" />
+      
       <SimpleColumn name="Cmr" />
+      <SimpleJoin name="Cmr" joinType="LEFT">
+        <SimpleColumn name="Name" alias="CmrName"/>
+        <SimpleColumn name="Number" alias="CmrNumber"/>
+      </SimpleJoin>
 
       <SimpleJoin joinType="LEFT" name="ShippingTerm">
         <SimpleColumn name="Name" alias="ShippingTermName" />

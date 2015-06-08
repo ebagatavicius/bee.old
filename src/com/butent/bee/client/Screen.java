@@ -92,6 +92,8 @@ public interface Screen extends NotificationListener, HasExtendedInfo {
 
   void updateMenu(IdentifiableWidget widget);
 
+  void updateNewsSize(int size);
+
   boolean updateProgress(String id, String label, double value);
 
   void updateUserData(UserData userData);
@@ -103,6 +105,4 @@ public interface Screen extends NotificationListener, HasExtendedInfo {
   Flow getOnlineEmailSize();
 
   FaLabel getOnlineEmailLabel();
-
-  Flow getNewsSize();
 }

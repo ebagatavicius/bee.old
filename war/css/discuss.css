@@ -1,7 +1,6 @@
 .bee-discuss-comment-container {
   margin-top: 2em;
   margin-bottom: 2em;
-  border: 1px solid #ccc;
   background: white;
 }
 
@@ -12,13 +11,13 @@
   max-width: 40px;
   min-width: 40px;
   padding: 4px;
-  border-left: 1px solid #ccc;
   margin-left: -1px;
 }
 
 .bee-discuss-comment-Photo {
   max-width: 100%;
   max-height: 100%;
+  border-radius: 50%;
 }
 
 .bee-discuss-comment-rowPhoto-chatter {
@@ -26,18 +25,21 @@
 }
 
 .bee-discuss-comment-PublishTime {
-  font-size: 1.5ex;
+  float: left;
+  margin-left: 20px;
+  color: #c5c5c5;
 }
 
 .bee-discuss-comment-col-Publisher {
   display: inline-block;
-  margin: 4px;
-  min-width: 150px;
+  margin: 4px 4px 4px 10px;
+  width: 100%;
   vertical-align: top;
 }
 
 .bee-discuss-comment-Publisher {
   font-weight: bolder;
+  float: left;
 }
 
 .bee-discuss-comment-col-CommentText {
@@ -56,7 +58,7 @@
   min-height: 35px;
   width: 100%;
   max-height: 9em;
-  overflow: auto;
+  margin-top: 10px;
 }
 
 .bee-discuss-comment-files {
@@ -70,21 +72,16 @@
 
 .bee-discuss-comment-row {
   padding-bottom: 2px;
-  border: 1px solid #ccc;
-  margin-bottom: -1px;
-  margin-top: -1px;
-  border-right: none;
-  margin-right: 0.5ex;
+  margin: -1px 40px -1px 30px;
 }
 
 .bee-discuss-comment-col-Actions {
   display: inline-block;
   min-width: 95px;
   vertical-align: top;
-  border: 1px solid #ccc;
-  border-left: none;
   margin: -1px -1px -3px 0px;
   text-align: center;
+  font-size: 17px;
 }
 
 .bee-discuss-comment-col-Mark>.bee-discuss-Actions-mark {
@@ -102,18 +99,19 @@
 .bee-discuss-Actions {
   padding: 4px;
   margin: 4px;
+  display: inline-block;
+  font-size: 15px;
 }
 
 .bee-discuss-Actions:hover {
-  outline: #ccc dotted 1px;
 }
 
 .bee-discuss-comment-col-Actions-reply {
-  
+  color: #c5c5c5;
 }
 
 .bee-discuss-comment-col-Actions-trash {
-  
+  color: #c5c5c5;
 }
 
 .bee-discuss-comment-col-Mark {
@@ -170,15 +168,14 @@
    display: inline-block;
    height: 1.5em;
    vertical-align: middle;
-   background-color: #fafafa;
-   border: 1px solid #ccc;
-   border-radius: 6px;
+   color: #c5c5c5;
 }
 
 .bee-discuss-Actions-stats {
   display: inline-block;
   height: 1.5em;
   vertical-align: middle;
+  color: #c5c5c5;
 }
 
 .bee-discuss-Actions-label-stats {
@@ -191,15 +188,13 @@
   
 }
 
-.bee-discuss-Actions-mark-marked {
-  border: 2px solid #a1bff5 !important;
-  color: #a1bff5 !important;
+.bee-discuss-Actions-mark-marked.bee-discuss-Actions-mark-marked {
+  color: #1ca5c7;
+  background-color: #ffffff;
 }
 
 .bee-discuss-Actions-mark-disabled:hover {
   cursor: default;
-  border: 1px solid #ccc;
-  outline: none;
 }
 
 .bee-discuss-adsFormContent {

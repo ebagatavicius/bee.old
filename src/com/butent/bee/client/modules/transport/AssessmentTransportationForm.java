@@ -69,9 +69,8 @@ public class AssessmentTransportationForm extends PrintFormInterceptor {
     if (!BeeUtils.anyNotNull(totals, cargo)) {
       return;
     }
-    Queries.getRowSet(TBL_ORDER_CARGO, null,
-        Filter.in(Data.getIdColumn(TBL_ORDER_CARGO), TBL_CARGO_TRIPS, COL_CARGO,
-            Filter.equals(COL_TRIP, row.getId())),
+    Queries.getRowSet(TBL_ASSESSMENTS, null,
+        Filter.in(COL_CARGO, TBL_CARGO_TRIPS, COL_CARGO, Filter.equals(COL_TRIP, row.getId())),
         new RowSetCallback() {
           @Override
           public void onSuccess(BeeRowSet result) {
@@ -265,7 +264,7 @@ public class AssessmentTransportationForm extends PrintFormInterceptor {
                 forwarderCompanySignature + BeeConst.STRING_COMMA,
                 BeeUtils.join(BeeConst.STRING_SPACE, PARAGRAPH_TEXT.subList(2, PARAGRAPH_TEXT
                     .size()))
-                );
+            );
 
             widget.getElement().setInnerText(pText);
           }

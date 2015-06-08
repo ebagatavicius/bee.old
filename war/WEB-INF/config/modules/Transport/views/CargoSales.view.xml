@@ -12,6 +12,11 @@
       </ExternalJoin>
 
       <SimpleColumn name="Cmr" />
+      <SimpleJoin name="Cmr" joinType="LEFT">
+        <SimpleColumn name="Name" alias="CmrName"/>
+        <SimpleColumn name="Number" alias="CmrNumber"/>
+      </SimpleJoin>
+  
       <SimpleColumn name="Notes" />
 
       <SimpleColumn name="Order" />

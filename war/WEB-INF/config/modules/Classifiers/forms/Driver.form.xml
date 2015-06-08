@@ -6,18 +6,17 @@
   <!ENTITY inpdt "width: 7em;">
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  
-  name="Driver" viewName="Drivers" caption="=vehicleDriver"
-  width="1050" height="800"  
-  >
+        xmlns:f="http://www.butent.com/form"
+
+        name="Driver" viewName="Drivers" caption="=vehicleDriver"
+        width="1050" height="800"
+    >
   <FlowPanel class="flexBox-vertical" style="padding: 5px 1em 45px 1em; min-width: 1000px;">
     <FlowPanel style="margin-top: 1ex;">
 	<Table style="border-spacing: 5px;">
 	  <row>
         <Label text="=trDriverName" class="bee-required" style="&lbl;" />
-        <DataSelector source="CompanyPerson" style="&w2;" 
+      <DataSelector source="CompanyPerson" style="&w2;"
           renderColumns="FirstName LastName" choiceColumns="FirstName LastName CompanyName" />
 
         <Label text="=driverGroupsShort" class="bee-required" style="&lbl;" />
@@ -73,12 +72,16 @@
         <text>=driverAbsence</text>
         <ChildGrid name="DriverAbsence" relColumn="Driver" />
       </page>
+      <page module="Transport">
+        <text>=trDailyCosts</text>
+        <ChildGrid name="DriverDailyCosts" relColumn="Driver" />
+      </page>
       <page>
         <text>=notes</text>
         <SimplePanel>
           <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
-      </page>  
+      </page>
     </TabbedPages>
   </FlowPanel>
-</f:Form>  
+</f:Form>

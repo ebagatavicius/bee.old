@@ -30,8 +30,9 @@
     <SimpleColumn name="SpeedometerAfter" />
     <SimpleColumn name="FuelBefore" />
     <SimpleColumn name="FuelAfter" />
+    <SimpleColumn name="Route" />
     <SimpleColumn name="Notes" />
-    
+
     <ExternalJoin source="TripDrivers" name="Trip" joinType="LEFT">
       <SimpleJoin name="Driver" joinType="LEFT">
         <SimpleJoin name="CompanyPerson" joinType="LEFT">

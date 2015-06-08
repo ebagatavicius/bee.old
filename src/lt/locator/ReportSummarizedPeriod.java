@@ -1,4 +1,3 @@
-
 package lt.locator;
 
 import java.util.ArrayList;
@@ -10,11 +9,12 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-
 /**
- * <p>Java class for reportSummarizedPeriod complex type.
+ * <p>
+ * Java class for reportSummarizedPeriod complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="reportSummarizedPeriod">
@@ -54,267 +54,240 @@ import javax.xml.datatype.XMLGregorianCalendar;
 })
 public class ReportSummarizedPeriod {
 
-    protected String deviceName;
-    protected int errorCode;
-    protected String errorMessage;
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar timeFrom;
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar timeTo;
-    protected TripSumRepData tripSummary;
-    @XmlElement(nillable = true)
-    protected List<TripSumRepData> tripSummaryByCountries;
-    @XmlElement(nillable = true)
-    protected List<TripSumRepData> tripSummaryByCountriesGrouped;
-    @XmlElement(nillable = true)
-    protected List<TripSumRepData> tripSummaryByDays;
-    protected String vehicleRegistrationNumber;
+  protected String deviceName;
+  protected int errorCode;
+  protected String errorMessage;
+  @XmlSchemaType(name = "dateTime")
+  protected XMLGregorianCalendar timeFrom;
+  @XmlSchemaType(name = "dateTime")
+  protected XMLGregorianCalendar timeTo;
+  protected TripSumRepData tripSummary;
+  @XmlElement(nillable = true)
+  protected List<TripSumRepData> tripSummaryByCountries;
+  @XmlElement(nillable = true)
+  protected List<TripSumRepData> tripSummaryByCountriesGrouped;
+  @XmlElement(nillable = true)
+  protected List<TripSumRepData> tripSummaryByDays;
+  protected String vehicleRegistrationNumber;
 
-    /**
-     * Gets the value of the deviceName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDeviceName() {
-        return deviceName;
-    }
+  /**
+   * Gets the value of the deviceName property.
+   * 
+   * @return possible object is {@link String }
+   * 
+   */
+  public String getDeviceName() {
+    return deviceName;
+  }
 
-    /**
-     * Sets the value of the deviceName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDeviceName(String value) {
-        this.deviceName = value;
-    }
+  /**
+   * Sets the value of the deviceName property.
+   * 
+   * @param value allowed object is {@link String }
+   * 
+   */
+  public void setDeviceName(String value) {
+    this.deviceName = value;
+  }
 
-    /**
-     * Gets the value of the errorCode property.
-     * 
-     */
-    public int getErrorCode() {
-        return errorCode;
-    }
+  /**
+   * Gets the value of the errorCode property.
+   * 
+   */
+  public int getErrorCode() {
+    return errorCode;
+  }
 
-    /**
-     * Sets the value of the errorCode property.
-     * 
-     */
-    public void setErrorCode(int value) {
-        this.errorCode = value;
-    }
+  /**
+   * Sets the value of the errorCode property.
+   * 
+   */
+  public void setErrorCode(int value) {
+    this.errorCode = value;
+  }
 
-    /**
-     * Gets the value of the errorMessage property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getErrorMessage() {
-        return errorMessage;
-    }
+  /**
+   * Gets the value of the errorMessage property.
+   * 
+   * @return possible object is {@link String }
+   * 
+   */
+  public String getErrorMessage() {
+    return errorMessage;
+  }
 
-    /**
-     * Sets the value of the errorMessage property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setErrorMessage(String value) {
-        this.errorMessage = value;
-    }
+  /**
+   * Sets the value of the errorMessage property.
+   * 
+   * @param value allowed object is {@link String }
+   * 
+   */
+  public void setErrorMessage(String value) {
+    this.errorMessage = value;
+  }
 
-    /**
-     * Gets the value of the timeFrom property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getTimeFrom() {
-        return timeFrom;
-    }
+  /**
+   * Gets the value of the timeFrom property.
+   * 
+   * @return possible object is {@link XMLGregorianCalendar }
+   * 
+   */
+  public XMLGregorianCalendar getTimeFrom() {
+    return timeFrom;
+  }
 
-    /**
-     * Sets the value of the timeFrom property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setTimeFrom(XMLGregorianCalendar value) {
-        this.timeFrom = value;
-    }
+  /**
+   * Sets the value of the timeFrom property.
+   * 
+   * @param value allowed object is {@link XMLGregorianCalendar }
+   * 
+   */
+  public void setTimeFrom(XMLGregorianCalendar value) {
+    this.timeFrom = value;
+  }
 
-    /**
-     * Gets the value of the timeTo property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getTimeTo() {
-        return timeTo;
-    }
+  /**
+   * Gets the value of the timeTo property.
+   * 
+   * @return possible object is {@link XMLGregorianCalendar }
+   * 
+   */
+  public XMLGregorianCalendar getTimeTo() {
+    return timeTo;
+  }
 
-    /**
-     * Sets the value of the timeTo property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setTimeTo(XMLGregorianCalendar value) {
-        this.timeTo = value;
-    }
+  /**
+   * Sets the value of the timeTo property.
+   * 
+   * @param value allowed object is {@link XMLGregorianCalendar }
+   * 
+   */
+  public void setTimeTo(XMLGregorianCalendar value) {
+    this.timeTo = value;
+  }
 
-    /**
-     * Gets the value of the tripSummary property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TripSumRepData }
-     *     
-     */
-    public TripSumRepData getTripSummary() {
-        return tripSummary;
-    }
+  /**
+   * Gets the value of the tripSummary property.
+   * 
+   * @return possible object is {@link TripSumRepData }
+   * 
+   */
+  public TripSumRepData getTripSummary() {
+    return tripSummary;
+  }
 
-    /**
-     * Sets the value of the tripSummary property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TripSumRepData }
-     *     
-     */
-    public void setTripSummary(TripSumRepData value) {
-        this.tripSummary = value;
-    }
+  /**
+   * Sets the value of the tripSummary property.
+   * 
+   * @param value allowed object is {@link TripSumRepData }
+   * 
+   */
+  public void setTripSummary(TripSumRepData value) {
+    this.tripSummary = value;
+  }
 
-    /**
-     * Gets the value of the tripSummaryByCountries property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the tripSummaryByCountries property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
+  /**
+   * Gets the value of the tripSummaryByCountries property.
+   * 
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+   * modification you make to the returned list will be present inside the JAXB object. This is why
+   * there is not a <CODE>set</CODE> method for the tripSummaryByCountries property.
+   * 
+   * <p>
+   * For example, to add a new item, do as follows:
+   * 
+   * <pre>
      *    getTripSummaryByCountries().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link TripSumRepData }
-     * 
-     * 
-     */
-    public List<TripSumRepData> getTripSummaryByCountries() {
-        if (tripSummaryByCountries == null) {
-            tripSummaryByCountries = new ArrayList<TripSumRepData>();
-        }
-        return this.tripSummaryByCountries;
+   * 
+   * 
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link TripSumRepData }
+   * 
+   * 
+   */
+  public List<TripSumRepData> getTripSummaryByCountries() {
+    if (tripSummaryByCountries == null) {
+      tripSummaryByCountries = new ArrayList<>();
     }
+    return this.tripSummaryByCountries;
+  }
 
-    /**
-     * Gets the value of the tripSummaryByCountriesGrouped property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the tripSummaryByCountriesGrouped property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
+  /**
+   * Gets the value of the tripSummaryByCountriesGrouped property.
+   * 
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+   * modification you make to the returned list will be present inside the JAXB object. This is why
+   * there is not a <CODE>set</CODE> method for the tripSummaryByCountriesGrouped property.
+   * 
+   * <p>
+   * For example, to add a new item, do as follows:
+   * 
+   * <pre>
      *    getTripSummaryByCountriesGrouped().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link TripSumRepData }
-     * 
-     * 
-     */
-    public List<TripSumRepData> getTripSummaryByCountriesGrouped() {
-        if (tripSummaryByCountriesGrouped == null) {
-            tripSummaryByCountriesGrouped = new ArrayList<TripSumRepData>();
-        }
-        return this.tripSummaryByCountriesGrouped;
+   * 
+   * 
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link TripSumRepData }
+   * 
+   * 
+   */
+  public List<TripSumRepData> getTripSummaryByCountriesGrouped() {
+    if (tripSummaryByCountriesGrouped == null) {
+      tripSummaryByCountriesGrouped = new ArrayList<>();
     }
+    return this.tripSummaryByCountriesGrouped;
+  }
 
-    /**
-     * Gets the value of the tripSummaryByDays property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the tripSummaryByDays property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
+  /**
+   * Gets the value of the tripSummaryByDays property.
+   * 
+   * <p>
+   * This accessor method returns a reference to the live list, not a snapshot. Therefore any
+   * modification you make to the returned list will be present inside the JAXB object. This is why
+   * there is not a <CODE>set</CODE> method for the tripSummaryByDays property.
+   * 
+   * <p>
+   * For example, to add a new item, do as follows:
+   * 
+   * <pre>
      *    getTripSummaryByDays().add(newItem);
      * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link TripSumRepData }
-     * 
-     * 
-     */
-    public List<TripSumRepData> getTripSummaryByDays() {
-        if (tripSummaryByDays == null) {
-            tripSummaryByDays = new ArrayList<TripSumRepData>();
-        }
-        return this.tripSummaryByDays;
+   * 
+   * 
+   * <p>
+   * Objects of the following type(s) are allowed in the list {@link TripSumRepData }
+   * 
+   * 
+   */
+  public List<TripSumRepData> getTripSummaryByDays() {
+    if (tripSummaryByDays == null) {
+      tripSummaryByDays = new ArrayList<>();
     }
+    return this.tripSummaryByDays;
+  }
 
-    /**
-     * Gets the value of the vehicleRegistrationNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getVehicleRegistrationNumber() {
-        return vehicleRegistrationNumber;
-    }
+  /**
+   * Gets the value of the vehicleRegistrationNumber property.
+   * 
+   * @return possible object is {@link String }
+   * 
+   */
+  public String getVehicleRegistrationNumber() {
+    return vehicleRegistrationNumber;
+  }
 
-    /**
-     * Sets the value of the vehicleRegistrationNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setVehicleRegistrationNumber(String value) {
-        this.vehicleRegistrationNumber = value;
-    }
+  /**
+   * Sets the value of the vehicleRegistrationNumber property.
+   * 
+   * @param value allowed object is {@link String }
+   * 
+   */
+  public void setVehicleRegistrationNumber(String value) {
+    this.vehicleRegistrationNumber = value;
+  }
 
 }

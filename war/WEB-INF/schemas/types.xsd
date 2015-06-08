@@ -157,6 +157,7 @@
       <xs:enumeration value="icon" />
       <xs:enumeration value="edit" />
       <xs:enumeration value="delete" />
+      <xs:enumeration value="createdoc" />
     </xs:restriction>
   </xs:simpleType>
 
@@ -251,6 +252,7 @@
       <xs:enumeration value="CalExecutorGroups" />
       <xs:enumeration value="CargoCreditSales" />
       <xs:enumeration value="CargoExpenses" />
+      <xs:enumeration value="CargoGroups" />
       <xs:enumeration value="CargoHandling" />
       <xs:enumeration value="CargoIncomes" />
       <xs:enumeration value="CargoInvoices" />
@@ -261,6 +263,7 @@
       <xs:enumeration value="CargoRequests" />
       <xs:enumeration value="CargoSales" />
       <xs:enumeration value="CargoTrips" />
+      <xs:enumeration value="CargoTypes" />
       <xs:enumeration value="CategoryTree" />
       <xs:enumeration value="ChildAssessments" />
       <xs:enumeration value="Cities" />
@@ -315,6 +318,7 @@
       <xs:enumeration value="DocumentTree" />
       <xs:enumeration value="DriverAbsence" />
       <xs:enumeration value="DriverAdvances" />
+      <xs:enumeration value="DriverDailyCosts" />
       <xs:enumeration value="Drivers" />
       <xs:enumeration value="DriverTrips" />
       <xs:enumeration value="DurationTypes" />
@@ -371,6 +375,7 @@
       <xs:enumeration value="PrintContract" />
       <xs:enumeration value="PrintOrder" />
       <xs:enumeration value="Projects" />
+      <xs:enumeration value="ProjectContacts" />
       <xs:enumeration value="ProjectDates" />
       <xs:enumeration value="ProjectEvents" />
       <xs:enumeration value="ProjectFiles" />

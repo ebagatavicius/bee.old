@@ -22,6 +22,7 @@
     <Relation name="Forwarder" relation="Companies" label="=carrier" />
     <String name="ForwarderVehicle" precision="50" label="=trCarrierVehicle" />
     <String name="ForwarderDriver" precision="50" label="=trCarrierDriver" />
+    <String name="Route" precision="200" label="=route" />
     <Text name="Notes" label="=notes" />
   </Fields>
 </Table>

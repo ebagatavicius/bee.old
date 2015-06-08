@@ -114,7 +114,7 @@
           <InputArea source="Description" style="width: 424px; height: 60px;" readOnly="true" />
         </FlowPanel>
   
-        <FileGroup name="Files" data="TaskFiles"/>
+        <FileGroup name="Files" data="TaskFiles" visibleColumns="icon name size createdoc"/>
       
         &separator;
         <FlowPanel style="&section;" data="TaskUsers">
@@ -150,19 +150,19 @@
            <FlowPanel style="&section;" data="Relations" for="Company" module="Classifiers.Contacts">
                 <Label text="=companies" style="&top1;" />
               <MultiSelector viewName="Companies" property="Companies" renderColumns="Name TypeName"
-                      newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+                      newRowEnabled="true" style="&inp2x;" disablable="true" summarize="true"/>
             </FlowPanel>
   
           <FlowPanel style="&section;" data="Relations" for="Person" module="Classifiers.Contacts">
             <Label text="=persons" style="&top1;" />
             <MultiSelector viewName="Persons" property="Persons" renderColumns="FirstName LastName"
-              newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+              newRowEnabled="true" style="&inp2x;" disablable="true" summarize="true"/>
           </FlowPanel>
   
           <FlowPanel style="&section;" data="Relations" for="Document" module="Documents">
             <Label text="=documents" style="&top1;" />
             <MultiSelector viewName="Documents" property="Documents" renderColumns="Name Number RegistrationNumber DocumentDate"
-              newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
+              newRowEnabled="true" style="&inp2x;" disablable="true" summarize="true"/>
           </FlowPanel>
           
           <FlowPanel style="&section;" data="Relations" for="Appointment" module="Calendar">

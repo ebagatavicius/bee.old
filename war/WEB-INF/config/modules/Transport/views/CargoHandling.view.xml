@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="CargoHandling"
-  source="CargoHandling"
-  >
+      name="CargoHandling"
+      source="CargoHandling"
+    >
   <Columns>
     <SimpleColumn name="Cargo" />
-    <SimpleColumn name="Notes" />
     <SimpleColumn name="Forwarder" />
+
+    <SimpleColumn name="Notes" />
+    <SimpleColumn name="EmptyKilometers" />
+    <SimpleColumn name="LoadedKilometers" />
+    <SimpleColumn name="Weight" />
 
     <SimpleJoin name="LoadingPlace" joinType="LEFT">
       <SimpleColumn name="Date" alias="LoadingDate" label="=trLoadingDate" />

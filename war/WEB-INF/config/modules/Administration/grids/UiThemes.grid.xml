@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-
+        xmlns:ui="http://www.butent.com/ui"
+  
   name="UiThemes" viewName="UiThemes" caption="=uiThemes"
   enableCopy="-Name, Description"
   >
@@ -10,46 +11,107 @@
     <DataColumn name="Name" minWidth="120" visible="true" />
     <DataColumn name="Description" visible="false" />
 
-    <DataColumn name="WorkspaceMarginRight" carry="true" />
+    <DataColumn name="WorkspaceMarginRight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="ViewHeaderHeight" carry="true" />
-    <DataColumn name="ChildViewHeaderHeight" carry="true" />
+    <DataColumn name="ViewHeaderHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="ChildViewHeaderHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="ViewActionCreateNew" carry="true" />
-    <DataColumn name="GridActionCreateNew" carry="true" />
-    <DataColumn name="ChildActionCreateNew" carry="true" />
+    <DataColumn name="ViewActionCreateNew">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="GridActionCreateNew">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="ChildActionCreateNew">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="GridHeaderRowHeight" carry="true" />
-    <DataColumn name="GridBodyRowHeight" carry="true" />
-    <DataColumn name="GridFooterRowHeight" carry="true" />
+    <DataColumn name="GridHeaderRowHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="GridBodyRowHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="GridFooterRowHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="GridMarginLeft" carry="true" />
+    <DataColumn name="GridMarginLeft">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="GridHeaderFont" carry="true" />
-    <DataColumn name="GridBodyFont" carry="true" />
-    <DataColumn name="GridFooterFont" carry="true" />
+    <DataColumn name="GridHeaderFont">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="GridBodyFont">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="GridFooterFont">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="ChildGridHeaderRowHeight" carry="true" />
-    <DataColumn name="ChildGridBodyRowHeight" carry="true" />
-    <DataColumn name="ChildGridFooterRowHeight" carry="true" />
+    <DataColumn name="ChildGridHeaderRowHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="ChildGridBodyRowHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="ChildGridFooterRowHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="ChildGridMarginLeft" carry="true" />
+    <DataColumn name="ChildGridMarginLeft">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="ChildGridHeaderFont" carry="true" />
-    <DataColumn name="ChildGridBodyFont" carry="true" />
-    <DataColumn name="ChildGridFooterFont" carry="true" />
+    <DataColumn name="ChildGridHeaderFont">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="ChildGridBodyFont">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="ChildGridFooterFont">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="ApplianceHeaderHeight" carry="true" />
-    <DataColumn name="SubMenuLineHeight" carry="true" />
-    <DataColumn name="WorkspaceTabHeight" carry="true" />
-    <DataColumn name="TabbedPagesTabHeight" carry="true" />
-    <DataColumn name="DisclosureClosedHeight" carry="true" />
+    <DataColumn name="ApplianceHeaderHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="SubMenuLineHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="WorkspaceTabHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="TabbedPagesTabHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="DisclosureClosedHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="InputLineHeight" carry="true" />
-    <DataColumn name="InputPadding" carry="true" />
-    <DataColumn name="ListSize1Padding" carry="true" />
-    <DataColumn name="FormCellPaddingTop" carry="true" />
+    <DataColumn name="InputLineHeight">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="InputPadding">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="ListSize1Padding">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
+    <DataColumn name="FormCellPaddingTop">
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
 
-    <DataColumn name="Css" minWidth="200" carry="true" />
+    <DataColumn name="Css" minWidth="200" carry="true">
+      <editor type="area" minWidth="200" visibleLines="5" />
+      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
+    </DataColumn>
   </g:columns>
 </g:Grid>

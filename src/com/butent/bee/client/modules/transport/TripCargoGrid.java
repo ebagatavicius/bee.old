@@ -34,9 +34,7 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.presenter.GridPresenter;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.HeaderView;
-import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.edit.EditStopEvent;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.form.FormView;
@@ -131,7 +129,6 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
       });
       container.add(selector);
       dialog.setWidget(container);
-      dialog.showAt(grd.getAbsoluteLeft(), grd.getAbsoluteTop());
     }
 
     private void addCargo(final long cargoId) {
@@ -212,7 +209,7 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
 
       for (String fld : new String[] {COL_DESCRIPTION, "Loading", "Unloading",
           "Weight", "Volume", "Quantity", "Partial", "Outsized", "Dangerous", "Number",
-          "ShippingTermName", "Cmr", "LDM", "Length", "Width", "Height", "Palettes",
+          "ShippingTermName", "CmrNumber", "LDM", "Length", "Width", "Height", "Palettes",
           "ExchangeOfPalettes", COL_CARGO_DIRECTIONS}) {
 
         String lbl;
@@ -225,7 +222,6 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
           lbl = Localized.maybeTranslate("=" + fld.toLowerCase());
         }
         switch (fld) {
-          case "Weight":
           case "Volume":
           case "Quantity":
             xpr = lbl + ": {" + fld + "}{" + fld + "UnitName}";
@@ -453,18 +449,17 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
   @Override
   public boolean beforeAddRow(GridPresenter presenter, boolean copy) {
     Action action = new Action(presenter.getGridView());
-    UiHelper.focus(action.dialog.getContent());
+    action.dialog.focusOnOpen(action.dialog.getContent());
+
+    CellGrid grd = presenter.getGridView().getGrid();
+    action.dialog.showAt(grd.getAbsoluteLeft(), grd.getAbsoluteTop());
+
     return false;
   }
 
   @Override
   public GridInterceptor getInstance() {
     return new TripCargoGrid(tripForm);
-  }
-
-  @Override
-  public String getRowCaption(IsRow row, boolean edit) {
-    return Localized.getConstants().trCargoActualPlaces();
   }
 
   @Override
@@ -522,15 +517,6 @@ class TripCargoGrid extends AbstractGridInterceptor implements ClickHandler {
     } else {
       dialog.setCargoInfo(Data.createRowSet(TBL_ORDER_CARGO), null);
     }
-  }
-
-  @Override
-  public void onEditStart(EditStartEvent event) {
-    if (!BeeUtils.inListSame(event.getColumnId(), "Loading", "Unloading", "Ordinal",
-        COL_CARGO_PERCENT, COL_ORDER_NO, COL_DESCRIPTION)) {
-      event.consume();
-    }
-    super.onEditStart(event);
   }
 
   @Override

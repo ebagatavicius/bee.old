@@ -28,7 +28,7 @@
       <renderer type="flag" />
     </CalcColumn>
     <DataColumn name="UnloadingDate" />
-    <DataColumn name="Cmr" />
+    <DataColumn name="Cmr" caption="CMR" renderColumns="CmrName CmrNumber" />
 
     <DataColumn name="ServiceName" />
     <DataColumn name="Amount" format="0.00" />

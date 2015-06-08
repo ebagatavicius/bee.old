@@ -239,6 +239,14 @@ public final class Theme {
           Selectors.classSelector(HtmlTable.STYLE_NAME),
           Tags.TD);
       rules.add(StyleUtils.buildRule(ftc, StyleUtils.buildStyle(CssProperties.PADDING_TOP, px)));
+
+      String fctc = Selectors.descendantCombinator(
+          Selectors.classSelector(StyleUtils.NAME_FORM),
+          Tags.TD,
+          Selectors.classSelector(HtmlTable.STYLE_NAME),
+          Tags.TD);
+      rules.add(StyleUtils.buildRule(fctc,
+          StyleUtils.buildStyle(CssProperties.PADDING_TOP, StyleUtils.VALUE_INITIAL)));
     }
 
     return rules;

@@ -21,6 +21,7 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.Binder;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.CloseEvent;
+import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.ui.AutocompleteProvider;
@@ -494,7 +495,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   protected void onDialogCancel() {
   }
 
-  protected void openDialog(Element target, Widget widget,
+  protected void openDialog(Element target, Widget widget, OpenEvent.Handler onOpen,
       final Scheduler.ScheduledCommand onChange) {
 
     Popup popup = new Popup(OutsideClick.CLOSE, getDialogStyle());
@@ -516,6 +517,9 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
     setDialog(popup);
     setFilterChanged(false);
 
+    if (onOpen != null) {
+      popup.addOpenHandler(onOpen);
+    }
     popup.showOnTop(target);
   }
 

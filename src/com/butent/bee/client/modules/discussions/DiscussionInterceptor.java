@@ -42,7 +42,6 @@ import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.event.logical.SelectorEvent.Handler;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
-import com.butent.bee.client.images.Images;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.render.PhotoRenderer;
@@ -50,7 +49,6 @@ import com.butent.bee.client.richtext.RichTextEditor;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
-import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.edit.Editor;
@@ -226,15 +224,9 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
       return collector.getId();
     }
 
-    private void dispaly() {
+    private void display() {
+      focusOnOpen(getContent());
       center();
-      UiHelper.focus(getContent());
-    }
-
-    @SuppressWarnings("unused")
-    private void display(String focusId) {
-      center();
-      UiHelper.focus(getChild(focusId));
     }
 
     private Widget getChild(String id) {
@@ -911,27 +903,21 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
 
     container.add(colPublisher);
 
-    Flow colComment = new Flow();
-    colComment.addStyleName(STYLE_COMMENT_COL + COL_COMMENT_TEXT);
-
     String text = deleted ? commentRow.getString(DataUtils.getColumnIndex(COL_REASON, columns))
         : commentRow.getString(DataUtils.getColumnIndex(COL_COMMENT_TEXT, columns));
 
     if (!BeeUtils.isEmpty(text)) {
-      colComment.add(createCommentCell(COL_COMMENT, text));
+      colPublisher.add(createCommentCell(COL_COMMENT, text));
     }
 
     if (!files.isEmpty()) {
-      renderFiles(files, colComment);
+      renderFiles(files, colPublisher);
     }
 
     Flow colMarks = new Flow();
     colMarks.addStyleName(STYLE_COMMENT_COL + COL_MARK);
     createMarkPanel(colMarks, getFormView(), formRow, commentRow.getId());
-
-    colComment.add(colMarks);
-
-    container.add(colComment);
+    container.add(colMarks);
 
     Flow colActions = new Flow();
     colActions.addStyleName(STYLE_COMMENT_COL + STYLE_ACTIONS);
@@ -1272,7 +1258,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
       }
     });
 
-    dialog.dispaly();
+    dialog.display();
   }
 
   private void doCommentDelete(final long commentId) {
@@ -1493,14 +1479,14 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
 
     boolean hasImageRes = false;
     if (!BeeUtils.isEmpty(markRes)) {
-      if (Images.get(markRes) != null) {
+      if (FontAwesome.parse(markRes) != null) {
         hasImageRes = true;
       }
     }
 
     Widget imgMark =
-        !hasImageRes ? new Button(Localized.maybeTranslate(markName)) : new Image(
-            Images.get(markRes));
+        !hasImageRes ? new FaLabel(FontAwesome.THUMBS_O_UP) : new FaLabel(FontAwesome
+            .parse(markRes));
 
     imgMark.addStyleName(DISCUSSIONS_STYLE_PREFIX + STYLE_ACTIONS);
 

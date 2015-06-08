@@ -45,7 +45,6 @@ import com.butent.bee.shared.css.values.FontWeight;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.IsRow;
-import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.imports.ImportType;
 import com.butent.bee.shared.time.JustDate;
@@ -92,8 +91,6 @@ public class ImportsForm extends AbstractFormInterceptor implements ClickHandler
 
       for (final String viewName : data.keySet()) {
         Pair<String, String> pair = Pair.restore(data.get(viewName));
-
-        DataInfo info = Data.getDataInfo(viewName, false);
 
         final String cap = Data.getDataInfo(viewName, false) != null
             ? Data.getViewCaption(viewName) : viewName;

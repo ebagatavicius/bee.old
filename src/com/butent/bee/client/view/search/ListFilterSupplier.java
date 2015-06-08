@@ -162,7 +162,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
 
         } else {
           clearSelection();
-          openDialog(target, createWidget(), onChange);
+          openDialog(target, createWidget(), null, onChange);
         }
       }
     });

@@ -375,16 +375,8 @@ public class MessageBoxes {
 
     UiHelper.setWidget(popup, table, initializer, DialogConstants.WIDGET_PANEL);
 
-    popup.setAnimationEnabled(true);
-
-    if (target == null) {
-      popup.center();
-    } else {
-      popup.showRelativeTo(target);
-    }
-
     if (defaultValue >= 0 && defaultValue < group.getWidgetCount()) {
-      UiHelper.focus(group.getWidget(defaultValue));
+      popup.focusOnOpen(group.getWidget(defaultValue));
 
       if (group.getWidgetCount() > 1) {
         for (Widget widget : group) {
@@ -400,6 +392,14 @@ public class MessageBoxes {
           });
         }
       }
+    }
+
+    popup.setAnimationEnabled(true);
+
+    if (target == null) {
+      popup.center();
+    } else {
+      popup.showRelativeTo(target);
     }
 
     if (timer != null) {

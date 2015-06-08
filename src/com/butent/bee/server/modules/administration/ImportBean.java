@@ -55,7 +55,6 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
-import com.butent.bee.shared.utils.ExtendedProperty;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
@@ -700,7 +699,7 @@ public class ImportBean {
     return null;
   }
 
-  private SqlCreate createStructure(ImportObject io) {
+  private static SqlCreate createStructure(ImportObject io) {
     SqlCreate create = new SqlCreate(SqlUtils.temporaryName())
         .addInteger(COL_REC_NO, true);
 
@@ -801,7 +800,7 @@ public class ImportBean {
       qs.sqlDropTemp(tmp);
       return ResponseObject.error(error);
     }
-    List<ExtendedProperty> info = new ArrayList<>();
+
     Map<String, Pair<Integer, BeeRowSet>> status = new LinkedHashMap<>();
 
     for (ImportProperty prop : io.getProperties()) {
@@ -837,7 +836,7 @@ public class ImportBean {
 
     for (String tbl : new String[] {TBL_TRIP_COSTS, TBL_TRIP_FUEL_COSTS}) {
       HasConditions wh = SqlUtils.and(BeeUtils.same(tbl, TBL_TRIP_FUEL_COSTS)
-              ? SqlUtils.notNull(tmp, COL_FUEL) : SqlUtils.isNull(tmp, COL_FUEL),
+          ? SqlUtils.notNull(tmp, COL_FUEL) : SqlUtils.isNull(tmp, COL_FUEL),
           SqlUtils.notNull(tbl, COL_COSTS_EXTERNAL_ID));
 
       qs.updateData(new SqlUpdate(tmp)
@@ -1123,7 +1122,7 @@ public class ImportBean {
 
     qs.sqlDropTemp(tmp);
 
-    if (BeeUtils.isEmpty(error)) {
+    if (!BeeUtils.isEmpty(error)) {
       return ResponseObject.error(error);
     }
     return ResponseObject.response(status);
