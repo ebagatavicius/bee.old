@@ -6,6 +6,6 @@
   >
   <Fields>
     <Relation name="Project" notNull="true" relation="Projects" cascade="DELETE" label="=project"/>
-    <Relation name="CompanyPerson" notNull="true" relation="CompanyPersons" cascade="DELETE" label="=user" />
+    <Relation name="CompanyPerson" notNull="true" relation="CompanyPersons" cascade="DELETE" label="=companyPerson" />
   </Fields>
 </Table>
