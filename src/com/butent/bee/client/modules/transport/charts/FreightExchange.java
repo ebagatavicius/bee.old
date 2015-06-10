@@ -287,6 +287,8 @@ final class FreightExchange extends ChartBase {
     }
 
     ChartData customerData = new ChartData(ChartData.Type.CUSTOMER);
+    ChartData managerData = new ChartData(ChartData.Type.MANAGER);
+
     ChartData orderData = new ChartData(ChartData.Type.ORDER);
     ChartData statusData = new ChartData(ChartData.Type.ORDER_STATUS);
 
@@ -302,6 +304,8 @@ final class FreightExchange extends ChartBase {
       }
 
       customerData.add(item.getCustomerName(), item.getCustomerId());
+      managerData.addUser(item.getManager());
+
       orderData.add(item.getOrderName(), item.getOrderId());
       statusData.addNotNull(item.getOrderStatus());
 
@@ -337,6 +341,8 @@ final class FreightExchange extends ChartBase {
     }
 
     data.add(customerData);
+    data.add(managerData);
+
     data.add(orderData);
     data.add(statusData);
 

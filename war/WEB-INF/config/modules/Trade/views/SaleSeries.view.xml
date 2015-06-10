@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="SaleSeries" source="SaleSeries"
+  caption="=trdSaleSeries" newRowCaption="=trdNewSeries"
+  editForm="SaleSeries" newRowForm="SaleSeries"
+  >
+  <Columns>
+    <SimpleColumn name="SeriesName" />
+    <SimpleColumn name="Notes" />
+  </Columns>
+  
+  <Order>
+    <OrderBy column="SeriesName" />
+  </Order>
+</View>
+ 

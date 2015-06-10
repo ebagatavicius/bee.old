@@ -124,7 +124,8 @@ public enum Module implements HasLocalizedCaption {
     }
   },
 
-  TRANSPORT(SubModule.SELFSERVICE, SubModule.LOGISTICS, SubModule.ADMINISTRATION) {
+  TRANSPORT(SubModule.SELFSERVICE, SubModule.LOGISTICS,
+      SubModule.ADMINISTRATION, SubModule.LOGISTICS_SELFSERVICE) {
     @Override
     public String getCaption(LocalizableConstants constants) {
       return constants.transport();

@@ -184,7 +184,7 @@ final class TradeActHelper {
         return plural ? Localized.getConstants().trdStatuses() : Localized.getConstants().status();
 
       case COL_TA_SERIES:
-        return plural ? Localized.getConstants().trdSeriesPlural()
+        return plural ? Localized.getConstants().taSeriesPlural()
             : Localized.getConstants().trdSeries();
 
       case COL_TA_MANAGER:

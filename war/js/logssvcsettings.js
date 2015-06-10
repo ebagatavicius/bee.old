@@ -1,0 +1,33 @@
+var BeeSettings = {
+  "appName": "B-NOVO logistics self-service",
+  "logoImage": "images/logo_white.png",
+  "showUserPhoto": true,
+  "onStartup": {"content": "", "force": "*"},
+  "theme" : {
+    "WorkspaceMarginRight": 25,
+    "ViewHeaderHeight": 52,
+    "ChildViewHeaderHeight": 52,
+    "ViewActionCreateNew": true,
+    "GridActionCreateNew": true,
+    "ChildActionCreateNew": true,
+    "GridHeaderRowHeight": 34,
+    "GridBodyRowHeight": 43,
+    "GridMarginLeft": 10,
+    "GridBodyFont": "14px",
+    "GridFooterFont": "bold 14px",
+    "ChildGridHeaderRowHeight": 34,
+    "ChildGridBodyRowHeight": 43,
+    "ChildGridMarginLeft": 10,
+    "ChildGridBodyFont": "14px",
+    "ChildGridFooterFont": "bold 14px",
+    "ApplianceHeaderHeight": 35,
+    "SubMenuLineHeight": 30,
+    "WorkspaceTabHeight": 36,
+    "TabbedPagesTabHeight": 60,
+    "DisclosureClosedHeight": 55,
+    "InputLineHeight": 25,
+    "InputPadding": "1px 10px",
+    "ListSize1Padding": "5px 8px",
+    "FormCellPaddingTop": 20
+  }
+};

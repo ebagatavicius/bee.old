@@ -36,7 +36,7 @@
 	      <Table style="border-spacing: 0px;">
             <row>              
               <Label text="=trdInvoicePrefix" style="&lbl2; width: 30px; "/>
-              <InputText source="InvoicePrefix" upperCase="true" style="width:11em; margin-right: 4px;"/>
+              <DataSelector source="SaleSeries" upperCase="true" style="width:11em; margin-right: 4px;"/>
               <InlineLabel text="=trdInvoiceNo" style="&lbl2; margin-right: 5px;" />
               <InputText source="InvoiceNo" />
 		    </row>

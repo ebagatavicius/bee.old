@@ -4,7 +4,8 @@
 name="TradeClassifiers" label="=classifiers" parent="Trade" order="90" separator="true" 
 >
   <Item name="TradeOperations" label="=trdOperations" service="grid" parameters="TradeOperations" />
-  <Item name="TradeSeries" label="=trdSeriesPlural" service="grid" parameters="TradeSeries" />
+  <Item name="TradeSeries" label="=taSeriesPlural" service="grid" parameters="TradeSeries" />
+  <Item name="SaleSeries" label="=trdSaleSeries" service="grid" parameters="SaleSeries" />
   <Item name="TradeStatuses" label="=trdStatuses" service="grid" parameters="TradeStatuses" />
   <Item name="TradeNotes" label="=trdNoteTemplates" service="grid" parameters="TradeNotes" />
 </Entry>

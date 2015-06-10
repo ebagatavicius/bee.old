@@ -250,6 +250,8 @@ public interface LocalizableTransportConstants {
 
   String trLogistics();
 
+  String trLogisticsSelfService();
+
   String trNewAssessment();
 
   String trNewExpedition();

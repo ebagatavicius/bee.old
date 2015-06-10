@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
+
+        name="EventHistory" viewName="EventHistory" caption="=eventHistory" readOnly="true"
+        disabledActions="audit">
+  <g:columns>
+    <DataColumn name="Event" visible="true" />
+
+    <DataColumn name="Started" visible="true" format="yyyy-MM-dd HH:mm:ss" />
+    <DataColumn name="Ended" visible="false" format="yyyy-MM-dd HH:mm:ss" />
+    <CalcColumn name="Duration" visible="true" type="string"
+                autoFit="true" caption="=duration">
+      <render>
+        <ui:expression>
+          row.Ended ? ((row.Ended - row.Started) / 1000) + 's' : ''
+        </ui:expression>
+      </render>
+    </CalcColumn>
+    <DataColumn name="Result" />
+  </g:columns>
+</g:Grid>

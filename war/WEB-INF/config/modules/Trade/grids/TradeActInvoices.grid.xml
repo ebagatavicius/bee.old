@@ -18,7 +18,7 @@
       editEnabled="true" editPopup="true" editViewName="Sales" editSource="Sale" readOnly="true" />
     <DataColumn name="Date" />
 
-    <DataColumn name="InvoicePrefix" />
+    <RelColumn name="SaleSeries" />
     <DataColumn name="InvoiceNo" />
 
     <DataColumn name="CustomerName" label="=trdCustomer" />

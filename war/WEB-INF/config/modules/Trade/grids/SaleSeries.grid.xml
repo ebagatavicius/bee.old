@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="SaleSeries" viewName="SaleSeries" caption="=trdSaleSeries"
+  >
+  <g:columns>
+    <DataColumn name="SeriesName" minWidth="100" visible="true" />
+
+    <DataColumn name="Notes" whiteSpace="normal" flexGrow="1" />
+  </g:columns>
+</g:Grid>

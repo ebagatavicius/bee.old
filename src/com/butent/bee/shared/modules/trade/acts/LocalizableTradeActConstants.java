@@ -40,6 +40,8 @@ public interface LocalizableTradeActConstants {
 
   String taSaveSelectedItems();
 
+  String taSeriesPlural();
+
   String taTariff();
 
   String taTimeUnit();
@@ -65,4 +67,5 @@ public interface LocalizableTradeActConstants {
   String tradeActsAll();
 
   String tradeActSaveAsTemplate();
+
 }

@@ -142,7 +142,7 @@ class OrderCargoForm extends AbstractFormInterceptor implements SelectorEvent.Ha
 
         @Override
         public ColumnDescription beforeCreateColumn(GridView gridView, ColumnDescription descr) {
-          if (!TransportHandler.bindExpensesToIncomes
+          if (!TransportHandler.bindExpensesToIncomes()
               && Objects.equals(descr.getId(), COL_CARGO_INCOME)) {
             return null;
           }

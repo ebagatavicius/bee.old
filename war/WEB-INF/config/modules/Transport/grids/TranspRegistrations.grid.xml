@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
   name="TranspRegistrations" viewName="TranspRegistrations" caption="=trRegistrations"
-  autoFit="true"
+  autoFit="true" filter="!(Interface) or Interface = 4"
   >
   <g:columns>
     <DataColumn name="Date" visible="true" />

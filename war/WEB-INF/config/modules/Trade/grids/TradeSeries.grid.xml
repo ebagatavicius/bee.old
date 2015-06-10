@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
-  name="TradeSeries" viewName="TradeSeries" caption="=trdSeriesPlural"
+  name="TradeSeries" viewName="TradeSeries" caption="=taSeriesPlural"
   >
   <g:columns>
     <DataColumn name="SeriesName" minWidth="100" visible="true" />

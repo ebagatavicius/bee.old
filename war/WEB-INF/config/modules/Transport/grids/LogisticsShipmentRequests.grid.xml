@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+  name="LogisticsShipmentRequests" viewName="ShipmentRequests"
+  caption="=trRequestsUnregistered" filter="Interface = 6 OR !(Interface)"
+  >
+  <g:columns>
+    <DataColumn name="Date" visible="true" />
+    <DataColumn name="Status" visible="true" />
+    <RelColumn name="Order" editEnabled="true" />
+
+    <DataColumn name="CustomerName" visible="true" />
+    <DataColumn name="CustomerCode" visible="false" />
+    <DataColumn name="CustomerVatCode" visible="false" />
+
+    <DataColumn name="CustomerAddress" visible="false" />
+    <DataColumn name="CustomerPhone" />
+    <DataColumn name="CustomerEmail" />
+
+    <DataColumn name="CustomerContact" />
+    <DataColumn name="CustomerContactPosition" visible="false" />
+
+    <DataColumn name="CustomerExchangeCode" visible="false" />
+    
+    <DataColumn name="LoadingDate" />
+    <DataColumn name="LoadingCompany" visible="false" />
+    <DataColumn name="LoadingContact" visible="false" />
+
+    <DataColumn name="LoadingCity" />
+
+    <DataColumn name="LoadingAddress" visible="false" />
+    <DataColumn name="LoadingEmail" visible="false" />
+    <DataColumn name="LoadingPhone" visible="false" />
+    <DataColumn name="LoadingFax" visible="false" />
+    <DataColumn name="LoadingNumber" visible="false" />
+
+    <DataColumn name="UnloadingDate" />
+    <DataColumn name="UnloadingCompany" visible="false" />
+    <DataColumn name="UnloadingContact" visible="false" />
+
+    <DataColumn name="UnloadingCity" />
+
+    <DataColumn name="UnloadingAddress" visible="false" />
+    <DataColumn name="UnloadingEmail" visible="false" />
+    <DataColumn name="UnloadingPhone" visible="false" />
+    <DataColumn name="UnloadingFax" visible="false" />
+    <DataColumn name="UnloadingNumber" visible="false" />
+    
+    <RelColumn name="Expedition" visible="false" />
+    <RelColumn name="ShippingTerm" visible="false" />
+
+    <DataColumn name="DeliveryDate" visible="false" />
+    <DataColumn name="DeliveryTime" visible="false" />
+    <DataColumn name="TermsOfDelivery" visible="false" />
+
+    <DataColumn name="CustomsBrokerage" visible="false" />
+    <DataColumn name="FreightInsurance" visible="false" />
+
+    <DataColumn name="CargoDescription" whiteSpace="nowrap" />
+    <DataColumn name="Quantity" visible="false" />
+
+    <DataColumn name="Weight" visible="false" />
+    <DataColumn name="Volume" visible="false" />
+    <DataColumn name="LDM" visible="false" />
+    <DataColumn name="Length" visible="false" />
+    <DataColumn name="Width" visible="false" />
+    <DataColumn name="Height" visible="false" />
+    <DataColumn name="Palettes" visible="false" />
+
+    <DataColumn name="Value" />
+    <RelColumn name="ValueCurrency" />
+    
+    <RelColumn name="Manager" />
+
+    <DataColumn name="Notes" visible="false" />
+    <DataColumn name="Host" visible="false" />
+    <DataColumn name="Agent" visible="false" />
+  </g:columns>
+</g:Grid>

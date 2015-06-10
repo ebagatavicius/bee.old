@@ -12,19 +12,7 @@
     <IdColumn name="ID" caption="=trdInvoiceId" />
     <DataColumn name="Date" />
     <DataColumn name="Number" />
-    <DataColumn name="InvoiceNo" searchBy="InvoicePrefix InvoiceNo">
-      <render>
-        <ui:function>
-          if (!row.InvoicePrefix) {
-            return row.InvoiceNo;
-          } else if(!row.InvoiceNo) {
-            return row.InvoicePrefix;
-          } else {
-            return row.InvoicePrefix + " " + row.InvoiceNo;
-          }
-        </ui:function>
-      </render>
-    </DataColumn>
+    <DataColumn name="InvoiceNo" renderColumns="SeriesName InvoiceNo" searchBy="SeriesName InvoiceNo" />
     <DataColumn name="CustomerName" caption="=trdCustomer" />
     <DataColumn name="PayerName" caption="=trdPayer" />
     <DataColumn name="Amount" />

@@ -84,7 +84,7 @@ public class AssessmentForwarderForm extends PrintFormInterceptor {
 
   @Override
   public boolean beforeCreateWidget(String name, Element description) {
-    if (!TransportHandler.bindExpensesToIncomes
+    if (!TransportHandler.bindExpensesToIncomes()
         && BeeUtils.inListSame(name, VAR_INCOME + "Label", VAR_INCOME)) {
       return false;
     }

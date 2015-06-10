@@ -275,7 +275,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
                       String oldLog = Data.getString(view, row, COL_ASSESSMENT_LOG);
 
                       Queries.update(view, row.getId(), row.getVersion(), Data.getColumns(view,
-                              Lists.newArrayList(COL_ASSESSMENT_STATUS, COL_ASSESSMENT_LOG)),
+                          Lists.newArrayList(COL_ASSESSMENT_STATUS, COL_ASSESSMENT_LOG)),
                           Lists.newArrayList(BeeUtils.toString(status.ordinal()), oldLog),
                           Lists.newArrayList(BeeUtils.toString(AssessmentStatus.NEW.ordinal()),
                               buildLog(loc.trAssessmentRejection(), value, oldLog)), null,
@@ -380,7 +380,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
 
     @Override
     public ColumnDescription beforeCreateColumn(GridView gridView, ColumnDescription descr) {
-      if (!TransportHandler.bindExpensesToIncomes
+      if (!TransportHandler.bindExpensesToIncomes()
           && Objects.equals(gridView.getViewName(), TBL_CARGO_EXPENSES)
           && Objects.equals(descr.getId(), COL_CARGO_INCOME)) {
         return null;

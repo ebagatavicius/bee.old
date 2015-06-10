@@ -3,6 +3,7 @@
 
   name="CargoRequests" viewName="CargoRequests" caption="=trRequests"
   enableCopy="- *Date, *Time, Status, Cargo, Order*"
+  filter="Interface = 4 OR !(Interface)"
   >
   <g:columns>
     <DataColumn name="Date" visible="true" />

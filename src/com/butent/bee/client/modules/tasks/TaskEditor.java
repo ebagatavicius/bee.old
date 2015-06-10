@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
+import static com.butent.bee.shared.modules.tasks.TaskConstants.COL_EVENT;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;

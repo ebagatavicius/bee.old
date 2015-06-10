@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+       name="LogisticsSelfService" label="=trMenuSelfService" parent="TransportLogistics" order="0"
+       module="Transport.LogisticsSelfService"
+>
+  
+  <Item name="LogisticsShipmentRequests" label="=trMenuUnregisteredRequests" service="grid"
+    parameters="LogisticsShipmentRequests" />
+
+  <Item name="LogisticsCargoRequests" label="=trMenuRequests" service="grid" parameters="LogisticsCargoRequests" />
+  
+  <Item name="CargoReqTemplates" label="=trMenuRequestTemplates" service="grid"
+    parameters="LogisticsCargoReqTemplates" separator="true" />
+
+  <Item name="LogisticsRegistrations" label="=trMenuRegistrations" service="grid"
+    parameters="LogisticsRegistrations" separator="true" />
+
+</Entry>

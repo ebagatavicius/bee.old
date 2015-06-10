@@ -207,6 +207,7 @@
       <xs:enumeration value="Transport.Logistics" />
       <xs:enumeration value="Transport.SelfService" />
       <xs:enumeration value="Transport.Administration" />
+      <xs:enumeration value="Transport.LogisticsSelfService" />
       <xs:enumeration value="Service" />
       <xs:enumeration value="Administration" />
     </xs:restriction>
@@ -337,6 +338,7 @@
       <xs:enumeration value="EcRegistrations" />
       <xs:enumeration value="EditorTemplates" />
       <xs:enumeration value="Emails" />
+      <xs:enumeration value="EventHistory" />
       <xs:enumeration value="ExpeditionTypes" />
       <xs:enumeration value="ExpeditionTrips" />
       <xs:enumeration value="ExtendedProperties" />
@@ -414,6 +416,7 @@
       <xs:enumeration value="Rules" />
       <xs:enumeration value="SaleItems" />
       <xs:enumeration value="Sales" />
+      <xs:enumeration value="SaleSeries" />
       <xs:enumeration value="SeriesManagers" />
       <xs:enumeration value="ServiceCriteria" />
       <xs:enumeration value="ServiceCritGroups" />

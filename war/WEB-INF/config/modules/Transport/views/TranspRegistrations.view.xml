@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="TranspRegistrations" source="TranspRegistrations" module="Transport.SelfService" 
+  name="TranspRegistrations" source="TranspRegistrations" module="Transport.SelfService Transport.LogisticsSelfService" 
   caption="=trRegistrations" newRowCaption="=trRegistrationNew"
   editForm="TranspRegistration" newRowForm="TranspRegistration"
   >
@@ -36,6 +36,7 @@
     <SimpleColumn name="Notes" />
     <SimpleColumn name="Host" />
     <SimpleColumn name="Agent" />
+    <SimpleColumn name="Interface" />
   </Columns>
   <Order>
     <OrderBy column="Date" />

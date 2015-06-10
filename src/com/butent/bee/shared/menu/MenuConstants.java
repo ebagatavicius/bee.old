@@ -21,7 +21,7 @@ public final class MenuConstants {
     LABEL, BUTTON, RADIO, HTML, OPTION, LI, DT, DD, ROW
   }
 
-  public static final int MAX_MENU_DEPTH = 3;
+  public static final int MAX_MENU_DEPTH = 4;
   public static final int ROOT_MENU_INDEX = 0;
 
   public static final int DEFAULT_ROOT_LIMIT = 0;

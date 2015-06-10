@@ -462,7 +462,7 @@ public class TasksModuleBean implements BeeModule {
     Filter durationFilter = Filter.notNull(COL_DURATION);
 
     BeeRowSet taskEvents =
-        qs.getViewData(TaskConstants.VIEW_TASK_DURATIONS, Filter.and(idFilter, durationFilter),
+        qs.getViewData(VIEW_TASK_DURATIONS, Filter.and(idFilter, durationFilter),
             null, Lists.newArrayList(COL_TASK, COL_DURATION, ProjectConstants.COL_RATE));
 
     if (taskEvents.isEmpty()) {
@@ -2003,7 +2003,7 @@ public class TasksModuleBean implements BeeModule {
         .addConstant(COL_TASK, taskId)
         .addConstant(COL_PUBLISHER, userId)
         .addConstant(COL_PUBLISH_TIME, millis)
-        .addConstant(COL_EVENT, event.ordinal());
+        .addConstant(TaskConstants.COL_EVENT, event.ordinal());
 
     if (!BeeUtils.isEmpty(comment)) {
       si.addConstant(COL_COMMENT, comment);

@@ -47,5 +47,6 @@
     <Text name="Notes" label="=trRequestNotes" />
     <Text name="Host" label="=remoteHost" />
     <Text name="Agent" label="=userAgent" />
+    <Enum name="Interface" key="UserInterface" />
   </Fields>
 </Table>

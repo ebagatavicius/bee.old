@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="LogisticsRegistrations" viewName="TranspRegistrations" caption="=trRegistrations"
+  autoFit="true" filter="!(Interface) or Interface = 6"
+  >
+  <g:columns>
+    <DataColumn name="Date" visible="true" />
+    <DataColumn name="Status" visible="true" />
+
+    <DataColumn name="CompanyName" visible="true" />
+    <DataColumn name="CompanyCode" />
+    <DataColumn name="VatCode" />
+
+    <DataColumn name="Contact" visible="true" />
+    <DataColumn name="ContactPosition" />
+
+    <DataColumn name="Address" />
+    <DataColumn name="City" />
+    <DataColumn name="Country" />
+
+    <DataColumn name="Phone" />
+    <DataColumn name="Mobile" />
+
+    <DataColumn name="Fax" />
+    <DataColumn name="Email" />
+
+    <DataColumn name="ExchangeCode" />
+
+    <DataColumn name="Bank" />
+    <DataColumn name="BankAddress" />
+    <DataColumn name="BankAccount" />
+    <DataColumn name="Swift" />
+
+    <DataColumn name="Notes" />
+    <DataColumn name="Host" />
+    <DataColumn name="Agent" />
+  </g:columns>
+</g:Grid>

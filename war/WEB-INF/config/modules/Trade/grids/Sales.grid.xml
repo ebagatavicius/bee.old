@@ -14,7 +14,7 @@
     <DataColumn name="Date" visible="true" />
 
     <DataColumn name="Number" visible="false" />
-    <DataColumn name="InvoicePrefix" />
+    <RelColumn name="SaleSeries" />
     <DataColumn name="InvoiceNo" />
 
     <RelColumn name="Supplier" visible="false" />

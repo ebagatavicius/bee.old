@@ -3,7 +3,7 @@
   <IdColumn name="ID" label="=trdInvoiceId" />
   <DataColumn name="Date" visible="true" />
 
-  <DataColumn name="InvoicePrefix" />
+  <RelColumn name="SaleSeries" />
   <DataColumn name="InvoiceNo" />
 
   <DataColumn name="CustomerName" label="=trdCustomer" visible="true" />

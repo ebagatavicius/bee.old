@@ -29,7 +29,7 @@
       
       <row>
         <Label text="=trdInvoicePrefix" />
-        <InputText name="InvoicePrefix" upperCase="true" maxLength="10" style="width: 100px;" />
+        <UnboundSelector name="SaleSeries" viewName="SaleSeries"  renderColumns="SeriesName" upperCase="true" style="width: 100px;" />
 
         <Label text="=currency" />
         <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name" 

@@ -47,6 +47,8 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.Paths;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.transport.TransportConstants.CargoRequestStatus;
+import com.butent.bee.shared.modules.transport.TransportConstants.TranspRegStatus;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.UiConstants;
 import com.butent.bee.shared.ui.UserInterface;
@@ -180,9 +182,9 @@ public class TransportSelfService extends LoginServlet {
     String path = req.getPathInfo();
 
     if (BeeUtils.isEmpty(path)) {
-      html = getInitialPage(req, UserInterface.SELF_SERVICE);
+      html = getInitialPage(req, getInitialUserInterface());
 
-    } else if (BeeUtils.same(path, PATH_REGISTER)) {
+    } else if (BeeUtils.same(path, getRegisterPath())) {
       Map<String, String> parameters = HttpUtils.getParameters(req, false);
 
       String language = getLanguage(req);
@@ -195,7 +197,7 @@ public class TransportSelfService extends LoginServlet {
         html = getRegistrationForm(req.getServletContext().getContextPath(), constants);
       }
 
-    } else if (BeeUtils.same(path, PATH_QUERY)) {
+    } else if (BeeUtils.same(path, getQueryPath())) {
       Map<String, String> parameters = HttpUtils.getParameters(req, false);
 
       String language = getLanguage(req);
@@ -247,6 +249,18 @@ public class TransportSelfService extends LoginServlet {
         && super.isProtected(req);
   }
 
+  protected UserInterface getInitialUserInterface() {
+    return UserInterface.SELF_SERVICE;
+  }
+
+  protected String getQueryPath() {
+    return PATH_QUERY;
+  }
+
+  protected String getRegisterPath() {
+    return PATH_REGISTER;
+  }
+
   private String doQuery(HttpServletRequest req, Map<String, String> parameters,
       LocalizableConstants constants, Map<String, String> dictionary) {
 
@@ -283,6 +297,9 @@ public class TransportSelfService extends LoginServlet {
 
         case COL_QUERY_AGENT:
           value = req.getHeader(HttpHeaders.USER_AGENT);
+          break;
+        case COL_USER_INTERFACE:
+          row.setValue(i, UserInterface.normalize(getInitialUserInterface()).ordinal());
           break;
 
         default:
@@ -352,6 +369,7 @@ public class TransportSelfService extends LoginServlet {
           case COL_QUERY_STATUS:
           case COL_QUERY_HOST:
           case COL_QUERY_AGENT:
+          case COL_USER_INTERFACE:
             value = null;
             break;
 
@@ -405,6 +423,8 @@ public class TransportSelfService extends LoginServlet {
 
     si.addConstant(COL_REGISTRATION_HOST, req.getRemoteAddr());
     si.addConstant(COL_REGISTRATION_AGENT, req.getHeader(HttpHeaders.USER_AGENT));
+    si.addConstant(COL_USER_INTERFACE, UserInterface.normalize(getInitialUserInterface())
+        .ordinal());
 
     ResponseObject response = proxy.insert(si);
     if (response.hasErrors()) {
@@ -431,6 +451,7 @@ public class TransportSelfService extends LoginServlet {
           case COL_REGISTRATION_STATUS:
           case COL_REGISTRATION_HOST:
           case COL_REGISTRATION_AGENT:
+          case COL_USER_INTERFACE:
             value = null;
             break;
 

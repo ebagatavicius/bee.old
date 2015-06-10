@@ -570,6 +570,8 @@ final class DriverTimeBoard extends ChartBase {
     ChartData tripData = new ChartData(ChartData.Type.TRIP);
 
     ChartData customerData = new ChartData(ChartData.Type.CUSTOMER);
+    ChartData managerData = new ChartData(ChartData.Type.MANAGER);
+
     ChartData orderData = new ChartData(ChartData.Type.ORDER);
     ChartData statusData = new ChartData(ChartData.Type.ORDER_STATUS);
 
@@ -626,6 +628,8 @@ final class DriverTimeBoard extends ChartBase {
           }
 
           customerData.add(freight.getCustomerName(), freight.getCustomerId());
+          managerData.addUser(freight.getManager());
+
           orderData.add(freight.getOrderName(), freight.getOrderId());
           statusData.addNotNull(freight.getOrderStatus());
 
@@ -669,6 +673,8 @@ final class DriverTimeBoard extends ChartBase {
     data.add(tripData);
 
     data.add(customerData);
+    data.add(managerData);
+
     data.add(orderData);
     data.add(statusData);
 

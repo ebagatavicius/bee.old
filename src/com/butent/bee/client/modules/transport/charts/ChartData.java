@@ -1,5 +1,6 @@
 package com.butent.bee.client.modules.transport.charts;
 
+import com.butent.bee.client.Global;
 import com.butent.bee.client.i18n.Collator;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.HasCaption;
@@ -95,6 +96,7 @@ class ChartData {
     DRIVER_GROUP(Localized.getConstants().driverGroupsShort()),
     CARGO(Localized.getConstants().cargos()),
     CUSTOMER(Localized.getConstants().transportationCustomers()),
+    MANAGER(Localized.getConstants().managers()),
     LOADING(Localized.getConstants().cargoLoading()),
     ORDER(Localized.getConstants().trOrders()),
     ORDER_STATUS(Localized.getConstants().trOrderStatus()),
@@ -160,6 +162,15 @@ class ChartData {
   <E extends Enum<?> & HasCaption> void addNotNull(E item) {
     if (item != null) {
       add(item.getCaption(), (long) item.ordinal());
+    }
+  }
+
+  void addUser(Long userId) {
+    if (userId != null) {
+      String signature = Global.getUsers().getSignature(userId);
+      if (signature != null) {
+        add(signature, userId);
+      }
     }
   }
 

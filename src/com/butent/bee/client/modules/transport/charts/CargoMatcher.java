@@ -12,27 +12,34 @@ final class CargoMatcher {
     }
 
     ChartData customerData = FilterHelper.getDataByType(data, ChartData.Type.CUSTOMER);
+    ChartData managerData = FilterHelper.getDataByType(data, ChartData.Type.MANAGER);
+
     ChartData orderData = FilterHelper.getDataByType(data, ChartData.Type.ORDER);
     ChartData statusData = FilterHelper.getDataByType(data, ChartData.Type.ORDER_STATUS);
 
     ChartData cargoData = FilterHelper.getDataByType(data, ChartData.Type.CARGO);
 
-    if (BeeUtils.anyNotNull(customerData, orderData, statusData, cargoData)) {
-      return new CargoMatcher(customerData, orderData, statusData, cargoData);
+    if (BeeUtils.anyNotNull(customerData, managerData, orderData, statusData, cargoData)) {
+      return new CargoMatcher(customerData, managerData, orderData, statusData, cargoData);
     } else {
       return null;
     }
   }
 
   private final ChartData customerData;
+  private final ChartData managerData;
+
   private final ChartData orderData;
   private final ChartData statusData;
 
   private final ChartData cargoData;
 
-  private CargoMatcher(ChartData customerData, ChartData orderData, ChartData statusData,
-      ChartData cargoData) {
+  private CargoMatcher(ChartData customerData, ChartData managerData, ChartData orderData,
+      ChartData statusData, ChartData cargoData) {
+
     this.customerData = customerData;
+    this.managerData = managerData;
+
     this.orderData = orderData;
     this.statusData = statusData;
 
@@ -45,6 +52,9 @@ final class CargoMatcher {
     }
 
     if (customerData != null && !customerData.contains(cargo.getCustomerId())) {
+      return false;
+    }
+    if (managerData != null && !managerData.contains(cargo.getManager())) {
       return false;
     }
     if (orderData != null && !orderData.contains(cargo.getOrderId())) {
