@@ -121,6 +121,7 @@
     <SimpleColumn name="Notes" />
     <SimpleColumn name="Host" />
     <SimpleColumn name="Agent" />
+    <SimpleColumn name="Interface" />
   </Columns>
   
   <Order>

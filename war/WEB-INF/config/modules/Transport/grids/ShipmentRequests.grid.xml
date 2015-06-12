@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
   name="ShipmentRequests" viewName="ShipmentRequests"
-  caption="=trRequestsUnregistered"
+  caption="=trRequestsUnregistered" filter="Interface = 4 OR !(Interface)"
   >
   <g:columns>
     <DataColumn name="Date" visible="true" />

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="EventHistory" caption="=eventHistory" source="EventHistory" module="Administration"
+      readOnly="true"
+    >
+  <Columns>
+    <SimpleColumn name="Event" />
+    <SimpleColumn name="Started" />
+    <SimpleColumn name="Ended" />
+    <SimpleColumn name="Result" />
+  </Columns>
+  <Order>
+    <OrderBy column="Started" descending="true" />
+  </Order>
+</View>

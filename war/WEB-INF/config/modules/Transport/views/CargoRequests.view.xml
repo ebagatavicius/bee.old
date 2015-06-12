@@ -159,7 +159,7 @@
       </SimpleJoin>
     </SimpleJoin>
 
-    
+    <SimpleColumn name="Interface" />
     <SimpleColumn name="Notes" />
   </Columns>
 

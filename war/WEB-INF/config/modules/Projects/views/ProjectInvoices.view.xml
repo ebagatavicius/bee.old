@@ -8,6 +8,10 @@
   <Columns>
     <SimpleColumn name="Date" />
     <SimpleColumn name="InvoicePrefix" />
+    <SimpleColumn name="SaleSeries" />
+    <SimpleJoin name="SaleSeries" joinType="LEFT">
+      <SimpleColumn name="SeriesName" />
+    </SimpleJoin>
     <SimpleColumn name="InvoiceNo" />
     <SimpleColumn name="Term" />
 

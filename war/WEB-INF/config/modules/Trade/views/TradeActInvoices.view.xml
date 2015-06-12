@@ -32,6 +32,10 @@
 
         <SimpleColumn name="Number" />
         <SimpleColumn name="InvoicePrefix" />
+        <SimpleColumn name="SaleSeries" label="=trdInvoicePrefix"/>
+        <SimpleJoin name="SaleSeries" joinType="LEFT">
+          <SimpleColumn name="SeriesName" />
+        </SimpleJoin>
         <SimpleColumn name="InvoiceNo" />
 
         <SimpleColumn name="Term" />

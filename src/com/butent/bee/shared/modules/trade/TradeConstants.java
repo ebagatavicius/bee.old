@@ -42,6 +42,7 @@ public final class TradeConstants {
   public static final String COL_TRADE_DATE = "Date";
   public static final String COL_TRADE_NUMBER = "Number";
   public static final String COL_TRADE_INVOICE_PREFIX = "InvoicePrefix";
+  public static final String COL_TRADE_SALE_SERIES = "SaleSeries";
   public static final String COL_TRADE_INVOICE_NO = "InvoiceNo";
   public static final String COL_TRADE_AMOUNT = "Amount";
   public static final String COL_TRADE_CURRENCY = "Currency";

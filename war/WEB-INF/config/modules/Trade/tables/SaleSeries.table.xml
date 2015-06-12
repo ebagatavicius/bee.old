@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="SaleSeries"
+  idName="SaleSeriesID"
+  >
+  <Fields>
+    <String name="SeriesName" precision="10" notNull="true" unique="true" label="=trdSeries" />
+    <Text name="Notes" label="=notes" />
+  </Fields>
+</Table>

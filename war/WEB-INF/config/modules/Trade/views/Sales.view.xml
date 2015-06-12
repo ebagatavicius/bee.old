@@ -9,6 +9,10 @@
     <SimpleColumn name="Date" />
 
     <SimpleColumn name="Number" />
+    <SimpleColumn name="SaleSeries" label="=trdInvoicePrefix" />
+    <SimpleJoin name="SaleSeries" joinType="LEFT">
+      <SimpleColumn name="SeriesName" />
+    </SimpleJoin>
     <SimpleColumn name="InvoicePrefix" />
     <SimpleColumn name="InvoiceNo" />
 

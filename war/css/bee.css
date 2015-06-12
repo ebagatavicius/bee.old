@@ -2895,9 +2895,9 @@
 }
 
 .bee-News-headline-dismiss {
-  font-size: 17px;
+  font-size: 28px;
   margin-left: 2px;
-  margin-right: 2px;
+  margin-right: 20px;
   cursor: pointer;
   visibility: hidden;
 }

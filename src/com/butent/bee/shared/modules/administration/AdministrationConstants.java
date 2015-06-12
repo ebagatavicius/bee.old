@@ -170,6 +170,8 @@ public final class AdministrationConstants {
 
   public static final String TBL_CUSTOM_CONFIG = "CustomConfig";
 
+  public static final String TBL_EVENT_HISTORY = "EventHistory";
+
   public static final String VIEW_USERS = "Users";
   public static final String VIEW_USER_SETTINGS = "UserSettings";
   public static final String VIEW_USER_GROUP_SETTINGS = "UserGroupSettings";
@@ -329,6 +331,11 @@ public final class AdministrationConstants {
   public static final String COL_CONFIG_DATA = "ObjectData";
 
   public static final String COL_MENU_HIDE = "MenuHide";
+
+  public static final String COL_EVENT = "Event";
+  public static final String COL_EVENT_STARTED = "Started";
+  public static final String COL_EVENT_ENDED = "Ended";
+  public static final String COL_EVENT_RESULT = "Result";
 
   public static final String ALS_FILE_NAME = "FileName";
   public static final String ALS_FILE_SIZE = "FileSize";

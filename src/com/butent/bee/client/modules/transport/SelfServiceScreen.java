@@ -11,6 +11,7 @@ import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.cli.Shell;
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.GridFactory;
@@ -27,11 +28,14 @@ import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
+import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.LongValue;
 import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.documents.DocumentConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.ui.UserInterface;
@@ -105,11 +109,27 @@ public class SelfServiceScreen extends ScreenImpl {
 
     FormFactory.hideWidget(DocumentConstants.FORM_DOCUMENT, "DocumentRelations");
 
+    if (getCommandPanel() != null) {
+      getCommandPanel().clear();
+    }
+
     addCommandItem(new Button(Localized.getConstants().trSelfServiceCommandNewRequest(),
         new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
-            RowFactory.createRow(VIEW_CARGO_REQUESTS);
+            DataInfo info = Data.getDataInfo(VIEW_CARGO_REQUESTS);
+            BeeRow row = RowFactory.createEmptyRow(info, true);
+
+            row.setValue(info.getColumnIndex(AdministrationConstants.COL_USER_INTERFACE),
+                UserInterface.normalize(getUserInterface()).ordinal());
+
+            RowFactory.createRow(info, row, new RowCallback() {
+
+              @Override
+              public void onSuccess(BeeRow result) {
+                showCargoRequests();
+              }
+            });
           }
         }));
 
@@ -117,7 +137,7 @@ public class SelfServiceScreen extends ScreenImpl {
         new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
-            openGrid(VIEW_CARGO_REQUESTS, true, COL_CARGO_REQUEST_USER);
+            showCargoRequests();
           }
         }));
 
@@ -213,5 +233,21 @@ public class SelfServiceScreen extends ScreenImpl {
 
   private void openGrid(String gridName, Filter filter) {
     openGrid(gridName, false, filter);
+  }
+
+  private void showCargoRequests() {
+    switch (getUserInterface()) {
+      case SELF_SERVICE:
+        openGrid(GRID_CARGO_REQUESTS, true, COL_CARGO_REQUEST_USER);
+        break;
+
+      case SELF_SERVICE_LOG:
+        openGrid(GRID_LOGISTICS_CARGO_REQUESTS, true, COL_CARGO_REQUEST_USER);
+        break;
+
+      default:
+        notifyInfo(Localized.getConstants().noData());
+        break;
+    }
   }
 }

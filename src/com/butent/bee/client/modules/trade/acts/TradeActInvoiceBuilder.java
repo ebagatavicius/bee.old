@@ -47,7 +47,6 @@ import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.HeaderView;
-import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -514,11 +513,12 @@ public class TradeActInvoiceBuilder extends AbstractFormInterceptor implements
       }
     }
 
-    String pfx = BeeKeeper.getStorage().get(storageKey(COL_TRADE_INVOICE_PREFIX));
-    if (!BeeUtils.isEmpty(pfx)) {
-      widget = form.getWidgetByName(COL_TRADE_INVOICE_PREFIX);
-      if (widget instanceof Editor) {
-        ((Editor) widget).setValue(pfx);
+    Long seriesId =
+        BeeUtils.toLongOrNull(BeeKeeper.getStorage().get(storageKey(COL_TRADE_SALE_SERIES)));
+    if (DataUtils.isId(seriesId)) {
+      widget = form.getWidgetByName(COL_TRADE_SALE_SERIES);
+      if (widget instanceof UnboundSelector) {
+        ((UnboundSelector) widget).setValue(seriesId, true);
       }
     }
 
@@ -781,7 +781,7 @@ public class TradeActInvoiceBuilder extends AbstractFormInterceptor implements
       return;
     }
 
-    String invoicePrefix = getInvoicePrefix();
+    Long seriesId = getSeriesId();
     Long currency = getCurrency();
 
     Multimap<Long, Integer> ss = getSelectedServices(STYLE_SVC_SELECTED);
@@ -830,14 +830,14 @@ public class TradeActInvoiceBuilder extends AbstractFormInterceptor implements
     BeeKeeper.getStorage().set(storageKey(COL_TA_SERVICE_FROM), range.lowerEndpoint());
     BeeKeeper.getStorage().set(storageKey(COL_TA_SERVICE_TO), range.upperEndpoint());
 
-    BeeKeeper.getStorage().set(storageKey(COL_TRADE_INVOICE_PREFIX), BeeUtils.trim(invoicePrefix));
+    BeeKeeper.getStorage().set(storageKey(COL_TRADE_SALE_SERIES), BeeUtils.toString(seriesId));
     BeeKeeper.getStorage().set(storageKey(COL_TA_CURRENCY), currency);
 
     DataInfo dataInfo = Data.getDataInfo(VIEW_SALES);
     BeeRow invoice = RowFactory.createEmptyRow(dataInfo, true);
 
-    if (!BeeUtils.isEmpty(invoicePrefix)) {
-      Data.squeezeValue(VIEW_SALES, invoice, COL_TRADE_INVOICE_PREFIX, invoicePrefix.trim());
+    if (DataUtils.isId(seriesId)) {
+      invoice.setValue(dataInfo.getColumnIndex(COL_TRADE_SALE_SERIES), seriesId);
     }
 
     invoice.setValue(dataInfo.getColumnIndex(COL_TRADE_CUSTOMER), company);
@@ -1036,10 +1036,10 @@ public class TradeActInvoiceBuilder extends AbstractFormInterceptor implements
     return BeeUtils.isEmpty(name) ? ClientDefaults.getCurrencyName() : name;
   }
 
-  private String getInvoicePrefix() {
-    Widget widget = getFormView().getWidgetByName(COL_TRADE_INVOICE_PREFIX);
-    if (widget instanceof Editor) {
-      return ((Editor) widget).getValue();
+  private Long getSeriesId() {
+    Widget widget = getFormView().getWidgetByName(COL_TRADE_SALE_SERIES);
+    if (widget instanceof UnboundSelector) {
+      return BeeUtils.toLongOrNull(((UnboundSelector) widget).getValue());
     } else {
       return null;
     }

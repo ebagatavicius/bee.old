@@ -25,6 +25,8 @@
 
     <Relation name="Manager" relation="Users" label="=trRequestResponsibleManager" />
 
+    <Enum name="Interface" key="UserInterface" />
+
     <Text name="Notes" label="=trRequestNotes" />
   </Fields>
 </Table>

@@ -1289,6 +1289,12 @@ public class MailModuleBean implements BeeModule, HasTimerService {
 
       MailAccount account = mail.getAccount(BeeUtils.toLongOrNull(accountId));
       checkMail(true, account, account.getInboxFolder(), null);
+
+      try {
+        Thread.sleep(TimeUtils.MILLIS_PER_SECOND);
+      } catch (InterruptedException e) {
+        logger.warning(e.getMessage());
+      }
     }
   }
 

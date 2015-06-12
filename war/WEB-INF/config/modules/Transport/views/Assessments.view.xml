@@ -23,6 +23,7 @@
 
     <SimpleColumn name="Cargo" />
     <SimpleJoin name="Cargo" joinType="INNER">
+      <SimpleColumn name="Order" />
       <SimpleJoin name="Order" joinType="INNER">
         <SimpleColumn name="Date" editable="true" />
         <SimpleColumn name="Status" alias="OrderStatus" editable="true" />

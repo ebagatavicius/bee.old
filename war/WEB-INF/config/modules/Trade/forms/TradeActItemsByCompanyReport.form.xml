@@ -67,7 +67,7 @@
         </row>
 
         <row>
-          <Label text="=trdSeriesPlural" />
+          <Label text="=taSeriesPlural" />
           <MultiSelector name="Series" viewName="TradeSeries" renderColumns="SeriesName"
             newRowEnabled="false" style="&multi;" summarize="true" />
         </row>

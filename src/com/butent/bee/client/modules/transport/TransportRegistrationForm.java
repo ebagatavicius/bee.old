@@ -110,7 +110,9 @@ class TransportRegistrationForm extends AbstractFormInterceptor {
     putUserField(parameters, COL_REGISTRATION_FAX, ClassifierConstants.COL_FAX);
 
     String caption = Localized.getConstants().trCommandCreateNewUser();
-    AdministrationUtils.createUser(caption, login, null, UserInterface.SELF_SERVICE, parameters,
+    AdministrationUtils.createUser(caption, login, null, UserInterface.normalize(EnumUtils
+        .getEnumByIndex(UserInterface.class,
+            getIntegerValue(AdministrationConstants.COL_USER_INTERFACE))), parameters,
         getFormView(), new IdCallback() {
           @Override
           public void onSuccess(Long result) {

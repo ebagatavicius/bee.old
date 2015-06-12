@@ -44,6 +44,7 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
             EnumUtils.getEnumByIndex(OrderStatus.class, row.getInt(COL_STATUS)),
             row.getDateTime(COL_ORDER_DATE), row.getValue(COL_ORDER_NO),
             row.getLong(COL_CUSTOMER), row.getValue(COL_CUSTOMER_NAME),
+            row.getLong(COL_ORDER_MANAGER),
             row.getLong(COL_CARGO_ID), row.getLong(COL_CARGO_TYPE),
             row.getValue(COL_CARGO_DESCRIPTION), row.getValue(COL_CARGO_NOTES),
             BeeUtils.nvl(Places.getLoadingDate(row, loadingColumnAlias(COL_PLACE_DATE)), minLoad),
@@ -76,9 +77,12 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
   private final DateTime orderDate;
 
   private final String orderNo;
-  private final Long customerId;
 
+  private final Long customerId;
   private final String customerName;
+
+  private final Long manager;
+
   private final Long cargoId;
 
   private final Long cargoType;
@@ -105,7 +109,7 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
   private Range<JustDate> range;
 
   protected OrderCargo(Long orderId, OrderStatus orderStatus, DateTime orderDate, String orderNo,
-      Long customerId, String customerName,
+      Long customerId, String customerName, Long manager,
       Long cargoId, Long cargoType, String cargoDescription, String notes,
       JustDate loadingDate, Long loadingCountry, String loadingPlace, String loadingPostIndex,
       Long loadingCity, String loadingNumber,
@@ -120,6 +124,7 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
 
     this.customerId = customerId;
     this.customerName = customerName;
+    this.manager = manager;
 
     this.cargoId = cargoId;
     this.cargoType = cargoType;
@@ -264,6 +269,10 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
 
   String getCustomerName() {
     return customerName;
+  }
+
+  Long getManager() {
+    return manager;
   }
 
   JustDate getMaxDate() {

@@ -5,7 +5,7 @@ name="Administration" label="=administration" order="1000" module="Administratio
 >
   <Item name="Users" label="=users" service="grid" parameters="Users" />
 
-  <Item name="UserSettings" label="=userSettings" service="grid" parameters="UserSettings" 
+  <Item name="UserSettings" label="=userSettings" service="grid" parameters="UserSettings"
     separator="true" />
   <Item name="UiThemes" label="=uiThemes" service="grid" parameters="UiThemes" />
 
@@ -19,6 +19,9 @@ name="Administration" label="=administration" order="1000" module="Administratio
 
   <Item name="Parameters" label="=systemParameters" service="parameters" parameters="Administration"
     separator="true" />
+
+  <Item name="EventHistory" label="=eventHistory" service="grid" parameters="EventHistory"
+        separator="true" />
 
   <Item name="UserHistory" label="=loginHistory" service="grid" parameters="UserHistory"/>
   <Item name="IpFilters" label="=ipFilters" service="grid" parameters="IpFilters"

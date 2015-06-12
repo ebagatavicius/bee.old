@@ -479,7 +479,6 @@ public final class TransportConstants {
 
   public static final String COL_LOADED_KILOMETERS = "LoadedKilometers";
   public static final String COL_EMPTY_KILOMETERS = "EmptyKilometers";
-
   public static final String COL_DESCRIPTION = "Description";
   public static final String COL_CARGO_DIRECTIONS = "Directions";
 
@@ -747,6 +746,10 @@ public final class TransportConstants {
 
   public static final String GRID_ASSESSMENT_REQUESTS = "AssessmentRequests";
   public static final String GRID_ASSESSMENT_ORDERS = "AssessmentOrders";
+  public static final String GRID_CARGO_REQUESTS = "CargoRequests";
+  public static final String GRID_LOGISTICS_CARGO_REQUESTS = "LogisticsCargoRequests";
+  public static final String GRID_SHIPMENT_REQUESTS = "ShipmentRequests";
+  public static final String GRID_LOGISTICS_SHIPMENT_REQUESTS = "LogisitcsShipmentRequests";
 
   public static final String PROP_COLORS = "Colors";
   public static final String PROP_COUNTRIES = "Countries";
@@ -780,6 +783,7 @@ public final class TransportConstants {
   public static final String ALS_ABSENCE_NAME = "AbsenceName";
   public static final String ALS_ABSENCE_LABEL = "AbsenceLabel";
   public static final String ALS_CUSTOMER_NAME = "CustomerName";
+  public static final String ALS_CUSTOMER_TYPE_NAME = "CustomerTypeName";
 
   public static final String ALS_CARGO_DESCRIPTION = "CargoDescription";
 

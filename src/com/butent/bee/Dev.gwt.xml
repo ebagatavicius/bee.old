@@ -36,6 +36,11 @@
     <when-type-is class="com.butent.bee.client.Screen"/>
     <when-property-is name="screen" value="trss"/> 
   </replace-with>
+  
+  <replace-with class="com.butent.bee.client.modules.transport.logistics.LogSelfServiceScreen">
+    <when-type-is class="com.butent.bee.client.Screen"/>
+    <when-property-is name="screen" value="logss"/> 
+  </replace-with>
 
   <replace-with class="com.butent.bee.client.modules.trade.acts.TradeActClientArea">
     <when-type-is class="com.butent.bee.client.Screen"/>

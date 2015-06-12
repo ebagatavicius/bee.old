@@ -86,8 +86,6 @@ public interface LocalizableTradeConstants {
 
   String trdSeries();
 
-  String trdSeriesPlural();
-
   String trdStatuses();
 
   String trdTotal();

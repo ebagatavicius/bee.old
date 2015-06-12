@@ -29,7 +29,7 @@
 
         <Label text="=trdInvoicePrefix" style="&lbl;" />
         <FlowPanel>
-          <InputText source="InvoicePrefix" upperCase="true" style="width:11em;" />
+          <DataSelector source="SaleSeries" upperCase="true" style="width:11em;" />
           <InlineLabel text="=trdInvoiceNo" style="margin-left:5px;" />
           <InputText source="InvoiceNo" />
         </FlowPanel>

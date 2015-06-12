@@ -4,6 +4,7 @@
   name="AssessmentExecutors" source="Users"
   >
   <Columns>
+    <IdColumn name="User"/>
     <SimpleJoin name="CompanyPerson" joinType="INNER">
       <SimpleJoin name="Person" joinType="INNER">
         <SimpleColumn name="FirstName" />
