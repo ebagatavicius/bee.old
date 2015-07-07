@@ -1,5 +1,6 @@
 package com.butent.bee.client.menu;
 
+import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.Theme;
@@ -19,7 +20,12 @@ public class MenuPopup extends Popup {
 
     int lineHeight = Theme.getSubMenuLineHeight();
     if (lineHeight > 0) {
-      StyleUtils.setLineHeight(this, lineHeight);
+      int cnt = item.getSubMenu().getItemCount();
+      int max = BeeKeeper.getScreen().getScreenPanel().getCenterHeight();
+
+      if (cnt * (lineHeight + 8) < max) {
+        StyleUtils.setLineHeight(this, lineHeight);
+      }
     }
 
     this.parentMenu = bar;

@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  xmlns:d="http://www.butent.com/decorator"
   
   name="TransportGroup" viewName="TransportGroups" caption="=transportGroup"
   height="50" heightUnit="%" width="600"
   >
   <FlowPanel class="flexBox-vertical">
-    <SimplePanel class="flexBox-horizontal">
-      <InputText source="Name" caption="=group" decorator="flex-left" d:size="40" d:rootStyle="margin: 10px;" />
-    </SimplePanel>
+    <Table>
+      <col index="0" kind="label" />
 
-    <FlowPanel class="flexBox-horizontal flexible">
-      <ChildGrid class="flexible" name="GroupDrivers" relColumn="Group" style="margin:0 5px 10px 10px;" />
-      <ChildGrid class="flexible" name="GroupVehicles" relColumn="Group" style="margin:0 10px 10px 5px;" />
+      <row>
+        <Label for="Name" visible="true" />
+        <InputText source="Name" visible="true" style="width: 20em;" />
+      </row>
+      <row>
+        <Label for="Manager" />
+        <DataSelector source="Manager" editSource="ManagerPerson" newRowEnabled="false" 
+          style="width: 20em;" />
+      </row>
+    </Table>
+
+    <FlowPanel class="flexBox-horizontal flexible" style="margin-top: 20px;">
+      <ChildGrid class="flexible" name="GroupDrivers" relColumn="Group" style="margin: 0 5px 10px 10px;" />
+      <ChildGrid class="flexible" name="GroupVehicles" relColumn="Group" style="margin: 0 10px 10px 5px;" />
     </FlowPanel>
   </FlowPanel>
 </f:Form>

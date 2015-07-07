@@ -13,6 +13,7 @@ import com.butent.bee.client.grid.column.AbstractColumn;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.render.ProvidesGridColumnRenderer;
 import com.butent.bee.client.style.StyleProvider;
+import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.ui.WidgetInterceptor;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.EditEndEvent;
@@ -126,7 +127,7 @@ public interface GridInterceptor extends WidgetInterceptor, ActiveRowChangeEvent
 
   ColumnHeader getHeader(String columnName, String caption);
 
-  Map<String, Filter> getInitialParentFilters();
+  Map<String, Filter> getInitialParentFilters(Collection<UiOption> uiOptions);
 
   BeeRowSet getInitialRowSet(GridDescription gridDescription);
 

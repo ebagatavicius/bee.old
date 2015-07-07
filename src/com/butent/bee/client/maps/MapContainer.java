@@ -7,6 +7,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.Presenter;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
@@ -49,6 +50,7 @@ public class MapContainer extends Flow implements Presenter, View, HasWidgetSupp
     headerView.setViewPresenter(this);
     add(headerView);
 
+    StyleUtils.setTop(mapWidget, headerView.getHeight());
     add(mapWidget);
   }
 

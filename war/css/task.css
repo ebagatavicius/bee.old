@@ -33,6 +33,11 @@
   min-width: 125px;
 }
 
+.bee-crm-taskEvent-col-1 > .bee-fa-label {
+  margin: 4px 0;
+  font-size: 3ex;
+}
+
 .bee-crm-taskEvent-Event,
 .bee-crm-taskEvent-Duration {
   font-weight: bolder;
@@ -41,6 +46,10 @@
 .bee-crm-taskEvent-EventNote,
 .bee-crm-taskEvent-Comment {
   white-space: pre-wrap;
+}
+.bee-crm-taskEvent-EventNote > .bee-InternalLink {
+  display: inline-block;
+  padding: 0 2px;
 }
 
 .bee-crm-taskDialog-container td {

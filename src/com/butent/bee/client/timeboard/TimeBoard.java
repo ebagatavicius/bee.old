@@ -51,8 +51,8 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.event.CellUpdateEvent;
 import com.butent.bee.shared.data.event.DataChangeEvent;
-import com.butent.bee.shared.data.event.DataEvent;
 import com.butent.bee.shared.data.event.HandlesAllDataEvents;
+import com.butent.bee.shared.data.event.ModificationEvent;
 import com.butent.bee.shared.data.event.MultiDeleteEvent;
 import com.butent.bee.shared.data.event.RowDeleteEvent;
 import com.butent.bee.shared.data.event.RowInsertEvent;
@@ -125,7 +125,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   private static final String STYLE_ITEM_HAS_HANDLING = STYLE_ITEM_PREFIX + "has-handling";
 
   private static final String STYLE_SHEET_NAME = "timeboard";
-  private static final JustDate STYLE_SHEET_VERSION = new JustDate(2014, 5, 4);
+  private static final JustDate STYLE_SHEET_VERSION = new JustDate(2015, 7, 6);
 
   private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
 
@@ -254,8 +254,8 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     headerView.setViewPresenter(this);
     add(headerView);
 
-    this.canvas = new Flow();
-    canvas.addStyleName(STYLE_CANVAS);
+    this.canvas = new Flow(STYLE_CANVAS);
+    StyleUtils.setTop(canvas, headerView.getHeight());
     add(canvas);
   }
 
@@ -953,7 +953,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     }
   }
 
-  protected abstract boolean isDataEventRelevant(DataEvent event);
+  protected abstract boolean isDataEventRelevant(ModificationEvent<?> event);
 
   protected boolean isFiltered() {
     return filtered;

@@ -40,7 +40,6 @@
     <SimpleColumn name="ApplianceHeaderHeight" />
     <SimpleColumn name="SubMenuLineHeight" />
     <SimpleColumn name="WorkspaceTabHeight" />
-    <SimpleColumn name="TabbedPagesTabHeight" />
     <SimpleColumn name="DisclosureClosedHeight" />
 
     <SimpleColumn name="InputLineHeight" />

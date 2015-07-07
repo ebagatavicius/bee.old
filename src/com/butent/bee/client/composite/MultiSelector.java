@@ -507,7 +507,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
         }
       }
 
-      getElement().scrollIntoView();
+      DomUtils.scrollIntoView(getElement());
       setFocus(true);
     }
   }
@@ -883,7 +883,7 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
 
     updateValue();
 
-    getElement().scrollIntoView();
+    DomUtils.scrollIntoView(getElement());
     setFocus(true);
 
     if (removed) {

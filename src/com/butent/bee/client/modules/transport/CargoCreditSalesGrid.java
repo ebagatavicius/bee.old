@@ -23,6 +23,7 @@ import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -47,6 +48,7 @@ import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -66,7 +68,7 @@ public class CargoCreditSalesGrid extends AbstractGridInterceptor implements Cli
   }
 
   @Override
-  public Map<String, Filter> getInitialParentFilters() {
+  public Map<String, Filter> getInitialParentFilters(Collection<UiOption> uiOptions) {
     return ImmutableMap.of("pyp",
         Filter.and(Filter.isNull(COL_SALE_PROFORMA), Filter.isNull(COL_PURCHASE)));
   }

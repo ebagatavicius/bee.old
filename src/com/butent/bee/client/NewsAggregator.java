@@ -793,20 +793,20 @@ public class NewsAggregator implements HandlesAllDataEvents {
       return false;
 
     } else {
-      boolean requires = false;
-      String table = Data.getViewTable(event.getViewName());
+      for (String viewName : event.getViewNames()) {
+        String table = Data.getViewTable(viewName);
 
-      if (!BeeUtils.isEmpty(table)) {
-        for (Subscription subscription : subscriptions) {
-          if (table.equals(subscription.getTable())
-              || table.equals(Data.getViewTable(subscription.getHeadlineView()))) {
-            requires = true;
-            break;
+        if (!BeeUtils.isEmpty(table)) {
+          for (Subscription subscription : subscriptions) {
+            if (table.equals(subscription.getTable())
+                || table.equals(Data.getViewTable(subscription.getHeadlineView()))) {
+              return true;
+            }
           }
         }
       }
 
-      return requires;
+      return false;
     }
   }
 

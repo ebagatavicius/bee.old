@@ -10,16 +10,16 @@
 
     <Integer name="WorkspaceMarginRight" />
 
-    <Integer name="ViewHeaderHeight" label="=heightOfViewHeader" />
-    <Integer name="ChildViewHeaderHeight" />
+    <String name="ViewHeaderHeight" precision="50" label="=heightOfViewHeader" />
+    <String name="ChildViewHeaderHeight" precision="50" />
 
     <Boolean name="ViewActionCreateNew" />
     <Boolean name="GridActionCreateNew" />
     <Boolean name="ChildActionCreateNew" />
 
-    <Integer name="GridHeaderRowHeight" />
-    <Integer name="GridBodyRowHeight" />
-    <Integer name="GridFooterRowHeight" />
+    <String name="GridHeaderRowHeight" precision="50" />
+    <String name="GridBodyRowHeight" precision="50" />
+    <String name="GridFooterRowHeight" precision="50" />
 
     <Integer name="GridMarginLeft" />
     
@@ -27,9 +27,9 @@
     <String name="GridBodyFont" precision="50" />
     <String name="GridFooterFont" precision="50" />
 
-    <Integer name="ChildGridHeaderRowHeight" />
-    <Integer name="ChildGridBodyRowHeight" />
-    <Integer name="ChildGridFooterRowHeight" />
+    <String name="ChildGridHeaderRowHeight" precision="50" />
+    <String name="ChildGridBodyRowHeight" precision="50" />
+    <String name="ChildGridFooterRowHeight" precision="50" />
 
     <Integer name="ChildGridMarginLeft" />
 
@@ -40,7 +40,6 @@
     <Integer name="ApplianceHeaderHeight" label="=heightOfApplianceHeader" />
     <Integer name="SubMenuLineHeight" />
     <Integer name="WorkspaceTabHeight" />
-    <Integer name="TabbedPagesTabHeight" />
     <Integer name="DisclosureClosedHeight" />
 
     <Integer name="InputLineHeight" />

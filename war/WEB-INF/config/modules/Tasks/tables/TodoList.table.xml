@@ -17,5 +17,7 @@
 
     <Relation name="Company" relation="Companies" label="=company" />
     <Relation name="Contact" relation="CompanyPersons" label="=personContact" />
+    
+    <Enum name="Visibility" key="ToDoVisibility" defValue="0" />
   </Fields>
 </Table>

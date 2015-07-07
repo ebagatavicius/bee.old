@@ -11,7 +11,7 @@
     <RelColumn name="Item" renderColumns="ItemName" choiceColumns="Name Article" visible="true" />
     <DataColumn name="Article" />
     <DataColumn name="Quantity" />
-    <DataColumn name="UnitName" flexGrow="0" />
+    <DataColumn name="UnitName" flexGrow="0" caption="=unitShort" />
     <DataColumn name="Price" />
 
     <DataColumn name="VatPlus" width="20" sortable="false" horizontalAlignment="center" caption="+">

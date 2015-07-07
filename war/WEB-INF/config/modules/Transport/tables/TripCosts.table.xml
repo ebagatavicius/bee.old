@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="TripCosts"
-  idName="CostID"
-  >
+       name="TripCosts"
+       idName="CostID"
+    >
   <Fields>
     <Relation name="Trip" relation="Trips" cascade="DELETE" label="=trip" />
     <Date name="Date" notNull="true" defExpr="CURRENT_DATE" label="=date" />
@@ -19,7 +19,13 @@
     <String name="Number" precision="20" label="=number" />
     <Relation name="Supplier" relation="Companies" label="=trSupplier" />
     <Relation name="Country" relation="Countries" label="=country" />
+
+    <Relation name="PaymentType" relation="PaymentTypes" label="=paymentType" />
+    <Relation name="MainDriver" relation="TripDrivers" cascade="SET_NULL" label="=vehicleDriver" />
+
     <String name="Note" precision="50" label="=note" />
+    <Relation name="Purchase" relation="Purchases" cascade="SET_NULL" label="=trdPurchaseId" />
+
     <String name="ExternalID" precision="40" label="=externalId" />
   </Fields>
   <Indexes>

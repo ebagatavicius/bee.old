@@ -5,12 +5,14 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.Locality;
+import com.butent.bee.shared.data.HasViewName;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +20,8 @@ import java.util.Set;
  * Handles deletion of multiple rows event.
  */
 
-public class MultiDeleteEvent extends ModificationEvent<MultiDeleteEvent.Handler> {
+public class MultiDeleteEvent extends ModificationEvent<MultiDeleteEvent.Handler> implements
+    HasViewName {
 
   /**
    * Requires implementing classes to have a method to handle multiple row deletion event.
@@ -109,6 +112,11 @@ public class MultiDeleteEvent extends ModificationEvent<MultiDeleteEvent.Handler
   @Override
   public String getViewName() {
     return viewName;
+  }
+
+  @Override
+  public Collection<String> getViewNames() {
+    return Collections.singleton(viewName);
   }
 
   @Override

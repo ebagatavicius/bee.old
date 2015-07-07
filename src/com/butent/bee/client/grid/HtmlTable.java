@@ -467,6 +467,11 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     return getWidgetImpl(row, column);
   }
 
+  public Widget getWidgetByElement(Element elem) {
+    Assert.notNull(elem);
+    return widgetMap.get(elem);
+  }
+
   public int insertRow(int beforeRow) {
     if (beforeRow != getRowCount()) {
       checkRowBounds(beforeRow);

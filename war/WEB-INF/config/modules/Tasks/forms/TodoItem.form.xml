@@ -47,6 +47,10 @@
       <row>
         <Label for="ExpectedDuration" />
         <InputTime source="ExpectedDuration" step="30" style="width: 60px;" />
+        <Label text="=calVisibility" />
+        <cell colSpan="2">
+          <Radio source="Visibility" vertical="false" />
+        </cell>
       </row>
 
       <row>

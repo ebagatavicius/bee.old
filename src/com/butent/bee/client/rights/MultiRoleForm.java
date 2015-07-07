@@ -658,18 +658,24 @@ abstract class MultiRoleForm extends RightsForm {
       warning("object", object.getName(), "children not found");
 
     } else {
-      for (Widget widget : getTable()) {
-        if (isValueWidget(widget)
-            && DomUtils.dataEquals(widget.getElement(), DATA_KEY_ROLE, roleId)) {
+      NodeList<Element> nodes = Selectors.getNodes(getTable(),
+          Selectors.conjunction(getValueSelector(),
+              Selectors.attributeEquals(Attributes.DATA_PREFIX + DATA_KEY_ROLE, roleId)));
 
-          String childName = getObjectName(widget);
+      if (nodes != null) {
+        for (int i = 0; i < nodes.getLength(); i++) {
+          Element elem = nodes.getItem(i);
+          String childName = getObjectName(elem);
+
           for (RightsObject child : children) {
             if (child.getName().equals(childName)) {
-              enableValueWidet(widget, enabled);
+              enableValueWidet(elem, enabled);
 
               if (child.hasChildren()) {
-                boolean childEnabled = enabled
+                Widget widget = getTable().getWidgetByElement(elem);
+                boolean childEnabled = enabled && widget != null
                     && widget instanceof Toggle && ((Toggle) widget).isChecked();
+
                 enableChildren(child, roleId, childEnabled);
               }
             }
@@ -836,7 +842,7 @@ abstract class MultiRoleForm extends RightsForm {
         updateValueCell(widget, isChanged);
 
         if (checked) {
-          enableValueWidet(widget, checked);
+          enableValueWidet(widget.getElement(), checked);
         }
       }
     }

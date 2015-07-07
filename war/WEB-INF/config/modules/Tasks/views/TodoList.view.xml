@@ -4,7 +4,7 @@
 
   name="TodoList" source="TodoList" caption="=crmTodoList"
   newRowForm="TodoItem" newRowCaption="=crmNewTodoItem" editForm="TodoItem"
-  rowCaption="Summary" 
+  rowCaption="Summary"
   >
   <Columns>
     <SimpleColumn name="Summary" />
@@ -25,6 +25,7 @@
     <SimpleColumn name="StartTime" />
     <SimpleColumn name="FinishTime" />
     <SimpleColumn name="ExpectedDuration" />
+    <SimpleColumn name="Visibility" />
 
     <SimpleColumn name="Company" />
     <SimpleJoin name="Company" joinType="LEFT">

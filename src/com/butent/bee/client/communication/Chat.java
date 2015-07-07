@@ -20,6 +20,7 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
@@ -158,6 +159,7 @@ public class Chat extends Flow implements Presenter, View, Printable,
     add(headerView);
 
     this.messagePanel = new Flow(STYLE_PREFIX + "messages");
+    StyleUtils.setTop(messagePanel, headerView.getHeight());
     add(messagePanel);
 
     this.inputArea = new InputArea();

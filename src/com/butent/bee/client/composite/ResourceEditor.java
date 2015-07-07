@@ -17,6 +17,7 @@ import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.Presenter;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
@@ -110,6 +111,7 @@ public class ResourceEditor extends Flow implements Presenter, View, Printable, 
 
     Simple wrapper = new Simple(textArea);
     wrapper.addStyleName(STYLE_PREFIX + "wrapper");
+    StyleUtils.setTop(wrapper, headerView.getHeight());
 
     add(wrapper);
   }

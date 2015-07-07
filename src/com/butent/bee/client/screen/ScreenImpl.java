@@ -102,7 +102,7 @@ public class ScreenImpl implements Screen {
   private static Flow flowOnlineUserSize = new Flow();
   private static Flow flowOnlineEmailSize = new Flow();
 
-  private static final String DEFAULT_PHOTO_IMAGE = "images/silver/person_profile.png";
+  private static final String DEFAULT_PHOTO_IMAGE = "images/defaultUser.png";
   public static final HtmlTable NOTIFICATION_CONTENT = new HtmlTable(BeeConst.CSS_CLASS_PREFIX
       + "NotificationBar-Content");
 
@@ -1151,7 +1151,12 @@ public class ScreenImpl implements Screen {
         if (sessions.size() > 0) {
           for (String session : sessions) {
             UserData user = users.getUserData(users.getUserIdBySession(session));
-            Image img = new Image(PHOTO_URL + user.getPhotoFileName());
+            Image img;
+            if (user.getPhotoFileName() != null) {
+              img = new Image(PHOTO_URL + user.getPhotoFileName());
+            } else {
+              img = new Image(DEFAULT_PHOTO_IMAGE);
+            }
             img.setStyleName(BeeConst.CSS_CLASS_PREFIX + "OnlineUsersPhoto");
             table.setWidget(r, 0, img);
             table.setText(r, 1, user.getFirstName() + " " + user.getLastName());

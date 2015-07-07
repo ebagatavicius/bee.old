@@ -233,7 +233,8 @@ class OrderCargoForm extends AbstractFormInterceptor implements SelectorEvent.Ha
     header.clearCommandPanel();
 
     if (Data.isViewEditable(VIEW_CARGO_INVOICES)) {
-      header.addCommandItem(new InvoiceCreator(Filter.equals(COL_CARGO, row.getId())));
+      header.addCommandItem(new InvoiceCreator(VIEW_CARGO_SALES,
+          Filter.equals(COL_CARGO, row.getId())));
     }
     header.addCommandItem(new Profit(COL_CARGO, row.getId()));
 

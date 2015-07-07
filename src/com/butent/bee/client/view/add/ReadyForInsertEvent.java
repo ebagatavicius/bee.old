@@ -7,6 +7,7 @@ import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.shared.Consumable;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.RowChildren;
+import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,15 +41,27 @@ public class ReadyForInsertEvent extends GwtEvent<ReadyForInsertEvent.Handler> i
   private final String sourceId;
 
   private boolean consumed;
+  private boolean forced;
 
   public ReadyForInsertEvent(List<BeeColumn> columns, List<String> values,
       Collection<RowChildren> children, RowCallback callback, String sourceId) {
+
     super();
+
     this.columns = columns;
     this.values = values;
     this.children = children;
     this.callback = callback;
     this.sourceId = sourceId;
+  }
+
+  public void add(BeeColumn column, long value) {
+    add(column, BeeUtils.toString(value));
+  }
+
+  public void add(BeeColumn column, String value) {
+    columns.add(column);
+    values.add(value);
   }
 
   @Override
@@ -86,9 +99,17 @@ public class ReadyForInsertEvent extends GwtEvent<ReadyForInsertEvent.Handler> i
     return consumed;
   }
 
+  public boolean isForced() {
+    return forced;
+  }
+
   @Override
   public void setConsumed(boolean consumed) {
     this.consumed = consumed;
+  }
+
+  public void setForced(boolean forced) {
+    this.forced = forced;
   }
 
   @Override

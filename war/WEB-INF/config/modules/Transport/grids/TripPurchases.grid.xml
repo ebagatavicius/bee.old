@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
+
+        name="TripPurchases" viewName="TripPurchases" caption="=trTripCosts"
+        readOnly="true"
+    >
+  <g:columns>
+    <SelectionColumn name="Select" width="20" />
+
+    <DataColumn name="TripDate" />
+    <ActionColumn element="link" name="TripNo" caption="=trTripNo" />
+    <DataColumn name="Status" />
+    <DataColumn name="ExpeditionType" caption="=trExpeditionType" />
+
+    <DataColumn name="Date" caption="=date" />
+
+    <RelColumn name="Item" renderColumns="ItemName" />
+    <DataColumn name="UnitName" />
+    <DataColumn name="Quantity" />
+    <DataColumn name="Price" format="0.00" />
+    <RelColumn name="Currency" />
+    <DataColumn name="VatPlus" width="20" sortable="false" horizontalAlignment="center" caption="+">
+      <render>
+        <ui:expression>row.VatPlus ? '+' : ''</ui:expression>
+      </render>
+    </DataColumn>
+    <DataColumn name="Vat" />
+    <DataColumn name="VatPercent" width="20" sortable="false" horizontalAlignment="center"
+                caption="%">
+      <render>
+        <ui:expression>row.VatPercent ? '%' : ''</ui:expression>
+      </render>
+    </DataColumn>
+    <CalcColumn name="Total" type="decimal" caption="=amount" format="#.00">
+      <style>
+        <bodyStyle>
+          <ui:font>bold</ui:font>
+        </bodyStyle>
+      </style>
+    </CalcColumn>
+
+    <DataColumn name="Number" />
+    <RelColumn name="Supplier" />
+    <RelColumn name="Country" />
+    <RelColumn name="PaymentType" visible="false" />
+    <DataColumn name="Note" />
+  </g:columns>
+</g:Grid>

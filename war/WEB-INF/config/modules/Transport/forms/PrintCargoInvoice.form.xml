@@ -22,7 +22,7 @@
             </render>
           </TextLabel>
           <TextLabel source="InvoiceNo">
-            <renderToken source="SeriesName" prefix="Serija " suffix=" " />
+            <renderToken source="InvoicePrefix" prefix="Serija " suffix=" " />
             <renderToken source="InvoiceNo" prefix="Nr. " />
           </TextLabel>
         </FlowPanel>

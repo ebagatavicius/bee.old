@@ -19,6 +19,7 @@
     <SimpleColumn name="Comment" />
     <SimpleColumn name="Event" />
     <SimpleColumn name="EventNote" />
+    <SimpleColumn name="EventData" />
     <SimpleJoin name="EventDuration" joinType="LEFT">
       <SimpleColumn name="Duration" />
       <SimpleColumn name="DurationDate" />

@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.dialog.DialogBox;
+import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
@@ -297,7 +298,7 @@ public class GridFilterManager {
                       NodeList<Element> nodes =
                           widget.getElement().getElementsByTagName(Tags.TR);
                       if (nodes != null && nodes.getLength() > 1) {
-                        nodes.getItem(nodes.getLength() - 1).scrollIntoView();
+                        DomUtils.scrollIntoView(nodes.getItem(nodes.getLength() - 1));
                       }
                       break;
                     }

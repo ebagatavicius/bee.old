@@ -10,8 +10,11 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> {
 
@@ -36,6 +39,16 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
     em.fireModificationEvent(new DataChangeEvent(viewName, effects), Locality.ENTANGLED);
   }
 
+  public static void fire(FiresModificationEvents em, Collection<String> viewNames,
+      EnumSet<Effect> effects) {
+
+    Assert.notNull(em);
+    Assert.notEmpty(viewNames);
+    Assert.notEmpty(effects);
+
+    em.fireModificationEvent(new DataChangeEvent(viewNames, effects), Locality.ENTANGLED);
+  }
+
   public static void fireLocal(FiresModificationEvents em, String viewName,
       EnumSet<Effect> effects) {
     Assert.notNull(em);
@@ -57,6 +70,10 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
     fire(em, viewName, EnumSet.of(Effect.REFRESH));
   }
 
+  public static void fireRefresh(FiresModificationEvents em, Collection<String> viewNames) {
+    fire(em, viewNames, EnumSet.of(Effect.REFRESH));
+  }
+
   public static void fireReset(FiresModificationEvents em, String viewName) {
     fire(em, viewName, EnumSet.of(Effect.REFRESH, Effect.RESET));
   }
@@ -67,11 +84,16 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
     return eventBus.addHandler(TYPE, handler);
   }
 
-  private String viewName;
+  private final Set<String> viewNames = new HashSet<>();
   private EnumSet<Effect> effects;
 
   private DataChangeEvent(String viewName, EnumSet<Effect> effects) {
-    this.viewName = viewName;
+    viewNames.add(viewName);
+    this.effects = effects;
+  }
+
+  private DataChangeEvent(Collection<String> views, EnumSet<Effect> effects) {
+    viewNames.addAll(views);
     this.effects = effects;
   }
 
@@ -87,7 +109,15 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
 
-    this.viewName = arr[0];
+    viewNames.clear();
+
+    String[] packedViews = Codec.beeDeserializeCollection(arr[0]);
+    if (!ArrayUtils.isEmpty(packedViews)) {
+      for (String pv : packedViews) {
+        viewNames.add(pv);
+      }
+    }
+
     this.effects = EnumSet.noneOf(Effect.class);
 
     String[] packedEffects = Codec.beeDeserializeCollection(arr[1]);
@@ -109,8 +139,8 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
   }
 
   @Override
-  public String getViewName() {
-    return viewName;
+  public Collection<String> getViewNames() {
+    return viewNames;
   }
 
   public boolean hasCancel() {
@@ -127,7 +157,7 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
 
   @Override
   public boolean hasView(String view) {
-    return BeeUtils.same(view, getViewName());
+    return BeeUtils.containsSame(viewNames, view);
   }
 
   @Override
@@ -139,7 +169,7 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
       }
     }
 
-    Object[] arr = new Object[] {getViewName(), packedEffects};
+    Object[] arr = new Object[] {getViewNames(), packedEffects};
     return Codec.beeSerialize(arr);
   }
 

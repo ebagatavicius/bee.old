@@ -8,10 +8,8 @@ import com.google.gwt.event.dom.client.DropEvent;
 
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
-import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
@@ -29,9 +27,9 @@ import com.butent.bee.shared.BiConsumer;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
-import com.butent.bee.shared.data.event.RowInsertEvent;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.modules.transport.TransportConstants.TripStatus;
 import com.butent.bee.shared.modules.transport.TransportConstants.VehicleType;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateRange;
@@ -59,13 +57,15 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
 
   private static final String driversLabel = Data.getViewCaption(VIEW_DRIVERS);
   private static final String cargosLabel = Data.getViewCaption(VIEW_CARGO_TRIPS);
+  private static final String customersLabel = Data.getColumnLabel(VIEW_ORDERS, COL_CUSTOMER);
+  private static final String managersLabel = Data.getColumnLabel(VIEW_ORDERS, COL_ORDER_MANAGER);
 
   private static final Set<String> acceptsDropTypes =
       ImmutableSet.of(DATA_TYPE_TRUCK, DATA_TYPE_TRAILER, DATA_TYPE_FREIGHT, DATA_TYPE_ORDER_CARGO,
           DATA_TYPE_DRIVER);
 
   static void createForCargo(final Vehicle truck, final HasShipmentInfo cargo, String cargoTitle,
-      final boolean fire, final IdCallback callback) {
+      final RowCallback callback) {
 
     if (truck == null || BeeUtils.isEmpty(cargoTitle) || callback == null) {
       return;
@@ -93,11 +93,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
             Queries.insert(VIEW_NAME, dataInfo.getColumns(), newRow, new RowCallback() {
               @Override
               public void onSuccess(BeeRow result) {
-                if (fire) {
-                  RowInsertEvent.fire(BeeKeeper.getBus(), VIEW_NAME, result, null);
-                }
-
-                callback.onSuccess(result.getId());
+                callback.onSuccess(result);
               }
             });
           }
@@ -218,12 +214,16 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
 
   private final String itemName;
 
-  Trip(SimpleRow row, Collection<Driver> drivers, int cargoCount) {
-    this(row, null, null, drivers, cargoCount);
+  private final int cargoCount;
+
+  Trip(SimpleRow row, Collection<Driver> drivers) {
+    this(row, drivers, null, null, 0,
+        BeeConst.EMPTY_IMMUTABLE_STRING_SET, BeeConst.EMPTY_IMMUTABLE_STRING_SET);
   }
 
-  Trip(SimpleRow row, JustDate minDate, JustDate maxDate, Collection<Driver> drivers,
-      int cargoCount) {
+  Trip(SimpleRow row, Collection<Driver> drivers, JustDate minDate, JustDate maxDate,
+      int cargoCount, Collection<String> customers, Collection<String> managers) {
+
     this.tripId = row.getLong(COL_TRIP_ID);
     this.tripVersion = row.getLong(ALS_TRIP_VERSION);
     this.tripNo = row.getValue(COL_TRIP_NO);
@@ -259,9 +259,13 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
         trailerLabel, this.trailerNumber,
         driversLabel, Driver.getNames(BeeConst.DEFAULT_LIST_SEPARATOR, drivers),
         cargosLabel, cargoCount,
+        customersLabel, BeeUtils.joinItems(customers),
+        managersLabel, BeeUtils.joinItems(managers),
         notesLabel, this.notes);
 
     this.itemName = BeeUtils.joinWords(rangeLabel, this.tripNo);
+
+    this.cargoCount = cargoCount;
   }
 
   @Override
@@ -335,6 +339,10 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
       default:
         return null;
     }
+  }
+
+  boolean hasCargo() {
+    return cargoCount > 0;
   }
 
   boolean hasDriver(Long driverId) {
@@ -475,7 +483,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
       Trip.maybeAssignCargo(freightTitle, getTitle(), new ConfirmationCallback() {
         @Override
         public void onConfirm() {
-          freight.updateTrip(Trip.this.getTripId(), true);
+          freight.updateTrip(Trip.this.getTripId(), RowCallback.refreshView(VIEW_CARGO_TRIPS));
         }
       });
 
@@ -486,7 +494,8 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
       Trip.maybeAssignCargo(cargoTitle, getTitle(), new ConfirmationCallback() {
         @Override
         public void onConfirm() {
-          orderCargo.assignToTrip(Trip.this.getTripId(), true);
+          orderCargo.assignToTrip(Trip.this.getTripId(),
+              RowCallback.refreshView(VIEW_CARGO_TRIPS));
         }
       });
 

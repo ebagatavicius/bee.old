@@ -91,6 +91,8 @@ import javax.ejb.Stateless;
 import javax.ejb.Timeout;
 import javax.ejb.Timer;
 import javax.ejb.TimerService;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.mail.Address;
 import javax.mail.FetchProfile;
 import javax.mail.Flags.Flag;
@@ -137,6 +139,7 @@ public class MailModuleBean implements BeeModule, HasTimerService {
   @Resource
   TimerService timerService;
 
+  @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
   public void checkMail(boolean async, MailAccount account, MailFolder localFolder,
       String progressId) {
 
@@ -1197,7 +1200,7 @@ public class MailModuleBean implements BeeModule, HasTimerService {
                 SqlUtils.equals(TBL_ADDRESSBOOK, COL_USER, usr.getCurrentUserId())));
 
     if (DataUtils.isId(placeId)) {
-      query.addFields(TBL_PLACES, COL_FLAGS, COL_MESSAGE, COL_REPLIED)
+      query.addFields(TBL_PLACES, COL_FLAGS, COL_MESSAGE, COL_REPLIED, COL_FOLDER)
           .addField(TBL_PLACES, sys.getIdName(TBL_PLACES), COL_PLACE)
           .addExpr(SqlUtils.expression(SqlUtils.equals(TBL_PLACES, COL_FOLDER,
               SqlUtils.field(TBL_ACCOUNTS, sent + COL_FOLDER))), sent)
@@ -1212,6 +1215,7 @@ public class MailModuleBean implements BeeModule, HasTimerService {
       query.addConstant(messageId, COL_MESSAGE)
           .addEmptyLong(COL_REPLIED)
           .addEmptyLong(COL_PLACE)
+          .addEmptyLong(COL_FOLDER)
           .addEmptyBoolean(sent)
           .addEmptyBoolean(drafts)
           .setWhere(sys.idEquals(TBL_MESSAGES, messageId));

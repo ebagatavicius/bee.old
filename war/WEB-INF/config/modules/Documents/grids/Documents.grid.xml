@@ -19,7 +19,7 @@
 
   <g:columns>
     <DataColumn name="Name" visible="true" />
-    <RelColumn name="Company" />
+    <RelColumn name="Company" filterSupplier="value" />
     <RelColumn name="Category" />
     <DataColumn name="DocumentDate" />
     <DataColumn name="Expires" />

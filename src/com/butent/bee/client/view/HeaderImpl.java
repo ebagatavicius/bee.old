@@ -13,6 +13,7 @@ import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.presenter.Presenter;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Theme;
 import com.butent.bee.client.ui.UiOption;
@@ -122,8 +123,10 @@ public class HeaderImpl extends Flow implements HeaderView {
     if (h > 0) {
       setHeight(h);
     }
+    StyleUtils.setHeight(this, getHeight());
 
     captionWidget.addStyleName(STYLE_CAPTION);
+    StyleUtils.setFontSize(captionWidget, BeeUtils.resize(getHeight(), 30, 45, 16, 24));
     if (Captions.isCaption(caption)) {
       setCaption(caption);
     }

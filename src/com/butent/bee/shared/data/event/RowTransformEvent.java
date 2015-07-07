@@ -6,9 +6,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.data.BeeRow;
+import com.butent.bee.shared.data.HasViewName;
 import com.butent.bee.shared.utils.BeeUtils;
 
-public class RowTransformEvent extends Event<RowTransformEvent.Handler> implements DataEvent {
+public class RowTransformEvent extends Event<RowTransformEvent.Handler> implements DataEvent,
+    HasViewName {
 
   public interface Handler {
     void onRowTransform(RowTransformEvent event);

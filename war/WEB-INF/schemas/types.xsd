@@ -370,6 +370,7 @@
       <xs:enumeration value="Objects" />
       <xs:enumeration value="OrderCargo" />
       <xs:enumeration value="Parameters" />
+      <xs:enumeration value="PaymentTypes" />
       <xs:enumeration value="Persons" />
       <xs:enumeration value="PersonFamily" />
       <xs:enumeration value="Places" />
@@ -382,7 +383,7 @@
       <xs:enumeration value="ProjectEvents" />
       <xs:enumeration value="ProjectFiles" />
       <xs:enumeration value="ProjectIncomes" />
-       <xs:enumeration value="ProjectInvoices" />
+      <xs:enumeration value="ProjectInvoices" />
       <xs:enumeration value="ProjectReasons" />
       <xs:enumeration value="ProjectStages" />
       <xs:enumeration value="ProjectTree"/>
@@ -493,6 +494,8 @@
       <xs:enumeration value="TripDrivers" />
       <xs:enumeration value="TripFuelConsumptions" />
       <xs:enumeration value="TripFuelCosts" />
+      <xs:enumeration value="TripPurchaseInvoices" />
+      <xs:enumeration value="TripPurchases" />
       <xs:enumeration value="TripRoutes" />
       <xs:enumeration value="Trips" />
       <xs:enumeration value="Turnovers" />

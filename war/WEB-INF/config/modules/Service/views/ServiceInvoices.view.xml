@@ -9,10 +9,9 @@
     <SimpleColumn name="Date" />
 
     <SimpleColumn name="Number" />
-    <SimpleColumn name="InvoicePrefix" />
     <SimpleColumn name="SaleSeries" />
     <SimpleJoin name="SaleSeries" joinType="LEFT">
-      <SimpleColumn name="SeriesName" />
+      <SimpleColumn name="SeriesName" alias="InvoicePrefix" />
     </SimpleJoin>
     <SimpleColumn name="InvoiceNo" />
 
@@ -28,10 +27,10 @@
       <SimpleColumn name="Name" alias="CurrencyName" />
       <SimpleColumn name="MinorName" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="PaymentTime" />
     <SimpleColumn name="Paid" />
-    
+
     <SimpleColumn name="Debt" label="=trdDebt" >
       <x:minus>
         <x:number>"Amount"</x:number>
@@ -47,25 +46,25 @@
       <SimpleColumn name="Name" alias="SupplierName" />
       <SimpleJoin joinType="LEFT" name="CompanyType">
         <SimpleColumn name="Name" alias="SupplierTypeName" />
-      </SimpleJoin>     
+      </SimpleJoin>
     </SimpleJoin>
-    
+
     <SimpleColumn name="Customer" />
     <SimpleJoin joinType="LEFT" name="Customer">
       <SimpleColumn name="Name" alias="CustomerName" />
       <SimpleJoin joinType="LEFT" name="CompanyType">
         <SimpleColumn name="Name" alias="CustomerTypeName" />
-      </SimpleJoin>     
+      </SimpleJoin>
     </SimpleJoin>
-    
+
     <SimpleColumn name="Payer" />
     <SimpleJoin joinType="LEFT" name="Payer">
       <SimpleColumn name="Name" alias="PayerName" />
       <SimpleJoin joinType="LEFT" name="CompanyType">
         <SimpleColumn name="Name" alias="PayerTypeName" />
-      </SimpleJoin>  
+      </SimpleJoin>
     </SimpleJoin>
-    
+
     <SimpleColumn name="Manager" />
     <SimpleJoin name="Manager" joinType="LEFT">
       <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />

@@ -370,7 +370,7 @@ public enum Feed implements HasLocalizedCaption {
   CARGO_PURCHASES(ModuleAndSub.of(Module.TRANSPORT), TransportConstants.TBL_CARGO_EXPENSES,
       TransportConstants.VIEW_CARGO_PURCHASES, Lists.newArrayList(
           TransportConstants.ALS_ORDER_DATE, TransportConstants.COL_ORDER_NO,
-          TransportConstants.COL_SERVICE_NAME)) {
+          TransportConstants.ALS_SERVICE_NAME)) {
     @Override
     public String getCaption(LocalizableConstants constants) {
 

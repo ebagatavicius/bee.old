@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
-      xmlns:x="http://www.butent.com/expression"
 
   name="CargoPurchaseInvoices" source="Purchases"
   editForm="CargoPurchaseInvoice"
@@ -34,7 +33,7 @@
         <SimpleColumn name="Name" alias="SupplierTypeName" />
       </SimpleJoin>
     </SimpleJoin>
-    
+
     <SimpleColumn name="Customer" />
     <SimpleJoin joinType="LEFT" name="Customer">
       <SimpleColumn name="Name" alias="CustomerName" label="=trdCustomer" />
@@ -42,7 +41,7 @@
         <SimpleColumn name="Name" alias="CustomerTypeName" />
       </SimpleJoin>
     </SimpleJoin>
-    
+
     <SimpleColumn name="Manager" />
     <SimpleJoin name="Manager" joinType="LEFT">
       <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />
@@ -53,7 +52,7 @@
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
-    
+
     <ExternalJoin name="Purchase" source="CargoExpenses" joinType="LEFT">
       <AggregateColumn name="Purchase" aggregate="MAX" />
     </ExternalJoin>

@@ -35,7 +35,6 @@ import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.mail.AccountInfo;
-import com.butent.bee.shared.modules.mail.MailConstants.MessageFlag;
 import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -127,8 +126,8 @@ public final class MailKeeper {
           event.consume();
 
           NewMailMessage.create(Collections
-              .singleton(Data.getString(ClassifierConstants.TBL_EMAILS,
-                  event.getRow(), ClassifierConstants.COL_EMAIL_ADDRESS)),
+                  .singleton(Data.getString(ClassifierConstants.TBL_EMAILS,
+                      event.getRow(), ClassifierConstants.COL_EMAIL_ADDRESS)),
               null, null, null, null, null, null, false);
         }
       }
@@ -172,8 +171,8 @@ public final class MailKeeper {
           LocalizableMessages loc = Localized.getMessages();
 
           panel.getFormView().notifyInfo(move
-              ? loc.mailMovedMessagesToFolder(response.getResponseAsString())
-              : loc.mailCopiedMessagesToFolder(response.getResponseAsString()),
+                  ? loc.mailMovedMessagesToFolder(response.getResponseAsString())
+                  : loc.mailCopiedMessagesToFolder(response.getResponseAsString()),
               BeeUtils.bracket(panel.getCurrentAccount().findFolder(folderTo).getName()));
         }
       }

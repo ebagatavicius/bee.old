@@ -6,5 +6,6 @@
   >
   <Fields>
     <String name="Name" precision="50" notNull="true" unique="true" label="=trGroup" />
+    <Relation name="Manager" relation="Users" label="=manager" />
   </Fields>
 </Table>

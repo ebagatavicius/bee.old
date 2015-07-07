@@ -2,6 +2,6 @@
 <module rename-to="bee">
   <inherits name="com.butent.bee.Dev"/>
 
-  <extend-property name="locale" values="lt,en,ru,fi"/>
-  <set-property name="locale" value="lt,en,ru,fi"/>
+  <extend-property name="locale" values="lt,en,ru,fi,lv"/>
+  <set-property name="locale" value="lt,en,ru,fi,lv"/>
 </module>

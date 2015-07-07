@@ -16,6 +16,7 @@ import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.style.StyleProvider;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.EditEndEvent;
 import com.butent.bee.client.view.edit.EditStartEvent;
@@ -255,7 +256,7 @@ public abstract class AbstractGridInterceptor implements GridInterceptor {
   }
 
   @Override
-  public Map<String, Filter> getInitialParentFilters() {
+  public Map<String, Filter> getInitialParentFilters(Collection<UiOption> uiOptions) {
     return null;
   }
 

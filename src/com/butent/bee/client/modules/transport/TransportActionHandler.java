@@ -15,8 +15,8 @@ public class TransportActionHandler implements Handler {
 
   @Override
   public void onRowAction(RowActionEvent event) {
-    if (event.isCellClick()
-        && BeeUtils.inListSame(event.getViewName(), VIEW_CARGO_TRIPS, VIEW_ALL_CARGO)) {
+    if (event.isCellClick() && BeeUtils.inListSame(event.getViewName(),
+        VIEW_CARGO_TRIPS, VIEW_ALL_CARGO, VIEW_TRIP_PURCHASES)) {
 
       event.consume();
       Long tripId = Data.getLong(event.getViewName(), event.getRow(), COL_TRIP);

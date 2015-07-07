@@ -1,6 +1,7 @@
 package com.butent.bee.client.modules.tasks;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import com.google.gwt.core.client.Scheduler;
@@ -15,7 +16,6 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
-import static com.butent.bee.shared.modules.tasks.TaskConstants.COL_EVENT;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
@@ -30,8 +30,10 @@ import com.butent.bee.client.composite.FileGroup.Column;
 import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.data.Queries.IntCallback;
 import com.butent.bee.client.data.Queries.RowSetCallback;
 import com.butent.bee.client.data.RowCallback;
+import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.HtmlTable;
@@ -41,6 +43,7 @@ import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.render.PhotoRenderer;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
@@ -51,6 +54,7 @@ import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
+import com.butent.bee.client.widget.InternalLink;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
@@ -63,6 +67,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
+import com.butent.bee.shared.data.RowChildren;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
@@ -74,6 +79,7 @@ import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.modules.documents.DocumentConstants;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.modules.projects.ProjectStatus;
+import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskEvent;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.modules.tasks.TaskUtils;
@@ -122,9 +128,42 @@ class TaskEditor extends AbstractFormInterceptor {
   }
 
   private static Widget createEventCell(String colName, String value) {
-    Widget widget = new CustomDiv(STYLE_EVENT + colName);
-    if (!BeeUtils.isEmpty(value)) {
+    return createEventCell(colName, value, false);
+  }
+
+  private static Widget createEventCell(String colName, String value, boolean serializable) {
+    Widget widget = new Flow(STYLE_EVENT + colName);
+    if (!BeeUtils.isEmpty(value) && !serializable) {
       widget.getElement().setInnerText(value);
+    } else if (!BeeUtils.isEmpty(value) && serializable) {
+      Map<String, String> data = Codec.deserializeMap(value);
+
+      if (data == null) {
+        return widget;
+      }
+
+      if (!data.containsKey(BeeUtils.toString(TaskEvent.CREATE.ordinal()))) {
+        return widget;
+      }
+
+      List<Long> extTasks =
+          DataUtils.parseIdList(data.get(BeeUtils.toString(TaskEvent.CREATE.ordinal())));
+
+      widget.getElement().setInnerHTML(Localized.getConstants().crmTasksDelegatedTasks());
+
+      for (final Long extTaskId : extTasks) {
+        InternalLink url = new InternalLink(BeeUtils.toString(extTaskId));
+        url.addClickHandler(new ClickHandler() {
+
+          @Override
+          public void onClick(ClickEvent arg0) {
+            RowEditor.open(VIEW_TASKS, extTaskId, Opener.NEW_TAB);
+          }
+        });
+
+        ((Flow) widget).add(url);
+      }
+
     }
     return widget;
   }
@@ -361,7 +400,7 @@ class TaskEditor extends AbstractFormInterceptor {
     Global.showError(Localized.getConstants().error(), Collections.singletonList(message));
   }
 
-  private static void showEvent(Flow panel, final BeeRow row, List<BeeColumn> columns,
+  private void showEvent(Flow panel, final BeeRow row, List<BeeColumn> columns,
       List<FileInfo> files, Table<String, String, Long> durations, boolean renderPhoto,
       Long lastAccess, final IsRow taskRow) {
 
@@ -386,10 +425,10 @@ class TaskEditor extends AbstractFormInterceptor {
     Flow col0 = new Flow();
     col0.addStyleName(STYLE_EVENT_COL + BeeUtils.toString(c));
 
-    Integer ev = row.getInteger(DataUtils.getColumnIndex(COL_EVENT, columns));
+    Integer ev = row.getInteger(DataUtils.getColumnIndex(TaskConstants.COL_EVENT, columns));
     TaskEvent event = EnumUtils.getEnumByIndex(TaskEvent.class, ev);
     if (event != null) {
-      col0.add(createEventCell(COL_EVENT, event.getCaption()));
+      col0.add(createEventCell(TaskConstants.COL_EVENT, event.getCaption()));
     }
 
     DateTime publishTime = row.getDateTime(DataUtils.getColumnIndex(COL_PUBLISH_TIME, columns));
@@ -426,9 +465,30 @@ class TaskEditor extends AbstractFormInterceptor {
       col1.add(createEventCell(COL_EVENT_NOTE, note));
     }
 
+    String eventData = row.getString(DataUtils.getColumnIndex(COL_EVENT_DATA, columns));
+
+    if (!BeeUtils.isEmpty(eventData)) {
+      col1.add(createEventCell(COL_EVENT_NOTE, eventData, true));
+    }
+
     String comment = row.getString(DataUtils.getColumnIndex(COL_COMMENT, columns));
     if (!BeeUtils.isEmpty(comment)) {
       col1.add(createEventCell(COL_COMMENT, comment));
+      int idxOwner = Data.getColumnIndex(VIEW_TASKS, COL_OWNER);
+
+      if (event == TaskEvent.COMMENT && Objects.equals(taskRow.getLong(idxOwner), userId)) {
+        FaLabel createTask = new FaLabel(TaskEvent.CREATE.getCommandIcon());
+        createTask.setTitle(TaskEvent.CREATE.getCommandLabel());
+        createTask.addClickHandler(new ClickHandler() {
+
+          @Override
+          public void onClick(ClickEvent arg0) {
+            doCreate(row.getId(), taskRow);
+          }
+        });
+
+        col1.add(createTask);
+      }
     }
 
     container.add(col1);
@@ -484,7 +544,7 @@ class TaskEditor extends AbstractFormInterceptor {
     }
   }
 
-  private static void showEventsAndDuration(FormView form, BeeRowSet rowSet,
+  private void showEventsAndDuration(FormView form, IsRow taskRow, BeeRowSet rowSet,
       List<FileInfo> files, Long lastAccess) {
 
     Widget widget = form.getWidgetByName(VIEW_TASK_EVENTS);
@@ -510,7 +570,7 @@ class TaskEditor extends AbstractFormInterceptor {
 
     for (BeeRow row : rowSet.getRows()) {
       showEvent(panel, row, rowSet.getColumns(), filterEventFiles(files, row.getId()), durations,
-          hasPhoto, lastAccess, form.getActiveRow());
+          hasPhoto, lastAccess, taskRow);
     }
 
     showExtensions(form, rowSet);
@@ -521,7 +581,7 @@ class TaskEditor extends AbstractFormInterceptor {
       Scheduler.get().scheduleDeferred(new ScheduledCommand() {
         @Override
         public void execute() {
-          last.getElement().scrollIntoView();
+          DomUtils.scrollIntoView(last.getElement());
         }
       });
     }
@@ -590,8 +650,6 @@ class TaskEditor extends AbstractFormInterceptor {
     }
 
     Integer status = row.getInteger(form.getDataIndex(COL_STATUS));
-    Long owner = row.getLong(form.getDataIndex(COL_OWNER));
-    Long executor = row.getLong(form.getDataIndex(COL_EXECUTOR));
 
     for (final TaskEvent event : TaskEvent.values()) {
       String label = event.getCommandLabel();
@@ -610,7 +668,7 @@ class TaskEditor extends AbstractFormInterceptor {
         ((FaLabel) button).setTitle(label);
       }
 
-      if (!BeeUtils.isEmpty(label) && isEventEnabled(event, status, owner, executor)) {
+      if (!BeeUtils.isEmpty(label) && isEventEnabled(event, status)) {
         header.addCommandItem(button);
       }
     }
@@ -730,7 +788,7 @@ class TaskEditor extends AbstractFormInterceptor {
           ((FileGroup) fileWidget).clear();
         }
 
-        List<FileInfo> files = FileInfo.restoreCollection(data.getProperty(PROP_FILES));
+        List<FileInfo> files = getFiles(data);
         if (!files.isEmpty()) {
           if (fileWidget instanceof FileGroup) {
             for (FileInfo file : files) {
@@ -748,9 +806,8 @@ class TaskEditor extends AbstractFormInterceptor {
           }
         }
 
-        String events = data.getProperty(PROP_EVENTS);
-        if (!BeeUtils.isEmpty(events)) {
-          showEventsAndDuration(form, BeeRowSet.restore(events), files, lastAccess);
+        if (!getEvents(data).isEmpty()) {
+          showEventsAndDuration(form, data, getEvents(data), files, lastAccess);
         }
 
         form.updateRow(data, true);
@@ -906,6 +963,22 @@ class TaskEditor extends AbstractFormInterceptor {
     }
   }
 
+  private static BeeRowSet getEvents(IsRow row) {
+    if (!BeeUtils.isEmpty(row.getProperty(PROP_EVENTS))) {
+      return BeeRowSet.restore(row.getProperty(PROP_EVENTS));
+    }
+
+    return Data.createRowSet(VIEW_TASK_EVENTS);
+  }
+
+  private static List<FileInfo> getFiles(IsRow row) {
+    if (BeeUtils.isEmpty(row.getProperty(PROP_FILES))) {
+      return Lists.newArrayList();
+    }
+
+    return FileInfo.restoreCollection(row.getProperty(PROP_FILES));
+  }
+
   private ParameterList createParams(TaskEvent event, BeeRow newRow, String comment) {
     FormView form = getFormView();
     String viewName = form.getViewName();
@@ -1001,6 +1074,84 @@ class TaskEditor extends AbstractFormInterceptor {
     }
 
     return params;
+  }
+
+  private void createRelations(final IsRow taskRow, final Long eventId,
+      final String taskIds) {
+    final Consumer<Boolean> consumer = new Consumer<Boolean>() {
+      private int consumeCount = 2;
+
+      @Override
+      public void accept(Boolean input) {
+        consumeCount--;
+
+        if (consumeCount == 0) {
+          Map<String, String> data = Maps.newLinkedHashMap();
+          data.put(BeeUtils.toString(TaskEvent.CREATE.ordinal()), taskIds);
+
+          ParameterList params =
+              createParams(TaskEvent.EDIT, BeeConst.STRING_EMPTY);
+
+          params.addDataItem(COL_EVENT_DATA, Codec.beeSerialize(data));
+
+          sendRequest(params, TaskEvent.EDIT);
+        }
+      }
+    };
+
+    if (DataUtils.isId(eventId)) {
+      Queries.getValue(VIEW_TASK_EVENTS, eventId, COL_EVENT_DATA, new RpcCallback<String>() {
+
+        @Override
+        public void onSuccess(String result) {
+          Map<String, String> data;
+
+          if (BeeUtils.isEmpty(result)) {
+            data = Maps.newLinkedHashMap();
+          } else {
+            data = Codec.deserializeMap(result);
+          }
+
+          if (data.containsKey(BeeUtils.toString(TaskEvent.CREATE.ordinal()))) {
+            List<Long> lTaskIds =
+                DataUtils.parseIdList(data.get(BeeUtils.toString(TaskEvent.CREATE.ordinal())));
+            lTaskIds.addAll(DataUtils.parseIdList(taskIds));
+
+            data.put(BeeUtils.toString(TaskEvent.CREATE.ordinal()), DataUtils
+                .buildIdList(lTaskIds));
+          } else {
+            data.put(BeeUtils.toString(TaskEvent.CREATE.ordinal()), taskIds);
+          }
+
+          Queries.update(VIEW_TASK_EVENTS, eventId, COL_EVENT_DATA, Value.getValue(Codec
+              .beeSerialize(data)),
+              new IntCallback() {
+
+                @Override
+                public void onSuccess(Integer updateCount) {
+                  consumer.accept(null);
+                }
+              });
+
+        }
+      });
+    } else {
+      consumer.accept(null);
+    }
+
+    List<Long> relIds = DataUtils.parseIdList(taskRow.getProperty(PROP_TASKS));
+    relIds.addAll(DataUtils.parseIdList(taskIds));
+
+    Queries.updateChildren(VIEW_TASKS, taskRow.getId(), Lists.newArrayList(RowChildren
+        .create(TBL_RELATIONS, COL_TASK, null, COL_TASK, DataUtils.buildIdList(relIds))),
+        new RowCallback() {
+
+          @Override
+          public void onSuccess(BeeRow result) {
+            consumer.accept(null);
+          }
+        });
+
   }
 
   private ParameterList createParams(TaskEvent event, String comment) {
@@ -1134,8 +1285,128 @@ class TaskEditor extends AbstractFormInterceptor {
     dialog.display();
   }
 
+  private void doCreate(final Long eventId, final IsRow taskRow) {
+    DataInfo newTaskInfo = Data.getDataInfo(VIEW_TASKS);
+    BeeRow newTaskRow = RowFactory.createEmptyRow(newTaskInfo, true);
+
+    int idxSummary = newTaskInfo.getColumnIndex(COL_SUMMARY);
+    int idxDescription = newTaskInfo.getColumnIndex(COL_DESCRIPTION);
+    int idxPriority = newTaskInfo.getColumnIndex(COL_PRIORITY);
+    int idxType = newTaskInfo.getColumnIndex(COL_TASK_TYPE);
+    int idxTypeName = newTaskInfo.getColumnIndex(ALS_TASK_TYPE_NAME);
+    int idxCompany = newTaskInfo.getColumnIndex(COL_COMPANY);
+    int idxCompanyName = newTaskInfo.getColumnIndex(ALS_COMPANY_NAME);
+    int idxCompanyType = newTaskInfo.getColumnIndex(ALS_COMPANY_TYPE_NAME);
+    int idxContact = newTaskInfo.getColumnIndex(COL_CONTACT);
+    int idxContactFirstName = newTaskInfo.getColumnIndex(TaskConstants.ALS_CONTACT_FIRST_NAME);
+    int idxContactLastName = newTaskInfo.getColumnIndex(TaskConstants.ALS_CONTACT_LAST_NAME);
+
+    int idxProject = newTaskInfo.getColumnIndex(ProjectConstants.COL_PROJECT);
+    int idxProjectStage = newTaskInfo.getColumnIndex(ProjectConstants.COL_PROJECT_STAGE);
+
+    newTaskRow.setValue(idxSummary, Data.clamp(VIEW_TASKS, COL_SUMMARY, BeeUtils.joinWords(taskRow
+        .getString(idxSummary), BeeUtils
+        .parenthesize(taskRow.getId()))));
+
+    String description = taskRow.getString(idxDescription);
+
+    BeeRowSet events = getEvents(taskRow);
+
+    if (!events.isEmpty() && DataUtils.isId(eventId)) {
+      IsRow event = events.getRowById(eventId);
+
+      if (event != null
+          && Objects.equals(TaskEvent.COMMENT.ordinal(), event.getInteger(events
+              .getColumnIndex(TaskConstants.COL_EVENT)))) {
+        description =
+            BeeUtils.join(BeeConst.STRING_EOL
+                + BeeUtils.replicate(BeeConst.CHAR_MINUS, BeeConst.MAX_SCALE)
+                + BeeConst.STRING_EOL, description, BeeUtils
+                .joinWords(event.getDateTime(events.getColumnIndex(COL_PUBLISH_TIME)), BeeUtils
+                    .nvl(event
+                        .getString(events.getColumnIndex(ALS_PUBLISHER_FIRST_NAME)),
+                        BeeConst.STRING_EMPTY), BeeUtils.nvl(event
+                    .getString(events.getColumnIndex(ALS_PUBLISHER_LAST_NAME)),
+                    BeeConst.STRING_EMPTY)
+                    + BeeConst.STRING_COLON, event
+                    .getString(events
+                        .getColumnIndex(COL_COMMENT))));
+      }
+    } else if (!events.isEmpty()) {
+      for (IsRow event : events) {
+        if (event != null
+            && Objects.equals(TaskEvent.COMMENT.ordinal(), event.getInteger(events
+                .getColumnIndex(TaskConstants.COL_EVENT)))) {
+          description =
+              BeeUtils.join(BeeConst.STRING_EOL
+                  + BeeUtils.replicate(BeeConst.CHAR_MINUS, BeeConst.MAX_SCALE)
+                  + BeeConst.STRING_EOL, description, BeeUtils
+                  .joinWords(event.getDateTime(events.getColumnIndex(COL_PUBLISH_TIME)), BeeUtils
+                      .nvl(event
+                          .getString(events.getColumnIndex(ALS_PUBLISHER_FIRST_NAME)),
+                          BeeConst.STRING_EMPTY), BeeUtils.nvl(event
+                      .getString(events.getColumnIndex(ALS_PUBLISHER_LAST_NAME)),
+                      BeeConst.STRING_EMPTY)
+                      + BeeConst.STRING_COLON, event
+                      .getString(events
+                          .getColumnIndex(COL_COMMENT))));
+        }
+      }
+    }
+
+    newTaskRow.setValue(idxDescription, Data.clamp(VIEW_TASKS, COL_DESCRIPTION, description));
+
+    newTaskRow.setValue(idxPriority, taskRow
+        .getInteger(idxPriority));
+
+    newTaskRow.setValue(idxType, taskRow
+        .getLong(idxType));
+
+    newTaskRow.setValue(idxTypeName, taskRow
+        .getString(idxTypeName));
+
+    newTaskRow.setValue(idxCompany, taskRow
+        .getLong(idxCompany));
+
+    newTaskRow.setValue(idxCompanyName, taskRow
+        .getString(idxCompanyName));
+
+    newTaskRow.setValue(idxCompanyType, taskRow
+        .getLong(idxCompanyType));
+
+    newTaskRow.setValue(idxContact, taskRow
+        .getLong(idxContact));
+
+    newTaskRow.setValue(idxContactFirstName, taskRow
+        .getString(idxContactFirstName));
+
+    newTaskRow.setValue(idxContactLastName, taskRow
+        .getString(idxContactLastName));
+
+    newTaskRow.setValue(idxProject, taskRow
+        .getLong(idxProject));
+
+    newTaskRow.setValue(idxProjectStage, taskRow
+        .getLong(idxProjectStage));
+
+    Map<Long, FileInfo> files = Maps.newLinkedHashMap();
+
+    for (FileInfo file : getFiles(taskRow)) {
+      files.put(file.getId(), file);
+    }
+
+    RowFactory.createRow(newTaskInfo.getNewRowForm(), newTaskInfo.getNewRowCaption(), newTaskInfo,
+        newTaskRow, null, new TaskBuilder(files, null, true), new RowCallback() {
+
+          @Override
+          public void onSuccess(BeeRow result) {
+            createRelations(taskRow, eventId, result.getString(0));
+          }
+        });
+  }
+
   private void doEvent(TaskEvent event) {
-    if (!isEventEnabled(event, getStatus(), getOwner(), getExecutor())) {
+    if (!isEventEnabled(event, getStatus())) {
       showError(Localized.getConstants().actionNotAllowed());
     }
 
@@ -1172,8 +1443,10 @@ class TaskEditor extends AbstractFormInterceptor {
         doRenew();
         break;
 
-      case ACTIVATE:
       case CREATE:
+        doCreate(null, getActiveRow());
+        break;
+      case ACTIVATE:
       case VISIT:
       case EDIT:
         Assert.untouchable();
@@ -1404,15 +1677,17 @@ class TaskEditor extends AbstractFormInterceptor {
     return getFormView().getActiveRow().getInteger(getFormView().getDataIndex(COL_STATUS));
   }
 
-  private boolean isEventEnabled(TaskEvent event, Integer status, Long owner, Long executor) {
-    if (event == null || status == null || owner == null || executor == null) {
+  private boolean isEventEnabled(TaskEvent event, Integer status) {
+    if (event == null || status == null || getOwner() == null || getExecutor() == null) {
       return false;
     }
 
-    if (userId != owner) {
+    if (isOwner()) {
       if (event == TaskEvent.COMMENT) {
         return true;
-      } else if (userId == executor && TaskStatus.in(status, TaskStatus.ACTIVE)) {
+      } else if (event == TaskEvent.CREATE) {
+        return true;
+      } else if (isExecutor() && TaskStatus.in(status, TaskStatus.ACTIVE)) {
         return event == TaskEvent.FORWARD || event == TaskEvent.COMPLETE;
       } else {
         return false;
@@ -1444,7 +1719,7 @@ class TaskEditor extends AbstractFormInterceptor {
             TaskStatus.SUSPENDED, TaskStatus.SCHEDULED);
 
       case APPROVE:
-        return TaskStatus.in(status, TaskStatus.COMPLETED) && userId != executor;
+        return TaskStatus.in(status, TaskStatus.COMPLETED) && !isExecutor();
 
       case ACTIVATE:
       case CREATE:
@@ -1460,6 +1735,10 @@ class TaskEditor extends AbstractFormInterceptor {
     return Objects.equals(userId, getExecutor());
   }
 
+  private boolean isOwner() {
+    return Objects.equals(userId, getOwner());
+  }
+
   private void onResponse(BeeRow data) {
     RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_TASKS, data);
 
@@ -1470,10 +1749,9 @@ class TaskEditor extends AbstractFormInterceptor {
       DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_RELATED_TASKS);
     }
 
-    String events = data.getProperty(PROP_EVENTS);
-    if (!BeeUtils.isEmpty(events)) {
-      List<FileInfo> files = FileInfo.restoreCollection(data.getProperty(PROP_FILES));
-      showEventsAndDuration(form, BeeRowSet.restore(events), files, lastAccess);
+    if (!getEvents(data).isEmpty()) {
+      showEventsAndDuration(form, form.getActiveRow(), getEvents(data), getFiles(data),
+          lastAccess);
     }
 
     form.updateRow(data, true);

@@ -1298,20 +1298,21 @@ public class ExtendedReportInterceptor extends ReportInterceptor {
       table.setColumnCellStyles(1, "width:100%;");
       int c = 0;
 
-      for (final ReportItem item : filterItems) {
-        table.setText(c, 0, item.getCaption());
-        table.setWidget(c, 1, item.getFilterWidget());
+      for (ReportItem item : filterItems) {
+        final int idx = c;
+        table.setText(idx, 0, item.getCaption());
+        table.setWidget(idx, 1, item.getFilterWidget());
 
         CustomDiv remove = new CustomDiv(STYLE_REMOVE);
         remove.setText(String.valueOf(BeeConst.CHAR_TIMES));
         remove.addClickHandler(new ClickHandler() {
           @Override
           public void onClick(ClickEvent event) {
-            filterItems.remove(item);
+            filterItems.remove(idx);
             renderFilters();
           }
         });
-        table.setWidget(c, 2, remove);
+        table.setWidget(idx, 2, remove);
         c++;
       }
       container.add(table);
@@ -1326,7 +1327,7 @@ public class ExtendedReportInterceptor extends ReportInterceptor {
       activateReport(rep);
     } else {
       Queries.insert(VIEW_REPORT_SETTINGS, Data.getColumns(VIEW_REPORT_SETTINGS,
-          Arrays.asList(COL_RS_USER, COL_RS_REPORT, COL_RS_PARAMETERS)),
+              Arrays.asList(COL_RS_USER, COL_RS_REPORT, COL_RS_PARAMETERS)),
           Arrays.asList(BeeUtils.toString(BeeKeeper.getUser().getUserId()),
               getReport().getReportName(), rep.serialize()), null,
           new RowCallback() {

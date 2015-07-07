@@ -566,7 +566,7 @@ public final class GridFactory {
 
     final Filter immutableFilter = getImmutableFilter(gridDescription, gridOptions);
     final Map<String, Filter> initialParentFilters =
-        (gridInterceptor == null) ? null : gridInterceptor.getInitialParentFilters();
+        (gridInterceptor == null) ? null : gridInterceptor.getInitialParentFilters(uiOptions);
 
     List<FilterDescription> predefinedFilters =
         getPredefinedFilters(gridDescription, gridInterceptor);

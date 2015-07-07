@@ -19,6 +19,7 @@ import com.butent.bee.client.composite.TabBar;
 import com.butent.bee.client.dialog.Popup.OutsideClick;
 import com.butent.bee.client.event.Binder;
 import com.butent.bee.client.event.logical.CloseEvent;
+import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.images.star.Stars;
 import com.butent.bee.client.layout.Flow;
@@ -114,7 +115,7 @@ public class MessageBoxes {
       vertical = len > CHOICE_MAX_HORIZONTAL_CHARS;
     }
 
-    TabBar group = new TabBar(STYLE_CHOICE_GROUP,
+    final TabBar group = new TabBar(STYLE_CHOICE_GROUP,
         vertical ? Orientation.VERTICAL : Orientation.HORIZONTAL);
 
     for (int i = 0; i < size; i++) {
@@ -155,6 +156,25 @@ public class MessageBoxes {
 
     dialog.setHideOnEscape(true);
 
+    dialog.addOpenHandler(new OpenEvent.Handler() {
+      @Override
+      public void onOpen(OpenEvent event) {
+        int focusIndex;
+
+        if (group.isIndex(defaultValue)) {
+          group.getTabWidget(defaultValue).addStyleName(STYLE_CHOICE_DEFAULT);
+          group.selectTab(defaultValue, false);
+          focusIndex = defaultValue;
+        } else if (cancelIndex.isNotNull()) {
+          focusIndex = cancelIndex.get();
+        } else {
+          focusIndex = 0;
+        }
+
+        group.focusTab(focusIndex);
+      }
+    });
+
     dialog.addCloseHandler(new CloseEvent.Handler() {
       @Override
       public void onClose(CloseEvent event) {
@@ -176,20 +196,6 @@ public class MessageBoxes {
 
     dialog.setAnimationEnabled(true);
     dialog.center();
-
-    int focusIndex;
-
-    if (group.isIndex(defaultValue)) {
-      group.getTabWidget(defaultValue).addStyleName(STYLE_CHOICE_DEFAULT);
-      group.selectTab(defaultValue, false);
-      focusIndex = defaultValue;
-    } else if (cancelIndex.isNotNull()) {
-      focusIndex = cancelIndex.get();
-    } else {
-      focusIndex = 0;
-    }
-
-    group.focusTab(focusIndex);
 
     if (timer != null) {
       timer.schedule(timeout);

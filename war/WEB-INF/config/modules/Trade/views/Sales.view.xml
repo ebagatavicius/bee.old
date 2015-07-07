@@ -11,9 +11,8 @@
     <SimpleColumn name="Number" />
     <SimpleColumn name="SaleSeries" label="=trdInvoicePrefix" />
     <SimpleJoin name="SaleSeries" joinType="LEFT">
-      <SimpleColumn name="SeriesName" />
+      <SimpleColumn name="SeriesName" alias="InvoicePrefix" />
     </SimpleJoin>
-    <SimpleColumn name="InvoicePrefix" />
     <SimpleColumn name="InvoiceNo" />
 
     <SimpleColumn name="Term" />
@@ -28,7 +27,7 @@
       <SimpleColumn name="Name" alias="CurrencyName" />
       <SimpleColumn name="MinorName" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="PaymentTime" />
     <SimpleColumn name="Paid" />
 
@@ -47,7 +46,7 @@
       <SimpleColumn alias="WarehouseFromCode" name="Code" />
       <SimpleColumn alias="WarehouseFromName" name="Name" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="Supplier" />
     <SimpleJoin joinType="LEFT" name="Supplier">
       <SimpleColumn name="Name" alias="SupplierName" />
@@ -62,7 +61,7 @@
     <SimpleJoin joinType="LEFT" name="Payer">
       <SimpleColumn name="Name" alias="PayerName" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="Manager" />
     <SimpleJoin name="Manager" joinType="LEFT">
       <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />

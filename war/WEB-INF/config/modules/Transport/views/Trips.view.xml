@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
-  xmlns:xpr="http://www.butent.com/expression"
+      xmlns:xpr="http://www.butent.com/expression"
 
-  name="Trips"
-  source="Trips"
-  filter="!(Expedition)"
-  editForm="Trip" newRowForm="Trip"
-  caption="=trips" newRowCaption="=trNewTrip"
-  >
+      name="Trips"
+      source="Trips"
+      filter="!(Expedition)"
+      editForm="Trip" newRowForm="Trip"
+      caption="=trips" newRowCaption="=trNewTrip"
+    >
   <Relation renderColumns="TripNo" choiceColumns="Date PlannedEndDate TripNo VehicleNumber" />
   <Columns>
     <HiddenColumn name="Expedition" />
@@ -33,24 +33,25 @@
     <SimpleColumn name="Route" />
     <SimpleColumn name="Notes" />
 
-    <ExternalJoin source="TripDrivers" name="Trip" joinType="LEFT">
+    <SimpleColumn name="MainDriver" />
+    <SimpleJoin name="MainDriver" joinType="LEFT">
       <SimpleJoin name="Driver" joinType="LEFT">
         <SimpleJoin name="CompanyPerson" joinType="LEFT">
           <SimpleJoin name="Person" joinType="LEFT">
             <HiddenColumn name="FirstName" />
             <HiddenColumn name="LastName" />
 
-            <AggregateColumn name="Driver" aggregate="MAX">
+            <SimpleColumn name="Driver" label="=vehicleDriver">
               <xpr:concat>
                 <xpr:string>"LastName"</xpr:string>
                 <xpr:string>' '</xpr:string>
                 <xpr:string>"FirstName"</xpr:string>
               </xpr:concat>
-            </AggregateColumn>
+            </SimpleColumn>
           </SimpleJoin>
         </SimpleJoin>
       </SimpleJoin>
-    </ExternalJoin>
+    </SimpleJoin>
   </Columns>
   <Order>
     <OrderBy column="Date" />

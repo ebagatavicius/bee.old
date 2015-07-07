@@ -2692,6 +2692,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
     for (int i = 0; i < getDataColumns().size(); i++) {
       BeeColumn dataColumn = getDataColumns().get(i);
+
       if (!BeeUtils.isEmpty(getRelColumn()) && BeeUtils.same(getRelColumn(), dataColumn.getId())) {
         if (!DataUtils.isId(getRelId())) {
           callback.onFailure(BeeUtils.joinWords(getViewName(), getRelColumn(), "invalid rel id"));
@@ -2700,17 +2701,14 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
         columns.add(dataColumn);
         values.add(BeeUtils.toString(getRelId()));
-        continue;
-      }
 
-      String value = row.getString(i);
-      if (BeeUtils.isEmpty(value)) {
-        continue;
-      }
+      } else {
+        String value = row.getString(i);
 
-      if (dataColumn.isEditable()) {
-        columns.add(dataColumn);
-        values.add(value);
+        if (dataColumn.isInsertable(value)) {
+          columns.add(dataColumn);
+          values.add(value);
+        }
       }
     }
 

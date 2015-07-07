@@ -7,12 +7,14 @@ import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.event.logical.ParentRowEvent;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.ui.Action;
 
+import java.util.Collection;
 import java.util.Map;
 
 public class ObjectInvoicesGrid extends AbstractGridInterceptor {
@@ -44,7 +46,7 @@ public class ObjectInvoicesGrid extends AbstractGridInterceptor {
   }
 
   @Override
-  public Map<String, Filter> getInitialParentFilters() {
+  public Map<String, Filter> getInitialParentFilters(Collection<UiOption> uiOptions) {
     return ImmutableMap.of(FILTER_KEY, getFilter(getPendingId()));
   }
 

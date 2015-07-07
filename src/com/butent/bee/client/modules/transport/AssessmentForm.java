@@ -990,7 +990,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
 
                       for (IsRow row : incomes) {
                         table.setText(r, 0,
-                            Data.getString(VIEW_CARGO_INCOMES, row, COL_SERVICE_NAME));
+                            Data.getString(VIEW_CARGO_INCOMES, row, ALS_SERVICE_NAME));
 
                         String currency = Data.getString(VIEW_CARGO_INCOMES, row, "CurrencyName");
                         String amount = BeeUtils.joinWords(totalRenderer.render(row), currency);

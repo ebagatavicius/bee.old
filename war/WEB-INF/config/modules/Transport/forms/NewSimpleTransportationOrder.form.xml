@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:ui="http://www.butent.com/ui"
+  
+  name="NewSimpleTransportationOrder" viewName="OrderCargo" caption="=newTransportationOrder"
+  width="600" height="420"
+  >
+  <FlowPanel>
+    <Table>
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+
+      <row>
+        <Label text="=orderDate" class="bee-hasDefaults" />
+        <InputDateTime name="Date" />
+        <Label text="=customer" class="bee-required" />
+        <UnboundSelector name="Customer" viewName="Companies" choiceColumns="Name TypeName" />
+      </row>
+  
+      <row>
+        <cell colSpan="2">
+          <Label text="=loading" horizontalAlignment="center" style="font-weight: bold;" />
+        </cell>
+        <cell colSpan="2">
+          <Label text="=unloading" horizontalAlignment="center" style="font-weight: bold;" />
+        </cell>
+      </row>
+  
+      <row>
+        <Label text="=date" />
+        <InputDateTime source="LoadingDate" />
+        <Label text="=date" />
+        <InputDateTime source="UnloadingDate" />
+      </row>
+  
+      <row>
+        <Label text="=city" />
+        <DataSelector source="LoadingCity" options="LoadingCountry">
+          <selectorColumn source="Name" />
+          <selectorColumn source="CountryName" />
+          <selectorColumn source="CountryCode">
+            <ui:renderer type="flag" />
+          </selectorColumn>
+        </DataSelector>
+
+        <Label text="=city" />
+        <DataSelector source="UnloadingCity" options="UnloadingCountry">
+          <selectorColumn source="Name" />
+          <selectorColumn source="CountryName" />
+          <selectorColumn source="CountryCode">
+            <ui:renderer type="flag" />
+          </selectorColumn>
+        </DataSelector>
+      </row>
+    
+      <row>
+        <Label text="=postIndex" />
+        <InputText source="LoadingPostIndex" autocompleteKey="cargo-place-postal-code" />
+        <Label text="=postIndex" />
+        <InputText source="UnloadingPostIndex" autocompleteKey="cargo-place-postal-code" />
+      </row>
+    
+      <row>
+        <Label text="=country" />
+        <DataSelector source="LoadingCountry">
+          <renderToken source="LoadingCountryName" />
+          <renderToken source="LoadingCountryCode" prefix=" (" suffix=")" />
+          <selectorColumn source="Name" />
+          <selectorColumn source="Code">
+            <ui:renderer type="flag" />
+          </selectorColumn>
+        </DataSelector>
+  
+        <Label text="=country" />
+        <DataSelector source="UnloadingCountry">
+          <renderToken source="UnloadingCountryName" />
+          <renderToken source="UnloadingCountryCode" prefix=" (" suffix=")" />
+          <selectorColumn source="Name" />
+          <selectorColumn source="Code">
+            <ui:renderer type="flag" />
+          </selectorColumn>
+        </DataSelector>
+      </row>
+  
+      <row>
+        <Label text="=price" />
+        <HorizontalPanel>
+          <InputMoney name="Amount" style="width: 7em;" />
+          <UnboundSelector name="Currency" viewName="Currencies" choiceColumns="Name"
+            style="width: 4em;" editEnabled="false" newRowEnabled="false"
+            placeholder="=currencyShort" />
+        </HorizontalPanel>
+        
+        <cell><text/></cell>
+        <HorizontalPanel>
+          <CheckBox name="VatPlus" text="=vatPlus" />
+          <InputMoney name="Vat" placeholder="=vat" style="width: 5em;" />
+          <CheckBox name="VatPercent" text="%" />
+        </HorizontalPanel>
+      </row>
+    </Table>
+  </FlowPanel>
+</f:Form>

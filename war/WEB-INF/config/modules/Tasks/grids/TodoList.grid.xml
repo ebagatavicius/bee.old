@@ -3,6 +3,7 @@
   
   name="TodoList" viewName="TodoList" caption="=crmTodoList"
   newRowPopup="true" editPopup="true"
+  filter="Creator={u} or Visibility = 0"
   >
   <g:columns>
     <DataColumn name="Summary" minWidth="120" visible="true" />

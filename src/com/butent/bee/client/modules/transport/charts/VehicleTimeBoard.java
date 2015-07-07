@@ -317,7 +317,18 @@ abstract class VehicleTimeBoard extends ChartBase {
       return result;
 
     } else if (separateCargo()) {
-      return freights.values();
+      List<HasDateRange> result = new ArrayList<>();
+      if (!freights.isEmpty()) {
+        result.addAll(freights.values());
+      }
+
+      for (Trip trip : trips.values()) {
+        if (!trip.hasCargo()) {
+          result.add(trip);
+        }
+      }
+
+      return result;
 
     } else {
       return trips.values();
@@ -400,19 +411,35 @@ abstract class VehicleTimeBoard extends ChartBase {
         Long tripId = row.getLong(COL_TRIP_ID);
 
         Collection<Driver> tripDrivers = BeeUtils.getIfContains(drivers, tripId);
-        int cargoCount = 0;
 
         if (freights.containsKey(tripId)) {
           JustDate minDate = null;
           JustDate maxDate = null;
 
+          int cargoCount = 0;
+
+          Collection<String> tripCustomers = new ArrayList<>();
+          Collection<String> tripManagers = new ArrayList<>();
+
           for (Freight freight : freights.get(tripId)) {
             minDate = BeeUtils.min(minDate, freight.getMinDate());
             maxDate = BeeUtils.max(maxDate, freight.getMaxDate());
+
             cargoCount++;
+
+            String customerName = freight.getCustomerName();
+            if (!BeeUtils.isEmpty(customerName) && !tripCustomers.contains(customerName)) {
+              tripCustomers.add(customerName);
+            }
+
+            String managerName = freight.getManagerName();
+            if (!BeeUtils.isEmpty(managerName) && !tripManagers.contains(managerName)) {
+              tripManagers.add(managerName);
+            }
           }
 
-          Trip trip = new Trip(row, minDate, maxDate, tripDrivers, cargoCount);
+          Trip trip = new Trip(row, tripDrivers, minDate, maxDate, cargoCount,
+              tripCustomers, tripManagers);
           trips.put(row.getLong(index), trip);
 
           for (Freight freight : freights.get(tripId)) {
@@ -423,7 +450,7 @@ abstract class VehicleTimeBoard extends ChartBase {
           }
 
         } else {
-          trips.put(row.getLong(index), new Trip(row, tripDrivers, cargoCount));
+          trips.put(row.getLong(index), new Trip(row, tripDrivers));
         }
       }
     }
@@ -479,8 +506,8 @@ abstract class VehicleTimeBoard extends ChartBase {
     setChartLeft(getNumberWidth() + getInfoWidth());
     setChartWidth(canvasSize.getWidth() - getChartLeft() - getChartRight());
 
-    setDayColumnWidth(TimeBoardHelper.getPixels(getSettings(), getDayWidthColumnName(), 20,
-        1, getChartWidth()));
+    setDayColumnWidth(TimeBoardHelper.getPixels(getSettings(), getDayWidthColumnName(),
+        getDefaultDayColumnWidth(getChartWidth()), 1, getChartWidth()));
 
     boolean sc = TimeBoardHelper.getBoolean(getSettings(), getSeparateCargoColumnName());
     if (separateCargo() != sc) {
@@ -925,11 +952,10 @@ abstract class VehicleTimeBoard extends ChartBase {
         Long vehicleId = vehicle.getId();
         TimeBoardRowLayout layout = new TimeBoardRowLayout(vehicleIndex);
 
-        Collection<Trip> vehicleTrips = getTripsForLayout(vehicleId,
-            separateCargo() ? null : range);
+        Collection<Trip> vehicleTrips = getTripsForLayout(vehicleId, range);
 
         for (Trip trip : vehicleTrips) {
-          if (separateCargo()) {
+          if (separateCargo() && trip.hasCargo()) {
             List<Freight> tripFreights = getFreightsForLayout(trip.getTripId(), range);
             if (!tripFreights.isEmpty()) {
               layout.addItems(getGroupIdForFreightLayout(trip), tripFreights, range,
@@ -974,13 +1000,22 @@ abstract class VehicleTimeBoard extends ChartBase {
 
   private List<Trip> getTripsForLayout(Long vehicleId, Range<JustDate> range) {
     List<Trip> result = new ArrayList<>();
-    if (!trips.containsKey(vehicleId)) {
-      return result;
-    }
 
-    for (Trip trip : trips.get(vehicleId)) {
-      if (isItemVisible(trip) && TimeBoardHelper.hasRangeAndIsActive(trip, range)) {
-        result.add(trip);
+    if (range != null && trips.containsKey(vehicleId)) {
+      for (Trip trip : trips.get(vehicleId)) {
+        boolean ok = isItemVisible(trip) && trip.getRange() != null;
+
+        if (ok) {
+          if (separateCargo()) {
+            ok = trip.hasCargo() || range.isConnected(trip.getRange());
+          } else {
+            ok = range.isConnected(trip.getRange());
+          }
+
+          if (ok) {
+            result.add(trip);
+          }
+        }
       }
     }
 

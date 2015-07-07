@@ -468,7 +468,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
   }
 
   private boolean isEventRelevant(DataEvent event) {
-    return event != null && BeeUtils.same(event.getViewName(), getViewName())
+    return event != null && event.hasView(getViewName())
         && getViewData() != null && isCachingEnabled();
   }
 

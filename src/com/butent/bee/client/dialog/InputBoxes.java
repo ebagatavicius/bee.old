@@ -602,7 +602,7 @@ public class InputBoxes {
       }
 
       if (enabled && enabledActions.contains(Action.DELETE)) {
-        FaLabel delete = new FaLabel(FontAwesome.REMOVE);
+        FaLabel delete = new FaLabel(FontAwesome.TRASH);
         delete.addClickHandler(new ClickHandler() {
           @Override
           public void onClick(ClickEvent arg0) {

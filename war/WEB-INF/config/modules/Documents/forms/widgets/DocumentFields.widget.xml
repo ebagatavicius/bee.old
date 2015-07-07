@@ -27,8 +27,8 @@
   </row>
 
   <row>
-    <Label for="Number" />
-    <InputText source="Number" />
+    <Label for="Number" class="bee-required" />
+    <InputText source="Number" required="true" />
     <Label text="=documentRegistrationNumberShort" for="RegistrationNumber" />
     <InputText source="RegistrationNumber" />
   </row>

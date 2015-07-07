@@ -41,7 +41,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
-import com.butent.bee.shared.data.event.DataEvent;
+import com.butent.bee.shared.data.event.ModificationEvent;
 import com.butent.bee.shared.menu.MenuHandler;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -313,6 +313,10 @@ public abstract class ChartBase extends TimeBoard {
 
   protected abstract String getDataService();
 
+  protected int getDefaultDayColumnWidth(int chartWidth) {
+    return Math.max(chartWidth / 10, 1);
+  }
+
   @Override
   protected Set<Action> getEnabledActions() {
     return EnumSet.of(Action.FILTER, Action.REFRESH, Action.ADD, Action.CONFIGURE, Action.PRINT);
@@ -341,8 +345,8 @@ public abstract class ChartBase extends TimeBoard {
   protected abstract void initData(Map<String, String> properties);
 
   @Override
-  protected boolean isDataEventRelevant(DataEvent event) {
-    return event != null && relevantDataViews.contains(event.getViewName());
+  protected boolean isDataEventRelevant(ModificationEvent<?> event) {
+    return event != null && event.containsAny(relevantDataViews);
   }
 
   protected boolean isItemVisible(Filterable item) {

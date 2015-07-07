@@ -6,7 +6,7 @@
   ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  
+
   name="NewCargoInvoice" viewName="CargoInvoices" caption="=trNewCargoInvoice"
   width="760" height="500"
   >
@@ -17,7 +17,7 @@
          &separator;
 	   </cell>
 	  </row>
-      <row>	  
+      <row>
         <cell colSpan="4">
           <CheckBox source="Proforma" text="=trdProformaInvoice" style="float:right;" />
 		</cell>
@@ -31,12 +31,12 @@
       </row>
       <row>
         <Label text="=currency" class="bee-required" style="&lbl2; width:143px; margin-right: 5px;" />
-        <DataSelector source="CurrencyName" style="width:5em;" editEnabled="false" />        
+        <DataSelector source="CurrencyName" style="width:5em;" editEnabled="false" />
 	    <cell colSpan="2">
 	      <Table style="border-spacing: 0px;">
-            <row>              
+            <row>
               <Label text="=trdInvoicePrefix" style="&lbl2; width: 30px; "/>
-              <DataSelector source="SaleSeries" upperCase="true" style="width:11em; margin-right: 4px;"/>
+              <DataSelector source="SaleSeries" style="width:6em; margin-right: 4px;"/>
               <InlineLabel text="=trdInvoiceNo" style="&lbl2; margin-right: 5px;" />
               <InputText source="InvoiceNo" />
 		    </row>
@@ -45,7 +45,7 @@
       </row>
 	  <row>
 		<!-- <cell colSpan="4"> -->
-	     <!-- <Table style="border-spacing: 0px;"> 
+	     <!-- <Table style="border-spacing: 0px;">
 		    <row> -->
   	 	      <Label text="=trdTerm" style="&lbl2; width:143px; text-align:right; margin-right: 5px;"/>
   		      <InputDate source="Term" style="width:150px;" />
@@ -66,14 +66,14 @@
         <DataSelector source="Supplier" renderColumns="SupplierName SupplierTypeName"
             choiceColumns="Name TypeName" />
         <Label text="=trdCustomer" class="bee-required" style="&lbl2;" />
-        <DataSelector source="Customer" required="true" renderColumns="CustomerName CustomerTypeName" 
+        <DataSelector source="Customer" required="true" renderColumns="CustomerName CustomerTypeName"
             choiceColumns="Name TypeName" />
       </row>
       <row>
         <Label text="=trdManager" style="&lbl2; width:143px;" />
         <DataSelector source="Manager" editEnabled="false" />
         <Label text="=trdPayer" style="&lbl2;" />
-        <DataSelector source="Payer" renderColumns="PayerName PayerTypeName" 
+        <DataSelector source="Payer" renderColumns="PayerName PayerTypeName"
             choiceColumns="Name TypeName" />
       </row>
     </Table>

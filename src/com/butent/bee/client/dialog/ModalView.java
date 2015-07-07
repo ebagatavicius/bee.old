@@ -33,6 +33,12 @@ public class ModalView extends Popup {
   }
 
   @Override
+  protected int getHeaderHeight() {
+    HeaderView header = ViewHelper.getHeader(getWidget());
+    return (header == null) ? super.getHeaderHeight() : header.getHeight();
+  }
+
+  @Override
   protected boolean isCaptionEvent(NativeEvent event) {
     HeaderView header = ViewHelper.getHeader(getWidget());
     if (header == null) {

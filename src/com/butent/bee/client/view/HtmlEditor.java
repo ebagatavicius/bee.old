@@ -103,8 +103,8 @@ public class HtmlEditor extends Flow implements Presenter, View, Printable, HasW
     headerView.setViewPresenter(this);
     add(headerView);
 
-    this.canvas = new Flow();
-    canvas.addStyleName(STYLE_CANVAS);
+    this.canvas = new Flow(STYLE_CANVAS);
+    StyleUtils.setTop(canvas, headerView.getHeight());
 
     this.urlFrame = new Frame();
     urlFrame.addStyleName(STYLE_FRAME + STYLE_SUFFIX_URL);

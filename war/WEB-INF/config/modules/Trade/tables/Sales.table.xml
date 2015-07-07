@@ -9,7 +9,7 @@
     <String name="Number" precision="50" label="=trdNumber" />
     <Relation name="SaleSeries" relation="SaleSeries" label="=trdInvoicePrefix"/>
     <String name="InvoicePrefix" precision="10" label="=trdInvoicePrefix" />
-    <String name="InvoiceNo" precision="20" label="=trdInvoiceNo" defExpr="NEXT_NUMBER" defValue="InvoicePrefix" />
+    <String name="InvoiceNo" precision="20" label="=trdInvoiceNo" />
 
     <Relation name="Supplier" relation="Companies" label="=trdSupplier" />
     <Relation name="Customer" relation="Companies" label="=trdCustomer" />
@@ -33,7 +33,7 @@
 
     <Boolean name="Proforma" label="=trdProformaInvoice" />
     <DateTime name="Exported" label="=trdExported" />
-    
+
     <Integer name="Kind" />
   </Fields>
 

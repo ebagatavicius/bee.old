@@ -113,8 +113,12 @@ public abstract class RightsForm extends AbstractFormInterceptor {
     logger.debug(messages);
   }
 
-  protected static void enableValueWidet(Widget widget, boolean enabled) {
-    widget.setStyleName(STYLE_VALUE_DISABLED, !enabled);
+  protected static void enableValueWidet(Element elem, boolean enabled) {
+    if (enabled) {
+      elem.removeClassName(STYLE_VALUE_DISABLED);
+    } else {
+      elem.addClassName(STYLE_VALUE_DISABLED);
+    }
   }
 
   protected static ModuleAndSub getFirstVisibleModule(String input) {
@@ -133,12 +137,16 @@ public abstract class RightsForm extends AbstractFormInterceptor {
     }
   }
 
-  protected static String getObjectName(Widget widget) {
-    String objectName = DomUtils.getDataProperty(widget.getElement(), DATA_KEY_OBJECT);
+  protected static String getObjectName(Element elem) {
+    String objectName = DomUtils.getDataProperty(elem, DATA_KEY_OBJECT);
     if (BeeUtils.isEmpty(objectName)) {
-      severe("widget", DomUtils.getId(widget), "has no object name");
+      severe("element", elem.getId(), "has no object name");
     }
     return objectName;
+  }
+
+  protected static String getObjectName(Widget widget) {
+    return getObjectName(widget.getElement());
   }
 
   protected static void markObjectLabel(Widget widget, RightsObject object) {
@@ -418,6 +426,10 @@ public abstract class RightsForm extends AbstractFormInterceptor {
 
   protected HtmlTable getTable() {
     return table;
+  }
+
+  protected String getValueSelector() {
+    return Selectors.attributeEquals(Attributes.DATA_PREFIX + DATA_KEY_TYPE, DATA_TYPE_VALUE);
   }
 
   protected abstract int getValueStartCol();

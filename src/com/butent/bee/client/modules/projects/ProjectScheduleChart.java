@@ -36,7 +36,7 @@ import com.butent.bee.shared.Size;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.SimpleRowSet;
-import com.butent.bee.shared.data.event.DataEvent;
+import com.butent.bee.shared.data.event.ModificationEvent;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.time.HasDateRange;
@@ -209,8 +209,8 @@ final class ProjectScheduleChart extends TimeBoard {
   }
 
   @Override
-  protected boolean isDataEventRelevant(DataEvent event) {
-    return event != null && relevantDataViews.contains(event.getViewName());
+  protected boolean isDataEventRelevant(ModificationEvent<?> event) {
+    return event != null && event.containsAny(relevantDataViews);
   }
 
   @Override

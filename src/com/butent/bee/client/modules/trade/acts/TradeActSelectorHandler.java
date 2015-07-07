@@ -602,7 +602,7 @@ class TradeActSelectorHandler implements SelectorEvent.Handler {
           String viewName = (dataView == null) ? null : dataView.getViewName();
           IsRow dst = (dataView == null) ? null : dataView.getActiveRow();
 
-          if (dataView.getActiveRow() != null
+          if (dst != null
               && (VIEW_TRADE_ACT_SERVICES.equals(viewName)
               || VIEW_TRADE_ACT_TMPL_SERVICES.equals(viewName))) {
 

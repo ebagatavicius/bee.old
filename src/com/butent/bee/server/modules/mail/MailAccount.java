@@ -11,20 +11,21 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.mail.AccountInfo;
-import com.butent.bee.shared.modules.mail.MailConstants.Protocol;
-import com.butent.bee.shared.modules.mail.MailConstants.SystemFolder;
 import com.butent.bee.shared.modules.mail.MailFolder;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
@@ -39,7 +40,41 @@ import javax.mail.internet.MimeMessage;
 
 public class MailAccount {
 
+  private static class MailStore {
+    final Store store;
+    final long start;
+    int cnt;
+
+    public MailStore(Store store) {
+      this.store = Assert.notNull(store);
+      this.start = System.currentTimeMillis();
+    }
+
+    public void enter() {
+      cnt++;
+    }
+
+    public boolean expired() {
+      return BeeUtils.isMore(System.currentTimeMillis() - start, TimeUtils.MILLIS_PER_MINUTE * 10L);
+    }
+
+    public Store getStore() {
+      return store;
+    }
+
+    public boolean idle() {
+      return cnt <= 0;
+    }
+
+    public void leave() {
+      cnt--;
+    }
+  }
+
   private static final BeeLogger logger = LogUtils.getLogger(MailAccount.class);
+
+  private static final Map<Long, MailStore> stores = new HashMap<>();
+  private static final ReentrantLock storesLock = new ReentrantLock();
 
   private static boolean checkNewFolderName(Folder newFolder, String name, boolean acceptExisting)
       throws MessagingException {
@@ -273,23 +308,62 @@ public class MailAccount {
     if (!isValidStoreAccount()) {
       throw new MessagingException(getStoreErrorMessage());
     }
-    logger.debug("Connecting to store...");
+    storesLock.lock();
+    MailStore mailStore = stores.get(getAccountId());
 
-    String protocol = getStoreProtocol().name().toLowerCase();
-    Properties props = new Properties();
-    String pfx = "mail." + protocol + ".";
+    if (mailStore != null) {
+      if (mailStore.expired()) {
+        logger.debug("Removing expired store...");
+        stores.remove(getAccountId());
+        storesLock.unlock();
+        return connectToStore();
 
-    if (isStoreSSL()) {
-      props.put(pfx + "ssl.enable", "true");
+      } else if (mailStore.idle()) {
+        logger.debug("Waiting for connected store...");
+        storesLock.unlock();
+
+        try {
+          Thread.sleep(TimeUtils.MILLIS_PER_SECOND);
+        } catch (InterruptedException e) {
+          logger.warning(e.getMessage());
+        }
+        return connectToStore();
+      }
+      logger.debug("Entering connected store...");
+      mailStore.enter();
+      storesLock.unlock();
+    } else {
+      logger.debug("Connecting to store...");
+
+      String protocol = getStoreProtocol().name().toLowerCase();
+      Properties props = new Properties();
+      String pfx = "mail." + protocol + ".";
+
+      if (isStoreSSL()) {
+        props.put(pfx + "ssl.enable", "true");
+      }
+      for (Entry<String, String> prop : getStoreProperties().entrySet()) {
+        String key = prop.getKey();
+        props.put(BeeUtils.isPrefix(key, "mail.") ? key : pfx + key, prop.getValue());
+      }
+      Session session = Session.getInstance(props, null);
+      mailStore = new MailStore(session.getStore(protocol));
+
+      stores.put(getAccountId(), mailStore);
+      storesLock.unlock();
+
+      try {
+        mailStore.getStore().connect(getStoreHost(), getStorePort(), getStoreLogin(),
+            getStorePassword());
+      } catch (MessagingException ex) {
+        storesLock.lock();
+        stores.remove(getAccountId());
+        storesLock.unlock();
+        throw ex;
+      }
+      mailStore.enter();
     }
-    for (Entry<String, String> prop : getStoreProperties().entrySet()) {
-      String key = prop.getKey();
-      props.put(BeeUtils.isPrefix(key, "mail.") ? key : pfx + key, prop.getValue());
-    }
-    Session session = Session.getInstance(props, null);
-    Store store = session.getStore(protocol);
-    store.connect(getStoreHost(), getStorePort(), getStoreLogin(), getStorePassword());
-    return store;
+    return mailStore.getStore();
   }
 
   Transport connectToTransport() throws MessagingException {
@@ -352,12 +426,29 @@ public class MailAccount {
 
   void disconnectFromStore(Store store) {
     if (store != null) {
-      try {
-        logger.debug("Disconnecting from store...");
-        store.close();
-      } catch (MessagingException e) {
-        logger.warning(e);
+      storesLock.lock();
+      MailStore mailStore = stores.get(getAccountId());
+      boolean disconnect = mailStore == null || mailStore.getStore() != store;
+
+      if (!disconnect) {
+        mailStore.leave();
+        disconnect = mailStore.idle();
+
+        if (disconnect) {
+          stores.remove(getAccountId());
+        }
       }
+      if (disconnect) {
+        try {
+          logger.debug("Disconnecting from store...");
+          store.close();
+        } catch (MessagingException e) {
+          logger.warning(e);
+        }
+      } else {
+        logger.debug("Leaving connected store...");
+      }
+      storesLock.unlock();
     }
   }
 

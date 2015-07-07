@@ -20,6 +20,6 @@
         <InputInteger style="&inpLeft;" source="DocumentCount" readOnly="true" />
       </row>
     </Table>
-    <ChildGrid class="bee-documents-childWiget" style="margin-top: 40px;" name="AllDocuments" relColumn="Category" caption="=documents" />
+    <ChildGrid class="bee-documents-childWiget" style="margin-top: 5em;" name="AllDocuments" relColumn="Category" caption="=documents" />
   </FlowPanel>
 </f:Form>  

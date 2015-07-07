@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
+
+        name="TripPurchaseInvoices" viewName="TripPurchaseInvoices"
+        editShowId="true" flexGrow="1"
+        disabledActions="add"
+        caption="=trTripPurchaseInvoices"
+        filter="Purchase"
+    >
+  <g:columns>
+    <SelectionColumn name="Select" width="20" />
+    <IdColumn name="ID" caption="=trdInvoiceId" />
+    <DataColumn name="Date" />
+    <DataColumn name="Number" />
+    <DataColumn name="InvoiceNo" searchBy="InvoicePrefix InvoiceNo">
+      <render>
+        <ui:function>
+          if (!row.InvoicePrefix) {
+          return row.InvoiceNo;
+          } else if(!row.InvoiceNo) {
+          return row.InvoicePrefix;
+          } else {
+          return row.InvoicePrefix + " " + row.InvoiceNo;
+          }
+        </ui:function>
+      </render>
+    </DataColumn>
+    <DataColumn name="SupplierName" />
+    <DataColumn name="Amount" />
+    <DataColumn name="CurrencyName" />
+    <DataColumn name="Term" />
+    <DataColumn name="Exported" />
+  </g:columns>
+</g:Grid>

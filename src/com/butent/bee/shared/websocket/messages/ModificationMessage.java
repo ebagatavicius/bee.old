@@ -22,7 +22,7 @@ public class ModificationMessage extends Message {
     if (getEvent() == null || getEvent().getKind() == null) {
       return BeeConst.NULL;
     } else {
-      return BeeUtils.joinWords(getEvent().getKind().getBrief(), getEvent().getViewName());
+      return BeeUtils.joinWords(getEvent().getKind().getBrief(), getEvent().getViewNames());
     }
   }
 
@@ -41,7 +41,7 @@ public class ModificationMessage extends Message {
       return BeeConst.NULL;
     } else {
       return BeeUtils.joinOptions("kind", string(getEvent().getKind()),
-          "view name", getEvent().getViewName());
+          "view names", BeeUtils.joinItems(getEvent().getViewNames()));
     }
   }
 

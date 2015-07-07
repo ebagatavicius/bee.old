@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="Purchases" source="Purchases" caption="=trdPurchases"
-  >
+      name="Purchases" source="Purchases" caption="=trdPurchases"
+    >
   <Columns>
     <SimpleColumn name="Date" />
     <SimpleColumn name="Number" />
@@ -15,13 +15,45 @@
 
     <SimpleColumn name="Amount" />
     <SimpleColumn name="Currency" />
+    <SimpleJoin name="Currency" joinType="INNER">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
 
     <SimpleColumn name="WarehouseFrom" />
-    <SimpleColumn name="WarehouseTo" />
+    <SimpleJoin name="WarehouseFrom" joinType="LEFT">
+      <SimpleColumn name="Code" alias="WarehouseFromCode" />
+    </SimpleJoin>
 
-    <SimpleColumn name="Supplier" />    
+    <SimpleColumn name="WarehouseTo" />
+    <SimpleJoin name="WarehouseTo" joinType="INNER">
+      <SimpleColumn name="Code" alias="WarehouseToCode" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Supplier" />
+    <SimpleJoin name="Supplier" joinType="LEFT">
+      <SimpleColumn name="Name" alias="SupplierName" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="SupplierType" />
+      </SimpleJoin>
+    </SimpleJoin>
+
     <SimpleColumn name="Customer" />
+    <SimpleJoin name="Customer" joinType="LEFT">
+      <SimpleColumn name="Name" alias="CustomerName" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="CustomerType" />
+      </SimpleJoin>
+    </SimpleJoin>
 
     <SimpleColumn name="Manager" />
+    <SimpleJoin name="Manager" joinType="LEFT">
+      <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" alias="ManagerFirstName" />
+          <SimpleColumn name="LastName" alias="ManagerLastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
   </Columns>
 </View>
