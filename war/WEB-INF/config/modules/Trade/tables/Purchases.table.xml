@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="Purchases"
-  idName="PurchaseID"
-  >
+       name="Purchases"
+       idName="PurchaseID"
+    >
   <Fields>
     <DateTime name="Date" notNull="true" defExpr="CURRENT_TIME" label="=trdDate" />
     <String name="Number" precision="50" label="=trdNumber" />
@@ -17,7 +17,8 @@
     <Relation name="Customer" relation="Companies" label="=trdCustomer" />
 
     <Numeric name="Amount" precision="12" scale="2" label="=trdTotal" />
-    <Relation name="Currency" relation="Currencies" notNull="true" defExpr="MAIN_CURRENCY" />
+    <Relation name="Currency" relation="Currencies" notNull="true" label="=currency"
+              defExpr="MAIN_CURRENCY" />
 
     <Date name="Term" label="=trdTerm" />
     <DateTime name="PaymentTime" label="=trdPaymentTime" />

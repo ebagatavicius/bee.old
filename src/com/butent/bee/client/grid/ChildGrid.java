@@ -148,8 +148,8 @@ public class ChildGrid extends EmbeddedGrid implements Launchable {
   private void getInitialRowSet(final IsRow row) {
     final Filter immutableFilter =
         GridFactory.getImmutableFilter(getGridDescription(), getGridOptions());
-    final Map<String, Filter> initialFilters =
-        (getGridInterceptor() == null) ? null : getGridInterceptor().getInitialParentFilters();
+    final Map<String, Filter> initialFilters = (getGridInterceptor() == null)
+        ? null : getGridInterceptor().getInitialParentFilters(uiOptions);
 
     final Order order = getGridDescription().getOrder();
 

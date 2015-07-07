@@ -406,7 +406,7 @@ public class MenuBar extends Widget implements IdentifiableWidget, CloseEvent.Ha
     }
 
     if (item != null) {
-      item.getElement().scrollIntoView();
+      DomUtils.scrollIntoView(item.getElement());
       item.setSelected(true);
     }
 

@@ -9,7 +9,7 @@
     <SimpleJoin name="Company" joinType="LEFT">
       <SimpleColumn alias="CompanyName" name="Name" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="User" />
     <SimpleJoin name="User" joinType="LEFT">
       <SimpleColumn name="CompanyPerson" />
@@ -21,14 +21,14 @@
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
-   
+
     <SimpleColumn name="Responsibility" />
     <SimpleJoin name="Responsibility" joinType="LEFT">
       <SimpleColumn name="Name" alias="ResponsibilityName"/>
     </SimpleJoin>
 
     <ExternalJoin name="DefaultCompanyUser" source="Companies" joinType="LEFT">
-      <AggregateColumn name="DefaultCompanyUser" aggregate="MAX" />
+      <SimpleColumn name="DefaultCompanyUser" />
     </ExternalJoin>
   </Columns>
   <Order>

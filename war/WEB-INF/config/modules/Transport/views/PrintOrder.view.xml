@@ -16,7 +16,6 @@
         <SimpleColumn name="Customer" />
         <SimpleJoin name="Customer" joinType="INNER">
           <SimpleColumn name="CreditDays" />
-          <SimpleColumn name="DaysAsBuyer" />
         </SimpleJoin>
 
         <SimpleJoin name="Manager" joinType="INNER">
@@ -25,12 +24,12 @@
               <SimpleColumn name="Name" alias="Position" />
             </SimpleJoin>
             <SimpleColumn name="Company" alias="Forwarder" />
-    
+
             <SimpleJoin name="Person" joinType="LEFT">
               <SimpleColumn name="FirstName" />
               <SimpleColumn name="LastName" />
             </SimpleJoin>
-    
+
             <SimpleJoin name="Contact" joinType="LEFT">
               <SimpleColumn name="Phone" />
               <SimpleColumn name="Mobile" />
@@ -58,12 +57,12 @@
       <SimpleJoin joinType="LEFT" name="WeightUnit">
         <SimpleColumn name="Name" alias="WeightUnitName" />
       </SimpleJoin>
-  
+
       <SimpleColumn name="Volume" />
       <SimpleJoin joinType="LEFT" name="VolumeUnit">
         <SimpleColumn name="Name" alias="VolumeUnitName" />
       </SimpleJoin>
-  
+
       <SimpleColumn name="Quantity" />
       <SimpleJoin joinType="LEFT" name="QuantityUnit">
         <SimpleColumn name="Name" alias="QuantityUnitName" />

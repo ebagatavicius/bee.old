@@ -144,11 +144,7 @@
         <TextLabel source="CurrencyName" inline="true" />
       </FlowPanel>
       <Label html="Payment term (days):" style="&bold;" />
-      <TextLabel name="CreditDays">
-        <render>
-          <ui:expression>row.DaysAsBuyer ? row.DaysAsBuyer : row.CreditDays</ui:expression>
-        </render>
-      </TextLabel>
+      <TextLabel source="CreditDays" />
     </HorizontalPanel>
 
     <HtmlPanel style="&section;">

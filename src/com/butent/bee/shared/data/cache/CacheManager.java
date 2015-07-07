@@ -433,7 +433,9 @@ public class CacheManager implements HandlesAllDataEvents {
 
   @Override
   public void onDataChange(DataChangeEvent event) {
-    remove(event.getViewName());
+    for (String viewName : event.getViewNames()) {
+      remove(viewName);
+    }
   }
 
   @Override

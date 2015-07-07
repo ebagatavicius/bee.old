@@ -7,10 +7,9 @@
   >
   <Columns>
     <SimpleColumn name="Date" />
-    <SimpleColumn name="InvoicePrefix" />
     <SimpleColumn name="SaleSeries" />
     <SimpleJoin name="SaleSeries" joinType="LEFT">
-      <SimpleColumn name="SeriesName" />
+      <SimpleColumn name="SeriesName" alias="InvoicePrefix" />
     </SimpleJoin>
     <SimpleColumn name="InvoiceNo" />
     <SimpleColumn name="Term" />
@@ -27,10 +26,10 @@
       <SimpleColumn name="Name" alias="CurrencyName" />
       <SimpleColumn name="MinorName" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="PaymentTime" />
     <SimpleColumn name="Paid" />
-    
+
     <SimpleColumn name="Debt">
       <x:minus>
         <x:number>"Amount"</x:number>
@@ -40,7 +39,7 @@
         </x:nvl>
       </x:minus>
     </SimpleColumn>
-    
+
     <SimpleColumn name="Supplier" />
     <SimpleJoin joinType="LEFT" name="Supplier">
       <SimpleColumn name="Name" alias="SupplierName" label="=trdSupplier" />
@@ -50,12 +49,12 @@
     <SimpleJoin joinType="LEFT" name="Customer">
       <SimpleColumn name="Name" alias="CustomerName" label="=trdCustomer" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="Payer" />
     <SimpleJoin joinType="LEFT" name="Payer">
       <SimpleColumn name="Name" alias="PayerName" label="=trdPayer" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="Manager" />
     <SimpleJoin name="Manager" joinType="LEFT">
       <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />
@@ -66,7 +65,7 @@
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
-    
+
     <ExternalJoin name="Sale" source="ProjectIncomes" joinType="LEFT">
       <AggregateColumn name="Sale" aggregate="MAX" />
       <AggregateColumn name="Project" aggregate="MAX" />

@@ -498,19 +498,34 @@ final class DriverTimeBoard extends ChartBase {
         Long tripId = row.getLong(COL_TRIP_ID);
 
         Collection<Driver> td = BeeUtils.getIfContains(tripDrivers, tripId);
-        int cargoCount = 0;
 
         if (freights.containsKey(tripId)) {
           JustDate minDate = null;
           JustDate maxDate = null;
 
+          int cargoCount = 0;
+
+          Collection<String> tripCustomers = new ArrayList<>();
+          Collection<String> tripManagers = new ArrayList<>();
+
           for (Freight freight : freights.get(tripId)) {
             minDate = BeeUtils.min(minDate, freight.getMinDate());
             maxDate = BeeUtils.max(maxDate, freight.getMaxDate());
+
             cargoCount++;
+
+            String customerName = freight.getCustomerName();
+            if (!BeeUtils.isEmpty(customerName) && !tripCustomers.contains(customerName)) {
+              tripCustomers.add(customerName);
+            }
+
+            String managerName = freight.getManagerName();
+            if (!BeeUtils.isEmpty(managerName) && !tripManagers.contains(managerName)) {
+              tripManagers.add(managerName);
+            }
           }
 
-          Trip trip = new Trip(row, minDate, maxDate, td, cargoCount);
+          Trip trip = new Trip(row, td, minDate, maxDate, cargoCount, tripCustomers, tripManagers);
           trips.put(tripId, trip);
 
           for (Freight freight : freights.get(tripId)) {
@@ -521,7 +536,7 @@ final class DriverTimeBoard extends ChartBase {
           }
 
         } else {
-          trips.put(tripId, new Trip(row, td, cargoCount));
+          trips.put(tripId, new Trip(row, td));
         }
       }
     }
@@ -549,8 +564,8 @@ final class DriverTimeBoard extends ChartBase {
     setChartLeft(getDriverWidth());
     setChartWidth(canvasSize.getWidth() - getChartLeft() - getChartRight());
 
-    setDayColumnWidth(TimeBoardHelper.getPixels(getSettings(), COL_DTB_PIXELS_PER_DAY, 20,
-        1, getChartWidth()));
+    setDayColumnWidth(TimeBoardHelper.getPixels(getSettings(), COL_DTB_PIXELS_PER_DAY,
+        getDefaultDayColumnWidth(getChartWidth()), 1, getChartWidth()));
 
     Long colorId = TimeBoardHelper.getLong(getSettings(), COL_DTB_COLOR);
     setItemColor((colorId == null) ? null : findColor(colorId));

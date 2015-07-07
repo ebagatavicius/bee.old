@@ -4,7 +4,7 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  
+
   name="ServiceInvoice" viewName="ServiceInvoices"
   caption="=trdInvoice" showRowId="true"
   width="800" height="600"
@@ -15,7 +15,7 @@
         <Label text="=trdDate" class="bee-required" style="&lbl;" />
         <InputDateTime source="Date" visible="true" />
 
-        <Label text="=trdInvoicePrefix" style="&lbl;" for="InvoicePrefix" />
+        <Label text="=trdInvoicePrefix" style="&lbl;" for="SaleSeries" />
         <HorizontalPanel style="border-collapse: collapse;">
           <DataSelector source="SaleSeries" upperCase="true" style="width: 50px;" />
           <Label text="=trdInvoiceNo" style="&lbl;" for="InvoiceNo" />

@@ -107,6 +107,7 @@ public final class ClassifierConstants {
   public static final String COL_COMPANY_CREDIT_LIMIT = "CreditLimit";
   public static final String COL_COMPANY_LIMIT_CURRENCY = "LimitCurrency";
   public static final String COL_COMPANY_CREDIT_DAYS = "CreditDays";
+  public static final String COL_COMPANY_SUPPLIER_DAYS = "SupplierCreditDays";
   public static final String COL_COMPANY_RELATION_TYPE_STATE = "CompanyRelationTypeState";
   public static final String COL_COMPANY_FINANCIAL_STATE = "FinancialState";
   public static final String COL_COMPANY_SIZE = "CompanySize";

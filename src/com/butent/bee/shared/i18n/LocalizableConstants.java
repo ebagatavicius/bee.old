@@ -425,6 +425,10 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
 
   String initialFilter();
 
+  String inputFull();
+
+  String inputSimple();
+
   String invalidDate();
 
   String invalidDateFormat();
@@ -442,6 +446,10 @@ public interface LocalizableConstants extends Constants, LocalizableClassifierCo
   String ipBlockCommand();
 
   String ipBlocked();
+
+  String is();
+
+  String isNot();
 
   String keywords();
 

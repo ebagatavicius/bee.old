@@ -6,18 +6,18 @@
   >
   <Columns>
     <SimpleColumn name="Company" />
-    
+
     <SimpleColumn name="Bank" />
     <SimpleJoin joinType="LEFT" name="Bank">
       <SimpleColumn name="Name" alias="BankName" />
       <SimpleColumn name="BankCode" />
       <SimpleColumn name="SWIFTCode" />
     </SimpleJoin>
-      
+
     <ExternalJoin source="Companies" joinType="LEFT" name="DefaultBankAccount">
-      <AggregateColumn aggregate="MAX" name="DefaultBankAccount" />
+      <SimpleColumn name="DefaultBankAccount" />
     </ExternalJoin>
-    
+
     <SimpleColumn name="BankAccount"/>
     <SimpleColumn name="Currency"/>
     <SimpleJoin joinType="LEFT" name="Currency">
@@ -27,4 +27,3 @@
     <SimpleColumn name="Notes" />
   </Columns>
 </View>
- 

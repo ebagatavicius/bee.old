@@ -14,10 +14,10 @@
         <Label for="Date" class="bee-hasDefaults bee-required" />
         <InputDateTime source="Date" style="width:11em;" />
         <Label for="Vehicle" class="bee-required" horizontalAlignment="right" />
-        <DataSelector source="Vehicle" renderColumns="VehicleNumber" filter="IsTruck"
+        <DataSelector name="Vehicle" source="Vehicle" renderColumns="VehicleNumber" filter="IsTruck"
                       required="true" />
         <Label for="Trailer" horizontalAlignment="right" />
-        <DataSelector source="Trailer" filter="IsTrailer" />
+        <DataSelector name="Trailer" source="Trailer" filter="IsTrailer" />
       </row>
       <row>
         <Label for="PlannedEndDate" />

@@ -200,6 +200,11 @@ public class BeeColumn extends TableColumn implements BeeSerializable, HasExtend
     return getLevel() > 0;
   }
 
+  public boolean isInsertable(String value) {
+    return isEditable()
+        && (!BeeUtils.isEmpty(value) || getType() == ValueType.BOOLEAN && hasDefaults());
+  }
+
   public boolean isNullable() {
     return nullable;
   }

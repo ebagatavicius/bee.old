@@ -185,6 +185,11 @@ public class DialogBox extends Popup implements Printable {
   }
 
   @Override
+  protected int getHeaderHeight() {
+    return header.getOffsetHeight();
+  }
+
+  @Override
   protected boolean isCaptionEvent(NativeEvent event) {
     EventTarget target = event.getEventTarget();
 

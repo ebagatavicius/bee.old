@@ -757,7 +757,7 @@ public class TasksModuleBean implements BeeModule {
 
     for (Long taskId : taskIdList) {
       response = registerTaskEvent(BeeUtils.unbox(taskId), user, TaskEvent.APPROVE, comment,
-          eventNote, null, null, now);
+          eventNote, null, null, null, now);
 
       if (response.hasErrors()) {
         logger.severe("Confirmation failed");
@@ -1974,12 +1974,13 @@ public class TasksModuleBean implements BeeModule {
   }
 
   private ResponseObject registerTaskEvent(long taskId, long userId, TaskEvent event, long millis) {
-    return registerTaskEvent(taskId, userId, event, null, null, null, null, millis);
+    return registerTaskEvent(taskId, userId, event, null, null, null, null, null, millis);
   }
 
   private ResponseObject registerTaskEvent(long taskId, long userId, TaskEvent event,
       RequestInfo reqInfo, String note, Long finishTime, long millis) {
     String comment = reqInfo.getParameter(VAR_TASK_COMMENT);
+    String eventData = reqInfo.getParameter(COL_EVENT_DATA);
 
     Long durationId = null;
     Long durationType = BeeUtils.toLongOrNull(reqInfo.getParameter(VAR_TASK_DURATION_TYPE));
@@ -1993,11 +1994,13 @@ public class TasksModuleBean implements BeeModule {
       }
     }
 
-    return registerTaskEvent(taskId, userId, event, comment, note, finishTime, durationId, millis);
+    return registerTaskEvent(taskId, userId, event, comment, note, eventData, finishTime,
+        durationId, millis);
   }
 
   private ResponseObject registerTaskEvent(long taskId, long userId, TaskEvent event,
-      String comment, String note, Long finishTime, Long durationId, long millis) {
+      String comment, String note, String eventData, Long finishTime, Long durationId,
+      long millis) {
 
     SqlInsert si = new SqlInsert(TBL_TASK_EVENTS)
         .addConstant(COL_TASK, taskId)
@@ -2010,6 +2013,10 @@ public class TasksModuleBean implements BeeModule {
     }
     if (!BeeUtils.isEmpty(note)) {
       si.addConstant(COL_EVENT_NOTE, note);
+    }
+
+    if (!BeeUtils.isEmpty(eventData)) {
+      si.addConstant(COL_EVENT_DATA, eventData);
     }
 
     if (BeeUtils.isPositive(finishTime)) {

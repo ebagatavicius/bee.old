@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="PaymentTypes"
+       idName="PaymentTypeID"
+    >
+  <Fields>
+    <String name="PaymentName" precision="20" notNull="true" unique="true" label="=paymentType" />
+    <Boolean name="Cash" label="=cash" />
+  </Fields>
+</Table>

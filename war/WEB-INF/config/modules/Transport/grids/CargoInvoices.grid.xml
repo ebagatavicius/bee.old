@@ -13,13 +13,13 @@
     <IdColumn name="ID" caption="=trdInvoiceId" />
     <DataColumn name="Date" />
     <DataColumn name="Number" />
-    <DataColumn name="InvoiceNo" renderColumns="SeriesName InvoiceNo" searchBy="SeriesName InvoiceNo" />
+    <DataColumn name="InvoiceNo" renderColumns="InvoicePrefix InvoiceNo" searchBy="InvoicePrefix InvoiceNo" />
     <DataColumn name="CustomerName" />
     <DataColumn name="PayerName" />
     <DataColumn name="Amount" />
     <DataColumn name="CurrencyName" />
     <DataColumn name="Term" />
-    
+
     <DataColumn name="PaymentTime" />
     <DataColumn name="Paid" />
 

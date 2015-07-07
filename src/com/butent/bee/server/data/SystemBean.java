@@ -208,6 +208,7 @@ public class SystemBean {
     }
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   public void eventEnd(long historyId, Object... result) {
     qs.updateData(new SqlUpdate(TBL_EVENT_HISTORY)
         .addConstant(COL_EVENT_ENDED, System.currentTimeMillis())
@@ -215,6 +216,7 @@ public class SystemBean {
         .setWhere(idEquals(TBL_EVENT_HISTORY, historyId)));
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   public long eventStart(String event) {
     return qs.insertData(new SqlInsert(TBL_EVENT_HISTORY)
         .addConstant(COL_EVENT, event)

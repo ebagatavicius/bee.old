@@ -24,18 +24,20 @@ name="References" label="=references" order="900" module="Classifiers"
 
   <Item name="Holidays" label="=holidays" service="form" parameters="Holidays" separator="true"
     module="Trade.Acts" />
-  
+
   <Item name="Banks" label="=banks" service="grid" parameters="Banks" separator="true" />
+
+  <Item name="PaymentTypes" label="=paymentTypes" service="grid" parameters="PaymentTypes" separator="true" />
 
   <Item name="ActivityTypes" label="=activityTypes" service="grid" parameters="ActivityTypes"
     separator="true" />
   <Item name="CostCenters" label="=costCenters" service="grid" parameters="CostCenters" />
-  
+
   <Item name="RefVehicles" label="=vehicles" service="grid" parameters="Vehicles" separator="true"/>
   <Item name="RefVehicleTypes" label="=trVehicleTypes" service="grid" parameters="VehicleTypes" />
   <Item name="RefDrivers" label="=drivers" service="grid" parameters="Drivers" />
   <Item name="RefTransportGroups" label="=trTransportGroups" service="grid" parameters="TransportGroups" />
-    
+
   <Item name="Colors" label="=colors" service="grid" parameters="Colors" separator="true" />
   <Item name="Themes" label="=colorThemes" service="grid" parameters="Themes" />
 </Entry>

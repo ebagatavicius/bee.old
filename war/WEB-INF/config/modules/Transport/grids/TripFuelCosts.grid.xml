@@ -28,9 +28,8 @@
 
     <DataColumn name="Number" />
     <RelColumn name="Supplier" />
-    <RelColumn name="Country">
-      <carry><ui:expression>row.Country</ui:expression></carry>
-    </RelColumn>
+    <RelColumn name="Country" />
+    <RelColumn name="PaymentType" visible="false" />
     <DataColumn name="Note" />
     <RelColumn name="Item" visible="false">
       <carry><ui:expression>row.Item</ui:expression></carry>

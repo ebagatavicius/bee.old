@@ -22,7 +22,7 @@
         <Label text="=driverGroupsShort" class="bee-required" style="&lbl;" />
         <ChildSelector viewName="TransportGroups" childTable="DriverGroups"
           targetRelColumn="Driver" sourceRelColumn="Group" newRowEnabled="false"
-          required="true" label="=driverGroupsShort" />
+          required="true" label="=driverGroupsShort" renderColumns="Name" />
       </row>
 	  <row>
         <Label text="=company" class="bee-co-companyInfo-label" style="&lbl;" />

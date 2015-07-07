@@ -70,6 +70,24 @@ public enum SupportedLocale implements HasCaption {
     public String getLanguage() {
       return "fi";
     }
+
+  },
+
+  LV {
+    @Override
+    public String getCaption() {
+      return "Latviešu";
+    }
+
+    @Override
+    public String getIconName() {
+      return "latvian";
+    }
+
+    @Override
+    public String getLanguage() {
+      return "lv";
+    }
   };
 
   public static final SupportedLocale DEFAULT = LT;

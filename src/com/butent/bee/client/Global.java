@@ -141,6 +141,12 @@ public final class Global {
     msgBoxen.choice(caption, prompt, options, callback, BeeConst.UNDEF, BeeConst.UNDEF, null, null);
   }
 
+  public static void choiceWithCancel(String caption, String prompt, List<String> options,
+      ChoiceCallback callback) {
+    msgBoxen.choice(caption, prompt, options, callback, BeeConst.UNDEF, BeeConst.UNDEF,
+        Localized.getConstants().cancel(), null);
+  }
+
   public static void confirm(String message, ConfirmationCallback callback) {
     confirm(null, null, Lists.newArrayList(message), callback);
   }

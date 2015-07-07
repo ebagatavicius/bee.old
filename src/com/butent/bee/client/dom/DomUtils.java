@@ -1582,6 +1582,52 @@ public final class DomUtils {
     return x != null && y != null && sameId(x.getElement(), y.getElement());
   }
 
+  public static void scrollIntoView(Element elem) {
+    Assert.notNull(elem);
+
+    int left = elem.getOffsetLeft();
+    int top = elem.getOffsetTop();
+    int width = elem.getOffsetWidth();
+    int height = elem.getOffsetHeight();
+
+    Element parent = elem.getParentElement();
+    if (parent != null && parent != elem.getOffsetParent()) {
+      left -= parent.getOffsetLeft();
+      top -= parent.getOffsetTop();
+    }
+
+    Element cur = parent;
+    while (cur != null && !Tags.BODY.equalsIgnoreCase(cur.getTagName())) {
+      if (left < cur.getScrollLeft()) {
+        cur.setScrollLeft(left);
+      }
+      if (left + width > cur.getScrollLeft() + cur.getClientWidth()) {
+        cur.setScrollLeft((left + width) - cur.getClientWidth());
+      }
+
+      if (top < cur.getScrollTop()) {
+        cur.setScrollTop(top);
+      }
+      if (top + height > cur.getScrollTop() + cur.getClientHeight()) {
+        cur.setScrollTop((top + height) - cur.getClientHeight());
+      }
+
+      int offsetLeft = cur.getOffsetLeft();
+      int offsetTop = cur.getOffsetTop();
+
+      parent = cur.getParentElement();
+      if (parent != null && parent != cur.getOffsetParent()) {
+        offsetLeft -= parent.getOffsetLeft();
+        offsetTop -= parent.getOffsetTop();
+      }
+
+      left += offsetLeft - cur.getScrollLeft();
+      top += offsetTop - cur.getScrollTop();
+
+      cur = parent;
+    }
+  }
+
   public static void scrollToBottom(Element elem) {
     Assert.notNull(elem);
     elem.setScrollTop(elem.getScrollHeight());

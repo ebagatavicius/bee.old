@@ -251,7 +251,11 @@ public final class ButentWS {
         String[] cells = new String[data.getNumberOfColumns()];
 
         for (int j = 0; j < c; j++) {
-          cells[data.getColumnIndex(row.item(j).getLocalName())] = row.item(j).getTextContent();
+          String col = row.item(j).getLocalName();
+
+          if (data.hasColumn(col)) {
+            cells[data.getColumnIndex(col)] = row.item(j).getTextContent();
+          }
         }
         data.addRow(cells);
       }

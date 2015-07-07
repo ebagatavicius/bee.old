@@ -118,8 +118,8 @@ public class Search {
 
       this.add(header);
 
-      Flow content = new Flow();
-      content.addStyleName(STYLE_RESULT_CONTENT);
+      Flow content = new Flow(STYLE_RESULT_CONTENT);
+      StyleUtils.setTop(content, header.getHeight());
 
       String viewName = null;
       DataInfo dataInfo = null;

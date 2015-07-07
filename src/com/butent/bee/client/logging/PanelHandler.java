@@ -8,6 +8,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Settings;
+import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Split;
 import com.butent.bee.client.widget.CustomWidget;
@@ -108,7 +109,7 @@ public class PanelHandler extends Handler implements HasVisibility, HasEnabled {
       elem.setClassName(STYLENAME_SEPARATOR);
 
       if (isVisible()) {
-        elem.scrollIntoView();
+        DomUtils.scrollToBottom(panel);
       }
 
       return;

@@ -27,7 +27,6 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.Pair;
-import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
@@ -43,19 +42,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.concurrent.locks.ReentrantLock;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
+import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -89,8 +90,11 @@ public class MailStorageBean {
   FileStorageBean fs;
   @EJB
   ConcurrencyBean cb;
+  @Resource
+  SessionContext ctx;
 
   private final Table<Long, String, Long> repliedStack = HashBasedTable.create();
+  private final ReentrantLock repliedStackLock = new ReentrantLock();
 
   public void attachMessages(Long folderId, Map<Long, Integer> messages) {
     for (Entry<Long, Integer> message : messages.entrySet()) {
@@ -361,7 +365,7 @@ public class MailStorageBean {
 
     SimpleRowSet data = qs.getData(new SqlSelect()
         .addFields(TBL_PLACES, COL_FLAGS, COL_MESSAGE_UID)
-        .addField(TBL_PLACES, sys.getIdName(TBL_PLACES), COL_UNIQUE_ID)
+        .addField(TBL_PLACES, sys.getIdName(TBL_PLACES), COL_PLACE)
         .addFrom(TBL_PLACES)
         .setWhere(SqlUtils.equals(TBL_PLACES, COL_FOLDER, localFolder.getId()))
         .addOrderDesc(TBL_PLACES, COL_MESSAGE_UID)
@@ -371,7 +375,7 @@ public class MailStorageBean {
     int c = 0;
 
     if (data.getNumberOfRows() > 0) {
-      Set<Long> syncedMsgs = new HashSet<>();
+      Map<Long, Holder<Integer>> syncedMsgs = new HashMap<>();
 
       Message[] msgs = ((UIDFolder) remoteFolder).getMessagesByUID(BeeUtils
           .unbox(data.getLong(data.getNumberOfRows() - 1, COL_MESSAGE_UID)), lastUid);
@@ -386,35 +390,41 @@ public class MailStorageBean {
 
         if (row != null) {
           Integer flags = MailEnvelope.getFlagMask(message);
-          Long id = row.getLong(COL_UNIQUE_ID);
+          Holder<Integer> hasFlags = null;
 
           if (BeeUtils.unbox(row.getInt(COL_FLAGS)) != BeeUtils.unbox(flags)) {
-            c += qs.updateData(new SqlUpdate(TBL_PLACES)
-                .addConstant(COL_FLAGS, flags)
-                .setWhere(sys.idEquals(TBL_PLACES, id)));
+            hasFlags = Holder.of(flags);
           }
-          syncedMsgs.add(id);
+          syncedMsgs.put(row.getLong(COL_PLACE), hasFlags);
         } else {
           try {
-            storeMail(account, message, localFolder.getId(), uid);
+            ctx.getBusinessObject(MailStorageBean.class)
+                .storeMail(account, message, localFolder.getId(), uid);
             c++;
           } catch (MessagingException e) {
             logger.error(e);
           }
         }
       }
+      for (Entry<Long, Holder<Integer>> entry : syncedMsgs.entrySet()) {
+        if (entry.getValue() != null) {
+          c += qs.updateData(new SqlUpdate(TBL_PLACES)
+              .addConstant(COL_FLAGS, entry.getValue().get())
+              .setWhere(sys.idEquals(TBL_PLACES, entry.getKey())));
+        }
+      }
       List<Long> deletedMsgs = new ArrayList<>();
 
       for (int i = 0; i < data.getNumberOfRows(); i++) {
-        Long id = data.getLong(i, COL_UNIQUE_ID);
+        Long id = data.getLong(i, COL_PLACE);
 
-        if (!syncedMsgs.contains(id)) {
+        if (!syncedMsgs.containsKey(id)) {
           deletedMsgs.add(id);
         }
       }
       if (!deletedMsgs.isEmpty()) {
         c += qs.updateData(new SqlDelete(TBL_PLACES)
-            .setWhere(SqlUtils.inList(TBL_PLACES, sys.getIdName(TBL_PLACES), deletedMsgs)));
+            .setWhere(sys.idInList(TBL_PLACES, deletedMsgs)));
       }
     }
     return Pair.of(lastUid, c);
@@ -435,9 +445,10 @@ public class MailStorageBean {
     }
   }
 
-  @Lock(LockType.WRITE)
   public void waitForReplied(Long folderId, String uniqueId, Long repliedFrom) {
+    repliedStackLock.lock();
     repliedStack.put(folderId, uniqueId, repliedFrom);
+    repliedStackLock.unlock();
   }
 
   private MailFolder createFolder(Long accountId, MailFolder parent, String name, Long folderUID) {
@@ -461,10 +472,7 @@ public class MailStorageBean {
   private static String getStringContent(Object enigma) throws IOException {
     String content;
 
-    if (enigma instanceof String) {
-      content = (String) enigma;
-
-    } else if (enigma instanceof InputStream) {
+    if (enigma instanceof InputStream) {
       content = CharStreams.toString(new InputStreamReader((InputStream) enigma,
           BeeConst.CHARSET_UTF8));
     } else {
@@ -707,38 +715,10 @@ public class MailStorageBean {
 
   private void storePart(Long messageId, String content, boolean isHtml) {
     if (!BeeUtils.isEmpty(content)) {
-      ResponseObject response = qs.insertDataWithResponse(new SqlInsert(TBL_PARTS)
-              .addConstant(COL_MESSAGE, messageId)
-              .addConstant(COL_CONTENT, isHtml ? HtmlUtils.stripHtml(content) : content)
-              .addConstant(COL_HTML_CONTENT, isHtml ? content : null),
-          new Function<SQLException, ResponseObject>() {
-            @Override
-            public ResponseObject apply(SQLException ex) {
-              return ResponseObject.error(ex);
-            }
-          });
-      if (response.hasErrors()) {
-        String cleanContent;
-        int idx = content.indexOf(0);
-
-        switch (idx) {
-          case -1:
-            cleanContent = content;
-            break;
-
-          case 0:
-            cleanContent = null;
-            break;
-
-          default:
-            cleanContent = content.substring(0, idx);
-            break;
-        }
-        qs.insertData(new SqlInsert(TBL_PARTS)
-            .addConstant(COL_MESSAGE, messageId)
-            .addConstant(COL_CONTENT, isHtml ? HtmlUtils.stripHtml(cleanContent) : cleanContent)
-            .addConstant(COL_HTML_CONTENT, isHtml ? cleanContent : null));
-      }
+      qs.insertData(new SqlInsert(TBL_PARTS)
+          .addConstant(COL_MESSAGE, messageId)
+          .addConstant(COL_CONTENT, isHtml ? HtmlUtils.stripHtml(content) : content)
+          .addConstant(COL_HTML_CONTENT, isHtml ? content : null));
     }
   }
 
@@ -755,7 +735,9 @@ public class MailStorageBean {
           .addFrom(TBL_MESSAGES)
           .setWhere(sys.idEquals(TBL_MESSAGES, messageId)));
 
+      repliedStackLock.lock();
       Long repliedFrom = repliedStack.remove(folderId, uniqueId);
+      repliedStackLock.unlock();
 
       if (DataUtils.isId(repliedFrom)) {
         qs.updateData(new SqlUpdate(TBL_PLACES)

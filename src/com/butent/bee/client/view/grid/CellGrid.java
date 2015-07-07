@@ -2039,7 +2039,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
     int oldRow = getActiveRowIndex();
 
     if (oldRow >= 0 && oldRow < getDataSize()) {
-      int newRow = 0;
+      int newRow = BeeConst.UNDEF;
       long id = getRowData().get(oldRow).getId();
       for (int i = 0; i < rows.size(); i++) {
         if (rows.get(i).getId() == id) {
@@ -2047,7 +2047,8 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
           break;
         }
       }
-      this.activeRowIndex = newRow;
+
+      setActiveRowIndex(newRow, false);
     }
   }
 
@@ -3728,6 +3729,7 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
 
     if (activeCell != null) {
       boolean resizable = getColumnInfo(getActiveColumnIndex()).isCellResizable();
+      Element activeElement = DomUtils.getActiveElement();
 
       if (activate) {
         setCellZIndex(activeCell);
@@ -3737,7 +3739,6 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
           activeCell.addClassName(StyleUtils.NAME_RESIZABLE);
         }
 
-        Element activeElement = DomUtils.getActiveElement();
         if (activeElement == null || !activeCell.isOrHasChild(activeElement)) {
           activeCell.focus();
         }
@@ -3746,6 +3747,10 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
         activeCell.removeClassName(STYLE_ACTIVE_CELL);
         if (resizable) {
           activeCell.removeClassName(StyleUtils.NAME_RESIZABLE);
+        }
+
+        if (activeElement != null && activeCell.isOrHasChild(activeElement)) {
+          activeElement.blur();
         }
       }
     }

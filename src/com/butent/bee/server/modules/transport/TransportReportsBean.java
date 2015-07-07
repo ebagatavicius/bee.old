@@ -819,7 +819,7 @@ public class TransportReportsBean {
    *         "Trip" - trip ID <br>
    *         key == "Cargo" ? "TripPercent" : "CargoPercent"
    */
-  public String getCargoTripPercents(String key, SqlSelect filter) {
+  private String getCargoTripPercents(String key, SqlSelect filter) {
     String percent = null;
 
     switch (key) {

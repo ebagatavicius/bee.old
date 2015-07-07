@@ -35,7 +35,27 @@
     <SimpleJoin name="Country" joinType="LEFT">
       <SimpleColumn name="Name" alias="CountryName" />
     </SimpleJoin>
+
+    <SimpleColumn name="PaymentType" />
+    <SimpleJoin name="PaymentType" joinType="LEFT">
+      <SimpleColumn name="PaymentName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="MainDriver" />
+    <SimpleJoin name="MainDriver" joinType="LEFT">
+      <SimpleJoin name="Driver" joinType="LEFT">
+        <SimpleJoin name="CompanyPerson" joinType="LEFT">
+          <SimpleJoin name="Person" joinType="LEFT">
+            <SimpleColumn name="FirstName" />
+            <SimpleColumn name="LastName" />
+          </SimpleJoin>
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+
     <SimpleColumn name="Note" />
+
+    <SimpleColumn name="Purchase" />
     <SimpleColumn name="ExternalID" />
   </Columns>
   <Order>

@@ -3,8 +3,10 @@
   
   name="TransportGroups" viewName="TransportGroups" caption="=trTransportGroups"
   newRowCaption="=trNewTransportGroup" editForm="TransportGroup" editPopup="true"
+  minColumnWidth="150"
   >
   <g:columns>
     <DataColumn name="Name" caption="=group" />
+    <RelColumn name="Manager" caption="=manager" />
   </g:columns>
 </g:Grid>

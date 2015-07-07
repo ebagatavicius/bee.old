@@ -89,9 +89,6 @@
     <DataColumn name="WorkspaceTabHeight">
       <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
     </DataColumn>
-    <DataColumn name="TabbedPagesTabHeight">
-      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
-    </DataColumn>
     <DataColumn name="DisclosureClosedHeight">
       <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
     </DataColumn>

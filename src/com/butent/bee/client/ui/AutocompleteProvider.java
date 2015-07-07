@@ -602,8 +602,7 @@ public final class AutocompleteProvider implements HandlesAllDataEvents {
   }
 
   private void onDataEvent(DataEvent event) {
-    if (event != null && VIEW_AUTOCOMPLETE.equalsIgnoreCase(event.getViewName())
-        && getType() != null) {
+    if (event != null && event.hasView(VIEW_AUTOCOMPLETE) && getType() != null) {
       getType().refresh();
     }
   }

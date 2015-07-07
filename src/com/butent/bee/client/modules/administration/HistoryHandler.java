@@ -25,6 +25,7 @@ import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -35,7 +36,9 @@ import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class HistoryHandler extends AbstractGridInterceptor implements ClickHandler {
 
@@ -81,7 +84,7 @@ public class HistoryHandler extends AbstractGridInterceptor implements ClickHand
 
   @Override
   public GridInterceptor getInstance() {
-    return new HistoryHandler(viewName, ids);
+    return null;
   }
 
   @Override
@@ -95,12 +98,15 @@ public class HistoryHandler extends AbstractGridInterceptor implements ClickHand
         Long id = row.getLong(provider.getColumnIndex(AUDIT_FLD_VALUE));
 
         if (DataUtils.isId(id)) {
-          GridFactory.openGrid(GRID_HISTORY,
-              new HistoryHandler(relation, Lists.newArrayList(id)),
-              null, ModalGrid.opener(500, 500));
+          openHistory(relation, Collections.singleton(id));
         }
       }
     }
+  }
+
+  public static void openHistory(String viewName, Set<Long> ids) {
+    GridFactory.openGrid(GRID_HISTORY, new HistoryHandler(viewName, ids),
+        null, ModalGrid.opener(600, CssUnit.PX, 70, CssUnit.PCT));
   }
 
   private void requery() {

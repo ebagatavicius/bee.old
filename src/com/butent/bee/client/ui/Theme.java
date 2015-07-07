@@ -1,5 +1,7 @@
 package com.butent.bee.client.ui;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.StyleElement;
 import com.google.gwt.json.client.JSONObject;
@@ -11,7 +13,6 @@ import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Selectors;
 import com.butent.bee.client.grid.HtmlTable;
-import com.butent.bee.client.layout.TabbedPages;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.utils.JsonUtils;
 import com.butent.bee.client.widget.InputArea;
@@ -22,12 +23,21 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.html.Attributes;
 import com.butent.bee.shared.html.Tags;
+import com.butent.bee.shared.logging.BeeLogger;
+import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class Theme {
+
+  private static BeeLogger logger = LogUtils.getLogger(Theme.class);
+
+  private static final Splitter INT_SPLITTER =
+      Splitter.on(CharMatcher.inRange(BeeConst.CHAR_ZERO, BeeConst.CHAR_NINE).negate())
+          .omitEmptyStrings().trimResults();
 
   private static JSONObject values;
 
@@ -62,11 +72,11 @@ public final class Theme {
   }
 
   public static int getViewHeaderHeight() {
-    return getInteger("ViewHeaderHeight");
+    return getHeight("ViewHeaderHeight");
   }
 
   public static int getChildViewHeaderHeight() {
-    return getInteger("ChildViewHeaderHeight");
+    return getHeight("ChildViewHeaderHeight");
   }
 
   public static boolean hasViewActionCreateNew() {
@@ -82,15 +92,15 @@ public final class Theme {
   }
 
   public static int getGridHeaderRowHeight() {
-    return getInteger("GridHeaderRowHeight");
+    return getHeight("GridHeaderRowHeight");
   }
 
   public static int getGridBodyRowHeight() {
-    return getInteger("GridBodyRowHeight");
+    return getHeight("GridBodyRowHeight");
   }
 
   public static int getGridFooterRowHeight() {
-    return getInteger("GridFooterRowHeight");
+    return getHeight("GridFooterRowHeight");
   }
 
   public static int getGridMarginLeft() {
@@ -110,15 +120,15 @@ public final class Theme {
   }
 
   public static int getChildGridHeaderRowHeight() {
-    return getInteger("ChildGridHeaderRowHeight");
+    return getHeight("ChildGridHeaderRowHeight");
   }
 
   public static int getChildGridBodyRowHeight() {
-    return getInteger("ChildGridBodyRowHeight");
+    return getHeight("ChildGridBodyRowHeight");
   }
 
   public static int getChildGridFooterRowHeight() {
-    return getInteger("ChildGridFooterRowHeight");
+    return getHeight("ChildGridFooterRowHeight");
   }
 
   public static int getChildGridMarginLeft() {
@@ -147,10 +157,6 @@ public final class Theme {
 
   public static int getWorkspaceTabHeight() {
     return getInteger("WorkspaceTabHeight");
-  }
-
-  public static int getTabbedPagesTabHeight() {
-    return getInteger("TabbedPagesTabHeight");
   }
 
   public static int getDisclosureClosedHeight() {
@@ -185,6 +191,30 @@ public final class Theme {
     return BeeUtils.isTrue(JsonUtils.getBoolean(values, key));
   }
 
+  private static int getHeight(String key) {
+    String value = JsonUtils.getString(values, key);
+
+    if (BeeUtils.isEmpty(value)) {
+      return BeeConst.UNDEF;
+
+    } else if (BeeUtils.isPositiveInt(value)) {
+      return BeeUtils.toInt(value);
+
+    } else {
+      List<Integer> ints = parseInts(value);
+
+      if (ints.size() == 4) {
+        Collections.sort(ints);
+        return BeeUtils.resize(DomUtils.getClientHeight(),
+            ints.get(2), ints.get(3), ints.get(0), ints.get(1));
+
+      } else {
+        logger.warning(key, "cannot parse", value);
+        return BeeConst.UNDEF;
+      }
+    }
+  }
+
   private static int getInteger(String key) {
     Integer value = JsonUtils.getInteger(values, key);
     return (value == null) ? BeeConst.UNDEF : value;
@@ -193,14 +223,7 @@ public final class Theme {
   private static List<String> getRules() {
     List<String> rules = new ArrayList<>();
 
-    int px = getTabbedPagesTabHeight();
-    if (px > 0) {
-      String tpt = Selectors.classSelector(TabbedPages.DEFAULT_STYLE_PREFIX
-          + TabbedPages.TAB_STYLE_SUFFIX);
-      rules.add(StyleUtils.buildRule(tpt, StyleUtils.buildHeight(px)));
-    }
-
-    px = getDisclosureClosedHeight();
+    int px = getDisclosureClosedHeight();
     if (px > 0) {
       String dch = Selectors.descendantCombinator(Selectors.classSelector(Disclosure.STYLE_CLOSED),
           Selectors.classSelector(Disclosure.STYLE_HEADER));
@@ -242,9 +265,8 @@ public final class Theme {
 
       String fctc = Selectors.descendantCombinator(
           Selectors.classSelector(StyleUtils.NAME_FORM),
-          Tags.TD,
           Selectors.classSelector(HtmlTable.STYLE_NAME),
-          Tags.TD);
+          Tags.TD, Tags.TABLE, Tags.TD);
       rules.add(StyleUtils.buildRule(fctc,
           StyleUtils.buildStyle(CssProperties.PADDING_TOP, StyleUtils.VALUE_INITIAL)));
     }
@@ -254,6 +276,19 @@ public final class Theme {
 
   private static String getString(String key) {
     return JsonUtils.getString(values, key);
+  }
+
+  public static List<Integer> parseInts(String input) {
+    List<Integer> result = new ArrayList<>();
+
+    if (!BeeUtils.isEmpty(input)) {
+      for (String field : INT_SPLITTER.split(input)) {
+        if (BeeUtils.isInt(field)) {
+          result.add(BeeUtils.toInt(field));
+        }
+      }
+    }
+    return result;
   }
 
   private static void setValues(JSONObject values) {

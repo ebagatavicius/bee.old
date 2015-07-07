@@ -80,6 +80,7 @@ import javax.sql.DataSource;
 
 @Stateless
 @LocalBean
+@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 public class QueryServiceBean {
 
   public interface ViewDataProvider {
@@ -91,7 +92,6 @@ public class QueryServiceBean {
   /**
    * Is a private interface for SQL processing.
    */
-
   public interface ResultSetProcessor<T> {
     T processResultSet(ResultSet rs) throws SQLException;
   }

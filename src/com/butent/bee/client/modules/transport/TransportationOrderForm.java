@@ -129,7 +129,8 @@ class TransportationOrderForm extends AbstractFormInterceptor implements ClickHa
     hdr.clearCommandPanel();
 
     if (Data.isViewEditable(VIEW_CARGO_INVOICES)) {
-      hdr.addCommandItem(new InvoiceCreator(Filter.equals(COL_ORDER, row.getId())));
+      hdr.addCommandItem(new InvoiceCreator(VIEW_CARGO_SALES,
+          Filter.equals(COL_ORDER, row.getId())));
     }
     if (Data.isViewEditable(VIEW_CARGO_TRIPS)) {
       Image button = new Image(Global.getImages().silverTruck());

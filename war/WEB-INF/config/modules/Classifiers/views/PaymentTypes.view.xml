@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="PaymentTypes" source="PaymentTypes" module="Classifiers" caption="=paymentTypes"
+    >
+  <Columns>
+    <SimpleColumn name="PaymentName" />
+    <SimpleColumn name="Cash" />
+  </Columns>
+  <Order>
+    <OrderBy column="PaymentName" />
+  </Order>
+</View>

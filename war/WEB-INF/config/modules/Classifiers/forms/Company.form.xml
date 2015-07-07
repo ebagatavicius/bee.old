@@ -135,14 +135,9 @@
                 <DataSelector source="FinancialState" summarize="true" />
               </row>
 
-              <row for="DaysAsBuyer">
-                <Label text="=daysAsBuyer" style="&lbl;"/>
-                <InputDecimal source="DaysAsBuyer" style="width: 60px;" summarize="true" />
-              </row>
-
-              <row for="DaysAsSupplier">
-                <Label text="=daysAsSupplier" style="&lbl;"/>
-                <InputDecimal source="DaysAsSupplier" style="width: 60px;" summarize="true" />
+              <row for="SupplierCreditDays">
+                <Label text="=supplierCreditDays" style="&lbl;"/>
+                <InputDecimal source="SupplierCreditDays" style="width: 60px;" summarize="true" />
               </row>
             </Table>
           </FlowPanel>

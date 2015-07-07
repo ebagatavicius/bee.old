@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:Form xmlns="http://www.butent.com/widget"
+        xmlns:f="http://www.butent.com/form"
+
+        name="TripPurchaseInvoice"
+        caption="=trdPurchase" showRowId="true"
+        width="840" height="600"
+    >
+  <FlowPanel class="flexBox-vertical">
+    <br />
+    <Table style="border-top:1px solid red;">
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+      <row>
+        <Label for="Date" />
+        <InputDateTime source="Date" style="width:10em;" />
+        <Label for="Number" />
+        <InputText source="Number" />
+      </row>
+      <row>
+        <Label for="InvoicePrefix" />
+        <InputText source="InvoicePrefix" upperCase="true" style="width:7em" />
+        <InlineLabel for="InvoiceNo" />
+        <InputText source="InvoiceNo" />
+      </row>
+      <row>
+        <Label for="Supplier" class="bee-required" />
+        <DataSelector source="Supplier" required="true" renderColumns="SupplierName SupplierType" />
+        <Label for="Term" />
+        <InputDate source="Term" style="width:10em;" />
+      </row>
+      <row>
+        <Label for="Customer" />
+        <DataSelector source="Customer" renderColumns="CustomerName CustomerType" />
+        <Label for="WarehouseTo" />
+        <DataSelector source="WarehouseTo" renderColumns="WarehouseToCode" />
+      </row>
+      <row>
+        <Label for="Manager" />
+        <DataSelector source="Manager" renderColumns="ManagerFirstName ManagerLastName"
+                      choiceColumns="FirstName LastName PositionName CompanyName"
+                      editSource="ManagerPerson" newRowEnabled="false" />
+        <Label for="Amount" />
+        <FlowPanel>
+          <DecimalLabel source="Amount" format="0.00" style="font-weight:bold; display:inline;" />
+          <DataSelector source="Currency" style="width:5em; display:inline-block;"
+                        editEnabled="false" newRowEnabled="false" />
+        </FlowPanel>
+      </row>
+    </Table>
+
+    <br />
+
+    <TabbedPages class="flexible">
+      <page>
+        <text>=productsServices</text>
+        <ChildGrid name="PurchaseItems" relColumn="Purchase" />
+      </page>
+      <page>
+        <text>=trdNotes</text>
+        <SimplePanel>
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
+        </SimplePanel>
+      </page>
+      <page module="Transport">
+        <text>=transportExpenses</text>
+        <ChildGrid name="TripPurchases" relColumn="Purchase" />
+      </page>
+    </TabbedPages>
+  </FlowPanel>
+</f:Form>

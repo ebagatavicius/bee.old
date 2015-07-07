@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="Trips"
-  idName="TripID"
-  >
+       name="Trips"
+       idName="TripID"
+    >
   <Fields>
     <Enum name="Status" key="TripStatus" notNull="true" label="=status" defValue="0" />
     <DateTime name="Date" notNull="true" defExpr="CURRENT_TIME" label="=trTripDate" />
     <String name="TripNo" precision="20" unique="true" notNull="true"
-      defExpr="NEXT_NUMBER" defValue="R/" label="=trTripNo" />
+            defExpr="NEXT_NUMBER" defValue="R/" label="=trTripNo" />
+
     <Relation name="Vehicle" relation="Vehicles" label="=trTruck" />
     <Relation name="Trailer" relation="Vehicles" label="=trailer" />
+
+    <Relation name="MainDriver" relation="TripDrivers" unique="true" cascade="SET_NULL"
+              label="=vehicleDriver" />
+
     <Date name="DateFrom" label="=trTripDateFrom" />
     <Date name="DateTo" label="=trTripDateTo" />
     <Date name="PlannedEndDate" label="=scheduledEndingDate" />

@@ -1,5 +1,4 @@
 .bee-tr-fx-Customer-panel,
-.bee-tr-fx-Order-panel,
 .bee-tr-dtb-Driver-panel,
 .bee-tr-vtb-Number-panel {
   position: absolute;
@@ -14,6 +13,7 @@
   -ms-flex-align: center;
   overflow: hidden;
 }
+.bee-tr-fx-Order-panel,
 .bee-tr-ss-trip-Group-panel {
   position: absolute;
   display: flex;
@@ -36,18 +36,19 @@
 }
 
 .bee-tr-fx-Customer-label,
-.bee-tr-fx-Order-label,
 .bee-tr-dtb-Driver-label {
   word-wrap: break-word;
   min-width: 100%;
 }
+.bee-tr-fx-Order-number,
+.bee-tr-fx-Order-manager,
 .bee-tr-ss-trip-Group-label,
 .bee-tr-ss-trip-Group-trailer {
   word-wrap: break-word;
 }
 
 .bee-tr-fx-Customer-label:hover,
-.bee-tr-fx-Order-label:hover,
+.bee-tr-fx-Order-number:hover,
 .bee-tr-ss-trip-Group-label:hover,
 .bee-tr-ss-trip-Group-trailer:hover,
 .bee-tr-dtb-Driver-label:hover,
@@ -104,6 +105,9 @@
   color: black;
 }
 
+.bee-tr-fx-dragOver {
+  background-color: lightpink;
+}
 .bee-tr-ss-trip-Group-dragOver,
 .bee-tr-vtb-Vehicle-dragOver,
 .bee-tr-vtb-Trip-dragOver,

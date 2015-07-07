@@ -836,7 +836,7 @@ public class ImportBean {
 
     for (String tbl : new String[] {TBL_TRIP_COSTS, TBL_TRIP_FUEL_COSTS}) {
       HasConditions wh = SqlUtils.and(BeeUtils.same(tbl, TBL_TRIP_FUEL_COSTS)
-          ? SqlUtils.notNull(tmp, COL_FUEL) : SqlUtils.isNull(tmp, COL_FUEL),
+              ? SqlUtils.notNull(tmp, COL_FUEL) : SqlUtils.isNull(tmp, COL_FUEL),
           SqlUtils.notNull(tbl, COL_COSTS_EXTERNAL_ID));
 
       qs.updateData(new SqlUpdate(tmp)
@@ -922,19 +922,14 @@ public class ImportBean {
             Localized.maybeTranslate(sys.getView(tbl).getCaption()), 0);
       }
       SqlSelect query = new SqlSelect()
-          .addFields(tmp, COL_COSTS_DATE, COL_COSTS_QUANTITY, COL_COSTS_PRICE,
+          .addFields(tmp, COL_COSTS_DATE, COL_COSTS_ITEM, COL_COSTS_QUANTITY, COL_COSTS_PRICE,
               COL_TRADE_VAT_PLUS, COL_COSTS_VAT, COL_TRADE_VAT_PERC,
               COL_NUMBER, COL_COSTS_NOTE, COL_TRIP, COL_COSTS_EXTERNAL_ID,
               COL_COSTS_CURRENCY, COL_COSTS_COUNTRY, COL_COSTS_SUPPLIER)
           .addFrom(tmp)
-          .setWhere(SqlUtils.isNull(tmp, prfx));
+          .setWhere(SqlUtils.and(SqlUtils.isNull(tmp, prfx), BeeUtils.same(tbl, TBL_TRIP_COSTS)
+              ? SqlUtils.isNull(tmp, COL_FUEL) : SqlUtils.notNull(tmp, COL_FUEL)));
 
-      if (BeeUtils.same(tbl, TBL_TRIP_COSTS)) {
-        query.addFields(tmp, COL_COSTS_ITEM)
-            .setWhere(SqlUtils.and(query.getWhere(), SqlUtils.isNull(tmp, COL_FUEL)));
-      } else {
-        query.setWhere(SqlUtils.and(query.getWhere(), SqlUtils.notNull(tmp, COL_FUEL)));
-      }
       SimpleRowSet rs = qs.getData(query);
 
       for (int i = 0; i < rs.getNumberOfRows(); i++) {

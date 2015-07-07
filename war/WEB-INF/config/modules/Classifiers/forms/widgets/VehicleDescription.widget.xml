@@ -22,7 +22,9 @@
 	  <Label text="=vehicleType" class="bee-required" horizontalAlignment="right" style="&lbl2;"/>
 	  <DataSelector source="Type" renderColumns="TypeName" class="flexible" decorator="flex-left" d:size="40" d:rootStyle="&MARGIN;" />
 	  <Label module="Transport" for="Group" text="=groups" class="bee-required" horizontalAlignment="right" style="&lbl2;"/>
-	  <ChildSelector module="Transport" viewName="TransportGroups" childTable="VehicleGroups" class="flexible" required="true" label="=groups" style="width: 155px;" targetRelColumn="Vehicle" sourceRelColumn="Group" newRowEnabled="false"/>
+	  <ChildSelector module="Transport" viewName="TransportGroups" childTable="VehicleGroups"
+        required="true" label="=groups" renderColumns="Name" style="width: 155px;"
+        targetRelColumn="Vehicle" sourceRelColumn="Group" newRowEnabled="false" />
 	</row>
 	<row>
 	  <Label text="=vehicleOwnerName" horizontalAlignment="right" style="&lbl1;"/>

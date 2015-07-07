@@ -26,14 +26,14 @@
       <renderer type="flag" />
     </CalcColumn>
     <RelColumn name="DefaultCompanyUser" visible="false" filterSupplier="value" />
-    
+
     <DataColumn name="CreditLimit" visible="false" />
     <DataColumn name="CreditTolerance" visible="false" />
     <DataColumn name="CreditDays" visible="false" />
-    <DataColumn name="DaysAsSupplier" visible="false" />
-        
+    <DataColumn name="SupplierCreditDays" visible="false" />
+
     <RelColumn name="Turnover" visible="false" />
     <RelColumn name="InformationSource" visible="false" />
-    <RelColumn name="CompanySize" visible="false" />   
+    <RelColumn name="CompanySize" visible="false" />
   </g:columns>
 </g:Grid>

@@ -134,7 +134,7 @@ public class CalendarPanel extends Split implements AppointmentEvent.Handler, Pr
   private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
 
   private static boolean hasNonLocalAppointment(ModificationEvent<?> event) {
-    return event.isSpookyActionAtADistance() && VIEW_APPOINTMENTS.equals(event.getViewName());
+    return event.isSpookyActionAtADistance() && event.hasView(VIEW_APPOINTMENTS);
   }
 
   private final long calendarId;

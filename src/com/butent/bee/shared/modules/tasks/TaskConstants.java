@@ -12,7 +12,8 @@ import com.butent.bee.shared.utils.EnumUtils;
 public final class TaskConstants {
 
   public enum TaskEvent implements HasCaption {
-    CREATE(Localized.getConstants().crmTaskEventCreated(), null, null),
+    CREATE(Localized.getConstants().crmTaskEventCreated(), Localized.getConstants().crmNewTask(),
+        FontAwesome.CODE_FORK),
     VISIT(Localized.getConstants().crmTaskEventVisited(), null, null),
     ACTIVATE(Localized.getConstants().crmTaskForwardedForExecution(), Localized.getConstants()
         .crmTaskForwardForExecution(), FontAwesome.ARROW_CIRCLE_RIGHT),
@@ -137,10 +138,27 @@ public final class TaskConstants {
     }
   }
 
+  public enum ToDoVisibility implements HasCaption {
+    PUBLIC(Localized.getConstants().calPublic()),
+    PRIVATE(Localized.getConstants().calPrivate());
+
+    private final String caption;
+
+    private ToDoVisibility(String caption) {
+      this.caption = caption;
+    }
+
+    @Override
+    public String getCaption() {
+      return caption;
+    }
+  }
+
   public static void register() {
     EnumUtils.register(TaskPriority.class);
     EnumUtils.register(TaskEvent.class);
     EnumUtils.register(TaskStatus.class);
+    EnumUtils.register(ToDoVisibility.class);
   }
 
   public static final String CRM_TASK_PREFIX = "task_";
@@ -292,6 +310,7 @@ public final class TaskConstants {
 
   public static final String COL_EVENT = "Event";
   public static final String COL_EVENT_NOTE = "EventNote";
+  public static final String COL_EVENT_DATA = "EventData";
   public static final String COL_EVENT_DURATION = "EventDuration";
 
   public static final String COL_LAST_ACCESS = "LastAccess";

@@ -45,7 +45,6 @@
     <SimpleJoin name="Sale" joinType="INNER">
       <HiddenColumn name="Proforma" />
       <SimpleColumn name="Date" alias="InvoiceDate" />
-      <SimpleColumn name="InvoicePrefix" />
       <SimpleColumn name="SaleSeries" label="=trdInvoicePrefix"/>
       <SimpleJoin name="SaleSeries" joinType="LEFT">
         <SimpleColumn name="SeriesName" />

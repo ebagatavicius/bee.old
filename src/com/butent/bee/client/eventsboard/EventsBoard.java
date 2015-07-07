@@ -839,7 +839,7 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
           @Override
           public void execute() {
-            last.getElement().scrollIntoView();
+            DomUtils.scrollIntoView(last.getElement());
           }
         });
       }

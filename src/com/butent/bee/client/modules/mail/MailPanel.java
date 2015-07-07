@@ -334,7 +334,8 @@ public class MailPanel extends AbstractFormInterceptor {
           row.setValue(flagIdx, value);
           getGridView().refreshCell(row.getId(), COL_MESSAGE);
         }
-      } else {
+      } else if (getGridView().isEmpty()
+          || !Objects.equals(message.getFolder(), getCurrentFolderId())) {
         message.reset();
         messageWidget.setVisible(false);
         emptySelectionWidget.setVisible(true);
@@ -907,7 +908,7 @@ public class MailPanel extends AbstractFormInterceptor {
     Icon icon = purge ? Icon.ALARM : Icon.WARNING;
 
     Global.messageBox(purge ? Localized.getConstants().actionDelete()
-        : Localized.getConstants().mailActionMoveToTrash(), icon, null, options, BeeConst.UNDEF,
+            : Localized.getConstants().mailActionMoveToTrash(), icon, null, options, BeeConst.UNDEF,
         new ChoiceCallback() {
           @Override
           public void onSuccess(int value) {

@@ -23,6 +23,7 @@ import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.edit.EditEndEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -49,6 +50,7 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -67,7 +69,7 @@ public class CargoPurchasesGrid extends AbstractGridInterceptor implements Click
   }
 
   @Override
-  public Map<String, Filter> getInitialParentFilters() {
+  public Map<String, Filter> getInitialParentFilters(Collection<UiOption> uiOptions) {
     return ImmutableMap.of("pyp", Filter.isNull(COL_PURCHASE));
   }
 

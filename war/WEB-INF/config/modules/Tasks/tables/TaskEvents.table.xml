@@ -11,6 +11,7 @@
     <Text name="Comment" label="=crmTaskComment" />
     <Enum name="Event" key="TaskEvent" precision="2" notNull="true" label="=crmTaskEvent" />
     <Text name="EventNote" label="=crmTaskEventNote" />
+    <Text name="EventData" label="=crmTaskEventNote" />
     <Relation name="EventDuration" unique="true" relation="EventDurations" editable="true" label="=crmTaskDuration" />
     <DateTime name="FinishTime" label="=crmFinishDate" />
   </Fields>

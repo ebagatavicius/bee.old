@@ -9,16 +9,20 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.HasRowId;
+import com.butent.bee.shared.data.HasViewName;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Handles an event when a cell value is updated in table based user interface components.
  */
 
 public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
-    implements HasRowId {
+    implements HasRowId, HasViewName {
 
   /**
    * Requires implementing classes to have a method to handle cell update event.
@@ -145,6 +149,11 @@ public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
   @Override
   public String getViewName() {
     return viewName;
+  }
+
+  @Override
+  public Collection<String> getViewNames() {
+    return Collections.singleton(viewName);
   }
 
   public boolean hasColumn() {

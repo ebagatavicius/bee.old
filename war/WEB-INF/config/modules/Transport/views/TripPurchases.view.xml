@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="TripPurchases" source="TripCosts" caption="=trTripCosts"
+      readOnly="true"
+    >
+  <Columns>
+    <SimpleColumn name="Trip" />
+    <SimpleJoin name="Trip" joinType="INNER">
+      <SimpleColumn name="Status" />
+      <SimpleColumn name="Date" alias="TripDate" />
+      <SimpleColumn name="TripNo" />
+      <SimpleJoin joinType="LEFT" name="Expedition">
+        <SimpleColumn name="Name" alias="ExpeditionType" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Date" />
+
+    <SimpleColumn name="Item" />
+    <SimpleJoin joinType="LEFT" name="Item">
+      <SimpleColumn name="Name" alias="ItemName" />
+      <SimpleJoin joinType="LEFT" name="Unit">
+        <SimpleColumn name="Name" alias="UnitName" />
+      </SimpleJoin>
+    </SimpleJoin>
+    <SimpleColumn name="Quantity" />
+    <SimpleColumn name="Price" />
+    <SimpleColumn name="Currency" />
+    <SimpleJoin joinType="LEFT" name="Currency">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
+    <SimpleColumn name="VatPlus" />
+    <SimpleColumn name="Vat" />
+    <SimpleColumn name="VatPercent" />
+
+    <SimpleColumn name="Number" />
+    <SimpleColumn name="Supplier" />
+    <SimpleJoin name="Supplier" joinType="LEFT">
+      <SimpleColumn name="Name" alias="SupplierName" />
+    </SimpleJoin>
+    <SimpleColumn name="Country" />
+    <SimpleJoin name="Country" joinType="LEFT">
+      <SimpleColumn name="Name" alias="CountryName" />
+    </SimpleJoin>
+    <SimpleColumn name="PaymentType" />
+    <SimpleJoin name="PaymentType" joinType="LEFT">
+      <SimpleColumn name="PaymentName" />
+    </SimpleJoin>
+    <SimpleColumn name="Note" />
+
+    <HiddenColumn name="Purchase" />
+  </Columns>
+  <Order>
+    <OrderBy column="TripDate" />
+    <OrderBy column="TripNo" />
+  </Order>
+</View>

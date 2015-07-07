@@ -7,14 +7,19 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.Locality;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.HasRowId;
+import com.butent.bee.shared.data.HasViewName;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Handles single row deletion event.
  */
 
-public class RowDeleteEvent extends ModificationEvent<RowDeleteEvent.Handler> implements HasRowId {
+public class RowDeleteEvent extends ModificationEvent<RowDeleteEvent.Handler> implements HasRowId,
+    HasViewName {
 
   /**
    * Requires implementing classes to have a method to handle single row deletion event.
@@ -69,6 +74,11 @@ public class RowDeleteEvent extends ModificationEvent<RowDeleteEvent.Handler> im
   @Override
   public String getViewName() {
     return viewName;
+  }
+
+  @Override
+  public Collection<String> getViewNames() {
+    return Collections.singleton(viewName);
   }
 
   @Override
