@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   xmlns:ui="http://www.butent.com/ui"
-  
+
   name="Parameters" viewName="Parameters" disabledActions="add delete filter audit rights"
   >
   <g:columns>
@@ -11,7 +11,7 @@
         <ui:expression>row.User</ui:expression>
       </dynStyle>
     </DataColumn>
-    <DataColumn name="Value" visible="true">
+    <DataColumn name="Value" visible="true" verticalAlignment="middle">
       <dynStyle>
         <ui:inline>color:silver</ui:inline>
         <ui:expression>!row.HasValue</ui:expression>

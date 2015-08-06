@@ -378,10 +378,6 @@ public final class AdministrationConstants {
   public static final String PRM_ERP_LOGIN = "ERPLogin";
   public static final String PRM_ERP_PASSWORD = "ERPPassword";
 
-  public static final String PRM_ERP_PURCHASE_OPERATION = "ERPPurchaseOperation";
-  public static final String PRM_ERP_OPERATION = "ERPOperation";
-  public static final String PRM_ERP_WAREHOUSE = "ERPWarehouse";
-
   public static final String PRM_WS_LB_EXCHANGE_RATES_ADDRESS = "WSLBExchangeRates";
 
   public static final String PRM_URL = "Url";

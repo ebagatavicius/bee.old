@@ -141,6 +141,16 @@
             </cell>
           </row>
           <row>
+            <Label for="Link">
+              &foritem;
+            </Label>
+            <cell colSpan="3">
+              <InputText source="Link" style="width: 100%;" summarize="true">
+                &foritem;
+              </InputText>
+            </cell>  
+          </row>
+          <row>
             <Label for="Article2" />
             <InputText source="Article2" summarize="true" />
 

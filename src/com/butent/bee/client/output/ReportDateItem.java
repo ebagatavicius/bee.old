@@ -311,7 +311,7 @@ public class ReportDateItem extends ReportItem {
         Assert.unsupported();
         break;
     }
-    return ReportValue.of(value, display);
+    return ReportValue.of(value).setDisplay(display);
   }
 
   protected EnumSet<DateTimeFunction> getSupportedFunctions() {

@@ -31,7 +31,7 @@ public final class MailConstants {
   }
 
   public enum MessageFlag {
-    ANSWERED(1), DELETED(2), FLAGGED(4), SEEN(8), USER(16);
+    ANSWERED(1), DELETED(2), FLAGGED(4), SEEN(8), FORWARDED(16);
 
     final int mask;
 

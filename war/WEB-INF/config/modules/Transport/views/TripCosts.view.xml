@@ -41,8 +41,8 @@
       <SimpleColumn name="PaymentName" />
     </SimpleJoin>
 
-    <SimpleColumn name="MainDriver" />
-    <SimpleJoin name="MainDriver" joinType="LEFT">
+    <SimpleColumn name="Driver" />
+    <SimpleJoin name="Driver" joinType="LEFT">
       <SimpleJoin name="Driver" joinType="LEFT">
         <SimpleJoin name="CompanyPerson" joinType="LEFT">
           <SimpleJoin name="Person" joinType="LEFT">

@@ -73,7 +73,7 @@ public abstract class ReportItem implements BeeSerializable {
 
   @SuppressWarnings("unchecked")
   public Object calculate(Object total, ReportValue value, ReportFunction function) {
-    if (value != null && !BeeUtils.isEmpty(value.getValue())) {
+    if (!BeeUtils.isEmpty(value.toString())) {
       switch (function) {
         case COUNT:
           if (total == null) {
@@ -82,17 +82,17 @@ public abstract class ReportItem implements BeeSerializable {
           return (int) total + 1;
         case LIST:
           if (total == null) {
-            return new TreeSet<>(Arrays.asList(value));
+            return new TreeSet<>(Collections.singleton(value));
           }
           ((Collection<ReportValue>) total).add(value);
           break;
         case MAX:
-          if (total == null || value.compareTo((ReportValue) total) > 0) {
+          if (total == null || value.compareTo((ReportValue) total) == BeeConst.COMPARE_MORE) {
             return value;
           }
           break;
         case MIN:
-          if (total == null || value.compareTo((ReportValue) total) < 0) {
+          if (total == null || value.compareTo((ReportValue) total) == BeeConst.COMPARE_LESS) {
             return value;
           }
           break;
@@ -411,28 +411,6 @@ public abstract class ReportItem implements BeeSerializable {
   @SuppressWarnings("unused")
   public ReportItem setFilter(String value) {
     return this;
-  }
-
-  @SuppressWarnings("unchecked")
-  public Object summarize(Object total, Object value, ReportFunction function) {
-    if (value != null) {
-      if (total == null) {
-        if (function == ReportFunction.LIST) {
-          return new TreeSet<>((Collection<ReportValue>) value);
-        }
-        return value;
-      }
-      switch (function) {
-        case COUNT:
-          return (int) total + (int) value;
-        case LIST:
-          ((Collection<ReportValue>) total).addAll((Collection<ReportValue>) value);
-          break;
-        default:
-          return calculate(total, (ReportValue) value, function);
-      }
-    }
-    return total;
   }
 
   public boolean validate(SimpleRow row) {

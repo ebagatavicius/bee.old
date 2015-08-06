@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
+        xmlns:ui="http://www.butent.com/ui"
 
-  name="CargoSales" viewName="CargoSales"
-  flexGrow="1"
-  readOnly="true" caption="=trCargoIncomes"
-  >
+        name="CargoSales" viewName="CargoSales"
+        flexGrow="1"
+        readOnly="true" caption="=trCargoIncomes"
+    >
   <g:columns>
     <SelectionColumn name="Select" width="20" />
     <RelColumn name="Assessment" label="=trAssessment" editEnabled="true"
-      editViewName="Assessments" editSource="Assessment" module="Transport.Logistics"/>
+               editViewName="Assessments" editSource="Assessment" module="Transport.Logistics" />
     <DataColumn name="OrderDate" />
     <RelColumn name="OrderNo" editEnabled="true" editSource="Order" />
-    <DataColumn name="Status" />    
-    <DataColumn name="CustomerName" />
-    <DataColumn name="Payer" searchBy="CompanyName PayerName" >
+    <DataColumn name="Status" />
+    <DataColumn name="Customer" searchBy="CustomerName PayerName">
       <render>
-        <ui:expression>row.Company ? row.CompanyName : row.PayerName</ui:expression>
+        <ui:expression>row.Company ? row.CompanyName : row.CustomerName</ui:expression>
       </render>
     </DataColumn>
+    <DataColumn name="PayerName" />
 
     <RelColumn name="LoadingCountry" visible="false" readOnly="true" />
     <CalcColumn type="string" name="From" source="LoadingCountryCode" cellType="html" width="20"
-      horizontalAlignment="center" searchBy="LoadingCountryName LoadingCountryCode">
+                horizontalAlignment="center" searchBy="LoadingCountryName LoadingCountryCode">
       <renderer type="flag" />
     </CalcColumn>
     <DataColumn name="LoadingDate" />
 
     <RelColumn name="UnloadingCountry" visible="false" readOnly="true" />
     <CalcColumn type="string" name="To" source="UnloadingCountryCode" cellType="html" width="20"
-      horizontalAlignment="center" searchBy="UnloadingCountryName UnloadingCountryCode">
+                horizontalAlignment="center" searchBy="UnloadingCountryName UnloadingCountryCode">
       <renderer type="flag" />
     </CalcColumn>
     <DataColumn name="UnloadingDate" />
@@ -40,12 +40,16 @@
     <DataColumn name="CurrencyName" flexGrow="0" />
     <DataColumn name="Vat" horizontalAlignment="right">
       <render>
-        <ui:expression>row.Vat ? ((row.VatPlus ? '+' : '') + row.Vat + (row.VatPercent ? '%' : '')) : ''</ui:expression>
+        <ui:expression>row.Vat ? ((row.VatPlus ? '+' : '') + row.Vat + (row.VatPercent ? '%' : ''))
+          : ''
+        </ui:expression>
       </render>
     </DataColumn>
     <CalcColumn name="Total" type="decimal" caption="=total" format="0.00">
       <style>
-        <bodyStyle><ui:font>bold</ui:font></bodyStyle>
+        <bodyStyle>
+          <ui:font>bold</ui:font>
+        </bodyStyle>
       </style>
     </CalcColumn>
 

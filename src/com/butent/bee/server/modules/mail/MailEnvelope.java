@@ -28,7 +28,7 @@ public class MailEnvelope {
   private static BiMap<Flag, MessageFlag> flags = HashBiMap
       .create(ImmutableMap.of(Flag.ANSWERED, MessageFlag.ANSWERED,
           Flag.DELETED, MessageFlag.DELETED, Flag.FLAGGED, MessageFlag.FLAGGED,
-          Flag.SEEN, MessageFlag.SEEN, Flag.USER, MessageFlag.USER));
+          Flag.SEEN, MessageFlag.SEEN));
 
   public static Flag getFlag(MessageFlag flag) {
     return flags.inverse().get(flag);
@@ -36,19 +36,21 @@ public class MailEnvelope {
 
   public static Integer getFlagMask(Message message) throws MessagingException {
     Assert.notNull(message);
-    Flag[] systemFlags = message.getFlags().getSystemFlags();
-
-    if (ArrayUtils.length(systemFlags) == 0) {
-      return null;
-    }
     int mask = 0;
 
-    for (Flag flag : systemFlags) {
+    for (Flag flag : message.getFlags().getSystemFlags()) {
       if (flags.containsKey(flag)) {
         mask |= BeeUtils.unbox(flags.get(flag).getMask());
       }
     }
-    return mask;
+    for (String flag : message.getFlags().getUserFlags()) {
+      MessageFlag messageFlag = EnumUtils.getEnumByName(MessageFlag.class, flag);
+
+      if (messageFlag != null) {
+        mask |= BeeUtils.unbox(messageFlag.getMask());
+      }
+    }
+    return mask == 0 ? null : mask;
   }
 
   private final String messageId;
@@ -100,10 +102,6 @@ public class MailEnvelope {
 
   public Integer getFlagMask() {
     return flagMask;
-  }
-
-  public String getMessageId() {
-    return messageId;
   }
 
   public Multimap<AddressType, InternetAddress> getRecipients() {

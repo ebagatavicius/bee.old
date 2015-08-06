@@ -163,6 +163,8 @@ public abstract class ChartBase extends TimeBoard {
   private boolean showPlaceCities;
   private boolean showPlaceCodes;
 
+  private boolean showAdditionalInfo;
+
   private final Set<String> relevantDataViews = Sets.newHashSet(VIEW_ORDER_CARGO,
       VIEW_CARGO_TYPES, VIEW_CARGO_HANDLING, VIEW_CARGO_TRIPS, VIEW_TRIP_CARGO,
       ClassifierConstants.VIEW_COUNTRIES,
@@ -328,6 +330,8 @@ public abstract class ChartBase extends TimeBoard {
 
   protected abstract String getSettingsFormName();
 
+  protected abstract String getShowAdditionalInfoColumnName();
+
   protected abstract String getShowCountryFlagsColumnName();
 
   protected abstract String getShowPlaceCitiesColumnName();
@@ -358,6 +362,11 @@ public abstract class ChartBase extends TimeBoard {
   @Override
   protected void prepareDefaults(Size canvasSize) {
     super.prepareDefaults(canvasSize);
+
+    String colName = getShowAdditionalInfoColumnName();
+    if (!BeeUtils.isEmpty(colName)) {
+      setShowAdditionalInfo(TimeBoardHelper.getBoolean(getSettings(), colName));
+    }
 
     setShowCountryFlags(TimeBoardHelper.getBoolean(getSettings(), getShowCountryFlagsColumnName()));
     setShowPlaceInfo(TimeBoardHelper.getBoolean(getSettings(), getShowPlaceInfoColumnName()));
@@ -410,8 +419,9 @@ public abstract class ChartBase extends TimeBoard {
     }
   }
 
-  protected void renderTrip(HasWidgets panel, String title,
-      Collection<? extends OrderCargo> cargos, Range<JustDate> range, String styleVoid) {
+  protected void renderTrip(HasWidgets panel, String title, String additionalInfo,
+      Collection<? extends OrderCargo> cargos, Range<JustDate> range,
+      String styleVoid, String styleInfo) {
 
     List<Range<JustDate>> voidRanges;
 
@@ -445,6 +455,13 @@ public abstract class ChartBase extends TimeBoard {
       StyleUtils.setWidth(voidWidget, TimeBoardHelper.getSize(voidRange) * getDayColumnWidth());
 
       panel.add(voidWidget);
+    }
+
+    if (showAdditionalInfo() && !BeeUtils.isEmpty(additionalInfo)) {
+      CustomDiv infoWidget = new CustomDiv(styleInfo);
+      infoWidget.setText(additionalInfo);
+
+      panel.add(infoWidget);
     }
   }
 
@@ -748,6 +765,10 @@ public abstract class ChartBase extends TimeBoard {
     getRemoveFilter().setVisible(false);
   }
 
+  private void setShowAdditionalInfo(boolean showAdditionalInfo) {
+    this.showAdditionalInfo = showAdditionalInfo;
+  }
+
   private void setShowCountryFlags(boolean showCountryFlags) {
     this.showCountryFlags = showCountryFlags;
   }
@@ -762,6 +783,10 @@ public abstract class ChartBase extends TimeBoard {
 
   private void setShowPlaceInfo(boolean showPlaceInfo) {
     this.showPlaceInfo = showPlaceInfo;
+  }
+
+  private boolean showAdditionalInfo() {
+    return showAdditionalInfo;
   }
 
   private boolean showCountryFlags() {

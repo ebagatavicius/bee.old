@@ -119,8 +119,6 @@ public class MailAccount {
     return Lists.newArrayList(msgs);
   }
 
-  private String error;
-
   private final Protocol storeProtocol;
   private final String storeHost;
   private final Integer storePort;
@@ -172,16 +170,12 @@ public class MailAccount {
     return accountInfo.getAddress();
   }
 
-  public Long getAddressId() {
-    return accountInfo.getAddressId();
-  }
-
   public Long getSignatureId() {
     return accountInfo.getSignatureId();
   }
 
   public String getStoreErrorMessage() {
-    String err = error;
+    String err = null;
 
     if (BeeUtils.isEmpty(err)) {
       if (storeProtocol == null) {
@@ -222,7 +216,7 @@ public class MailAccount {
   }
 
   public String getTransportErrorMessage() {
-    String err = error;
+    String err = null;
 
     if (BeeUtils.isEmpty(err)) {
       if (transportProtocol == null) {
@@ -633,7 +627,9 @@ public class MailAccount {
     return ok;
   }
 
-  boolean setFlag(MailFolder source, long[] uids, Flag flag, boolean on) throws MessagingException {
+  boolean setFlag(MailFolder source, long[] uids, MessageFlag messageFlag, boolean on)
+      throws MessagingException {
+
     if (!isStoredRemotedly(source)) {
       return false;
     }
@@ -655,9 +651,20 @@ public class MailAccount {
 
       List<Message> messages = getMessageReferences(folder, uids);
 
-      logger.debug(on ? "Setting" : "Clearing", "flag for selected messages");
-      folder.setFlags(messages.toArray(new Message[0]), new Flags(flag), on);
+      Flag flag = MailEnvelope.getFlag(messageFlag);
+      Flags flags = null;
 
+      if (flag != null) {
+        flags = new Flags(flag);
+      } else if (folder.getPermanentFlags().contains(Flag.USER)) {
+        flags = new Flags(messageFlag.name());
+      } else {
+        logger.warning("Remote folder", folder.getName(), "does not support user defined flags");
+      }
+      if (flags != null) {
+        logger.debug(on ? "Setting" : "Clearing", "flag", messageFlag, " for selected messages");
+        folder.setFlags(messages.toArray(new Message[0]), flags, on);
+      }
     } finally {
       if (folder != null && folder.isOpen()) {
         try {

@@ -8,15 +8,15 @@
   <!ENTITY slider_row "position: relative; height: 25px;">
   <!ENTITY cb_row "position: relative; height: 20px;">
 
-  <!ENTITY lbl "&inline; width: 260px; padding: 2px 10px 0 10px; text-align: right;">
-  <!ENTITY spin "&inline; width: 50px;">
-  <!ENTITY slider_inp "position: absolute; left: 280px; top: 0; width: 100px;">
-  <!ENTITY cb_inp "position: absolute; left: 280px; top: 3px; margin: 0;">
+  <!ENTITY lbl "&inline; width: 300px; padding: 2px 10px 0 10px; text-align: right;">
+  <!ENTITY spin "&inline; width: 70px;">
+  <!ENTITY slider_inp "position: absolute; left: 320px; top: 0; width: 100px;">
+  <!ENTITY cb_inp "position: absolute; left: 320px; top: 3px; margin: 0;">
 ]>
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
  
   name="TrDtbSettings" viewName="TransportSettings" caption="=settings"
-  width="440" height="420"
+  width="480" height="50" heightUnit="%"
   >
 
   <FlowPanel style="background-color: WhiteSmoke;">
@@ -31,19 +31,23 @@
       <Label text="=trTbSettingsCountryFlags" style="&lbl;" />
       <CheckBox source="DtbCountryFlags" html="-" style="&cb_inp;" />
     </FlowPanel>
+
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceInfo" style="&lbl;" />
       <CheckBox source="DtbPlaceInfo" html="-" style="&cb_inp;" />
     </FlowPanel>
-
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCities" style="&lbl;" />
       <CheckBox source="DtbPlaceCities" html="-" style="&cb_inp;" />
     </FlowPanel>
-    
     <FlowPanel style="&cb_row;">
       <Label text="=trTbSettingsPlaceCodes" style="&lbl;" />
       <CheckBox source="DtbPlaceCodes" html="-" style="&cb_inp;" />
+    </FlowPanel>
+
+    <FlowPanel style="&cb_row;">
+      <Label text="=trTbSettingsAdditionalInfo" style="&lbl;" />
+      <CheckBox source="DtbAdditionalInfo" html="-" style="&cb_inp;" />
     </FlowPanel>
 
     &separator;

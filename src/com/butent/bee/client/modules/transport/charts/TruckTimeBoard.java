@@ -8,6 +8,7 @@ import com.butent.bee.client.modules.transport.TransportHandler;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.utils.BeeUtils;
 
 final class TruckTimeBoard extends VehicleTimeBoard {
 
@@ -42,6 +43,12 @@ final class TruckTimeBoard extends VehicleTimeBoard {
   @Override
   public String getSupplierKey() {
     return SUPPLIER_KEY;
+  }
+
+  @Override
+  protected String getAdditionalInfo(Trip trip) {
+    return BeeUtils.joinItems(trip.getCustomerNames(), trip.getDriverNames(),
+        trip.getTrailerNumber());
   }
 
   @Override
@@ -97,6 +104,11 @@ final class TruckTimeBoard extends VehicleTimeBoard {
   @Override
   protected String getSettingsFormName() {
     return FORM_TRUCK_SETTINGS;
+  }
+
+  @Override
+  protected String getShowAdditionalInfoColumnName() {
+    return COL_TRUCK_ADDITIONAL_INFO;
   }
 
   @Override

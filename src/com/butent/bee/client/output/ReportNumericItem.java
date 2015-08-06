@@ -113,24 +113,4 @@ public class ReportNumericItem extends ReportItem {
     this.precision = Assert.nonNegative(prec);
     return this;
   }
-
-  @Override
-  public Object summarize(Object total, Object value, ReportFunction function) {
-    if (value != null) {
-      if (total == null) {
-        return super.summarize(total, value, function);
-      }
-      switch (function) {
-        case MAX:
-          return ((BigDecimal) value).max((BigDecimal) total);
-        case MIN:
-          return ((BigDecimal) value).min((BigDecimal) total);
-        case SUM:
-          return ((BigDecimal) value).add((BigDecimal) total);
-        default:
-          return super.summarize(total, value, function);
-      }
-    }
-    return total;
-  }
 }

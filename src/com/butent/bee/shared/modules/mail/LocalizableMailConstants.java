@@ -20,9 +20,7 @@ public interface LocalizableMailConstants {
 
   String mailCreateNewFolder();
 
-  String mailCurrentMessage();
-
-  String mailInFolder();
+  String mailEmptyTrashFolder();
 
   String mailFolderContentsWillBeRemovedFromTheMailServer();
 
@@ -45,6 +43,8 @@ public interface LocalizableMailConstants {
   String mailGetAllAttachments();
 
   String mailHasAttachments();
+
+  String mailInFolder();
 
   String mailMarkAsUnread();
 

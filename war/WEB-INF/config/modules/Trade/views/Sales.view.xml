@@ -7,8 +7,13 @@
   >
   <Columns>
     <SimpleColumn name="Date" />
-
     <SimpleColumn name="Number" />
+
+    <SimpleColumn name="Operation" />
+    <SimpleJoin name="Operation" joinType="LEFT">
+      <SimpleColumn name="OperationName" />
+    </SimpleJoin>
+
     <SimpleColumn name="SaleSeries" label="=trdInvoicePrefix" />
     <SimpleJoin name="SaleSeries" joinType="LEFT">
       <SimpleColumn name="SeriesName" alias="InvoicePrefix" />

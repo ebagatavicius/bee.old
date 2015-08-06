@@ -8,8 +8,8 @@
     <Relation name="Client" notNull="true" relation="EcClients" cascade="DELETE" 
       label="=ecClient" />
     
-    <DateTime name="DateFrom" label="=ecDiscountDateFrom" />
-    <DateTime name="DateTo" label="=ecDiscountDateTo" />
+    <DateTime name="DateFrom" label="=discountDateFrom" />
+    <DateTime name="DateTo" label="=discountDateTo" />
     
     <Relation name="Category" relation="TcdCategories" label="=ecItemCategory" />
     <Relation name="Brand" relation="TcdBrands" label="=ecItemBrand" />
@@ -18,8 +18,8 @@
     <Relation name="Article" relation="TcdArticles" label="=ecItem" />
 
     <Numeric name="Percent" precision="7" scale="3" label="=discountPercent" />
-    <Numeric name="Price" precision="10" scale="2" label="=ecDiscountPrice" />
+    <Numeric name="Price" precision="10" scale="2" label="=discountPrice" />
     
-    <String name="Note" precision="100" label="=ecDiscountNote" />
+    <String name="Note" precision="100" label="=discountNote" />
   </Fields>
 </Table>

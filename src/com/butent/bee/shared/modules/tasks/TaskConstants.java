@@ -33,7 +33,10 @@ public final class TaskConstants {
         .crmActionFinish(), FontAwesome.CHECK_CIRCLE_O),
     APPROVE(Localized.getConstants().crmTaskEventApproved(), Localized.getConstants()
         .crmTaskConfirm(), FontAwesome.CHECK_SQUARE_O),
-    EDIT(Localized.getConstants().crmTaskEventEdited(), null, null);
+    EDIT(Localized.getConstants().crmTaskEventEdited(), null, null),
+    OUT_OF_OBSERVERS(Localized.getConstants().crmTaskOutOfObservers(), Localized.getConstants()
+        .crmTaskOutOfObservers(),
+        FontAwesome.USER_TIMES);
 
     private final String caption;
     private final String commandLabel;

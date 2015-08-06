@@ -13,8 +13,8 @@
     <Boolean name="FxCountryFlags" />
     <Boolean name="FxPlaceInfo" />
 
-    <Boolean name="FxPlaceCodes"/>
-    <Boolean name="FxPlaceCities"/>
+    <Boolean name="FxPlaceCodes" />
+    <Boolean name="FxPlaceCities" />
 
     <Integer name="FxPixelsPerDay" />
     <Integer name="FxPixelsPerRow" />
@@ -36,8 +36,10 @@
     <Boolean name="SsCountryFlags" />
     <Boolean name="SsPlaceInfo" />
 
-    <Boolean name="SsPlaceCodes"/>
-    <Boolean name="SsPlaceCities"/>
+    <Boolean name="SsPlaceCodes" />
+    <Boolean name="SsPlaceCities" />
+
+    <Boolean name="SsAdditionalInfo" />
 
     <Integer name="SsPixelsPerDay" />
     <Integer name="SsPixelsPerRow" />
@@ -55,8 +57,10 @@
     <Boolean name="DtbCountryFlags" />
     <Boolean name="DtbPlaceInfo" />
 
-    <Boolean name="DtbPlaceCodes"/>
-    <Boolean name="DtbPlaceCities"/>
+    <Boolean name="DtbPlaceCodes" />
+    <Boolean name="DtbPlaceCities" />
+
+    <Boolean name="DtbAdditionalInfo" />
 
     <Integer name="DtbPixelsPerDay" />
     <Integer name="DtbPixelsPerRow" />
@@ -80,6 +84,8 @@
     <Boolean name="TruckPlaceCities" />
     <Boolean name="TruckPlaceCodes" />
 
+    <Boolean name="TruckAdditionalInfo" />
+
     <Integer name="TruckPixelsPerDay" />
     <Integer name="TruckPixelsPerRow" />
 
@@ -101,6 +107,8 @@
 
     <Boolean name="TrailerPlaceCities" />
     <Boolean name="TrailerPlaceCodes" />
+
+    <Boolean name="TrailerAdditionalInfo" />
 
     <Integer name="TrailerPixelsPerDay" />
     <Integer name="TrailerPixelsPerRow" />

@@ -9,7 +9,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_COMPANY_PERSON;
-import static com.butent.bee.shared.modules.trade.TradeConstants.*;
+import static com.butent.bee.shared.modules.trade.TradeConstants.VAR_TOTAL;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -311,7 +311,7 @@ public final class TransportHandler {
     GridFactory.registerGridInterceptor(VIEW_CARGO_SALES, new CargoSalesGrid());
     GridFactory.registerGridInterceptor(VIEW_CARGO_CREDIT_SALES, new CargoCreditSalesGrid());
     GridFactory.registerGridInterceptor(VIEW_CARGO_PURCHASES, new CargoPurchasesGrid());
-    GridFactory.registerGridInterceptor(VIEW_TRIP_PURCHASES, new TripInvoiceBuilder());
+    GridFactory.registerGridInterceptor(VIEW_TRIP_PURCHASES, new TripPurchasesGrid());
 
     GridFactory.registerGridInterceptor(VIEW_CARGO_INVOICES, new InvoicesGrid());
     GridFactory.registerGridInterceptor(VIEW_CARGO_CREDIT_INVOICES, new InvoicesGrid());
@@ -372,7 +372,6 @@ public final class TransportHandler {
     FormFactory.registerFormInterceptor(FORM_CARGO_INVOICE, new CargoInvoiceForm());
     FormFactory.registerFormInterceptor(FORM_CARGO_PURCHASE_INVOICE,
         new CargoPurchaseInvoiceForm());
-
     FormFactory.registerFormInterceptor(FORM_TRIP_PURCHASE_INVOICE, new InvoiceForm(null));
 
     FormFactory.registerFormInterceptor(FORM_REGISTRATION, new TransportRegistrationForm());

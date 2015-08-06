@@ -17,6 +17,8 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.ClientDefaults;
+import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.modules.administration.AdministrationKeeper;
@@ -25,10 +27,13 @@ import com.butent.bee.client.render.RendererFactory;
 import com.butent.bee.client.utils.XmlUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.utils.BeeUtils;
+
+import java.util.Arrays;
 
 public final class TradeUtils {
 
@@ -274,8 +279,7 @@ public final class TradeUtils {
     });
   }
 
-  public static void getTotalInWords(Double amount, final String currencyName,
-      final String minorName, final Widget total) {
+  public static void getTotalInWords(Double amount, final Long currency, final Widget total) {
     Assert.notNull(total);
     String locale = DomUtils.getDataProperty(total.getElement(), VAR_LOCALE);
 
@@ -293,14 +297,25 @@ public final class TradeUtils {
     }
     BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
       @Override
-      public void onResponse(ResponseObject response) {
+      public void onResponse(final ResponseObject response) {
         response.notify(BeeKeeper.getScreen());
 
         if (response.hasErrors()) {
           return;
         }
-        total.getElement().setInnerText(BeeUtils.joinWords(response.getResponse(), currencyName,
-            fraction, minorName));
+        Queries.getRow(TBL_CURRENCIES, currency,
+            Arrays.asList(COL_CURRENCY_NAME, COL_CURRENCY_MINOR_NAME), new RowCallback() {
+              @Override
+              public void onSuccess(BeeRow result) {
+                String text = response.getResponseAsString();
+
+                if (result != null) {
+                  text = BeeUtils.joinWords(text, result.getString(0), fraction,
+                      result.getString(1));
+                }
+                total.getElement().setInnerText(text);
+              }
+            });
       }
     });
   }

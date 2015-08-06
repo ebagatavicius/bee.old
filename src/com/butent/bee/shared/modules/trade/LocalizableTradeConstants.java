@@ -89,4 +89,10 @@ public interface LocalizableTradeConstants {
   String trdStatuses();
 
   String trdTotal();
+
+  String trdTypePurchase();
+
+  String trdTypeSale();
+
+  String trdTypeTransfer();
 }

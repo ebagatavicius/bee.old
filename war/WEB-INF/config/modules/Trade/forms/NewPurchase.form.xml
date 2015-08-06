@@ -2,7 +2,7 @@
 <f:Form xmlns="http://www.butent.com/widget"
         xmlns:f="http://www.butent.com/form"
 
-        name="NewPurchase" viewName="Purchases" caption="=trdNewPurchase"
+        name="NewPurchase" caption="=trdNewPurchase"
         width="600" height="450"
     >
   <FlowPanel style="padding: 10px;">
@@ -16,6 +16,13 @@
         <InputText source="Number" />
       </row>
       <row>
+        <Label for="Operation" class="bee-required" />
+        <cell colSpan="2">
+          <DataSelector source="Operation" viewName="PurchaseOperations" required="true"
+                        editEnabled="false" newRowEnabled="false" style="width:100%;" />
+        </cell>
+      </row>
+      <row>
         <Label for="InvoicePrefix" />
         <InputText source="InvoicePrefix" upperCase="true" style="width:7em" />
         <InlineLabel for="InvoiceNo" />
@@ -23,15 +30,15 @@
       </row>
       <row>
         <Label for="Supplier" class="bee-required" />
-        <DataSelector source="Supplier" required="true" renderColumns="SupplierName SupplierType" />
+        <DataSelector source="Supplier" required="true" />
         <Label for="Term" />
         <InputDate source="Term" style="width:10em;" />
       </row>
       <row>
-        <Label for="Customer" />
-        <DataSelector source="Customer" renderColumns="CustomerName CustomerType" />
-        <Label for="WarehouseTo" />
-        <DataSelector source="WarehouseTo" renderColumns="WarehouseToCode" />
+        <cell colSpan="3">
+          <Label for="WarehouseTo" />
+        </cell>
+        <DataSelector source="WarehouseTo" newRowEnabled="false" editEnabled="false" />
       </row>
       <row>
         <Label for="Manager" />
@@ -39,7 +46,8 @@
                       choiceColumns="FirstName LastName PositionName CompanyName"
                       editSource="ManagerPerson" newRowEnabled="false" />
         <Label for="Currency" />
-        <DataSelector source="Currency" style="width:5em;" editEnabled="false" newRowEnabled="false" />
+        <DataSelector source="Currency" style="width:5em;" editEnabled="false"
+                      newRowEnabled="false" />
       </row>
       <row>
         <Label for="Notes" />

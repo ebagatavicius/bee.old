@@ -57,6 +57,7 @@ import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.InlineLabel;
 import com.butent.bee.client.widget.Link;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
@@ -87,6 +88,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 public class MailMessage extends AbstractFormInterceptor {
@@ -266,6 +268,7 @@ public class MailMessage extends AbstractFormInterceptor {
   private static final String SUBJECT = "Subject";
 
   private final MailPanel mailPanel;
+  private Integer rpcId;
   private Long placeId;
   private Long folderId;
   private Long repliedFrom;
@@ -499,6 +502,7 @@ public class MailMessage extends AbstractFormInterceptor {
     if (relations != null) {
       relations.reset();
     }
+    rpcId = null;
   }
 
   @Override
@@ -536,9 +540,13 @@ public class MailMessage extends AbstractFormInterceptor {
     ParameterList params = MailKeeper.createArgs(SVC_GET_MESSAGE);
     params.addDataItem(column, columnId);
 
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+    rpcId = BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
+        if (!Objects.equals(getRpcId(), rpcId)) {
+          return;
+        }
+        getRpcId();
         response.notify(getFormView());
 
         if (response.hasErrors()) {
@@ -603,27 +611,24 @@ public class MailMessage extends AbstractFormInterceptor {
           Widget widget = widgets.get(ATTACHMENTS);
 
           if (widget != null && widget instanceof HasWidgets) {
-            ((HasWidgets) widget).clear();
-
-            HtmlTable table = new HtmlTable();
+            Widget label;
 
             if (cnt > 1) {
-              table.setText(0, 0, BeeUtils.toString(cnt));
-              table.setWidget(0, 1, new FaLabel(FontAwesome.PAPERCLIP));
-              table.setText(0, 2, BeeUtils.parenthesize(FileUtils.sizeToText(size)));
-              table.addClickHandler(attachmentsHandler);
+              label = new InlineLabel(BeeUtils.joinWords(cnt,
+                  BeeUtils.parenthesize(FileUtils.sizeToText(size))));
+              ((InlineLabel) label).addClickHandler(attachmentsHandler);
             } else {
+              label = new Simple();
               FileInfo file = BeeUtils.peek(attachments);
-              Simple simple = new Simple();
-              DndHelper.makeSource(simple, NameUtils.getClassName(FileInfo.class), file, null);
-              simple.setWidget(new Link(BeeUtils.joinWords(file.getName(),
+
+              DndHelper.makeSource((Simple) label, NameUtils.getClassName(FileInfo.class), file,
+                  null);
+
+              ((Simple) label).setWidget(new Link(BeeUtils.joinWords(file.getName(),
                   BeeUtils.parenthesize(FileUtils.sizeToText(file.getSize()))),
                   FileUtils.getUrl(file.getName(), file.getId())));
-
-              table.setWidget(0, 0, new FaLabel(FontAwesome.PAPERCLIP));
-              table.setWidget(0, 1, simple);
             }
-            ((HasWidgets) widget).add(table);
+            ((HasWidgets) widget).add(label);
           }
         }
         String content = null;
@@ -789,8 +794,26 @@ public class MailMessage extends AbstractFormInterceptor {
             break;
         }
         if (mailPanel != null) {
-          NewMailMessage.create(mailPanel.getAccounts(), mailPanel.getCurrentAccount(),
-              to, cc, bcc, subject, content, attach, relatedId, isDraft);
+          NewMailMessage newMessage = NewMailMessage.create(mailPanel.getAccounts(),
+              mailPanel.getCurrentAccount(), to, cc, bcc, subject, content, attach, relatedId,
+              isDraft);
+
+          if (mode == NewMailMode.FORWARD && !isDraft && DataUtils.isId(placeId)) {
+            final Long place = placeId;
+            newMessage.setCallback(new Consumer<Boolean>() {
+              @Override
+              public void accept(Boolean save) {
+                if (!save) {
+                  ParameterList params = MailKeeper.createArgs(SVC_FLAG_MESSAGE);
+                  params.addDataItem(COL_PLACE, place);
+                  params.addDataItem(COL_FLAGS, MessageFlag.FORWARDED.name());
+                  params.addDataItem("on", Codec.pack(true));
+
+                  BeeKeeper.getRpc().makePostRequest(params, (ResponseCallback) null);
+                }
+              }
+            });
+          }
         } else {
           NewMailMessage.create(to, cc, bcc, subject, content, attach, relatedId, isDraft);
         }

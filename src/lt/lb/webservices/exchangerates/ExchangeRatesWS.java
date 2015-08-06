@@ -13,7 +13,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,8 @@ public class ExchangeRatesWS extends Service {
   static final String NAME = "FxRates";
   static final String ACTION = "http://www.lb.lt/WebServices/FxRates";
 
-  private static final String DEFAULT_WSDL = "http://webservices.lb.lt/FxRates/FxRates.asmx?WSDL";
+  private static final String DEFAULT_WSDL =
+      "http://www.lb.lt/WebServices/FxRates/FxRates.asmx?WSDL";
   private static final String DEFAULT_TYPE = "LT";
 
   private static BeeLogger logger = LogUtils.getLogger(ExchangeRatesWS.class);
@@ -59,13 +59,20 @@ public class ExchangeRatesWS extends Service {
     String tp = BeeUtils.notEmpty(type, DEFAULT_TYPE);
     logger.info(svc, tp, currency);
 
-    List<Object> result = ((ExchangeRatesSoapPort) response.getResponse()).getCurrentFxRates(tp);
+    List<Object> result;
+
+    try {
+      result = ((ExchangeRatesSoapPort) response.getResponse()).getCurrentFxRates(tp);
+    } catch (Exception e) {
+      logger.error(e);
+      return ResponseObject.error(e);
+    }
     if (BeeUtils.isEmpty(result)) {
       return ResponseObject.error(svc, "result is empty");
     }
 
-    SimpleRowSet data = new SimpleRowSet(new String[] {COL_TP, COL_DT,
-        COL_CCY_1, COL_AMT_1, COL_CCY_2, COL_AMT_2});
+    SimpleRowSet data = new SimpleRowSet(new String[] {
+        COL_TP, COL_DT, COL_CCY_1, COL_AMT_1, COL_CCY_2, COL_AMT_2});
     int currencyIndex = data.getColumnIndex(COL_CCY_2);
 
     for (Object root : result) {
@@ -114,13 +121,20 @@ public class ExchangeRatesWS extends Service {
 
     logger.info(svc, tp, currency, date);
 
-    List<Object> result = ((ExchangeRatesSoapPort) response.getResponse()).getFxRates(tp, dt);
+    List<Object> result;
+
+    try {
+      result = ((ExchangeRatesSoapPort) response.getResponse()).getFxRates(tp, dt);
+    } catch (Exception e) {
+      logger.error(e);
+      return ResponseObject.error(e);
+    }
     if (BeeUtils.isEmpty(result)) {
       return ResponseObject.error(svc, "result is empty");
     }
 
-    SimpleRowSet data = new SimpleRowSet(new String[] {COL_TP, COL_DT,
-        COL_CCY_1, COL_AMT_1, COL_CCY_2, COL_AMT_2});
+    SimpleRowSet data = new SimpleRowSet(new String[] {
+        COL_TP, COL_DT, COL_CCY_1, COL_AMT_1, COL_CCY_2, COL_AMT_2});
     int currencyIndex = data.getColumnIndex(COL_CCY_2);
 
     for (Object root : result) {
@@ -170,15 +184,21 @@ public class ExchangeRatesWS extends Service {
 
     logger.info(svc, tp, currency, dateLow, dateHigh);
 
-    List<Object> result = ((ExchangeRatesSoapPort) response.getResponse()).getFxRatesForCurrency(
-        tp, currency, low, high);
+    List<Object> result;
 
+    try {
+      result = ((ExchangeRatesSoapPort) response.getResponse())
+          .getFxRatesForCurrency(tp, currency, low, high);
+    } catch (Exception e) {
+      logger.error(e);
+      return ResponseObject.error(e);
+    }
     if (BeeUtils.isEmpty(result)) {
       return ResponseObject.error(svc, "result is empty");
     }
 
-    SimpleRowSet data = new SimpleRowSet(new String[] {COL_TP, COL_DT,
-        COL_CCY_1, COL_AMT_1, COL_CCY_2, COL_AMT_2});
+    SimpleRowSet data = new SimpleRowSet(new String[] {
+        COL_TP, COL_DT, COL_CCY_1, COL_AMT_1, COL_CCY_2, COL_AMT_2});
 
     for (Object root : result) {
       if (root instanceof Element) {
@@ -218,7 +238,14 @@ public class ExchangeRatesWS extends Service {
     String svc = "getCurrencyList";
     logger.info(svc);
 
-    List<Object> result = ((ExchangeRatesSoapPort) response.getResponse()).getCurrencyList();
+    List<Object> result;
+
+    try {
+      result = ((ExchangeRatesSoapPort) response.getResponse()).getCurrencyList();
+    } catch (Exception e) {
+      logger.error(e);
+      return ResponseObject.error(e);
+    }
     if (BeeUtils.isEmpty(result)) {
       return ResponseObject.error(svc, "result is empty");
     }
@@ -279,7 +306,7 @@ public class ExchangeRatesWS extends Service {
 
     try {
       exchangeRatesWS = new ExchangeRatesWS(new URL(address));
-    } catch (MalformedURLException e) {
+    } catch (Exception e) {
       logger.error(e);
       return ResponseObject.error(e);
     }

@@ -10,6 +10,8 @@ public interface LocalizableMailMessages {
 
   String mailDeleteFolderQuestion(String folderName);
 
+  String mailMessages(int count);
+
   String mailMovedMessagesToFolder(String count);
 
   String mailMovedMessagesToTrash(String count);
@@ -17,7 +19,4 @@ public interface LocalizableMailMessages {
   String mailOnlyInFolder(String folderName);
 
   String mailRenameFolder(String folderName);
-
-  String mailSelectedMessages(int count);
-
 }

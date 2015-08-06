@@ -2,7 +2,7 @@
 <View xmlns="http://www.butent.com/view"
 
   name="EcDiscounts" source="EcDiscounts" module="Ec.Administration"
-  caption="=ecDiscounts" newRowCaption="=ecDiscountNew"
+  caption="=discounts" newRowCaption="=discountNew"
   >
   <Columns>
     <SimpleColumn name="Client" />

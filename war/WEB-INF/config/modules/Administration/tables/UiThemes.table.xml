@@ -40,12 +40,10 @@
     <Integer name="ApplianceHeaderHeight" label="=heightOfApplianceHeader" />
     <Integer name="SubMenuLineHeight" />
     <Integer name="WorkspaceTabHeight" />
-    <Integer name="DisclosureClosedHeight" />
 
     <Integer name="InputLineHeight" />
     <String name="InputPadding" precision="20" />
     <String name="ListSize1Padding" precision="20" />
-    <Integer name="FormCellPaddingTop" />
 
     <Text name="Css" />
   </Fields>

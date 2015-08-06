@@ -280,7 +280,7 @@ public class ReportInfo implements BeeSerializable {
   }
 
   public boolean isEmpty() {
-    return BeeUtils.isEmpty(getRowItems()) && BeeUtils.isEmpty(getColItems());
+    return BeeUtils.isEmpty(getColItems());
   }
 
   public boolean requiresField(String field) {
@@ -379,6 +379,14 @@ public class ReportInfo implements BeeSerializable {
 
     if (item != null) {
       item.colSummary = summary;
+    }
+  }
+
+  public void setDescending(int colIndex, Boolean descending) {
+    ReportInfoItem item = BeeUtils.getQuietly(getColItems(), colIndex);
+
+    if (item != null) {
+      item.descending = descending;
     }
   }
 

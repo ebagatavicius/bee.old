@@ -19,6 +19,7 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.edit.SimpleEditorHandler;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.client.widget.CheckBox;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.InputArea;
@@ -184,6 +185,22 @@ class TaskDialog extends DialogBox {
     return collector.getId();
   }
 
+  String addCheckBox(boolean checked) {
+    HtmlTable table = getContainer();
+    int row = table.getRowCount();
+    int col = 0;
+
+    String styleName = STYLE_DIALOG + "-observerCheckbox";
+    CheckBox chkBx = new CheckBox(Localized.getConstants().crmTaskAddSenderToObservers());
+    chkBx.setChecked(checked);
+    chkBx.addStyleName(styleName);
+
+    table.setWidget(row, col, chkBx);
+    table.getCellFormatter().addStyleName(row, col, styleName + STYLE_CELL);
+
+    return chkBx.getId();
+  }
+
   String addSelector(String caption, String relView, List<String> relColumns,
       boolean required, Collection<Long> exclusions, Collection<Long> filter) {
     HtmlTable table = getContainer();
@@ -273,6 +290,15 @@ class TaskDialog extends DialogBox {
       return ((InputTime) child).getValue();
     } else {
       return null;
+    }
+  }
+
+  boolean isChecked(String id) {
+    Widget child = getChild(id);
+    if (child instanceof CheckBox) {
+      return ((CheckBox) child).isChecked();
+    } else {
+      return false;
     }
   }
 

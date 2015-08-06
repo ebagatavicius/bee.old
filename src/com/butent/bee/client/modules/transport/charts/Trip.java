@@ -216,6 +216,8 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
 
   private final int cargoCount;
 
+  private final Collection<String> customers;
+
   Trip(SimpleRow row, Collection<Driver> drivers) {
     this(row, drivers, null, null, 0,
         BeeConst.EMPTY_IMMUTABLE_STRING_SET, BeeConst.EMPTY_IMMUTABLE_STRING_SET);
@@ -266,6 +268,7 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
     this.itemName = BeeUtils.joinWords(rangeLabel, this.tripNo);
 
     this.cargoCount = cargoCount;
+    this.customers = customers;
   }
 
   @Override
@@ -281,6 +284,18 @@ class Trip extends Filterable implements HasColorSource, HasDateRange, HasItemNa
   @Override
   public Range<JustDate> getRange() {
     return range;
+  }
+
+  String getCustomerNames() {
+    return BeeUtils.joinItems(customers);
+  }
+
+  Collection<String> getCustomers() {
+    return customers;
+  }
+
+  String getDriverNames() {
+    return Driver.getNames(BeeConst.DEFAULT_LIST_SEPARATOR, drivers);
   }
 
   Collection<Driver> getDrivers() {

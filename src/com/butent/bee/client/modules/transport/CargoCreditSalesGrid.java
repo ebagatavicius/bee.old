@@ -211,7 +211,7 @@ public class CargoCreditSalesGrid extends AbstractGridInterceptor implements Cli
                 args.addDataItem(TradeConstants.COL_PURCHASE, row.getId());
                 args.addDataItem(COL_CURRENCY,
                     row.getLong(purchaseInfo.getColumnIndex(COL_CURRENCY)));
-                args.addDataItem(Service.VAR_ID, DataUtils.buildIdList(ids));
+                args.addDataItem(Service.VAR_DATA, DataUtils.buildIdList(ids));
 
                 if (mainItem != null && DataUtils.isId(mainItem.getRelatedId())) {
                   args.addDataItem(ClassifierConstants.COL_ITEM, mainItem.getRelatedId());

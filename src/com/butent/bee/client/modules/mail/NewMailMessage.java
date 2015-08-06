@@ -46,6 +46,7 @@ import com.butent.bee.client.widget.ListBox;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BiConsumer;
+import com.butent.bee.shared.Consumer;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -193,6 +194,8 @@ public final class NewMailMessage extends AbstractFormInterceptor
   private final ListBox signaturesWidget = new ListBox();
   private FileCollector attachmentsWidget;
 
+  private Consumer<Boolean> actionCallback;
+
   private NewMailMessage(List<AccountInfo> availableAccounts, AccountInfo defaultAccount,
       Set<String> to, Set<String> cc, Set<String> bcc, String subject, String content,
       Collection<FileInfo> attachments, Long relatedId, boolean isDraft) {
@@ -290,6 +293,10 @@ public final class NewMailMessage extends AbstractFormInterceptor
         }
       });
     }
+  }
+
+  public void setCallback(Consumer<Boolean> callback) {
+    this.actionCallback = callback;
   }
 
   private void applySignature(Long signatureId) {
@@ -396,7 +403,7 @@ public final class NewMailMessage extends AbstractFormInterceptor
     dialog.insertAction(1, accountsWidget);
   }
 
-  private void save(boolean saveMode) {
+  private void save(final boolean saveMode) {
     if (saveMode && !hasChanges()) {
       return;
     }
@@ -429,6 +436,10 @@ public final class NewMailMessage extends AbstractFormInterceptor
       @Override
       public void onResponse(ResponseObject response) {
         response.notify(BeeKeeper.getScreen());
+
+        if (actionCallback != null && !response.hasErrors()) {
+          actionCallback.accept(saveMode);
+        }
       }
     });
   }

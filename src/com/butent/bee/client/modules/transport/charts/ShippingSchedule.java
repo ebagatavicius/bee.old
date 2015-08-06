@@ -24,6 +24,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.transport.TransportConstants.VehicleType;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -106,6 +107,11 @@ final class ShippingSchedule extends VehicleTimeBoard {
   }
 
   @Override
+  protected String getAdditionalInfo(Trip trip) {
+    return BeeUtils.joinItems(trip.getCustomerNames(), trip.getDriverNames());
+  }
+
+  @Override
   protected String getDataService() {
     return DATA_SERVICE;
   }
@@ -168,6 +174,11 @@ final class ShippingSchedule extends VehicleTimeBoard {
   @Override
   protected String getSettingsFormName() {
     return FORM_SS_SETTINGS;
+  }
+
+  @Override
+  protected String getShowAdditionalInfoColumnName() {
+    return COL_SS_ADDITIONAL_INFO;
   }
 
   @Override

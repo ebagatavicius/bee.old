@@ -1,67 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Form [
-  <!ENTITY lbl "text-align: right;">
-]>
 <f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  
-  name="CargoInvoice" viewName="CargoInvoices"
-  width="800" height="600"
-  >
+        xmlns:f="http://www.butent.com/form"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="CargoInvoice" caption="=trdInvoice" showRowId="true"
+        width="800" height="600"
+    >
   <f:properties reports="PrintCargoInvoice, PrintCargoInvoiceShort" />
 
   <FlowPanel class="flexBox-vertical">
-    <Table>
-      <row>
-        <Label text="=trdDate" class="bee-required" style="&lbl;" />
-        <InputDateTime source="Date" style="width:110px;" />
-
-        <Label text="=orderNumber" style="&lbl;" />
-        <InputText source="Number" />
-      </row>
-      <row>
-        <Label text="=trdTotal" style="&lbl;" />
-        <HorizontalPanel>
-          <DecimalLabel source="Amount" format="0.00" style="font-weight:bold; margin-right:5px;" />
-          <DataSelector source="CurrencyName" placeholder="=currencyShort"
-            style="width:5em;" editEnabled="false" />
-        </HorizontalPanel>
-
-        <Label text="=trdInvoicePrefix" style="&lbl;" />
-        <FlowPanel>
-          <DataSelector source="SaleSeries" upperCase="true" style="width:11em;" />
-          <InlineLabel text="=trdInvoiceNo" style="margin-left:5px;" />
-          <InputText source="InvoiceNo" />
-        </FlowPanel>
-      </row>
-      <row>
-        <Label text="=trdSupplier" style="&lbl;" />
-        <DataSelector source="Supplier" renderColumns="SupplierName SupplierTypeName"
-            choiceColumns="Name TypeName" />
-        <Label text="=trdCustomer" class="bee-required" style="&lbl;" />
-        <DataSelector source="Customer" renderColumns="CustomerName CustomerTypeName" 
-            choiceColumns="Name TypeName" required="true" />
-      </row>
-      <row>
-        <Label text="=trdManager" style="&lbl;" />
-        <DataSelector source="Manager" editSource="ManagerPerson" />
-        <Label text="=trdPayer" style="&lbl;" />
-        <DataSelector source="Payer" renderColumns="PayerName PayerTypeName" 
-            choiceColumns="Name TypeName" />
-      </row>
-      <row>
-        <cell colSpan="3">
-          <Label text="=trdTerm" style="&lbl; text-align:right;" />
-        </cell>
-        <InputDate source="Term" style="width:150px;" />
-      </row>
-      <row>
-        <Label text="=trdVehicle" style="&lbl;" />
-        <InputText source="Vehicle" />
-        <Label text="=trdDriver" style="&lbl;" />
-        <InputText source="Driver" />
-      </row>
-    </Table>
+    <br />
+    <xi:include href="widgets/SaleInvoice.widget.xml" />
+    <br />
 
     <TabbedPages class="flexible">
       <page>

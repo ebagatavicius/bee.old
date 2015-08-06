@@ -7,7 +7,7 @@
   <g:body height="35" borderWidth="0 0 1 0" />
 
   <g:columns>
-    <DataColumn name="Flags" cellType="html" horizontalAlignment="center" width="20" />
+    <DataColumn name="Flags" cellType="html" horizontalAlignment="center" width="35" />
     <DataColumn name="Message" cellType="html" minWidth="200" maxWidth="600" flexGrow="1" flexShrink="1" />
   </g:columns>
 </g:Grid>

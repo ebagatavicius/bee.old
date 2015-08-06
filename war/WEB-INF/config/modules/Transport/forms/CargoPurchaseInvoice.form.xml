@@ -1,60 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Form [
-  <!ENTITY lbl "text-align: right;">
-]>
 <f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  
-  name="CargoPurchaseInvoice" viewName="CargoPurchaseInvoices"
-  width="800" height="600"
-  >
-  <f:properties reports="PrintCargoInvoiceShort, PrintCargoCreditInvoice" />
+        xmlns:f="http://www.butent.com/form"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="CargoPurchaseInvoice"
+        caption="=trPurchaseInvoice" showRowId="true"
+        width="840" height="600"
+    >
+  <f:properties reports="PrintCargoCreditInvoice" />
 
   <FlowPanel class="flexBox-vertical">
-    <Table>
-      <row>
-        <Label text="=trdDate" class="bee-required" style="&lbl;" />
-        <InputDateTime source="Date" style="width:110px;" />
+    <br />
+    <xi:include href="widgets/PurchaseInvoice.widget.xml" />
+    <br />
 
-        <Label text="=orderNumber" style="&lbl;" />
-        <InputText source="Number" />
-      </row>
-      <row>
-        <Label text="=trdTotal" style="&lbl;" />
-        <HorizontalPanel>
-          <DecimalLabel source="Amount" format="0.00" style="font-weight:bold; margin-right:5px;" />
-          <DataSelector source="CurrencyName" placeholder="=currencyShort"
-            style="width:5em;" editEnabled="false" />
-        </HorizontalPanel>
-
-        <Label text="=trdInvoicePrefix" style="&lbl;" />
-        <FlowPanel>
-          <InputText source="InvoicePrefix" upperCase="true" style="width:11em;" />
-          <InlineLabel text="=trdInvoiceNo" style="margin-left:5px;" />
-          <InputText source="InvoiceNo" />
-        </FlowPanel>
-      </row>
-      <row>
-        <cell colSpan="3">
-          <Label text="=trdWarehouseTo" class="bee-required" style="&lbl;" />
-        </cell>
-        <DataSelector source="WarehouseTo" />
-      </row>
-      <row>
-        <Label text="=trdSupplier" class="bee-required" style="&lbl;" />
-        <DataSelector source="Supplier" required="true" renderColumns="SupplierName" />
-        <Label text="=trdCustomer" style="&lbl;" />
-        <DataSelector source="Customer" renderColumns="CustomerName" />
-      </row>
-      <row>
-        <Label text="=trdTerm" style="&lbl; text-align:right;" />
-        <InputDate source="Term" style="width:150px;" />
-        <Label text="=trdManager" style="&lbl;" />
-        <DataSelector source="Manager" editSource="ManagerPerson" />
-      </row>
-    </Table>
-
-    <TabbedPages class="flexible">
+    <TabbedPages name="TabbedPages" class="flexible">
       <page>
         <text>=productsServices</text>
         <ChildGrid name="PurchaseItems" relColumn="Purchase" />

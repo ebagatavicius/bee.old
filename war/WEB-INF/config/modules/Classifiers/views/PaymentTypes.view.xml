@@ -5,7 +5,7 @@
     >
   <Columns>
     <SimpleColumn name="PaymentName" />
-    <SimpleColumn name="Cash" />
+    <SimpleColumn name="PaymentCash" />
   </Columns>
   <Order>
     <OrderBy column="PaymentName" />

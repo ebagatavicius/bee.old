@@ -33,7 +33,7 @@
     <RelColumn name="Country" />
 
     <RelColumn name="PaymentType" visible="false" />
-    <RelColumn name="MainDriver" newRowEnabled="false" editEnabled="false" visible="false" />
+    <RelColumn name="Driver" newRowEnabled="false" editEnabled="false" visible="false" />
 
     <DataColumn name="Note" />
 

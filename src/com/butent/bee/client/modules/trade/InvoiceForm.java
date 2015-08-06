@@ -7,17 +7,21 @@ import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.RpcCallback;
+import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.dialog.InputCallback;
+import com.butent.bee.client.event.logical.SelectorEvent;
+import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.EditEndEvent;
+import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.Pair;
+import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.i18n.Localized;
@@ -26,16 +30,29 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.EnumUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
-public class InvoiceForm extends PrintFormInterceptor {
+public class InvoiceForm extends PrintFormInterceptor implements SelectorEvent.Handler {
 
-  Pair<Boolean, Long> mainItem;
+  Holder<Long> mainItem;
 
-  public InvoiceForm(Pair<Boolean, Long> mainItem) {
+  public InvoiceForm(Holder<Long> mainItem) {
     this.mainItem = mainItem;
+  }
+
+  @Override
+  public void afterCreateEditableWidget(EditableWidget editableWidget, IdentifiableWidget widget) {
+    super.afterCreateEditableWidget(editableWidget, widget);
+
+    if (BeeUtils.same(editableWidget.getColumnId(), COL_TRADE_OPERATION)
+        && widget instanceof DataSelector) {
+      ((DataSelector) widget).addSelectorHandler(this);
+    }
   }
 
   @Override
@@ -51,7 +68,7 @@ public class InvoiceForm extends PrintFormInterceptor {
           new InputCallback() {
             @Override
             public String getErrorMessage() {
-              if (mainItem.getA() && !DataUtils.isId(item.getRelatedId())) {
+              if (!DataUtils.isId(item.getRelatedId())) {
                 return Localized.getConstants().valueRequired();
               }
               return super.getErrorMessage();
@@ -59,7 +76,7 @@ public class InvoiceForm extends PrintFormInterceptor {
 
             @Override
             public void onSuccess() {
-              mainItem.setB(item.getRelatedId());
+              mainItem.set(item.getRelatedId());
               listener.fireEvent(event);
             }
           });
@@ -75,6 +92,50 @@ public class InvoiceForm extends PrintFormInterceptor {
   @Override
   public FormInterceptor getPrintFormInterceptor() {
     return new PrintInvoiceInterceptor();
+  }
+
+  @Override
+  public void onDataSelector(SelectorEvent event) {
+    String viewName = event.getRelatedViewName();
+    IsRow relatedRow = event.getRelatedRow();
+
+    if (relatedRow != null && event.isChanged()
+        && BeeUtils.same(Data.getViewTable(viewName), TBL_TRADE_OPERATIONS)) {
+      OperationType type = EnumUtils.getEnumByIndex(OperationType.class,
+          Data.getInteger(viewName, relatedRow, COL_OPERATION_TYPE));
+
+      List<String> fields = new ArrayList<>();
+
+      if (type != null) {
+        switch (type) {
+          case PURCHASE:
+            fields.add(COL_OPERATION_WAREHOUSE_TO);
+            break;
+          case SALE:
+            fields.add(COL_TRADE_WAREHOUSE_FROM);
+            break;
+          case TRANSFER:
+            fields.add(COL_TRADE_WAREHOUSE_FROM);
+            fields.add(COL_OPERATION_WAREHOUSE_TO);
+            break;
+        }
+      }
+      for (String field : fields) {
+        Long warehouse = Data.getLong(viewName, relatedRow, field);
+
+        if (DataUtils.isId(warehouse)) {
+          int idx = getDataIndex(field);
+          int codeIdx = getDataIndex(field + "Code");
+
+          if (!BeeConst.isUndef(idx) && !BeeConst.isUndef(codeIdx)) {
+            getActiveRow().setValue(idx, warehouse);
+            getActiveRow().setValue(codeIdx, Data.getString(viewName, relatedRow, field + "Code"));
+
+            getFormView().refreshBySource(field);
+          }
+        }
+      }
+    }
   }
 
   @Override

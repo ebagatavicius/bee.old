@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
+        xmlns:ui="http://www.butent.com/ui"
 
-  name="CargoInvoices" viewName="CargoInvoices"
-  editShowId="true" flexGrow="1"
-  disabledActions="add"
-  caption="=trIncomeInvoices"
-  filter="Sale AND !(Proforma)"
-  >
+        name="CargoInvoices" viewName="CargoInvoices"
+        editShowId="true" flexGrow="1"
+        disabledActions="add"
+        caption="=trIncomeInvoices"
+        filter="Sale AND !(Proforma)"
+    >
   <g:columns>
     <SelectionColumn name="Select" width="20" />
     <IdColumn name="ID" caption="=trdInvoiceId" />
     <DataColumn name="Date" />
     <DataColumn name="Number" />
-    <DataColumn name="InvoiceNo" renderColumns="InvoicePrefix InvoiceNo" searchBy="InvoicePrefix InvoiceNo" />
-    <DataColumn name="CustomerName" />
-    <DataColumn name="PayerName" />
+    <RelColumn name="Operation" />
+    <DataColumn name="InvoiceNo" renderColumns="InvoicePrefix InvoiceNo"
+                searchBy="InvoicePrefix InvoiceNo" />
+    <RelColumn name="Customer" filterSupplier="value" />
+    <RelColumn name="Payer" filterSupplier="value" />
     <DataColumn name="Amount" />
     <DataColumn name="CurrencyName" />
     <DataColumn name="Term" />
@@ -23,7 +25,7 @@
     <DataColumn name="PaymentTime" />
     <DataColumn name="Paid" />
 
-    <DataColumn name="Debt" caption="=trdDebt" format="0.00" />
+    <DataColumn name="Debt" format="0.00" />
 
     <DataColumn name="Vehicle" />
     <DataColumn name="Driver" />

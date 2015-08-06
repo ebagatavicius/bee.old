@@ -1,34 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
 
-  name="CargoPurchaseInvoices" viewName="CargoPurchaseInvoices"
-  editShowId="true" flexGrow="1"
-  disabledActions="add"
-  caption="=trPurchaseInvoices"
-  filter="Purchase"
-  >
+        name="CargoPurchaseInvoices" viewName="CargoPurchaseInvoices"
+        editShowId="true" flexGrow="1"
+        disabledActions="add"
+        caption="=trPurchaseInvoices"
+        filter="Purchase"
+    >
   <g:columns>
     <SelectionColumn name="Select" width="20" />
     <IdColumn name="ID" caption="=trdInvoiceId" />
     <DataColumn name="Date" />
     <DataColumn name="Number" />
+    <RelColumn name="OperationName" />
+
     <DataColumn name="InvoiceNo" searchBy="InvoicePrefix InvoiceNo">
-      <render>
-        <ui:function>
-          if (!row.InvoicePrefix) {
-            return row.InvoiceNo;
-          } else if(!row.InvoiceNo) {
-            return row.InvoicePrefix;
-          } else {
-            return row.InvoicePrefix + " " + row.InvoiceNo;
-          }
-        </ui:function>
-      </render>
+      <renderToken source="InvoicePrefix" suffix=" " />
+      <renderToken source="InvoiceNo" />
     </DataColumn>
-    <DataColumn name="SupplierName" />
+    <RelColumn name="Supplier" filterSupplier="value" />
     <DataColumn name="Amount" />
-    <DataColumn name="CurrencyName" />
+    <RelColumn name="Currency" />
     <DataColumn name="Term" />
     <DataColumn name="Exported" />
   </g:columns>

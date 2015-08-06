@@ -147,6 +147,14 @@
   pointer-events: none;
 }
 
+.bee-tr-dtb-Trip-info,
+.bee-tr-vtb-Trip-info {
+  position: absolute;
+  left: 2%;
+  top: 0;
+  pointer-events: none;
+}
+
 .bee-tr-fx-Customer-row-sep,
 .bee-tr-fx-Order-row-sep,
 .bee-tr-ss-trip-Group-row-sep,

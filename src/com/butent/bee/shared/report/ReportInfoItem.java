@@ -13,7 +13,7 @@ import java.util.Map;
 public final class ReportInfoItem implements BeeSerializable {
 
   private enum Serial {
-    ITEM, RELATION, FUNCTION, COL_SUMMARY, GROUP_SUMMARY, ROW_SUMMARY
+    ITEM, RELATION, FUNCTION, COL_SUMMARY, GROUP_SUMMARY, ROW_SUMMARY, DESCENDING
   }
 
   private ReportItem item;
@@ -23,6 +23,7 @@ public final class ReportInfoItem implements BeeSerializable {
   boolean colSummary;
   boolean groupSummary;
   boolean rowSummary;
+  Boolean descending;
 
   ReportInfoItem(ReportItem item) {
     this.item = Assert.notNull(item);
@@ -42,6 +43,9 @@ public final class ReportInfoItem implements BeeSerializable {
         switch (key) {
           case COL_SUMMARY:
             colSummary = BeeUtils.toBoolean(value);
+            break;
+          case DESCENDING:
+            descending = BeeUtils.toBooleanOrNull(value);
             break;
           case FUNCTION:
             function = EnumUtils.getEnumByName(ReportFunction.class, value);
@@ -65,12 +69,16 @@ public final class ReportInfoItem implements BeeSerializable {
     }
   }
 
-  public ReportItem getItem() {
-    return item;
+  public boolean getDescending() {
+    return BeeUtils.unbox(descending);
   }
 
   public ReportFunction getFunction() {
     return function;
+  }
+
+  public ReportItem getItem() {
+    return item;
   }
 
   public String getRelation() {
@@ -106,6 +114,10 @@ public final class ReportInfoItem implements BeeSerializable {
     return rowSummary;
   }
 
+  public boolean isSorted() {
+    return descending != null;
+  }
+
   @Override
   public String serialize() {
     Map<String, Object> map = new HashMap<>();
@@ -116,6 +128,9 @@ public final class ReportInfoItem implements BeeSerializable {
       switch (key) {
         case COL_SUMMARY:
           value = isColSummary();
+          break;
+        case DESCENDING:
+          value = getDescending();
           break;
         case FUNCTION:
           value = getFunction();

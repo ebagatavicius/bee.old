@@ -19,10 +19,8 @@
     <Relation name="CompanySize" relation="CompanySizes" label="=companySize" />
     <Relation name="InformationSource" relation="InformationSources" label="=informationSource" />
 
-    <Relation name="Turnover" relation="Turnovers"
-      label="=clientTurnovers" />
-    <Relation name="TurnoverCurrency" relation="Currencies"
-      label="=currency" />
+    <Relation name="Turnover" relation="Turnovers" label="=clientTurnovers" />
+    <Relation name="TurnoverCurrency" relation="Currencies" label="=currency" />
 
     <Relation name="CompanyRelationTypeState" relation="RelationTypeStates"
       label="=companyRelationState" />
@@ -34,8 +32,14 @@
     <Numeric name="SupplierCreditDays" precision="3" label="=supplierCreditDays" />
 
     <Relation name="FinancialState" relation="FinancialStates" label="=financialState" />
-    <Relation name="DefaultBankAccount" relation="CompanyBankAccounts" unique="true" cascade="SET_NULL" label="=defaultBankAccount" />
-    <Relation name="DefaultCompanyUser" relation="CompanyUsers" unique="true" cascade="SET_NULL" label="=defaultCompanyUser" editable="true" />
+    <Relation name="DefaultBankAccount" relation="CompanyBankAccounts" unique="true"
+      cascade="SET_NULL" label="=defaultBankAccount" />
+    <Relation name="DefaultCompanyUser" relation="CompanyUsers" unique="true"
+      cascade="SET_NULL" label="=defaultCompanyUser" editable="true" />
+
+    <Numeric name="DiscountPercent" precision="7" scale="3" label="=discountPercent" />
+    <Relation name="DiscountParent" relation="Companies" label="=discountParent" />
+    <Enum name="PriceKey" key="ItemPrice" label="=salePrice" />
 
     <Text name="Notes" label="=notes" />
   </Fields>

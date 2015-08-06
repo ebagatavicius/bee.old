@@ -75,7 +75,7 @@ public class ReportEnumItem extends ReportItem implements ClickHandler {
   public ReportValue evaluate(SimpleRow row) {
     Integer value = row.getInt(getName());
     return value == null ? ReportValue.empty()
-        : ReportValue.of(TimeUtils.padTwo(value), EnumUtils.getCaption(enumKey, value));
+        : ReportValue.of(TimeUtils.padTwo(value)).setDisplay(EnumUtils.getCaption(enumKey, value));
   }
 
   @Override

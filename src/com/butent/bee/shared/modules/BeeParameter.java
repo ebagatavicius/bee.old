@@ -83,17 +83,17 @@ public final class BeeParameter implements BeeSerializable {
   }
 
   public static BeeParameter createRelation(String module, String name,
-      String relationTable, String relationField) {
-    return createRelation(module, name, false, relationTable, relationField);
+      String relationView, String relationField) {
+    return createRelation(module, name, false, relationView, relationField);
   }
 
   public static BeeParameter createRelation(String module, String name, boolean userMode,
-      String relationTable, String relationField) {
-    Assert.notEmpty(relationTable);
+      String relationView, String relationField) {
+    Assert.notEmpty(relationView);
     Assert.notEmpty(relationField);
 
     BeeParameter param = new BeeParameter(module, name, ParameterType.RELATION, userMode, null);
-    param.setOptions(Pair.of(relationTable, relationField).serialize());
+    param.setOptions(Pair.of(relationView, relationField).serialize());
     return param;
   }
 

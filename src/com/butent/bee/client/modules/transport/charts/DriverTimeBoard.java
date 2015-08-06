@@ -155,6 +155,7 @@ final class DriverTimeBoard extends ChartBase {
   private static final String STYLE_TRIP_PREFIX = STYLE_PREFIX + "Trip-";
   private static final String STYLE_TRIP_PANEL = STYLE_TRIP_PREFIX + "panel";
   private static final String STYLE_TRIP_VOID = STYLE_TRIP_PREFIX + "void";
+  private static final String STYLE_TRIP_INFO = STYLE_TRIP_PREFIX + "info";
 
   private static final String STYLE_ABSENCE_PREFIX = STYLE_PREFIX + "Absence-";
   private static final String STYLE_ABSENCE_PANEL = STYLE_ABSENCE_PREFIX + "panel";
@@ -364,6 +365,11 @@ final class DriverTimeBoard extends ChartBase {
   @Override
   protected String getSettingsFormName() {
     return FORM_DTB_SETTINGS;
+  }
+
+  @Override
+  protected String getShowAdditionalInfoColumnName() {
+    return COL_DTB_ADDITIONAL_INFO;
   }
 
   @Override
@@ -927,8 +933,11 @@ final class DriverTimeBoard extends ChartBase {
     Trip trip = trips.get(tripId);
 
     List<String> titleLines = new ArrayList<>();
+    String tripInfo = null;
     if (trip != null) {
       titleLines.add(trip.getTitle());
+      tripInfo = BeeUtils.joinItems(trip.getTruckNumber(), trip.getTrailerNumber(),
+          trip.getCustomerNames());
     }
 
     if (!BeeUtils.isEmpty(item.title)) {
@@ -948,7 +957,8 @@ final class DriverTimeBoard extends ChartBase {
       return panel;
     }
 
-    renderTrip(panel, title, BeeUtils.getIfContains(freights, tripId), range, STYLE_TRIP_VOID);
+    renderTrip(panel, title, tripInfo, BeeUtils.getIfContains(freights, tripId), range,
+        STYLE_TRIP_VOID, STYLE_TRIP_INFO);
 
     return panel;
   }

@@ -2,12 +2,12 @@
 #Connector.Datasources.DATASOURCES.PostgrePool.Pool.Max Pool Size:30
 #Container.Transactions.Default Timeout:1800
 #Container.EE.SERVICES.Executor.Max threads:250
-#Web.HTTP.HTTP SERVER.default-server.HTTP Listener.Max post size:104857600
+#/subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=max-post-size,value=104857600)
 
 
-module add --name=org.postgres --resources=/Applications/JavaEE/SQL/postgresql-9.3-1102.jdbc41.jar --dependencies=javax.api,javax.transaction.api
+module add --name=org.postgres --resources=/opt/postgresql-9.4-1201.jdbc41.jar --dependencies=javax.api,javax.transaction.api
 /subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres",driver-module-name="org.postgres",driver-class-name=org.postgresql.Driver)
-data-source add --jndi-name=java:/jdbc/BeeDS --name=PostgrePool --connection-url=jdbc:postgresql://192.168.0.210/postgres --driver-name=postgres --user-name=postgres --password=admin
+data-source add --jndi-name=java:/jdbc/BeeDS --name=PostgrePool --connection-url=jdbc:postgresql://192.168.0.210/DB --driver-name=postgres --user-name=postgres --password=admin
 
 
 /subsystem=security/security-domain=Bee:add(cache-type="default")
