@@ -89,9 +89,6 @@
     <DataColumn name="WorkspaceTabHeight">
       <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
     </DataColumn>
-    <DataColumn name="DisclosureClosedHeight">
-      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
-    </DataColumn>
 
     <DataColumn name="InputLineHeight">
       <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
@@ -100,9 +97,6 @@
       <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
     </DataColumn>
     <DataColumn name="ListSize1Padding">
-      <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
-    </DataColumn>
-    <DataColumn name="FormCellPaddingTop">
       <carry><ui:expression>$wnd.BeeSettings.theme[colName]</ui:expression></carry>
     </DataColumn>
 

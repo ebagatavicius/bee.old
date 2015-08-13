@@ -35,5 +35,11 @@
     <RelColumn name="Turnover" visible="false" />
     <RelColumn name="InformationSource" visible="false" />
     <RelColumn name="CompanySize" visible="false" />
+
+    <DataColumn name="DiscountPercent" visible="false" />
+    <DataColumn name="DiscountParent" renderColumns="DiscountParentName" visible="false" />
+    <DataColumn name="PriceKey" visible="false" />
+
+    <DataColumn name="Notes" visible="false" />
   </g:columns>
 </g:Grid>

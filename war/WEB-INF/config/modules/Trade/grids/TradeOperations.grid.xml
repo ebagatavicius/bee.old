@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  
+
   name="TradeOperations" viewName="TradeOperations" caption="=trdOperations"
   >
   <g:columns>
-    <DataColumn name="Ordinal" />
+    <DataColumn name="OperationType" readOnly="true" visible="true" />
     <DataColumn name="OperationName" minWidth="100" visible="true" />
-    
+
     <DataColumn name="Kind" module="Trade.Acts" minWidth="100" />
     <DataColumn name="Price" minWidth="100" />
-    
+
     <RelColumn name="WarehouseFrom" />
     <RelColumn name="WarehouseTo" />
 
@@ -21,7 +21,8 @@
     <DataColumn name="Foreground" updateMode="row">
       <editor type="color" />
     </DataColumn>
-    
+
     <DataColumn name="Description" visible="false" />
+    <DataColumn name="Ordinal" visible="false" />
   </g:columns>
 </g:Grid>

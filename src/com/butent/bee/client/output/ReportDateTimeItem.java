@@ -30,8 +30,8 @@ public class ReportDateTimeItem extends ReportDateItem {
 
       switch (getFormat()) {
         case DATETIME:
-          value = ReportValue.of(BeeUtils.padLeft(val, 15, BeeConst.CHAR_ZERO),
-              date.toCompactString());
+          value = ReportValue.of(BeeUtils.padLeft(val, 15, BeeConst.CHAR_ZERO))
+              .setDisplay(date.toCompactString());
           break;
         case HOUR:
         case MINUTE:

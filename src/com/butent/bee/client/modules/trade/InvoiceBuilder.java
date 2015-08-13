@@ -13,14 +13,17 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
+import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.Pair;
+import com.butent.bee.shared.BiConsumer;
+import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
@@ -41,15 +44,81 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class InvoiceBuilder extends AbstractGridInterceptor implements ClickHandler {
+public abstract class InvoiceBuilder extends AbstractGridInterceptor
+    implements ClickHandler, BiConsumer<BeeRowSet, BeeRow> {
 
   private boolean isChild;
 
   @Override
+  public void accept(final BeeRowSet data, BeeRow newRow) {
+    final DataInfo dataInfo = Data.getDataInfo(getTargetView());
+    int item = DataUtils.getColumnIndex(ClassifierConstants.COL_ITEM, data.getColumns());
+    boolean itemAbsent = BeeConst.isUndef(item);
+
+    if (!itemAbsent) {
+      for (BeeRow row : data) {
+        if (!DataUtils.isId(row.getLong(item))) {
+          itemAbsent = true;
+          break;
+        }
+      }
+    }
+    final Holder<Long> mainItem;
+
+    if (itemAbsent) {
+      mainItem = Holder.absent();
+    } else {
+      mainItem = null;
+    }
+    RowFactory.createRow(dataInfo.getNewRowForm(), dataInfo.getNewRowCaption(), dataInfo,
+        newRow, null, new InvoiceForm(mainItem), new RowCallback() {
+          @Override
+          public void onSuccess(final BeeRow row) {
+            ParameterList args = getRequestArgs();
+
+            if (args != null) {
+              Map<String, String> params = new HashMap<>();
+
+              params.put(Service.VAR_TABLE, Data.getViewTable(getViewName()));
+              params.put(getRelationColumn(), BeeUtils.toString(row.getId()));
+              params.put(Service.VAR_DATA, DataUtils.buildIdList(data.getRowIds()));
+              params.put(COL_CURRENCY, row.getString(dataInfo.getColumnIndex(COL_CURRENCY)));
+
+              if (mainItem != null && DataUtils.isId(mainItem.get())) {
+                params.put(ClassifierConstants.COL_ITEM, BeeUtils.toString(mainItem.get()));
+              }
+              for (String prm : params.keySet()) {
+                if (!args.hasParameter(prm)) {
+                  args.addDataItem(prm, params.get(prm));
+                }
+              }
+              BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
+                @Override
+                public void onResponse(ResponseObject response) {
+                  response.notify(getGridView());
+
+                  if (!response.hasErrors()) {
+                    Popup popup = UiHelper.getParentPopup(getGridView().getGrid());
+
+                    if (popup != null) {
+                      popup.close();
+                    }
+                    Data.onViewChange(getViewName(), DataChangeEvent.RESET_REFRESH);
+                    RowEditor.openForm(dataInfo.getEditForm(), dataInfo, row.getId(),
+                        Opener.MODAL);
+                  }
+                }
+              });
+            }
+          }
+        });
+  }
+
+  @Override
   public void afterCreatePresenter(GridPresenter presenter) {
     if (!isChild) {
-      presenter.getHeader()
-          .addCommandItem(new Button(Localized.getConstants().createPurchaseInvoice(), this));
+      presenter.getHeader().addCommandItem(new Button(Localized.getConstants().createInvoice(),
+          this));
     }
   }
 
@@ -69,82 +138,25 @@ public abstract class InvoiceBuilder extends AbstractGridInterceptor implements 
 
   @Override
   public void onClick(ClickEvent clickEvent) {
-    final GridPresenter presenter = getGridPresenter();
-    final Set<Long> ids = new HashSet<>();
+    Set<Long> ids = new HashSet<>();
 
-    for (RowInfo row : presenter.getGridView().getSelectedRows(GridView.SelectedRows.ALL)) {
+    for (RowInfo row : getGridView().getSelectedRows(GridView.SelectedRows.ALL)) {
       ids.add(row.getId());
     }
     if (ids.isEmpty()) {
-      presenter.getGridView().notifyWarning(Localized.getConstants().selectAtLeastOneRow());
+      getGridView().notifyWarning(Localized.getConstants().selectAtLeastOneRow());
       return;
     }
     Queries.getRowSet(getViewName(), null, Filter.idIn(ids), new Queries.RowSetCallback() {
       @Override
       public void onSuccess(BeeRowSet data) {
-        int item = DataUtils.getColumnIndex(ClassifierConstants.COL_ITEM, data.getColumns(), false);
-        final Pair<Boolean, Long> mainItem = Pair.of(BeeConst.isUndef(item), null);
-
-        if (!mainItem.getA()) {
-          for (BeeRow row : data) {
-            if (!DataUtils.isId(row.getLong(item))) {
-              mainItem.setA(true);
-              break;
-            }
-          }
-        }
-        final DataInfo dataInfo = Data.getDataInfo(getTargetView());
-        BeeRow newRow = RowFactory.createEmptyRow(dataInfo, true);
-        Map<String, String> initialValues = getInitialValues(data);
-
-        if (!BeeUtils.isEmpty(initialValues)) {
-          for (Map.Entry<String, String> entry : initialValues.entrySet()) {
-            int idx = dataInfo.getColumnIndex(entry.getKey());
-
-            if (!BeeConst.isUndef(idx)) {
-              newRow.setValue(idx, entry.getValue());
-            }
-          }
-        }
-        RowFactory.createRow(dataInfo.getNewRowForm(), dataInfo.getNewRowCaption(), dataInfo,
-            newRow, null, new InvoiceForm(mainItem), new RowCallback() {
-              @Override
-              public void onSuccess(final BeeRow row) {
-                ParameterList args = getRequestArgs();
-
-                if (args == null) {
-                  return;
-                }
-                args.addDataItem(getRelationColumn(), row.getId());
-                args.addDataItem(COL_CURRENCY, row.getLong(dataInfo.getColumnIndex(COL_CURRENCY)));
-                args.addDataItem(Service.VAR_ID, DataUtils.buildIdList(ids));
-
-                if (DataUtils.isId(mainItem.getB())) {
-                  args.addDataItem(ClassifierConstants.COL_ITEM, mainItem.getB());
-                }
-                BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
-                  @Override
-                  public void onResponse(ResponseObject response) {
-                    response.notify(presenter.getGridView());
-
-                    if (!response.hasErrors()) {
-                      Data.onViewChange(presenter.getViewName(), DataChangeEvent.RESET_REFRESH);
-                      RowEditor.openForm(dataInfo.getEditForm(), dataInfo, row.getId(),
-                          Opener.MODAL);
-                    }
-                  }
-                });
-              }
-            });
+        createInvoice(data, InvoiceBuilder.this);
       }
     });
   }
 
-  /**
-   * @param data
-   */
-  protected Map<String, String> getInitialValues(BeeRowSet data) {
-    return null;
+  protected void createInvoice(BeeRowSet data, BiConsumer<BeeRowSet, BeeRow> consumer) {
+    consumer.accept(data, RowFactory.createEmptyRow(Data.getDataInfo(getTargetView()), true));
   }
 
   protected abstract String getRelationColumn();

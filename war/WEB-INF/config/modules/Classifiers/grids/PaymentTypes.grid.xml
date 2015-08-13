@@ -5,6 +5,6 @@
     >
   <g:columns>
     <DataColumn name="PaymentName" visible="true" />
-    <DataColumn name="Cash" />
+    <DataColumn name="PaymentCash" />
   </g:columns>
 </g:Grid>

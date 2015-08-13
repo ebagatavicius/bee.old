@@ -15,7 +15,6 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  xmlns:ui="http://www.butent.com/ui"
   
   name="Task" viewName="Tasks" caption="=crmTask" showRowId="true" printHeader="true"
   width="1024" height="768"

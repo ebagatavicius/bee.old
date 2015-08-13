@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/widget"
+       style="border-top:1px solid red;">
+
+  <col index="0" kind="label" />
+  <col index="2" kind="label" />
+  <row>
+    <Label for="Date" />
+    <InputDateTime source="Date" style="width:10em;" />
+    <Label for="Number" />
+    <InputText source="Number" />
+  </row>
+  <row>
+    <Label for="Operation" class="bee-required" />
+    <cell colSpan="2">
+      <DataSelector source="Operation" viewName="PurchaseOperations" required="true"
+                    editEnabled="false" newRowEnabled="false" style="width:100%;" />
+    </cell>
+  </row>
+  <row>
+    <Label for="InvoicePrefix" />
+    <InputText source="InvoicePrefix" upperCase="true" style="width:7em" />
+    <InlineLabel for="InvoiceNo" />
+    <InputText source="InvoiceNo" />
+  </row>
+  <row>
+    <Label for="Supplier" class="bee-required" />
+    <DataSelector source="Supplier" required="true" />
+    <Label for="Term" />
+    <InputDate source="Term" style="width:10em;" />
+  </row>
+  <row>
+    <cell colSpan="3">
+      <Label for="WarehouseTo" />
+    </cell>
+    <DataSelector source="WarehouseTo" newRowEnabled="false" editEnabled="false" />
+  </row>
+  <row>
+    <Label for="Manager" />
+    <DataSelector source="Manager" renderColumns="ManagerFirstName ManagerLastName"
+                  choiceColumns="FirstName LastName PositionName CompanyName"
+                  editSource="ManagerPerson" newRowEnabled="false" />
+    <Label for="Amount" />
+    <FlowPanel>
+      <DecimalLabel source="Amount" format="0.00" style="font-weight:bold; display:inline;" />
+      <DataSelector source="Currency" style="width:5em; display:inline-block;"
+                    editEnabled="false" newRowEnabled="false" />
+    </FlowPanel>
+  </row>
+</Table>

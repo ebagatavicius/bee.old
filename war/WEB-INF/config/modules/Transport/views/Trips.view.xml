@@ -43,9 +43,9 @@
 
             <SimpleColumn name="Driver" label="=vehicleDriver">
               <xpr:concat>
-                <xpr:string>"LastName"</xpr:string>
-                <xpr:string>' '</xpr:string>
                 <xpr:string>"FirstName"</xpr:string>
+                <xpr:string>' '</xpr:string>
+                <xpr:string>"LastName"</xpr:string>
               </xpr:concat>
             </SimpleColumn>
           </SimpleJoin>

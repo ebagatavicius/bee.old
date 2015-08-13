@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+xmlns:ui="http://www.butent.com/ui" >
   <DataColumn name="RecurringTask" readOnly="true" visible="false" />
 
   <RelColumn name="Type" renderColumns="TypeName" />
-  <DataColumn name="Priority" />
+  <DataColumn name="Priority" >
+       <dynStyle>
+       <ui:inline>color: blue; font-weight: bold;</ui:inline>
+       <ui:expression>row.Priority == 0</ui:expression>
+     </dynStyle>
+     <dynStyle>
+       <ui:inline>color: red; font-weight: bold;</ui:inline>
+       <ui:expression>row.Priority == 2</ui:expression>
+     </dynStyle>
+  </DataColumn>
 
   <DataColumn name="Summary" visible="true" minWidth="150" maxWidth="500"/>
   <DataColumn name="Description" visible="false" />

@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
-  name="CargoProformaInvoices" viewName="CargoInvoices"
-  editShowId="true" flexGrow="1"
-  disabledActions="add"
-  caption="=trProformaInvoices"
-  filter="Sale AND Proforma"
-  >
+        name="CargoProformaInvoices" viewName="CargoInvoices"
+        editShowId="true" flexGrow="1"
+        disabledActions="add"
+        caption="=trProformaInvoices"
+        filter="Sale AND Proforma"
+    >
   <g:columns>
     <IdColumn name="ID" caption="=trdInvoiceId" />
     <DataColumn name="Date" />
     <DataColumn name="Number" />
-    <DataColumn name="InvoiceNo" renderColumns="InvoicePrefix InvoiceNo" searchBy="InvoicePrefix InvoiceNo" />
-    <DataColumn name="CustomerName" caption="=trdCustomer" />
-    <DataColumn name="PayerName" caption="=trdPayer" />
+    <RelColumn name="Operation" />
+    <DataColumn name="InvoiceNo" renderColumns="InvoicePrefix InvoiceNo"
+                searchBy="InvoicePrefix InvoiceNo" />
+    <RelColumn name="Customer" filterSupplier="value" />
+    <RelColumn name="Payer" filterSupplier="value" />
     <DataColumn name="Amount" />
     <DataColumn name="CurrencyName" />
     <DataColumn name="Term" />

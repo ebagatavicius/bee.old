@@ -247,6 +247,7 @@ public final class TransportConstants {
   public static final String SVC_GET_ASSESSMENT_TURNOVER_REPORT = "GetAssessmentTurnoverReport";
   public static final String SVC_CREATE_INVOICE_ITEMS = "CreateInvoiceItems";
   public static final String SVC_GET_CREDIT_INFO = "GetCreditInfo";
+  public static final String SVC_GET_TRIP_INFO = "GetTripInfo";
   public static final String SVC_GET_VEHICLE_BUSY_DATES = "GetVehicleBusyDates";
 
   public static final String SVC_SEND_MESSAGE = "SendMessage";
@@ -278,6 +279,7 @@ public final class TransportConstants {
 
   public static final String TBL_TRIPS = "Trips";
   public static final String TBL_TRIP_DRIVERS = "TripDrivers";
+  public static final String TBL_DRIVER_ADVANCES = "DriverAdvances";
   public static final String TBL_TRIP_COSTS = "TripCosts";
   public static final String TBL_TRIP_FUEL_COSTS = "TripFuelCosts";
   public static final String TBL_TRIP_ROUTES = "TripRoutes";
@@ -578,6 +580,8 @@ public final class TransportConstants {
   public static final String COL_SS_PLACE_CITIES = "SsPlaceCities";
   public static final String COL_SS_PLACE_CODES = "SsPlaceCodes";
 
+  public static final String COL_SS_ADDITIONAL_INFO = "SsAdditionalInfo";
+
   public static final String COL_SS_PIXELS_PER_DAY = "SsPixelsPerDay";
   public static final String COL_SS_PIXELS_PER_ROW = "SsPixelsPerRow";
 
@@ -596,6 +600,8 @@ public final class TransportConstants {
 
   public static final String COL_DTB_PLACE_CITIES = "DtbPlaceCities";
   public static final String COL_DTB_PLACE_CODES = "DtbPlaceCodes";
+
+  public static final String COL_DTB_ADDITIONAL_INFO = "DtbAdditionalInfo";
 
   public static final String COL_DTB_PIXELS_PER_DAY = "DtbPixelsPerDay";
   public static final String COL_DTB_PIXELS_PER_ROW = "DtbPixelsPerRow";
@@ -618,6 +624,8 @@ public final class TransportConstants {
   public static final String COL_TRUCK_PLACE_CITIES = "TruckPlaceCities";
   public static final String COL_TRUCK_PLACE_CODES = "TruckPlaceCodes";
 
+  public static final String COL_TRUCK_ADDITIONAL_INFO = "TruckAdditionalInfo";
+
   public static final String COL_TRUCK_PIXELS_PER_DAY = "TruckPixelsPerDay";
   public static final String COL_TRUCK_PIXELS_PER_ROW = "TruckPixelsPerRow";
 
@@ -637,6 +645,8 @@ public final class TransportConstants {
   public static final String COL_TRAILER_PLACE_INFO = "TrailerPlaceInfo";
   public static final String COL_TRAILER_PLACE_CITIES = "TrailerPlaceCities";
   public static final String COL_TRAILER_PLACE_CODES = "TrailerPlaceCodes";
+
+  public static final String COL_TRAILER_ADDITIONAL_INFO = "TrailerAdditionalInfo";
 
   public static final String COL_TRAILER_PIXELS_PER_DAY = "TrailerPixelsPerDay";
   public static final String COL_TRAILER_PIXELS_PER_ROW = "TrailerPixelsPerRow";
@@ -739,8 +749,6 @@ public final class TransportConstants {
   public static final String FORM_ASSESSMENT_FORWARDER = "AssessmentForwarder";
   public static final String FORM_ASSESSMENT_TRANSPORTATION = "AssessmentTransportation";
 
-  public static final String FORM_NEW_CARGO_INVOICE = "NewCargoInvoice";
-  public static final String FORM_NEW_CARGO_PURCHASE_INVOICE = "NewCargoPurchaseInvoice";
   public static final String FORM_NEW_CARGO_CREDIT_INVOICE = "NewCargoCreditInvoice";
   public static final String FORM_CARGO_INVOICE = "CargoInvoice";
   public static final String FORM_CARGO_PURCHASE_INVOICE = "CargoPurchaseInvoice";

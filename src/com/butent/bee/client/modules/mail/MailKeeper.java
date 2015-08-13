@@ -61,7 +61,7 @@ public final class MailKeeper {
         refreshMessages = new ScheduledCommand() {
           @Override
           public void execute() {
-            if (activePanel != null && Objects.equals(activePanel.getCurrentFolderId(), folderId)) {
+            if (activePanel != null && Objects.equals(activePanel.getCurrentFolder(), folderId)) {
               activePanel.refreshMessages(true);
             }
           }
@@ -177,6 +177,9 @@ public final class MailKeeper {
         }
       }
     });
+    if (move) {
+      panel.removeRows(DataUtils.parseIdList(places));
+    }
   }
 
   static ParameterList createArgs(String method) {
@@ -186,7 +189,7 @@ public final class MailKeeper {
   static void createFolder(String title) {
     final MailPanel panel = activePanel;
     final AccountInfo account = panel.getCurrentAccount();
-    final Long parentId = panel.getCurrentFolderId();
+    final Long parentId = panel.getCurrentFolder();
     final boolean isParent = DataUtils.isId(parentId) && !account.isSystemFolder(parentId);
     String caption = null;
 
@@ -271,7 +274,7 @@ public final class MailKeeper {
   }
 
   static void refreshController() {
-    controller.refresh(activePanel.getCurrentFolderId());
+    controller.refresh(activePanel.getCurrentFolder());
   }
 
   static void removeFolder(final AccountInfo account, final Long folderId) {
@@ -289,7 +292,7 @@ public final class MailKeeper {
           panel.requeryFolders(new ScheduledCommand() {
             @Override
             public void execute() {
-              if (Objects.equals(folderId, panel.getCurrentFolderId())) {
+              if (Objects.equals(folderId, panel.getCurrentFolder())) {
                 panel.refreshFolder(account.getInboxId());
               }
             }

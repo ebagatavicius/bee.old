@@ -8,7 +8,7 @@
     <Relation name="Driver" notNull="true" relation="TripDrivers" cascade="DELETE" label="=vehicleDriver" />
     <Date name="Date" label="=date" />
     <String name="Number" precision="30" label="=number" />
-    <Numeric name="Amount" precision="12" scale="2" notNull="true" label="=total" />
+    <Numeric name="Amount" precision="12" scale="2" notNull="true" label="=amount" />
     <Relation name="Currency" relation="Currencies" notNull="true" label="=currency" />
   </Fields>
 </Table>

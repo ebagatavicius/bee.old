@@ -37,7 +37,7 @@ public class TripCostsGrid extends AbstractGridInterceptor
 
   @Override
   public void afterCreateEditor(String source, Editor editor, boolean embedded) {
-    if (BeeUtils.same(source, COL_MAIN_DRIVER) && editor instanceof DataSelector) {
+    if (BeeUtils.same(source, COL_DRIVER) && editor instanceof DataSelector) {
       ((DataSelector) editor).addSelectorHandler(this);
     }
     super.afterCreateEditor(source, editor, embedded);

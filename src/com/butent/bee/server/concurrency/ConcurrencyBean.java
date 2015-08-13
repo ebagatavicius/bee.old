@@ -48,7 +48,9 @@ public class ConcurrencyBean {
 
   public abstract static class AsynchronousRunnable implements Runnable {
 
-    public abstract String getId();
+    public String getId() {
+      return null;
+    }
 
     public long getTimeout() {
       return TimeUtils.MILLIS_PER_HOUR;
@@ -69,7 +71,9 @@ public class ConcurrencyBean {
     }
 
     public String getId() {
-      return BeeUtils.joinWords(runnable.getId(), Integer.toHexString(hashCode()));
+      String id = runnable.getId();
+      return BeeUtils.isEmpty(id) ? runnable.toString()
+          : BeeUtils.joinWords(id, Integer.toHexString(hashCode()));
     }
 
     @Override
@@ -126,8 +130,8 @@ public class ConcurrencyBean {
 
   public void asynchronousCall(AsynchronousRunnable runnable) {
     Assert.notNull(runnable);
-    String id = Assert.notEmpty(runnable.getId());
-    Worker worker = asyncThreads.get(id);
+    String id = runnable.getId();
+    Worker worker = BeeUtils.isEmpty(id) ? null : asyncThreads.get(id);
 
     if (worker != null) {
       if (!worker.isDone()) {
@@ -145,7 +149,10 @@ public class ConcurrencyBean {
 
     try {
       executor.execute(newWorker);
-      asyncThreads.put(id, newWorker);
+
+      if (!BeeUtils.isEmpty(id)) {
+        asyncThreads.put(id, newWorker);
+      }
     } catch (Exception e) {
       logger.error(e);
       newWorker.cancel(true);

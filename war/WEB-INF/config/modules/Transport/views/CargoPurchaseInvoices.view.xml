@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="CargoPurchaseInvoices" source="Purchases"
-  editForm="CargoPurchaseInvoice"
-  >
+      name="CargoPurchaseInvoices" source="Purchases" caption="=trPurchaseInvoices"
+      editForm="CargoPurchaseInvoice"
+      newRowForm="NewPurchase" newRowCaption="=trNewCargoPurchaseInvoice"
+    >
   <Columns>
     <SimpleColumn name="Date" />
     <SimpleColumn name="Number" />
+
+    <SimpleColumn name="Operation" />
+    <SimpleJoin name="Operation" joinType="LEFT">
+      <SimpleColumn name="OperationName" />
+    </SimpleJoin>
+
     <SimpleColumn name="InvoicePrefix" />
     <SimpleColumn name="InvoiceNo" />
     <SimpleColumn name="Term" />
@@ -16,30 +23,21 @@
 
     <SimpleColumn name="Amount" />
     <SimpleColumn name="Currency" />
-    <SimpleJoin joinType="LEFT" name="Currency">
+    <SimpleJoin name="Currency" joinType="INNER">
       <SimpleColumn name="Name" alias="CurrencyName" />
-      <SimpleColumn name="MinorName" />
-    </SimpleJoin>
-
-    <SimpleColumn name="WarehouseTo" />
-    <SimpleJoin joinType="LEFT" name="WarehouseTo">
-      <SimpleColumn name="Code" alias="WarehouseCode" />
     </SimpleJoin>
 
     <SimpleColumn name="Supplier" />
-    <SimpleJoin joinType="LEFT" name="Supplier">
-      <SimpleColumn name="Name" alias="SupplierName" label="=trdSupplier" />
+    <SimpleJoin name="Supplier" joinType="LEFT">
+      <SimpleColumn name="Name" alias="SupplierName" />
       <SimpleJoin joinType="LEFT" name="CompanyType">
-        <SimpleColumn name="Name" alias="SupplierTypeName" />
+        <SimpleColumn name="Name" alias="SupplierType" />
       </SimpleJoin>
     </SimpleJoin>
 
-    <SimpleColumn name="Customer" />
-    <SimpleJoin joinType="LEFT" name="Customer">
-      <SimpleColumn name="Name" alias="CustomerName" label="=trdCustomer" />
-      <SimpleJoin joinType="LEFT" name="CompanyType">
-        <SimpleColumn name="Name" alias="CustomerTypeName" />
-      </SimpleJoin>
+    <SimpleColumn name="WarehouseTo" />
+    <SimpleJoin name="WarehouseTo" joinType="LEFT">
+      <SimpleColumn name="Code" alias="WarehouseToCode" />
     </SimpleJoin>
 
     <SimpleColumn name="Manager" />

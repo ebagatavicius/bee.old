@@ -22,7 +22,7 @@
         </ui:function>
       </render>
     </CalcColumn>
-    <DataColumn name="Driver" caption="=vehicleDriver" />
+    <DataColumn name="Driver" caption="=vehicleDriver" verticalAlignment="middle" />
     <DataColumn name="DateFrom" caption="=trDeparted" />
     <DataColumn name="DateTo" caption="=trReturned" />
     <DataColumn name="PlannedEndDate" caption="=trPlannedEndDate" />

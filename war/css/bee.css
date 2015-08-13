@@ -3306,6 +3306,27 @@ textarea,
 .bee-Form .bee-Horizontal {
   border-collapse: collapse;
 }
+
+@media (max-height: 600px) {
+  .bee-Form .bee-HtmlTable td {
+    padding-top: 1vh;
+  }
+}
+@media (min-height: 600px) and (max-height: 1300px) {
+  .bee-Form .bee-HtmlTable td {
+    padding-top: calc(2vh - 6px);
+  }
+}
+@media (min-height: 1300px) {
+  .bee-Form .bee-HtmlTable td {
+    padding-top: 20px;
+  }
+}
+
+.bee-Form .bee-HtmlTable td table td {
+  padding-top: 0;
+}
+
 .bee-LabelCell {
   text-align: right;
   vertical-align: top;
@@ -3415,6 +3436,9 @@ textarea,
 }
 
 .bee-Disclosure-closed .bee-Disclosure-header {
+  height: 5vh;
+  min-height: 30px;
+  max-height: 55px;
   background-color: #fafafa;
 }
 .bee-Disclosure-closed .bee-Disclosure-content {

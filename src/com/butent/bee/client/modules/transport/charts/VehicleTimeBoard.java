@@ -79,6 +79,7 @@ abstract class VehicleTimeBoard extends ChartBase {
   private static final String STYLE_TRIP_PREFIX = STYLE_PREFIX + "Trip-";
   private static final String STYLE_TRIP_PANEL = STYLE_TRIP_PREFIX + "panel";
   private static final String STYLE_TRIP_VOID = STYLE_TRIP_PREFIX + "void";
+  private static final String STYLE_TRIP_INFO = STYLE_TRIP_PREFIX + "info";
 
   private static final String STYLE_TRIP_DRAG = STYLE_TRIP_PREFIX + "drag";
   private static final String STYLE_TRIP_DRAG_OVER = STYLE_TRIP_PREFIX + "dragOver";
@@ -292,6 +293,8 @@ abstract class VehicleTimeBoard extends ChartBase {
     }
     return null;
   }
+
+  protected abstract String getAdditionalInfo(Trip trip);
 
   @Override
   protected Collection<? extends HasDateRange> getChartItems() {
@@ -935,8 +938,9 @@ abstract class VehicleTimeBoard extends ChartBase {
       return panel;
     }
 
-    renderTrip(panel, trip.getTitle(), BeeUtils.getIfContains(freights, tripId), tripRange,
-        STYLE_TRIP_VOID);
+    renderTrip(panel, trip.getTitle(), getAdditionalInfo(trip),
+        BeeUtils.getIfContains(freights, tripId), tripRange,
+        STYLE_TRIP_VOID, STYLE_TRIP_INFO);
 
     return panel;
   }

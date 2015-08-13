@@ -95,6 +95,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.mail.Address;
 import javax.mail.FetchProfile;
+import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -481,15 +482,11 @@ public class MailModuleBean implements BeeModule, HasTimerService {
           Set<Long> messages = new HashSet<>();
 
           BeeRowSet rowSet = event.getRowset();
-          int idx = BeeConst.UNDEF;
+          int idx = DataUtils.getColumnIndex(COL_MESSAGE, rowSet.getColumns(), false);
 
-          if (!DataUtils.isEmpty(rowSet)) {
-            idx = DataUtils.getColumnIndex(COL_MESSAGE, rowSet.getColumns(), false);
-
-            if (idx != BeeConst.UNDEF) {
-              for (BeeRow row : rowSet) {
-                messages.add(row.getLong(idx));
-              }
+          if (!DataUtils.isEmpty(rowSet) && !BeeConst.isUndef(idx)) {
+            for (BeeRow row : rowSet) {
+              messages.add(row.getLong(idx));
             }
           }
           if (!BeeUtils.isEmpty(messages)) {
@@ -1272,11 +1269,16 @@ public class MailModuleBean implements BeeModule, HasTimerService {
         .addOrder(TBL_ATTACHMENTS, sys.getIdName(TBL_ATTACHMENTS))));
 
     if (DataUtils.isId(placeId) && !MessageFlag.SEEN.isSet(msg.getInt(COL_FLAGS))) {
-      try {
-        setMessageFlag(placeId, MessageFlag.SEEN, true);
-      } catch (MessagingException e) {
-        logger.error(e);
-      }
+      cb.asynchronousCall(new AsynchronousRunnable() {
+        @Override
+        public void run() {
+          try {
+            setMessageFlag(placeId, MessageFlag.SEEN, true);
+          } catch (MessagingException e) {
+            logger.error(e);
+          }
+        }
+      });
     }
     return ResponseObject.response(packet);
   }
@@ -1352,10 +1354,21 @@ public class MailModuleBean implements BeeModule, HasTimerService {
               file = new File(fileInfo.getPath());
               is = new BufferedInputStream(new FileInputStream(file));
               MimeMessage message = new MimeMessage(null, is);
+              Flags on = new Flags();
+              Flags off = new Flags();
 
-              for (MessageFlag flag : MessageFlag.values()) {
-                message.setFlag(MailEnvelope.getFlag(flag), flag.isSet(mask));
+              for (MessageFlag messageFlag : MessageFlag.values()) {
+                Flags flags = messageFlag.isSet(mask) ? on : off;
+                Flag flag = MailEnvelope.getFlag(messageFlag);
+
+                if (flag != null) {
+                  flags.add(flag);
+                } else {
+                  flags.add(messageFlag.name());
+                }
               }
+              message.setFlags(on, true);
+              message.setFlags(off, false);
               storeMail(account, message, target);
 
             } catch (IOException e) {
@@ -1450,8 +1463,7 @@ public class MailModuleBean implements BeeModule, HasTimerService {
     MailAccount account = mail.getAccount(row.getLong(COL_ACCOUNT));
     MailFolder folder = account.findFolder(row.getLong(COL_FOLDER));
 
-    account.setFlag(folder, new long[] {BeeUtils.unbox(row.getLong(COL_MESSAGE_UID))},
-        MailEnvelope.getFlag(flag), on);
+    account.setFlag(folder, new long[] {BeeUtils.unbox(row.getLong(COL_MESSAGE_UID))}, flag, on);
 
     mail.setFlags(placeId, value);
 

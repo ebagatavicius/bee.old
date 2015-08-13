@@ -95,6 +95,7 @@
 
     <SimpleColumn name="Description" />
     <SimpleColumn name="Notes" />
+    <SimpleColumn name="Link" />
   </Columns>
 
   <Order>

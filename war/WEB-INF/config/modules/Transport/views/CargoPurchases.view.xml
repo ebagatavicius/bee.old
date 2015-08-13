@@ -15,7 +15,7 @@
         <SimpleColumn name="Name" alias="CmrName"/>
         <SimpleColumn name="Number" alias="CmrNumber"/>
       </SimpleJoin>
-  
+
       <SimpleColumn name="Order" />
       <SimpleJoin name="Order" joinType="INNER">
         <SimpleColumn name="Status" />
@@ -23,7 +23,7 @@
         <SimpleColumn name="OrderNo" />
       </SimpleJoin>
       <SimpleJoin name="LoadingPlace" joinType="LEFT">
-        <SimpleColumn name="Country" alias="LoadingCountry" label="=trLoadingCountry" editable="true" />
+        <SimpleColumn name="Country" alias="LoadingCountry" label="=trLoadingCountry" />
         <SimpleJoin joinType="LEFT" name="Country">
           <SimpleColumn name="Name" alias="LoadingCountryName" />
           <SimpleColumn name="Code" alias="LoadingCountryCode" label="=from" />
@@ -31,7 +31,7 @@
         <SimpleColumn name="Date" alias="LoadingDate" label="=loading" />
       </SimpleJoin>
       <SimpleJoin name="UnloadingPlace" joinType="LEFT">
-        <SimpleColumn name="Country" alias="UnloadingCountry" label="=trUnloadingCountry" editable="true" />
+        <SimpleColumn name="Country" alias="UnloadingCountry" label="=trUnloadingCountry" />
         <SimpleJoin joinType="LEFT" name="Country">
           <SimpleColumn name="Name" alias="UnloadingCountryName" />
           <SimpleColumn name="Code" alias="UnloadingCountryCode" label="=to" />
@@ -53,11 +53,10 @@
     <SimpleColumn name="VatPlus" />
     <SimpleColumn name="Vat" />
     <SimpleColumn name="VatPercent" />
-    
+
     <SimpleColumn name="Supplier" />
     <SimpleJoin joinType="LEFT" name="Supplier">
       <SimpleColumn name="Name" alias="SupplierName" label="=supplier" />
-      <SimpleColumn name="CreditDays" />
     </SimpleJoin>
 
     <SimpleColumn name="Note" />

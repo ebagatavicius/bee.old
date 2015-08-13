@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="SaleOperations" source="TradeOperations"
+      filter="OperationType=1"
+    >
+  <Columns>
+    <SimpleColumn name="OperationName" />
+    <SimpleColumn name="OperationType" />
+    <SimpleColumn name="Ordinal" />
+
+    <SimpleColumn name="WarehouseFrom" />
+    <SimpleJoin joinType="LEFT" name="WarehouseFrom">
+      <SimpleColumn name="Code" alias="WarehouseFromCode" />
+    </SimpleJoin>
+  </Columns>
+
+  <Order>
+    <OrderBy column="Ordinal" />
+    <OrderBy column="OperationType" />
+    <OrderBy column="OperationName" />
+  </Order>
+</View>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
-      xmlns:x="http://www.butent.com/expression"
+      xmlns:xpr="http://www.butent.com/expression"
 
-  name="CargoSales" source="CargoIncomes" caption="=trOrderCargoIncomes"
-  >
+      name="CargoSales" source="CargoIncomes" caption="=trCargoIncomes"
+    >
   <Columns>
     <SimpleColumn name="Cargo" />
     <SimpleJoin name="Cargo" joinType="INNER">
@@ -13,10 +13,10 @@
 
       <SimpleColumn name="Cmr" />
       <SimpleJoin name="Cmr" joinType="LEFT">
-        <SimpleColumn name="Name" alias="CmrName"/>
-        <SimpleColumn name="Number" alias="CmrNumber"/>
+        <SimpleColumn name="Name" alias="CmrName" />
+        <SimpleColumn name="Number" alias="CmrNumber" />
       </SimpleJoin>
-  
+
       <SimpleColumn name="Notes" />
 
       <SimpleColumn name="Order" />
@@ -24,21 +24,19 @@
         <SimpleColumn name="Status" />
         <SimpleColumn name="Date" alias="OrderDate" label="=orderDate" />
         <SimpleColumn name="OrderNo" />
-        
+
         <SimpleColumn name="Customer" />
         <SimpleJoin joinType="LEFT" name="Customer">
           <SimpleColumn name="Name" alias="CustomerName" label="=customer" />
-          <SimpleColumn name="CreditDays" alias="CustomerCreditDays" />
         </SimpleJoin>
 
-        <SimpleColumn name="Payer" label="=payer" />
+        <SimpleColumn name="Payer" />
         <SimpleJoin joinType="LEFT" name="Payer">
-          <SimpleColumn name="Name" alias="PayerName" />
-          <SimpleColumn name="CreditDays" alias="PayerCreditDays" />
+          <SimpleColumn name="Name" alias="PayerName" label="=payer" />
         </SimpleJoin>
       </SimpleJoin>
       <SimpleJoin name="LoadingPlace" joinType="LEFT">
-        <SimpleColumn name="Country" alias="LoadingCountry" editable="true" label="=trLoadingCountry"/>
+        <SimpleColumn name="Country" alias="LoadingCountry" label="=trLoadingCountry" />
         <SimpleJoin joinType="LEFT" name="Country">
           <SimpleColumn name="Name" alias="LoadingCountryName" />
           <SimpleColumn name="Code" alias="LoadingCountryCode" label="=from" />
@@ -46,9 +44,9 @@
         <SimpleColumn name="Date" alias="LoadingDate" label="=loading" />
       </SimpleJoin>
       <SimpleJoin name="UnloadingPlace" joinType="LEFT">
-        <SimpleColumn name="Country" alias="UnloadingCountry" editable="true" label="=trUnloadingCountry" />
+        <SimpleColumn name="Country" alias="UnloadingCountry" label="=trUnloadingCountry" />
         <SimpleJoin joinType="LEFT" name="Country">
-          <SimpleColumn name="Name" alias="UnloadingCountryName"/>
+          <SimpleColumn name="Name" alias="UnloadingCountryName" />
           <SimpleColumn name="Code" alias="UnloadingCountryCode" label="=to" />
         </SimpleJoin>
         <SimpleColumn name="Date" alias="UnloadingDate" label="=unloading" />
@@ -66,26 +64,24 @@
             <AggregateColumn name="Number" alias="Trailer" aggregate="MAX" label="=trailer" />
           </SimpleJoin>
 
-          <ExternalJoin source="TripDrivers" name="Trip" joinType="LEFT">
+          <SimpleJoin name="MainDriver" joinType="LEFT">
             <SimpleJoin name="Driver" joinType="LEFT">
               <SimpleJoin name="CompanyPerson" joinType="LEFT">
                 <SimpleJoin name="Person" joinType="LEFT">
                   <HiddenColumn name="FirstName" />
                   <HiddenColumn name="LastName" />
+
                   <AggregateColumn name="Driver" aggregate="MAX" label="=vehicleDriver">
-                    <x:concat>
-                      <x:string>"FirstName"</x:string>
-                      <x:string>' '</x:string>
-                      <x:nvl type="STRING">
-                        <x:string>"LastName"</x:string>
-                        <x:string>''</x:string>
-                      </x:nvl>
-                    </x:concat>
+                    <xpr:concat>
+                      <xpr:string>"FirstName"</xpr:string>
+                      <xpr:string>' '</xpr:string>
+                      <xpr:string>"LastName"</xpr:string>
+                    </xpr:concat>
                   </AggregateColumn>
                 </SimpleJoin>
               </SimpleJoin>
             </SimpleJoin>
-          </ExternalJoin>
+          </SimpleJoin>
         </SimpleJoin>
       </ExternalJoin>
     </SimpleJoin>
@@ -103,15 +99,14 @@
     <SimpleColumn name="VatPlus" />
     <SimpleColumn name="Vat" />
     <SimpleColumn name="VatPercent" />
-    
+
     <SimpleColumn name="Customer" alias="Company" />
     <SimpleJoin joinType="LEFT" name="Customer">
       <SimpleColumn name="Name" alias="CompanyName" />
-      <SimpleColumn name="CreditDays" alias="CompanyCreditDays" />
     </SimpleJoin>
 
     <SimpleColumn name="Note" />
-    
+
     <HiddenColumn name="Sale" />
     <HiddenColumn name="Purchase" />
   </Columns>

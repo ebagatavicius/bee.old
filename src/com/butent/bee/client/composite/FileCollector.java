@@ -394,9 +394,9 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
     return new Button(Localized.getConstants().chooseFiles());
   }
 
-  public static FileCollector headless(Consumer<Collection<? extends FileInfo>> fileConsumer) {
-    Assert.notNull(fileConsumer);
-    return new FileCollector(fileConsumer);
+  public static FileCollector headless(Consumer<Collection<? extends FileInfo>> consumer) {
+    Assert.notNull(consumer);
+    return new FileCollector(consumer);
   }
 
   public static List<Column> parseColumns(String input) {
@@ -593,11 +593,11 @@ public class FileCollector extends HtmlTable implements DragOverHandler, DropHan
     }
   }
 
-  public static void pushFiles(Collection<FileInfo> files) {
+  public static void pushFiles(Collection<FileInfo> fileInfos) {
     FILE_STACK.clear();
 
-    if (!BeeUtils.isEmpty(files)) {
-      FILE_STACK.addAll(files);
+    if (!BeeUtils.isEmpty(fileInfos)) {
+      FILE_STACK.addAll(fileInfos);
     }
   }
 

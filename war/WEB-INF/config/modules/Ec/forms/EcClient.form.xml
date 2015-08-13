@@ -107,7 +107,7 @@
       </page>
 
       <page>
-        <text>=ecDiscounts</text>
+        <text>=discounts</text>
         <FlowPanel class="flexBox-vertical">
           &separator;
           <FlowPanel class="flexBox-horizontal">

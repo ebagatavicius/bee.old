@@ -7,6 +7,8 @@
   <Fields>
     <DateTime name="Date" notNull="true" defExpr="CURRENT_TIME" label="=trdDate" />
     <String name="Number" precision="50" label="=trdNumber" />
+    <Relation name="Operation" relation="TradeOperations" label="=trdOperation" />
+
     <Relation name="SaleSeries" relation="SaleSeries" label="=trdInvoicePrefix"/>
     <String name="InvoicePrefix" precision="10" label="=trdInvoicePrefix" />
     <String name="InvoiceNo" precision="20" label="=trdInvoiceNo" />

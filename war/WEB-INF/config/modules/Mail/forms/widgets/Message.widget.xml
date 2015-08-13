@@ -10,11 +10,8 @@
       </FlowPanel>
 
       <TextLabel name="Recipients" class="bee-mail-Recipients" />
-
-      <FlowPanel class="flexBox-horizontal">
-        <TextLabel name="Subject" class="bee-mail-Subject flexible" />
-        <FlowPanel name="Attachments" class="bee-mail-Attachments" />
-      </FlowPanel>
+      <TextLabel name="Subject" class="bee-mail-Subject" />
+      <FlowPanel name="Attachments" class="bee-mail-Attachments" />
 
       <HorizontalPanel cellStyle="padding: 5px;" style="width:100%">
         <cell style="width:50%; padding:0;">

@@ -116,33 +116,31 @@
   bottom: 0;
 }
 .bee-crm-Slack-late {
-  background-color: red;
+  color: red;
 }
 .bee-crm-Slack-opening {
-  background-color: green;
+  color: green;
 }
 .bee-crm-Slack-endgame {
-  background-color: orange;
+  color: orange;
 }
 .bee-crm-Slack-scheduled {
-  background-color: yellow;
+  color: yellow;
 }
 
 .bee-crm-Slack-label {
   position: absolute;
   top: 3px;
+  font-weight: bold;
 }
 .bee-crm-Slack-late .bee-crm-Slack-label {
   left: 3px;
-  color: white;
 }
 .bee-crm-Slack-opening .bee-crm-Slack-label {
   left: 30%;
-  color: white;
 }
 .bee-crm-Slack-endgame .bee-crm-Slack-label {
   right: 30%;
-  color: white;
 }
 .bee-crm-Slack-scheduled .bee-crm-Slack-label {
   right: 3px;

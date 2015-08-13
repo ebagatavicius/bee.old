@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+    <!ENTITY form "PrintTripOrder">
+    ]>
+<f:Form xmlns="http://www.butent.com/widget"
+        xmlns:f="http://www.butent.com/form"
+        xmlns:ui="http://www.butent.com/ui"
+
+        name="&form;" caption="Įsakymas" disabledActions="save"
+        width="70" widthUnit="%" height="90" heightUnit="%"
+    >
+
+  <FlowPanel class="bee-PrintableForm">
+    <br />
+
+    <Label html="ĮSAKYMAS" style="text-align:center; font-weight:bold;" />
+    <Label html="DĖL TARNYBINĖS KOMANDIRUOTĖS Į UŽSIENĮ"
+           style="text-align:center; font-weight:bold;" />
+    <br />
+
+    <FlowPanel class="flexBox-horizontal-center">
+      <HorizontalPanel>
+        <TextLabel>
+          <render>
+            <ui:expression>new Date().toLocaleDateString()</ui:expression>
+          </render>
+        </TextLabel>
+        <TextLabel>
+          <renderToken source="TripNo" prefix="Nr. " />
+        </TextLabel>
+      </HorizontalPanel>
+    </FlowPanel>
+
+    <br />
+    <br />
+
+    <FlowPanel style="margin-left:5em;">
+      <Label text="Įsakau:" style="font-weight:bold;" />
+      <Table>
+        <col index="1" cellStyle="text-align:center; padding:0 2em 0 2em;" />
+        <row>
+          <Label text="Vykti į tarnybinę komandiruotę tolimųjų reisų vairuotojui" />
+          <TextLabel source="Driver" />
+        </row>
+        <row>
+          <text />
+          <cell style="border-top: 1px solid black; font-size:x-small;">
+            <Label text="(vardas, pavardė)" />
+          </cell>
+        </row>
+      </Table>
+      <Table>
+        <col index="1" cellStyle="text-align:center; padding:0 2em 0 2em;" />
+        <row>
+          <Label text="Antram vairuotojui" />
+          <Label name="TripDrivers" />
+        </row>
+        <row>
+          <text />
+          <cell style="border-top: 1px solid black; font-size:x-small;">
+            <Label text="(vardas, pavardė)" />
+          </cell>
+        </row>
+      </Table>
+    </FlowPanel>
+
+    <br />
+    <br />
+
+    <Table>
+      <col index="0" cellStyle="font-weight:bold; padding-right:1em;" />
+      <col index="1" cellStyle="border-bottom:1px solid black;" />
+      <row>
+        <Label text="Išvykimo data" />
+        <DateLabel source="DateFrom" />
+      </row>
+      <row>
+        <Label text="Komandiruotės tikslas" />
+        <TextLabel>
+          <renderToken source="TripNo" prefix="Krovinių pervežimas. Kelionės lapo nr. " />
+        </TextLabel>
+      </row>
+      <row>
+        <Label text="Vilkiko ir puspriekabės numeriai" />
+        <TextLabel>
+          <renderToken source="VehicleNumber" />
+          <renderToken source="TrailerNumber" prefix=", " />
+        </TextLabel>
+      </row>
+      <row>
+        <Label text="Komandiruotės trukmė" />
+        <TextLabel>
+          <renderToken source="DateFrom" prefix="nuo " />
+          <renderToken source="PlannedEndDate" prefix=" iki " />
+        </TextLabel>
+      </row>
+      <row>
+        <Label text="Numatomas komandiruotės maršrutas" />
+        <TextLabel source="Route" />
+      </row>
+    </Table>
+
+    <br />
+    <br />
+
+    <Label text="Pavedu buhalterijai:" style="text-decoration:underline;" />
+
+    <br />
+
+    <Label text="-atlyginti komandiruotės išlaidas, patvirtintas dokumentais,
+    atitinkančiais 2001-01-20 Nr.IX-675 LRPMĮ 11 str. 4-5-6 dalių reikalavimus;" />
+    <Label text="-priskaityti ir išmokėti 50 proc. dienpinigius pagal Komandiruočių sąnaudų
+    atskaitymo iš pajamų taisykles, patvirtintas Lietuvos Respublikos Vyriausybės 2003 m. sausio
+    28 d. nutarimu Nr. 99 (Žin., 2003, Nr. 11-396);" />
+    <Label text="-jeigu, grįžus iš komandiruotės, vairuotojas pateikia kelionės lapą, iš kurio
+    matyti, jog pasikeitė pradžioje komandiruotės numatytas kelionės maršrutas, priskaitomi
+    papildomi dienpinigiai pagal komandiruotėje išbūtas dienas, ar jie yra didinami darbdavio
+    iniciatyva - atspausdinti ir pasirašyti KOREGUOJANTĮ KOMANDIRUOTĖS ĮSAKYMĄ, kuriame būtų
+    aiškiai nurodytos komandiruotės vietos, trukmė, bei priskaitytų dienpinigių suma;" />
+
+    <br />
+    <br />
+
+    <Table style="text-align:center; white-space:nowrap;">
+      <col index="0" cellStyle="text-align:left;" />
+      <row>
+        <Label text="Įgaliotas asmuo" />
+        <Label name="User" style="padding:0 2em 0 2em;" />
+        <cell rowSpan="5" style="width:100%;">
+          <text />
+        </cell>
+      </row>
+      <row>
+        <text />
+        <cell style="border-top: 1px solid black; font-size:x-small;">
+          <Label text="(vardas, pavardė)" />
+        </cell>
+        <cell style="border-top: 1px solid black; font-size:x-small;">
+          <Label text="(parašas)" style="width:15em;" />
+        </cell>
+      </row>
+      <row>
+        <Label text="&amp;#160;" />
+      </row>
+      <row>
+        <Label text="Su įsakymu susipažinau, sutinku" />
+        <TextLabel source="Driver" style="padding:0 2em 0 2em;" />
+      </row>
+      <row>
+        <text />
+        <cell style="border-top: 1px solid black; font-size:x-small;">
+          <Label text="(vardas, pavardė)" />
+        </cell>
+        <cell style="border-top: 1px solid black; font-size:x-small;">
+          <Label text="(parašas)" style="width:15em;" />
+        </cell>
+      </row>
+    </Table>
+  </FlowPanel>
+</f:Form>

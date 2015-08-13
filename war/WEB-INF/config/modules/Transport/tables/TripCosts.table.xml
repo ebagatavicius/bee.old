@@ -21,7 +21,7 @@
     <Relation name="Country" relation="Countries" label="=country" />
 
     <Relation name="PaymentType" relation="PaymentTypes" label="=paymentType" />
-    <Relation name="MainDriver" relation="TripDrivers" cascade="SET_NULL" label="=vehicleDriver" />
+    <Relation name="Driver" relation="TripDrivers" cascade="SET_NULL" label="=vehicleDriver" />
 
     <String name="Note" precision="50" label="=note" />
     <Relation name="Purchase" relation="Purchases" cascade="SET_NULL" label="=trdPurchaseId" />

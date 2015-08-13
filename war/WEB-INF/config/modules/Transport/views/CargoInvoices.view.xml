@@ -3,11 +3,17 @@
       xmlns:x="http://www.butent.com/expression"
 
   name="CargoInvoices" source="Sales"
-  editForm="CargoInvoice"
+  editForm="CargoInvoice" newRowForm="NewSale" newRowCaption="=trNewCargoInvoice"
   >
   <Columns>
     <SimpleColumn name="Date" />
     <SimpleColumn name="Number" />
+
+    <SimpleColumn name="Operation" />
+    <SimpleJoin name="Operation" joinType="LEFT">
+      <SimpleColumn name="OperationName" />
+    </SimpleJoin>
+
     <SimpleColumn name="SaleSeries" />
     <SimpleJoin name="SaleSeries" joinType="LEFT">
       <SimpleColumn name="SeriesName" alias="InvoicePrefix" />
@@ -25,13 +31,12 @@
     <SimpleColumn name="Currency" />
     <SimpleJoin joinType="LEFT" name="Currency">
       <SimpleColumn name="Name" alias="CurrencyName" />
-      <SimpleColumn name="MinorName" />
     </SimpleJoin>
 
     <SimpleColumn name="PaymentTime" />
     <SimpleColumn name="Paid" />
 
-    <SimpleColumn name="Debt">
+    <SimpleColumn name="Debt" label="=trdDebt">
       <x:minus>
         <x:number>"Amount"</x:number>
         <x:nvl type="DECIMAL">
@@ -40,14 +45,6 @@
         </x:nvl>
       </x:minus>
     </SimpleColumn>
-
-    <SimpleColumn name="Supplier" />
-    <SimpleJoin joinType="LEFT" name="Supplier">
-      <SimpleColumn name="Name" alias="SupplierName" label="=trdSupplier" />
-      <SimpleJoin joinType="LEFT" name="CompanyType">
-        <SimpleColumn name="Name" alias="SupplierTypeName" />
-      </SimpleJoin>
-    </SimpleJoin>
 
     <SimpleColumn name="Customer" />
     <SimpleJoin joinType="LEFT" name="Customer">
@@ -63,6 +60,11 @@
        <SimpleJoin joinType="LEFT" name="CompanyType">
         <SimpleColumn name="Name" alias="PayerTypeName" />
       </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="WarehouseFrom" />
+    <SimpleJoin name="WarehouseFrom" joinType="LEFT">
+      <SimpleColumn name="Code" alias="WarehouseFromCode" />
     </SimpleJoin>
 
     <SimpleColumn name="Manager" />

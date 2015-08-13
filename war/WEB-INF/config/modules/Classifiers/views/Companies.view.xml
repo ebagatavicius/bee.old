@@ -103,6 +103,15 @@
      </SimpleJoin>
     </SimpleJoin>
 
+    <SimpleColumn name="DiscountPercent" />
+
+    <SimpleColumn name="DiscountParent" />
+    <SimpleJoin name="DiscountParent" joinType="LEFT">
+      <SimpleColumn name="Name" alias="DiscountParentName" />
+    </SimpleJoin>
+    
+    <SimpleColumn name="PriceKey" />
+
     <SimpleColumn name="Notes" />
    </Columns>
   <Order>

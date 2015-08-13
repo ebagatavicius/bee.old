@@ -1,6 +1,5 @@
 .bee-mail-Headers {
   margin-top: 5px;
-  margin-right: 5px;
 }
 
 .bee-mail-WaitingForContent {
@@ -19,7 +18,7 @@
   color: teal;
 }
 
-.bee-mail-Sender, .bee-mail-Recipients, .bee-mail-Subject, .bee-mail-HeaderAddress, .bee-mail-HeaderSubject {
+.bee-mail-Sender, .bee-mail-Recipients, .bee-mail-Subject {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -42,6 +41,13 @@
 .bee-mail-Attachments {
   cursor: pointer;
   color: #0A8DE9;
+  text-align: right;
+}
+
+.bee-mail-Attachments > *:before {
+  font-family: FontAwesome;
+  margin-right: 3px;
+  content: "\f0c6";
 }
 
 .bee-mail-RecipientsType {
@@ -61,49 +67,57 @@
 }
 
 .bee-mail-Header {
-  position: relative;
   height: 100%;
 }
-
+.bee-mail-Header > div {
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  flex-direction: row;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+}
 .bee-mail-HeaderUnread .bee-mail-HeaderAddress, .bee-mail-HeaderUnread  .bee-mail-HeaderSubject {
   font-weight: bold;
 }
-
-.bee-mail-HeaderAddress {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 75px;
-  resize: none;
+.bee-mail-HeaderAddress, .bee-mail-HeaderSubject {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
 }
-
-.bee-mail-AttachmentImage, .bee-mail-AttachmentCount {
-  color: gray;
-  position: absolute;
-  top: 20px;
-}
-
-.bee-mail-AttachmentImage {
-  right: 0;
-}
-
-.bee-mail-AttachmentCount {
-  right: 15px;
-}
-
 .bee-mail-HeaderDate {
   color: #0A8DE9;
-  position: absolute;
-  top: 0;
-  right: 0;
+}
+.bee-mail-HeaderAttachment {
+  color: gray;
+  margin-left: 3px;
+}
+.bee-mail-HeaderAttachment:after {
+  font-family: FontAwesome;
+  margin-left: 3px;
+  content: "\f0c6";
 }
 
-.bee-mail-HeaderSubject {
-  position: absolute;
-  top: 20px;
-  left: 0;
-  right: 40px;
-  resize: none;
+.bee-CellGridColumn-FlagRenderer > img {
+  display: block;
+  margin: auto;
+}
+.bee-mail-FlagAnswered, .bee-mail-FlagForwarded, .bee-mail-FlagChained {
+  font-family: FontAwesome;
+  margin: 0 1px 0 1px;
+  display: inline;
+}
+.bee-mail-FlagAnswered:after {
+  content: "\f112";
+}
+.bee-mail-FlagForwarded:after {
+  content: "\f064";
+}
+.bee-mail-FlagChained:after {
+  content: "\f0c1";
 }
 
 .bee-mail-Date {
@@ -266,6 +280,6 @@
   color: red;
 }
 
-.bee-mail-WaitingForUserEmails bee-MultiSelector-container {
+.bee-mail-WaitingForUserEmails .bee-MultiSelector-container {
   visibility: hidden;
 }

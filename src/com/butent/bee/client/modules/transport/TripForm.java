@@ -26,8 +26,8 @@ import com.butent.bee.client.validation.CellValidation;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.form.FormView;
-import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
+import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class TripForm extends AbstractFormInterceptor implements SelectorEvent.Handler {
+public class TripForm extends PrintFormInterceptor implements SelectorEvent.Handler {
 
   private static final Multimap<Long, DateRange> vehicleBusy = HashMultimap.create();
 
@@ -164,6 +164,11 @@ public class TripForm extends AbstractFormInterceptor implements SelectorEvent.H
   @Override
   public FormInterceptor getInstance() {
     return new TripForm();
+  }
+
+  @Override
+  public FormInterceptor getPrintFormInterceptor() {
+    return new PrintTripForm();
   }
 
   @Override

@@ -2,11 +2,18 @@
 <View xmlns="http://www.butent.com/view"
 
       name="TripPurchaseInvoices" source="Purchases" caption="=trTripPurchaseInvoices"
-      editForm="TripPurchaseInvoice" newRowForm="NewPurchase"
+      editForm="TripPurchaseInvoice"
+      newRowForm="NewPurchase" newRowCaption="=trNewCargoPurchaseInvoice"
     >
   <Columns>
     <SimpleColumn name="Date" />
     <SimpleColumn name="Number" />
+
+    <SimpleColumn name="Operation" />
+    <SimpleJoin name="Operation" joinType="LEFT">
+      <SimpleColumn name="OperationName" />
+    </SimpleJoin>
+
     <SimpleColumn name="InvoicePrefix" />
     <SimpleColumn name="InvoiceNo" />
     <SimpleColumn name="Term" />
@@ -20,16 +27,6 @@
       <SimpleColumn name="Name" alias="CurrencyName" />
     </SimpleJoin>
 
-    <SimpleColumn name="WarehouseFrom" />
-    <SimpleJoin name="WarehouseFrom" joinType="LEFT">
-      <SimpleColumn name="Code" alias="WarehouseFromCode" />
-    </SimpleJoin>
-
-    <SimpleColumn name="WarehouseTo" />
-    <SimpleJoin name="WarehouseTo" joinType="INNER">
-      <SimpleColumn name="Code" alias="WarehouseToCode" />
-    </SimpleJoin>
-
     <SimpleColumn name="Supplier" />
     <SimpleJoin name="Supplier" joinType="LEFT">
       <SimpleColumn name="Name" alias="SupplierName" />
@@ -38,12 +35,9 @@
       </SimpleJoin>
     </SimpleJoin>
 
-    <SimpleColumn name="Customer" />
-    <SimpleJoin name="Customer" joinType="LEFT">
-      <SimpleColumn name="Name" alias="CustomerName" />
-      <SimpleJoin joinType="LEFT" name="CompanyType">
-        <SimpleColumn name="Name" alias="CustomerType" />
-      </SimpleJoin>
+    <SimpleColumn name="WarehouseTo" />
+    <SimpleJoin name="WarehouseTo" joinType="LEFT">
+      <SimpleColumn name="Code" alias="WarehouseToCode" />
     </SimpleJoin>
 
     <SimpleColumn name="Manager" />

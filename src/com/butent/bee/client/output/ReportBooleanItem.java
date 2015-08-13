@@ -50,7 +50,7 @@ public class ReportBooleanItem extends ReportItem {
     } else {
       display = Localized.getConstants().no();
     }
-    return ReportValue.of(Boolean.toString(on), display);
+    return ReportValue.of(Boolean.toString(on)).setDisplay(display);
   }
 
   @Override

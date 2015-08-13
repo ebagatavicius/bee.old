@@ -251,6 +251,11 @@ final class FreightExchange extends ChartBase {
   }
 
   @Override
+  protected String getShowAdditionalInfoColumnName() {
+    return null;
+  }
+
+  @Override
   protected String getShowCountryFlagsColumnName() {
     return COL_FX_COUNTRY_FLAGS;
   }

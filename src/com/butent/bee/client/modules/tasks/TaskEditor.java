@@ -1446,6 +1446,9 @@ class TaskEditor extends AbstractFormInterceptor {
       case CREATE:
         doCreate(null, getActiveRow());
         break;
+      case OUT_OF_OBSERVERS:
+        doOut();
+        break;
       case ACTIVATE:
       case VISIT:
       case EDIT:
@@ -1538,6 +1541,7 @@ class TaskEditor extends AbstractFormInterceptor {
         dialog.addSelector(Localized.getConstants().crmTaskExecutor(), VIEW_USERS,
             Lists.newArrayList(COL_FIRST_NAME, COL_LAST_NAME),
             true, exclusions, filter);
+    final String obs = dialog.addCheckBox(true);
 
     final String cid = dialog.addComment(true);
 
@@ -1579,6 +1583,14 @@ class TaskEditor extends AbstractFormInterceptor {
 
         if (newStatus != null) {
           newRow.setValue(getDataIndex(COL_STATUS), newStatus.ordinal());
+        }
+
+        if (dialog.isChecked(obs)) {
+          List<Long> obsUsers = DataUtils.parseIdList(newRow.getProperty(PROP_OBSERVERS));
+          if (!obsUsers.contains(oldUser)) {
+            obsUsers.add(oldUser);
+            newRow.setProperty(PROP_OBSERVERS, DataUtils.buildIdList(obsUsers));
+          }
         }
 
         ParameterList params = createParams(TaskEvent.FORWARD, newRow, comment);
@@ -1643,6 +1655,20 @@ class TaskEditor extends AbstractFormInterceptor {
     dialog.display();
   }
 
+  private void doOut() {
+    BeeRow row = getNewRow();
+    List<Long> obsIds = DataUtils.parseIdList(row.getProperty(PROP_OBSERVERS));
+
+    obsIds.remove(userId);
+
+    row.setProperty(PROP_OBSERVERS,
+        DataUtils.buildIdList(obsIds));
+
+    ParameterList params =
+        createParams(TaskEvent.OUT_OF_OBSERVERS, row, BeeConst.STRING_EMPTY);
+    sendRequest(params, TaskEvent.OUT_OF_OBSERVERS);
+  }
+
   private DateTime getDateTime(String colName) {
     return getFormView().getActiveRow().getDateTime(getFormView().getDataIndex(colName));
   }
@@ -1682,47 +1708,46 @@ class TaskEditor extends AbstractFormInterceptor {
       return false;
     }
 
-    if (isOwner()) {
-      if (event == TaskEvent.COMMENT) {
-        return true;
-      } else if (event == TaskEvent.CREATE) {
-        return true;
-      } else if (isExecutor() && TaskStatus.in(status, TaskStatus.ACTIVE)) {
-        return event == TaskEvent.FORWARD || event == TaskEvent.COMPLETE;
-      } else {
-        return false;
-      }
-    }
-
     switch (event) {
       case COMMENT:
         return true;
 
       case RENEW:
         return TaskStatus.in(status, TaskStatus.SUSPENDED, TaskStatus.CANCELED,
-            TaskStatus.COMPLETED, TaskStatus.APPROVED);
+            TaskStatus.COMPLETED, TaskStatus.APPROVED) && isOwner();
 
       case FORWARD:
         return TaskStatus.in(status, TaskStatus.NOT_VISITED, TaskStatus.ACTIVE,
-            TaskStatus.SCHEDULED);
+            TaskStatus.SCHEDULED) && (isOwner() || isExecutor());
 
       case EXTEND:
         return TaskStatus.in(status, TaskStatus.NOT_VISITED, TaskStatus.ACTIVE,
-            TaskStatus.SCHEDULED);
+            TaskStatus.SCHEDULED) && isOwner();
 
       case SUSPEND:
+        return TaskStatus.in(status, TaskStatus.NOT_VISITED, TaskStatus.ACTIVE,
+            TaskStatus.SCHEDULED) && isOwner();
       case COMPLETE:
-        return TaskStatus.in(status, TaskStatus.NOT_VISITED, TaskStatus.ACTIVE);
+        return TaskStatus.in(status, TaskStatus.NOT_VISITED, TaskStatus.ACTIVE,
+            TaskStatus.SCHEDULED) && (isOwner() || isExecutor());
 
       case CANCEL:
         return TaskStatus.in(status, TaskStatus.NOT_VISITED, TaskStatus.ACTIVE,
-            TaskStatus.SUSPENDED, TaskStatus.SCHEDULED);
+            TaskStatus.SCHEDULED) && isOwner();
 
       case APPROVE:
-        return TaskStatus.in(status, TaskStatus.COMPLETED) && !isExecutor();
+        return TaskStatus.in(status, TaskStatus.COMPLETED) && isOwner();
 
       case ACTIVATE:
+        return false;
       case CREATE:
+        return isOwner() || (TaskStatus.in(status, TaskStatus.NOT_VISITED, TaskStatus.SCHEDULED,
+            TaskStatus.SUSPENDED, TaskStatus.CANCELED) && isExecutor());
+
+      case OUT_OF_OBSERVERS:
+        return TaskStatus.in(status, TaskStatus.ACTIVE, TaskStatus.NOT_VISITED,
+            TaskStatus.SCHEDULED)
+            && isObserver();
       case EDIT:
       case VISIT:
         return false;
@@ -1733,6 +1758,11 @@ class TaskEditor extends AbstractFormInterceptor {
 
   private boolean isExecutor() {
     return Objects.equals(userId, getExecutor());
+  }
+
+  private boolean isObserver() {
+    List<Long> obsUsers = DataUtils.parseIdList(getActiveRow().getProperty(PROP_OBSERVERS));
+    return obsUsers.contains(userId);
   }
 
   private boolean isOwner() {

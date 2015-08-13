@@ -991,6 +991,7 @@ public class TasksModuleBean implements BeeModule {
       case APPROVE:
       case RENEW:
       case ACTIVATE:
+      case OUT_OF_OBSERVERS:
         Long finishTime = BeeUtils.toLongOrNull(reqInfo.getParameter(VAR_TASK_FINISH_TIME));
 
         response = registerTaskEvent(taskId, currentUser, event, reqInfo, eventNote, finishTime,

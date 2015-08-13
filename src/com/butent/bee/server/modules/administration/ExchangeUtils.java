@@ -40,7 +40,9 @@ public final class ExchangeUtils {
   public static IsExpression exchangeFieldTo(SqlSelect query, String tbl, String amountFld,
       String currencyFld, String dateFld, Long currencyTo) {
 
-    DataUtils.assertId(currencyTo);
+    if (!DataUtils.isId(currencyTo)) {
+      return exchangeField(query, tbl, amountFld, currencyFld, dateFld);
+    }
     IsExpression date = null;
 
     if (!BeeUtils.isEmpty(dateFld)) {
@@ -53,7 +55,9 @@ public final class ExchangeUtils {
   public static IsExpression exchangeFieldTo(SqlSelect query, IsExpression amount,
       IsExpression currency, IsExpression date, IsExpression currencyTo) {
 
-    Assert.notNull(currencyTo);
+    if (currencyTo == null) {
+      return exchangeField(query, amount, currency, date);
+    }
     String ratesTo = SqlUtils.uniqueName();
 
     IsExpression xpr = SqlUtils.multiply(exchangeField(query, amount, currency, date),

@@ -12,229 +12,248 @@
   height="565"
   >
   <FlowPanel>
-      <Table>
-        <row>
-          <Label text="=name" style="&lbl;" class="bee-required" />
-          <cell colSpan="3">
-            <InputText source="Name" style="width: 425px;" visible="true" />
-          </cell>
-          <DataSelector source="CompanyType" style="width: 80px;"/>
-          <Label style="&lbl;" for="CompanyPriority" />
-          <DataSelector source="CompanyPriority" style="width: 180px" />
-          <FlowPanel name="qrFlowPanel" style="margin-left: 10px" />
-        </row>
+    <Table>
+      <row>
+        <Label text="=name" style="&lbl;" class="bee-required" />
+        <cell colSpan="3">
+          <InputText source="Name" style="width: 425px;" visible="true" />
+        </cell>
+        <DataSelector source="CompanyType" style="width: 80px;"/>
+        <Label style="&lbl;" for="CompanyPriority" />
+        <DataSelector source="CompanyPriority" style="width: 180px" />
+        <FlowPanel name="qrFlowPanel" style="margin-left: 10px" />
+      </row>
 
-        <row>
-          <Label text="=phone" style="&lbl;" for="Phone" />
-          <InputText style="width: 140px;" source="Phone" />
-          <Label style="&lbl;" for="Mobile" />
-          <cell colSpan="2">
-            <InputText source="Mobile" style="width: 140px;" />
-          </cell>
-          <Label text="=fax" style="&lbl;" for="Fax" />
-          <InputText source="Fax" style="width: 180px;" />
-        </row>
+      <row>
+        <Label text="=phone" style="&lbl;" for="Phone" />
+        <InputText style="width: 140px;" source="Phone" />
+        <Label style="&lbl;" for="Mobile" />
+        <cell colSpan="2">
+          <InputText source="Mobile" style="width: 140px;" />
+        </cell>
+        <Label text="=fax" style="&lbl;" for="Fax" />
+        <InputText source="Fax" style="width: 180px;" />
+      </row>
 
-        <row for="Address">
-          <Label text="=address" style="&lbl;" />
-          <cell colSpan="4">
-            <InputText source="Address" style="width: 525px;" />
-          </cell>
-          <Label for="EmailId" style="&lbl;" />
-          <cell colSpan="1" for="EmailId">
-            <DataSelector style="width: 180px;" source="EmailId" maxLength="50" />
-          </cell>
-        </row>
+      <row for="Address">
+        <Label text="=address" style="&lbl;" />
+        <cell colSpan="4">
+          <InputText source="Address" style="width: 525px;" />
+        </cell>
+        <Label for="EmailId" style="&lbl;" />
+        <cell colSpan="1" for="EmailId">
+          <DataSelector style="width: 180px;" source="EmailId" maxLength="50" />
+        </cell>
+      </row>
 
-        <row for="City">
-          <Label text="=city" style="&lbl;" for="City" />
-          <DataSelector source="City" style="width: 140px;">
-            <selectorColumn source="Name" />
-            <selectorColumn source="CountryName" />
-            <selectorColumn source="CountryCode">
-              <ui:renderer type="flag" />
-            </selectorColumn>
-          </DataSelector>
+      <row for="City">
+        <Label text="=city" style="&lbl;" for="City" />
+        <DataSelector source="City" style="width: 140px;">
+          <selectorColumn source="Name" />
+          <selectorColumn source="CountryName" />
+          <selectorColumn source="CountryCode">
+            <ui:renderer type="flag" />
+          </selectorColumn>
+        </DataSelector>
 
-          <Label text="=country" style="&lbl;" for="Country" />
-          <DataSelector source="Country" style="width: 140px;">
-            <renderToken source="CountryName" />
-            <renderToken source="CountryCode" prefix=" (" suffix=")" />
-            <selectorColumn source="Name" />
-            <selectorColumn source="Code">
-              <ui:renderer type="flag" />
-            </selectorColumn>
-          </DataSelector>
-          <Flag source="CountryCode" style="width: 22px;" />
-          <Label text="=postIndex" style="&lbl;" for="PostIndex" />
-          <InputText source="PostIndex" style="width: 180px;" />
-        </row>
-      </Table>
+        <Label text="=country" style="&lbl;" for="Country" />
+        <DataSelector source="Country" style="width: 140px;">
+          <renderToken source="CountryName" />
+          <renderToken source="CountryCode" prefix=" (" suffix=")" />
+          <selectorColumn source="Name" />
+          <selectorColumn source="Code">
+            <ui:renderer type="flag" />
+          </selectorColumn>
+        </DataSelector>
+        <Flag source="CountryCode" style="width: 22px;" />
+        <Label text="=postIndex" style="&lbl;" for="PostIndex" />
+        <InputText source="PostIndex" style="width: 180px;" />
+      </row>
+    </Table>
 
-      <Disclosure open="false" style="margin-top: 40px;">
-        <Label text="=otherInfo" />
-        <FlowPanel style="padding-bottom: 40px;">
-          <Table>
+    <Disclosure open="false" style="margin-top: 40px;">
+      <Label text="=otherInfo" />
+      <FlowPanel style="padding-bottom: 40px;">
+        <Table>
+          <row>
+            <Label text="=website" style="&lbl;" for="Website" />
+            <InputText source="Website" style="width: 280px;" />
+            <Label text="=socialContacts" style="&lbl;" />
+            <InputText source="SocialContacts" style="width: 280px;" />
+          </row>
+          <row>
+            <Label text="=code" style="&lbl;" for="Code" />
+            <InputText source="Code" style="width: 280px;"/>
+            <Label text="=companyVATCode" style="&lbl;" for="VATCode" />
+            <InputText source="VATCode" style="width: 280px;" upperCase="true" />
+          </row>
+        </Table>
+      </FlowPanel>
+    </Disclosure>
+
+    <Disclosure open="false">
+      <Label text="=additionalContacts" />
+      <ChildGrid name="CompanyContacts" relColumn="Company"
+        style="min-height:150px; padding-bottom: 40px;" />
+    </Disclosure>
+
+    <Disclosure open="false">
+      <Label text="=bankDetails" />
+      <ChildGrid name="CompanyBankAccounts" relColumn="Company"
+        style="min-height:150px" />
+    </Disclosure>
+
+    <TabbedPages style="margin-top: 15px; height: 500px;">
+      <page data="Sales">
+        <text>=financialInfo</text>
+        <FlowPanel class="flexBox-horizontal">
+          <Table style="margin-right: 8px;" >
             <row>
-              <Label text="=website" style="&lbl;" for="Website" />
-              <InputText source="Website" style="width: 280px;" />
-              <Label text="=socialContacts" style="&lbl;" />
-              <InputText source="SocialContacts" style="width: 280px;" />
+              <Label text="=creditLimit" for="CreditLimit" style="&lbl;"/>
+              <FlowPanel>
+                <InputInteger source="CreditLimit" style="text-align: right" summarize="true" />
+                <DataSelector source="LimitCurrency" editEnabled="false" placeholder="=currencyShort"
+                  style="width:5em; margin-left:5px; display:inline-block;" for="CreditLimit" />
+              </FlowPanel>
+              <cell rowSpan="5" verticalAlignment="top">
+                <FlowPanel name="CreditInfo" />
+              </cell>
             </row>
-            <row>
-              <Label text="=code" style="&lbl;" for="Code" />
-              <InputText source="Code" style="width: 280px;"/>
-              <Label text="=companyVATCode" style="&lbl;" for="VATCode" />
-              <InputText source="VATCode" style="width: 280px;" upperCase="true" />
+
+            <row for="CreditTolerance">
+              <Label text="=creditTolerance" style="&lbl;" />
+              <InputInteger source="CreditTolerance" style="width: 60px;" summarize="true" />
+            </row>
+
+            <row for="CreditDays">
+              <Label text="=creditDays" style="&lbl;"/>
+              <InputDecimal source="CreditDays" style="width: 60px;" summarize="true" />
+            </row>
+
+            <row for="FinancialState">
+              <Label text="=financialState" style="&lbl;" />
+              <DataSelector source="FinancialState" summarize="true" />
+            </row>
+
+            <row for="SupplierCreditDays">
+              <Label text="=supplierCreditDays" style="&lbl;"/>
+              <InputDecimal source="SupplierCreditDays" style="width: 60px;" summarize="true" />
             </row>
           </Table>
         </FlowPanel>
-      </Disclosure>
+      </page>
 
-      <Disclosure open="false">
-        <Label text="=additionalContacts" />
-        <ChildGrid name="CompanyContacts" relColumn="Company"
-          style="min-height:150px; padding-bottom: 40px;" />
-      </Disclosure>
+      <page>
+        <text>=personContacts</text>
+        <ChildGrid name="CompanyPersons" relColumn="Company" />
+      </page>
 
-      <Disclosure open="false">
-        <Label text="=bankDetails" />
-        <ChildGrid name="CompanyBankAccounts" relColumn="Company"
-          style="min-height:150px" />
-      </Disclosure>
+      <page>
+        <text>=responsibilities</text>
+        <ChildGrid name="CompanyUsers" relColumn="Company" />
+      </page>
 
-      <TabbedPages style="margin-top: 15px; height: 500px;">
-        <page data="Sales">
-          <text>=financialInfo</text>
-          <FlowPanel class="flexBox-horizontal">
-            <Table style="margin-right: 8px;" >
-              <row>
-                <Label text="=creditLimit" for="CreditLimit" style="&lbl;"/>
-                <FlowPanel>
-                  <InputInteger source="CreditLimit" style="text-align: right" summarize="true" />
-                  <DataSelector source="LimitCurrency" editEnabled="false" placeholder="=currencyShort"
-                    style="width:5em; margin-left:5px; display:inline-block;" for="CreditLimit" />
-                </FlowPanel>
-                <cell rowSpan="5" verticalAlignment="top">
-                  <FlowPanel name="CreditInfo" />
-                </cell>
-              </row>
+      <page>
+        <text>=additionalInfo</text>
+        <FlowPanel style="margin:5px;">
+          <Table>
+            <row>
+              <Label style="&lbl;" for="CompanySize" />
+              <DataSelector source="CompanySize" summarize="true" />
+              <Label style="margin-left: 8px; margin-right: 8px;" for="InformationSource" />
+              <DataSelector source="InformationSource" summarize="true" />
+            </row>
+            <row data="CompActStore">
+              <Label text="=companyActivities" style="&lbl;" />
+              <cell colSpan="3">
+                <ChildSelector viewName="CompanyActivities" childTable="CompActStore"
+                  targetRelColumn="Company" sourceRelColumn="Activity"
+                  label="=companyActivities" style="width: 100%;" summarize="true" />
+              </cell>
+            </row>
+            <row>
+              <Label text="=trdTurnover" style="&lbl;"/>
+              <DataSelector source="Turnover" summarize="true" />
+              <DataSelector source="TurnoverCurrency" editEnabled="false"
+                placeholder="=currencyShort"
+                style="width:5em; margin-left:5px; display:inline-block;" for="Turnover" />
+            </row>
+            <row>
+              <Label text="=clientGroup" style="&lbl;" for="CompanyGroup" />
+              <DataSelector source="CompanyGroup" summarize="true" />
+            </row>
+            <row>
+              <Label text="=companyRelation" style="&lbl;" data="CompRelTypeStore" />
+              <ChildSelector viewName="CompanyRelationTypes" childTable="CompRelTypeStore"
+                targetRelColumn="Company" sourceRelColumn="RelationType" newRowEnabled="true"
+                label="=companyRelationType" data="CompRelTypeStore" summarize="true" />
+              <Label style="&lbl;" for="CompanyRelationTypeState" />
+              <DataSelector source="CompanyRelationTypeState" summarize="true" />
+            </row>
+          </Table>
+        </FlowPanel>
+      </page>
 
-              <row for="CreditTolerance">
-                <Label text="=creditTolerance" style="&lbl;" />
-                <InputInteger source="CreditTolerance" style="width: 60px;" summarize="true" />
-              </row>
+      <page>
+        <text>=discounts</text>
+        <FlowPanel class="flexBox-vertical">
+          <HorizontalPanel>
+            <Label for="DiscountPercent" style="&lbl;" />
+            <InputDecimal source="DiscountPercent" style="width: 80px;" summarize="true" />
 
-              <row for="CreditDays">
-                <Label text="=creditDays" style="&lbl;"/>
-                <InputDecimal source="CreditDays" style="width: 60px;" summarize="true" />
-              </row>
+            <Label for="DiscountParent" style="&lbl;" />
+            <DataSelector source="DiscountParent" newRowEnabled="false" summarize="true" />
 
-              <row for="FinancialState">
-                <Label text="=financialState" style="&lbl;" />
-                <DataSelector source="FinancialState" summarize="true" />
-              </row>
+            <Label for="PriceKey" style="&lbl;" />
+            <ListBox source="PriceKey" summarize="true" />
+          </HorizontalPanel>
 
-              <row for="SupplierCreditDays">
-                <Label text="=supplierCreditDays" style="&lbl;"/>
-                <InputDecimal source="SupplierCreditDays" style="width: 60px;" summarize="true" />
-              </row>
-            </Table>
-          </FlowPanel>
-        </page>
+<!--           <ChildGrid name="Discounts" relColumn="Company" class="flexible" /> -->
+        </FlowPanel>
+      </page>
 
-        <page>
-          <text>=personContacts</text>
-          <ChildGrid name="CompanyPersons" relColumn="Company" />
-        </page>
+      <page>
+        <text>=documents</text>
+        <ChildGrid name="RelatedDocuments" relColumn="Company" />
+      </page>
+      <page>
+        <text>=objects</text>
+        <ChildGrid name="CompanyObjects" relColumn="Company" module="Trade.Acts" />
+      </page>
+      <page>
+        <text>=tradeActs</text>
+        <ChildGrid name="CompanyTradeActs" relColumn="Company" module="Trade.Acts" />
+      </page>
 
-        <page>
-          <text>=responsibilities</text>
-          <ChildGrid name="CompanyUsers" relColumn="Company" />
-        </page>
+      <page for="RelatedMessages">
+        <text>=mails</text>
+        <ChildGrid name="RelatedMessages" relColumn="Company" />
+      </page>
+      <page for="CompActionList" module="Calendar">
+        <text>=calListOfActions</text>
+        <ChildGrid name="CompActionList" relColumn="Company" />
+      </page>
+      <page for="Tasks">
+        <text>=crmTasks</text>
+        <ChildGrid name="ChildTasks" relColumn="Company" />
+      </page>
 
-        <page>
-          <text>=additionalInfo</text>
-          <FlowPanel style="margin:5px;">
-            <Table>
-              <row>
-                <Label style="&lbl;" for="CompanySize" />
-                <DataSelector source="CompanySize" summarize="true" />
-                <Label style="margin-left: 8px; margin-right: 8px;" for="InformationSource" />
-                <DataSelector source="InformationSource" summarize="true" />
-              </row>
-              <row data="CompActStore">
-                <Label text="=companyActivities" style="&lbl;" />
-                <cell colSpan="3">
-                  <ChildSelector viewName="CompanyActivities" childTable="CompActStore"
-                    targetRelColumn="Company" sourceRelColumn="Activity"
-                    label="=companyActivities" style="width: 100%;" summarize="true" />
-                </cell>
-              </row>
-              <row>
-                <Label text="=trdTurnover" style="&lbl;"/>
-                <DataSelector source="Turnover" summarize="true" />
-                <DataSelector source="TurnoverCurrency" editEnabled="false" placeholder="=currencyShort"
-                 style="width:5em; margin-left:5px; display:inline-block;" for="Turnover" />
-              </row>
-              <row>
-                <Label text="=clientGroup" style="&lbl;" for="CompanyGroup" />
-                <DataSelector source="CompanyGroup" />
-              </row>
-              <row>
-                <Label text="=companyRelation" style="&lbl;" data="CompRelTypeStore" />
-                <ChildSelector viewName="CompanyRelationTypes" childTable="CompRelTypeStore"
-                  targetRelColumn="Company" sourceRelColumn="RelationType" newRowEnabled="true"
-                  label="=companyRelationType" data="CompRelTypeStore" />
-                <Label style="&lbl;" for="CompanyRelationTypeState" />
-                <DataSelector source="CompanyRelationTypeState" />
-              </row>
-            </Table>
-          </FlowPanel>
-        </page>
+      <page for="Requests">
+        <text>=crmRequests</text>
+        <ChildGrid name="ChildRequests" relColumn="Customer" />
+      </page>
 
-        <page>
-          <text>=documents</text>
-          <ChildGrid name="RelatedDocuments" relColumn="Company" />
-        </page>
-        <page>
-          <text>=objects</text>
-          <ChildGrid name="CompanyObjects" relColumn="Company" module="Trade.Acts" />
-        </page>
-        <page>
-          <text>=tradeActs</text>
-          <ChildGrid name="CompanyTradeActs" relColumn="Company" module="Trade.Acts" />
-        </page>
+      <page data="Projects">
+        <text>=projects</text>
+        <ChildGrid name="CompanyProjects" relColumn="Company" />
+      </page>
 
-        <page for="RelatedMessages">
-          <text>=mails</text>
-          <ChildGrid name="RelatedMessages" relColumn="Company" />
-        </page>
-        <page for="CompActionList" module="Calendar">
-          <text>=calListOfActions</text>
-          <ChildGrid name="CompActionList" relColumn="Company" />
-        </page>
-        <page for="Tasks">
-          <text>=crmTasks</text>
-          <ChildGrid name="ChildTasks" relColumn="Company" />
-        </page>
-
-        <page for="Requests">
-          <text>=crmRequests</text>
-          <ChildGrid name="ChildRequests" relColumn="Customer" />
-        </page>
-
-        <page data="Projects">
-          <text>=projects</text>
-          <ChildGrid name="CompanyProjects" relColumn="Company" />
-        </page>
-
-        <page for="Notes">
-          <text>=notes</text>
-          <SimplePanel>
-            <InputArea source="Notes" class="occupy-1" summarize="true" />
-          </SimplePanel>
-        </page>
-      </TabbedPages>
+      <page for="Notes">
+        <text>=notes</text>
+        <SimplePanel>
+          <InputArea source="Notes" class="occupy-1" summarize="true" />
+        </SimplePanel>
+      </page>
+    </TabbedPages>
   </FlowPanel>
 </f:Form>

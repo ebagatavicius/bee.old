@@ -174,9 +174,6 @@ public class AdministrationModuleBean implements BeeModule, HasTimerService {
         BeeParameter.createText(module, PRM_ERP_ADDRESS),
         BeeParameter.createText(module, PRM_ERP_LOGIN),
         BeeParameter.createText(module, PRM_ERP_PASSWORD),
-        BeeParameter.createText(module, PRM_ERP_PURCHASE_OPERATION),
-        BeeParameter.createText(module, PRM_ERP_OPERATION),
-        BeeParameter.createRelation(module, PRM_ERP_WAREHOUSE, TBL_WAREHOUSES, COL_WAREHOUSE_CODE),
         BeeParameter.createText(module, PRM_URL));
 
     params.addAll(getSqlEngineParameters());
@@ -899,7 +896,7 @@ public class AdministrationModuleBean implements BeeModule, HasTimerService {
 
         Double amt = rateRow.getDouble(ExchangeRatesWS.COL_AMT_1);
         if (BeeUtils.isPositive(amt) && !Objects.equals(amt, BeeConst.DOUBLE_ONE)) {
-          factor = factor / amt;
+          factor /= amt;
         }
 
         if (date != null && BeeUtils.isPositive(factor)) {

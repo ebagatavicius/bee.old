@@ -159,6 +159,19 @@ public enum Module implements HasLocalizedCaption {
     public String getStyleSheet(SubModule subModule) {
       return null;
     }
+  },
+
+  ORDERS {
+
+    @Override
+    public String getCaption(LocalizableConstants constants) {
+      return constants.orders();
+    }
+
+    @Override
+    public String getStyleSheet(SubModule subModule) {
+      return "orders";
+    }
   };
 
   public static final String NEVER_MIND = "*";

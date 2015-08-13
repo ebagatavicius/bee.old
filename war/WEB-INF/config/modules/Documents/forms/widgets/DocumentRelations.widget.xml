@@ -38,6 +38,13 @@
       choiceColumns="Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
       summarize="true" />
   </FlowPanel>
+  
+  <FlowPanel class="flexBox-horizontal" style="&row;"
+      data="Relations" for="Documents" module="Documents">
+    <Label text="=documents" style="&chlabel;" />
+    <ChildSelector class="flexible" viewName="Documents" childTable="Relations" 
+      targetRelColumn="Document" sourceRelColumn="Document" renderColumns="Name CompanyName CategoryName" />
+  </FlowPanel>
 
   <FlowPanel class="flexBox-horizontal" style="&row;"
       data="Relations" for="CargoRequest" module="Transport.SelfService">

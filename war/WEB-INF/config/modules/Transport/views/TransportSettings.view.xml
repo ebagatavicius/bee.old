@@ -38,8 +38,10 @@
     <SimpleColumn name="SsCountryFlags" />
     <SimpleColumn name="SsPlaceInfo" />
 
-    <SimpleColumn name="SsPlaceCodes"/>
-    <SimpleColumn name="SsPlaceCities"/>
+    <SimpleColumn name="SsPlaceCodes" />
+    <SimpleColumn name="SsPlaceCities" />
+
+    <SimpleColumn name="SsAdditionalInfo" />
 
     <SimpleColumn name="SsPixelsPerDay" />
     <SimpleColumn name="SsPixelsPerRow" />
@@ -60,8 +62,10 @@
     <SimpleColumn name="DtbCountryFlags" />
     <SimpleColumn name="DtbPlaceInfo" />
 
-    <SimpleColumn name="DtbPlaceCodes"/>
-    <SimpleColumn name="DtbPlaceCities"/>
+    <SimpleColumn name="DtbPlaceCodes" />
+    <SimpleColumn name="DtbPlaceCities" />
+
+    <SimpleColumn name="DtbAdditionalInfo" />
 
     <SimpleColumn name="DtbPixelsPerDay" />
     <SimpleColumn name="DtbPixelsPerRow" />
@@ -88,6 +92,8 @@
     <SimpleColumn name="TruckPlaceCities" />
     <SimpleColumn name="TruckPlaceCodes" />
 
+    <SimpleColumn name="TruckAdditionalInfo" />
+
     <SimpleColumn name="TruckPixelsPerDay" />
     <SimpleColumn name="TruckPixelsPerRow" />
 
@@ -112,6 +118,8 @@
     
     <SimpleColumn name="TrailerPlaceCities" />
     <SimpleColumn name="TrailerPlaceCodes" />
+
+    <SimpleColumn name="TrailerAdditionalInfo" />
 
     <SimpleColumn name="TrailerPixelsPerDay" />
     <SimpleColumn name="TrailerPixelsPerRow" />

@@ -208,6 +208,23 @@
 .bee-rep-drill-off:before {
   color: silver;
 }
+.bee-rep-sort, .bee-rep-sort-asc, .bee-rep-sort-desc {
+  cursor: pointer;
+  font-family: FontAwesome;
+  margin-left: 5px;
+}
+.bee-rep-sort:before {
+  content: "\f0dc";
+  color: silver;
+}
+.bee-rep-sort-asc:before {
+  content: "\f0de";
+  color: black;
+}
+.bee-rep-sort-desc:before {
+  content: "\f0dd";
+  color: black;
+}
 .bee-rep-cgroup {
   text-align: center;
 }
@@ -243,7 +260,6 @@
   background-color: lightyellow;
 }
 .bee-rep-function {
-  display: block;
   color: blue;
   cursor: pointer;
 }

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="TradeOperations"
-  idName="TradeOperationID"
-  >
+       name="TradeOperations"
+       idName="TradeOperationID"
+    >
   <Fields>
     <String name="OperationName" precision="100" notNull="true" unique="true"
-      label="=trdOperation" />
+            label="=trdOperation" />
+
+    <Enum name="OperationType" key="OperationType" notNull="true" label="=trdOperationType" />
 
     <Integer name="Ordinal" label="=ordinal" />
 
@@ -15,7 +17,7 @@
 
     <Relation name="WarehouseFrom" relation="Warehouses" label="=trdWarehouseFrom" />
     <Relation name="WarehouseTo" relation="Warehouses" label="=trdWarehouseTo" />
-    
+
     <Boolean name="IsDefault" label="=trdOperationDefault" />
 
     <String name="Background" precision="100" label="=backgroundColor" />

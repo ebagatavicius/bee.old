@@ -86,6 +86,8 @@ public interface LocalizableTaskConstants {
 
   String crmTask();
 
+  String crmTaskAddSenderToObservers();
+
   String crmTaskCancel();
 
   String crmTaskCancellation();
@@ -179,6 +181,8 @@ public interface LocalizableTaskConstants {
   String crmTaskNotFound();
 
   String crmTaskObservers();
+
+  String crmTaskOutOfObservers();
 
   String crmTaskPriority();
 

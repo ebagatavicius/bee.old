@@ -6,6 +6,6 @@
     >
   <Fields>
     <String name="PaymentName" precision="20" notNull="true" unique="true" label="=paymentType" />
-    <Boolean name="Cash" label="=cash" />
+    <Boolean name="PaymentCash" label="=cash" />
   </Fields>
 </Table>
