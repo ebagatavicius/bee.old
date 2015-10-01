@@ -106,7 +106,7 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
   private Disclosure relatedInfo;
   private ChildGrid documents;
   private DataSelector owner;
-
+  private ChildGrid tasks;
   private BeeRowSet timeUnits;
 
   @Override
@@ -153,6 +153,10 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
     if (widget instanceof DataSelector && BeeUtils.same(name, WIDGET_OWNER)) {
       owner = (DataSelector) widget;
     }
+
+    if (widget instanceof ChildGrid && BeeUtils.same(name, TaskConstants.GRID_CHILD_TASKS)) {
+      tasks = (ChildGrid) widget;
+    }
   }
 
   @Override
@@ -193,7 +197,7 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
       }
     }
 
-    if (DataUtils.isId(row.getId())) {
+    if (!DataUtils.isNewRow(row)) {
       form.setEnabled(isOwner(form, row) && !isProjectApproved(form, row));
 
       if (status != null) {
@@ -215,6 +219,10 @@ class ProjectForm extends AbstractFormInterceptor implements DataChangeEvent.Han
 
     if (BeeKeeper.getUser().isAdministrator()) {
       owner.setEnabled(true);
+    }
+
+    if((isProjectUser(form, row) || isOwner(form, row)) && tasks!= null) {
+      tasks.setEnabled(true);
     }
 
     lockedValidations.clear();
