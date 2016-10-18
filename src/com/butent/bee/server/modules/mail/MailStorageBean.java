@@ -314,7 +314,7 @@ public class MailStorageBean {
           try {
             Long adr = storeAddress(account.getUserId(), entry.getValue());
 
-            if (allAddresses.add(adr)) {
+            if (DataUtils.isId(adr) && allAddresses.add(adr)) {
               qs.insertData(new SqlInsert(TBL_RECIPIENTS)
                   .addConstant(COL_MESSAGE, messageId.get())
                   .addConstant(MailConstants.COL_ADDRESS, adr)
