@@ -8,7 +8,7 @@
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="CarOrder" viewName="CarOrders" width="800" height="600" caption="=order">
-  <f:properties jasperReports="Offer" />
+  <f:properties jasperReports="RenaultOffer" />
 
   <FlowPanel class="flexBox-vertical">
     <Table kind="controls">
