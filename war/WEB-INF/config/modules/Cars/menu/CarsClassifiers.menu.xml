@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+
+       name="CarsClassifiers" label="=vehicleServiceSettings" order="30" parent="Cars" module="Cars"
+>
+  <Item name="VehicleTypes" label="=trVehicleTypes" service="grid" parameters="VehicleTypes" />
+  <Item name="CarStatus" label="=statuses" service="grid" parameters="CarStatus" />
+  <Item name="CarWarranties" label="=vehicleWarranties" service="grid" parameters="CarWarranties" />
+  <Item name="CarGearboxes" label="=vehicleGearboxes" service="grid" parameters="CarGearboxes" />
+  <Item name="CarPlaceCodes" label="=vehiclePlaceCodes" service="grid" parameters="CarPlaceCodes" />
+  <Item name="CarEmissionStandards" label="=vehicleEmissionStandards" service="grid"
+        parameters="CarEmissionStandards" />
+  <Item name="Fueltypes" label="=trFuelTypes" service="grid" parameters="FuelTypes" />
+</Entry>

@@ -2,6 +2,7 @@
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
   
   name="Department" viewName="Departments" caption="=department"
   width="600" height="600"
@@ -34,6 +35,13 @@
         <DataSelector source="Role" style="width: 200px;" newRowEnabled="false" />
       </row>
     </Table>
+
+    <Disclosure open="true">
+      <Label text="=contactInfo" style="text-transform: uppercase; " />
+      <FlowPanel class="flexible">
+        <xi:include href="../../Classifiers/forms/widgets/ContactDetails.widget.xml" />
+      </FlowPanel>
+    </Disclosure>
 
     <br/>
     

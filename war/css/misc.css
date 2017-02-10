@@ -510,6 +510,9 @@
   font-weight: bold;
   background-color: lightyellow;
 }
+.bee-conf-packet {
+  color: silver;
+}
 .bee-conf-row-hdr {
   font-weight: bold;
 }
@@ -616,8 +619,11 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-start;
-  max-width: 620px;
+  max-width: 80vw;
   max-height: 200px;
+}
+.bee-spec-summary {
+  max-width: 40%;
 }
 .bee-spec-summary tr td:nth-child(2) {
   font-weight: bold;
@@ -678,6 +684,23 @@
 }
 .bee-row-Mode-upd {
   background-color: #ffb300;
+}
+
+.bee-stage {
+  display: inline-block;
+  padding: 5px;
+  text-align: center;
+  background-color: white;
+  color: #1eb2d8;
+  font-weight: bolder;
+  border: 1px solid #1eb2d8;
+  cursor: pointer;
+}
+
+.bee-stage-active {
+  background-color: #1eb2d8;
+  color: white;
+  cursor: default;
 }
 
 .bee-reminder-dialog-panel{

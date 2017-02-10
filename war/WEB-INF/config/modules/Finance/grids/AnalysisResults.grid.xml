@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
+
+        name="AnalysisResults" viewName="AnalysisResults"
+        disabledActions="add"
+>
+  <g:columns>
+    <DataColumn name="Date" format="DATE_SHORT_TIME_MEDIUM" readOnly="true" visible="true" />
+    <DataColumn name="Caption" minWidth="100" flexGrow="1" visible="true" />
+
+    <DataColumn name="Size" readOnly="true" />
+
+    <CalcColumn name="Open" type="string" label="=actionOpen" horizontalAlignment="center"
+                exportable="false" visible="true">
+      <style>
+        <bodyStyle>
+          <ui:class>bee-fa-label</ui:class>
+          <ui:font>medium</ui:font>
+        </bodyStyle>
+      </style>
+
+      <render>
+        <ui:expression>'\uf054'</ui:expression>
+      </render>
+    </CalcColumn>
+  </g:columns>
+</g:Grid>

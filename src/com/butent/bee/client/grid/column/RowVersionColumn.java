@@ -2,8 +2,9 @@ package com.butent.bee.client.grid.column;
 
 import com.butent.bee.client.grid.CellContext;
 import com.butent.bee.client.grid.cell.DateTimeCell;
-import com.butent.bee.client.i18n.DateTimeFormat;
-import com.butent.bee.client.i18n.HasDateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormat;
+import com.butent.bee.client.i18n.Format;
+import com.butent.bee.shared.i18n.HasDateTimeFormat;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.time.DateTime;
@@ -16,11 +17,10 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 public class RowVersionColumn extends AbstractColumn<DateTime> implements HasDateTimeFormat {
 
-  private static final DateTimeFormat DEFAULT_FORMAT =
-      DateTimeFormat.getFormat("yy-MM-dd HH:mm:ss.SSS");
+  private static final String DEFAULT_PATTERN = "yy-MM-dd HH:mm:ss.SSS";
 
   public RowVersionColumn() {
-    this(DEFAULT_FORMAT);
+    this(Format.parseDateTimePattern(DEFAULT_PATTERN));
   }
 
   public RowVersionColumn(DateTimeFormat format) {

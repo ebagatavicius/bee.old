@@ -1,5 +1,7 @@
 package com.butent.bee.shared.logging;
 
+import com.butent.bee.shared.exceptions.BeeRuntimeException;
+
 public class BeeLoggerWrapper implements BeeLogger {
 
   private final String loggerName;
@@ -29,6 +31,9 @@ public class BeeLoggerWrapper implements BeeLogger {
       Throwable cause = ex;
 
       while (cause.getCause() != null) {
+        if (cause instanceof BeeRuntimeException) {
+          return;
+        }
         cause = cause.getCause();
       }
       logger.error(cause, messages);

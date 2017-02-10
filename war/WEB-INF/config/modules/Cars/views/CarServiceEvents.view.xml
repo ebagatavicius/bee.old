@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarServiceEvents" source="CarServiceEvents"
+      caption="=calAppointments+ (+=serviceOrders+)" newRowCaption="=calNewAppointment"
+      editForm="CarServiceEvent" newRowForm="CarServiceEvent"
+>
+  <Columns>
+    <SimpleColumn name="ServiceOrder" />
+    <SimpleJoin name="ServiceOrder" joinType="LEFT">
+      <SimpleColumn name="OrderNo" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Arrived" />
+
+    <SimpleJoin name="Appointment" joinType="INNER">
+      <IdColumn name="Appointment" />
+      <SimpleColumn name="AppointmentType" />
+      <SimpleJoin joinType="LEFT" name="AppointmentType">
+        <SimpleColumn alias="TypeName" name="Name" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Summary" />
+      <SimpleColumn name="Description" />
+      <SimpleColumn name="ActionResult" />
+      <SimpleColumn name="ActionReminded" />
+
+      <SimpleColumn name="Location" />
+
+      <SimpleColumn name="Color" />
+      <SimpleJoin name="Color" joinType="LEFT">
+        <SimpleColumn alias="ColorName" name="Name" />
+        <SimpleColumn name="Background" />
+        <SimpleColumn name="Foreground" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Style" />
+      <SimpleJoin name="Style" joinType="LEFT">
+        <SimpleColumn alias="StyleName" name="Name" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Status" />
+
+      <SimpleColumn name="Created" />
+      <SimpleColumn name="Creator" />
+      <SimpleJoin name="Creator" joinType="LEFT">
+        <SimpleColumn alias="CreatorCompanyPerson" name="CompanyPerson" />
+
+        <SimpleJoin name="CompanyPerson" joinType="LEFT">
+          <SimpleJoin name="Person" joinType="LEFT">
+            <SimpleColumn alias="CreatorFirstName" name="FirstName" />
+            <SimpleColumn alias="CreatorLastName" name="LastName" />
+          </SimpleJoin>
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleColumn name="StartDateTime" />
+      <SimpleColumn name="EndDateTime" />
+
+      <SimpleColumn name="Visibility" />
+
+      <SimpleColumn name="Company" />
+      <SimpleJoin name="Company" joinType="LEFT">
+        <SimpleColumn alias="CompanyName" name="Name" />
+
+        <SimpleJoin joinType="LEFT" name="CompanyType">
+          <SimpleColumn name="Name" alias="CompanyTypeName" />
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleColumn name="CompanyPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn alias="PersonFirstName" name="FirstName" />
+          <SimpleColumn alias="PersonLastName" name="LastName" />
+        </SimpleJoin>
+
+        <SimpleColumn name="Company" alias="PersonCompany" />
+        <SimpleJoin name="Company" joinType="LEFT">
+          <SimpleColumn name="Name" alias="PersonCompanyName" />
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleColumn name="Vehicle" alias="Car" />
+      <SimpleJoin name="Vehicle" joinType="LEFT">
+        <SimpleColumn name="Model" />
+        <SimpleJoin name="Model" joinType="LEFT">
+          <SimpleJoin name="Parent" joinType="LEFT">
+            <SimpleColumn name="Name" alias="ParentModelName" />
+          </SimpleJoin>
+
+          <SimpleColumn name="Name" alias="ModelName" />
+        </SimpleJoin>
+
+        <SimpleColumn name="Number" alias="CarNumber" />
+      </SimpleJoin>
+    </SimpleJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="StartDateTime" />
+  </Order>
+</View>

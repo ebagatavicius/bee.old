@@ -171,6 +171,14 @@ public class InputTime extends InputText implements HasBounds, HasIntStep {
     }
   }
 
+  public void setMillis(Long millis) {
+    if (millis == null) {
+      clearValue();
+    } else {
+      setValue(TimeUtils.renderTime(millis, true));
+    }
+  }
+
   public void setMinutes(int minutes) {
     if (minutes < 0) {
       clearValue();

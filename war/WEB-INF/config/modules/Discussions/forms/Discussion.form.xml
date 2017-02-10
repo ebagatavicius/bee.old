@@ -83,12 +83,12 @@
     style="text-transform: uppercase;" />
 
    <FlowPanel class="flexBox-vertical" style="&discussDataPanel;">
-    <FlowPanel data="Users">
+    <FlowPanel data="DiscussionsUsers">
      <Label name="membersLabel" text="=discussMembers" style="&lblRight;" />
      <MultiSelector viewName="Users" property="Members" newRowEnabled="false"
       renderColumns="FirstName LastName" editSource="CompanyPerson"
       style="&inpLeft400p;" label="=discussMembers" disablable="false" />
-     <CheckBox for="Accessibility" data="Users" name="Accessibility"
+     <CheckBox for="Accessibility" data="DiscussionsUsers" name="Accessibility"
       source="Accessibility" text="=discussPublic" disablable="false" />
     </FlowPanel>
 
@@ -134,6 +134,6 @@
 
  </FlowPanel>
   <f:rowMessage>
-    <ui:function>return "&lt;span style&#61;\"font-size:23px; color: #484849; font-weight: lighter;\"&gt;" + row.Subject + "&lt;&#47;span&gt;";</ui:function>
+    <ui:expression>row.Subject</ui:expression>
   </f:rowMessage>
 </f:Form>

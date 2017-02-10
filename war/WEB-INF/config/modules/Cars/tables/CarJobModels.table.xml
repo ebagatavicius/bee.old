@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="CarJobModels"
+       idName="JobModelID"
+>
+  <Fields>
+    <Relation name="Job" notNull="true" relation="CarJobs" label="=serviceJob" cascade="DELETE" />
+
+    <Relation name="Model" notNull="true" relation="VehicleModels" label="=vehicleModel" />
+    <String name="Duration" precision="10" label="=expectedDuration" />
+
+    <Numeric name="Price" precision="18" scale="8" label="=price" />
+    <Relation name="Currency" relation="Currencies" label="=currency" />
+  </Fields>
+  <Constraints>
+    <Unique fields="Job Model" />
+  </Constraints>
+</Table>

@@ -906,7 +906,7 @@ public class ClassifiersModuleBean implements BeeModule {
         td.setBorderColor("black");
 
         if (ValueType.isNumeric(type) || ValueType.TEXT == type
-            && CharMatcher.DIGIT.matchesAnyOf(value) && BeeUtils.isDouble(value)) {
+            && CharMatcher.digit().matchesAnyOf(value) && BeeUtils.isDouble(value)) {
           td.setTextAlign(TextAlign.RIGHT);
         }
       }
@@ -2155,7 +2155,7 @@ public class ClassifiersModuleBean implements BeeModule {
 
   @Schedule(hour = "*/1", persistent = false)
   private void notifyCompanyActions() {
-    logger.info("Timer", TIMER_REMIND_COMPANY_ACTIONS, "started");
+    logger.debug("Timer", TIMER_REMIND_COMPANY_ACTIONS, "started");
 
     if (!DataUtils.isId(mail.getSenderAccountId(TIMER_REMIND_COMPANY_ACTIONS))) {
       return;
@@ -2168,7 +2168,7 @@ public class ClassifiersModuleBean implements BeeModule {
       sendCompanyActionsReminder(user, userSettings.get(user));
     }
 
-    logger.info("Timer", TIMER_REMIND_COMPANY_ACTIONS, "ended");
+    logger.debug("Timer", TIMER_REMIND_COMPANY_ACTIONS, "ended");
   }
 
   private void sendCompanyActionsReminder(Long user, Integer remindBefore) {

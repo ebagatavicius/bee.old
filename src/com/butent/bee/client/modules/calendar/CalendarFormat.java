@@ -1,6 +1,7 @@
 package com.butent.bee.client.modules.calendar;
 
-import com.butent.bee.client.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormat;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.JustDate;
@@ -9,7 +10,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 public final class CalendarFormat {
 
-  private static final DateTimeFormat DAY_OF_WEEK_FORMAT = DateTimeFormat.getFormat("EEEE");
+  private static final DateTimeFormat DAY_OF_WEEK_FORMAT = Format.parseDateTimePattern("EEEE");
 
   private static final String[] weekDayNames = new String[7];
   private static final String[] hours = new String[24];
@@ -30,8 +31,7 @@ public final class CalendarFormat {
     if (date == null) {
       return BeeConst.STRING_EMPTY;
     } else {
-      return BeeUtils.joinWords(TimeUtils.weekOfYear(date), Localized.dictionary()
-          .unitWeekShort());
+      return BeeUtils.joinWords(TimeUtils.weekOfYear(date), Localized.dictionary().unitWeekShort());
     }
   }
 

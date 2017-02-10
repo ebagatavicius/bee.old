@@ -28,6 +28,7 @@
     </SimpleJoin>
 
     <SimpleColumn name="Locale" />
+    <SimpleColumn name="DateFormat" />
 
     <SimpleColumn name="MailAssignedTasks" />
     <SimpleColumn name="MailNewDiscussions" />

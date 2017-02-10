@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="Folders"
-  idName="FolderID"
-  >
+       name="Folders"
+       idName="FolderID"
+       audit="false"
+>
   <Fields>
-    <Relation name="Account" relation="Accounts" notNull="true" cascade="DELETE" label="=mailAccount" />
+    <Relation name="Account" relation="Accounts" notNull="true" cascade="DELETE"
+              label="=mailAccount" />
     <Relation name="Parent" relation="Folders" cascade="DELETE" />
-    <String name="Name" precision="100" notNull="true"  label="=mailName"/>
+    <String name="Name" precision="100" notNull="true" label="=mailName" />
     <Long name="UIDValidity" />
     <Long name="ModSeq" />
   </Fields>

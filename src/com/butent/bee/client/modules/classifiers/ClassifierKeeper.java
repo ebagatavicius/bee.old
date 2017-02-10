@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
-import static com.butent.bee.shared.modules.transport.TransportConstants.*;
+import static com.butent.bee.shared.modules.transport.TransportConstants.VIEW_VEHICLES;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
@@ -73,30 +73,28 @@ public final class ClassifierKeeper {
   }
 
   public static void getHolidays(final Consumer<Set<Integer>> consumer) {
-    Global.getParameter(AdministrationConstants.PRM_COUNTRY, input -> {
-      if (DataUtils.isId(input)) {
-        Queries.getRowSet(VIEW_HOLIDAYS, Collections.singletonList(COL_HOLY_DAY),
-            Filter.equals(COL_HOLY_COUNTRY, BeeUtils.toLong(input)),
-            new Queries.RowSetCallback() {
-              @Override
-              public void onSuccess(BeeRowSet result) {
-                Set<Integer> holidays = new HashSet<>();
+    Long countryId = Global.getParameterRelation(AdministrationConstants.PRM_COUNTRY);
 
-                if (!DataUtils.isEmpty(result)) {
-                  int index = result.getColumnIndex(COL_HOLY_DAY);
-                  for (BeeRow row : result) {
-                    holidays.add(row.getInteger(index));
-                  }
+    if (DataUtils.isId(countryId)) {
+      Queries.getRowSet(VIEW_HOLIDAYS, Collections.singletonList(COL_HOLY_DAY),
+          Filter.equals(COL_HOLY_COUNTRY, countryId),
+          new Queries.RowSetCallback() {
+            @Override
+            public void onSuccess(BeeRowSet result) {
+              Set<Integer> holidays = new HashSet<>();
+
+              if (!DataUtils.isEmpty(result)) {
+                int index = result.getColumnIndex(COL_HOLY_DAY);
+                for (BeeRow row : result) {
+                  holidays.add(row.getInteger(index));
                 }
-
-                consumer.accept(holidays);
               }
-            });
-
-      } else {
-        consumer.accept(BeeConst.EMPTY_IMMUTABLE_INT_SET);
-      }
-    });
+              consumer.accept(holidays);
+            }
+          });
+    } else {
+      consumer.accept(BeeConst.EMPTY_IMMUTABLE_INT_SET);
+    }
   }
 
   public static void getPricesAndDiscounts(Map<String, Long> options,

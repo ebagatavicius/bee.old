@@ -89,6 +89,20 @@ public final class AnalysisUtils {
     }
   }
 
+  public static Integer getScale(Integer... input) {
+    if (input == null) {
+      return null;
+    }
+
+    for (Integer scale : input) {
+      if (isValidScale(scale)) {
+        return scale;
+      }
+    }
+
+    return null;
+  }
+
   public static MonthRange intersection(MonthRange first, MonthRange second) {
     if (first == null) {
       return second;
@@ -99,8 +113,20 @@ public final class AnalysisUtils {
     }
   }
 
+  public static boolean isBounded(MonthRange range) {
+    if (range == null) {
+      return false;
+
+    } else if (BeeUtils.isMore(range.getMinMonth(), ANALYSIS_MIN_YEAR_MONTH)) {
+      return true;
+
+    } else {
+      return BeeUtils.isLess(range.getMaxMonth(), ANALYSIS_MAX_YEAR_MONTH);
+    }
+  }
+
   public static boolean isValidAbbreviation(String input) {
-    return NameUtils.isIdentifier(input);
+    return NameUtils.isIdentifier(input) && Character.isLetter(input.charAt(0));
   }
 
   public static boolean isValidRange(Integer yearFrom, Integer monthFrom,
@@ -161,6 +187,10 @@ public final class AnalysisUtils {
     } else {
       return false;
     }
+  }
+
+  public static boolean isValidScale(Integer scale) {
+    return scale != null && BeeUtils.betweenInclusive(scale, 0, 5);
   }
 
   private static boolean isValidYear(int year) {

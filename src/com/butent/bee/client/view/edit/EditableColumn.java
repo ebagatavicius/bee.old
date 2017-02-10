@@ -17,7 +17,7 @@ import com.butent.bee.client.dom.Stacking;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.column.AbstractColumn;
 import com.butent.bee.client.i18n.Format;
-import com.butent.bee.client.i18n.HasDateTimeFormat;
+import com.butent.bee.shared.i18n.HasDateTimeFormat;
 import com.butent.bee.client.i18n.HasNumberFormat;
 import com.butent.bee.client.i18n.LocaleUtils;
 import com.butent.bee.client.style.StyleUtils;

@@ -27,6 +27,14 @@
     <SimpleColumn name="Weight" />
     <SimpleColumn name="Area" />
 
+    <SimpleColumn name="KPNCode" />
+    <SimpleColumn name="Volume" />
+    <SimpleColumn name="Brutto" />
+    <SimpleColumn name="Netto" />
+    <SimpleColumn name="AdditionalUnit" />
+    <SimpleColumn name="CountryOfOrigin" />
+    <SimpleColumn name="Factor" />
+
     <SimpleColumn name="Price" />
     <SimpleColumn name="Currency" />
     <SimpleJoin joinType="LEFT" name="Currency">

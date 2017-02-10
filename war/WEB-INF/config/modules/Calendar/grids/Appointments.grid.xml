@@ -3,6 +3,7 @@
 
   name="Appointments" viewName="Appointments" caption="=calAppointments"
   newRowForm="Appointment" editForm="Appointment" order="AppointmentID desc"
+        filter="!(ServiceEvent)"
   >
   <g:columns>
     <IdColumn name="Id" visible="false" />

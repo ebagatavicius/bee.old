@@ -11,8 +11,6 @@ import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.utils.BeeUtils;
 
-import java.util.function.Consumer;
-
 /**
  * Client-side projects module handler.
  */
@@ -43,14 +41,9 @@ public final class OrdersKeeper {
 
     SelectorEvent.register(new OrdersSelectorHandler());
 
-    Global.getParameter(PRM_NOTIFY_ABOUT_DEBTS, new Consumer<String>() {
-      @Override
-      public void accept(String input) {
-        if (BeeUtils.toBoolean(input)) {
-          OrdersObserver.register();
-        }
-      }
-    });
+    if (BeeUtils.unbox(Global.getParameterBoolean(PRM_NOTIFY_ABOUT_DEBTS))) {
+      OrdersObserver.register();
+    }
   }
 
   private OrdersKeeper() {

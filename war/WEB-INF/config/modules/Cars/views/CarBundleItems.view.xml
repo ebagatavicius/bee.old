@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarBundleItems" source="CarBundleItems"
+      caption="=productsServices+(+=bundle+)"
+>
+  <Columns>
+    <SimpleColumn name="Bundle" />
+
+    <SimpleColumn name="Item" />
+    <SimpleJoin joinType="LEFT" name="Item">
+      <SimpleColumn name="Name" alias="ItemName" />
+      <SimpleColumn name="Article" />
+      <SimpleColumn name="IsService" />
+
+      <SimpleJoin joinType="LEFT" name="Unit">
+        <SimpleColumn name="Name" alias="UnitName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Quantity" />
+    <SimpleColumn name="Price" />
+
+    <SimpleColumn name="Currency" />
+    <SimpleJoin joinType="LEFT" name="Currency">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
+  </Columns>
+</View>

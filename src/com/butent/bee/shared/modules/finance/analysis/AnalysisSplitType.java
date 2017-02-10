@@ -4,6 +4,7 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.modules.finance.Dimensions;
 import com.butent.bee.shared.modules.finance.FinanceConstants;
+import com.butent.bee.shared.time.MonthRange;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -16,12 +17,30 @@ public enum AnalysisSplitType implements HasLocalizedCaption {
     public String getCaption(Dictionary dictionary) {
       return dictionary.month();
     }
+
+    @Override
+    public MonthRange getMonthRange(AnalysisSplitValue splitValue) {
+      if (splitValue == null) {
+        return super.getMonthRange(splitValue);
+      } else {
+        return MonthRange.month(splitValue.getYearMonth());
+      }
+    }
   },
 
   QUARTER(Kind.PERIOD, 3) {
     @Override
     public String getCaption(Dictionary dictionary) {
       return dictionary.quarter();
+    }
+
+    @Override
+    public MonthRange getMonthRange(AnalysisSplitValue splitValue) {
+      if (splitValue == null) {
+        return super.getMonthRange(splitValue);
+      } else {
+        return MonthRange.quarter(splitValue.getYearQuarter());
+      }
     }
   },
 
@@ -30,12 +49,26 @@ public enum AnalysisSplitType implements HasLocalizedCaption {
     public String getCaption(Dictionary dictionary) {
       return dictionary.year();
     }
+
+    @Override
+    public MonthRange getMonthRange(AnalysisSplitValue splitValue) {
+      if (splitValue == null) {
+        return super.getMonthRange(splitValue);
+      } else {
+        return MonthRange.year(splitValue.getYear());
+      }
+    }
   },
 
   EMPLOYEE(Kind.FILTER) {
     @Override
     public String getCaption(Dictionary dictionary) {
       return dictionary.employee();
+    }
+
+    @Override
+    public String getBudgetColumn() {
+      return FinanceConstants.COL_BUDGET_ENTRY_EMPLOYEE;
     }
 
     @Override
@@ -58,6 +91,9 @@ public enum AnalysisSplitType implements HasLocalizedCaption {
   private enum Kind {
     PERIOD, FILTER, DIMENSION
   }
+
+  public static final AnalysisSplitType[] PERIODS_INCREASING =
+      new AnalysisSplitType[] {MONTH, QUARTER, YEAR};
 
   public static boolean validateSplits(List<AnalysisSplitType> splits) {
     if (BeeUtils.isEmpty(splits)) {
@@ -107,6 +143,14 @@ public enum AnalysisSplitType implements HasLocalizedCaption {
     }
   }
 
+  public String getBudgetColumn() {
+    if (kind == Kind.DIMENSION) {
+      return Dimensions.getRelationColumn(index);
+    } else {
+      return null;
+    }
+  }
+
   public String getFinColumn() {
     switch (kind) {
       case PERIOD:
@@ -116,6 +160,10 @@ public enum AnalysisSplitType implements HasLocalizedCaption {
       default:
         return null;
     }
+  }
+
+  public MonthRange getMonthRange(AnalysisSplitValue splitValue) {
+    return null;
   }
 
   public int getIndex() {

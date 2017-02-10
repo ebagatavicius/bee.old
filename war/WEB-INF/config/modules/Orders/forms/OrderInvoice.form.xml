@@ -84,6 +84,71 @@
       </page>
 
       <page>
+        <text>=ordTransportationActInfo</text>
+        <SimplePanel>
+          <Table kind="controls">
+            <col index="0" kind="label" />
+            <col index="2" kind="label" />
+            <col index="4" kind="label" />
+
+            <row>
+              <Label for="BoLSeries" />
+              <DataSelector source="BoLSeries" style="width: 7em;" disablable="false" />
+
+              <Label for="BoLNumber" />
+              <InputText source="BoLNumber" style="width: 10em;" disablable="false" />
+
+              <Label for="BoLIssueDate" />
+              <InputDateTime source="BoLIssueDate" style="width: 10em;" disablable="false" />
+            </row>
+
+            <row>
+              <Label for="BoLLoading" />
+              <cell colSpan="3" >
+                <InputText source="BoLLoading" style="width:100%;" disablable="false" />
+              </cell>
+
+              <Label for="BoLDepartureDate" />
+              <InputDateTime source="BoLDepartureDate" style="width: 10em;" disablable="false" />
+            </row>
+
+            <row>
+              <Label for="BoLUnloading" />
+              <cell colSpan="3" >
+                <InputText source="BoLUnloading" style="width:100%;" disablable="false" />
+              </cell>
+
+              <Label for="BoLUnloadingDate" />
+              <InputDateTime source="BoLUnloadingDate" style="width: 10em;" disablable="false" />
+            </row>
+
+            <row>
+              <Label for="BoLDriverTabNo" />
+              <DataSelector source="BoLDriverTabNo" renderColumns="TabNumber" disablable="false"
+                            choiceColumns="TabNumber FirstName LastName" style="width: 10em;" />
+            </row>
+
+            <row>
+              <Label for="BoLVehicleNumber" />
+              <InputText source="BoLVehicleNumber" style="width: 10em;" disablable="false" />
+
+              <Label for="BoLDriver" />
+              <cell colSpan="3" >
+                <InputText source="BoLDriver" style="width:100%;" disablable="false" />
+              </cell>
+            </row>
+
+            <row>
+              <Label for="BoLCarrier" />
+              <cell colSpan="5" >
+                <DataSelector source="BoLCarrier" style="width:100%;" disablable="false" />
+              </cell>
+            </row>
+          </Table>
+        </SimplePanel>
+      </page>
+
+      <page>
         <text>=trdNotes</text>
         <SimplePanel>
           <InputArea source="Notes" class="occupy-1"

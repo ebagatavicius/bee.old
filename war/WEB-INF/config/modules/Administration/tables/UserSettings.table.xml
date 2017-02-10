@@ -6,6 +6,7 @@
       unique="true" cascade="DELETE" label="=user" />
 
     <Enum name="Locale" key="SupportedLocale" label="=userLocale" />
+    <Enum name="DateFormat" key="SupportedLocale" label="=dateFormat" />
 
     <Boolean name="MailAssignedTasks" label="=crmMailAssignedTasks" />
     <Boolean name="MailNewDiscussions" label="=discussMailNewDiscussions" />

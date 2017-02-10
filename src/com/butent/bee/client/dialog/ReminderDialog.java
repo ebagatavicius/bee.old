@@ -11,7 +11,8 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
-import com.butent.bee.client.i18n.DateTimeFormat;
+import com.butent.bee.client.i18n.Format;
+import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.FaLabel;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ReminderDialog extends DialogBox {
   private static final String STYLE_DIALOG = BeeConst.CSS_CLASS_PREFIX + "reminder-dialog";
@@ -51,7 +53,6 @@ public class ReminderDialog extends DialogBox {
   private static final String STYLE_DIALOG_COMPONENT = STYLE_DIALOG + "-component";
   private static final String REMINDER_ACTIVE = "bee-reminder-dialog-active";
 
-
   private BeeRow reminderDataRow;
   private Map<Integer, DateTime> datesByField;
   private TextLabel dateTextLabel;
@@ -62,7 +63,6 @@ public class ReminderDialog extends DialogBox {
   private FaLabel reminderLabel;
   private long userId;
   private UnboundSelector selector;
-
 
   public ReminderDialog(Module module, long remindForId, long userId) {
     super(Localized.dictionary().userReminder(), null);
@@ -159,8 +159,7 @@ public class ReminderDialog extends DialogBox {
 
     calculateReminderTime(selector.getRelatedRow(),
         reminderDataRow != null ? reminderDataRow.getDateTime(
-                          Data.getColumnIndex(VIEW_USER_REMINDERS, COL_USER_REMINDER_TIME)) : null);
-
+            Data.getColumnIndex(VIEW_USER_REMINDERS, COL_USER_REMINDER_TIME)) : null);
 
     Flow buttonsPanel = new Flow(STYLE_DIALOG_PANEL);
 
@@ -191,7 +190,7 @@ public class ReminderDialog extends DialogBox {
   private static boolean isActive(BeeRow dataRow) {
     if (dataRow != null) {
       return BeeUtils.toBoolean(dataRow.getString(
-                              Data.getColumnIndex(VIEW_USER_REMINDERS, COL_USER_REMINDER_ACTIVE)));
+          Data.getColumnIndex(VIEW_USER_REMINDERS, COL_USER_REMINDER_ACTIVE)));
 
     }
     return false;
@@ -278,8 +277,8 @@ public class ReminderDialog extends DialogBox {
 
   private Button createCancelButton() {
     return new Button(Localized.dictionary().userReminderCancel(), event -> {
-          close();
-        });
+      close();
+    });
   }
 
   private void createDateTimeWidget(Long dataTypeId) {
@@ -288,8 +287,7 @@ public class ReminderDialog extends DialogBox {
 
     dateTimeInput = new InputDateTime();
     dateTimeInput.addStyleName(STYLE_DIALOG_COMPONENT);
-    dateTimeInput.setDateTimeFormat(DateTimeFormat.getFormat(
-        DateTimeFormat.PredefinedFormat.DATE_TIME_SHORT));
+    dateTimeInput.setDateTimeFormat(Format.getPredefinedFormat(PredefinedFormat.DATE_TIME_SHORT));
 
     if (dataValue != null) {
       dateTimeInput.setDateTime(dataValue);
@@ -440,7 +438,7 @@ public class ReminderDialog extends DialogBox {
                   BeeUtils.toString(selectorId), null, BeeConst.STRING_TRUE, BeeConst.STRING_FALSE);
             } else {
               values = Lists.newArrayList(null, BeeUtils.toString(time), BeeConst.STRING_TRUE,
-                                                                            BeeConst.STRING_FALSE);
+                  BeeConst.STRING_FALSE);
             }
 
             Queries
@@ -452,7 +450,7 @@ public class ReminderDialog extends DialogBox {
                   }
                 });
           } else {
-           showDateError();
+            showDateError();
           }
         });
     updateReminderButton.addStyleName(STYLE_DIALOG_REMIND_BUTTON);
@@ -467,21 +465,19 @@ public class ReminderDialog extends DialogBox {
 
   private static String formatDate(DateTime dateTime) {
     return BeeUtils.joinItems(" ",
-        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_FULL).format(dateTime),
-        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.TIME_SHORT).format(dateTime));
+        Format.render(PredefinedFormat.DATE_FULL, dateTime),
+        Format.render(PredefinedFormat.TIME_SHORT, dateTime));
   }
 
   private void setTime() {
-    if (TimeUtils.isToday(dateTimeInput.getDateTime())) {
-      Global.getParameter(TaskConstants.PRM_END_OF_WORK_DAY, this::setTimeToDateTimeInput);
-    } else {
-      Global.getParameter(TaskConstants.PRM_START_OF_WORK_DAY, this::setTimeToDateTimeInput);
-    }
+    setTimeToDateTimeInput(Global.getParameterTime(TimeUtils.isToday(dateTimeInput.getDateTime())
+        ? TaskConstants.PRM_END_OF_WORK_DAY : TaskConstants.PRM_START_OF_WORK_DAY));
   }
 
-  private void setTimeToDateTimeInput(String time) {
-    if (!BeeUtils.isEmpty(time)) {
-      DateTime dateTime = TimeUtils.toDateTimeOrNull(TimeUtils.parseTime(time));
+  private void setTimeToDateTimeInput(Long time) {
+    if (Objects.nonNull(time)) {
+      DateTime dateTime = TimeUtils.toDateTimeOrNull(time);
+
       if (dateTime != null) {
         int hour = dateTime.getUtcHour();
         int minute = dateTime.getUtcMinute();

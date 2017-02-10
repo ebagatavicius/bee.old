@@ -30,6 +30,7 @@ import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -228,22 +229,22 @@ public class UserServiceBean {
 
   public boolean canCreateData(String viewName) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().canCreateData(viewName);
+    return info != null && info.getUserData().canCreateData(viewName);
   }
 
   public boolean canEditColumn(String viewName, String column) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().canEditColumn(viewName, column);
+    return info != null && info.getUserData().canEditColumn(viewName, column);
   }
 
   public boolean canDeleteData(String viewName) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().canDeleteData(viewName);
+    return info != null && info.getUserData().canDeleteData(viewName);
   }
 
   public boolean canEditData(String viewName) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().canEditData(viewName);
+    return info != null && info.getUserData().canEditData(viewName);
   }
 
   public BeeRowSet ensureUserSettings() {
@@ -424,6 +425,40 @@ public class UserServiceBean {
     return getSupportedLocale(getUserId(user));
   }
 
+  public DateTimeFormatInfo getDateTimeFormatInfo() {
+    return getDateTimeFormatInfo(getCurrentUserId());
+  }
+
+  public DateTimeFormatInfo getDateTimeFormatInfo(Long userId) {
+    return getDateTimeFormatLocale(userId).getDateTimeFormatInfo();
+  }
+
+  public SupportedLocale getDateTimeFormatLocale() {
+    return getDateTimeFormatLocale(getCurrentUserId());
+  }
+
+  public SupportedLocale getDateTimeFormatLocale(Long userId) {
+    SupportedLocale locale = null;
+
+    if (userId != null) {
+      SqlSelect query = new SqlSelect()
+          .addFields(TBL_USER_SETTINGS, COL_USER_LOCALE, COL_USER_DATE_FORMAT)
+          .addFrom(TBL_USER_SETTINGS)
+          .setWhere(SqlUtils.equals(TBL_USER_SETTINGS, COL_USER, userId));
+
+      SimpleRow row = qs.getRow(query);
+
+      if (row != null) {
+        locale = row.getEnum(COL_USER_DATE_FORMAT, SupportedLocale.class);
+        if (locale == null) {
+          locale = row.getEnum(COL_USER_LOCALE, SupportedLocale.class);
+        }
+      }
+    }
+
+    return (locale == null) ? SupportedLocale.USER_DEFAULT : locale;
+  }
+
   public String getUserEmail(Long userId, boolean checkCompany) {
     if (userId == null) {
       return null;
@@ -519,7 +554,7 @@ public class UserServiceBean {
 
   public boolean hasDataRight(String viewName, RightsState state) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().hasDataRight(viewName, state);
+    return info != null && info.getUserData().hasDataRight(viewName, state);
   }
 
   @Lock(LockType.WRITE)
@@ -644,7 +679,7 @@ public class UserServiceBean {
 
   public boolean isActive(Long userId) {
     UserInfo userInfo = getUserInfo(userId);
-    return (userInfo == null) ? false : !userInfo.isBlocked(System.currentTimeMillis());
+    return userInfo != null && !userInfo.isBlocked(System.currentTimeMillis());
   }
 
   public boolean isAdministrator() {
@@ -653,7 +688,7 @@ public class UserServiceBean {
 
   public boolean isAnyModuleVisible(String input) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().isAnyModuleVisible(input);
+    return info != null && info.getUserData().isAnyModuleVisible(input);
   }
 
   public Boolean isBlocked(String user) {
@@ -663,7 +698,7 @@ public class UserServiceBean {
 
   public boolean isColumnRequired(BeeView viewName, String column) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().isColumnRequired(viewName.getName(), column);
+    return info != null && info.getUserData().isColumnRequired(viewName.getName(), column);
   }
 
   public boolean isColumnVisible(BeeView view, String column) {
@@ -691,17 +726,17 @@ public class UserServiceBean {
 
   public boolean isDataVisible(String viewName) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().isDataVisible(viewName);
+    return info != null && info.getUserData().isDataVisible(viewName);
   }
 
   public boolean isMenuVisible(String object) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().isMenuVisible(object);
+    return info != null && info.getUserData().isMenuVisible(object);
   }
 
   public boolean isModuleVisible(ModuleAndSub moduleAndSub) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().isModuleVisible(moduleAndSub);
+    return info != null && info.getUserData().isModuleVisible(moduleAndSub);
   }
 
   public boolean isUser(String user) {
@@ -710,7 +745,7 @@ public class UserServiceBean {
 
   public boolean isWidgetVisible(RegulatedWidget widget) {
     UserInfo info = getCurrentUserInfo();
-    return (info == null) ? false : info.getUserData().isWidgetVisible(widget);
+    return info != null && info.getUserData().isWidgetVisible(widget);
   }
 
   public ResponseObject login(String host, String agent) {
@@ -882,7 +917,7 @@ public class UserServiceBean {
           .addConstant(COL_USER, userId)
           .addConstant(COL_USER_LOCALE, locale.ordinal()));
 
-      logger.info("created user setings for:", user, ", locale:", locale.getLanguage());
+      logger.info("created user settings for:", user, ", locale:", locale.getLanguage());
       return true;
 
     } else {

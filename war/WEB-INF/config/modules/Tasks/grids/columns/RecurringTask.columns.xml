@@ -11,6 +11,9 @@
   <RelColumn name="Contact" renderColumns="ContactFirstName ContactLastName"
     sortBy="ContactLastName ContactFirstName" visible="false" />
 
+  <RelColumn name="Project" renderColumns="ProjectName" visible="false" autoFit="true"
+             editPopup="false"/>
+
   <DataColumn name="ScheduleFrom" />
   <DataColumn name="ScheduleUntil" />
 

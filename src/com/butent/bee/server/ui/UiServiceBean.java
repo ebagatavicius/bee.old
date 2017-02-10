@@ -38,6 +38,7 @@ import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
 import com.butent.bee.server.utils.InstallCert;
 import com.butent.bee.server.utils.XmlUtils;
+import com.butent.bee.server.websocket.Endpoint;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
@@ -49,6 +50,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.RowChildren;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
+import com.butent.bee.shared.data.SqlConstants;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.Order;
@@ -61,6 +63,8 @@ import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.rights.RightsObjectType;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.rights.RightsUtils;
+import com.butent.bee.shared.time.JustDate;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.DecoratorConstants;
 import com.butent.bee.shared.ui.GridDescription;
@@ -74,6 +78,7 @@ import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 import com.butent.bee.shared.utils.Wildcards;
 import com.butent.bee.shared.utils.XmlHelper;
+import com.butent.bee.shared.websocket.messages.LogMessage;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1152,6 +1157,7 @@ public class UiServiceBean {
       } else {
         response.addError(err);
       }
+
     } else if (BeeUtils.same(cmd, "tecdoc")) {
       tcd.suckTecdoc();
       response = ResponseObject.info("TecDoc SUCKS NOW...");
@@ -1175,6 +1181,13 @@ public class UiServiceBean {
         response.addError(e);
         logger.error(e);
       }
+
+    } else if (BeeUtils.same(cmd, "date")) {
+      response = rebuildDate();
+
+    } else if (BeeUtils.same(cmd, "datetime")) {
+      response = rebuildDateTime();
+
     } else if (!BeeUtils.isEmpty(cmd)) {
       String tbl = NameUtils.getWord(cmd, 0);
       if (sys.isTable(tbl)) {
@@ -1187,6 +1200,131 @@ public class UiServiceBean {
     } else {
       response.addError("Rebuild what?");
     }
+    return response;
+  }
+
+  private ResponseObject rebuildDate() {
+    ResponseObject response = new ResponseObject();
+    List<Property> properties = new ArrayList<>();
+
+    Multimap<String, String> fields = HashMultimap.create();
+
+    sys.getTables().forEach(table -> table.getFields().stream()
+        .filter(field -> field.getType() == SqlConstants.SqlDataType.DATE)
+        .forEach(field -> fields.put(table.getName(), field.getName())));
+
+    Long userId = usr.getCurrentUserId();
+
+    List<String> tables = new ArrayList<>(fields.keySet());
+    tables.sort(null);
+
+    for (String table : tables) {
+      for (String field : fields.get(table)) {
+        Long[] values = qs.getLongColumn(new SqlSelect().setDistinctMode(true)
+            .addFields(table, field)
+            .addFrom(table)
+            .setWhere(SqlUtils.notNull(table, field)));
+
+        if (!ArrayUtils.isEmpty(values)) {
+          int count = 0;
+
+          for (long value : values) {
+            if (value % TimeUtils.MILLIS_PER_DAY == 0
+                && BeeUtils.isInt(value / TimeUtils.MILLIS_PER_DAY)) {
+
+              int days = BeeUtils.toInt(value / TimeUtils.MILLIS_PER_DAY);
+              long time = new JustDate(days).getTime();
+
+              if (!Objects.equals(value, time)) {
+                SqlUpdate update = new SqlUpdate(table)
+                    .addConstant(field, time)
+                    .setWhere(SqlUtils.equals(table, field, value));
+
+                ResponseObject updateResponse = qs.updateDataWithResponse(update);
+
+                if (updateResponse.hasErrors()) {
+                  response.addMessagesFrom(updateResponse);
+                  break;
+                } else {
+                  Integer result = updateResponse.getResponseAsInt();
+                  if (BeeUtils.isPositive(result)) {
+                    count += result;
+                  }
+                }
+              }
+            }
+          }
+
+          if (count > 0) {
+            Endpoint.sendToUser(userId, LogMessage.debug(BeeUtils.joinWords(table, field, count)));
+            properties.add(new Property(table + BeeConst.STRING_POINT + field, count));
+          }
+        }
+
+        if (response.hasErrors()) {
+          break;
+        }
+      }
+      if (response.hasErrors()) {
+        break;
+      }
+    }
+
+    if (!properties.isEmpty()) {
+      response.setCollection(properties, Property.class);
+    } else if (!response.hasErrors()) {
+      response.addInfo("dates ok:", fields.size(), "fields in", tables.size(), "tables");
+    }
+
+    return response;
+  }
+
+  private ResponseObject rebuildDateTime() {
+    ResponseObject response = new ResponseObject();
+    List<Property> properties = new ArrayList<>();
+
+    Multimap<String, String> fields = HashMultimap.create();
+
+    sys.getTables().forEach(table -> table.getFields().stream()
+        .filter(field -> field.getType() == SqlConstants.SqlDataType.DATETIME)
+        .forEach(field -> fields.put(table.getName(), field.getName())));
+
+    Long userId = usr.getCurrentUserId();
+
+    List<String> tables = new ArrayList<>(fields.keySet());
+    tables.sort(null);
+
+    for (String table : tables) {
+      String idName = sys.getIdName(table);
+
+      for (String field : fields.get(table)) {
+        SqlSelect query = new SqlSelect()
+            .addFields(table, idName, field)
+            .addFrom(table)
+            .setWhere(SqlUtils.negative(table, field));
+
+        SimpleRowSet data = qs.getData(query);
+
+        if (!DataUtils.isEmpty(data)) {
+          for (SimpleRow row : data) {
+            Long id = row.getLong(idName);
+            Long time = row.getLong(field);
+
+            Endpoint.sendToUser(userId,
+                LogMessage.warning(BeeUtils.joinWords(table, id, field, time)));
+            properties.add(new Property(BeeUtils.joinWords(table, id, field),
+                BeeUtils.toStringOrNull(time)));
+          }
+        }
+      }
+    }
+
+    if (properties.isEmpty()) {
+      response.addInfo("datetimes ok:", fields.size(), "fields in", tables.size(), "tables");
+    } else {
+      response.setCollection(properties, Property.class);
+    }
+
     return response;
   }
 

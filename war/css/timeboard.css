@@ -226,3 +226,22 @@
   color: red;
   cursor: pointer;
 }
+
+.bee-timeboard-progress-container {
+  display: none;
+  position: absolute;
+  overflow: hidden;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #b0d0ef;
+}
+.bee-timeboard-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #3a81f0;
+}

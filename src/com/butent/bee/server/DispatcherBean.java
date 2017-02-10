@@ -14,7 +14,6 @@ import com.butent.bee.server.modules.ModuleHolderBean;
 import com.butent.bee.server.modules.ParamHolderBean;
 import com.butent.bee.server.modules.mail.MailModuleBean;
 import com.butent.bee.server.news.NewsBean;
-import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.ui.UiHolderBean;
 import com.butent.bee.server.ui.UiServiceBean;
 import com.butent.bee.server.utils.Reflection;
@@ -25,8 +24,10 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.finance.Dimensions;
 import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.rights.Module;
@@ -36,8 +37,11 @@ import com.butent.bee.shared.ui.UserInterface;
 import com.butent.bee.shared.ui.UserInterface.Component;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.EJB;
@@ -105,21 +109,23 @@ public class DispatcherBean {
     data.put(Service.PROPERTY_MODULES, Module.getEnabledModulesAsString());
     data.put(Service.PROPERTY_VIEW_MODULES, RightsUtils.getViewModulesAsString());
 
-    Long currency = prm.getRelation(PRM_CURRENCY);
-    if (DataUtils.isId(currency)) {
-      data.put(COL_CURRENCY, currency);
-      data.put(ALS_CURRENCY_NAME, qs.getValue(new SqlSelect()
-          .addFields(TBL_CURRENCIES, COL_CURRENCY_NAME)
-          .addFrom(TBL_CURRENCIES)
-          .setWhere(sys.idEquals(TBL_CURRENCIES, currency))));
-    }
+    data.put(Service.PROPERTY_ACTIVE_LOCALES, SupportedLocale.ACTIVE_LOCALES);
 
-    Long company = prm.getRelation(PRM_COMPANY);
-    if (DataUtils.isId(company)) {
-      data.put(PRM_COMPANY, company);
-    }
+    data.put(PRM_CURRENCY, prm.getRelationInfo(PRM_CURRENCY));
 
-    data.put(TBL_DICTIONARY, Localizations.getGlossary(userService.getSupportedLocale()));
+    List<BeeParameter> params = new ArrayList<>();
+    Arrays.stream(Module.values()).filter(Module::isEnabled).map(Module::getName)
+        .forEach(moduleName -> params.addAll(prm.getParameters(moduleName)));
+
+    data.put(TBL_PARAMETERS, params);
+
+    SupportedLocale locale = userService.getSupportedLocale();
+    data.put(VAR_LOCALE, locale.getLanguage());
+
+    data.put(TBL_DICTIONARY, Localizations.getGlossary(locale));
+
+    SupportedLocale dateTimeFormatLocale = userService.getDateTimeFormatLocale();
+    data.put(COL_USER_DATE_FORMAT, dateTimeFormatLocale.getLanguage());
 
     return response.setResponse(data);
   }

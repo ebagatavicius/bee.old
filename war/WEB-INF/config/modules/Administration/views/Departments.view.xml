@@ -33,6 +33,34 @@
     <SimpleJoin name="Role" joinType="LEFT">
       <SimpleColumn name="Name" alias="RoleName" />
     </SimpleJoin>
+
+    <SimpleJoin name="Contact" joinType="LEFT">
+      <SimpleColumn name="Phone" />
+      <SimpleColumn name="Mobile" />
+      <SimpleColumn name="Fax" />
+
+      <SimpleColumn name="Email" alias="EmailId" />
+      <SimpleJoin name="Email" joinType="LEFT">
+        <SimpleColumn name="Email" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Address" />
+      <SimpleColumn name="PostIndex" />
+      <SimpleColumn name="Website" />
+
+      <SimpleColumn name="City" />
+      <SimpleJoin name="City" joinType="LEFT">
+        <SimpleColumn alias="CityName" name="Name" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Country" />
+      <SimpleJoin name="Country" joinType="LEFT">
+        <SimpleColumn alias="CountryName" name="Name" />
+        <SimpleColumn alias="CountryCode" name="Code" />
+      </SimpleJoin>
+
+      <SimpleColumn name="SocialContacts" />
+    </SimpleJoin>
   </Columns>
   <Order>
     <OrderBy column="DepartmentName" />

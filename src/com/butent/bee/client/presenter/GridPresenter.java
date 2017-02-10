@@ -1077,11 +1077,15 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
   }
 
   private void reset() {
+    getGridView().getGrid().clearSelection();
+
     GridFactory.getGridDescription(getGridView().getGridName(), result -> {
       getGridView().reset(result);
 
       CellGrid display = getGridView().getGrid();
+
       getDataProvider().setDisplay(display);
+      gridContainer.bindDisplay(display);
 
       Collection<PagerView> pagers = gridContainer.getPagers();
       if (pagers != null) {

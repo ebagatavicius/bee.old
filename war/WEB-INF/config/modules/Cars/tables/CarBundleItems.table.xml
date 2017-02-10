@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="CarBundleItems"
+       idName="BundleItemID">
+  <Fields>
+    <Relation name="Bundle" notNull="true" relation="CarBundles" cascade="DELETE"
+              label="=bundle" />
+
+    <Relation name="Item" notNull="true" relation="Items" label="=item" />
+
+    <Numeric name="Quantity" precision="15" scale="5" notNull="true" label="=quantity"
+             defValue="1" />
+    <Numeric name="Price" precision="18" scale="8" label="=price" />
+    <Relation name="Currency" relation="Currencies" label="=currency" />
+  </Fields>
+  <Constraints>
+    <Unique fields="Bundle Item" />
+  </Constraints>
+</Table>

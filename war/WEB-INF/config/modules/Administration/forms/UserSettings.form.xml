@@ -111,9 +111,12 @@
         <text>=userInterface</text>
         <FlowPanel class="flexBox-vertical" >
 
-          <FlowPanel for="UiTheme" class="flexBox-horizontal">
+          <FlowPanel class="flexBox-horizontal">
             <Label for="UiTheme" style="&labelStyle;"/>
             <DataSelector source="UiTheme" style="&inputStyle;" summarize="true" />
+
+            <Label for="DateFormat" style="&labelStyle;" />
+            <ListBox source="DateFormat" summarize="true" />
           </FlowPanel>
 
           <CheckBox source="OpenInNewTab" summarize="true" style="&tabbedFlowCheckStyle;" />

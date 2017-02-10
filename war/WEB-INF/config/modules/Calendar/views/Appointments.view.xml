@@ -10,7 +10,7 @@
     <SimpleJoin joinType="LEFT" name="AppointmentType">
       <SimpleColumn alias="TypeName" name="Name" />
     </SimpleJoin>
-  
+
     <SimpleColumn name="Summary" />
     <SimpleColumn name="Description" />
     <SimpleColumn name="ActionResult" />
@@ -24,7 +24,7 @@
       <SimpleColumn name="Background" />
       <SimpleColumn name="Foreground" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="Style" />
     <SimpleJoin name="Style" joinType="LEFT">
       <SimpleColumn alias="StyleName" name="Name" />
@@ -43,7 +43,7 @@
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
-    
+
     <SimpleColumn name="StartDateTime" />
     <SimpleColumn name="EndDateTime" />
 
@@ -52,7 +52,7 @@
     <SimpleColumn name="Company" />
     <SimpleJoin name="Company" joinType="LEFT">
       <SimpleColumn alias="CompanyName" name="Name" />
-        <SimpleJoin joinType="LEFT" name="CompanyType">     
+        <SimpleJoin joinType="LEFT" name="CompanyType">
           <SimpleColumn name="Name" alias="CompanyTypeName" />
         </SimpleJoin>
       <SimpleJoin name="Contact" joinType="LEFT">
@@ -63,7 +63,7 @@
           <SimpleColumn name="Email" alias="CompanyEmail" />
         </SimpleJoin>
       </SimpleJoin>
-      
+
       <SimpleJoin name="CompanyType" joinType="LEFT" >
         <SimpleColumn name="Name" alias="CompanyType" />
       </SimpleJoin>
@@ -75,7 +75,7 @@
     </SimpleJoin>
 
     <SimpleColumn name="CompanyPerson" />
-    <SimpleJoin name="CompanyPerson" joinType="LEFT">    
+    <SimpleJoin name="CompanyPerson" joinType="LEFT">
       <SimpleJoin name="Person" joinType="LEFT">
         <SimpleColumn alias="PersonFirstName" name="FirstName" />
         <SimpleColumn alias="PersonLastName" name="LastName" />
@@ -88,13 +88,13 @@
         </SimpleJoin>
       </SimpleJoin>
       </SimpleJoin>
-      
+
       <SimpleColumn name="Company" alias="PersonCompany" />
       <SimpleJoin name="Company" joinType="LEFT">
         <SimpleColumn alias="PersonCompanyName" name="Name" />
       </SimpleJoin>
     </SimpleJoin>
-    
+
     <SimpleColumn name="Vehicle" />
     <SimpleJoin name="Vehicle" joinType="LEFT">
       <SimpleJoin name="Type" joinType="LEFT">
@@ -128,6 +128,10 @@
       </SimpleJoin>
       <SimpleColumn alias="VehicleNotes" name="Notes" />
     </SimpleJoin>
+
+    <ExternalJoin name="Appointment" joinType="LEFT" source="CarServiceEvents">
+      <IdColumn name="ServiceEvent" />
+    </ExternalJoin>
   </Columns>
 
   <Order>

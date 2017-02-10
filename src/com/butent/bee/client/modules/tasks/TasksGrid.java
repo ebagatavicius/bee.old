@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
+import static com.butent.bee.client.modules.mail.Relations.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
@@ -39,8 +40,10 @@ import com.butent.bee.client.validation.ValidationHelper;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.edit.EditableColumn;
 import com.butent.bee.client.view.edit.EditorAssistant;
+import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
+import com.butent.bee.client.view.grid.GridFormKind;
 import com.butent.bee.client.view.grid.GridSettings;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.GridView.SelectedRows;
@@ -186,7 +189,7 @@ class TasksGrid extends AbstractGridInterceptor implements RowUpdateEvent.Handle
           ParameterList params = TasksKeeper.createArgs(SVC_GET_TASK_DATA);
           params.addQueryItem(VAR_TASK_ID, getTaskId(presenter.getActiveRow()));
           params.addQueryItem(VAR_TASK_PROPERTIES, PROP_OBSERVERS);
-          params.addQueryItem(VAR_TASK_RELATIONS, 1);
+          params.addQueryItem(VAR_COPY_RELATIONS, BeeConst.STRING_ASTERISK);
 
           BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
             @Override
@@ -326,8 +329,15 @@ class TasksGrid extends AbstractGridInterceptor implements RowUpdateEvent.Handle
         event.consume();
         getGridView().notifySevere(Localized.dictionary().actionCanNotBeExecuted(), BeeUtils
             .bracket(Localized.dictionary().createNewRow()));
-      }
+      } else if (BeeKeeper.getUser().openInNewTab()) {
+        event.consume();
+        FormView form = getGridView().getForm(GridFormKind.EDIT);
+        String editForm =
+          form == null ? Data.getDataInfo(getViewName()).getEditForm() : form.getFormName();
 
+        RowEditor.openForm(editForm, Data.getDataInfo(getViewName()), row, Opener.NEW_TAB, null,
+          null);
+      }
     }
   }
 
@@ -799,11 +809,10 @@ class TasksGrid extends AbstractGridInterceptor implements RowUpdateEvent.Handle
         newRow.setProperty(PROP_OBSERVERS, DataUtils.buildIdList(users));
       }
     }
-
-    for (String propName : TaskUtils.getRelationPropertyNames()) {
-      String propValue = oldRow.getProperty(propName);
+    for (String propViewName : TaskHelper.getRelatedViews()) {
+      String propValue = oldRow.getProperty(PFX_RELATED + propViewName);
       if (!BeeUtils.isEmpty(propValue)) {
-        newRow.setProperty(propName, propValue);
+        newRow.setProperty(PFX_RELATED + propViewName, propValue);
       }
     }
 
@@ -863,10 +872,10 @@ class TasksGrid extends AbstractGridInterceptor implements RowUpdateEvent.Handle
       }
     }
 
-    for (String propName : TaskUtils.getRelationPropertyNames()) {
-      String propValue = oldRow.getProperty(propName);
+    for (String propViewName : TaskHelper.getRelatedViews()) {
+      String propValue = oldRow.getProperty(PFX_RELATED + propViewName);
       if (!BeeUtils.isEmpty(propValue)) {
-        newRow.setProperty(propName, propValue);
+        newRow.setProperty(PFX_RELATED + propViewName, propValue);
       }
     }
 

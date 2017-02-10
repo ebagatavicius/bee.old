@@ -19,9 +19,37 @@
       <SimpleColumn name="Name" alias="ModelName" />
     </SimpleJoin>
 
+    <SimpleColumn name="ModelNumber" />
+    <SimpleColumn name="Status" />
+    <SimpleJoin name="Status" joinType="LEFT">
+      <SimpleColumn name="Name" alias="CarStatusName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="CarWarranty" />
+    <SimpleJoin name="CarWarranty" joinType="LEFT">
+      <SimpleColumn name="Name" alias="CarWarrantyName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="CarPlaceCode" />
+    <SimpleJoin name="CarPlaceCode" joinType="LEFT">
+      <SimpleColumn name="Name" alias="CarPlaceCodeName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="CarGearbox" />
+    <SimpleJoin name="CarGearbox" joinType="LEFT">
+      <SimpleColumn name="Name" alias="CarGearboxName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="CarEmissionStandard" />
+    <SimpleJoin name="CarEmissionStandard" joinType="LEFT">
+      <SimpleColumn name="Name" alias="CarEmissionStandardName" />
+    </SimpleJoin>
+
     <SimpleColumn name="Number" />
     <SimpleColumn name="BodyNumber" />
+    <SimpleColumn name="EngineCode" />
     <SimpleColumn name="EngineNumber" />
+    <SimpleColumn name="ManufacturerNumber" />
     <SimpleColumn name="EngineVolume" />
     <SimpleColumn name="ProductionDate" />
     <SimpleColumn name="StartDate" />
@@ -34,6 +62,11 @@
 
     <SimpleColumn name="TankCapacity" />
     <SimpleColumn name="Power" />
+    <SimpleColumn name="Horsepower" />
+    <SimpleColumn name="Speedometer" />
+    <SimpleColumn name="CylinderNumber" />
+    <SimpleColumn name="DoorsNumber" />
+    <SimpleColumn name="GearsNumber" />
     <SimpleColumn name="Netto" />
     <SimpleColumn name="Brutto" />
     <SimpleColumn name="Owner" />
@@ -43,6 +76,8 @@
         <SimpleColumn name="Name" alias="OwnerTypeName" />
       </SimpleJoin>
     </SimpleJoin>
+    <SimpleColumn name="ResponsiblePerson" />
+    <SimpleColumn name="Phone" />
     <SimpleColumn name="Notes" />
 
     <SimpleColumn name="Body" />

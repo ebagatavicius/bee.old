@@ -12,5 +12,7 @@
     <Relation name="DepartmentHead" unique="true" relation="DepartmentEmployees"
       label="=departmentHead" />
     <Relation name="Role" relation="Roles" label="=role" />
+
+    <Relation name="Contact" unique="true" relation="Contacts" editable="true" />
   </Fields>
 </Table>

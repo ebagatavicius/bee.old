@@ -68,7 +68,6 @@ public class AnalysisColumnsGrid extends AnalysisColumnsRowsGrid {
       for (int i = 0; i < COL_ANALYSIS_COLUMN_SPLIT.length; i++) {
         changed |= grid.setColumnVisible(COL_ANALYSIS_COLUMN_SPLIT[i], i < splitLevels);
       }
-      changed |= grid.setColumnVisible(COL_ANALYSIS_COLUMN_TOTAL, splitLevels > 0);
 
       if (changed) {
         event.setDataChanged();

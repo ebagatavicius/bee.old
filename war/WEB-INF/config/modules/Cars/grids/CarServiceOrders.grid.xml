@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+        name="CarServiceOrders" viewName="CarServiceOrders" caption="=serviceOrders"
+        flexGrow="1" autoFlex="true"
+>
+  <g:columns>
+    <DataColumn name="Date" visible="true" />
+    <DataColumn name="OrderNo" visible="true" />
+    <RelColumn name="Stage" />
+    <RelColumn name="Customer" visible="true" renderColumns="CustomerName CustomerTypeName" />
+    <RelColumn name="CustomerPerson" renderColumns="ContactFirstName ContactLastName" />
+    <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
+    <RelColumn name="Car" renderColumns="ParentModelName ModelName CarNumber" />
+  </g:columns>
+</g:Grid>

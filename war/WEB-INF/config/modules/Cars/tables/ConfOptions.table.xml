@@ -6,8 +6,9 @@
 >
   <Fields>
     <Relation name="Group" relation="ConfGroups" notNull="true" label="=optionGroup" />
-    <String name="OptionName" precision="100" notNull="true" label="=option" />
+    <String name="OptionName" precision="150" notNull="true" label="=option" />
     <String name="Code" precision="20" label="=code" />
+    <String name="Code2" precision="20" label="=code+2" />
     <Text name="Description" label="=description" />
     <Relation name="PhotoFile" relation="Files" editable="true" label="=photo" />
     <String name="PhotoCode" precision="10" label="=code+ (+=photo+)" />

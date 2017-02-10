@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+        name="CarBundles" viewName="CarBundles" caption="=bundles"
+>
+  <g:columns>
+    <DataColumn name="BundleName" />
+    <DataColumn name="Code" />
+    <RelColumn name="Model" />
+    <RelColumn name="Customer" />
+    <DataColumn name="ValidUntil" />
+  </g:columns>
+</g:Grid>

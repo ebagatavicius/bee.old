@@ -325,8 +325,7 @@ public class SimpleRowSet implements Iterable<SimpleRow>, BeeSerializable {
 
   public JustDate getDate(int rowIndex, int colIndex) {
     Long value = getLong(rowIndex, colIndex);
-    return (value == null)
-        ? null : TimeUtils.toDateOrNull(BeeUtils.toString(value / TimeUtils.MILLIS_PER_DAY));
+    return (value == null) ? null : new JustDate(JustDate.readDays(value));
   }
 
   public JustDate getDate(int rowIndex, String colName) {

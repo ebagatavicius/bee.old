@@ -574,7 +574,7 @@ public class QueryServiceBean {
         .addFrom(tblName)
         .setWhere(SqlUtils.equals(tblName, fldName, fldValue));
 
-    String als = sys.joinTranslationField(query, tblName, null, fldName, locale.getLanguage());
+    String als = sys.joinTranslationField(query, tblName, tblName, fldName, locale.getLanguage());
 
     return ArrayUtils.getQuietly(getColumn(query.addFields(als, fldName)), 0);
   }
@@ -1525,7 +1525,7 @@ public class QueryServiceBean {
 
           case DATE:
             Long time = BeeUtils.toLongOrNull(rs.getString(colIndex));
-            values[i] = (time == null) ? null : BeeUtils.toString(time / TimeUtils.MILLIS_PER_DAY);
+            values[i] = (time == null) ? null : BeeUtils.toString(JustDate.readDays(time));
             break;
 
           case NUMBER:

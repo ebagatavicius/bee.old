@@ -29,7 +29,6 @@
 
     <SimpleColumn name="RowScript" />
 
-    <SimpleColumn name="RowIsPercent" />
     <SimpleColumn name="RowScale" />
 
     <SimpleColumn name="RowSplit01" />
@@ -42,8 +41,6 @@
     <SimpleColumn name="RowSplit08" />
     <SimpleColumn name="RowSplit09" />
     <SimpleColumn name="RowSplit10" />
-
-    <SimpleColumn name="RowTotal" />
 
     <SimpleColumn name="Note" />
 

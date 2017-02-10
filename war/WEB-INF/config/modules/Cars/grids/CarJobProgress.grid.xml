@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+        name="CarJobProgress" viewName="CarJobProgress"
+        caption="=employees" autoFlex="true"
+>
+  <g:columns>
+    <RelColumn name="CompanyPerson" visible="true" />
+
+    <DataColumn name="Duration">
+      <editor type="time" stepValue="5" />
+    </DataColumn>
+
+    <DataColumn name="Note" />
+    <DataColumn name="Confirmed" />
+
+    <DataColumn name="StartDateTime" />
+    <DataColumn name="EndDateTime" />
+    <DataColumn name="Status" />
+  </g:columns>
+</g:Grid>

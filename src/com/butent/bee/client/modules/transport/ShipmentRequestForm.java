@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.HasHandlers;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -32,11 +33,13 @@ import com.butent.bee.client.modules.administration.AdministrationUtils;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.modules.mail.NewMailMessage;
 import com.butent.bee.client.output.ReportUtils;
+import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.EditableWidget;
@@ -44,6 +47,8 @@ import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
+import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
+import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
@@ -55,6 +60,8 @@ import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.CssUnit;
+import com.butent.bee.shared.css.values.FontWeight;
+import com.butent.bee.shared.css.values.Overflow;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -67,6 +74,7 @@ import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
@@ -154,6 +162,25 @@ class ShipmentRequestForm extends PrintFormInterceptor {
               !BeeUtils.unbox(getFormView().getBooleanValue(COL_CARGO_PARTIAL)));
         }
         renderInputMode();
+      });
+    } else if (widget instanceof ChildGrid && BeeUtils.isSuffix(name, VAR_UNBOUND)) {
+      ((ChildGrid) widget).setGridInterceptor(new AbstractGridInterceptor() {
+
+        @Override
+        public DeleteMode getDeleteMode(GridPresenter presenter, IsRow activeRow,
+            Collection<RowInfo> selectedRows, DeleteMode defMode) {
+
+          if (BeeUtils.size(presenter.getGridView().getRowData())
+              <= BeeUtils.max(BeeUtils.size(selectedRows), 1)) {
+            return DeleteMode.DENY;
+          }
+          return super.getDeleteMode(presenter, activeRow, selectedRows, defMode);
+        }
+
+        @Override
+        public GridInterceptor getInstance() {
+          return null;
+        }
       });
     }
     super.afterCreateWidget(name, widget, callback);
@@ -268,15 +295,61 @@ class ShipmentRequestForm extends PrintFormInterceptor {
 
   @Override
   public void onReadyForInsert(HasHandlers listener, ReadyForInsertEvent event) {
+    if (!event.isForced()) {
+      Widget grid = getWidgetByName(TBL_CARGO_LOADING + VAR_UNBOUND);
+
+      if (grid instanceof ChildGrid) {
+        event.consume();
+        ((ChildGrid) grid).getPresenter().handleAction(Action.ADD);
+      }
+    }
     if (!event.isConsumed()) {
       getCommonTerms(terms -> {
         if (BeeUtils.isEmpty(terms)) {
           listener.fireEvent(event);
         } else {
-          Global.confirm(Localized.dictionary().trRequestCommonTerms(), null,
-              Arrays.asList(terms, BeeConst.STRING_EMPTY),
-              Localized.dictionary().trAgreeWithConditions(), Localized.dictionary().no(),
-              () -> listener.fireEvent(event));
+          FlowPanel panel = new FlowPanel();
+          StyleUtils.setHeight(panel, 160);
+          StyleUtils.setWidth(panel, 300);
+
+          HtmlTable table = new HtmlTable();
+
+          FlowPanel fp = new FlowPanel();
+          StyleUtils.setHeight(fp, 100);
+          StyleUtils.setWidth(fp, 300);
+
+          Label commonTerms = new Label(Localized.dictionary().trAgreeWithTermsAndConditions());
+          table.setWidget(0, 0, commonTerms, StyleUtils.className(FontWeight.BOLD));
+          table.getCellFormatter().setColSpan(1, 0, 2);
+          table.setWidget(1, 0, fp);
+
+          FaLabel question = new FaLabel(FontAwesome.QUESTION_CIRCLE);
+          question.addClickHandler(clickEvent -> {
+            fp.clear();
+            fp.add(new Label(terms));
+            StyleUtils.setHeight(fp, 400);
+            StyleUtils.setHeight(panel, 460);
+            StyleUtils.setOverflow(fp, StyleUtils.ScrollBars.VERTICAL, Overflow.AUTO);
+            StyleUtils.setOverflow(fp, StyleUtils.ScrollBars.HORIZONTAL, Overflow.AUTO);
+          });
+          table.setWidget(0, 1, question);
+
+          panel.add(table);
+
+          Global.showModalWidget(Localized.dictionary().trRequestCommonTerms(), panel);
+
+          Button no = new Button(Localized.dictionary().no().toUpperCase());
+          Button yes = new Button(Localized.dictionary().trAgreeWithConditions().toUpperCase());
+          StyleUtils.setColor(yes, "white");
+          StyleUtils.setBackgroundColor(yes, "#6bae45");
+
+          table.setWidget(2, 0, yes);
+          table.setWidget(2, 1, no);
+          no.addClickHandler(clickEvent -> UiHelper.closeDialog(panel));
+          yes.addClickHandler(clickEvent -> {
+            listener.fireEvent(event);
+            UiHelper.closeDialog(panel);
+          });
         }
       });
       event.consume();
@@ -374,7 +447,7 @@ class ShipmentRequestForm extends PrintFormInterceptor {
 
   @Override
   protected void getReportData(Consumer<BeeRowSet[]> dataConsumer) {
-    SelfServiceUtils.getCargos(Filter.compareId(getLongValue(COL_CARGO)),
+    TransportUtils.getCargos(Filter.compareId(getLongValue(COL_CARGO)),
         cargoInfo -> dataConsumer.accept(new BeeRowSet[] {cargoInfo}));
   }
 

@@ -17,6 +17,7 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.orders.OrderForm;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.edit.EditStartEvent;
@@ -229,7 +230,7 @@ class ItemsGrid extends TreeGridInterceptor {
     for (int i = 0; i < rowSet.getNumberOfRows(); i++) {
       table.setText(i + 1, 0, String.valueOf(rowSet.getRow(i).getId()), STYLE_RES_ORDER_ID_PREFIX
           + STYLE_CELL_SUFFIX);
-      table.setText(i + 1, 1, rowSet.getRow(i).getDateTime(0).getDate().toString(),
+      table.setText(i + 1, 1, Format.renderDate(rowSet.getRow(i).getDateTime(0).getDate()),
           STYLE_RES_ORDER_DATE_PREFIX + STYLE_CELL_SUFFIX);
       table.setText(i + 1, 2, rowSet.getRow(i).getString(1), STYLE_RES_ORDER_COMPANY_PREFIX
           + STYLE_CELL_SUFFIX);

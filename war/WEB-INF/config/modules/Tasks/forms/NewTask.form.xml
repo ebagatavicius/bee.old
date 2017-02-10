@@ -75,7 +75,7 @@
       <row module="Projects" data="Projects">
         <Label text="=project" name="ProjectLabel" />
         <DataSelector source="Project" renderColumns="ProjectName" style="&inp2x;" disablable="true"
-          readOnly="true" editPopup="false" />
+                      editPopup="false" />
       </row>
       <row module="Projects" data="ProjectStages">
         <Label text="=prjStage" name="ProjectStageLabel" />
@@ -161,69 +161,31 @@
 
     <Label text="=relatedTo" style="font-style: italic; margin-top: 20px; margin-bottom: 2px;" data="Relations" />
 
-    <Table kind="controls" style="&tbl;" cellStyle="&cell;" data="Relations" for="Task">
-      <col index="0" cellStyle="&col1;" />
-
-      <row data="Relations" for="Company" module="Classifiers.Contacts">
-        <Label text="=companies" />
-        <MultiSelector viewName="Companies" property="Companies" renderColumns="Name TypeName"
-          editPopup="true" newRowEnabled="false" style="&inp2x;" />
-      </row>
-
-      <row data="Relations" for="Person" module="Classifiers.Contacts">
-        <Label text="=persons" />
-        <MultiSelector viewName="Persons" property="Persons" renderColumns="FirstName LastName"
-          editPopup="true" newRowEnabled="false" style="&inp2x;" />
-      </row>
-
-      <row data="Relations" for="Document" module="Documents">
-        <Label text="=documents" />
-        <MultiSelector viewName="Documents" property="Documents" renderColumns="Name Number RegistrationNumber"
-          editPopup="true" newRowEnabled="false" style="&inp2x;" />
-      </row>
-
-      <row data="Relations" for="Appointment" module="Calendar">
-        <Label text="=calAppointments" />
-        <MultiSelector viewName="Appointments" property="Appointments"
-          renderColumns="Summary" choiceColumns="Summary StartDateTime EndDateTime"
-          newRowEnabled="true" editPopup="true" style="&inp2x;" />
-      </row>
-
-      <row data="Relations" for="Discussion" module="Discussions">
-        <Label text="=discussions" />
-        <MultiSelector viewName="Discussions" property="Discussions"
-          renderColumns="Subject" newRowEnabled="false" editPopup="true" style="&inp2x;" />
-      </row>
-
-      <row data="Relations" for="ServiceObject" module="Service">
-        <Label text="=svcDevices" />
-        <MultiSelector viewName="ServiceObjects" property="ServiceObjects"
-          renderColumns="Address" choiceColumns="Address CustomerName"
-          newRowEnabled="false" editPopup="true" style="&inp2x;" />
-      </row>
-
-      <row data="Relations" for="Projects" module="Projects">
-        <Label text="=projects" />
-        <MultiSelector viewName="Projects" property="Projects"
-          renderColumns="Name" choiceColumns="Name"
-          newRowEnabled="false" editPopup="true" style="&inp2x;" />
-      </row>
-
-      <row data="Relations" for="Relation">
-        <Label text="=crmTasks" />
-        <MultiSelector viewName="Tasks" property="Tasks"
-          renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
-          choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
-          newRowEnabled="false" editPopup="true" style="&inp2x;" />
-      </row>
-
-      <row data="Relations" for="ServiceMaintenance" module="Service">
-        <Label text="=svcMaintenance" />
-        <MultiSelector viewName="ServiceMaintenance" property="ServiceMaintenance"
-                       renderColumns="ID" choiceColumns="ID TypeName StateName"
-                       newRowEnabled="false" editPopup="true" style="&inp2x;" />
-      </row>
-    </Table>
-
+    <Relations name="Relations" relColumn="Task" inline="true" disablable="false"
+               defaultRelations="Companies Persons Documents Appointments Discussions
+                       Projects Tasks Requests Messages" style="width: 628px">
+      <Relation viewName="Companies" property="RelCompanies" renderColumns="Name TypeName"
+                newRowEnabled="false" editPopup="true"/>
+      <Relation viewName="Persons" property="RelPersons" renderColumns="FirstName LastName"
+                newRowEnabled="false"
+                editPopup="true"/>
+      <Relation viewName="Documents" property="RelDocuments"
+                renderColumns="Name Number RegistrationNumber DocumentDate"
+                newRowEnabled="false" editPopup="true"/>
+      <Relation viewName="Discussions" property="RelDiscussions" renderColumns="Subject"
+                newRowEnabled="false" editPopup="true"/>
+      <Relation viewName="ServiceObjects" property="RelServiceObjects" renderColumns="Address"
+                newRowEnabled="false" editPopup="true"
+                choiceColumns="Address CustomerName"/>
+      <Relation viewName="Tasks" property="RelTasks"
+                renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
+                newRowEnabled="false" editPopup="true" style="&inp2x;"
+                choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"/>
+      <Relation viewName="OrderCargo" property="RelOrderCargo"
+                renderColumns="Description" newRowEnabled="false" editPopup="true" />
+      <Relation viewName="ServiceMaintenance" property="RelServiceMaintenance"
+                renderColumns="ID" choiceColumns="ID TypeName StateName"
+                newRowEnabled="false" editPopup="true" />
+    </Relations>
   </FlowPanel>
 </f:Form>

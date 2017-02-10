@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="Attachments"
-  idName="AttachmentID"
-  >
+       name="Attachments"
+       idName="AttachmentID"
+       audit="false"
+>
   <Fields>
-    <Relation name="Message" relation="Messages" notNull="true" cascade="DELETE" label="=mailMessage" />
+    <Relation name="Message" relation="Messages" notNull="true" cascade="DELETE"
+              label="=mailMessage" />
     <Relation name="File" relation="Files" notNull="true" editable="true" />
     <String name="FileName" precision="255" />
   </Fields>

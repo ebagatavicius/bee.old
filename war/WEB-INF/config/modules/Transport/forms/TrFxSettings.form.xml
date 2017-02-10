@@ -16,7 +16,7 @@
 <f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
  
   name="TrFxSettings" viewName="TransportSettings" caption="=settings"
-  width="480" height="50" heightUnit="%"
+  width="480" height="75" heightUnit="%"
   >
 
   <FlowPanel style="background-color: WhiteSmoke;">
@@ -68,6 +68,16 @@
     <FlowPanel style="&row;">
       <Label text="=timeboardFooterHeight" style="&lbl;" />
       <InputSpinner source="FxFooterHeight" minValue="3" maxValue="1000" style="&spin;" />
+    </FlowPanel>
+
+    &separator;
+    <FlowPanel style="&row;">
+      <Label text="=trTbSettingsRefreshLocalChanges" style="&lbl;" />
+      <InputSpinner source="FxRefreshLocalChanges" minValue="-1" maxValue="999" style="&spin;" />
+    </FlowPanel>
+    <FlowPanel style="&row;">
+      <Label text="=trTbSettingsRefreshRemoteChanges" style="&lbl;" />
+      <InputSpinner source="FxRefreshRemoteChanges" minValue="-1" maxValue="999" style="&spin;" />
     </FlowPanel>
 
     &separator;

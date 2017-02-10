@@ -2,11 +2,11 @@ package com.butent.bee.client.modules.tasks;
 
 import com.google.common.collect.Lists;
 
+import static com.butent.bee.client.modules.mail.Relations.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
@@ -30,7 +30,6 @@ import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.modules.tasks.TaskType;
-import com.butent.bee.shared.modules.tasks.TaskUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -51,49 +50,46 @@ class RelatedTasksGrid extends TasksGrid {
 
   @Override
   public boolean beforeAddRow(final GridPresenter presenter, boolean copy) {
-    presenter.getGridView().ensureRelId(new IdCallback() {
-      @Override
-      public void onSuccess(Long relId) {
-        DataInfo dataInfo = Data.getDataInfo(VIEW_TASKS);
+    presenter.getGridView().ensureRelId(relId -> {
+      DataInfo dataInfo = Data.getDataInfo(VIEW_TASKS);
 
-        BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
-        RowActionEvent.fireCreateRow(VIEW_TASKS, row, presenter.getMainView().getId());
+      BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
+      RowActionEvent.fireCreateRow(VIEW_TASKS, row, presenter.getMainView().getId());
 
-        String relColumn = presenter.getGridView().getRelColumn();
-        String property = TaskUtils.translateRelationToTaskProperty(relColumn);
+      String relViewName = presenter.getGridView().getViewName();
 
-        if (!BeeUtils.isEmpty(property) && BeeUtils.isEmpty(row.getProperty(property))) {
-          row.setProperty(property, relId.toString());
-        }
+      if (!BeeUtils.isEmpty(relViewName) && BeeUtils.isEmpty(row.getProperty(PFX_RELATED
+        + relViewName))) {
+        row.setProperty(PFX_RELATED + relViewName, DataUtils.buildIdList(relId));
+      }
 
-        RowFactory.createRow(dataInfo, row, Modality.ENABLED, new RowCallback() {
-          @Override
-          public void onSuccess(BeeRow result) {
-            if (BeeUtils.same(property, PROP_SERVICE_MAINTENANCE)
-                && presenter.getMainView() != null) {
-              FormView parentForm = ViewHelper.getForm(presenter.getMainView());
+      RowFactory.createRow(dataInfo, row, Modality.ENABLED, new RowCallback() {
+        @Override
+        public void onSuccess(BeeRow result) {
+          if (BeeUtils.same(relViewName, ServiceConstants.COL_SERVICE_MAINTENANCE)
+              && presenter.getMainView() != null) {
+            FormView parentForm = ViewHelper.getForm(presenter.getMainView());
 
-              if (parentForm != null && parentForm.getActiveRow() != null) {
-                int objectColumnIndex = Data.getColumnIndex(parentForm.getViewName(),
-                    ServiceConstants.COL_SERVICE_OBJECT);
-                Long objectId = parentForm.getActiveRow().getLong(objectColumnIndex);
+            if (parentForm != null && parentForm.getActiveRow() != null) {
+              int objectColumnIndex = Data.getColumnIndex(parentForm.getViewName(),
+                  ServiceConstants.COL_SERVICE_OBJECT);
+              Long objectId = parentForm.getActiveRow().getLong(objectColumnIndex);
 
-                if (DataUtils.isId(objectId)) {
-                  List<BeeColumn> columns =
-                      Data.getColumns(AdministrationConstants.VIEW_RELATIONS,
-                          Lists.newArrayList(ServiceConstants.COL_SERVICE_OBJECT,
-                              COL_TASK));
-                  List<String> value = Lists.newArrayList(BeeUtils.toString(objectId),
-                      BeeUtils.toString(result.getId()));
+              if (DataUtils.isId(objectId)) {
+                List<BeeColumn> columns =
+                    Data.getColumns(AdministrationConstants.VIEW_RELATIONS,
+                        Lists.newArrayList(ServiceConstants.COL_SERVICE_OBJECT,
+                            COL_TASK));
+                List<String> value = Lists.newArrayList(BeeUtils.toString(objectId),
+                    BeeUtils.toString(result.getId()));
 
-                  Queries.insert(AdministrationConstants.VIEW_RELATIONS, columns, value);
-                }
+                Queries.insert(AdministrationConstants.VIEW_RELATIONS, columns, value);
               }
             }
-            presenter.handleAction(Action.REFRESH);
           }
-        });
-      }
+          presenter.handleAction(Action.REFRESH);
+        }
+      });
     });
 
     return false;

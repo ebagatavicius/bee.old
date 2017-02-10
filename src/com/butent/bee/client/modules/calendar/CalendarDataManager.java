@@ -13,7 +13,7 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.modules.calendar.CalendarConstants.ItemType;
+import com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 import com.butent.bee.shared.modules.calendar.CalendarSettings;
 import com.butent.bee.shared.modules.calendar.CalendarTask;
@@ -219,7 +219,7 @@ public class CalendarDataManager {
             for (String item : arr) {
               switch (type) {
                 case APPOINTMENT:
-                  addItem(new Appointment(BeeRow.restore(item)), settings);
+                  addItem(Appointment.create(BeeRow.restore(item)), settings);
                   break;
                 case TASK:
                   addItem(CalendarTask.restore(item), settings);

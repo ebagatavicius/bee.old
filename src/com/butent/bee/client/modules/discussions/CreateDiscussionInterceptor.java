@@ -455,7 +455,9 @@ class CreateDiscussionInterceptor extends AbstractFormInterceptor {
       oldFiles.put(row.getId(), oldFileList);
     }
 
-
+    if (focusCommand != null) {
+      focusCommand.execute();
+    }
 
     return false;
   }

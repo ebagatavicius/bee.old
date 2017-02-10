@@ -1,8 +1,10 @@
 package com.butent.bee.server.websocket;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+
 import com.butent.bee.server.Config;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.Chat;
 import com.butent.bee.shared.communication.Presence;
 import com.butent.bee.shared.data.BeeRow;
@@ -46,7 +48,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.websocket.CloseReason;
@@ -80,25 +81,35 @@ public class Endpoint {
   private static BeeLogger logger = LogUtils.getLogger(Endpoint.class);
 
   private static Queue<Session> openSessions = new ConcurrentLinkedQueue<>();
-  private static Map<String, Pair<String, Long>> progressToSession = new ConcurrentHashMap<>();
+  private static Table<String, String, Long> progressToSession = HashBasedTable.create();
 
   private static Class<? extends RemoteEndpoint> remoteEndpointType;
 
-  public static boolean closeProgress(String progressId) {
-    boolean ok = false;
-    Pair<String, Long> pair = progressToSession.remove(progressId);
+  public static void closeProgress(String progressId) {
+    Map<String, Long> sessions = progressToSession.row(progressId);
 
-    if (Objects.isNull(pair)) {
+    if (sessions.isEmpty()) {
       logger.info("ws session not found for progress:", progressId);
     } else {
-      Session session = findOpenSession(pair.getA(), true);
+      sessions.keySet().forEach(sessionId -> {
+        Session session = findOpenSession(sessionId);
 
-      if (session != null) {
-        send(session, ProgressMessage.close(progressId));
-        ok = true;
-      }
+        if (session != null) {
+          send(session, ProgressMessage.close(progressId));
+        }
+      });
+      sessions.clear();
     }
-    return ok;
+  }
+
+  public static String createProgress(long userId, String... label) {
+    ProgressMessage message = ProgressMessage.open(BeeUtils.randomString(10), label);
+
+    getUserSessions(userId).forEach(session -> {
+      progressToSession.put(message.getProgressId(), session.getId(), 0L);
+      send(session, message);
+    });
+    return message.getProgressId();
   }
 
   public static FiresModificationEvents getModificationShooter() {
@@ -150,11 +161,7 @@ public class Endpoint {
   }
 
   public static void sendToUser(long userId, Message message) {
-    for (Session session : openSessions) {
-      if (session.isOpen() && Objects.equals(getUserId(session), userId)) {
-        send(session, message);
-      }
-    }
+    getUserSessions(userId).forEach(session -> send(session, message));
   }
 
   public static void sendToUsers(Collection<Long> users, Message message, String mySessionId) {
@@ -176,24 +183,25 @@ public class Endpoint {
   }
 
   public static boolean updateProgress(String progressId, String label, double value) {
-    Pair<String, Long> pair = progressToSession.get(progressId);
+    Map<String, Long> sessions = progressToSession.row(progressId);
 
-    if (Objects.isNull(pair)) {
+    if (sessions.isEmpty()) {
       logger.info("ws session not found for progress:", progressId, "value", value);
       return false;
-
     } else {
-      if (!BeeUtils.isEmpty(label)) {
-        pair.setB(0L);
-      }
-      if ((System.currentTimeMillis() - pair.getB()) > 10) {
-        Session session = findOpenSession(pair.getA(), true);
-
-        if (session != null) {
-          send(session, ProgressMessage.update(progressId, label, value));
+      sessions.entrySet().forEach(entry -> {
+        if (!BeeUtils.isEmpty(label)) {
+          entry.setValue(0L);
         }
-        pair.setB(System.currentTimeMillis());
-      }
+        if ((System.currentTimeMillis() - entry.getValue()) > 10) {
+          Session session = findOpenSession(entry.getKey());
+
+          if (session != null) {
+            send(session, ProgressMessage.update(progressId, label, value));
+          }
+          entry.setValue(System.currentTimeMillis());
+        }
+      });
       return true;
     }
   }
@@ -219,7 +227,7 @@ public class Endpoint {
       case LOCATION:
       case NOTIFICATION:
       case SIGNALING:
-        Session toSession = findOpenSession(((HasRecipient) message).getTo(), true);
+        Session toSession = findOpenSession(((HasRecipient) message).getTo());
         if (toSession != null) {
           send(toSession, message);
         }
@@ -313,16 +321,13 @@ public class Endpoint {
           WsUtils.onEmptyMessage(message, toLog(session));
 
         } else if (pm.isOpen()) {
-          progressToSession.put(progressId, Pair.of(session.getId(), 0L));
-          logger.info("ws activated progress:", progressId, "session:", session.getId());
-
+          progressToSession.put(progressId, session.getId(), 0L);
+          logger.debug("ws activated progress:", progressId, "session:", session.getId());
           send(session, ProgressMessage.activate(progressId));
 
         } else if (pm.isClosed() || pm.isCanceled()) {
-          Pair<String, Long> removed = progressToSession.remove(progressId);
-          logger.debug("ws remove progress:", progressId, "session:",
-              Objects.nonNull(removed) ? removed.getA() : null);
-
+          progressToSession.row(progressId).clear();
+          logger.debug("ws removed progress:", progressId);
         } else {
           WsUtils.onInvalidState(message, toLog(session));
         }
@@ -356,22 +361,20 @@ public class Endpoint {
       case INFO:
       case MAIL:
       case ONLINE:
+      case PARAMETER:
       case USERS:
         logger.severe("ws message not supported", message, toLog(session));
         break;
     }
   }
 
-  private static Session findOpenSession(String sessionId, boolean warn) {
+  private static Session findOpenSession(String sessionId) {
     for (Session session : openSessions) {
       if (session.getId().endsWith(sessionId) && session.isOpen()) {
         return session;
       }
     }
-
-    if (warn) {
-      logger.warning("ws open session not found", sessionId);
-    }
+    logger.warning("ws open session not found", sessionId);
     return null;
   }
 
@@ -398,12 +401,6 @@ public class Endpoint {
 
   private static List<Property> getInfo() {
     List<Property> info = getOpenSessionsInfo(openSessions);
-
-    int size = progressToSession.size();
-    info.add(new Property("Progress", BeeUtils.bracket(size)));
-    if (size > 0) {
-      info.addAll(PropertyUtils.createProperties(progressToSession));
-    }
 
     LogLevel level = logger.getLevel();
     if (level != null) {
@@ -542,6 +539,16 @@ public class Endpoint {
         : session.getUserPrincipal().getName();
   }
 
+  private static Collection<Session> getUserSessions(long userId) {
+    List<Session> userSessions = new ArrayList<>();
+
+    openSessions.stream()
+        .filter(session -> session.isOpen() && Objects.equals(getUserId(session), userId))
+        .forEach(userSessions::add);
+
+    return userSessions;
+  }
+
   private static List<Property> getWebSocketContainerInfo(WebSocketContainer wsc) {
     List<Property> info = new ArrayList<>();
 
@@ -595,7 +602,7 @@ public class Endpoint {
         logger.debug("->", message);
 
         info = BeeUtils.joinWords(message.getType(), "length", text.length(), toLog(session));
-        logger.info("->", info);
+        logger.debug("->", info);
       } else {
         info = null;
       }
@@ -671,19 +678,7 @@ public class Endpoint {
   @OnClose
   public void onClose(Session session, CloseReason closeReason) {
     openSessions.remove(session);
-
-    if (!progressToSession.isEmpty()) {
-      Set<String> keys = new HashSet<>();
-
-      progressToSession.forEach((key, value) -> {
-        if (value.getA().equals(session.getId())) {
-          keys.add(key);
-        }
-      });
-      for (String key : keys) {
-        progressToSession.remove(key);
-      }
-    }
+    progressToSession.column(session.getId()).clear();
 
     String reasonInfo;
     if (closeReason == null) {
@@ -742,7 +737,7 @@ public class Endpoint {
       if (message != null) {
         if (message.isLoggable()) {
           logger.debug("<-", message);
-          logger.info("<-", message.getType(), "length", data.length(), toLog(session));
+          logger.debug("<-", message.getType(), "length", data.length(), toLog(session));
         }
         dispatch(session, message);
       }

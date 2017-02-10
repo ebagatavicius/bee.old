@@ -394,8 +394,7 @@ public class TransportModuleBean implements BeeModule {
         BeeParameter.createRelation(module, PRM_SELF_SERVICE_ROLE, TBL_ROLES, COL_ROLE_NAME),
         BeeParameter.createRelation(module, PRM_CARGO_TYPE, true, TBL_CARGO_TYPES,
             COL_CARGO_TYPE_NAME),
-        BeeParameter.createRelation(module, PRM_CARGO_SERVICE, TBL_SERVICES, COL_SERVICE_NAME),
-        BeeParameter.createBoolean(module, PRM_BIND_EXPENSES_TO_INCOMES, false, true));
+        BeeParameter.createRelation(module, PRM_CARGO_SERVICE, TBL_SERVICES, COL_SERVICE_NAME));
   }
 
   @Override
@@ -485,7 +484,8 @@ public class TransportModuleBean implements BeeModule {
       @Subscribe
       @AllowConcurrentEvents
       public void fillCargoIncomes(ViewQueryEvent event) {
-        if (event.isAfter(VIEW_ORDER_CARGO, VIEW_ALL_CARGO) && event.hasData()) {
+        if (event.isAfter(VIEW_ORDER_CARGO, VIEW_ALL_CARGO, VIEW_SHIPMENT_REQUESTS)
+            && event.hasData()) {
           BeeRowSet rowSet = event.getRowset();
           Collection<Long> cargoIds;
           Function<BeeRow, Long> valueSupplier;
@@ -496,6 +496,7 @@ public class TransportModuleBean implements BeeModule {
               valueSupplier = BeeRow::getId;
               break;
             case VIEW_ALL_CARGO:
+            case VIEW_SHIPMENT_REQUESTS:
               int idx = rowSet.getColumnIndex(COL_CARGO);
               cargoIds = rowSet.getDistinctLongs(idx);
               valueSupplier = row -> row.getLong(idx);
@@ -734,8 +735,13 @@ public class TransportModuleBean implements BeeModule {
               text = BeeUtils.notEmpty(data.getString(0, localizedContent),
                   data.getString(0, COL_TEXT_CONTENT));
             }
-            cb.asynchronousCall(() -> mail.sendMail(accountId, email, null,
-                text.replace("{CONTRACT_ID}", BeeUtils.toString(event.getRow().getId()))));
+            cb.asynchronousCall(new ConcurrencyBean.AsynchronousRunnable() {
+              @Override
+              public void run() {
+                mail.sendMail(accountId, email, null, text.replace("{CONTRACT_ID}",
+                    BeeUtils.toString(event.getRow().getId())));
+              }
+            });
           }
         }
       }
@@ -1641,8 +1647,13 @@ public class TransportModuleBean implements BeeModule {
           data.getString(0, COL_TEXT_CONTENT));
     }
     if (!BeeUtils.isEmpty(text)) {
-      cb.asynchronousCall(() -> mail.sendMail(accountId, email, null,
-          text.replace("{LOGIN}", login).replace("{PASSWORD}", password)));
+      cb.asynchronousCall(new ConcurrencyBean.AsynchronousRunnable() {
+        @Override
+        public void run() {
+          mail.sendMail(accountId, email, null, text.replace("{LOGIN}", login)
+              .replace("{PASSWORD}", password));
+        }
+      });
     }
     return resp;
   }
@@ -2547,6 +2558,7 @@ public class TransportModuleBean implements BeeModule {
 
   private Table<Long, String, String> getExtremes(IsCondition clause, String keyColumn) {
     Table<Long, String, String> data = HashBasedTable.create();
+    Table<Long, String, SimpleRowSet> handle = HashBasedTable.create();
 
     String als = "tmpSubQuery";
 
@@ -2561,9 +2573,11 @@ public class TransportModuleBean implements BeeModule {
         .addFromLeft(TBL_COUNTRIES,
             sys.joinTables(TBL_COUNTRIES, TBL_CARGO_PLACES, COL_PLACE_COUNTRY))
         .addFromInner(getHandlingQuery(clause, Objects.equals(keyColumn, COL_CARGO_TRIP)), als,
-            SqlUtils.joinUsing(TBL_CARGO_PLACES, als, sys.getIdName(TBL_CARGO_PLACES))));
+            SqlUtils.joinUsing(TBL_CARGO_PLACES, als, sys.getIdName(TBL_CARGO_PLACES)))
+        .addOrder(TBL_CARGO_PLACES, COL_PLACE_DATE));
 
     String[] calc = new String[] {COL_LOADED_KILOMETERS, COL_EMPTY_KILOMETERS};
+    Multimap<Long, Long> defaults = HashMultimap.create();
 
     for (SimpleRow row : rs) {
       String prfx;
@@ -2579,8 +2593,7 @@ public class TransportModuleBean implements BeeModule {
       Long key = row.getLong(keyColumn);
 
       if (!BeeUtils.unbox(row.getBoolean(VAR_PARAMETER_DEFAULT))
-          || !data.contains(key, prfx + COL_PLACE_DATE)) {
-
+          || defaults.put(key, row.getLong(sys.getIdName(TBL_CARGO_PLACES)))) {
         Arrays.stream(calc).forEach(col -> data.put(key, col,
             BeeUtils.toString(BeeUtils.toDouble(data.get(key, col))
                 + BeeUtils.unbox(row.getDouble(col)))));
@@ -2594,7 +2607,16 @@ public class TransportModuleBean implements BeeModule {
                 && !ArrayUtils.contains(calc, col))
             .forEach(col -> data.put(key, prfx + col, BeeUtils.nvl(row.getValue(col), "")));
       }
+      if (!handle.contains(key, prfx)) {
+        handle.put(key, prfx, new SimpleRowSet(row.getColumnNames()));
+      }
+
+      handle.get(key, prfx).addRow(row.getValues());
     }
+    handle.rowKeySet().forEach(key ->
+        handle.row(key).forEach((prfx, h) ->
+            data.put(key, prfx, h.serialize())));
+
     return data;
   }
 

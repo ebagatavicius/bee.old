@@ -48,7 +48,7 @@ import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
-import com.butent.bee.shared.modules.discussions.DiscussionsConstants.DiscussionStatus;
+import com.butent.bee.shared.modules.discussions.DiscussionsConstants.*;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.GridDescription;
@@ -93,7 +93,7 @@ class DiscussionsGridHandler extends AbstractGridInterceptor {
   public void beforeRender(GridView gridView, RenderingEvent event) {
     super.beforeRender(gridView, event);
 
-    Global.getParameter(PRM_DISCUSS_ADMIN, input -> this.discussionAdminLogin = input);
+    this.discussionAdminLogin = Global.getParameterText(PRM_DISCUSS_ADMIN);
     finishCompletedDiscussions(gridView);
   }
 
@@ -136,7 +136,7 @@ class DiscussionsGridHandler extends AbstractGridInterceptor {
       return DeleteMode.CANCEL;
     }
 
-    boolean isAdmin =  DiscussionHelper.isDiscussionAdmin(getDiscussionAdminLogin());
+    boolean isAdmin = DiscussionHelper.isDiscussionAdmin(getDiscussionAdminLogin());
 
     if (!isAdmin && !DiscussionHelper.isOwner(activeRow)) {
       gridView.notifyWarning(BeeUtils.joinWords(Localized.dictionary().discussion(),
@@ -225,7 +225,7 @@ class DiscussionsGridHandler extends AbstractGridInterceptor {
           CellSource.forProperty(PROP_STAR, currentUser.getUserId(), ValueType.INTEGER);
 
       EditorAssistant.editStarCell(DEFAULT_STAR_COUNT, event, source,
-              parameter -> updateStar(event, source, parameter));
+          parameter -> updateStar(event, source, parameter));
     }
   }
 

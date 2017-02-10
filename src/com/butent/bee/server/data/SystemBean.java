@@ -673,7 +673,7 @@ public class SystemBean {
         }
       }
     }
-    for (RightsState state : table.getStates()) {
+    for (RightsState state : BeeTable.getStates()) {
       tblName = table.getStateTable(state);
       SqlCreate sc = table.createStateTable(newTables.get(tblName), state);
 
@@ -1114,7 +1114,7 @@ public class SystemBean {
 
       Map<String, String[]> tableFields = new HashMap<>();
 
-      for (RightsState state : table.getStates()) {
+      for (RightsState state : BeeTable.getStates()) {
         tblName = table.getStateTable(state);
 
         if (names.contains(BeeUtils.normalize(tblName))) {

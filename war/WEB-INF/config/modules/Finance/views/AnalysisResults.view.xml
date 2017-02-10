@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="AnalysisResults" source="AnalysisResults"
+      caption="=finAnalysisResults"
+>
+  <Columns>
+    <SimpleColumn name="AnalysisHeader" />
+
+    <SimpleColumn name="Date" />
+    <SimpleColumn name="Caption" />
+
+    <SimpleColumn name="Size" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="Date" descending="true" />
+  </Order>
+</View>

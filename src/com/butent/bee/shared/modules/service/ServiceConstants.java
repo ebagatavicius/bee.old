@@ -31,6 +31,8 @@ public final class ServiceConstants {
   public static final String PRM_SMS_REQUEST_SERVICE_USER_NAME = "SmsRequestServiceUserName";
   public static final String PRM_SMS_REQUEST_SERVICE_PASSWORD = "SmsRequestServicePassword";
   public static final String PRM_SMS_REQUEST_SERVICE_FROM = "SmsRequestServiceFrom";
+  public static final String PRM_EXTERNAL_MAINTENANCE_URL = "ExternalMaintenanceUrl";
+  public static final String PRM_SMS_REQUEST_CONTACT_INFO_FROM = "SmsRequestContactInfoFrom";
 
   public static final String SVC_CREATE_INVOICE_ITEMS = "CreateInvoiceItems";
   public static final String SVC_CREATE_DEFECT_ITEMS = "CreateDefectItems";
@@ -39,6 +41,7 @@ public final class ServiceConstants {
   public static final String SVC_UPDATE_SERVICE_MAINTENANCE_OBJECT
           = "update_service_maintenance_object";
   public static final String SVC_INFORM_CUSTOMER = "inform_customer";
+  public static final String SVC_GET_MAINTENANCE_NEW_ROW_VALUES = "getMaintenanceNewRowValues";
 
   public static final String TBL_SERVICE_TREE = "ServiceTree";
   public static final String TBL_SERVICE_OBJECTS = "ServiceObjects";
@@ -88,6 +91,7 @@ public final class ServiceConstants {
   public static final String COL_MAINTENANCE_STATE = "MaintenanceState";
   public static final String COL_MESSAGE = "Message";
   public static final String COL_NOTIFY_CUSTOMER = "NotifyCustomer";
+  public static final String COL_REPAIRER = "Repairer";
   public static final String COL_SHOW_CUSTOMER = "ShowCustomer";
   public static final String COL_SEND_EMAIL = "SentEmail";
   public static final String COL_SEND_SMS = "SentSms";
@@ -106,6 +110,7 @@ public final class ServiceConstants {
 
   public static final String COL_SERVICE_CATEGORY_NAME = "Name";
   public static final String COL_STATE_COMMENT = "StateComment";
+  public static final String COL_STATE_NAME = "Name";
 
   public static final String COL_MANUFACTURER = "Manufacturer";
   public static final String COL_MAINTENANCE_DATE = "Date";
@@ -147,7 +152,6 @@ public final class ServiceConstants {
   public static final String ALS_CONTACT_EMAIL = "ContactEmail";
   public static final String ALS_CONTACT_PHONE = "ContactPhone";
 
-  public static final String ALS_CREATOR_DEPARTMENT_NAME = "CreatorDepartmentName";
   public static final String ALS_CUSTOMER_TYPE_NAME = "CustomerTypeName";
   public static final String ALS_DEPARTMENT_NAME = "DepartmentName";
   public static final String ALS_SERVICE_CATEGORY_NAME = "CategoryName";
@@ -158,7 +162,6 @@ public final class ServiceConstants {
   public static final String ALS_STATE_TIME = "StateTime";
 
   public static final String ALS_MAINTENANCE_ITEM_NAME = "ItemName";
-  public static final String ALS_MAINTENANCE_STATE_NAME = "MaintenanceStateName";
   public static final String ALS_MAINTENANCE_TYPE_NAME = "TypeName";
 
   public static final String ALS_MANUFACTURER_NAME = "ManufacturerName";
@@ -178,6 +181,7 @@ public final class ServiceConstants {
   public static final String GRID_OBJECT_INVOICES = "ObjectInvoices";
   public static final String GRID_OBJECT_DEFECTS = "ObjectDefects";
   public static final String GRID_SERVICE_INVOICES = "ServiceInvoices";
+  public static final String GRID_SERVICE_MAINTENANCE = "ServiceMaintenance";
 
   public static final String PROP_MAIN_ITEM = "MainItem";
   public static final String PROP_CRITERIA = "Criteria";

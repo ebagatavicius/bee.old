@@ -149,8 +149,6 @@ class NewSimpleTransportationOrder extends AbstractFormInterceptor {
     }
   }
 
-  private Long cargoService;
-
   NewSimpleTransportationOrder() {
   }
 
@@ -174,6 +172,7 @@ class NewSimpleTransportationOrder extends AbstractFormInterceptor {
   @Override
   public void afterInsertRow(IsRow result, boolean forced) {
     Double amount = getNumber(COL_AMOUNT);
+    Long cargoService = Global.getParameterRelation(PRM_CARGO_SERVICE);
 
     if (BeeUtils.isPositive(amount) && DataUtils.isId(cargoService) && DataUtils.hasId(result)) {
       String currency = null;
@@ -273,19 +272,7 @@ class NewSimpleTransportationOrder extends AbstractFormInterceptor {
       @Override
       public void onSuccess(BeeRow orderRow) {
         event.add(Data.getColumn(getViewName(), COL_ORDER), orderRow.getId());
-
-        if (BeeUtils.isPositive(getNumber(COL_AMOUNT))) {
-          Global.getParameter(PRM_CARGO_SERVICE, new Consumer<String>() {
-            @Override
-            public void accept(String input) {
-              cargoService = BeeUtils.toLongOrNull(input);
-              listener.fireEvent(event);
-            }
-          });
-
-        } else {
-          listener.fireEvent(event);
-        }
+        listener.fireEvent(event);
       }
     });
   }

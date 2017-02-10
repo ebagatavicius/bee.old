@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="StageConditions" source="StageConditions"
+      caption="=conditions"
+>
+  <Columns>
+    <SimpleColumn name="Stage" />
+    <SimpleColumn name="Field" />
+    <SimpleColumn name="Operator" />
+    <SimpleColumn name="Value" />
+    <SimpleColumn name="StageFrom" />
+  </Columns>
+</View>

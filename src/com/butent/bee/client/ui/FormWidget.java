@@ -1412,7 +1412,7 @@ public enum FormWidget {
         widget = new InputDate();
         format = attributes.get(UiConstants.ATTR_FORMAT);
         if (!BeeUtils.isEmpty(format)) {
-          ((InputDate) widget).setDateTimeFormat(Format.getDateTimeFormat(format));
+          ((InputDate) widget).setDateTimeFormat(Format.parseDateTimeFormat(format));
         }
         break;
 
@@ -1420,7 +1420,7 @@ public enum FormWidget {
         widget = new InputDateTime();
         format = attributes.get(UiConstants.ATTR_FORMAT);
         if (!BeeUtils.isEmpty(format)) {
-          ((InputDateTime) widget).setDateTimeFormat(Format.getDateTimeFormat(format));
+          ((InputDateTime) widget).setDateTimeFormat(Format.parseDateTimeFormat(format));
         }
         break;
 

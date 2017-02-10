@@ -106,13 +106,10 @@ public class CargoSalesGrid extends InvoiceBuilder {
       newRow.setValue(targetInfo.getColumnIndex(COL_CURRENCY), entry.getKey());
       newRow.setValue(targetInfo.getColumnIndex(ALS_CURRENCY_NAME), entry.getValue());
     }
-    Global.getRelationParameter(PRM_INVOICE_PREFIX, new BiConsumer<Long, String>() {
-      @Override
-      public void accept(Long prefixId, String prefix) {
-        newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_SALE_SERIES), prefixId);
-        newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_INVOICE_PREFIX), prefix);
-        consumer.accept(data, newRow);
-      }
+    Global.getParameterRelation(PRM_INVOICE_PREFIX, (prefixId, prefix) -> {
+      newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_SALE_SERIES), prefixId);
+      newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_INVOICE_PREFIX), prefix);
+      consumer.accept(data, newRow);
     });
   }
 

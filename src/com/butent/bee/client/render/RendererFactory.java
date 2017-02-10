@@ -282,7 +282,7 @@ public final class RendererFactory {
         break;
 
       case PLACE:
-        renderer = new CargoPlaceRenderer(dataColumns, description.getOptions());
+        renderer = new CargoPlaceRenderer(source, renderColumns, description.getOptions());
         break;
     }
 

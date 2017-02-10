@@ -44,7 +44,7 @@ abstract class MaintenanceExpanderForm extends AbstractFormInterceptor {
     Split split = getSplit(getFormView());
 
     if (split != null) {
-      int splitHeight = split.getParent().getOffsetHeight();
+      int splitHeight = split.getOffsetHeight();
 
       int oldSize = split.getDirectionSize(Direction.SOUTH);
       int newSize;

@@ -2790,7 +2790,7 @@ public class EcModuleBean implements BeeModule {
   private ResponseObject mailRegistration(Long account, String recipient, String login,
       String password, SupportedLocale locale) {
 
-    String companyName = BeeUtils.trim(prm.getText(PRM_COMPANY));
+    String companyName = BeeUtils.trim(prm.getRelationInfo(PRM_COMPANY).getB());
     String url = BeeUtils.trim(prm.getText(PRM_URL));
 
     Dictionary messages = Localizations.getDictionary(locale);

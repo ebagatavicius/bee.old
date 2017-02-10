@@ -180,6 +180,16 @@ final class ShippingSchedule extends VehicleTimeBoard {
   }
 
   @Override
+  protected String getRefreshLocalChangesColumnName() {
+    return COL_SS_REFRESH_LOCAL_CHANGES;
+  }
+
+  @Override
+  protected String getRefreshRemoteChangesColumnName() {
+    return COL_SS_REFRESH_REMOTE_CHANGES;
+  }
+
+  @Override
   protected String getRowHeightColumnName() {
     return COL_SS_PIXELS_PER_ROW;
   }

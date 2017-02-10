@@ -14,6 +14,8 @@ public final class FinanceConstants {
 
   public static final String SVC_VERIFY_ANALYSIS_FORM = "verifyAnalysisForm";
   public static final String SVC_CALCULATE_ANALYSIS_FORM = "calculateAnalysisForm";
+  public static final String SVC_SAVE_ANALYSIS_RESULTS = "saveAnalysisResults";
+  public static final String SVC_GET_ANALYSIS_RESULTS = "getAnalysisResults";
 
   public static final String TBL_FINANCIAL_RECORDS = "FinancialRecords";
 
@@ -33,6 +35,7 @@ public final class FinanceConstants {
   public static final String TBL_ANALYSIS_COLUMNS = "AnalysisColumns";
   public static final String TBL_ANALYSIS_ROWS = "AnalysisRows";
   public static final String TBL_ANALYSIS_FILTERS = "AnalysisFilters";
+  public static final String TBL_ANALYSIS_RESULTS = "AnalysisResults";
 
   public static final String VIEW_FINANCIAL_RECORDS = "FinancialRecords";
 
@@ -56,6 +59,7 @@ public final class FinanceConstants {
   public static final String VIEW_ANALYSIS_COLUMNS = "AnalysisColumns";
   public static final String VIEW_ANALYSIS_ROWS = "AnalysisRows";
   public static final String VIEW_ANALYSIS_FILTERS = "AnalysisFilters";
+  public static final String VIEW_ANALYSIS_RESULTS = "AnalysisResults";
 
   public static final String COL_FIN_JOURNAL = "Journal";
   public static final String COL_FIN_DATE = "Date";
@@ -109,7 +113,6 @@ public final class FinanceConstants {
   public static final String COL_FIN_INDICATOR_TURNOVER_OR_BALANCE = "IndicatorTurnoverOrBalance";
   public static final String COL_FIN_INDICATOR_NORMAL_BALANCE = "IndicatorNormalBalance";
   public static final String COL_FIN_INDICATOR_CLOSING_ENTRIES = "IndicatorClosingEntries";
-  public static final String COL_FIN_INDICATOR_IS_PERCENT = "IndicatorIsPercent";
   public static final String COL_FIN_INDICATOR_SCALE = "IndicatorScale";
 
   public static final String COL_FIN_INDICATOR = "Indicator";
@@ -127,7 +130,9 @@ public final class FinanceConstants {
   public static final String COL_BUDGET_HEADER_ORDINAL = "Ordinal";
   public static final String COL_BUDGET_HEADER_EMPLOYEE = "Employee";
   public static final String COL_BUDGET_HEADER_INDICATOR = "Indicator";
+  public static final String COL_BUDGET_HEADER_TURNOVER_OR_BALANCE = "TurnoverOrBalance";
   public static final String COL_BUDGET_HEADER_TYPE = "BudgetType";
+  public static final String COL_BUDGET_HEADER_CURRENCY = "Currency";
   public static final String COL_BUDGET_HEADER_YEAR = "Year";
   public static final String COL_BUDGET_HEADER_BACKGROUND = "Background";
   public static final String COL_BUDGET_HEADER_FOREGROUND = "Foreground";
@@ -142,10 +147,11 @@ public final class FinanceConstants {
   public static final String COL_BUDGET_ENTRY_ORDINAL = "Ordinal";
   public static final String COL_BUDGET_ENTRY_EMPLOYEE = "Employee";
   public static final String COL_BUDGET_ENTRY_INDICATOR = "Indicator";
+  public static final String COL_BUDGET_ENTRY_TURNOVER_OR_BALANCE = "TurnoverOrBalance";
   public static final String COL_BUDGET_ENTRY_TYPE = "BudgetType";
   public static final String COL_BUDGET_ENTRY_YEAR = "Year";
 
-  private static final String[] COL_BUDGET_ENTRY_VALUES = new String[] {
+  public static final String[] COL_BUDGET_ENTRY_VALUES = new String[] {
       "Month01", "Month02", "Month03", "Month04", "Month05", "Month06",
       "Month07", "Month08", "Month09", "Month10", "Month11", "Month12"
   };
@@ -196,9 +202,7 @@ public final class FinanceConstants {
   public static final String COL_ANALYSIS_COLUMN_YEAR_UNTIL = "YearUntil";
   public static final String COL_ANALYSIS_COLUMN_MONTH_UNTIL = "MonthUntil";
   public static final String COL_ANALYSIS_COLUMN_SCRIPT = "ColumnScript";
-  public static final String COL_ANALYSIS_COLUMN_IS_PERCENT = "ColumnIsPercent";
   public static final String COL_ANALYSIS_COLUMN_SCALE = "ColumnScale";
-  public static final String COL_ANALYSIS_COLUMN_TOTAL = "ColumnTotal";
   public static final String COL_ANALYSIS_COLUMN_BACKGROUND = "Background";
   public static final String COL_ANALYSIS_COLUMN_FOREGROUND = "Foreground";
   public static final String COL_ANALYSIS_COLUMN_STYLE = "ColumnStyle";
@@ -222,9 +226,7 @@ public final class FinanceConstants {
   public static final String COL_ANALYSIS_ROW_YEAR_UNTIL = "YearUntil";
   public static final String COL_ANALYSIS_ROW_MONTH_UNTIL = "MonthUntil";
   public static final String COL_ANALYSIS_ROW_SCRIPT = "RowScript";
-  public static final String COL_ANALYSIS_ROW_IS_PERCENT = "RowIsPercent";
   public static final String COL_ANALYSIS_ROW_SCALE = "RowScale";
-  public static final String COL_ANALYSIS_ROW_TOTAL = "RowTotal";
   public static final String COL_ANALYSIS_ROW_BACKGROUND = "Background";
   public static final String COL_ANALYSIS_ROW_FOREGROUND = "Foreground";
   public static final String COL_ANALYSIS_ROW_STYLE = "RowStyle";
@@ -241,6 +243,11 @@ public final class FinanceConstants {
   public static final String COL_ANALYSIS_FILTER_EMPLOYEE = "Employee";
   public static final String COL_ANALYSIS_FILTER_EXTRA = "ExtraFilter";
   public static final String COL_ANALYSIS_FILTER_INCLUDE = "Include";
+
+  public static final String COL_ANALYSIS_RESULT_DATE = "Date";
+  public static final String COL_ANALYSIS_RESULT_CAPTION = "Caption";
+  public static final String COL_ANALYSIS_RESULT_SIZE = "Size";
+  public static final String COL_ANALYSIS_RESULTS = "Results";
 
   public static final String ALS_JOURNAL_BACKGROUND = "JournalBackground";
   public static final String ALS_JOURNAL_FOREGROUND = "JournalForeground";
@@ -296,6 +303,7 @@ public final class FinanceConstants {
 
   public static final String GRID_ANALYSIS_COLUMNS = "AnalysisColumns";
   public static final String GRID_ANALYSIS_ROWS = "AnalysisRows";
+  public static final String GRID_ANALYSIS_RESULTS = "AnalysisResults";
 
   public static final String FORM_FINANCE_DEFAULT_ACCOUNTS = "FinanceDefaultAccounts";
   public static final String FORM_FINANCE_POSTING_PRECEDENCE = "FinancePostingPrecedence";

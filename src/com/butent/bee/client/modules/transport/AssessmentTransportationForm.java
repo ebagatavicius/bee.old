@@ -82,7 +82,7 @@ public class AssessmentTransportationForm extends PrintFormInterceptor {
             map.put(colQuantity, Pair.of(1, loc.trdQuantity()));
             map.put(colVolume, Pair.of(2, loc.volume()));
 
-            SelfServiceUtils.getCargoPlaces(Filter.any(COL_CARGO,
+            TransportUtils.getCargoPlaces(Filter.any(COL_CARGO,
                 result.getDistinctLongs(cargoIdx)), (loading, unloading) -> {
               HtmlTable cargoInfo = new HtmlTable();
               int c = 0;

@@ -2,8 +2,8 @@ package com.butent.bee.client.grid.column;
 
 import com.butent.bee.client.grid.cell.AbstractCell;
 import com.butent.bee.client.grid.cell.DateTimeCell;
-import com.butent.bee.client.i18n.DateTimeFormat;
-import com.butent.bee.client.i18n.HasDateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.HasDateTimeFormat;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.time.DateTime;

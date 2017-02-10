@@ -107,6 +107,36 @@
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
+
+    <SimpleColumn name="BoLSeries" />
+    <SimpleJoin name="BoLSeries" joinType="LEFT">
+      <SimpleColumn name="SeriesName" alias="BoLSeriesName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="BoLDriverTabNo" />
+    <SimpleJoin name="BoLDriverTabNo" joinType="LEFT">
+      <SimpleColumn name="TabNumber" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" alias="DriverFirstName" />
+          <SimpleColumn name="LastName" alias="DriverLastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="BoLNumber" />
+    <SimpleColumn name="BoLIssueDate" />
+    <SimpleColumn name="BoLDepartureDate" />
+    <SimpleColumn name="BoLUnloadingDate" />
+    <SimpleColumn name="BoLLoading" />
+    <SimpleColumn name="BoLUnloading" />
+    <SimpleColumn name="BoLVehicleNumber" />
+    <SimpleColumn name="BoLDriver" />
+
+    <SimpleColumn name="BoLCarrier" />
+    <SimpleJoin joinType="LEFT" name="BoLCarrier">
+      <SimpleColumn name="Name" alias="BoLCarrierName" />
+    </SimpleJoin>
   </Columns>
   <Order>
     <OrderBy column="Date" descending="true" />

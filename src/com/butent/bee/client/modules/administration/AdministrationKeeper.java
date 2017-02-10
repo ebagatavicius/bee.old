@@ -59,14 +59,8 @@ public final class AdministrationKeeper {
     }
   }
 
-  private static Long company;
-
   public static ParameterList createArgs(String method) {
     return BeeKeeper.getRpc().createParameters(Module.ADMINISTRATION, method);
-  }
-
-  public static Long getCompany() {
-    return company;
   }
 
   public static void register() {
@@ -148,10 +142,6 @@ public final class AdministrationKeeper {
     SelectorEvent.register(AdministrationKeeper::onDataSelector);
 
     registerDimensions();
-  }
-
-  public static void setCompany(Long company) {
-    AdministrationKeeper.company = company;
   }
 
   private static void onDataSelector(SelectorEvent event) {

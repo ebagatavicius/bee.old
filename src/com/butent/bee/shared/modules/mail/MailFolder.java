@@ -6,9 +6,10 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 public class MailFolder implements BeeSerializable {
@@ -26,21 +27,21 @@ public class MailFolder implements BeeSerializable {
   private Long modSeq;
   private int unread;
 
-  private final Map<String, MailFolder> childs = new LinkedHashMap<>();
+  private final List<MailFolder> childs = new ArrayList<>();
 
   public MailFolder() {
-    this(null, null, "ROOT", null);
+    this(null, "ROOT", null);
   }
 
-  public MailFolder(MailFolder parent, Long id, String name, Long uidValidity) {
-    this.parent = parent;
+  public MailFolder(Long id, String name, Long uidValidity) {
     this.id = id;
     this.name = name;
     this.uidValidity = uidValidity;
   }
 
   public void addSubFolder(MailFolder subFolder) {
-    childs.put(BeeUtils.normalize(subFolder.getName()), subFolder);
+    childs.add(subFolder);
+    subFolder.parent = this;
   }
 
   @Override
@@ -58,11 +59,7 @@ public class MailFolder implements BeeSerializable {
           String[] data = Codec.beeDeserializeCollection(value);
 
           if (!ArrayUtils.isEmpty(data)) {
-            for (int j = 0; j < data.length; j += 2) {
-              MailFolder child = restore(data[j + 1]);
-              child.parent = this;
-              childs.put(data[j], child);
-            }
+            Arrays.stream(data).forEach(d -> addSubFolder(restore(d)));
           }
           break;
         case ID:
@@ -127,7 +124,7 @@ public class MailFolder implements BeeSerializable {
   }
 
   public Collection<MailFolder> getSubFolders() {
-    return childs.values();
+    return childs;
   }
 
   public Long getUidValidity() {
@@ -140,10 +137,6 @@ public class MailFolder implements BeeSerializable {
 
   public boolean isConnected() {
     return !Objects.equals(uidValidity, DISCONNECTED_MODE);
-  }
-
-  public MailFolder removeSubFolder(String subFolderName) {
-    return childs.remove(BeeUtils.normalize(subFolderName));
   }
 
   public static MailFolder restore(String s) {

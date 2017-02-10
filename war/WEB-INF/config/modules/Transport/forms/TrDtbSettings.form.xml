@@ -94,6 +94,16 @@
 
     &separator;
     <FlowPanel style="&row;">
+      <Label text="=trTbSettingsRefreshLocalChanges" style="&lbl;" />
+      <InputSpinner source="DtbRefreshLocalChanges" minValue="-1" maxValue="999" style="&spin;" />
+    </FlowPanel>
+    <FlowPanel style="&row;">
+      <Label text="=trTbSettingsRefreshRemoteChanges" style="&lbl;" />
+      <InputSpinner source="DtbRefreshRemoteChanges" minValue="-1" maxValue="999" style="&spin;" />
+    </FlowPanel>
+
+    &separator;
+    <FlowPanel style="&row;">
       <Label text="=transportTripColor" style="&lbl;" />
       <DataSelector source="DtbColor" renderColumns="DtbColorName" style="&inline;" />
     </FlowPanel>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="ShipmentRegisteredRequests" viewName="ShipmentRequests"
@@ -46,5 +47,8 @@
     <DataColumn name="LossReason" />
     <DataColumn name="Host" />
     <DataColumn name="Agent" />
+
+    <PropColumn name="Vat" type="decimal" label="=vat" format="0.00" />
+    <PropColumn name="Income" type="decimal" label="=customerPrice" format="0.00" />
   </g:columns>
 </g:Grid>

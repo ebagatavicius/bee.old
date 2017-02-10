@@ -2,9 +2,9 @@ package com.butent.bee.client.render;
 
 import com.google.gwt.i18n.client.NumberFormat;
 
-import com.butent.bee.client.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.client.i18n.Format;
-import com.butent.bee.client.i18n.HasDateTimeFormat;
+import com.butent.bee.shared.i18n.HasDateTimeFormat;
 import com.butent.bee.client.i18n.HasNumberFormat;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasScale;

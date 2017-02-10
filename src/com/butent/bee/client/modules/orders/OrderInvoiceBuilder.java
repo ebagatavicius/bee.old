@@ -236,7 +236,7 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
     newRow.setValue(targetInfo.getColumnIndex(TradeConstants.COL_TRADE_MANAGER
         + ClassifierConstants.COL_LAST_NAME), BeeKeeper.getUser().getLastName());
 
-    Global.getRelationParameter(PRM_DEFAULT_SALE_OPERATION, (t, u) -> {
+    Global.getParameterRelation(PRM_DEFAULT_SALE_OPERATION, (t, u) -> {
       if (DataUtils.isId(t)) {
         newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_OPERATION), t);
         newRow.setValue(targetInfo.getColumnIndex(COL_OPERATION_NAME), u);

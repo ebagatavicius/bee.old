@@ -11,6 +11,7 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.Modality;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.validation.CellValidateEvent;
 import com.butent.bee.client.view.form.FormView;
@@ -288,7 +289,7 @@ public final class ProjectsHelper {
     } else if (ValueType.DATE.equals(type)) {
       JustDate date = TimeUtils.toDateOrNull(value);
 
-      result = date == null ? result : date.toString();
+      result = date == null ? result : Format.renderDate(date);
     } else if (col != null ? !BeeUtils.isEmpty(col.getEnumKey()) : false) {
       return EnumUtils.getCaption(col.getEnumKey(), BeeUtils.toInt(value));
     }

@@ -117,7 +117,7 @@ public class FileStorageBean {
     Holder<Long> id = Holder.absent();
     Holder<Boolean> exists = Holder.of(false);
 
-    cb.synchronizedCall(() -> {
+    cb.synchronizedCall(TBL_FILES, () -> {
       QueryServiceBean queryBean = Invocation.locateRemoteBean(QueryServiceBean.class);
 
       id.set(queryBean.getLong(new SqlSelect()
@@ -340,7 +340,7 @@ public class FileStorageBean {
     String hash = Codec.toHex(md.digest());
 
     Long id = qs.getLong(new SqlSelect()
-        .addFields(TBL_FILES, sys.getIdName(TBL_FILES))
+        .addField(TBL_FILES, sys.getIdName(TBL_FILES), COL_FILE)
         .addFrom(TBL_FILES)
         .setWhere(SqlUtils.equals(TBL_FILES, COL_FILE_HASH, hash)));
 

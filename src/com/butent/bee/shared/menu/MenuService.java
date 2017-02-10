@@ -2,6 +2,8 @@ package com.butent.bee.shared.menu;
 
 import com.google.common.collect.Sets;
 
+import static com.butent.bee.shared.modules.cars.CarsConstants.TBL_SERVICE_EVENTS;
+
 import com.butent.bee.shared.data.DataNameProvider;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.calendar.CalendarConstants;
@@ -94,6 +96,9 @@ public enum MenuService {
   SERVICE_CALENDAR(RightsState.VIEW,
       Sets.newHashSet(ServiceConstants.VIEW_SERVICE_OBJECTS, TaskConstants.VIEW_TASKS)),
 
+  @XmlEnumValue("car_service_calendar")
+  CAR_SERVICE_CALENDAR(RightsState.VIEW, TBL_SERVICE_EVENTS),
+
   @XmlEnumValue("trade_act_new")
   TRADE_ACT_NEW(RightsState.CREATE, TradeActConstants.VIEW_TRADE_ACTS),
   @XmlEnumValue("trade_act_list")
@@ -111,7 +116,10 @@ public enum MenuService {
   FINANCE_POSTING_PRECEDENCE(RightsState.EDIT, FinanceConstants.VIEW_FINANCE_CONFIGURATION),
 
   @XmlEnumValue("extra_dimensions")
-  EXTRA_DIMENSIONS(RightsState.VIEW);
+  EXTRA_DIMENSIONS(RightsState.VIEW),
+
+  @XmlEnumValue("service_maintenance_list")
+  SERVICE_MAINTENANCE_LIST(RightsState.VIEW, ServiceConstants.TBL_SERVICE_MAINTENANCE);
 
   private final Set<RightsState> dataRightsStates;
   private DataNameProvider dataNameProvider;

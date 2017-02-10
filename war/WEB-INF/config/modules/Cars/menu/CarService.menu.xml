@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+
+       name="CarService" label="=carService" parent="Cars" order="35" module="Cars.Service" separator="true"
+>
+  <Item name="CarServiceOrders" label="=serviceOrders" service="grid" parameters="CarServiceOrders" />
+  <Item name="Calendar" label="=calendar" service="car_service_calendar" separator="true" />
+  <Item name="Stages" label="=statuses" service="stages" parameters="CarServiceOrders" separator="true" />
+  <Item name="CarJobs" label="=serviceJobs" service="grid" parameters="CarJobs" />
+  <Item name="CarBundles" label="=bundles" service="grid" parameters="CarBundles" />
+</Entry>

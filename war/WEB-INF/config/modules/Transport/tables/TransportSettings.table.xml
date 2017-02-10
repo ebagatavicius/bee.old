@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="TransportSettings"
-  idName="TransportSettingID"
-  >
+       name="TransportSettings"
+       idName="TransportSettingID"
+>
   <Fields>
     <Relation name="User" notNull="true" relation="Users" cascade="DELETE" unique="true" />
 
@@ -22,11 +22,14 @@
     <Integer name="FxHeaderHeight" />
     <Integer name="FxFooterHeight" />
 
+    <Integer name="FxRefreshLocalChanges" />
+    <Integer name="FxRefreshRemoteChanges" />
+
     <Relation name="FxTheme" relation="Themes" />
 
     <Integer name="FxItemOpacity" />
     <Integer name="FxStripOpacity" />
-    
+
     <Text name="FxFilterDataTypes" />
     <Text name="FxFilters" />
 
@@ -56,6 +59,9 @@
     <Integer name="SsHeaderHeight" />
     <Integer name="SsFooterHeight" />
 
+    <Integer name="SsRefreshLocalChanges" />
+    <Integer name="SsRefreshRemoteChanges" />
+
     <Integer name="SsItemOpacity" />
     <Integer name="SsStripOpacity" />
 
@@ -63,10 +69,10 @@
 
     <Text name="SsFilterDataTypes" />
     <Text name="SsFilters" />
-    
+
     <Date name="DtbMinDate" />
     <Date name="DtbMaxDate" />
-    
+
     <Text name="DtbTransportGroups" />
     <Boolean name="DtbCompletedTrips" />
 
@@ -85,6 +91,9 @@
 
     <Integer name="DtbHeaderHeight" />
     <Integer name="DtbFooterHeight" />
+
+    <Integer name="DtbRefreshLocalChanges" />
+    <Integer name="DtbRefreshRemoteChanges" />
 
     <Integer name="DtbItemOpacity" />
     <Integer name="DtbStripOpacity" />
@@ -119,6 +128,9 @@
     <Integer name="TruckHeaderHeight" />
     <Integer name="TruckFooterHeight" />
 
+    <Integer name="TruckRefreshLocalChanges" />
+    <Integer name="TruckRefreshRemoteChanges" />
+
     <Integer name="TruckItemOpacity" />
     <Integer name="TruckStripOpacity" />
 
@@ -151,6 +163,9 @@
 
     <Integer name="TrailerHeaderHeight" />
     <Integer name="TrailerFooterHeight" />
+
+    <Integer name="TrailerRefreshLocalChanges" />
+    <Integer name="TrailerRefreshRemoteChanges" />
 
     <Integer name="TrailerItemOpacity" />
     <Integer name="TrailerStripOpacity" />

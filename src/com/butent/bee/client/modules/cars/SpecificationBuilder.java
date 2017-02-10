@@ -6,6 +6,7 @@ import com.google.common.collect.TreeMultimap;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.butent.bee.client.modules.cars.ConfPricelistForm.*;
 import static com.butent.bee.shared.html.builder.Factory.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_PHOTO;
@@ -20,6 +21,7 @@ import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dialog.InputBoxes;
 import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.dialog.Popup;
+import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.style.StyleUtils;
@@ -381,9 +383,18 @@ public class SpecificationBuilder implements InputCallback {
       List<TableCellElement> cells = table.getRowCells(i);
 
       if (cells.size() > 2) {
-        table.getRowFormatter().setVisible(i, BeeUtils.isEmpty(value)
+        boolean show = BeeUtils.isEmpty(value)
             || BeeUtils.containsSame(cells.get(1).getInnerText(), value)
-            || BeeUtils.containsSame(cells.get(2).getInnerText(), value));
+            || BeeUtils.containsSame(cells.get(2).getInnerText(), value);
+
+        if (show) {
+          int packetIdx = DomUtils.getDataIndexInt(table.getRow(i));
+
+          if (!BeeConst.isUndef(packetIdx)) {
+            table.getRowFormatter().setVisible(packetIdx, show);
+          }
+        }
+        table.getRowFormatter().setVisible(i, show);
       }
     }
     searchTag = value;
@@ -596,13 +607,18 @@ public class SpecificationBuilder implements InputCallback {
           specification.addOption(option, normPrice(option));
         }
         List<Widget[]> caps = new ArrayList<>();
-        opts.forEach(o -> caps.add(new Widget[] {getPhoto(o.getPhoto()), new Label(o.toString())}));
+        opts.forEach(o -> caps.add(new Widget[] {
+            getPhoto(BeeUtils.nvl(configuration.getRelationPhoto(o, specification.getBundle()),
+                configuration.getOptionPhoto(o), o.getPhoto())), new Label(o.toString())}));
 
         optionBox.add(buildThumbnail(dimension.getName(), caps,
             index -> toggleOption(allOptions, opts.get(index), true, false),
             Objects.isNull(option) ? null : new Widget[] {
                 new Label(dimension.getName()),
-                getPhoto(option.getPhoto()), new Label(option.toString())}));
+                getPhoto(BeeUtils.nvl(configuration.getRelationPhoto(option,
+                    specification.getBundle()), configuration.getOptionPhoto(option),
+                    option.getPhoto())),
+                new Label(option.toString())}));
       } else {
         int rowSelectable = BeeConst.UNDEF;
 
@@ -615,7 +631,7 @@ public class SpecificationBuilder implements InputCallback {
 
             if (BeeConst.isUndef(rowSelectable)) {
               rowSelectable = selectable.getRowCount();
-              selectable.setText(rowSelectable, 0, dimension.getName());
+              selectable.setText(rowSelectable, 0, dimension.getName(), STYLE_GROUP);
               selectable.getCellFormatter().setColSpan(rowSelectable, 0, 4);
             }
             rowSelectable++;
@@ -623,6 +639,21 @@ public class SpecificationBuilder implements InputCallback {
             selectable.setText(rowSelectable, 1, option.getCode());
             selectable.setText(rowSelectable, 2, option.getName());
             selectable.setText(rowSelectable, 3, BeeUtils.toString(normPrice(option)));
+
+            Set<Long> packets = DataUtils.parseIdSet(configuration.getRelationPackets(option,
+                specification.getBundle()));
+            int packetIdx = rowSelectable;
+
+            for (Option opt : configuration.getPackets(option)) {
+              if (!packets.contains(opt.getId())) {
+                rowSelectable++;
+                selectable.getCellFormatter().setStyleName(rowSelectable, 0, STYLE_PACKET);
+                selectable.setText(rowSelectable, 1, opt.getCode(), STYLE_PACKET);
+                selectable.setText(rowSelectable, 2, opt.getName(), STYLE_PACKET);
+                selectable.getCellFormatter().setStyleName(rowSelectable, 3, STYLE_PACKET);
+                DomUtils.setDataIndex(selectable.getRow(rowSelectable), packetIdx);
+              }
+            }
           }
         }
       }

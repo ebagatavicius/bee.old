@@ -135,6 +135,9 @@ public enum ImportType implements HasLocalizedCaption {
           + " (" + locale.name() + ",...)");
       addSimpleProperty(prfx + CarsConstants.COL_CRITERIA + "Values", capPrfx + locale.criteria()
           + " (" + locale.value() + ",...)");
+      addDataProperty(prfx + CarsConstants.COL_PACKET, capPrfx + locale.packet()
+          + " (<span style=\"font-family:" + FontAwesome.class.getSimpleName() + "; color:red;\">"
+          + FontAwesome.BAN.getCode() + "</span> " + locale.code() + ",...)");
 
       prfx = CarsConstants.TBL_CONF_RESTRICTIONS;
       capPrfx = locale.restrictions() + ": ";

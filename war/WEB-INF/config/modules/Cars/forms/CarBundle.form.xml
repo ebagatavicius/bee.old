@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form>
+<f:Form xmlns="http://www.butent.com/widget"
+        xmlns:f="http://www.butent.com/form"
+
+        name="CarBundle" caption="=bundle"
+>
+  <FlowPanel class="flexBox-vertical">
+    <Table kind="controls">
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+      <row>
+        <Label for="BundleName" />
+        <InputText source="BundleName" />
+
+        <Label for="Code" />
+        <InputText source="Code" />
+      </row>
+      <row>
+        <Label for="Model" />
+        <DataSelector source="Model" viewName="VehicleModels" newRowEnabled="false"
+                      renderColumns="ParentModelName ModelName" />
+
+        <Label for="Customer" />
+        <DataSelector source="Customer" renderColumns="CustomerName CustomerTypeName"
+                      newRowEnabled="false" />
+      </row>
+      <row>
+        <Label for="ValidUntil" />
+        <InputDate source="ValidUntil" />
+      </row>
+    </Table>
+    <br />
+    <TabbedPages class="flexible">
+      <page>
+        <text>=serviceJobs</text>
+        <ChildGrid name="CarBundleJobs" relColumn="Bundle" />
+      </page>
+      <page>
+        <text>=productsServices</text>
+        <ChildGrid name="CarBundleItems" relColumn="Bundle" />
+      </page>
+      <page>
+        <text>=notes</text>
+        <InputArea source="Notes" class="occupy-1" summarize="true" />
+      </page>
+    </TabbedPages>
+  </FlowPanel>
+</f:Form>

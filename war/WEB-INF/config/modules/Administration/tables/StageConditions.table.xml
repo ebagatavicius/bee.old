@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="StageConditions"
+       idName="ConditionID"
+>
+  <Fields>
+    <Relation name="Stage" relation="Stages" notNull="true" label="=status" />
+    <String name="Field" precision="30" />
+    <Numeric name="Operator" precision="2" />
+    <Text name="Value" />
+    <Relation name="StageFrom" relation="Stages" cascade="DELETE" label="=status+(+=from+)" />
+  </Fields>
+</Table>

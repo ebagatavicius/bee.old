@@ -64,6 +64,18 @@ public class WSDocument {
   private String currency;
   private String manager;
 
+  private String bolSeries;
+  private String bolNumber;
+  private String bolLoadingPlace;
+  private String bolUnloadingPlace;
+  private String bolVehicleNumber;
+  private String bolDriver;
+  private String bolCarrier;
+  private String bolDepartureDate;
+  private String bolUnloadingDate;
+  private String bolIssueDate;
+  private String bolDriverTabNo;
+
   private final List<WSDocumentItem> items = new ArrayList<>();
 
   public WSDocument(String documentId, DateTime date, String operation, String company,
@@ -105,6 +117,40 @@ public class WSDocument {
           .append(XmlUtils.tag("artikulas", item.article))
           .append(XmlUtils.tag("pastaba", item.note));
 
+      if (!BeeUtils.isEmpty(bolSeries)) {
+        sb.append(XmlUtils.tag("vaz_serija", bolSeries));
+      }
+      if (!BeeUtils.isEmpty(bolNumber)) {
+        sb.append(XmlUtils.tag("vaz_nr", bolNumber));
+      }
+      if (!BeeUtils.isEmpty(bolLoadingPlace)) {
+        sb.append(XmlUtils.tag("pakr_vieta", bolLoadingPlace));
+      }
+      if (!BeeUtils.isEmpty(bolUnloadingPlace)) {
+        sb.append(XmlUtils.tag("iskr_vieta", bolUnloadingPlace));
+      }
+      if (!BeeUtils.isEmpty(bolVehicleNumber)) {
+        sb.append(XmlUtils.tag("tran_priem", bolVehicleNumber));
+      }
+      if (!BeeUtils.isEmpty(bolDriver)) {
+        sb.append(XmlUtils.tag("vairuotoj", bolDriver));
+      }
+      if (!BeeUtils.isEmpty(bolCarrier)) {
+        sb.append(XmlUtils.tag("tran_kl", bolCarrier));
+      }
+      if (!BeeUtils.isEmpty(bolDepartureDate)) {
+        sb.append(XmlUtils.tag("vaz_isgab", bolDepartureDate));
+      }
+      if (!BeeUtils.isEmpty(bolUnloadingDate)) {
+        sb.append(XmlUtils.tag("iskr_time", bolUnloadingDate));
+      }
+      if (!BeeUtils.isEmpty(bolIssueDate)) {
+        sb.append(XmlUtils.tag("pakr_time", bolIssueDate));
+      }
+      if (!BeeUtils.isEmpty(bolDriverTabNo)) {
+        sb.append(XmlUtils.tag("tab_nr", bolDriverTabNo));
+      }
+
       if (!BeeUtils.isEmpty(item.price)) {
         sb.append(XmlUtils.tag("kaina", item.price));
 
@@ -117,6 +163,50 @@ public class WSDocument {
       sb.append("</row>");
     }
     return sb.append("</VFPData>").toString();
+  }
+
+  public void setBolSeries(String bolSeries) {
+    this.bolSeries = bolSeries;
+  }
+
+  public void setBolNumber(String bolNumber) {
+    this.bolNumber = bolNumber;
+  }
+
+  public void setBolLoadingPlace(String bolLoadingPlace) {
+    this.bolLoadingPlace = bolLoadingPlace;
+  }
+
+  public void setBolUnloadingPlace(String bolUnloadingPlace) {
+    this.bolUnloadingPlace = bolUnloadingPlace;
+  }
+
+  public void setBolVehicleNumber(String bolVehicleNumber) {
+    this.bolVehicleNumber = bolVehicleNumber;
+  }
+
+  public void setBolDriver(String bolDriver) {
+    this.bolDriver = bolDriver;
+  }
+
+  public void setBolCarrier(String bolCarrier) {
+    this.bolCarrier = bolCarrier;
+  }
+
+  public void setBolDepartureDate(String bolDepartureDate) {
+    this.bolDepartureDate = bolDepartureDate;
+  }
+
+  public void setBolUnloadingDate(String bolUnloadingDate) {
+    this.bolUnloadingDate = bolUnloadingDate;
+  }
+
+  public void setBolIssueDate(String bolIssueDate) {
+    this.bolIssueDate = bolIssueDate;
+  }
+
+  public void setBolDriverTabNo(String bolDriverTabNo) {
+    this.bolDriverTabNo = bolDriverTabNo;
   }
 
   public void setCurrency(String currency) {

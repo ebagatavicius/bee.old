@@ -104,6 +104,16 @@
 
     &separator;
     <FlowPanel style="&row;">
+      <Label text="=trTbSettingsRefreshLocalChanges" style="&lbl;" />
+      <InputSpinner source="TruckRefreshLocalChanges" minValue="-1" maxValue="999" style="&spin;" />
+    </FlowPanel>
+    <FlowPanel style="&row;">
+      <Label text="=trTbSettingsRefreshRemoteChanges" style="&lbl;" />
+      <InputSpinner source="TruckRefreshRemoteChanges" minValue="-1" maxValue="999" style="&spin;" />
+    </FlowPanel>
+
+    &separator;
+    <FlowPanel style="&row;">
       <Label text="=colorTheme" style="&lbl;" />
       <DataSelector source="TruckTheme" style="&inline;" />
     </FlowPanel>

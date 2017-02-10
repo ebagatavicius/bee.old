@@ -35,6 +35,7 @@ import com.butent.bee.server.modules.trade.TradeModuleBean;
 import com.butent.bee.server.sql.HasConditions;
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.IsExpression;
+import com.butent.bee.server.sql.IsQuery;
 import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUpdate;
@@ -42,6 +43,8 @@ import com.butent.bee.server.sql.SqlUtils;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.css.CssUnit;
+import com.butent.bee.shared.css.values.FontWeight;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -50,7 +53,11 @@ import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.html.Tags;
 import com.butent.bee.shared.html.builder.Document;
+import com.butent.bee.shared.html.builder.Element;
+import com.butent.bee.shared.html.builder.elements.Div;
+import com.butent.bee.shared.html.builder.elements.Tbody;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -135,6 +142,9 @@ public class ServiceModuleBean implements BeeModule {
     } else if (BeeUtils.same(svc, SVC_INFORM_CUSTOMER)) {
       response = informCustomer(reqInfo);
 
+    } else if (BeeUtils.same(svc, SVC_GET_MAINTENANCE_NEW_ROW_VALUES)) {
+      response = getMaintenanceNewRowValues();
+
     } else {
       String msg = BeeUtils.joinWords("service not recognized:", svc);
       logger.warning(msg);
@@ -159,7 +169,9 @@ public class ServiceModuleBean implements BeeModule {
         BeeParameter.createText(module, PRM_SMS_REQUEST_SERVICE_ADDRESS),
         BeeParameter.createText(module, PRM_SMS_REQUEST_SERVICE_USER_NAME),
         BeeParameter.createText(module, PRM_SMS_REQUEST_SERVICE_PASSWORD),
-        BeeParameter.createText(module, PRM_SMS_REQUEST_SERVICE_FROM)
+        BeeParameter.createText(module, PRM_SMS_REQUEST_SERVICE_FROM),
+        BeeParameter.createText(module, PRM_EXTERNAL_MAINTENANCE_URL),
+        BeeParameter.createText(module, PRM_SMS_REQUEST_CONTACT_INFO_FROM, false, VIEW_DEPARTMENTS)
     );
 
     return params;
@@ -932,6 +944,67 @@ public class ServiceModuleBean implements BeeModule {
     return rs;
   }
 
+  private ResponseObject getMaintenanceNewRowValues() {
+    Map<String, String> columnValues = new HashMap<>();
+
+    Pair<Long, String> typeInfo = prm.getRelationInfo(PRM_DEFAULT_MAINTENANCE_TYPE);
+    Long typeId = typeInfo.getA();
+
+    if (DataUtils.isId(typeId)) {
+      columnValues.put(COL_TYPE, BeeUtils.toString(typeId));
+      columnValues.put(ALS_MAINTENANCE_TYPE_NAME, typeInfo.getB());
+      columnValues.put(COL_ADDRESS_REQUIRED,
+          qs.getValueById(TBL_MAINTENANCE_TYPES, typeId, COL_ADDRESS_REQUIRED));
+    }
+
+    IsQuery stateSelect = new SqlSelect()
+        .addFields(TBL_STATE_PROCESS, COL_MAINTENANCE_STATE)
+        .addField(VIEW_MAINTENANCE_STATES, COL_STATE_NAME,  ALS_STATE_NAME)
+        .addFrom(TBL_STATE_PROCESS)
+        .addFromLeft(VIEW_MAINTENANCE_STATES,
+            sys.joinTables(VIEW_MAINTENANCE_STATES, TBL_STATE_PROCESS, COL_MAINTENANCE_STATE))
+        .setWhere(SqlUtils.and(SqlUtils.notNull(TBL_STATE_PROCESS, COL_INITIAL),
+            SqlUtils.equals(TBL_STATE_PROCESS, COL_MAINTENANCE_TYPE, typeId),
+            SqlUtils.in(TBL_STATE_PROCESS, AdministrationConstants.COL_ROLE,
+                AdministrationConstants.VIEW_USER_ROLES, AdministrationConstants.COL_ROLE,
+                SqlUtils.equals(AdministrationConstants.VIEW_USER_ROLES,
+                    AdministrationConstants.COL_USER, usr.getCurrentUserId()))
+            ))
+        .setLimit(1);
+    SimpleRow stateRow = qs.getRow(stateSelect);
+
+    if (stateRow != null) {
+      columnValues.put(AdministrationConstants.COL_STATE, stateRow.getValue(COL_MAINTENANCE_STATE));
+      columnValues.put(ALS_STATE_NAME, stateRow.getValue(ALS_STATE_NAME));
+    }
+
+    Pair<Long, String> warrantyInfo = prm.getRelationInfo(PRM_DEFAULT_WARRANTY_TYPE);
+    Long warrantyId = warrantyInfo.getA();
+
+    if (DataUtils.isId(warrantyId)) {
+      columnValues.put(COL_WARRANTY_TYPE, BeeUtils.toString(warrantyId));
+      columnValues.put(ALS_WARRANTY_TYPE_NAME, warrantyInfo.getB());
+    }
+
+    IsQuery departmentSelect = new SqlSelect()
+        .addFields(VIEW_DEPARTMENTS, sys.getIdName(VIEW_DEPARTMENTS), ALS_DEPARTMENT_NAME)
+        .addFrom(VIEW_DEPARTMENTS)
+        .addFromLeft(VIEW_DEPARTMENT_EMPLOYEES,
+            sys.joinTables(VIEW_DEPARTMENTS, VIEW_DEPARTMENT_EMPLOYEES, COL_DEPARTMENT))
+        .setWhere(SqlUtils.equals(VIEW_DEPARTMENT_EMPLOYEES, COL_COMPANY_PERSON,
+            usr.getCompanyPerson(usr.getCurrentUserId())));
+    SimpleRowSet departmentRowSet = qs.getData(departmentSelect);
+
+    if (departmentRowSet != null && departmentRowSet.getNumberOfRows() == 1) {
+      columnValues.put(COL_DEPARTMENT,
+          departmentRowSet.getRow(0).getValue(sys.getIdName(VIEW_DEPARTMENTS)));
+      columnValues.put(ALS_DEPARTMENT_NAME,
+          departmentRowSet.getRow(0).getValue(ALS_DEPARTMENT_NAME));
+    }
+
+    return ResponseObject.response(columnValues);
+  }
+
   private BeeRowSet getSettings() {
     long userId = usr.getCurrentUserId();
     Filter filter = Filter.equals(COL_USER, userId);
@@ -964,6 +1037,7 @@ public class ServiceModuleBean implements BeeModule {
           .addFields(TBL_PERSONS, COL_FIRST_NAME)
           .addFields(TBL_SERVICE_OBJECTS, COL_MODEL)
           .addField(TBL_COMPANIES, COL_COMPANY_NAME, ALS_MANUFACTURER_NAME)
+          .addFields(TBL_SERVICE_MAINTENANCE, COL_DEPARTMENT)
           .addFrom(TBL_MAINTENANCE_COMMENTS)
           .addFromInner(TBL_SERVICE_MAINTENANCE, sys.joinTables(TBL_SERVICE_MAINTENANCE,
               TBL_MAINTENANCE_COMMENTS, COL_SERVICE_MAINTENANCE))
@@ -994,9 +1068,62 @@ public class ServiceModuleBean implements BeeModule {
           isSendEmail = !mailResponse.hasErrors();
         }
 
+        String error = BeeConst.STRING_EMPTY;
+
         if (!BeeUtils.toBoolean(commentInfoRow.getValue(COL_SEND_SMS))) {
-          ResponseObject smsResponse = informCustomerWithSms(dic, commentInfoRow);
-          isSendSms = !smsResponse.hasErrors();
+          String from = BeeConst.STRING_EMPTY;
+
+          if (!BeeUtils.isEmpty(prm.getText(PRM_SMS_REQUEST_CONTACT_INFO_FROM))) {
+            SqlSelect phoneFromSelect = new SqlSelect()
+                .addFrom(TBL_CONTACTS)
+                .addFields(TBL_CONTACTS, COL_PHONE);
+
+            switch (prm.getText(PRM_SMS_REQUEST_CONTACT_INFO_FROM)) {
+              case AdministrationConstants.VIEW_DEPARTMENTS:
+                Long departmentId = commentInfoRow.getLong(COL_DEPARTMENT);
+
+                if (DataUtils.isId(departmentId)) {
+                  phoneFromSelect.addFromLeft(AdministrationConstants.VIEW_DEPARTMENTS,
+                      sys.joinTables(TBL_CONTACTS, AdministrationConstants.VIEW_DEPARTMENTS,
+                          COL_CONTACT))
+                      .setWhere(sys.idEquals(AdministrationConstants.VIEW_DEPARTMENTS,
+                          commentInfoRow.getLong(COL_DEPARTMENT)));
+                } else {
+                  phoneFromSelect = null;
+                }
+                break;
+
+              case VIEW_COMPANIES:
+                phoneFromSelect.addFromLeft(TBL_COMPANIES,
+                    sys.joinTables(TBL_CONTACTS, TBL_COMPANIES, COL_CONTACT))
+                    .addFromLeft(TBL_COMPANY_PERSONS,
+                        sys.joinTables(TBL_COMPANIES, TBL_COMPANY_PERSONS, COL_COMPANY))
+                    .setWhere(sys.idEquals(TBL_COMPANY_PERSONS,
+                        usr.getCompanyPerson(usr.getCurrentUserId())));
+                break;
+
+              case VIEW_COMPANY_PERSONS:
+                phoneFromSelect.addFromLeft(TBL_COMPANY_PERSONS,
+                    sys.joinTables(TBL_CONTACTS, TBL_COMPANY_PERSONS, COL_CONTACT))
+                    .setWhere(sys.idEquals(TBL_COMPANY_PERSONS,
+                        usr.getCompanyPerson(usr.getCurrentUserId())));
+                break;
+            }
+
+            if (phoneFromSelect != null) {
+              from = qs.getValue(phoneFromSelect);
+            }
+          } else {
+            from = prm.getText(PRM_SMS_REQUEST_SERVICE_FROM);
+          }
+
+          if (BeeUtils.isEmpty(from)) {
+            error = dic.svcEmptySmsFromError();
+
+          } else {
+            ResponseObject smsResponse = informCustomerWithSms(dic, commentInfoRow, from);
+            isSendSms = !smsResponse.hasErrors();
+          }
         }
 
         Map<String, Value> updatableValues = Maps.newHashMap();
@@ -1016,7 +1143,12 @@ public class ServiceModuleBean implements BeeModule {
 
         qs.updateData(updateQuery);
 
-        return ResponseObject.response(updatableValues);
+        ResponseObject result = ResponseObject.response(updatableValues);
+
+        if (!BeeUtils.isEmpty(error)) {
+          result.addError(error);
+        }
+        return result;
       }
     }
 
@@ -1036,26 +1168,62 @@ public class ServiceModuleBean implements BeeModule {
       return ResponseObject.error("No recipient email specified");
     }
 
-    String emailHeader = BeeUtils.joinWords(dic.svcMaintenanceEmailHeader(),
-        commentInfoRow.getValue(COL_FIRST_NAME), "<br /><br />",
-        commentInfoRow.getValue(COL_COMMENT), "<br /><br />");
+    String maintenanceId = commentInfoRow.getValue(COL_SERVICE_MAINTENANCE);
+    String deviceDescription = BeeUtils.joinWords(commentInfoRow.getValue(ALS_MANUFACTURER_NAME),
+        commentInfoRow.getValue(COL_MODEL));
+
+    String emailHeader = BeeUtils.joinWords(dic.svcRepair(), maintenanceId, deviceDescription);
 
     Document doc = new Document();
     doc.getHead().append(meta().encodingDeclarationUtf8());
-    doc.getBody().append(div().text(emailHeader));
 
+    Div panel = div();
+    doc.getBody().append(panel);
+    Tbody fields = tbody().append(
+        tr().append(
+            td().text(dic.svcRepair()), td().text(maintenanceId)));
+
+    if (!BeeUtils.isEmpty(deviceDescription)) {
+      fields.append(tr().append(
+          td().text(dic.svcDevice()), td().text(deviceDescription)));
+    }
+
+    fields.append(tr().append(
+            td().text(dic.date()),
+            td().text(TimeUtils.renderCompact(commentInfoRow.getDateTime(COL_PUBLISH_TIME)))),
+        tr().append(
+            td().text(dic.svcMaintenanceState()),
+            td().text(commentInfoRow.getValue(COL_EVENT_NOTE))));
     DateTime termValue = commentInfoRow.getDateTime(COL_TERM);
 
-    doc.getBody().append(div().text(BeeUtils.join("<br />",
-        BeeUtils.join(": ", dic.svcDevice(), BeeUtils.joinWords(
-            commentInfoRow.getValue(ALS_MANUFACTURER_NAME), commentInfoRow.getValue(COL_MODEL))),
-        BeeUtils.join(": ", dic.svcRepair(),
-            commentInfoRow.getValue(COL_SERVICE_MAINTENANCE)),
-        BeeUtils.join(": ", dic.date(),
-            TimeUtils.renderCompact(commentInfoRow.getDateTime(COL_PUBLISH_TIME))),
-        BeeUtils.join(": ", dic.svcMaintenanceState(), commentInfoRow.getValue(COL_EVENT_NOTE)),
-        termValue != null
-            ? BeeUtils.join(": ", dic.svcTerm(), TimeUtils.renderCompact(termValue)) : "")));
+    if (termValue != null) {
+      fields.append(tr().append(
+          td().text(dic.svcTerm()), td().text(TimeUtils.renderCompact(termValue))));
+    }
+
+    List<Element> cells = fields.queryTag(Tags.TD);
+    for (Element cell : cells) {
+      if (cell.index() == 0) {
+        cell.setPaddingRight(1, CssUnit.EM);
+        cell.setFontWeight(FontWeight.BOLDER);
+      }
+    }
+
+    panel.append(table().append(fields));
+
+    String externalLink = prm.getText(PRM_EXTERNAL_MAINTENANCE_URL);
+    String externalServiceUrl = BeeConst.STRING_EMPTY;
+
+    if (!BeeUtils.isEmpty(externalLink)) {
+      externalServiceUrl = BeeUtils.join(BeeConst.STRING_EMPTY, externalLink, maintenanceId);
+    }
+
+    doc.getBody().append(div().text("<br />"));
+
+    doc.getBody().append(div().text(dic.svcMaintenanceEmailContent(
+        BeeUtils.notEmpty(commentInfoRow.getValue(COL_FIRST_NAME), ""),
+        BeeUtils.notEmpty(commentInfoRow.getValue(COL_COMMENT), ""),
+        externalServiceUrl)));
 
     String signature = qs.getValue(new SqlSelect()
         .addFields(MailConstants.TBL_SIGNATURES, MailConstants.COL_SIGNATURE_CONTENT)
@@ -1064,42 +1232,63 @@ public class ServiceModuleBean implements BeeModule {
             MailConstants.TBL_ACCOUNTS, MailConstants.COL_SIGNATURE))
         .setWhere(sys.idEquals(MailConstants.TBL_ACCOUNTS, accountId)));
 
-    doc.getBody().append(div().text("<br />" + signature));
+    doc.getBody().append(div().text("<br />"));
+    doc.getBody().append(div().text(signature));
 
-    String emailSubject = BeeUtils.joinWords(dic.svcRepair(),
-        commentInfoRow.getValue(COL_SERVICE_MAINTENANCE));
+    String subject = BeeUtils.joinWords(dic.svcRepair(), maintenanceId);
 
-    return mail.sendMail(accountId, recipientEmail, emailSubject, doc.buildLines());
+    return mail.sendStyledMail(accountId, recipientEmail, subject, doc.buildLines(), emailHeader);
   }
 
-  private ResponseObject informCustomerWithSms(Dictionary dic, SimpleRow commentInfoRow) {
+  private ResponseObject informCustomerWithSms(Dictionary dic, SimpleRow commentInfoRow,
+      String from) {
     String phone = commentInfoRow.getValue(COL_PHONE);
     phone = phone.replaceAll("\\D+", "");
 
+    Long maintenanceId = commentInfoRow.getLong(COL_SERVICE_MAINTENANCE);
+    String externalLink = prm.getText(PRM_EXTERNAL_MAINTENANCE_URL);
+    String externalServiceUrl = BeeConst.STRING_EMPTY;
+
+    if (!BeeUtils.isEmpty(externalLink)) {
+      externalServiceUrl = BeeUtils.join(BeeConst.STRING_EMPTY, externalLink, maintenanceId);
+    }
+
     DateTime termValue = commentInfoRow.getDateTime(COL_TERM);
     String message = BeeUtils.joinWords(dic.svcRepair(),
-        commentInfoRow.getValue(COL_SERVICE_MAINTENANCE) + ":",
-        commentInfoRow.getValue(COL_COMMENT),
-        termValue != null ? BeeUtils
-            .joinWords(dic.svcTerm() + ":", TimeUtils.renderCompact(termValue)) : "");
+        maintenanceId + BeeConst.STRING_COLON,
+        BeeUtils.notEmpty(commentInfoRow.getValue(COL_COMMENT), ""),
+        termValue != null ? BeeUtils.joinWords(dic.svcTerm() + BeeConst.STRING_COLON,
+            TimeUtils.renderCompact(termValue)) : "", externalServiceUrl);
 
     if (BeeUtils.isEmpty(message) || BeeUtils.isEmpty(phone)) {
       return ResponseObject.error("message or phone is empty");
     }
 
     String address = prm.getText(PRM_SMS_REQUEST_SERVICE_ADDRESS);
+    String userName = prm.getText(PRM_SMS_REQUEST_SERVICE_USER_NAME);
+    String password = prm.getText(PRM_SMS_REQUEST_SERVICE_PASSWORD);
+
 
     if (BeeUtils.isEmpty(address)) {
+      logger.warning(BeeUtils.joinWords(PRM_SMS_REQUEST_SERVICE_ADDRESS, " is empty"));
       return ResponseObject.error(PRM_SMS_REQUEST_SERVICE_ADDRESS + " is empty");
+    }
+    if (BeeUtils.isEmpty(userName)) {
+      logger.warning(BeeUtils.joinWords(PRM_SMS_REQUEST_SERVICE_USER_NAME, " is empty"));
+      return ResponseObject.error(PRM_SMS_REQUEST_SERVICE_USER_NAME + " is empty");
+    }
+    if (BeeUtils.isEmpty(password)) {
+      logger.warning(BeeUtils.joinWords(PRM_SMS_REQUEST_SERVICE_PASSWORD, " is empty"));
+      return ResponseObject.error(PRM_SMS_REQUEST_SERVICE_PASSWORD + " is empty");
     }
 
     Client client = ClientBuilder.newClient();
     UriBuilder uriBuilder = UriBuilder.fromPath(address);
 
-    uriBuilder.queryParam("username", prm.getText(PRM_SMS_REQUEST_SERVICE_USER_NAME));
-    uriBuilder.queryParam("password", prm.getText(PRM_SMS_REQUEST_SERVICE_PASSWORD));
+    uriBuilder.queryParam("username", userName);
+    uriBuilder.queryParam("password", password);
     uriBuilder.queryParam("message", message);
-    uriBuilder.queryParam("from", prm.getText(PRM_SMS_REQUEST_SERVICE_FROM));
+    uriBuilder.queryParam("from", from);
     uriBuilder.queryParam("to", phone);
     WebTarget webtarget = client.target(uriBuilder);
 

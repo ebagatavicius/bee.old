@@ -2,6 +2,7 @@ package com.butent.bee.client.modules.tasks;
 
 import com.google.common.collect.Lists;
 
+import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
@@ -16,7 +17,6 @@ import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
-import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -39,14 +39,9 @@ import java.util.Objects;
 
 class ChildTasksGrid extends TasksGrid {
 
-  private static final List<String> COPY_COLUMNS = Lists.newArrayList(TaskConstants.COL_SUMMARY,
-      TaskConstants.COL_DESCRIPTION,
-      TaskConstants.COL_PRIORITY, TaskConstants.COL_TASK_TYPE, TaskConstants.ALS_TASK_TYPE_NAME,
-      TaskConstants.COL_EXPECTED_DURATION, ClassifierConstants.COL_COMPANY,
-      ClassifierConstants.ALS_COMPANY_NAME, ProjectConstants.ALS_COMPANY_TYPE_NAME,
-      ClassifierConstants.COL_CONTACT, ClassifierConstants.ALS_CONTACT_FIRST_NAME,
-      ClassifierConstants.ALS_CONTACT_LAST_NAME, ClassifierConstants.ALS_CONTACT_COMPANY_NAME,
-      ClassifierConstants.ALS_CONTACT_COMPANY_TYPE_NAME, TaskConstants.ALS_REMINDER_NAME);
+  private static final List<String> COPY_COLUMNS = Lists.newArrayList(COL_SUMMARY,
+    COL_DESCRIPTION, COL_PRIORITY, COL_TASK_TYPE, COL_EXPECTED_DURATION,
+    COL_TASK_COMPANY, ClassifierConstants.COL_CONTACT, COL_REMINDER);
 
   ChildTasksGrid() {
     super(TaskType.RELATED, null);
@@ -69,20 +64,31 @@ class ChildTasksGrid extends TasksGrid {
         DataInfo parentFormDataInfo = Data.getDataInfo(parentForm.getViewName());
         IsRow parentFormRow = parentForm.getActiveRow();
 
-        RelationUtils.updateRow(childTaskDataInfo, relColumn, childTaskRow,
+        if (parentFormRow != null) {
+          RelationUtils.updateRow(childTaskDataInfo, relColumn, childTaskRow,
             parentFormDataInfo, parentFormRow, true);
-
-        if (BeeUtils.same(parentForm.getViewName(), ProjectConstants.VIEW_PROJECTS)) {
-          fillProjectData(childTaskDataInfo, childTaskRow, parentFormDataInfo, parentFormRow);
         }
+        if (BeeUtils.same(parentForm.getViewName(), ProjectConstants.VIEW_PROJECTS)
+            && parentFormRow != null) {
+          Data.setValue(VIEW_TASKS, childTaskRow, COL_TASK_COMPANY, Data.getLong(
+            ProjectConstants.VIEW_PROJECTS, parentFormRow, ProjectConstants.COL_COMAPNY));
+          RelationUtils.updateRow(childTaskDataInfo, COL_TASK_COMPANY, childTaskRow,
+              parentFormDataInfo, parentFormRow, false);
+        } else if (BeeUtils.same(parentForm.getViewName(), ProjectConstants.VIEW_PROJECT_STAGES)) {
+          IsRow prjRow = ViewHelper.getParentRow(parentForm.asWidget(), ProjectConstants
+              .VIEW_PROJECTS);
 
-        if (BeeUtils.same(parentForm.getViewName(), ProjectConstants.VIEW_PROJECT_STAGES)) {
-          fillProjectStageData(childTaskDataInfo, childTaskRow, parentFormDataInfo,
-              parentFormRow);
-          fillProjectData(childTaskDataInfo, childTaskRow, parentFormDataInfo, parentFormRow);
+          if (prjRow != null) {
+            RelationUtils.updateRow(childTaskDataInfo, ProjectConstants.COL_PROJECT, childTaskRow,
+                Data.getDataInfo(ProjectConstants.VIEW_PROJECTS), prjRow, true);
+
+            Data.setValue(VIEW_TASKS, childTaskRow, COL_TASK_COMPANY, Data.getLong(
+              ProjectConstants.VIEW_PROJECTS, prjRow, ProjectConstants.COL_COMAPNY));
+            RelationUtils.updateRow(childTaskDataInfo, COL_TASK_COMPANY, childTaskRow,
+                Data.getDataInfo(ProjectConstants.VIEW_PROJECTS), prjRow, false);
+          }
         }
       }
-
       RowFactory.createRow(childTaskDataInfo, childTaskRow, Modality.ENABLED, new RowCallback() {
         @Override
         public void onSuccess(BeeRow result) {
@@ -125,16 +131,23 @@ class ChildTasksGrid extends TasksGrid {
 
     BeeRowSet templates = BeeRowSet.restore(prop);
     DataInfo viewTasks = Data.getDataInfo(TaskConstants.VIEW_TASKS);
+    DataInfo viewTmpTasks = Data.getDataInfo(ProjectConstants.VIEW_PROJECT_TEMPLATE_TASK_COPY);
 
     for (IsRow templRow : templates) {
 
       BeeRow row = RowFactory.createEmptyRow(viewTasks, true);
 
       for (String col : COPY_COLUMNS) {
+        if (!viewTasks.containsColumn(col)) {
+          continue;
+        }
         row.setValue(viewTasks.getColumnIndex(col),
             templRow.getValue(templates.getColumnIndex(col)));
-      }
 
+        if (viewTasks.hasRelation(col)) {
+          RelationUtils.updateRow(viewTasks, col, row, viewTmpTasks, templRow, false);
+        }
+      }
       row.setValue(viewTasks.getColumnIndex(TaskConstants.COL_STATUS),
           TaskConstants.TaskStatus.NOT_VISITED.ordinal());
 
@@ -147,30 +160,6 @@ class ChildTasksGrid extends TasksGrid {
   @Override
   public GridInterceptor getInstance() {
     return new ChildTasksGrid();
-  }
-
-  private static void fillProjectData(DataInfo taskData, IsRow taskRow, DataInfo parentFormData,
-      IsRow parentRowData) {
-    if (taskData == null && taskRow == null && parentFormData == null && parentRowData == null) {
-      return;
-    }
-
-    /* Fill company info */
-    int idxTaskCompany = taskData.getColumnIndex(ClassifierConstants.COL_COMPANY);
-    int idxProjectCompany = parentFormData.getColumnIndex(ClassifierConstants.COL_COMPANY);
-
-    if (BeeUtils.isNegative(idxTaskCompany) && BeeUtils.isNegative(idxProjectCompany)) {
-      return;
-    }
-
-    taskRow.setValue(idxTaskCompany, parentRowData.getValue(idxProjectCompany));
-
-    int idxTaskCompanyName = taskData.getColumnIndex(ClassifierConstants.ALS_COMPANY_NAME);
-    int idxProjectCompanyName = parentFormData.getColumnIndex(ClassifierConstants.ALS_COMPANY_NAME);
-
-    if (!BeeUtils.isNegative(idxTaskCompanyName) && !BeeUtils.isNegative(idxProjectCompanyName)) {
-      taskRow.setValue(idxTaskCompanyName, parentRowData.getValue(idxProjectCompanyName));
-    }
   }
 
   @Override
@@ -225,8 +214,15 @@ class ChildTasksGrid extends TasksGrid {
       final BeeRow row = RowFactory.createEmptyRow(viewTasks, true);
 
       for (String col : COPY_COLUMNS) {
+        if (!viewTasks.containsColumn(col)) {
+          continue;
+        }
         row.setValue(viewTasks.getColumnIndex(col),
             templRow.getValue(viewTasks.getColumnIndex(col)));
+
+        if (viewTasks.hasRelation(col)) {
+          RelationUtils.updateRow(viewTasks, col, row, viewTasks, templRow, false);
+        }
       }
 
       if (getGridView() != null) {
@@ -242,15 +238,36 @@ class ChildTasksGrid extends TasksGrid {
 
               switch (parentForm.getViewName()) {
                 case ProjectConstants.VIEW_PROJECT_STAGES:
-                  fillProjectStageData(viewTasks, row,
-                      Data.getDataInfo(parentForm.getViewName()),
-                      parentForm.getActiveRow());
-                  fillProjectData(viewTasks, row, Data.getDataInfo(parentForm.getViewName()),
-                      parentForm.getActiveRow());
+                  IsRow prjRow = ViewHelper.getParentRow(parentForm.asWidget(), ProjectConstants
+                      .VIEW_PROJECTS);
+
+                  if (prjRow != null) {
+                    row.setValue(viewTasks.getColumnIndex(ProjectConstants.COL_PROJECT),
+                        prjRow.getId());
+
+                    RelationUtils.updateRow(viewTasks, ProjectConstants.COL_PROJECT,
+                        row, Data.getDataInfo(ProjectConstants.VIEW_PROJECTS), prjRow, false);
+
+                    if (!DataUtils.isId(row.getLong(viewTasks.getColumnIndex(COL_TASK_COMPANY)))) {
+
+                      row.setValue(viewTasks.getColumnIndex(COL_TASK_COMPANY),
+                          Data.getLong(ProjectConstants.VIEW_PROJECTS, prjRow,
+                              ClassifierConstants.COL_COMPANY));
+
+                      RelationUtils.updateRow(viewTasks, COL_TASK_COMPANY, row,
+                          Data.getDataInfo(ProjectConstants.VIEW_PROJECTS), prjRow, false);
+                    }
+                  }
                   break;
                 case ProjectConstants.VIEW_PROJECTS:
-                  fillProjectData(viewTasks, row, Data.getDataInfo(parentForm.getViewName()),
-                      parentForm.getActiveRow());
+                  if (!DataUtils.isId(row.getLong(viewTasks.getColumnIndex(COL_TASK_COMPANY)))) {
+                    row.setValue(viewTasks.getColumnIndex(COL_TASK_COMPANY),
+                        parentForm.getLongValue(ClassifierConstants.COL_COMPANY));
+
+                    RelationUtils.updateRow(viewTasks, COL_TASK_COMPANY, row,
+                        Data.getDataInfo(ProjectConstants.VIEW_PROJECTS), parentForm.getActiveRow(),
+                        false);
+                  }
                   break;
                 default:
                   break;
@@ -316,29 +333,6 @@ class ChildTasksGrid extends TasksGrid {
 
     if ((isNew || changed) && getGridPresenter() != null) {
       getGridPresenter().handleAction(Action.REFRESH);
-    }
-  }
-
-  private static void fillProjectStageData(DataInfo taskData, IsRow taskRow,
-                                           DataInfo parentFormData, IsRow parentRowData) {
-    if (taskData == null && taskRow == null && parentFormData == null && parentRowData == null) {
-      return;
-    }
-
-    /* Fill project info */
-    int idxTaskProject = taskData.getColumnIndex(ProjectConstants.COL_PROJECT);
-    int idxTaskStageName = taskData.getColumnIndex(ProjectConstants.ALS_PROJECT_NAME);
-    int idxStageProject = parentFormData.getColumnIndex(ProjectConstants.COL_PROJECT);
-    int idxStageProjectName = parentFormData.getColumnIndex(ProjectConstants.ALS_PROJECT_NAME);
-
-    if (BeeConst.isUndef(idxTaskProject) && BeeConst.isUndef(idxStageProject)) {
-      return;
-    }
-
-    taskRow.setValue(idxTaskProject, parentRowData.getValue(idxStageProject));
-
-    if (!BeeConst.isUndef(idxTaskStageName) && !BeeConst.isUndef(idxStageProjectName)) {
-      taskRow.setValue(idxTaskStageName, parentRowData.getValue(idxStageProjectName));
     }
   }
 

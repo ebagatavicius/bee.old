@@ -503,7 +503,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
     panel.add(table);
 
     String caption = BeeUtils.joinWords(Localized.dictionary().crmTasks(),
-        new JustDate(dayNumber).toString());
+        Format.renderDate(new JustDate(dayNumber)));
 
     DialogBox dialog = DialogBox.create(caption, STYLE_OFFSPRING_DIALOG);
     dialog.setWidget(panel);

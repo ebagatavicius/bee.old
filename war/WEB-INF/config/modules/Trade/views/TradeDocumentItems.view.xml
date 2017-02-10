@@ -45,10 +45,16 @@
       </ExternalJoin>
     </ExternalJoin>
 
-    <SimpleColumn name="Warehouse" />
-    <SimpleJoin joinType="LEFT" name="Warehouse">
-      <SimpleColumn name="Code" alias="WarehouseCode" />
-      <SimpleColumn name="Name" alias="WarehouseName" />
+    <SimpleColumn name="ItemWarehouseFrom" />
+    <SimpleJoin joinType="LEFT" name="ItemWarehouseFrom">
+      <SimpleColumn name="Code" alias="ItemWarehouseFromCode" />
+      <SimpleColumn name="Name" alias="ItemWarehouseFromName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="ItemWarehouseTo" />
+    <SimpleJoin joinType="LEFT" name="ItemWarehouseTo">
+      <SimpleColumn name="Code" alias="ItemWarehouseToCode" />
+      <SimpleColumn name="Name" alias="ItemWarehouseToName" />
     </SimpleJoin>
 
     <SimpleColumn name="Employee" />

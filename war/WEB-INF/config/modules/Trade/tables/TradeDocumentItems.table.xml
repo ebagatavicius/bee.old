@@ -20,7 +20,8 @@
     <Numeric name="Vat" precision="12" scale="2" label="=vat" />
     <Boolean name="VatIsPercent" label="=vatIsPercent" />
 
-    <Relation name="Warehouse" relation="Warehouses" label="=trdWarehouseTo" />
+    <Relation name="ItemWarehouseFrom" relation="Warehouses" label="=trdItemWarehouseFrom" />
+    <Relation name="ItemWarehouseTo" relation="Warehouses" label="=trdItemWarehouseTo" />
 
     <Relation name="Employee" relation="Employees" label="=employee" />
 

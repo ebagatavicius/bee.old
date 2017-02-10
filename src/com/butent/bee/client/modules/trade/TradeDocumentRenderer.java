@@ -4,10 +4,12 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.PRM_COMPANY;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
@@ -15,7 +17,6 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Selectors;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
-import com.butent.bee.client.modules.administration.AdministrationKeeper;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -246,10 +247,8 @@ public class TradeDocumentRenderer extends AbstractFormInterceptor {
       Long company = row.getLong(index);
 
       if (company == null && checkDefault) {
-        company = AdministrationKeeper.getCompany();
-        if (company == null) {
-          company = BeeKeeper.getUser().getCompany();
-        }
+        company = BeeUtils.nvl(Global.getParameterRelation(PRM_COMPANY),
+            BeeKeeper.getUser().getCompany());
       }
       return company;
     }

@@ -11,6 +11,7 @@
     <Integer name="Price" label="=price" notNull="true" />
     <Text name="Description" label="=description" />
     <Text name="Criteria" label="=criteria" />
+    <Relation name="PhotoFile" relation="Files" editable="true" label="=photo" />
     <Boolean name="Blocked" label="=actionBlock" />
   </Fields>
   <Constraints>

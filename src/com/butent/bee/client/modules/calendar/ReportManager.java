@@ -14,6 +14,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.dialog.DialogConstants;
 import com.butent.bee.client.grid.GridFactory;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.render.RendererFactory;
@@ -109,13 +110,13 @@ class ReportManager {
     JustDate lower = Data.getDate(VIEW_REPORT_OPTIONS, row, COL_LOWER_DATE);
     if (lower != null) {
       sb.append(separator).append(Localized.dictionary().dateFromShort().toLowerCase()).append(
-          separator).append(lower.toString());
+          separator).append(Format.renderDate(lower));
     }
 
     JustDate upper = Data.getDate(VIEW_REPORT_OPTIONS, row, COL_UPPER_DATE);
     if (upper != null) {
       sb.append(separator).append(Localized.dictionary().dateToShort().toLowerCase()).append(
-          separator).append(upper.toString());
+          separator).append(Format.renderDate(upper));
     }
 
     return sb.toString();

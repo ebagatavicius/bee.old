@@ -16,6 +16,7 @@ import com.butent.bee.client.dialog.Popup.OutsideClick;
 import com.butent.bee.client.event.logical.CloseEvent;
 import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.grid.GridFactory;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.render.AbstractCellRenderer;
@@ -109,7 +110,7 @@ public final class ParametersGrid extends AbstractGridInterceptor {
           JustDate date = prm.supportsUsers() ? prm.getDate(userId) : prm.getDate();
 
           if (date != null) {
-            value = date.toString();
+            value = Format.renderDate(date);
           }
           break;
 
@@ -117,7 +118,7 @@ public final class ParametersGrid extends AbstractGridInterceptor {
           DateTime dateTime = prm.supportsUsers() ? prm.getDateTime(userId) : prm.getDateTime();
 
           if (dateTime != null) {
-            value = dateTime.toCompactString();
+            value = Format.renderDate(dateTime);
           }
           break;
 

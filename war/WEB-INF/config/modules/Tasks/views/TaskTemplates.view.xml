@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="TaskTemplates" source="TaskTemplates"
   caption="=crmTaskTemplates" newRowCaption="=crmNewTaskTemplate"
@@ -7,46 +8,10 @@
   >
   <Columns>
     <SimpleColumn name="Name" />
-    <SimpleColumn name="Summary" />
-    <SimpleColumn name="Description" />
-    <SimpleColumn name="Priority" />
 
-    <SimpleColumn name="Type" />
-    <SimpleJoin name="Type" joinType="LEFT">
-      <SimpleColumn name="Name" alias="TypeName" />
-      <SimpleColumn name="Background" alias="TypeBackground" />
-      <SimpleColumn name="Foreground" alias="TypeForeground" />
-    </SimpleJoin>
+    <xi:include href="viewcolumns/TaskTemplate.viewcolumns.xml" />
 
     <SimpleColumn name="ExpectedDuration" />
-
-    <SimpleColumn name="Company" />
-    <SimpleJoin name="Company" joinType="LEFT">
-      <SimpleColumn alias="CompanyName" name="Name" />
-       <SimpleJoin name="CompanyType" joinType="LEFT">
-         <SimpleColumn name="Name" alias="CompanyTypeName" />
-      </SimpleJoin>
-    </SimpleJoin>
-
-    <SimpleColumn name="Contact" />
-    <SimpleJoin name="Contact" joinType="LEFT">
-      <SimpleColumn alias="ContactPerson" name="Person" />
-      <SimpleJoin name="Person" joinType="LEFT">
-        <SimpleColumn alias="ContactFirstName" name="FirstName" />
-        <SimpleColumn alias="ContactLastName" name="LastName" />
-      </SimpleJoin>
-      <SimpleJoin name="Company" joinType="LEFT">
-        <SimpleColumn alias="ContactCompanyName" name="Name" />
-        <SimpleJoin name="CompanyType" joinType="LEFT">
-          <SimpleColumn name="Name" alias="ContactCompanyTypeName" />
-        </SimpleJoin>
-      </SimpleJoin>
-    </SimpleJoin>
-
-    <SimpleColumn name="Reminder" />
-    <SimpleJoin name="Reminder" joinType="LEFT">
-      <SimpleColumn alias="ReminderName" name="Name" />
-    </SimpleJoin>
 
     <SimpleColumn name="ProjectTemplate" />
     <SimpleColumn name="StageTemplate" />

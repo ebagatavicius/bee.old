@@ -9,6 +9,7 @@ import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.butent.bee.client.modules.mail.Relations.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -605,8 +606,8 @@ public class RequestEditor extends ProductSupportInterceptor {
           .getString(form.getDataIndex(COL_PRODUCT)));
     }
 
-    taskRow.setProperty(PROP_EXECUTORS, user);
-    taskRow.setProperty(PROP_REQUESTS, reqRow.getId());
+    taskRow.setProperty(PROP_EXECUTORS, DataUtils.buildIdList(user));
+    taskRow.setProperty(PFX_RELATED + VIEW_REQUESTS,  DataUtils.buildIdList(reqRow.getId()));
 
     BeeRowSet rowSet = DataUtils.createRowSetForInsert(VIEW_TASKS, taskDataInfo.getColumns(),
         taskRow, Sets.newHashSet(COL_EXECUTOR, COL_STATUS), true);
@@ -701,21 +702,25 @@ public class RequestEditor extends ProductSupportInterceptor {
         .getString(form.getDataIndex(COL_REQUEST_CONTENT)));
 
     DataSelector managerSel = (DataSelector) form.getWidgetByName(WIDGET_MANGAER_NAME);
-    Map<Long, FileInfo> files = Maps.newHashMap();
     FileGroup filesList = (FileGroup) form.getWidgetByName(WIDGET_FILES_NAME);
 
-    for (FileInfo f : filesList.getFiles()) {
-      files.put(f.getId(), f);
+    if (filesList != null) {
+      taskRow.setProperty(PROP_FILES, Codec.beeSerialize(filesList.getFiles()));
     }
 
-    taskRow.setProperty(PROP_REQUESTS, reqRow.getId());
+    if (managerSel != null && BeeUtils.isLong(managerSel.getValue())) {
+      taskRow.setProperty(PROP_EXECUTORS,
+        DataUtils.buildIdList(BeeUtils.toLong(managerSel.getValue())));
+    }
+    taskRow.setProperty(PFX_RELATED + VIEW_REQUESTS, DataUtils.buildIdList(reqRow.getId()));
     RowFactory.createRow(taskDataInfo.getNewRowForm(), null, taskDataInfo, taskRow,
-        Modality.ENABLED, null,
-        new TaskBuilder(files, BeeUtils.toLongOrNull(managerSel.getValue()), true), null,
-        new RowCallback() {
+        Modality.ENABLED, null, new TaskBuilder(true), null, new RowCallback() {
 
           @Override
           public void onSuccess(BeeRow result) {
+            if (result == null) {
+              return;
+            }
             Map<String, String> data = Maps.newLinkedHashMap();
             data.put(BeeUtils.toString(TaskEvent.CREATE.ordinal()), result.getString(0));
 

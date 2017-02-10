@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="Recipients"
-  idName="RecipientID"
-  >
+       name="Recipients"
+       idName="RecipientID"
+       audit="false"
+>
   <Fields>
-    <Relation name="Message" relation="Messages" notNull="true" cascade="DELETE" label="=mailMessage" />
-    <Relation name="Address" relation="Emails" notNull="true" editable="true" label="=mailAddress" />
+    <Relation name="Message" relation="Messages" notNull="true" cascade="DELETE"
+              label="=mailMessage" />
+    <Relation name="Address" relation="Emails" notNull="true" editable="true"
+              label="=mailAddress" />
     <String name="Type" precision="10" notNull="true" label="=mailRecipientType" />
   </Fields>
 

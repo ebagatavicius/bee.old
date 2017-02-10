@@ -88,22 +88,19 @@ public class TradeActItemsGrid extends AbstractGridInterceptor implements
   }
 
   private static void maybeMarkAsReturned(final long actId, final long actVersion) {
-    Global.getParameter(PRM_RETURNED_ACT_STATUS, new Consumer<String>() {
-      @Override
-      public void accept(final String newStatus) {
-        if (DataUtils.isId(newStatus)) {
-          Queries.getValue(VIEW_TRADE_ACTS, actId, COL_TA_STATUS, new RpcCallback<String>() {
-            @Override
-            public void onSuccess(String oldStatus) {
-              if (!newStatus.equals(oldStatus)) {
-                Queries.updateAndFire(VIEW_TRADE_ACTS, actId, actVersion, COL_TA_STATUS,
-                    oldStatus, newStatus, ModificationEvent.Kind.UPDATE_ROW);
-              }
-            }
-          });
+    Long newStatus = Global.getParameterRelation(PRM_RETURNED_ACT_STATUS);
+
+    if (DataUtils.isId(newStatus)) {
+      Queries.getValue(VIEW_TRADE_ACTS, actId, COL_TA_STATUS, new RpcCallback<String>() {
+        @Override
+        public void onSuccess(String oldStatus) {
+          if (!newStatus.toString().equals(oldStatus)) {
+            Queries.updateAndFire(VIEW_TRADE_ACTS, actId, actVersion, COL_TA_STATUS,
+                oldStatus, newStatus.toString(), ModificationEvent.Kind.UPDATE_ROW);
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   private static final String STYLE_COMMAND_IMPORT = TradeActKeeper.STYLE_PREFIX
@@ -517,40 +514,36 @@ public class TradeActItemsGrid extends AbstractGridInterceptor implements
                   getGridView().notifyWarning(importCaption, Localized.dictionary().noData());
 
                 } else {
-                  Global.getParameter(PRM_IMPORT_TA_ITEM_RX, new Consumer<String>() {
-                    @Override
-                    public void accept(String pattern) {
-                      List<ImportEntry> importEntries = TradeActItemImporter.parse(lines,
-                          BeeUtils.notEmpty(pattern, RX_IMPORT_ACT_ITEM));
+                  List<ImportEntry> importEntries = TradeActItemImporter.parse(lines,
+                      BeeUtils.notEmpty(Global.getParameterText(PRM_IMPORT_TA_ITEM_RX),
+                          RX_IMPORT_ACT_ITEM));
 
-                      if (importEntries.isEmpty()) {
-                        getGridView().notifyWarning(importCaption,
-                            Localized.dictionary().nothingFound());
+                  if (importEntries.isEmpty()) {
+                    getGridView().notifyWarning(importCaption,
+                        Localized.dictionary().nothingFound());
 
-                      } else {
-                        IsRow parentRow = getParentRow();
-                        TradeActKind kind = TradeActKeeper.getKind(VIEW_TRADE_ACTS, parentRow);
-                        Long wFrom = TradeActKeeper.getWarehouseFrom(VIEW_TRADE_ACTS, parentRow);
+                  } else {
+                    IsRow parentRow = getParentRow();
+                    TradeActKind kind = TradeActKeeper.getKind(VIEW_TRADE_ACTS, parentRow);
+                    Long wFrom = TradeActKeeper.getWarehouseFrom(VIEW_TRADE_ACTS, parentRow);
 
-                        Set<Long> itemIds = new HashSet<>();
+                    Set<Long> itemIds = new HashSet<>();
 
-                        if (!getGridView().isEmpty()) {
-                          int itemIndex = getDataIndex(COL_TA_ITEM);
-                          for (IsRow row : getGridView().getRowData()) {
-                            itemIds.add(row.getLong(itemIndex));
-                          }
-                        }
-
-                        TradeActItemImporter.queryItems(importCaption, importEntries,
-                            kind, wFrom, itemIds, new Consumer<BeeRowSet>() {
-                              @Override
-                              public void accept(BeeRowSet items) {
-                                addItems(items);
-                              }
-                            });
+                    if (!getGridView().isEmpty()) {
+                      int itemIndex = getDataIndex(COL_TA_ITEM);
+                      for (IsRow row : getGridView().getRowData()) {
+                        itemIds.add(row.getLong(itemIndex));
                       }
                     }
-                  });
+
+                    TradeActItemImporter.queryItems(importCaption, importEntries,
+                        kind, wFrom, itemIds, new Consumer<BeeRowSet>() {
+                          @Override
+                          public void accept(BeeRowSet items) {
+                            addItems(items);
+                          }
+                        });
+                  }
                 }
               }
             });

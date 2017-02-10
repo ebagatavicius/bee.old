@@ -22,7 +22,7 @@
     <Enum name="TimeBlockClickNumber" key="TimeBlockClick" defValue="1" label="=calTimeBlockClickNumber" />
 
     <Boolean name="SeparateAttendees" label="=calSeparateAttendees" />
-    
+
     <Enum name="MultidayLayout" key="MultidayLayout" label="=calMultidayLayout" />
     <Enum name="MultidayTaskLayout" key="MultidayLayout" label="=calMultidayTaskLayout" />
 
@@ -32,14 +32,14 @@
     <Boolean name="WeekView" defValue="true" label="=calWeekView" />
     <Boolean name="MonthView" defValue="true" label="=calMonthView" />
     <Boolean name="ResourceView" defValue="true" label="=calResourceView" />
-    
+
     <Relation name="Owner" relation="Users" defExpr="CURRENT_USER" label="=owner" />
 
     <Boolean name="AssignedTasks" label="=calTasksAssigned" />
     <String name="AssignedTasksBackground" precision="100" label="=calTasksAssignedBackground" />
     <String name="AssignedTasksForeground" precision="100" label="=calTasksAssignedForeground" />
     <Relation name="AssignedTasksStyle" relation="AppointmentStyles" label="=calTasksAssignedStyle" />
-    
+
     <Boolean name="DelegatedTasks" label="=calTasksDelegated" />
     <String name="DelegatedTasksBackground" precision="100" label="=calTasksDelegatedBackground" />
     <String name="DelegatedTasksForeground" precision="100" label="=calTasksDelegatedForeground" />
@@ -49,5 +49,7 @@
     <String name="ObservedTasksBackground" precision="100" label="=calTasksObservedBackground" />
     <String name="ObservedTasksForeground" precision="100" label="=calTasksObservedForeground" />
     <Relation name="ObservedTasksStyle" relation="AppointmentStyles" label="=calTasksObservedStyle" />
+
+    <Boolean name="IsService" label="=carService" />
   </Fields>
 </Table>

@@ -41,16 +41,16 @@
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
-    
+
     <SimpleColumn name="AssignedTasks" />
     <SimpleColumn name="AssignedTasksBackground" />
     <SimpleColumn name="AssignedTasksForeground" />
-    
+
     <SimpleColumn name="AssignedTasksStyle" />
     <SimpleJoin name="AssignedTasksStyle" joinType="LEFT">
       <SimpleColumn alias="AssignedTasksStyleName" name="Name" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="DelegatedTasks" />
     <SimpleColumn name="DelegatedTasksBackground" />
     <SimpleColumn name="DelegatedTasksForeground" />
@@ -68,6 +68,8 @@
     <SimpleJoin name="ObservedTasksStyle" joinType="LEFT">
       <SimpleColumn alias="ObservedTasksStyleName" name="Name" />
     </SimpleJoin>
+
+    <SimpleColumn name="IsService" />
   </Columns>
   <Order>
     <OrderBy column="Name" />

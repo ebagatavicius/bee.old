@@ -29,7 +29,6 @@
 
     <SimpleColumn name="ColumnScript" />
 
-    <SimpleColumn name="ColumnIsPercent" />
     <SimpleColumn name="ColumnScale" />
 
     <SimpleColumn name="ColumnSplit01" />
@@ -42,8 +41,6 @@
     <SimpleColumn name="ColumnSplit08" />
     <SimpleColumn name="ColumnSplit09" />
     <SimpleColumn name="ColumnSplit10" />
-
-    <SimpleColumn name="ColumnTotal" />
 
     <SimpleColumn name="Note" />
 

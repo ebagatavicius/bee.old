@@ -278,6 +278,23 @@ public final class RelationUtils {
     return result;
   }
 
+  /**
+   * Setting related values from sourceRow to targetRow using view data information. The targetRow
+   * has index of field to targetColumn where targetInfo view data information has references of
+   * relations of data source systems like as RDBMS. Depending of relations of data sources
+   * using targetInfo and sourceInfo data view information mappings, sets to targetRow values
+   * from sourceRow.
+   *
+   * @param targetInfo targetRow data information about target view.
+   * @param targetColumn column of target row, where sets related values from sourceRow.
+   * @param targetRow set of values where affected by related sourceRow values.
+   * @param sourceInfo sourceRow data information about source view.
+   * @param sourceRow set of values where contains related data for set to sourceRow.
+   * @param updateRelationColumn if source row is main (first level) data set, using this
+   *                             parameter, targetColumn value will be replaced own source ID
+   *                             value using sourceRow.getId().
+   * @return set of targetRow columns, where was effected from source row.
+   */
   public static Collection<String> updateRow(DataInfo targetInfo, String targetColumn,
       IsRow targetRow, DataInfo sourceInfo, IsRow sourceRow, boolean updateRelationColumn) {
 

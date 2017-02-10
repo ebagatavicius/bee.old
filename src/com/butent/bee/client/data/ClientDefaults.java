@@ -1,12 +1,13 @@
 package com.butent.bee.client.data;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.Defaults;
+import com.butent.bee.shared.utils.BeeUtils;
 
 public class ClientDefaults extends Defaults {
 
-  private static Long currency;
-  private static String currencyName;
+  private static final Pair<Long, String> currency = Pair.empty();
 
   @Override
   public Object getValue(DefaultExpression defExpr, Object defValue) {
@@ -36,18 +37,15 @@ public class ClientDefaults extends Defaults {
   }
 
   public static Long getCurrency() {
-    return currency;
+    return currency.getA();
   }
 
   public static String getCurrencyName() {
-    return currencyName;
+    return currency.getB();
   }
 
-  public static void setCurrency(Long currency) {
-    ClientDefaults.currency = currency;
-  }
-
-  public static void setCurrencyName(String currencyName) {
-    ClientDefaults.currencyName = currencyName;
+  public static void setCurrency(Pair<String, String> currencyInfo) {
+    currency.setA(BeeUtils.toLongOrNull(currencyInfo.getA()));
+    currency.setB(currencyInfo.getB());
   }
 }

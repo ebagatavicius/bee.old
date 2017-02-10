@@ -16,6 +16,7 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.i18n.Format;
+import com.butent.bee.client.modules.mail.Relations;
 import com.butent.bee.client.modules.tasks.TasksReportsInterceptor.ReportType;
 import com.butent.bee.client.style.ColorStyleProvider;
 import com.butent.bee.client.style.ConditionalStyle;
@@ -82,8 +83,8 @@ public final class TasksKeeper {
             Data.getLong(event.getViewName(), event.getRow(), COL_TASK),
             Data.getString(event.getViewName(), event.getRow(), ALS_PUBLISHER_FIRST_NAME),
             Data.getString(event.getViewName(), event.getRow(), ALS_PUBLISHER_LAST_NAME),
-            Format.getDefaultDateTimeFormat().format(Data.getDateTime(event.getViewName(),
-                event.getRow(), COL_PUBLISH_TIME)),
+            Format.renderDateTime(Data.getDateTime(event.getViewName(), event.getRow(),
+                COL_PUBLISH_TIME)),
             Data.getString(event.getViewName(), event.getRow(), COL_COMMENT)));
       } else if (event.hasView(VIEW_TASK_FILES)) {
         event.setResult(DataUtils.join(Data.getDataInfo(VIEW_TASK_FILES), event.getRow(),
@@ -292,7 +293,9 @@ public final class TasksKeeper {
               } else {
                 row.setProperty(COL_PRIVATE_TASK, COL_PRIVATE_TASK);
 
-                String formName = status == TaskStatus.NOT_SCHEDULED ? FORM_NEW_TASK : FORM_TASK;
+                String formName = status == TaskStatus.NOT_SCHEDULED
+                  ? FORM_NEW_TASK
+                  : event.getOptions();
                 RowEditor.openForm(formName, VIEW_TASKS, row, event.getOpener(), null);
               }
             }
@@ -391,7 +394,7 @@ public final class TasksKeeper {
     return createArgs(CRM_TASK_PREFIX + event.name());
   }
 
-  static void fireRelatedDataRefresh(IsRow taskRow, IsRow oldRow) {
+  static void fireRelatedDataRefresh(IsRow taskRow, Relations relations) {
     List<BeeColumn> columns = Data.getColumns(VIEW_TASKS);
 
     if (taskRow instanceof BeeRow) {
@@ -399,8 +402,9 @@ public final class TasksKeeper {
 
     }
 
-    if (TaskUtils.hasRelations(oldRow) || TaskUtils.hasRelations(taskRow)) {
+    if (relations != null && !BeeUtils.isEmpty(relations.getChildrenForUpdate())) {
       fireViewDataRefresh(VIEW_RELATED_TASKS, false);
+      relations.requery(taskRow, taskRow.getId());
     }
 
     for (BeeColumn column : columns) {

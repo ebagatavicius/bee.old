@@ -28,7 +28,7 @@ public class AssessmentForwarderPrintForm extends AbstractFormInterceptor {
         ClassifierUtils.getCompanyInfo(row.getLong(form.getDataIndex(name)), widget);
       }
     }
-    SelfServiceUtils.getCargoPlaces(Filter.equals(COL_CARGO_TRIP,
+    TransportUtils.getCargoPlaces(Filter.equals(COL_CARGO_TRIP,
         row.getLong(form.getDataIndex(COL_CARGO_TRIP))), (loading, unloading) -> {
 
       for (BeeRowSet places : new BeeRowSet[] {loading, unloading}) {

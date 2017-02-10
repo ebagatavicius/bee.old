@@ -4,7 +4,7 @@
 
   <DataColumn name="Ordinal" width="30" visible="false" editInPlace="true" />
 
-  <DataColumn name="Date" />
+  <DataColumn name="Date" required="true" />
   <DataColumn name="Company" />
   <DataColumn name="Address" />
 

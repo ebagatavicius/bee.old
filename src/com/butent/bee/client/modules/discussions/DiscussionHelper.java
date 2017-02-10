@@ -36,8 +36,7 @@ final class  DiscussionHelper {
      * @return formatted date time by locale.
      */
     static String renderDateTime(DateTime time) {
-        return Format.getDefaultDateTimeFormat()
-                .format(time);
+        return Format.renderDateTime(time);
     }
 
     static boolean isDiscussionAdmin(String prmAdmin) {

@@ -13,7 +13,7 @@
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="Item" viewName="Items" caption="=item"
-        width="820" height="720"
+        width="820" height="750"
 >
   <FlowPanel class="flexBox-vertical">
     <Table kind="controls" style="margin-top: 1ex; margin-bottom: 1em;">
@@ -37,6 +37,11 @@
 
         <Label for="Unit" text="=unitShort" />
         <DataSelector source="Unit" visible="true" editEnabled="false" style="width: 80px;" />
+      </row>
+
+      <row>
+        <Label for="Article2" />
+        <InputText source="Article2" summarize="true" />
       </row>
 
       <row>
@@ -195,28 +200,51 @@
           </row>
 
           <row>
-            <Label for="Article2" />
-            <InputText source="Article2" summarize="true" />
-
             <Label for="Ordinal" />
-            <InputInteger source="Ordinal" style="width: 80px;" summarize="true" />
+            <InputInteger source="Ordinal" summarize="true" />
 
-            <Label for="ExternalCode" />
-            <InputText source="ExternalCode" summarize="true" />
-          </row>
-
-          <row>
             <Label for="Weight">
               &foritem;
             </Label>
-            <InputDecimal source="Weight" style="width: 80px;" summarize="true">
+            <InputDecimal source="Weight" summarize="true">
               &foritem;
             </InputDecimal>
 
             <Label for="Area">
               &foritem;
             </Label>
-            <InputDecimal source="Area" style="width: 80px;" summarize="true">
+            <InputDecimal source="Area" summarize="true">
+              &foritem;
+            </InputDecimal>
+          </row>
+
+          <row>
+            <Label for="ExternalCode" />
+            <InputText source="ExternalCode" summarize="true" />
+
+            <Label for="Brutto">
+              &foritem;
+            </Label>
+            <InputDecimal source="Brutto" summarize="true">
+              &foritem;
+            </InputDecimal>
+
+            <Label for="Volume">
+              &foritem;
+            </Label>
+            <InputDecimal source="Volume" summarize="true">
+              &foritem;
+            </InputDecimal>
+          </row>
+
+          <row>
+            <Label for="DefaultQuantity" />
+            <InputInteger source="DefaultQuantity" summarize="true" />
+
+            <Label for="Netto">
+              &foritem;
+            </Label>
+            <InputDecimal source="Netto" summarize="true">
               &foritem;
             </InputDecimal>
           </row>
@@ -242,11 +270,6 @@
             <InputInteger source="MinTerm" style="width: 5em;" summarize="true">
               &forservice;
             </InputInteger>
-          </row>
-
-          <row module="Trade">
-            <Label for="DefaultQuantity" />
-            <InputInteger source="DefaultQuantity" style="width: 80px;" summarize="true" />
           </row>
         </Table>
       </page>
@@ -327,6 +350,46 @@
         <SimplePanel>
           <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
+      </page>
+
+      <page predicate="!row.IsService">
+        <text>=intrastat</text>
+        <Table kind="controls" style="margin-top: 1ex;">
+          <col index="0" kind="label" />
+          <col index="2" kind="label" />
+
+          <row>
+            <Label for="KPNCode" >
+              &foritem;
+            </Label>
+            <InputText source="KPNCode" summarize="true" >
+              &foritem;
+            </InputText>
+
+            <Label for="AdditionalUnit" >
+              &foritem;
+            </Label>
+            <InputText source="AdditionalUnit" summarize="true" >
+              &foritem;
+            </InputText>
+          </row>
+
+          <row>
+            <Label for="CountryOfOrigin" >
+              &foritem;
+            </Label>
+            <InputText source="CountryOfOrigin" summarize="true" >
+              &foritem;
+            </InputText>
+
+            <Label for="Factor" >
+              &foritem;
+            </Label>
+            <InputDecimal source="Factor" >
+              &foritem;
+            </InputDecimal>
+          </row>
+        </Table>
       </page>
     </TabbedPages>
   </FlowPanel>

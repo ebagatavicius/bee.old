@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarBundles" source="CarBundles" caption="=bundles"
+      newRowCaption="=newBundle" editForm="CarBundle" newRowForm="CarBundle"
+>
+  <Columns>
+    <SimpleColumn name="BundleName" />
+    <SimpleColumn name="Code" />
+
+    <SimpleColumn name="Model" />
+    <SimpleJoin name="Model" joinType="LEFT">
+      <SimpleJoin name="Parent" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ParentModelName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Name" alias="ModelName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Customer" />
+    <SimpleJoin name="Customer" joinType="LEFT">
+      <SimpleColumn name="Name" alias="CustomerName" />
+
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="CustomerTypeName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="ValidUntil" />
+    <SimpleColumn name="Notes" />
+  </Columns>
+  <Order>
+    <OrderBy column="BundleName" />
+  </Order>
+</View>

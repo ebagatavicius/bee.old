@@ -1,7 +1,14 @@
 package com.butent.bee.shared.modules.cars;
 
+import static com.butent.bee.shared.modules.cars.CarsConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_PHOTO;
+
+import com.butent.bee.client.data.Data;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
+import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -20,6 +27,38 @@ public class Option implements BeeSerializable, Comparable<Option> {
   private String description;
   private Long photo;
 
+  public Option(IsRow isRow) {
+    this(isRow.getId(),
+        Data.getString(TBL_CONF_OPTIONS, isRow, COL_OPTION_NAME),
+        new Dimension(Data.getLong(TBL_CONF_OPTIONS, isRow, COL_GROUP),
+            Data.getString(TBL_CONF_OPTIONS, isRow, COL_GROUP_NAME)));
+
+    setCode(BeeUtils.join("", Data.getString(TBL_CONF_OPTIONS, isRow, COL_CODE),
+        BeeUtils.parenthesize(Data.getString(TBL_CONF_OPTIONS, isRow, COL_CODE2))));
+  }
+
+  public Option(SimpleRowSet.SimpleRow simpleRow) {
+    this(simpleRow.getLong(COL_OPTION), simpleRow.getValue(COL_OPTION_NAME),
+        new Dimension(simpleRow.getLong(CarsConstants.COL_GROUP),
+            simpleRow.getValue(CarsConstants.COL_GROUP_NAME)));
+
+    if (simpleRow.hasColumn(COL_REQUIRED)) {
+      getDimension().setRequired(simpleRow.getBoolean(COL_REQUIRED));
+    }
+    if (simpleRow.hasColumn(COL_CODE)) {
+      setCode(simpleRow.getValue(COL_CODE));
+    }
+    if (simpleRow.hasColumn(COL_CODE2)) {
+      setCode(BeeUtils.join("", getCode(), BeeUtils.parenthesize(simpleRow.getValue(COL_CODE2))));
+    }
+    if (simpleRow.hasColumn(COL_DESCRIPTION)) {
+      setDescription(simpleRow.getValue(COL_DESCRIPTION));
+    }
+    if (simpleRow.hasColumn(COL_PHOTO)) {
+      setPhoto(simpleRow.getLong(COL_PHOTO));
+    }
+  }
+
   public Option(long id, String name, Dimension dimension) {
     this.id = id;
     this.name = Assert.notEmpty(name);
@@ -31,8 +70,13 @@ public class Option implements BeeSerializable, Comparable<Option> {
 
   @Override
   public int compareTo(Option o) {
-    int order = o == null ? 1 : getDimension().compareTo(o.getDimension());
-    return order == 0 ? name.compareTo(o.name) : order;
+    int order = BeeUtils.compareNullsFirst(getDimension(),
+        Objects.nonNull(o) ? o.getDimension() : null);
+
+    if (order == BeeConst.COMPARE_EQUAL) {
+      order = BeeUtils.compareNullsFirst(name, o.name);
+    }
+    return order == BeeConst.COMPARE_EQUAL ? BeeUtils.compareNullsFirst(id, o.id) : order;
   }
 
   @Override

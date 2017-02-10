@@ -14,6 +14,7 @@ import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.finance.analysis.AnalysisColumnsGrid;
+import com.butent.bee.client.modules.finance.analysis.AnalysisResultsGrid;
 import com.butent.bee.client.modules.finance.analysis.AnalysisRowsGrid;
 import com.butent.bee.client.modules.finance.analysis.BudgetEntriesGrid;
 import com.butent.bee.client.modules.finance.analysis.FinancialIndicatorsGrid;
@@ -145,6 +146,7 @@ public final class FinanceKeeper {
 
     GridFactory.registerGridInterceptor(GRID_ANALYSIS_COLUMNS, new AnalysisColumnsGrid());
     GridFactory.registerGridInterceptor(GRID_ANALYSIS_ROWS, new AnalysisRowsGrid());
+    GridFactory.registerGridInterceptor(GRID_ANALYSIS_RESULTS, new AnalysisResultsGrid());
 
     FormFactory.registerFormInterceptor(FORM_SIMPLE_BUDGET, new SimpleBudgetForm());
     FormFactory.registerFormInterceptor(FORM_SIMPLE_ANALYSIS, new SimpleAnalysisForm());

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="CarServiceEvents"
+       idName="ServiceEventID">
+  <Fields>
+    <Relation name="ServiceOrder" relation="CarServiceOrders" cascade="DELETE"
+              label="=serviceOrder" />
+
+    <Relation name="Appointment" notNull="true" unique="true" relation="Appointments"
+              editable="true" cascade="DELETE" label="=calAppointment" />
+
+    <Boolean name="Arrived" label="=arrived" />
+  </Fields>
+</Table>

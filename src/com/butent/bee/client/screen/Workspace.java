@@ -473,7 +473,10 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
     }
 
     private void setCaption(String caption) {
-      getCaptionWidget().setHtml(caption);
+      CustomDiv widget = getCaptionWidget();
+
+      widget.setHtml(caption);
+      widget.setTitle(caption);
     }
   }
 

@@ -41,6 +41,9 @@
     <SimpleJoin name="Trailer" joinType="LEFT">
       <SimpleColumn name="Number" alias="TrailerNumber" />
     </SimpleJoin>
+
+    <SimpleColumn name="Trip" alias="CargoLoadingDate" label="=trLoadingDate"/>
+    <SimpleColumn name="Trip" alias="CargoUnloadingDate" label="=trUnloadingDate"/>
   </Columns>
   <Order>
     <OrderBy column="Ordinal" />

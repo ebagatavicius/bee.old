@@ -173,7 +173,7 @@ public final class NameUtils {
   }
 
   public static String normalizeEnumName(String input) {
-    return CharMatcher.JAVA_LETTER_OR_DIGIT.retainFrom(input).toLowerCase();
+    return CharMatcher.javaLetterOrDigit().retainFrom(input).toLowerCase();
   }
 
   public static List<String> rename(List<String> names, String oldName, String newName) {

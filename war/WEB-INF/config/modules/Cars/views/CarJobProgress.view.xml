@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarJobProgress" source="CarJobProgress"
+      caption="=employees"
+>
+  <Columns>
+    <SimpleColumn name="ServiceJob" />
+
+    <SimpleColumn name="CompanyPerson" />
+    <SimpleJoin name="CompanyPerson" joinType="LEFT">
+      <SimpleJoin name="Person" joinType="LEFT">
+        <SimpleColumn name="FirstName" />
+        <SimpleColumn name="LastName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Duration" />
+    <SimpleColumn name="Note" />
+    <SimpleColumn name="Confirmed" />
+
+    <SimpleColumn name="ServiceEvent" />
+    <SimpleJoin name="ServiceEvent" joinType="LEFT">
+      <SimpleJoin name="Appointment" joinType="LEFT">
+        <SimpleColumn name="StartDateTime" />
+        <SimpleColumn name="EndDateTime" />
+        <SimpleColumn name="Status" />
+      </SimpleJoin>
+    </SimpleJoin>
+  </Columns>
+</View>

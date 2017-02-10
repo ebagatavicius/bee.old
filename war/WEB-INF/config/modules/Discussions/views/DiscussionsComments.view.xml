@@ -3,6 +3,7 @@
 
   name="DiscussionsComments"
   source="DiscussionsComments"
+  caption="=prjComments"
   >
   <Columns>
     <SimpleColumn name="Discussion" />

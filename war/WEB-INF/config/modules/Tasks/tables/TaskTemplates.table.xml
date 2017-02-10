@@ -10,7 +10,7 @@
     <String name="Summary" precision="100" label="=crmTaskSubject" />
     <Text name="Description" label="=crmTaskDescription" />
 
-    <Enum name="Priority" key="TaskPriority" label="=crmTaskPriority" />
+    <Enum name="Priority" key="TaskPriority" label="=crmTaskPriority" defValue="1" />
     <Relation name="Type" relation="TaskTypes" label="=crmTaskType" />
 
     <String name="ExpectedDuration" precision="10" label="=crmTaskExpectedDuration" />

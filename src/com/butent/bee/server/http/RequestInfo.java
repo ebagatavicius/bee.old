@@ -251,6 +251,10 @@ public class RequestInfo implements HasExtendedInfo, HasOptions {
     return value;
   }
 
+  public boolean getParameterBoolean(String name) {
+    return BeeUtils.toBoolean(getParameter(name));
+  }
+
   public DateTime getParameterDateTime(String name) {
     return DateTime.restore(getParameter(name));
   }

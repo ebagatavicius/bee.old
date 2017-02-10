@@ -87,6 +87,8 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
     ParentRowEvent.Handler, HasFosterParent, HasRowChildren, HandlesValueChange,
     SummaryChangeEvent.Handler, RowInsertEvent.Handler {
 
+  public static final String PFX_RELATED = "Rel";
+
   private static final String STORAGE = TBL_RELATIONS;
 
   private final String column;
@@ -278,6 +280,28 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
       }
     }
     return relations;
+  }
+
+  public Collection<RowChildren> getOldRowChildren(boolean all) {
+    List<RowChildren> relations = new ArrayList<>();
+
+     widgetMap.entrySet().forEach(entry -> {
+      MultiSelector multi = entry.getValue();
+
+      if (multi != null && (all || multi.isValueChanged())) {
+        relations.add(RowChildren.create(STORAGE, column, id, entry.getKey(), multi.getOldValue()));
+      }
+    });
+    return relations;
+  }
+
+  public String getSelectorRowLabel(String viewName, long rowId) {
+    for (MultiSelector multi : widgetMap.values()) {
+      if (multi != null && BeeUtils.same(multi.getOracle().getViewName(), viewName)) {
+        return multi.getRowLabel(rowId);
+      }
+    }
+    return BeeConst.STRING_EMPTY;
   }
 
   @Override
@@ -684,6 +708,10 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
       if (relation == null) {
         LogUtils.getRootLogger().severe("Missing relation info:", viewName);
         return null;
+      }
+      if (!relation.getAttributes().containsKey(UiConstants.ATTR_PROPERTY)) {
+        relation.getAttributes().put(UiConstants.ATTR_PROPERTY, PFX_RELATED
+          + relation.getViewName());
       }
     }
     List<String> cols = relation.getOriginalRenderColumns();

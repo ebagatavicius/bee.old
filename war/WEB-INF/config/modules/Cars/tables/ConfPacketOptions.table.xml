@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="ConfPacketOptions"
+       idName="PacketOptionID"
+>
+  <Fields>
+    <Relation name="Packet" relation="ConfOptions" notNull="true" cascade="DELETE"
+              label="=packet" />
+    <Relation name="Option" relation="ConfOptions" notNull="true" label="=option" />
+  </Fields>
+  <Constraints>
+    <Unique fields="Packet Option" />
+    <Check>
+      <PostgreSql>"Packet" != "Option"</PostgreSql>
+      <MsSql />
+      <Oracle />
+    </Check>
+  </Constraints>
+</Table>

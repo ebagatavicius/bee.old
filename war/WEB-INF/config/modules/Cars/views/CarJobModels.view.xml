@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarJobModels" source="CarJobModels"
+>
+  <Columns>
+    <SimpleColumn name="Job" />
+
+    <SimpleColumn name="Model" />
+    <SimpleJoin name="Model" joinType="LEFT">
+      <SimpleJoin name="Parent" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ParentModelName" />
+      </SimpleJoin>
+      <SimpleColumn name="Name" alias="ModelName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Duration" />
+
+    <SimpleColumn name="Price" />
+    <SimpleColumn name="Currency" />
+    <SimpleJoin joinType="LEFT" name="Currency">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="ParentModelName" />
+    <OrderBy column="ModelName" />
+  </Order>
+</View>

@@ -54,6 +54,7 @@ public final class OrdersConstants {
 
   public static final String TBL_ORDER_ITEMS = "OrderItems";
   public static final String TBL_ORDERS = "Orders";
+  public static final String TBL_ORDER_SERIES = "OrderSeries";
 
   public static final String VIEW_ORDERS = "Orders";
   public static final String VIEW_ORDER_CHILD_INVOICES = "OrderChildInvoices";

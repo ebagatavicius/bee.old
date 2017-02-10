@@ -431,7 +431,7 @@ public class TripForm extends PrintFormInterceptor {
       }
       if (widget instanceof TextLabel) {
         ((TextLabel) widget).setValue(BeeConst.STRING_LEFT_PARENTHESIS
-            + BeeConst.CHAR_SPACE + fuelConsumption
+            + BeeConst.CHAR_SPACE + BeeUtils.round(fuelConsumption)
             + BeeConst.CHAR_SPACE + BeeConst.STRING_RIGHT_PARENTHESIS);
       }
     }

@@ -53,6 +53,7 @@
       <xs:enumeration value="trailer_time_board" />
       <xs:enumeration value="assessments_grid" />
       <xs:enumeration value="service_calendar" />
+      <xs:enumeration value="car_service_calendar" />
       <xs:enumeration value="trade_act_new" />
       <xs:enumeration value="trade_act_list" />
       <xs:enumeration value="trade_documents" />
@@ -61,6 +62,7 @@
       <xs:enumeration value="finance_posting_precedence" />
       <xs:enumeration value="extra_dimensions" />
       <xs:enumeration value="stages" />
+      <xs:enumeration value="service_maintenance_list" />
     </xs:restriction>
   </xs:simpleType>
 

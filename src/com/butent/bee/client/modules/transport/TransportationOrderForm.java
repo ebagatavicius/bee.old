@@ -12,13 +12,8 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
-import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.data.Queries;
-import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
-import com.butent.bee.client.data.RowFactory;
-import com.butent.bee.client.dialog.Modality;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.modules.transport.TransportHandler.Profit;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -31,17 +26,12 @@ import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
-import com.butent.bee.shared.Assert;
-import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
-import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
-import com.butent.bee.shared.data.view.DataInfo;
-import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -69,7 +59,7 @@ class TransportationOrderForm extends PrintFormInterceptor implements ClickHandl
 
   @Override
   protected void getReportData(Consumer<BeeRowSet[]> dataConsumer) {
-    SelfServiceUtils.getCargos(Filter.equals(COL_ORDER, getActiveRowId()),
+    TransportUtils.getCargos(Filter.equals(COL_ORDER, getActiveRowId()),
         cargoInfo -> dataConsumer.accept(new BeeRowSet[] {cargoInfo}));
   }
 
@@ -245,65 +235,11 @@ class TransportationOrderForm extends PrintFormInterceptor implements ClickHandl
       copyAction = new FaLabel(FontAwesome.COPY);
       copyAction.setTitle(Localized.dictionary().actionCopy());
 
-      copyAction.addClickHandler(clickEvent -> {
-        DataInfo info = Data.getDataInfo(getViewName());
-        BeeRow order = RowFactory.createEmptyRow(info, true);
-        final Long orderId = getActiveRowId();
-
-        for (String col : new String[] {
-            COL_CUSTOMER, COL_CUSTOMER_NAME, COL_PAYER, COL_PAYER_NAME,
-            "CustomerPerson", "PersonFirstName", "PersonLastName"}) {
-
-          int idx = info.getColumnIndex(col);
-
-          if (!BeeConst.isUndef(idx)) {
-            order.setValue(idx, getStringValue(col));
-          }
-        }
-        RowFactory.createRow(info, order, Modality.ENABLED, new RowCallback() {
-          @Override
-          public void onSuccess(BeeRow newOrder) {
-            SelfServiceUtils.getCargos(Filter.equals(COL_ORDER, orderId), cargos -> {
-              BeeRowSet newCargos = DataUtils.createRowSetForInsert(cargos);
-
-              if (newCargos.isEmpty()) {
-                RowEditor.open(getViewName(), newOrder.getId(), Opener.MODAL);
-              } else {
-                int orderIdx = newCargos.getColumnIndex(COL_ORDER);
-
-                for (BeeRow cargo : newCargos) {
-                  cargo.setValue(orderIdx, newOrder.getId());
-                }
-                Queries.insertRows(newCargos, new RpcCallback<RowInfoList>() {
-                  @Override
-                  public void onSuccess(RowInfoList newIds) {
-                    Assert.isTrue(cargos.getNumberOfRows() == newIds.size());
-
-                    for (String view : new String[] {TBL_CARGO_LOADING, TBL_CARGO_UNLOADING}) {
-                      BeeRowSet newPlaces = Data.createRowSet(view);
-                      int cargoIdx = newPlaces.getColumnIndex(COL_CARGO);
-
-                      for (int i = 0; i < cargos.getNumberOfRows(); i++) {
-                        for (BeeRow row : BeeRowSet.restore(cargos.getRow(i).getProperty(view))) {
-                          BeeRow clonned = newPlaces.addEmptyRow();
-                          clonned.setValues(row.getValues());
-                          clonned.setValue(cargoIdx, newIds.get(i).getId());
-                        }
-                      }
-                      if (!newPlaces.isEmpty()) {
-                        newPlaces = DataUtils.createRowSetForInsert(newPlaces);
-                        newPlaces.removeColumn(newPlaces.getColumnIndex(COL_PLACE_DATE));
-                        Queries.insertRows(newPlaces);
-                      }
-                    }
-                    RowEditor.open(getViewName(), newOrder.getId(), Opener.MODAL);
-                  }
-                });
-              }
-            });
-          }
-        });
-      });
+      copyAction.addClickHandler(clickEvent -> TransportUtils.copyOrderWithCargos(getActiveRowId(),
+          Filter.equals(COL_ORDER, getActiveRowId()), (newOrderId, newCargos) -> {
+            RowEditor.open(getViewName(), newOrderId, Opener.MODAL);
+        })
+      );
     }
     return copyAction;
   }

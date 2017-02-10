@@ -546,3 +546,9 @@
 .bee-discuss-DescriptionEditor-disabled {
    display: none !important;
 }
+
+.bee-form-Discussion-container .bee-Header-row-message {
+  font-size: 23px;
+  color: #484849;
+  font-weight: lighter;
+}

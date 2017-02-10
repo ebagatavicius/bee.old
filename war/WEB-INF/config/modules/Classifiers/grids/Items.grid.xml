@@ -78,7 +78,8 @@
       </dynStyle>
     </PropColumn>
 
-    <CalcColumn name="FreeRemainder" type="string" label="=ordFreeRemainder" module="Orders">
+    <CalcColumn name="FreeRemainder" type="double" format="0.000" label="=ordFreeRemainder"
+                module="Orders">
       <render>
         <ui:expression>(row.WarehouseRemainder ? row.WarehouseRemainder : 0 )
           - (row.ResRemainder ? row.ResRemainder : 0)

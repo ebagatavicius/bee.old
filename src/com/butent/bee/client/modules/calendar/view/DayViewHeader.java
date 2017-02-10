@@ -5,7 +5,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.dom.DomUtils;
-import com.butent.bee.client.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormat;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.modules.calendar.CalendarFormat;
@@ -29,16 +30,23 @@ public class DayViewHeader extends Horizontal {
   static {
     labelFormats = RangeMap.create();
 
-    labelFormats.put(Range.lessThan(35), DateTimeFormat.getFormat("d"));
+    labelFormats.put(Range.lessThan(35),
+        Format.parseDateTimePattern("d"));
+
     labelFormats.put(Range.closedOpen(35, 45),
-        DateTimeFormat.getFormat("M" + TimeUtils.DATE_FIELD_SEPARATOR + "d"));
+        Format.parseDateTimePattern("M" + TimeUtils.DATE_FIELD_SEPARATOR + "d"));
+
     labelFormats.put(Range.closedOpen(45, 60),
-        DateTimeFormat.getFormat("MM" + TimeUtils.DATE_FIELD_SEPARATOR + "dd"));
+        Format.parseDateTimePattern("MM" + TimeUtils.DATE_FIELD_SEPARATOR + "dd"));
+
     labelFormats.put(Range.closedOpen(60, 120),
-        DateTimeFormat.getFormat("EEE, MM" + TimeUtils.DATE_FIELD_SEPARATOR + "dd"));
+        Format.parseDateTimePattern("EEE, MM" + TimeUtils.DATE_FIELD_SEPARATOR + "dd"));
+
     labelFormats.put(Range.closedOpen(120, 150),
-        DateTimeFormat.getFormat("EEEE, MM" + TimeUtils.DATE_FIELD_SEPARATOR + "dd"));
-    labelFormats.put(Range.atLeast(150), DateTimeFormat.getFormat("EEEE, MMMM d"));
+        Format.parseDateTimePattern("EEEE, MM" + TimeUtils.DATE_FIELD_SEPARATOR + "dd"));
+
+    labelFormats.put(Range.atLeast(150),
+        Format.parseDateTimePattern("EEEE, MMMM d"));
   }
 
   public DayViewHeader() {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+        name="CarBundleJobs" viewName="CarBundleJobs" autoFlex="true"
+>
+  <g:columns>
+    <RelColumn name="Job" renderColumns="JobName" flexGrow="2" visible="true" newRowEnabled="false"
+               caching="none" />
+    <DataColumn name="Code" flexGrow="1" />
+
+    <DataColumn name="Duration">
+      <editor type="time" stepValue="5" />
+    </DataColumn>
+
+    <DataColumn name="Quantity" scale="0" visible="true" />
+
+    <DataColumn name="Price" scale="2">
+      <editor type="number" currencySource="Currency" />
+    </DataColumn>
+    <RelColumn name="Currency" newRowEnabled="false" editEnabled="false" />
+  </g:columns>
+</g:Grid>

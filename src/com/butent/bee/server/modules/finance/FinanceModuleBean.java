@@ -37,6 +37,7 @@ public class FinanceModuleBean implements BeeModule {
       case SVC_POST_TRADE_DOCUMENT:
       case SVC_VERIFY_ANALYSIS_FORM:
       case SVC_CALCULATE_ANALYSIS_FORM:
+      case SVC_GET_ANALYSIS_RESULTS:
         Long id = reqInfo.getParameterLong(Service.VAR_ID);
 
         if (DataUtils.isId(id)) {
@@ -50,6 +51,9 @@ public class FinanceModuleBean implements BeeModule {
             case SVC_CALCULATE_ANALYSIS_FORM:
               response = analysis.calculateForm(id);
               break;
+            case SVC_GET_ANALYSIS_RESULTS:
+              response = analysis.getResults(id);
+              break;
             default:
               Assert.untouchable();
               response = null;
@@ -58,6 +62,10 @@ public class FinanceModuleBean implements BeeModule {
         } else {
           response = ResponseObject.parameterNotFound(svc, Service.VAR_ID);
         }
+        break;
+
+      case SVC_SAVE_ANALYSIS_RESULTS:
+        response = analysis.saveResults(reqInfo);
         break;
 
       default:

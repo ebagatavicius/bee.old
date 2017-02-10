@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
         name="ConfTemplates" viewName="ConfTemplates" caption="=templates"
-        flexGrow="1" autoFlex="true"
+        flexGrow="1" autoFlex="true" cacheDescription="false"
 >
   <g:columns>
     <DataColumn name="TemplateName" />

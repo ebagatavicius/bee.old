@@ -49,12 +49,11 @@ public class MailAccount {
     private static final int MAX_CONCURRENT_THEADS = 15;
 
     final Store store;
-    final long start;
+    long lastActivity = System.currentTimeMillis();
     int cnt;
 
     private MailStore(Store store) {
       this.store = Assert.notNull(store);
-      this.start = System.currentTimeMillis();
     }
 
     public Store getStore() {
@@ -63,10 +62,11 @@ public class MailAccount {
 
     private void enter() {
       cnt++;
+      lastActivity = System.currentTimeMillis();
     }
 
     private boolean expired() {
-      return BeeUtils.isMore(System.currentTimeMillis() - start, TIMEOUT);
+      return BeeUtils.isMore(System.currentTimeMillis() - lastActivity, TimeUtils.MILLIS_PER_HOUR);
     }
 
     private boolean full() {
@@ -102,8 +102,8 @@ public class MailAccount {
 
   private static void fillTree(MailFolder parent, Multimap<Long, SimpleRow> folders) {
     for (SimpleRow row : folders.get(parent.getId())) {
-      MailFolder folder = new MailFolder(parent, row.getLong(COL_FOLDER),
-          row.getValue(COL_FOLDER_NAME), row.getLong(COL_FOLDER_UID));
+      MailFolder folder = new MailFolder(row.getLong(COL_FOLDER), row.getValue(COL_FOLDER_NAME),
+          row.getLong(COL_FOLDER_UID));
 
       folder.setModSeq(row.getLong(COL_FOLDER_MODSEQ));
       folder.setUnread(BeeUtils.unbox(row.getInt(COL_MESSAGE)));
@@ -185,6 +185,10 @@ public class MailAccount {
 
   public String getAddress() {
     return accountInfo.getAddress();
+  }
+
+  public String getFolderCaption(Long folderId) {
+    return accountInfo.getFolderCaption(folderId);
   }
 
   public Long getSignatureId() {
@@ -408,8 +412,7 @@ public class MailAccount {
     return transport;
   }
 
-  boolean createRemoteFolder(MailFolder parent, String name)
-      throws MessagingException {
+  boolean createRemoteFolder(MailFolder parent, String name) throws MessagingException {
     boolean ok = true;
 
     if (!isStoredRemotedly(parent)) {
@@ -424,7 +427,7 @@ public class MailAccount {
       Folder newFolder = folder.getFolder(name);
 
       if (checkNewFolderName(newFolder, name)) {
-        logger.debug("Creating folder:", name);
+        logger.debug("Creating folder:", newFolder.getFullName());
         ok = newFolder.create(Folder.HOLDS_MESSAGES);
       }
     } finally {
@@ -528,19 +531,23 @@ public class MailAccount {
   }
 
   MailFolder getDraftsFolder() {
-    return findFolder(accountInfo.getSystemFolder(SystemFolder.Drafts));
+    return findFolder(getSystemFolder(SystemFolder.Drafts));
   }
 
   MailFolder getInboxFolder() {
-    return findFolder(accountInfo.getSystemFolder(SystemFolder.Inbox));
+    return findFolder(getSystemFolder(SystemFolder.Inbox));
   }
 
   MailFolder getSentFolder() {
-    return findFolder(accountInfo.getSystemFolder(SystemFolder.Sent));
+    return findFolder(getSystemFolder(SystemFolder.Sent));
+  }
+
+  public Long getSystemFolder(SystemFolder sysFolder) {
+    return accountInfo.getSystemFolder(sysFolder);
   }
 
   MailFolder getTrashFolder() {
-    return findFolder(accountInfo.getSystemFolder(SystemFolder.Trash));
+    return findFolder(getSystemFolder(SystemFolder.Trash));
   }
 
   MailFolder getRootFolder() {
@@ -557,6 +564,10 @@ public class MailAccount {
 
   boolean isInbox(MailFolder folder) {
     return accountInfo.isInboxFolder(folder.getId());
+  }
+
+  boolean isRoot(MailFolder folder) {
+    return folder == getRootFolder();
   }
 
   boolean isSystemFolder(MailFolder folder) {
@@ -688,6 +699,10 @@ public class MailAccount {
   void setFolders(Multimap<Long, SimpleRow> folders) {
     getRootFolder().getSubFolders().clear();
     fillTree(getRootFolder(), folders);
+  }
+
+  void setSystemFolder(SystemFolder sysFolder, Long folderId) {
+    accountInfo.setSystemFolder(sysFolder, folderId);
   }
 
   void setUsers(Long... users) {

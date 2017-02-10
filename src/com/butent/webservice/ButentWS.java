@@ -127,12 +127,27 @@ public final class ButentWS {
       throw BeeException.error(e);
     }
     SimpleRowSet data =
-        xmlToSimpleRowSet(answer, "PAVAD", "PREKE", "MATO_VIEN", "ARTIKULAS",
-            "PARD_KAINA", "SAVIKAINA", "KAINA_1", "KAINA_2", "KAINA_3", "KAINA_4", "KAINA_5",
-            "KAINA_6", "KAINA_7", "KAINA_8", "KAINA_9", "KAINA_10", "TIPAS", "GRUPE",
-            "PARD_VAL", "SAV_VAL", "VAL_1", "VAL_2", "VAL_3", "VAL_4", "VAL_5", "VAL_6", "VAL_7",
-            "VAL_8", "VAL_9", "VAL_10");
+        xmlToSimpleRowSet(answer, "PAVAD", "PAVAD_1", "PAVAD_3", "PAVAD_4", "PREKE",
+            "MATO_VIEN", "ARTIKULAS", "PARD_KAINA", "SAVIKAINA", "KAINA_1", "KAINA_2", "KAINA_3",
+            "KAINA_4", "KAINA_5", "KAINA_6", "KAINA_7", "KAINA_8", "KAINA_9", "KAINA_10", "TIPAS",
+            "GRUPE", "PARD_VAL", "SAV_VAL", "VAL_1", "VAL_2", "VAL_3", "VAL_4", "VAL_5", "VAL_6",
+            "VAL_7", "VAL_8", "VAL_9", "VAL_10", "PREK_SVOR", "PREK_KPN", "PREK_NETO", "KILM_SALIS",
+            "ALT_MV", "ALT_KOEF", "TURIS", "BRUTO");
     logger.debug("GetGoods cols:", data.getNumberOfColumns(), "rows:", data.getNumberOfRows());
+    return data;
+  }
+
+  public SimpleRowSet getGoodsR(String filter) throws BeeException {
+    logger.debug("GetGoodsR");
+    String answer;
+
+    try {
+      answer = process("GetGoodsR", XmlUtils.tag("filter", filter));
+    } catch (Exception e) {
+      throw BeeException.error(e);
+    }
+    SimpleRowSet data = xmlToSimpleRowSet(answer, "PAVAD_2", "PREKE");
+    logger.debug("GetGoodsR cols:", data.getNumberOfColumns(), "rows:", data.getNumberOfRows());
     return data;
   }
 

@@ -57,7 +57,7 @@ import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ItemPrice;
-import com.butent.bee.shared.modules.orders.OrdersConstants.OrdersStatus;
+import com.butent.bee.shared.modules.orders.OrdersConstants.*;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
@@ -78,7 +78,6 @@ public class OrderItemsGrid extends AbstractGridInterceptor implements Selection
   Long orderForm;
   private OrderItemsPicker picker;
   private Flow invoice = new Flow();
-  private Double managerDiscount;
 
   @Override
   public void afterCreatePresenter(GridPresenter presenter) {
@@ -91,9 +90,6 @@ public class OrderItemsGrid extends AbstractGridInterceptor implements Selection
 
     presenter.getHeader().addCommandItem(reCalculate);
     presenter.getHeader().addCommandItem(invoice);
-
-    Global.getParameter(PRM_MANAGER_DISCOUNT,
-        input -> managerDiscount = BeeUtils.toDoubleOrNull(input));
 
     super.afterCreatePresenter(presenter);
   }
@@ -298,10 +294,11 @@ public class OrderItemsGrid extends AbstractGridInterceptor implements Selection
               break;
 
             case COL_TRADE_DISCOUNT:
-              if (BeeUtils.isPositive(managerDiscount)) {
+              double mngDiscount = BeeUtils.unbox(Global.getParameterNumber(PRM_MANAGER_DISCOUNT));
+
+              if (BeeUtils.isPositive(mngDiscount)) {
                 double invisibleDiscount = BeeUtils.unbox(row.getDouble(
-                    Data.getColumnIndex(VIEW_ORDER_ITEMS, COL_INVISIBLE_DISCOUNT)))
-                    + managerDiscount.doubleValue();
+                    Data.getColumnIndex(VIEW_ORDER_ITEMS, COL_INVISIBLE_DISCOUNT))) + mngDiscount;
 
                 double discount = BeeUtils.unbox(newValue);
 

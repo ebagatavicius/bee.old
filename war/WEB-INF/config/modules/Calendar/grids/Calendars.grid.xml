@@ -3,7 +3,7 @@
 
   name="Calendars" viewName="Calendars" caption="=calendars" newRowCaption="=calNewCalendar"
   newRowForm="Calendar" editForm="Calendar" favorite="Name" flexGrow="1"
-  filter="!(Owner) or Owner {u} or !(Visibility) or Visibility != 1"
+  filter="!(IsService) and (!(Owner) or Owner {u} or !(Visibility) or Visibility != 1)"
   >
   <g:columns>
     <IdColumn name="Id" flexGrow="0" />
@@ -16,7 +16,7 @@
 
     <RelColumn name="Owner" caption="=owner" />
     <DataColumn name="Visibility" visible="false" />
-    
+
     <DataColumn name="AssignedTasks" visible="false" />
     <DataColumn name="DelegatedTasks" visible="false" />
     <DataColumn name="ObservedTasks" visible="false" />

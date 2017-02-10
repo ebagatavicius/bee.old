@@ -157,7 +157,9 @@ public enum Report implements HasWidgetSupplier {
           new ReportNumericItem("PlannedDailyCosts", BeeUtils.joinWords(loc.trDailyCosts(), plan))
               .setPrecision(2),
           new ReportNumericItem("PlannedRoadCosts", BeeUtils.joinWords(loc.trRoadCosts(), plan))
-              .setPrecision(2));
+              .setPrecision(2),
+          new ReportEnumItem(TransportConstants.ALS_ORDER_STATUS,
+              Data.getColumnLabel(TBL_ORDERS, TransportConstants.COL_STATUS), OrderStatus.class));
     }
 
     @Override

@@ -11,13 +11,14 @@
 
     <DateTime name="Date" notNull="true" defExpr="CURRENT_TIME" label="=date" />
 
-    <String name="OrderNo" precision="30" unique="true" label="=orderNumber" defExpr="NEXT_NUMBER"
-            defValue="AUTO/" />
+    <String name="OrderNo" precision="30" unique="true" notNull="true" label="=orderNumber"
+            defExpr="NEXT_NUMBER" defValue="AUTO/" />
 
     <Relation name="Customer" relation="Companies" notNull="true" label="=customer" />
     <Relation name="CustomerPerson" relation="CompanyPersons" label="=personContact" />
 
-    <Relation name="Manager" relation="Users" defExpr="CURRENT_USER" label="=manager" />
+    <Relation name="Manager" relation="Users" notNull="true" defExpr="CURRENT_USER"
+              label="=manager" />
 
     <Numeric name="Amount" precision="12" scale="2" label="=amount" />
     <Relation name="Currency" relation="Currencies" label="=currencyShort"

@@ -55,10 +55,9 @@ class TaskSelectorHandler implements SelectorEvent.Handler {
         handleExecutors(event, taskRow);
       } else if (BeeUtils.same(rowProperty, PROP_OBSERVERS)) {
         handleObservers(event, taskRow);
-
-      } else if (BeeUtils.same(rowProperty, PROP_COMPANIES)) {
+      } else if (event.hasRelatedView(ClassifierConstants.VIEW_COMPANIES)) {
         handleCompanies(event, taskRow);
-      } else if (BeeUtils.same(rowProperty, PROP_TASKS)) {
+      } else if (event.hasRelatedView(VIEW_TASKS)) {
         handleTasks(event, taskRow);
       }
     }

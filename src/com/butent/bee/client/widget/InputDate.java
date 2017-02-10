@@ -9,9 +9,9 @@ import com.butent.bee.client.datepicker.DatePicker;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dialog.Popup.OutsideClick;
 import com.butent.bee.client.event.EventUtils;
-import com.butent.bee.client.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.client.i18n.Format;
-import com.butent.bee.client.i18n.HasDateTimeFormat;
+import com.butent.bee.shared.i18n.HasDateTimeFormat;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.client.validation.ValidationHelper;
 import com.butent.bee.client.view.edit.EditStopEvent;
@@ -151,7 +151,7 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
     if (date == null) {
       text = BeeConst.STRING_EMPTY;
     } else if (getDateTimeFormat() == null) {
-      text = date.getDate().toString();
+      text = Format.renderDate(date.getDate());
     } else {
       text = getDateTimeFormat().format(date.getDate());
     }

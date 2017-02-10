@@ -156,78 +156,32 @@
       </page>
       <page>
         <text>=relatedInformation</text>
-        <FlowPanel class="flexBox-horizontal bee-crm-taskEdit-form">
-          <FlowPanel style="margin-left: 5px;">
-             <FlowPanel style="&section;" data="Relations" for="Company" module="Classifiers.Contacts">
-                  <Label text="=companies" style="&top1;" />
-                <MultiSelector viewName="Companies" property="Companies" renderColumns="Name TypeName"
-                        newRowEnabled="true" style="&inp2x;" disablable="true" summarize="true"/>
-              </FlowPanel>
-  
-            <FlowPanel style="&section;" data="Relations" for="Person" module="Classifiers.Contacts">
-              <Label text="=persons" style="&top1;" />
-              <MultiSelector viewName="Persons" property="Persons" renderColumns="FirstName LastName"
-                newRowEnabled="true" style="&inp2x;" disablable="true" summarize="true"/>
-            </FlowPanel>
-  
-            <FlowPanel style="&section;" data="Relations" for="Document" module="Documents">
-              <Label text="=documents" style="&top1;" />
-              <MultiSelector viewName="Documents" property="Documents" renderColumns="Name Number RegistrationNumber DocumentDate"
-                newRowEnabled="true" style="&inp2x;" disablable="true" summarize="true"/>
-            </FlowPanel>
-  
-            <FlowPanel style="&section;" data="Relations" for="Appointment" module="Calendar">
-              <Label text="=calAppointments" style="&top1;" />
-              <MultiSelector viewName="Appointments" property="Appointments"
-                renderColumns="Summary" choiceColumns="Summary StartDateTime EndDateTime"
-                newRowEnabled="true" style="&inp2x;" disablable="true" summarize="true"/>
-            </FlowPanel>
-
-            <FlowPanel style="&section;" data="Relations" for="Discussion" module="Discussions">
-              <Label text="=discussions" style="&top1;" />
-              <MultiSelector viewName="Discussions" property="Discussions"
-                renderColumns="Subject" newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
-            </FlowPanel>
-
-            <FlowPanel style="&section;" data="Relations" for="ServiceObject" module="Service">
-              <Label text="=svcObjects" style="&top1;" />
-              <MultiSelector viewName="ServiceObjects" property="ServiceObjects"
-                renderColumns="Address" choiceColumns="Address CustomerName"
-                newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
-            </FlowPanel>
-
-            <FlowPanel style="&section;" data="Relations" for="Project" module="Projects">
-              <Label text="=projects" style="&top1;"/>
-              <DataSelector viewName="Projects" property="Projects"
-                renderColumns="Name" choiceColumns="Name"
-                newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
-            </FlowPanel>
-
-            <FlowPanel style="&section;" data="Relations" for="Relation">
-              <Label text="=crmTasks" style="&top1;" />
-              <MultiSelector viewName="Tasks" property="Tasks"
-                renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
-                choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"
-                newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
-            </FlowPanel>
-            
-            <FlowPanel style="&section;" data="Relations" for="Request" module="Tasks">
-              <Label text="=crmRequests" style="&top1;" />
-              <MultiSelector viewName="Requests" property="Requests"
-                renderColumns="Id Summary FirstName LastName" 
-                choiceColumns="Id Summary FirstName LastName"
-                newRowEnabled="false" style="&inp2x;" disablable="true" summarize="true"/>
-            </FlowPanel>
-
-            <FlowPanel style="&section;" data="Relations" module="Mail">
-              <Label text="=mails" style="&top1;" />
-              <ChildSelector viewName="Messages" childTable="Relations"
-                targetRelColumn="Task" sourceRelColumn="Message"
-                renderColumns="Date Subject"
-                label="=mails" style="&inp2x;" readOnly="true" summarize="true" />
-            </FlowPanel>
-          </FlowPanel>
-        </FlowPanel>
+        <Relations name="Relations" relColumn="Task" inline="true"
+                   disablable="false" style="&section; width: 500px;" summarize="true"
+                   defaultRelations="Companies Persons Documents Appointments Discussions
+                       Projects Tasks Requests Messages">
+          <Relation viewName="Companies" renderColumns="Name TypeName"
+                    newRowEnabled="false" editPopup="true"/>
+          <Relation viewName="Persons" renderColumns="FirstName LastName"
+                    newRowEnabled="false" editPopup="true"/>
+          <Relation viewName="Documents"
+                    renderColumns="Name Number RegistrationNumber DocumentDate"
+                    newRowEnabled="false" editPopup="true"/>
+          <Relation viewName="Discussions" renderColumns="Subject"
+                    newRowEnabled="false" editPopup="true"/>
+          <Relation viewName="ServiceObjects" renderColumns="Address"
+                    newRowEnabled="false" editPopup="true" choiceColumns="Address CustomerName"/>
+          <Relation viewName="Tasks"
+                    renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
+                    newRowEnabled="false" editPopup="true"
+                    choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime
+                      FinishTime"/>
+          <Relation viewName="OrderCargo"
+                    renderColumns="Description" newRowEnabled="false" editPopup="true" />
+          <Relation viewName="ServiceMaintenance"
+                    renderColumns="ID" choiceColumns="ID TypeName StateName"
+                    newRowEnabled="false" editPopup="true" />
+        </Relations>
       </page>
 
       <page>

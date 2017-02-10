@@ -5,6 +5,7 @@ import com.google.common.primitives.Ints;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.value.ValueType;
+import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Date;
 
@@ -29,6 +30,10 @@ public class JustDate extends AbstractDate implements Comparable<JustDate> {
     } else {
       return dt.getDate();
     }
+  }
+
+  public static int readDays(long time) {
+    return BeeUtils.round((double) time / TimeUtils.MILLIS_PER_DAY);
   }
 
   private int days;
@@ -217,7 +222,8 @@ public class JustDate extends AbstractDate implements Comparable<JustDate> {
 
   @Override
   public long getTime() {
-    return TimeUtils.MILLIS_PER_DAY * days;
+    long time = TimeUtils.MILLIS_PER_DAY * days;
+    return time + TimeUtils.getTimezoneOffsetInMillis(time);
   }
 
   @Override

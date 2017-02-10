@@ -17,6 +17,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -91,7 +92,11 @@ public final class Dimensions {
 
   public static Integer getViewOrdinal(String viewName) {
     int index = ArrayUtils.indexOf(VIEWS, viewName);
-    return (index >= 0) ? index + 1 : null;
+    if (index >= 0) {
+      return index + 1;
+    } else {
+      return null;
+    }
   }
 
   public static boolean isDimensionView(String viewName) {
@@ -114,6 +119,15 @@ public final class Dimensions {
     return isValid(ordinal) ? RELATION_COLUMNS[ordinal - 1] : null;
   }
 
+  public static Integer getRelationColumnOrdinal(String columnName) {
+    int index = ArrayUtils.indexOf(RELATION_COLUMNS, columnName);
+    if (index >= 0) {
+      return index + 1;
+    } else {
+      return null;
+    }
+  }
+
   public static String getForegroundColumn(Integer ordinal) {
     return isValid(ordinal) ? getColumnPrefix(ordinal) + "Foreground" : null;
   }
@@ -122,7 +136,15 @@ public final class Dimensions {
     return isValid(ordinal) ? getColumnPrefix(ordinal) + "Background" : null;
   }
 
-  public static Set<String> getHiddenRelationColumns() {
+  public static Collection<String> getObservedRelationColumns() {
+    Set<String> result = new HashSet<>();
+    for (int ordinal = 1; ordinal < getObserved(); ordinal++) {
+      result.add(getRelationColumn(ordinal));
+    }
+    return result;
+  }
+
+  public static Collection<String> getHiddenRelationColumns() {
     Set<String> result = new HashSet<>();
     for (int ordinal = observed + 1; ordinal <= SPACETIME; ordinal++) {
       result.add(getRelationColumn(ordinal));

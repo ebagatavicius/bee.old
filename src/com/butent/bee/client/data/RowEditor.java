@@ -226,7 +226,7 @@ public final class RowEditor {
             }
 
             Opener formOpener;
-            if (!opener.isModal() && Popup.getActivePopup() != null) {
+            if (!opener.isModal() && Popup.hasEventPreview()) {
               formOpener = Opener.modal(opener.getOnOpen());
             } else {
               formOpener = opener;

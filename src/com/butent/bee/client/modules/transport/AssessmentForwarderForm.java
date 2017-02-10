@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.gwt.xml.client.Element;
-
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.composite.DataSelector;
@@ -33,15 +31,6 @@ public class AssessmentForwarderForm extends PrintFormInterceptor {
       });
     }
     super.afterCreateWidget(name, widget, callback);
-  }
-
-  @Override
-  public boolean beforeCreateWidget(String name, Element description) {
-    if (!TransportHandler.bindExpensesToIncomes()
-        && BeeUtils.inListSame(name, VAR_INCOME + "Label", VAR_INCOME)) {
-      return false;
-    }
-    return super.beforeCreateWidget(name, description);
   }
 
   @Override

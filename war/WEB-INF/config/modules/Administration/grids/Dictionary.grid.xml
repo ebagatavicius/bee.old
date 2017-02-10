@@ -25,5 +25,8 @@
 
     <DataColumn name="DefaultDE" />
     <DataColumn name="CustomDE" />
+
+    <DataColumn name="DefaultET" />
+    <DataColumn name="CustomET" />
   </g:columns>
 </g:Grid>

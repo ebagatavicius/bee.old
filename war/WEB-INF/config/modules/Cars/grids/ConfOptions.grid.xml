@@ -7,5 +7,6 @@
     <RelColumn name="Group" renderColumns="TypeName GroupName" />
     <DataColumn name="OptionName" />
     <DataColumn name="Code" />
+    <DataColumn name="Code2" />
   </g:columns>
 </g:Grid>

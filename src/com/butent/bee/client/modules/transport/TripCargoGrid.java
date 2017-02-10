@@ -14,25 +14,33 @@ import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.data.RowInsertCallback;
 import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.dialog.Modality;
+import com.butent.bee.client.grid.ColumnFooter;
+import com.butent.bee.client.grid.ColumnHeader;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.grid.column.AbstractColumn;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.view.edit.EditableColumn;
 import com.butent.bee.client.view.grid.CellGrid;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.RowInsertEvent;
 import com.butent.bee.shared.data.filter.CompoundFilter;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
+import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -142,6 +150,17 @@ public class TripCargoGrid extends PercentEditor {
   }
 
   @Override
+  public boolean afterCreateColumn(String columnName, List<? extends IsColumn> dataColumns,
+      AbstractColumn<?> column, ColumnHeader header, ColumnFooter footer,
+      EditableColumn editableColumn) {
+    if (BeeUtils.in(columnName, ALS_LOADING_DATE, ALS_UNLOADING_DATE)) {
+      column.setSortable(true);
+      column.setSortBy(Arrays.asList(COL_CARGO + columnName));
+    }
+    return super.afterCreateColumn(columnName, dataColumns, column, header, footer, editableColumn);
+  }
+
+  @Override
   public boolean beforeAddRow(GridPresenter presenter, boolean copy) {
     Action action = new Action(presenter.getGridView());
     action.dialog.focusOnOpen(action.dialog.getContent());
@@ -155,5 +174,47 @@ public class TripCargoGrid extends PercentEditor {
   @Override
   public GridInterceptor getInstance() {
     return new TripCargoGrid();
+  }
+
+  @Override
+  public void onDataReceived(List<? extends IsRow> rows) {
+    super.onDataReceived(rows);
+    Order order = getGridView().getGrid().getSortOrder();
+
+    if (!BeeConst.isUndef(order.getIndex(ALS_LOADING_DATE))
+        || !BeeConst.isUndef(order.getIndex(ALS_UNLOADING_DATE))) {
+      Collections.sort(rows, (row1, row2) -> {
+        int result = BeeConst.COMPARE_EQUAL;
+
+        for (Order.Column column : order.getColumns()) {
+          if (result == BeeConst.COMPARE_EQUAL) {
+            if (BeeUtils.in(column.getName(), ALS_LOADING_DATE, ALS_UNLOADING_DATE)) {
+              String propertyKey = BeeUtils.removePrefix(column.getName(), COL_CARGO);
+              Long date1 = BeeUtils.toLong(row1.getProperty(propertyKey));
+              Long date2 = BeeUtils.toLong(row2.getProperty(propertyKey));
+
+              if (order.isAscending(column.getName())) {
+                result = date1.compareTo(date2);
+              } else {
+                result = date2.compareTo(date1);
+              }
+            } else {
+              for (String sortBy : column.getSources()) {
+                if (result == BeeConst.COMPARE_EQUAL) {
+                  if (order.isAscending(column.getName())) {
+                    result = row1.getString(getDataIndex(sortBy))
+                        .compareTo(row2.getString(getDataIndex(sortBy)));
+                  } else {
+                    result = row2.getString(getDataIndex(sortBy))
+                        .compareTo(row1.getString(getDataIndex(sortBy)));
+                  }
+                }
+              }
+            }
+          }
+        }
+        return result;
+      });
+    }
   }
 }

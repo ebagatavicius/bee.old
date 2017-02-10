@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<View xmlns="http://www.butent.com/view" name="AdsTopics" source="AdsTopics"
- newRowForm="AdTopic">
+<View xmlns="http://www.butent.com/view"
+  name="AdsTopics"
+  source="AdsTopics"
+  newRowForm="AdTopic"
+  caption="=adsTopics"
+>
  <Columns>
   <SimpleColumn name="Ordinal" />
   <SimpleColumn name="Name" />

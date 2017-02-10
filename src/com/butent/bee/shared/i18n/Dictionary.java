@@ -136,6 +136,8 @@ public interface Dictionary {
 
   default String additionalInfo() {return g("additionalInfo");}
 
+  default String additionalItemUnit() {return g("additionalItemUnit");}
+
   default String additionalServices() {return g("additionalServices");}
 
   default String address() {return g("address");}
@@ -182,6 +184,8 @@ public interface Dictionary {
   default String announcementsBoard() {return g("announcementsBoard");}
 
   default String area() {return g("area");}
+
+  default String arrived() {return g("arrived");}
 
   default String article() {return g("article");}
 
@@ -254,6 +258,12 @@ public interface Dictionary {
   default String branch() {return g("branch");}
 
   default String branches() {return g("branches");}
+
+  default String brutto() {return g("brutto");}
+
+  default String bundle() {return g("bundle");}
+
+  default String bundles() {return g("bundles");}
 
   default String calAction() {return g("calAction");}
 
@@ -605,6 +615,8 @@ public interface Dictionary {
 
   default String car() {return g("car");}
 
+  default String carService() {return g("carService");}
+
   default String cargo() {return g("cargo");}
 
   default String cargoChangeOfPallets() {return g("cargoChangeOfPallets");}
@@ -688,6 +700,8 @@ public interface Dictionary {
   default String chatsShowAll() {return g("chatsShowAll");}
 
   default String checkNo() {return g("checkNo");}
+
+  default String checked() {return g("checked");}
 
   default String chief() {return g("chief");}
 
@@ -890,6 +904,8 @@ public interface Dictionary {
   default String countryEUMemberShort() {return g("countryEUMemberShort");}
 
   default String countryFlag() {return g("countryFlag");}
+
+  default String countryOfOrigin() {return g("countryOfOrigin");}
 
   default String create() {return g("create");}
 
@@ -1442,6 +1458,8 @@ public interface Dictionary {
   default String dangerousShort() {return g("dangerousShort");}
 
   default String data() {return g("data");}
+
+  default String dataCreateImportTemplates() {return g("dataCreateImportTemplates");}
 
   default String dataImport() {return g("dataImport");}
 
@@ -2795,6 +2813,8 @@ public interface Dictionary {
 
   default String finAnalysisPrimaryRowsNotAvailable() {return g("finAnalysisPrimaryRowsNotAvailable");}
 
+  default String finAnalysisResults() {return g("finAnalysisResults");}
+
   default String finAnalysisRow() {return g("finAnalysisRow");}
 
   default String finAnalysisRowAbbreviation() {return g("finAnalysisRowAbbreviation");}
@@ -2845,7 +2865,7 @@ public interface Dictionary {
 
   default String finAnalysisSpecifyBudgetType() {return g("finAnalysisSpecifyBudgetType");}
 
-  default String finAnalysisSpecifyIndicatorOrScript() {return g("finAnalysisSpecifyIndicatorOrScript");}
+  default String finAnalysisSpecifyIndicators() {return g("finAnalysisSpecifyIndicators");}
 
   default String finAnalysisSplit(Object p0) {
     Map<String, Object> _m = new HashMap<>();
@@ -2912,6 +2932,8 @@ public interface Dictionary {
   default String finCashInBank() {return g("finCashInBank");}
 
   default String finClosingBalance() {return g("finClosingBalance");}
+
+  default String finClosingBalanceShort() {return g("finClosingBalanceShort");}
 
   default String finClosingEntries() {return g("finClosingEntries");}
 
@@ -3056,6 +3078,8 @@ public interface Dictionary {
   default String finNormalBalanceShort() {return g("finNormalBalanceShort");}
 
   default String finOpeningBalance() {return g("finOpeningBalance");}
+
+  default String finOpeningBalanceShort() {return g("finOpeningBalanceShort");}
 
   default String finPettyCash() {return g("finPettyCash");}
 
@@ -3221,6 +3245,8 @@ public interface Dictionary {
 
   default String internalRelation() {return g("internalRelation");}
 
+  default String intrastat() {return g("intrastat");}
+
   default String invalidDate() {return g("invalidDate");}
 
   default String invalidDateFormat() {return g("invalidDateFormat");}
@@ -3312,6 +3338,8 @@ public interface Dictionary {
   default String kilometersShort() {return g("kilometersShort");}
 
   default String kind() {return g("kind");}
+
+  default String kpnCode() {return g("kpnCode");}
 
   default String language() {return g("language");}
 
@@ -3715,6 +3743,8 @@ public interface Dictionary {
 
   default String name() {return g("name");}
 
+  default String netto() {return g("netto");}
+
   default String newAccount() {return g("newAccount");}
 
   default String newActivityType() {return g("newActivityType");}
@@ -3724,6 +3754,8 @@ public interface Dictionary {
   default String newBank() {return g("newBank");}
 
   default String newBranch() {return g("newBranch");}
+
+  default String newBundle() {return g("newBundle");}
 
   default String newCar() {return g("newCar");}
 
@@ -3854,6 +3886,10 @@ public interface Dictionary {
   default String newSalaryFund() {return g("newSalaryFund");}
 
   default String newService() {return g("newService");}
+
+  default String newServiceJob() {return g("newServiceJob");}
+
+  default String newServiceOrder() {return g("newServiceOrder");}
 
   default String newSupplier() {return g("newSupplier");}
 
@@ -3989,6 +4025,16 @@ public interface Dictionary {
 
   default String ordAskNotChangeWarehouse() {return g("ordAskNotChangeWarehouse");}
 
+  default String ordBoLDepartureDate() {return g("ordBoLDepartureDate");}
+
+  default String ordBoLDriverTabNo() {return g("ordBoLDriverTabNo");}
+
+  default String ordBoLIssueDate() {return g("ordBoLIssueDate");}
+
+  default String ordBoLNumber() {return g("ordBoLNumber");}
+
+  default String ordBoLSeries() {return g("ordBoLSeries");}
+
   default String ordCancel() {return g("ordCancel");}
 
   default String ordCanceled() {return g("ordCanceled");}
@@ -4031,6 +4077,8 @@ public interface Dictionary {
 
   default String ordSupplierTerm() {return g("ordSupplierTerm");}
 
+  default String ordTransportationActInfo() {return g("ordTransportationActInfo");}
+
   default String ordUncompleted() {return g("ordUncompleted");}
 
   default String order() {return g("order");}
@@ -4062,6 +4110,10 @@ public interface Dictionary {
   default String owner() {return g("owner");}
 
   default String packageUnits() {return g("packageUnits");}
+
+  default String packet() {return g("packet");}
+
+  default String packets() {return g("packets");}
 
   default String pallets() {return g("pallets");}
 
@@ -4582,6 +4634,8 @@ public interface Dictionary {
 
   default String prmExportERPReservationsTime() {return g("prmExportERPReservationsTime");}
 
+  default String prmExternalMaintenanceUrl() {return g("prmExternalMaintenanceUrl");}
+
   default String prmForbiddenFilesExtentions() {return g("prmForbiddenFilesExtentions");}
 
   default String prmImportERPItemsTime() {return g("prmImportERPItemsTime");}
@@ -4613,6 +4667,8 @@ public interface Dictionary {
   default String prmSendNewslettersCount() {return g("prmSendNewslettersCount");}
 
   default String prmSendNewslettersInterval() {return g("prmSendNewslettersInterval");}
+
+  default String prmSmsRequestContactInfoFrom() {return g("prmSmsRequestContactInfoFrom");}
 
   default String prmSmsRequestServiceAddress() {return g("prmSmsRequestServiceAddress");}
 
@@ -4687,6 +4743,10 @@ public interface Dictionary {
   }
 
   default String recalculateTradeItemCostsQuestion() {return g("recalculateTradeItemCostsQuestion");}
+
+  default String recall() {return g("recall");}
+
+  default String recalls() {return g("recalls");}
 
   default String received() {return g("received");}
 
@@ -4793,6 +4853,8 @@ public interface Dictionary {
   default String restrictions() {return g("restrictions");}
 
   default String result() {return g("result");}
+
+  default String results() {return g("results");}
 
   default String rightStateCreate() {return g("rightStateCreate");}
 
@@ -4931,6 +4993,14 @@ public interface Dictionary {
 
   default String service() {return g("service");}
 
+  default String serviceJob() {return g("serviceJob");}
+
+  default String serviceJobs() {return g("serviceJobs");}
+
+  default String serviceOrder() {return g("serviceOrder");}
+
+  default String serviceOrders() {return g("serviceOrders");}
+
   default String services() {return g("services");}
 
   default String setAsPrimary() {return g("setAsPrimary");}
@@ -4953,6 +5023,8 @@ public interface Dictionary {
 
   default String singularName() {return g("singularName");}
 
+  default String size() {return g("size");}
+
   default String socialContacts() {return g("socialContacts");}
 
   default String softwareBuild() {return g("softwareBuild");}
@@ -4972,6 +5044,14 @@ public interface Dictionary {
   default String specifyCondition() {return g("specifyCondition");}
 
   default String specifyResult() {return g("specifyResult");}
+
+  default String stageAction() {return g("stageAction");}
+
+  default String stageCondition() {return g("stageCondition");}
+
+  default String stageConfirmation() {return g("stageConfirmation");}
+
+  default String stageTrigger() {return g("stageTrigger");}
 
   default String startRow() {return g("startRow");}
 
@@ -5045,6 +5125,8 @@ public interface Dictionary {
 
   default String svcDevices() {return g("svcDevices");}
 
+  default String svcEmptySmsFromError() {return g("svcEmptySmsFromError");}
+
   default String svcEquipment() {return g("svcEquipment");}
 
   default String svcFaultInfo() {return g("svcFaultInfo");}
@@ -5057,9 +5139,19 @@ public interface Dictionary {
 
   default String svcInvoices() {return g("svcInvoices");}
 
+  default String svcIsValid() {return g("svcIsValid");}
+
   default String svcMaintenance() {return g("svcMaintenance");}
 
-  default String svcMaintenanceEmailHeader() {return g("svcMaintenanceEmailHeader");}
+  default String svcMaintenanceEmailContent(Object p0, Object p1, Object p2) {
+    Map<String, Object> _m = new HashMap<>();
+    _m.put("{0}", p0);
+    _m.put("{1}", p1);
+    _m.put("{2}", p2);
+    return Localized.format(g("svcMaintenanceEmailContent"), _m);
+  }
+
+  default String svcMaintenanceEquipment() {return g("svcMaintenanceEquipment");}
 
   default String svcMaintenanceItemsServices() {return g("svcMaintenanceItemsServices");}
 
@@ -5072,6 +5164,8 @@ public interface Dictionary {
   default String svcModel() {return g("svcModel");}
 
   default String svcModule() {return g("svcModule");}
+
+  default String svcMyMaintenance() {return g("svcMyMaintenance");}
 
   default String svcNewDate() {return g("svcNewDate");}
 
@@ -5367,6 +5461,8 @@ public interface Dictionary {
   default String trAdvances() {return g("trAdvances");}
 
   default String trAgreeWithConditions() {return g("trAgreeWithConditions");}
+
+  default String trAgreeWithTermsAndConditions() {return g("trAgreeWithTermsAndConditions");}
 
   default String trArrivalCity() {return g("trArrivalCity");}
 
@@ -6097,6 +6193,10 @@ public interface Dictionary {
 
   default String trTbSettingsPlaceInfo() {return g("trTbSettingsPlaceInfo");}
 
+  default String trTbSettingsRefreshLocalChanges() {return g("trTbSettingsRefreshLocalChanges");}
+
+  default String trTbSettingsRefreshRemoteChanges() {return g("trTbSettingsRefreshRemoteChanges");}
+
   default String trTbSettingsSeparateCargo() {return g("trTbSettingsSeparateCargo");}
 
   default String trTbSettingsSeparateTrips() {return g("trTbSettingsSeparateTrips");}
@@ -6400,6 +6500,10 @@ public interface Dictionary {
 
   default String trdInvoices() {return g("trdInvoices");}
 
+  default String trdItemWarehouseFrom() {return g("trdItemWarehouseFrom");}
+
+  default String trdItemWarehouseTo() {return g("trdItemWarehouseTo");}
+
   default String trdManager() {return g("trdManager");}
 
   default String trdMovement() {return g("trdMovement");}
@@ -6550,7 +6654,11 @@ public interface Dictionary {
 
   default String trdWarehouseFrom() {return g("trdWarehouseFrom");}
 
+  default String trdWarehouseFromShort() {return g("trdWarehouseFromShort");}
+
   default String trdWarehouseTo() {return g("trdWarehouseTo");}
+
+  default String trdWarehouseToShort() {return g("trdWarehouseToShort");}
 
   default String trigger() {return g("trigger");}
 
@@ -6748,7 +6856,17 @@ public interface Dictionary {
 
   default String vehicleCoupe() {return g("vehicleCoupe");}
 
+  default String vehicleCylinderNumber() {return g("vehicleCylinderNumber");}
+
+  default String vehicleDoorsNumber() {return g("vehicleDoorsNumber");}
+
   default String vehicleDriver() {return g("vehicleDriver");}
+
+  default String vehicleEmissionStandard() {return g("vehicleEmissionStandard");}
+
+  default String vehicleEmissionStandards() {return g("vehicleEmissionStandards");}
+
+  default String vehicleEngineCode() {return g("vehicleEngineCode");}
 
   default String vehicleEngineNumber() {return g("vehicleEngineNumber");}
 
@@ -6758,17 +6876,27 @@ public interface Dictionary {
 
   default String vehicleGearbox() {return g("vehicleGearbox");}
 
+  default String vehicleGearboxes() {return g("vehicleGearboxes");}
+
+  default String vehicleGearsNumber() {return g("vehicleGearsNumber");}
+
   default String vehicleGroups() {return g("vehicleGroups");}
 
   default String vehicleGroupsShort() {return g("vehicleGroupsShort");}
 
   default String vehicleHatchback() {return g("vehicleHatchback");}
 
+  default String vehicleHorsepower() {return g("vehicleHorsepower");}
+
   default String vehicleManualTransmission() {return g("vehicleManualTransmission");}
+
+  default String vehicleManufacturerNr() {return g("vehicleManufacturerNr");}
 
   default String vehicleMinivan() {return g("vehicleMinivan");}
 
   default String vehicleModel() {return g("vehicleModel");}
+
+  default String vehicleModelNr() {return g("vehicleModelNr");}
 
   default String vehicleModels() {return g("vehicleModels");}
 
@@ -6778,11 +6906,23 @@ public interface Dictionary {
 
   default String vehicleNetto() {return g("vehicleNetto");}
 
+  default String vehicleNewEmissionStandard() {return g("vehicleNewEmissionStandard");}
+
+  default String vehicleNewGearbox() {return g("vehicleNewGearbox");}
+
+  default String vehicleNewPlaceCode() {return g("vehicleNewPlaceCode");}
+
+  default String vehicleNewWarranty() {return g("vehicleNewWarranty");}
+
   default String vehicleNotes() {return g("vehicleNotes");}
 
   default String vehicleNumber() {return g("vehicleNumber");}
 
   default String vehicleOwnerName() {return g("vehicleOwnerName");}
+
+  default String vehiclePlaceCode() {return g("vehiclePlaceCode");}
+
+  default String vehiclePlaceCodes() {return g("vehiclePlaceCodes");}
 
   default String vehiclePower() {return g("vehiclePower");}
 
@@ -6792,17 +6932,25 @@ public interface Dictionary {
 
   default String vehicleRepairs() {return g("vehicleRepairs");}
 
+  default String vehicleResponsiblePerson() {return g("vehicleResponsiblePerson");}
+
   default String vehicleSUV() {return g("vehicleSUV");}
 
   default String vehicleSedan() {return g("vehicleSedan");}
 
   default String vehicleService() {return g("vehicleService");}
 
+  default String vehicleServiceSettings() {return g("vehicleServiceSettings");}
+
   default String vehicleSpeedometer() {return g("vehicleSpeedometer");}
 
   default String vehicleTankCapacity() {return g("vehicleTankCapacity");}
 
   default String vehicleType() {return g("vehicleType");}
+
+  default String vehicleWarranties() {return g("vehicleWarranties");}
+
+  default String vehicleWarranty() {return g("vehicleWarranty");}
 
   default String vehicles() {return g("vehicles");}
 

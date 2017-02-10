@@ -8,19 +8,17 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.dialog.ConfirmationCallback;
-import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.GridView.SelectedRows;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
-import com.butent.bee.client.widget.Button;
-import com.butent.bee.client.widget.Image;
+import com.butent.bee.client.widget.CustomAction;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.view.RowInfo;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
@@ -28,25 +26,17 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class InvoicesGrid extends AbstractGridInterceptor implements ClickHandler {
 
-  private final Button action = new Button(Localized.dictionary().trSendToERP(), this);
-  private final Image loading = new Image(Global.getImages().loading());
-  private final Simple panel = new Simple();
+  private final CustomAction erpAction = new CustomAction(FontAwesome.CLOUD_UPLOAD, this);
 
   @Override
   public void afterCreatePresenter(final GridPresenter presenter) {
-    Global.getParameter(AdministrationConstants.PRM_ERP_ADDRESS, new Consumer<String>() {
-      @Override
-      public void accept(String address) {
-        if (!BeeUtils.isEmpty(address)) {
-          presenter.getHeader().addCommandItem(panel);
-          setWaiting(false);
-        }
-      }
-    });
+    if (!BeeUtils.isEmpty(Global.getParameterText(AdministrationConstants.PRM_ERP_ADDRESS))) {
+      erpAction.setTitle(Localized.dictionary().trSendToERP());
+      presenter.getHeader().addCommandItem(erpAction);
+    }
   }
 
   @Override
@@ -66,34 +56,27 @@ public class InvoicesGrid extends AbstractGridInterceptor implements ClickHandle
       view.notifyWarning(Localized.dictionary().selectAtLeastOneRow());
       return;
     }
-    Global.confirm(Localized.dictionary().trSendToERPConfirm(), new ConfirmationCallback() {
-      @Override
-      public void onConfirm() {
-        setWaiting(true);
-        ParameterList args = TradeKeeper.createArgs(TradeConstants.SVC_SEND_TO_ERP);
-        args.addDataItem(TradeConstants.VAR_VIEW_NAME, view.getViewName());
-        args.addDataItem(TradeConstants.VAR_ID_LIST, DataUtils.buildIdList(ids));
+    Global.confirm(Localized.dictionary().trSendToERPConfirm(), () -> {
+      erpAction.running();
+      ParameterList args = TradeKeeper.createArgs(TradeConstants.SVC_SEND_TO_ERP);
+      args.addDataItem(TradeConstants.VAR_VIEW_NAME, view.getViewName());
+      args.addDataItem(TradeConstants.VAR_ID_LIST, DataUtils.buildIdList(ids));
 
-        BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            setWaiting(false);
-            response.notify(view);
+      BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
+        @Override
+        public void onResponse(ResponseObject response) {
+          erpAction.idle();
+          response.notify(view);
 
-            if (!response.hasErrors()) {
-              getERPStocks(ids);
-              Data.onViewChange(view.getViewName(), DataChangeEvent.RESET_REFRESH);
-            }
+          if (!response.hasErrors()) {
+            getERPStocks(ids);
+            Data.onViewChange(view.getViewName(), DataChangeEvent.RESET_REFRESH);
           }
-        });
-      }
+        }
+      });
     });
   }
 
   public void getERPStocks(Set<Long> ids) {
-  }
-
-  private void setWaiting(boolean waiting) {
-    panel.setWidget(waiting ? loading : action);
   }
 }

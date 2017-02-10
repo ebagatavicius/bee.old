@@ -29,8 +29,8 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.grid.GridPanel;
 import com.butent.bee.client.grid.HtmlTable;
-import com.butent.bee.client.i18n.DateTimeFormat;
-import com.butent.bee.client.i18n.DateTimeFormat.PredefinedFormat;
+import com.butent.bee.shared.i18n.PredefinedFormat;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.render.PhotoRenderer;
@@ -72,7 +72,6 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.io.FileNameUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
-import com.butent.bee.shared.modules.discussions.DiscussionsConstants.DiscussionStatus;
 import com.butent.bee.shared.news.NewsConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
@@ -788,14 +787,14 @@ class AnnouncementsBoardInterceptor extends AbstractFormInterceptor implements
         Flow happyBirthdayDate = new Flow();
         listTbl.setWidget(row, 2, happyBirthdayDate);
         TextLabel date = new TextLabel(true);
-        date.setValue(DateTimeFormat.getFormat(PredefinedFormat.MONTH_DAY)
+        date.setValue(Format.getPredefinedFormat(PredefinedFormat.MONTH_DAY)
             .format(new JustDate(BeeUtils.toLong(birthListData[rs
                 .getColumnIndex(COL_DATE_OF_BIRTH)])))
             + " " + DAY);
         happyBirthdayDate.add(date);
         happyBirthdayDate.setStyleName(STYLE_HB_DATE);
       } else {
-        listTbl.setHtml(row, 2, DateTimeFormat.getFormat(PredefinedFormat.MONTH_DAY)
+        listTbl.setHtml(row, 2, Format.getPredefinedFormat(PredefinedFormat.MONTH_DAY)
             .format(new JustDate(BeeUtils.toLong(birthListData[rs
                 .getColumnIndex(COL_DATE_OF_BIRTH)]))));
       }

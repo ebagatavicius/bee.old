@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+        name="CarServiceEvents" viewName="CarServiceEvents" caption="=calAppointments"
+>
+  <g:columns>
+    <DataColumn name="Description" maxWidth="200" />
+
+    <DataColumn name="StartDateTime" visible="true" />
+    <DataColumn name="EndDateTime" visible="true" />
+
+    <DataColumn name="Status" />
+    <DataColumn name="Arrived" editInPlace="true" />
+  </g:columns>
+</g:Grid>

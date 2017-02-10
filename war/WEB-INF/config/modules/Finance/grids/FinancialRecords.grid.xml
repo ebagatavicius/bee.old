@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="FinancialRecords" viewName="FinancialRecords"
@@ -12,4 +13,8 @@
 
   <xi:include href="columns/Employee.columns.xml" />
   <xi:include href="../../Administration/grids/columns/ExtraDimensions.columns.xml" />
+
+  <g:rowMessage>
+    <ui:expression>[row.DebitCode, row.CreditCode].join(' ')</ui:expression>
+  </g:rowMessage>
 </g:Grid>

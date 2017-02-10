@@ -53,26 +53,26 @@
   <FileCollector name="Files" editableColumns="name" style="margin-left: -15px;" />
  </FlowPanel>
 
- <FlowPanel data="Users" style="&section;" class="flexBox-horizontal">
+ <FlowPanel data="DiscussionsUsers" style="&section;" class="flexBox-horizontal">
   <Label name="membersLabel" text="=discussMembers"
    style="&top1;min-width:80px; padding-left:24px; padding-right: 0px;" />
-  <MultiSelector name="Members" viewName="Users" property="Members"
+  <MultiSelector name="Members" viewName="Users" data="DiscussionsUsers" property="Members"
    renderColumns="FirstName LastName" editPopup="true" editSource="CompanyPerson"
    disablable="true" style="&inp2x; margin-left: 15px;" label="=discussMembers" />
  </FlowPanel>
 
- <FlowPanel data="Users" style="&section;" class="flexBox-horizontal">
+ <FlowPanel data="DiscussionsUsers" style="&section;" class="flexBox-horizontal">
   <Label name="groupsLabel" text="=discussUserGroup"
    style="&top1;min-width:104px; padding-right: 0px;" />
   <MultiSelector name="UserGroups" viewName="UserGroupSettings"
-   property="MemeberGroup" renderColumns="Name" editPopup="true"
+   property="MemberGroup" renderColumns="Name" editPopup="false"
    style="&inp2x; margin-left: 15px;" label="=discussMembers" filter="Owner={u} OR Visibility=1" />
  </FlowPanel>
 
  <FlowPanel style="&section; margin-left: 110px; margin-top: 10px;"
   class="flexBox-horizontal">
-  <CheckBox data="Users" name="Accessibility" source="Accessibility"
+  <CheckBox data="DiscussionsUsers" name="Accessibility" source="Accessibility"
    text="=discussPublic" style="&top1; min-width:70px; padding-right:28px;" />
-  <CheckBox module="Mail.Administration" name="Mail" text="=mailNotify" />
+  <CheckBox module="Mail" name="Mail" text="=mailNotify" />
  </FlowPanel>
 </FlowPanel>

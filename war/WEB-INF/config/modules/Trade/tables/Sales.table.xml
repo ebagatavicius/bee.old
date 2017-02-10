@@ -38,6 +38,19 @@
     <DateTime name="Exported" label="=trdExported" />
 
     <Integer name="Kind" />
+
+    <Relation name="BoLSeries" relation="OrderSeries" label="=ordBoLSeries" />
+    <String name="BoLNumber" precision="24" label="=ordBoLNumber" />
+    <DateTime name="BoLIssueDate" label="=ordBoLIssueDate" />
+    <DateTime name="BoLDepartureDate" label="=ordBoLDepartureDate" />
+    <DateTime name="BoLUnloadingDate" label="=trUnloadingDate" />
+    <String name="BoLLoading" precision="70" label="=cargoLoadingPlace" />
+    <String name="BoLUnloading" precision="70" label="=cargoUnloadingPlace" />
+    <Relation name="BoLDriverTabNo" relation="Employees" label="=ordBoLDriverTabNo" />
+    <String name="BoLVehicleNumber" precision="60" label="=vehicleNumber" />
+    <String name="BoLDriver" precision="60" label="=trdDriver" />
+    <Relation name="BoLCarrier" relation="Companies" label="=carrier" />
+
   </Fields>
 
   <Constraints>

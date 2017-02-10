@@ -75,7 +75,7 @@ public final class CalendarUtils {
     DataInfo srcInfo = Data.getDataInfo(VIEW_APPOINTMENTS);
     DataInfo dstInfo = Data.getDataInfo(TaskConstants.VIEW_TODO_LIST);
 
-    BeeRow srcRow = appointment.getRow();
+    IsRow srcRow = appointment.getRow();
     BeeRow dstRow = RowFactory.createEmptyRow(dstInfo, true);
 
     Map<String, String> colNames = new HashMap<>();
@@ -163,7 +163,7 @@ public final class CalendarUtils {
           for (Long id : appointment.getAttendees()) {
             if (attIds.contains(id)) {
               if (separate) {
-                Appointment copy = new Appointment(appointment.getRow(), id);
+                Appointment copy = Appointment.create(appointment.getRow(), id);
                 result.add(copy);
               } else {
                 result.add(appointment);
@@ -529,7 +529,7 @@ public final class CalendarUtils {
               RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, result);
             }
 
-            Appointment appointment = new Appointment(result);
+            Appointment appointment = Appointment.create(result);
             State state = isNew ? State.CREATED : State.CHANGED;
             AppointmentEvent.fire(appointment, state);
 

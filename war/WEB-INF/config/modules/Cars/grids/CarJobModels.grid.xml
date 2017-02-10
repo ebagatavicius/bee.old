@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+        name="CarJobModels" viewName="CarJobModels" caption="=vehicleModels"
+>
+  <g:columns>
+    <RelColumn name="Model" />
+
+    <DataColumn name="Duration">
+      <editor type="time" stepValue="5" />
+    </DataColumn>
+
+    <DataColumn name="Price" scale="2">
+      <editor type="number" currencySource="Currency" />
+    </DataColumn>
+    <RelColumn name="Currency" newRowEnabled="false" editEnabled="false" />
+  </g:columns>
+</g:Grid>

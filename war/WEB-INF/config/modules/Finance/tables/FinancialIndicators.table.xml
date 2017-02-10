@@ -20,7 +20,6 @@
 
     <Boolean name="IndicatorClosingEntries" label="=finClosingEntries" />
 
-    <Boolean name="IndicatorIsPercent" label="=percent" />
     <Integer name="IndicatorScale" label="=finIndicatorScale" />
 
     <Text name="Description" label="=description" />

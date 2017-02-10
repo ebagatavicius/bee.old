@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
+
+        name="CarRecalls" viewName="CarRecalls"
+>
+  <g:columns>
+    <DataColumn name="Code" />
+    <DataColumn name="Checked" />
+    <DataColumn name="Description" />
+  </g:columns>
+</g:Grid>

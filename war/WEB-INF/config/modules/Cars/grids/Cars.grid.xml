@@ -30,5 +30,20 @@
     <RelColumn name="Fuel" caption="=vehicleFuel" />
     <DataColumn name="Power" caption="=vehiclePower" />
     <DataColumn name="EngineVolume" caption="=vehicleEngineVolume" />
+    <DataColumn name="ManufacturerNumber" />
+    <DataColumn name="ModelNumber" />
+    <RelColumn name="Status" />
+    <DataColumn name="ResponsiblePerson" />
+    <DataColumn name="Phone" />
+    <RelColumn name="CarWarranty" />
+
+    <DataColumn name="EngineNumber" visible="false" />
+    <DataColumn name="CylinderNumber" visible="false" />
+    <DataColumn name="Horsepower" visible="false" />
+    <DataColumn name="DoorsNumber" visible="false" />
+    <DataColumn name="GearsNumber" visible="false" />
+    <RelColumn name="CarGearbox" visible="false" />
+    <RelColumn name="CarPlaceCode" visible="false" />
+    <RelColumn name="CarEmissionStandard" visible="false" />
   </g:columns>
 </g:Grid>

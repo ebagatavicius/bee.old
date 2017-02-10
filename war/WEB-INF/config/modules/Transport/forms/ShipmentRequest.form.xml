@@ -10,7 +10,7 @@
     <!ENTITY unit "display:inline-block; width:5em; margin-left:5px;">
     ]>
 <f:Form xmlns="http://www.butent.com/widget"
-        xmlns:f="http://www.butent.com/form"
+        xmlns:f="http://www.butent.com/form" xmlns:ui="http://www.butent.com/ui"
 
         name="ShipmentRequest" viewName="ShipmentRequests"
         showRowId="true" width="70" widthUnit="%" height="80" heightUnit="%"
@@ -26,6 +26,11 @@
         <Label for="Locale" />
         <TextLabel source="Locale" style="font-weight:bold;" />
         <FlowPanel name="OrderID" style="cursor:pointer; font-weight:bold; color:blue;" />
+        <Label />
+        <Label text="=customerPrice" />
+        <MoneyLabel property="Income" style="font-weight: bold;" />
+        <Label text="=vat" style="margin-left: 5px;" />
+        <MoneyLabel property="Vat" style="font-weight: bold;" />
       </row>
     </Table>
     <Table kind="custom" name="Status">
@@ -279,6 +284,10 @@
     </Details>
 
     <TabbedPages style="height:300px;">
+      <dynStyle>
+        <ui:inline>display:none;</ui:inline>
+        <ui:expression>!(rowId>0)</ui:expression>
+      </dynStyle>
       <page>
         <text>=files</text>
         <ChildGrid name="CargoFiles" relColumn="Cargo" source="Cargo" />

@@ -4,7 +4,6 @@ import com.google.gwt.i18n.client.NumberFormat;
 
 import com.butent.bee.client.grid.CellContext;
 import com.butent.bee.client.grid.cell.NumberCell;
-import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.i18n.HasNumberFormat;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.css.values.WhiteSpace;
@@ -14,15 +13,24 @@ import com.butent.bee.shared.ui.ColumnDescription.ColType;
 import com.butent.bee.shared.utils.BeeUtils;
 
 /**
- * Implements row id column, enables to get value for a specified row.
+ * Implements ID column renderer of data collections or structures(RowList, BeeRowSet) in
+ * table-based widgets (CellGrid, ChildGrid). This column renderer display specified row ID
+ * (usually unique) number of data structure or source.
  */
 
 public class RowIdColumn extends AbstractColumn<Long> implements HasNumberFormat {
 
+  /**
+   * Creates ID column renderer with pre-defined styles without number format.
+   */
   public RowIdColumn() {
-    this(Format.getDefaultLongFormat());
+    this(null);
   }
 
+  /**
+   * Creates ID column renderer with pre-defined styles with specified number format.
+   * @param format Format of ID number for rendering.
+   */
   public RowIdColumn(NumberFormat format) {
     super(new NumberCell<Long>(format));
 

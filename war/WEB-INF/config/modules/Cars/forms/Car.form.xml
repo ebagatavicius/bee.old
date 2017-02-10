@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Form []>
+<!DOCTYPE Form [
+    <!ENTITY inp1 "width: 170px;">
+    <!ENTITY inp2 "width: 90px;">
+    ]>
 <f:Form xmlns="http://www.butent.com/widget"
         xmlns:f="http://www.butent.com/form"
         xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -7,20 +10,122 @@
         name="Car" viewName="Cars" caption="=car" width="1000" height="700"
 >
   <FlowPanel class="flexBox-vertical">
-    <xi:include href="../../Classifiers/forms/widgets/VehicleDescription.widget.xml" />
+    <Table kind="controls" cellStyle="vertical-align: middle;">
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+      <col index="4" kind="label" />
+
+      <row>
+        <Label for="BodyNumber" />
+        <InputText source="BodyNumber" style="&inp1;" />
+        <Label text="=vehicleModel" class="bee-required" />
+        <DataSelector source="Model" class="flexible" newRowForm="NewVehicleModel"
+                      renderColumns="ParentModelName ModelName" filter="parent" />
+        <Label for="ManufacturerNumber" />
+        <InputText source="ManufacturerNumber" style="&inp1;" />
+      </row>
+
+      <row>
+        <Label text="=vehicleNumber" />
+        <InputText source="Number" upperCase="true" style="&inp1;" />
+        <Label text="=vehicleType" class="bee-required" />
+        <DataSelector source="Type" renderColumns="TypeName" />
+      </row>
+
+      <row>
+        <Label for="ModelNumber" />
+        <InputText source="ModelNumber" style="&inp1;" />
+        <Label for="Status" />
+        <DataSelector source="Status" />
+        <Label for="Notes" />
+        <SimplePanel style="position: relative; min-width: 5em;" class="flexible">
+          <InputArea source="Notes" class="occupy-1"
+                     style="width: 170px; height: 95px; max-height: 145px;" />
+        </SimplePanel>
+      </row>
+
+      <row>
+        <Label for="Owner" />
+        <DataSelector source="Owner" style="&inp1;" />
+        <Label for="ProductionDate" />
+        <InputDate source="ProductionDate" />
+      </row>
+
+      <row>
+        <Label for="ResponsiblePerson" />
+        <InputText source="ResponsiblePerson" style="&inp1;" />
+        <Label for="Speedometer" />
+        <InputInteger source="Speedometer" />
+      </row>
+
+      <row>
+        <Label for="Phone" />
+        <InputText source="Phone" style="&inp1;" />
+        <Label for="CarWarranty" />
+        <DataSelector source="CarWarranty" />
+      </row>
+    </Table>
 
     <TabbedPages class="flexible" style="margin-top: 1ex;">
       <page module="Transport">
         <text>=additionalInfo</text>
-        <VerticalPanel horizontalAlignment="right" cellStyle="padding-top: 5px;">
-          <DataSelector source="Fuel" caption="=vehicleFuel" summarize="true" />
-          <InputInteger source="TankCapacity" caption="=vehicleTankCapacity" style="width: 7em;"
-                        summarize="true" />
-          <InputDate source="StartDate" caption="=trVehicleStartDate" style="width: 7em;"
-                     summarize="true" />
-          <InputDate source="EndDate" caption="=trVehicleEndDate" style="width: 7em;"
-                     summarize="true" />
-        </VerticalPanel>
+        <FlowPanel>
+          <Table kind="controls" cellStyle="vertical-align: middle;">
+            <col index="0" kind="label" />
+            <col index="2" kind="label" />
+            <col index="4" kind="label" />
+
+            <row>
+              <Label for="EngineCode" />
+              <InputText source="EngineCode" style="&inp2;" />
+              <Label for="EngineVolume" />
+              <InputInteger source="EngineVolume" style="&inp2;" />
+              <Label for="CarGearbox" />
+              <DataSelector source="CarGearbox" style="&inp1;" />
+            </row>
+
+            <row>
+              <Label for="EngineNumber" />
+              <InputInteger source="EngineNumber" style="&inp2;" />
+              <Label for="Power" />
+              <InputText source="Power" style="&inp2;" />
+              <Label for="Netto" />
+              <InputInteger source="Netto" style="&inp2;" />
+            </row>
+
+            <row>
+              <Label for="StartDate" />
+              <InputDate source="StartDate" style="&inp2;" />
+              <Label for="Horsepower" />
+              <InputText source="Horsepower" style="&inp2;" />
+              <Label for="Brutto" />
+              <InputInteger source="Brutto" style="&inp2;" />
+            </row>
+
+            <row>
+              <Label for="EndDate" />
+              <InputDate source="EndDate" style="&inp2;" />
+              <Label for="CylinderNumber" />
+              <InputInteger source="CylinderNumber" style="&inp2;" />
+              <Label for="CarPlaceCode" />
+              <DataSelector source="CarPlaceCode" style="&inp1;" />
+            </row>
+
+            <row>
+              <Label for="Fuel" />
+              <DataSelector source="Fuel" style="&inp2;" />
+              <Label for="DoorsNumber" />
+              <InputInteger source="DoorsNumber" style="&inp2;" />
+            </row>
+
+            <row>
+              <Label for="CarEmissionStandard" />
+              <DataSelector source="CarEmissionStandard" style="&inp2;" />
+              <Label for="GearsNumber" />
+              <InputInteger source="GearsNumber" style="&inp2;" />
+            </row>
+          </Table>
+        </FlowPanel>
       </page>
       <page module="Documents">
         <text>=documents</text>
@@ -31,6 +136,10 @@
         <Relations relColumn="Vehicle" inline="true"
                    defaultRelations="Companies Persons Requests Tasks"
                    style="margin: 0px 15px 0px 15px; min-width:300px;" />
+      </page>
+      <page>
+        <text>=recalls</text>
+        <ChildGrid name="CarRecalls" relColumn="Vehicle" />
       </page>
       <page>
         <text>=specification</text>

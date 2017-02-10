@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="AnalysisResults"
+       idName="AnalysisResultID"
+>
+  <Fields>
+    <Relation name="AnalysisHeader" notNull="true" relation="AnalysisHeaders" cascade="DELETE"
+              label="=finAnalysisForm" />
+
+    <DateTime name="Date" notNull="true" label="=date" />
+    <String name="Caption" precision="200" label="=caption" />
+
+    <Long name="Size" label="=size" notNull="true" />
+    <Text name="Results" label="=results" />
+  </Fields>
+</Table>

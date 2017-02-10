@@ -640,6 +640,9 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
       public void onFailure(String... reason) {
         form.updateRow(row, true);
         form.notifySevere(reason);
+        if (focusCommand != null) {
+          focusCommand.execute();
+        }
       }
 
       @Override
@@ -674,6 +677,9 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
         }
 
         form.updateRow(data, true);
+        if (focusCommand != null) {
+          focusCommand.execute();
+        }
       }
     });
     return false;

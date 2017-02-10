@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form[
+    <!ENTITY inpw "width: 200px;">
+    <!ENTITY lbl "margin-right: 1em; text-align: right; padding-left: 30px">
+    ]>
+<f:Form xmlns="http://www.butent.com/widget"
+        xmlns:f="http://www.butent.com/form" xmlns:ui="http://www.butent.com/ui"
+
+        name="CarServiceOrder" viewName="CarServiceOrders"
+        width="1000" height="700"
+        caption="=serviceOrder">
+
+  <FlowPanel class="flexBox-vertical">
+    <FlowPanel class="flexBox-horizontal">
+      <Table kind="controls">
+        <row>
+          <Label for="Date" style="&lbl;" />
+          <InputDateTime source="Date" style="width: 10em;" />
+
+          <cell colSpan="2">
+            <FlowPanel name="Stages" style="text-align:right;" />
+          </cell>
+        </row>
+        <row>
+          <Label for="OrderNo" visible="true" style="&lbl;" />
+          <InputText source="OrderNo" style="&inpw;" />
+        </row>
+
+        <row>
+          <Label for="Customer" style="&lbl;" />
+          <FlowPanel>
+            <DataSelector source="Customer" style="&inpw;"
+                          renderColumns="CustomerName CustomerTypeName" />
+            <FlowPanel style="display:inline-block;">
+              <FaLabel char="exclamation_circle" name="CustomerWarning"
+                       style="display:none; color:red; margin-left:5px;" />
+            </FlowPanel>
+          </FlowPanel>
+
+          <Label for="Manager" style="&lbl;" />
+          <DataSelector source="Manager" editSource="ManagerPerson"
+                        renderColumns="ManagerFirstName ManagerLastName"
+                        newRowEnabled="false" style="&inpw;" />
+        </row>
+        <row>
+          <Label for="CustomerPerson" style="&lbl;" />
+          <DataSelector source="CustomerPerson" newRowEnabled="false" style="&inpw;"
+                        renderColumns="ContactFirstName ContactLastName"
+                        choiceColumns="FirstName LastName CompanyName" options="Customer" />
+
+          <Label for="Car" style="&lbl;" />
+          <FlowPanel>
+            <DataSelector source="Car" viewName="Cars" style="&inpw;"
+                          renderColumns="ParentModelName ModelName CarNumber" />
+            <FlowPanel style="display:inline-block;">
+              <FaLabel char="exclamation_circle" name="CarWarning"
+                       style="display:none; color:red; margin-left:5px;" />
+            </FlowPanel>
+          </FlowPanel>
+        </row>
+      </Table>
+      <FlowPanel class="flexible" style="min-width:200px; overflow:auto; margin:5px; padding:5px;
+      border:1px solid silver; border-radius:5px; background-color:whitesmoke;">
+        <Table kind="custom" style="width:100%; text-align:right;">
+          <row>
+            <Label text="=productsServices" />
+            <Label text="=serviceJobs" />
+          </row>
+          <row>
+            <MoneyLabel property="CarServiceItemsTotal" />
+            <MoneyLabel property="CarServiceJobsTotal" />
+          </row>
+          <row>
+            <Label text="=totalOf" style="font-weight:bold;" />
+            <cell horizontalAlignment="left">
+              <DataSelector source="Currency" style="width:5em;" newRowEnabled="false"
+                            editEnabled="false" placeholder="=currencyShort">
+                <editable>
+                  <ui:expression>!(rowId>0)</ui:expression>
+                </editable>
+              </DataSelector>
+            </cell>
+          </row>
+          <row>
+            <MoneyLabel style="font-weight:bold;">
+              <render>
+                <ui:expression>(+row.CarServiceItemsTotal||0) + (+row.CarServiceJobsTotal||0)
+                </ui:expression>
+              </render>
+            </MoneyLabel>
+          </row>
+          <row>
+            <Label text="=discount" />
+          </row>
+          <row>
+            <MoneyLabel>
+              <render>
+                <ui:expression>(+row.CarServiceItemsDiscount||0) + (+row.CarServiceJobsDiscount||0)
+                </ui:expression>
+              </render>
+            </MoneyLabel>
+          </row>
+          <row>
+            <Label text="=amountWithoutVat" />
+            <ListBox source="DocumentVatMode" />
+          </row>
+          <row>
+            <MoneyLabel>
+              <render>
+                <ui:expression>(+row.CarServiceItemsTotal||0) + (+row.CarServiceJobsTotal||0)
+                  - (+row.CarServiceItemsVat||0) - (+row.CarServiceJobsVat||0)
+                </ui:expression>
+              </render>
+            </MoneyLabel>
+            <MoneyLabel>
+              <render>
+                <ui:expression>(+row.CarServiceItemsVat||0) + (+row.CarServiceJobsVat||0)
+                </ui:expression>
+              </render>
+            </MoneyLabel>
+          </row>
+        </Table>
+      </FlowPanel>
+    </FlowPanel>
+    <br />
+    <TabbedPages class="flexible">
+      <page>
+        <text>=serviceJobs</text>
+        <FlowPanel class="flexBox-vertical">
+          <ChildGrid name="CarServiceJobs" relColumn="ServiceOrder" class="flexible" />
+          <FlowPanel class="flexible flexBox-horizontal">
+            <FlowPanel style="width:100px;" />
+            <ChildGrid name="CarJobProgress" parent="CarServiceJobs" relColumn="ServiceJob"
+                       class="flexible" />
+          </FlowPanel>
+        </FlowPanel>
+      </page>
+      <page>
+        <text>=productsServices</text>
+        <ChildGrid name="CarServiceItems" relColumn="ServiceOrder" />
+      </page>
+      <page>
+        <text>=calAppointments</text>
+        <ChildGrid name="CarServiceEvents" relColumn="ServiceOrder" />
+      </page>
+      <page>
+        <text>=notes</text>
+        <InputArea source="Notes" class="occupy-1" summarize="true" />
+      </page>
+    </TabbedPages>
+  </FlowPanel>
+</f:Form>

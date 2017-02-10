@@ -471,13 +471,25 @@ public class EditableWidget implements EditChangeHandler, FocusHandler, BlurHand
 
   public void refresh(IsRow row) {
     if (getEditor() != null) {
+      String value;
+
       if (hasColumn()) {
-        String value;
         if (row == null) {
           value = BeeConst.STRING_EMPTY;
         } else {
           value = BeeUtils.trimRight(row.getString(getDataIndex()));
         }
+
+        getEditor().render(value);
+
+      } else if (hasRowProperty() && !isDisplay()) {
+        if (row == null) {
+          value = BeeConst.STRING_EMPTY;
+        } else {
+          Long userId = BeeKeeper.getUser().idOrNull(getUserMode());
+          value = BeeUtils.trimRight(row.getProperty(getRowPropertyName(), userId));
+        }
+
         getEditor().render(value);
       }
 
@@ -587,7 +599,7 @@ public class EditableWidget implements EditChangeHandler, FocusHandler, BlurHand
   }
 
   private void reset() {
-    if (hasColumn() || isDisplay()) {
+    if (hasColumn() || hasRowProperty() || isDisplay()) {
       refresh(getRowValue());
     } else if (getEditor() != null) {
       getEditor().normalizeDisplay(getEditor().getNormalizedValue());
@@ -630,7 +642,7 @@ public class EditableWidget implements EditChangeHandler, FocusHandler, BlurHand
 
     } else {
       if (normalize) {
-        if (hasColumn() || isDisplay()) {
+        if (hasColumn() || hasRowProperty() || isDisplay()) {
           reset();
         } else {
           getEditor().clearValue();

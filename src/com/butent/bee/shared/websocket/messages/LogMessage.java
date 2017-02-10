@@ -24,6 +24,10 @@ public class LogMessage extends Message {
     return log(LogLevel.ERROR, cause.toString());
   }
 
+  public static LogMessage info(String text) {
+    return log(LogLevel.INFO, text);
+  }
+
   public static LogMessage level(LogLevel level) {
     return new LogMessage(level);
   }
@@ -32,6 +36,10 @@ public class LogMessage extends Message {
     LogMessage logMessage = new LogMessage(level);
     logMessage.setText(text);
     return logMessage;
+  }
+
+  public static LogMessage warning(String text) {
+    return log(LogLevel.WARNING, text);
   }
 
   private LogLevel level;
@@ -88,9 +96,8 @@ public class LogMessage extends Message {
     String[] arr = Codec.beeDeserializeCollection(s);
     Assert.lengthEquals(arr, 2);
 
-    int i = 0;
-    setLevel(Codec.unpack(LogLevel.class, arr[i++]));
-    setText(arr[i++]);
+    setLevel(Codec.unpack(LogLevel.class, arr[0]));
+    setText(arr[1]);
   }
 
   @Override

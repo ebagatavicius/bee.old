@@ -18,7 +18,6 @@
 
     <SimpleColumn name="IndicatorClosingEntries" />
 
-    <SimpleColumn name="IndicatorIsPercent" />
     <SimpleColumn name="IndicatorScale" />
 
     <SimpleColumn name="Description" />

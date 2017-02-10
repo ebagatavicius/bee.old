@@ -50,7 +50,6 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 public final class TradeUtils {
 
@@ -70,8 +69,6 @@ public final class TradeUtils {
   private static final String COL_RATE_VAT = COL_CURRENCY_RATE + COL_TRADE_VAT;
   private static final String COL_RATE_TOTAL = COL_CURRENCY_RATE + COL_TOTAL;
   private static final String COL_RATE_CURRENCY = COL_CURRENCY_RATE + COL_CURRENCY;
-
-  private static Double defaultVatPercent;
 
   public static void amountEntry(IsRow row, String viewName) {
     Totalizer totalizer = new Totalizer(Data.getColumns(viewName));
@@ -432,18 +429,6 @@ public final class TradeUtils {
           }));
 
       header.addCommandItem(command);
-    }
-  }
-
-  static void getDefaultVatPercent(Consumer<Double> consumer) {
-    if (TradeUtils.defaultVatPercent == null) {
-      Global.getParameter(PRM_VAT_PERCENT, input -> {
-        defaultVatPercent = BeeUtils.toDoubleOrNull(input);
-        consumer.accept(defaultVatPercent);
-      });
-
-    } else {
-      consumer.accept(defaultVatPercent);
     }
   }
 

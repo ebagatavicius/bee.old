@@ -13,6 +13,7 @@
     <SimpleColumn name="DefaultFI" />
     <SimpleColumn name="DefaultLV" />
     <SimpleColumn name="DefaultDE" />
+    <SimpleColumn name="DefaultET" />
 
     <SimpleColumn name="CustomEN" />
     <SimpleColumn name="CustomLT" />
@@ -20,6 +21,7 @@
     <SimpleColumn name="CustomFI" />
     <SimpleColumn name="CustomLV" />
     <SimpleColumn name="CustomDE" />
+    <SimpleColumn name="CustomET" />
   </Columns>
 
   <Order>

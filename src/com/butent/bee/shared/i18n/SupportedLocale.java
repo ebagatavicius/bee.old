@@ -1,11 +1,20 @@
 package com.butent.bee.shared.i18n;
 
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfoDE;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfoEN;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfoET;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfoFI;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfoLT;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfoLV;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfoRU;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public enum SupportedLocale implements HasCaption {
   LT {
@@ -22,6 +31,11 @@ public enum SupportedLocale implements HasCaption {
     @Override
     public String getLanguage() {
       return "lt";
+    }
+
+    @Override
+    public DateTimeFormatInfo getDateTimeFormatInfo() {
+      return DateTimeFormatInfoLT.getInstance();
     }
   },
 
@@ -40,6 +54,33 @@ public enum SupportedLocale implements HasCaption {
     public String getLanguage() {
       return "en";
     }
+
+    @Override
+    public DateTimeFormatInfo getDateTimeFormatInfo() {
+      return DateTimeFormatInfoEN.getInstance();
+    }
+  },
+
+  ET {
+    @Override
+    public String getCaption() {
+      return "Eesti";
+    }
+
+    @Override
+    public String getIconName() {
+      return "estonian";
+    }
+
+    @Override
+    public String getLanguage() {
+      return "et";
+    }
+
+    @Override
+    public DateTimeFormatInfo getDateTimeFormatInfo() {
+      return DateTimeFormatInfoET.getInstance();
+    }
   },
 
   RU {
@@ -56,6 +97,11 @@ public enum SupportedLocale implements HasCaption {
     @Override
     public String getLanguage() {
       return "ru";
+    }
+
+    @Override
+    public DateTimeFormatInfo getDateTimeFormatInfo() {
+      return DateTimeFormatInfoRU.getInstance();
     }
   },
 
@@ -75,6 +121,10 @@ public enum SupportedLocale implements HasCaption {
       return "fi";
     }
 
+    @Override
+    public DateTimeFormatInfo getDateTimeFormatInfo() {
+      return DateTimeFormatInfoFI.getInstance();
+    }
   },
 
   LV {
@@ -91,6 +141,11 @@ public enum SupportedLocale implements HasCaption {
     @Override
     public String getLanguage() {
       return "lv";
+    }
+
+    @Override
+    public DateTimeFormatInfo getDateTimeFormatInfo() {
+      return DateTimeFormatInfoLV.getInstance();
     }
   },
 
@@ -109,10 +164,16 @@ public enum SupportedLocale implements HasCaption {
     public String getLanguage() {
       return "de";
     }
+
+    @Override
+    public DateTimeFormatInfo getDateTimeFormatInfo() {
+      return DateTimeFormatInfoDE.getInstance();
+    }
   };
 
   public static final SupportedLocale DICTIONARY_DEFAULT = EN;
   public static final SupportedLocale USER_DEFAULT = LT;
+  public static final List<String> ACTIVE_LOCALES = new ArrayList<>();
 
   public static SupportedLocale getByLanguage(String language) {
     for (SupportedLocale locale : values()) {
@@ -159,4 +220,11 @@ public enum SupportedLocale implements HasCaption {
   public abstract String getIconName();
 
   public abstract String getLanguage();
+
+  public abstract DateTimeFormatInfo getDateTimeFormatInfo();
+
+  public boolean isActive() {
+    return ACTIVE_LOCALES.stream()
+        .anyMatch(loc -> Objects.equals(this, USER_DEFAULT) || BeeUtils.same(loc, getLanguage()));
+  }
 }

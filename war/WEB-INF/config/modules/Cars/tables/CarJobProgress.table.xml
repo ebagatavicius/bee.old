@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="CarJobProgress"
+       idName="JobProgressID">
+  <Fields>
+    <Relation name="ServiceJob" notNull="true" relation="CarServiceJobs" cascade="DELETE"
+              label="=serviceJob" />
+
+    <Relation name="CompanyPerson" notNull="true" relation="CompanyPersons" label="=employee" />
+    <String name="Duration" precision="10" label="=duration" />
+    <Text name="Note" label="=note" />
+    <Boolean name="Confirmed" label="=calAppointmentStatusConfirmed" />
+
+    <Relation name="ServiceEvent" relation="CarServiceEvents" unique="true" cascade="DELETE"
+              label="=calAppointment" />
+  </Fields>
+</Table>

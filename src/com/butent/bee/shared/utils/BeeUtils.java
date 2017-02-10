@@ -1108,6 +1108,10 @@ public final class BeeUtils {
     }
   }
 
+  public static <T> int indexOf(List<? extends T> list, T item) {
+    return (list == null) ? BeeConst.UNDEF : list.indexOf(item);
+  }
+
   public static int indexOfSame(List<String> list, String s) {
     if (isEmpty(list)) {
       return BeeConst.UNDEF;
@@ -1224,15 +1228,12 @@ public final class BeeUtils {
 
     Set<T> result;
 
-    if (isEmpty(col1)) {
+    if (isEmpty(col1) || isEmpty(col2)) {
       result = new HashSet<>();
 
     } else {
       result = new HashSet<>(col1);
-
-      if (!isEmpty(col2)) {
-        result.retainAll(col2);
-      }
+      result.retainAll(col2);
     }
 
     return result;
@@ -2462,7 +2463,7 @@ public final class BeeUtils {
     if (str == null) {
       return null;
     } else {
-      return CharMatcher.WHITESPACE.removeFrom(str);
+      return CharMatcher.whitespace().removeFrom(str);
     }
   }
 
@@ -3243,6 +3244,14 @@ public final class BeeUtils {
     return isDouble(x) ? toString(x) : null;
   }
 
+  public static String toStringOrNull(Integer x) {
+    return (x == null) ? null : toString(x);
+  }
+
+  public static String toStringOrNull(Long x) {
+    return (x == null) ? null : toString(x);
+  }
+
   public static String trim(String s) {
     return (s == null) ? BeeConst.STRING_EMPTY : s.trim();
   }
@@ -3307,6 +3316,10 @@ public final class BeeUtils {
    */
   public static double unbox(Double box) {
     return (box == null) ? BeeConst.DOUBLE_ZERO : box;
+  }
+
+  public static double unbox(Number box) {
+    return (box == null) ? BeeConst.DOUBLE_ZERO : box.doubleValue();
   }
 
   /**

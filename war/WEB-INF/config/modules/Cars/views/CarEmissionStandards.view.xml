@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarEmissionStandards" source="CarEmissionStandards" caption="=vehicleEmissionStandards"
+      newRowCaption="=vehicleNewEmissionStandard"
+>
+  <Columns>
+    <SimpleColumn name="Name" />
+  </Columns>
+</View>

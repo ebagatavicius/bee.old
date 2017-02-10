@@ -3,11 +3,12 @@
 
        name="Messages"
        idName="MessageID"
+       audit="false"
 >
   <Fields>
     <String name="UniqueId" precision="32" unique="true" notNull="true" />
     <DateTime name="Date" notNull="true" label="=date" />
-    <Relation name="Sender" relation="Emails" editable="true" label="=mailSender" />
+    <Relation name="Sender" relation="Emails" label="=mailSender" />
     <String name="Subject" precision="255" label="=mailSubject" />
     <Numeric name="AttachmentCount" precision="3" />
     <Relation name="RawContent" relation="Files" editable="true" />

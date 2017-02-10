@@ -23,8 +23,10 @@
     <RelColumn name="Supplier" renderColumns="SupplierName" />
     <RelColumn name="Customer" renderColumns="CustomerName" />
 
-    <RelColumn name="WarehouseFrom" renderColumns="WarehouseFromCode" carry="true" />
-    <RelColumn name="WarehouseTo" renderColumns="WarehouseToCode" carry="true" />
+    <RelColumn name="WarehouseFrom" caption="=trdWarehouseFromShort"
+               renderColumns="WarehouseFromCode" carry="true" />
+    <RelColumn name="WarehouseTo" caption="=trdWarehouseToShort" renderColumns="WarehouseToCode"
+               carry="true" />
 
     <RelColumn name="Currency" renderColumns="CurrencyName" carry="true" />
 

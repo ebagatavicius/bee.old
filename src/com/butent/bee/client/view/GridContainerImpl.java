@@ -28,12 +28,11 @@ import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.ui.WidgetCreationCallback;
 import com.butent.bee.client.utils.Evaluator;
-import com.butent.bee.client.view.add.AddEndEvent;
-import com.butent.bee.client.view.add.AddStartEvent;
-import com.butent.bee.client.view.edit.EditFormEvent;
 import com.butent.bee.client.view.edit.HasEditState;
+import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.CellGrid;
 import com.butent.bee.client.view.grid.ExtWidget;
+import com.butent.bee.client.view.grid.GridFormEvent;
 import com.butent.bee.client.view.grid.GridUtils;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
@@ -63,8 +62,8 @@ import java.util.Set;
  */
 
 public class GridContainerImpl extends Split implements GridContainerView,
-    HasSearch, ActiveRowChangeEvent.Handler, AddStartEvent.Handler, AddEndEvent.Handler,
-    EditFormEvent.Handler, HasEditState, RenderingEvent.Handler, MutationEvent.Handler {
+    HasSearch, ActiveRowChangeEvent.Handler, GridFormEvent.Handler, HasEditState,
+    RenderingEvent.Handler, MutationEvent.Handler {
 
   private static final String STYLE_NAME = BeeConst.CSS_CLASS_PREFIX + "GridContainer";
 
@@ -131,21 +130,23 @@ public class GridContainerImpl extends Split implements GridContainerView,
 
   @Override
   public void bind() {
-    getGridView().getGrid().addActiveRowChangeHandler(this);
-    getGridView().getGrid().addRenderingHandler(this);
+    bindDisplay(getGridView().getGrid());
+
+    getGridView().addGridFormHandler(this);
+  }
+
+  @Override
+  public void bindDisplay(CellGrid display) {
+    display.addActiveRowChangeHandler(this);
+    display.addRenderingHandler(this);
 
     if (getRowMessage() != null && hasHeader()) {
-      getGridView().getGrid().addMutationHandler(this);
+      display.addMutationHandler(this);
     }
 
     if (hasFooter()) {
-      getGridView().getGrid().addSelectionCountChangeHandler(getFooter());
+      display.addSelectionCountChangeHandler(getFooter());
     }
-
-    getGridView().addAddStartHandler(this);
-    getGridView().addAddEndHandler(this);
-
-    getGridView().addEditFormHandler(this);
   }
 
   @Override
@@ -314,6 +315,16 @@ public class GridContainerImpl extends Split implements GridContainerView,
 
   @Override
   public String getCaption() {
+    if (isEditing()) {
+      FormView activeForm = getGridView().getActiveForm();
+      Presenter formPresenter = (activeForm == null) ? null : activeForm.getViewPresenter();
+      String formCaption = (formPresenter == null) ? null : formPresenter.getRowMessageOrCaption();
+
+      if (!BeeUtils.isEmpty(formCaption)) {
+        return formCaption;
+      }
+    }
+
     return hasHeader() ? getHeader().getCaption() : null;
   }
 
@@ -449,22 +460,6 @@ public class GridContainerImpl extends Split implements GridContainerView,
   }
 
   @Override
-  public void onAddEnd(AddEndEvent event) {
-    if (!event.isPopup()) {
-      showChildren(true);
-    }
-    setEditing(false);
-  }
-
-  @Override
-  public void onAddStart(AddStartEvent event) {
-    setEditing(true);
-    if (!event.isPopup()) {
-      showChildren(false);
-    }
-  }
-
-  @Override
   public void onBrowserEvent(Event event) {
     super.onBrowserEvent(event);
     if (isEditing() || !isEnabled()) {
@@ -514,18 +509,17 @@ public class GridContainerImpl extends Split implements GridContainerView,
   }
 
   @Override
-  public void onEditForm(EditFormEvent event) {
-    if (event.isOpening()) {
-      setEditing(true);
-      if (!event.isPopup()) {
-        showChildren(false);
-      }
+  public void onGridForm(GridFormEvent event) {
+    if (event.isOpening() || event.isClosing()) {
+      setEditing(event.isOpening());
 
-    } else if (event.isClosing()) {
       if (!event.isPopup()) {
-        showChildren(true);
+        showChildren(event.isClosing());
+
+        if (!getGridView().isChild()) {
+          BeeKeeper.getScreen().onWidgetChange(this);
+        }
       }
-      setEditing(false);
     }
   }
 

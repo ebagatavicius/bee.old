@@ -35,8 +35,10 @@
     <RelColumn name="Supplier" renderColumns="SupplierName" />
     <RelColumn name="Customer" renderColumns="CustomerName" />
 
-    <RelColumn name="WarehouseFrom" renderColumns="WarehouseFromCode" />
-    <RelColumn name="WarehouseTo" renderColumns="WarehouseToCode" />
+    <RelColumn name="WarehouseFrom" caption="=trdWarehouseFromShort"
+               renderColumns="WarehouseFromCode" />
+    <RelColumn name="WarehouseTo" caption="=trdWarehouseToShort"
+               renderColumns="WarehouseToCode" />
 
     <RelColumn name="Payer" renderColumns="PayerName" visible="false" />
     <DataColumn name="Term" visible="false" />
@@ -64,8 +66,10 @@
       </render>
     </CalcColumn>
 
-    <RelColumn name="Warehouse" choiceColumns="Code Name" renderColumns="WarehouseCode"
-               visible="false" />
+    <RelColumn name="ItemWarehouseFrom" choiceColumns="Code Name"
+               renderColumns="ItemWarehouseFromCode" visible="false" />
+    <RelColumn name="ItemWarehouseTo" choiceColumns="Code Name"
+               renderColumns="ItemWarehouseToCode" visible="false" />
 
     <RelColumn name="Employee" renderColumns="EmployeeFirstName EmployeeLastName"
                sortBy="EmployeeLastName EmployeeFirstName" visible="false" />

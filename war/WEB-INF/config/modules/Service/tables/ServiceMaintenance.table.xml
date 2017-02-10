@@ -21,5 +21,6 @@
     <Text name="Equipment" label="=svcEquipment" />
     <Relation name="Company" relation="Companies" label="=company" />
     <Relation name="Contact" relation="CompanyPersons" label="=personContact" />
+    <Relation name="Department" relation="Departments" label="=department" />
   </Fields>
 </Table>

@@ -277,7 +277,7 @@ public class OrderForm extends PrintFormInterceptor {
   @Override
   public void onStartNewRow(FormView form, IsRow oldRow, IsRow newRow) {
 
-    Global.getRelationParameter(PRM_MANAGER_WAREHOUSE, (aLong, s) -> {
+    Global.getParameterRelation(PRM_MANAGER_WAREHOUSE, (aLong, s) -> {
       GridView parentGrid = getGridView();
       if (parentGrid == null) {
         return;

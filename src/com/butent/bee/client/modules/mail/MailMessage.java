@@ -3,7 +3,6 @@ package com.butent.bee.client.modules.mail;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -39,6 +38,7 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.output.Printer;
+import com.butent.bee.client.output.ReportUtils;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -256,11 +256,11 @@ public class MailMessage extends AbstractFormInterceptor {
 
   private final MailPanel mailPanel;
   private Integer rpcId;
+  private Long messageId;
   private Long placeId;
   private Long folderId;
   private boolean isSent;
   private boolean isDraft;
-  private Long rawId;
   private Pair<String, String> sender;
   private final Multimap<String, Pair<String, String>> recipients = LinkedHashMultimap.create();
   private final List<FileInfo> attachments = new ArrayList<>();
@@ -306,11 +306,10 @@ public class MailMessage extends AbstractFormInterceptor {
           final HtmlTable ft = new HtmlTable(BeeConst.CSS_CLASS_PREFIX + "mail-MenuTable");
           int r = 0;
 
-          if (DataUtils.isId(rawId)) {
-            ft.setWidget(r, 0, new FaLabel(FontAwesome.FILE_TEXT_O));
-            ft.setText(r, 1, Localized.dictionary().mailShowOriginal());
-            DomUtils.setDataProperty(ft.getRow(r++), CONTAINER, COL_RAW_CONTENT);
-          }
+          ft.setWidget(r, 0, new FaLabel(FontAwesome.FILE_TEXT_O));
+          ft.setText(r, 1, Localized.dictionary().mailShowOriginal());
+          DomUtils.setDataProperty(ft.getRow(r++), CONTAINER, COL_RAW_CONTENT);
+
           if (!BeeUtils.isEmpty(attachments)) {
             ft.setWidget(r, 0, new FaLabel(FontAwesome.FILE_ZIP_O));
             ft.setText(r, 1, Localized.dictionary().mailGetAllAttachments());
@@ -334,7 +333,19 @@ public class MailMessage extends AbstractFormInterceptor {
 
               switch (index) {
                 case COL_RAW_CONTENT:
-                  BrowsingContext.open(FileUtils.getUrl(rawId));
+                  ParameterList args = MailKeeper.createArgs(SVC_GET_RAW_CONTENT);
+                  args.addDataItem(COL_MESSAGE, messageId);
+
+                  BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
+                    @Override
+                    public void onResponse(ResponseObject response) {
+                      response.notify(BeeUtils.nvl(getFormView(), BeeKeeper.getScreen()));
+
+                      if (!response.hasErrors()) {
+                        ReportUtils.preview(FileInfo.restore(response.getResponseAsString()));
+                      }
+                    }
+                  });
                   break;
 
                 case ATTACHMENTS:
@@ -447,7 +458,7 @@ public class MailMessage extends AbstractFormInterceptor {
   @Override
   public boolean beforeAction(Action action, Presenter presenter) {
     if (action == Action.PRINT) {
-      if (DataUtils.isId(rawId)) {
+      if (DataUtils.isId(messageId)) {
         Printer.print(widgets.get(CONTAINER).getElement().getString(), null);
       }
       return false;
@@ -471,11 +482,11 @@ public class MailMessage extends AbstractFormInterceptor {
       }
     }
     sender = Pair.of(null, null);
+    messageId = null;
     placeId = null;
     folderId = null;
     isSent = false;
     isDraft = false;
-    rawId = null;
     recipients.clear();
     attachments.clear();
     related.clear();
@@ -535,29 +546,27 @@ public class MailMessage extends AbstractFormInterceptor {
           }
           return;
         }
-        String[] data = Codec.beeDeserializeCollection((String) response.getResponse());
-        Map<String, SimpleRowSet> packet = Maps.newHashMapWithExpectedSize(data.length / 2);
+        Map<String, SimpleRowSet> packet = new HashMap<>();
+        Codec.deserializeHashMap((String) response.getResponse())
+            .forEach((key, val) -> packet.put(key, SimpleRowSet.restore(val)));
 
-        for (int i = 0; i < data.length; i += 2) {
-          packet.put(data[i], SimpleRowSet.restore(data[i + 1]));
-        }
         SimpleRow row = packet.get(TBL_MESSAGES).getRow(0);
+
+        placeId = row.getLong(COL_PLACE);
+        folderId = row.getLong(COL_FOLDER);
+        isSent = BeeUtils.unbox(row.getBoolean(SystemFolder.Sent.name()));
+        isDraft = BeeUtils.unbox(row.getBoolean(SystemFolder.Drafts.name()));
+        messageId = row.getLong(COL_MESSAGE);
+        String lbl = row.getValue(COL_EMAIL_LABEL);
+        String mail = row.getValue(COL_EMAIL_ADDRESS);
 
         if (relations != null) {
           relations.blockRelation(TBL_COMPANIES,
               !BeeKeeper.getUser().isAdministrator()
                   && (mailPanel == null || !mailPanel.getCurrentAccount().isPrivate()));
 
-          relations.requery(null, row.getLong(COL_MESSAGE));
+          relations.requery(null, messageId);
         }
-        placeId = row.getLong(COL_PLACE);
-        folderId = row.getLong(COL_FOLDER);
-        isSent = BeeUtils.unbox(row.getBoolean(SystemFolder.Sent.name()));
-        isDraft = BeeUtils.unbox(row.getBoolean(SystemFolder.Drafts.name()));
-        rawId = row.getLong(COL_RAW_CONTENT);
-        String lbl = row.getValue(COL_EMAIL_LABEL);
-        String mail = row.getValue(COL_EMAIL_ADDRESS);
-
         sender = Pair.of(mail, lbl);
         setWidgetText(SENDER, BeeUtils.notEmpty(lbl, mail));
 
@@ -790,7 +799,7 @@ public class MailMessage extends AbstractFormInterceptor {
 
         if (mode == NewMailMode.FORWARD && !isDraft && DataUtils.isId(placeId)) {
           final Long place = placeId;
-          newMessage.setCallback((messageId, save) -> {
+          newMessage.setCallback((msgId, save) -> {
             if (!save) {
               ParameterList params = MailKeeper.createArgs(SVC_FLAG_MESSAGE);
               params.addDataItem(COL_PLACE, place);

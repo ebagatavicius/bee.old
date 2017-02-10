@@ -3,10 +3,11 @@
 
   name="DiscussMarkTypes"
   source="CommentsMarksTypes"
+  caption="=discussMarkTypes"
   >
   <Columns>
     <SimpleColumn name="Name" />
-    <SimpleColumn name="ImageResourceName" />    
+    <SimpleColumn name="ImageResourceName" />
   </Columns>
 </View>
  

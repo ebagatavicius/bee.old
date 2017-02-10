@@ -7,13 +7,14 @@
 >
   <Table kind="controls">
     <col index="0" kind="label" />
+    <col index="2" kind="label" />
     <row>
       <Label for="Group" />
       <DataSelector source="Group" renderColumns="TypeName GroupName" />
 
       <Label for="Description" />
       <cell rowSpan="4">
-        <InputArea source="Description" style="height:100%; width:300px;" />
+        <InputArea source="Description" visibleLines="10" style="width:300px;" />
       </cell>
     </row>
     <row>
@@ -23,6 +24,10 @@
     <row>
       <Label for="Code" />
       <InputText source="Code" />
+    </row>
+    <row>
+      <Label for="Code2" />
+      <InputText source="Code2" />
     </row>
     <row>
       <Label for="Item" />
@@ -42,6 +47,16 @@
           <item>MAIN</item>
         </ListBox>
       </FlowPanel>
+    </row>
+    <row>
+      <Label text="=packet" data="ConfPacketOptions" />
+      <cell colSpan="3">
+        <ChildSelector childTable="ConfPacketOptions" targetRelColumn="Packet"
+                       viewName="ConfOptions" sourceRelColumn="Option" newRowEnabled="false"
+                       style="width:100%;" choiceColumns="Code Code2 OptionName GroupName TypeName"
+                       renderColumns="Code Code2 OptionName" label="=packet"
+                       data="ConfPacketOptions" />
+      </cell>
     </row>
   </Table>
 </f:Form>

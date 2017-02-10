@@ -124,16 +124,16 @@ public class TestJustDate {
     jd = new JustDate(2011, 2, 22);
     assertEquals(53, jd.getDoy());
 
-    jd = new JustDate(2011, 03, 30);
+    jd = new JustDate(2011, 3, 30);
     assertEquals(89, jd.getDoy());
 
-    jd = new JustDate(2011, 03, 6);
+    jd = new JustDate(2011, 3, 6);
     assertEquals(65, jd.getDoy());
 
-    jd = new JustDate(2011, 03, 19);
+    jd = new JustDate(2011, 3, 19);
     assertEquals(78, jd.getDoy());
 
-    jd = new JustDate(2011, 01, 01);
+    jd = new JustDate(2011, 1, 1);
     assertEquals(1, jd.getDoy());
 
     jd = new JustDate(2011, 12, 31);
@@ -159,7 +159,7 @@ public class TestJustDate {
 
     dt = new JustDate(2011, 0, 1);
     assertEquals(2011, dt.getYear());
-    assertEquals(01, dt.getMonth());
+    assertEquals(1, dt.getMonth());
 
     dt = new JustDate(2011, -1, 1);
     assertEquals(2011, dt.getYear());
@@ -267,6 +267,28 @@ public class TestJustDate {
     assertEquals(2011, jd.getYear());
     assertEquals(2, jd.getMonth());
     assertEquals(22, jd.getDom());
+  }
+
+  @Test
+  public final void testGetTime() {
+    JustDate jd = new JustDate(2017, 1, 30);
+    assertEquals(1485727200000L, jd.getTime());
+
+    jd = new JustDate(2017, 3, 26);
+    assertEquals(jd.getDays() * TimeUtils.MILLIS_PER_DAY - 120 * 60000, jd.getTime());
+    jd.setDom(27);
+    assertEquals(jd.getDays() * TimeUtils.MILLIS_PER_DAY - 180 * 60000, jd.getTime());
+
+    jd = new JustDate(1);
+    assertEquals(TimeUtils.MILLIS_PER_HOUR * 22, jd.getTime());
+    jd = new JustDate(0);
+    assertEquals(TimeUtils.MILLIS_PER_HOUR * -2, jd.getTime());
+    jd = new JustDate(-1);
+    assertEquals(-TimeUtils.MILLIS_PER_DAY - TimeUtils.MILLIS_PER_HOUR * 2, jd.getTime());
+
+    jd = new JustDate(1900, 1, 1);
+    assertEquals(-25567, jd.getDays());
+    assertEquals(-2208996000000L, jd.getTime());
   }
 
   @Test

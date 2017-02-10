@@ -674,8 +674,8 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
       if (!BeeUtils.isNegative(idxCol)) {
         DateTime publishTime = row.getDateTime(idxCol);
         if (publishTime != null) {
-          cell.add(createCellHtmlItem(CELL_EVENT_PUBLISH, Format.getDefaultDateTimeFormat().format(
-              publishTime), rs, row));
+          cell.add(createCellHtmlItem(CELL_EVENT_PUBLISH, Format.renderDateTime(publishTime), rs,
+              row));
         }
 
       } else {

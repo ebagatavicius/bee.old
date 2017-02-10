@@ -4,9 +4,9 @@ import com.google.gwt.i18n.client.NumberFormat;
 
 import com.butent.bee.client.grid.cell.FooterCell;
 import com.butent.bee.client.grid.column.AbstractColumn;
-import com.butent.bee.client.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.client.i18n.Format;
-import com.butent.bee.client.i18n.HasDateTimeFormat;
+import com.butent.bee.shared.i18n.HasDateTimeFormat;
 import com.butent.bee.client.i18n.HasNumberFormat;
 import com.butent.bee.client.modules.trade.DiscountRenderer;
 import com.butent.bee.client.modules.trade.TotalRenderer;

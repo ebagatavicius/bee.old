@@ -1,5 +1,6 @@
 package com.butent.bee.client.modules.trade;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.PRM_VAT_PERCENT;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
@@ -48,6 +49,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -287,30 +289,27 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
 
       if (!itemIds.isEmpty()) {
         presenter.getGridView().ensureRelId(documentId ->
-            TradeUtils.getDefaultVatPercent(defVatPercent ->
-                Queries.getRowSequence(VIEW_ITEMS, itemIds, itemRows -> {
-                  if (BeeUtils.isEmpty(itemRows)) {
-                    getGridView().notifyWarning(Localized.dictionary().noData());
+            Queries.getRowSequence(VIEW_ITEMS, itemIds, itemRows -> {
+              if (BeeUtils.isEmpty(itemRows)) {
+                getGridView().notifyWarning(Localized.dictionary().noData());
+              } else {
+                IsRow documentRow = getParentRow(getGridView());
 
-                  } else {
-                    IsRow documentRow = getParentRow(getGridView());
+                if (DataUtils.hasId(documentRow)) {
+                  if (isStockRequired(documentRow)) {
+                    Long warehouse = Data.getLong(VIEW_TRADE_DOCUMENTS, documentRow,
+                        COL_TRADE_WAREHOUSE_FROM);
 
-                    if (DataUtils.hasId(documentRow)) {
-                      if (isStockRequired(documentRow)) {
-                        Long warehouse = Data.getLong(VIEW_TRADE_DOCUMENTS, documentRow,
-                            COL_TRADE_WAREHOUSE_FROM);
-
-                        if (DataUtils.isId(warehouse)) {
-                          getStock(itemIds, warehouse, stock ->
-                              addItems(documentRow, itemRows, true, stock, defVatPercent));
-                        }
-
-                      } else {
-                        addItems(documentRow, itemRows, false, null, defVatPercent);
-                      }
+                    if (DataUtils.isId(warehouse)) {
+                      getStock(itemIds, warehouse,
+                          stock -> addItems(documentRow, itemRows, true, stock));
                     }
+                  } else {
+                    addItems(documentRow, itemRows, false, null);
                   }
-                })));
+                }
+              }
+            }));
       }
     }, null, presenter.getHeader().getElement());
 
@@ -550,7 +549,7 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
   }
 
   private void addItems(IsRow documentRow, List<? extends IsRow> itemRows,
-      boolean stockRequired, Map<Long, Pair<Long, Double>> stock, Double defVatPercent) {
+      boolean stockRequired, Map<Long, Pair<Long, Double>> stock) {
 
     DateTime date = Data.getDateTime(VIEW_TRADE_DOCUMENTS, documentRow, COL_TRADE_DATE);
     Long currency = Data.getLong(VIEW_TRADE_DOCUMENTS, documentRow, COL_TRADE_CURRENCY);
@@ -600,7 +599,9 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
 
       Double vat;
       if (vatMode != null && BeeUtils.isTrue(row.getBoolean(vatIndex))) {
-        vat = BeeUtils.nvl(row.getDouble(vatPercentIndex), defVatPercent);
+        Number number = Global.getParameterNumber(PRM_VAT_PERCENT);
+        vat = BeeUtils.nvl(row.getDouble(vatPercentIndex),
+            Objects.isNull(number) ? null : number.doubleValue());
       } else {
         vat = null;
       }

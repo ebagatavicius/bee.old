@@ -16,22 +16,10 @@
         <Label for="Date" style="&lbl;" />
         <InputDateTime source="Date" style="width: 10em;" />
 
-        <Label for="OrderNo" visible="true" style="&lbl;" />
-        <InputText source="OrderNo" style="&inpw;" />
+        <cell colSpan="2">
+          <FlowPanel name="Stages" style="text-align:right;" />
+        </cell>
 
-        <Label for="Stage" style="&lbl;" />
-        <TextLabel source="StageName" style="font-weight:bold;" />
-      </row>
-      <row>
-        <Label for="Customer" style="&lbl;" />
-        <DataSelector source="Customer" style="&inpw;"
-                      renderColumns="CustomerName CustomerTypeName" />
-
-        <Label for="CustomerPerson" style="&lbl;" />
-        <DataSelector source="CustomerPerson" newRowEnabled="false" style="&inpw;"
-                      renderColumns="ContactFirstName ContactLastName"
-                      choiceColumns="FirstName LastName CompanyName" options="Customer" />
-        <text />
         <cell rowSpan="2" verticalAlignment="top">
           <TextLabel source="LossReason" style="color:red; white-space:pre-wrap;">
             <renderToken source="ReasonName" />
@@ -40,6 +28,19 @@
         </cell>
       </row>
       <row>
+        <Label for="OrderNo" visible="true" style="&lbl;" />
+        <InputText source="OrderNo" style="&inpw;" />
+
+        <Label for="Customer" style="&lbl;" />
+        <DataSelector source="Customer" style="&inpw;"
+                      renderColumns="CustomerName CustomerTypeName" />
+      </row>
+      <row>
+        <Label for="CustomerPerson" style="&lbl;" />
+        <DataSelector source="CustomerPerson" newRowEnabled="false" style="&inpw;"
+                      renderColumns="ContactFirstName ContactLastName"
+                      choiceColumns="FirstName LastName CompanyName" options="Customer" />
+
         <Label for="Manager" style="&lbl;" />
         <DataSelector source="Manager" editSource="ManagerPerson"
                       renderColumns="ManagerFirstName ManagerLastName"
@@ -58,7 +59,7 @@
             <row>
               <Label for="Amount" />
               <InputInteger source="Amount" style="width:8em;" />
-              <DataSelector source="Currency" style="width:5em;"
+              <DataSelector source="Currency" style="width:5em;" newRowEnabled="false"
                             editEnabled="false" placeholder="=currencyShort" />
             </row>
             <row>

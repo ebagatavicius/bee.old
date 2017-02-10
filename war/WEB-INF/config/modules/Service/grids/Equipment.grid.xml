@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+  name="Equipment" viewName="Equipment"
+  caption="=svcMaintenanceEquipment" newRowCaption="=svcMaintenanceEquipment"
+  flexGrow="1" flexShrink="1"
+  >
+  <g:columns>
+    <DataColumn name="Number" visible="true"/>
+    <DataColumn name="Name" visible="true" />
+    <DataColumn name="IsValid" visible="true" />
+  </g:columns>
+</g:Grid>

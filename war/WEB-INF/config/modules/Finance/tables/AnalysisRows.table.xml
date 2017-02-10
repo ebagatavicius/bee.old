@@ -31,7 +31,6 @@
 
     <Text name="RowScript" label="=finAnalysisScript" />
 
-    <Boolean name="RowIsPercent" label="=percent" />
     <Integer name="RowScale" label="=finAnalysisScale" />
 
     <String name="RowSplit01" precision="20" />
@@ -44,8 +43,6 @@
     <String name="RowSplit08" precision="20" />
     <String name="RowSplit09" precision="20" />
     <String name="RowSplit10" precision="20" />
-
-    <Boolean name="RowTotal" label="=finAnalysisShowTotal" />
 
     <String name="Note" precision="100" label="=note" />
 

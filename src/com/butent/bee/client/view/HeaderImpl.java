@@ -30,6 +30,7 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.Captions;
+import com.butent.bee.shared.ui.HandlesActions;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
@@ -77,6 +78,7 @@ public class HeaderImpl extends Flow implements HeaderView {
   }
 
   private Presenter viewPresenter;
+  private HandlesActions actionHandler;
 
   private final Label captionWidget = new Label();
 
@@ -269,6 +271,12 @@ public class HeaderImpl extends Flow implements HeaderView {
   }
 
   @Override
+  public String getRowMessage() {
+    Element messageElement = Selectors.getElementByClassName(this, STYLE_ROW_MESSAGE);
+    return (messageElement == null) ? null : messageElement.getInnerHTML();
+  }
+
+  @Override
   public Presenter getViewPresenter() {
     return viewPresenter;
   }
@@ -381,6 +389,11 @@ public class HeaderImpl extends Flow implements HeaderView {
     } else {
       return getCommandPanel().remove(command);
     }
+  }
+
+  @Override
+  public void setActionHandler(HandlesActions actionHandler) {
+    this.actionHandler = actionHandler;
   }
 
   @Override
@@ -533,6 +546,10 @@ public class HeaderImpl extends Flow implements HeaderView {
     return actionControls;
   }
 
+  private HandlesActions getActionHandler() {
+    return actionHandler;
+  }
+
   private Horizontal getCommandPanel() {
     return commandPanel;
   }
@@ -554,6 +571,9 @@ public class HeaderImpl extends Flow implements HeaderView {
     control.addClickHandler(event -> {
       if (getViewPresenter() != null) {
         getViewPresenter().handleAction(action);
+
+      } else if (getActionHandler() != null) {
+        getActionHandler().handleAction(action);
       }
     });
 

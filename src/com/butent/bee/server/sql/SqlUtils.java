@@ -820,7 +820,11 @@ public final class SqlUtils {
   }
 
   public static String uniqueName() {
-    return BeeUtils.randomString(5);
+    return BeeUtils.randomString(8);
+  }
+
+  public static String uniqueName(String prefix) {
+    return BeeUtils.trim(prefix) + uniqueName();
   }
 
   static <T> Collection<T> addCollection(Collection<T> destination, Collection<T> source) {

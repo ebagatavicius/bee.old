@@ -2,6 +2,7 @@ package com.butent.bee.shared.websocket.messages;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.State;
+import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -22,8 +23,10 @@ public class ProgressMessage extends Message {
     return new ProgressMessage(progressId, State.CLOSED);
   }
 
-  public static ProgressMessage open(String progressId) {
-    return new ProgressMessage(progressId, State.OPEN);
+  public static ProgressMessage open(String progressId, String... label) {
+    ProgressMessage message = new ProgressMessage(progressId, State.OPEN);
+    message.setLabel(ArrayUtils.joinWords(label));
+    return message;
   }
 
   public static ProgressMessage update(String progressId, String label, double value) {
@@ -116,7 +119,7 @@ public class ProgressMessage extends Message {
     setProgressId(arr[i++]);
     setState(Codec.unpack(State.class, arr[i++]));
     setLabel(arr[i++]);
-    setValue(BeeUtils.toDoubleOrNull(arr[i++]));
+    setValue(BeeUtils.toDoubleOrNull(arr[i]));
   }
 
   @Override

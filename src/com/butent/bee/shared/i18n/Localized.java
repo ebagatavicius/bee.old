@@ -34,7 +34,7 @@ public final class Localized {
   private static final Map<String, String> columnLabels = new HashMap<>();
 
   public static String column(String colName, String locale) {
-    return BeeUtils.join(BeeConst.STRING_UNDER, Assert.notEmpty(colName), Assert.notEmpty(locale));
+    return setLanguage(Assert.notEmpty(colName), Assert.notEmpty(locale));
   }
 
   public static Dictionary dictionary() {

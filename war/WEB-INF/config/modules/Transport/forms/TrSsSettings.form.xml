@@ -118,6 +118,16 @@
 
     &separator;
     <FlowPanel style="&row;">
+      <Label text="=trTbSettingsRefreshLocalChanges" style="&lbl;" />
+      <InputSpinner source="SsRefreshLocalChanges" minValue="-1" maxValue="999" style="&spin;" />
+    </FlowPanel>
+    <FlowPanel style="&row;">
+      <Label text="=trTbSettingsRefreshRemoteChanges" style="&lbl;" />
+      <InputSpinner source="SsRefreshRemoteChanges" minValue="-1" maxValue="999" style="&spin;" />
+    </FlowPanel>
+
+    &separator;
+    <FlowPanel style="&row;">
       <Label text="=colorTheme" style="&lbl;" />
       <DataSelector source="SsTheme" style="&inline;" />
     </FlowPanel>

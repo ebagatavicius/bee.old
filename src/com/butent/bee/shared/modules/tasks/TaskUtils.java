@@ -1,12 +1,9 @@
 package com.butent.bee.shared.modules.tasks;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.shared.Assert;
@@ -20,11 +17,6 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
-import com.butent.bee.shared.modules.calendar.CalendarConstants;
-import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
-import com.butent.bee.shared.modules.documents.DocumentConstants;
-import com.butent.bee.shared.modules.projects.ProjectConstants;
-import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
@@ -37,17 +29,10 @@ import com.butent.bee.shared.utils.EnumUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public final class TaskUtils {
 
   private static final String NOTE_LABEL_SEPARATOR = ": ";
-
-  private static final BiMap<String, String> taskPropertyToRelation = HashBiMap.create();
-
-  public static final List<String> TASK_RELATIONS = Lists.newArrayList(PROP_COMPANIES,
-      PROP_PERSONS, PROP_DOCUMENTS, PROP_APPOINTMENTS, PROP_DISCUSSIONS, PROP_SERVICE_OBJECTS,
-      PROP_TASKS, PROP_REQUESTS);
 
   public static boolean canConfirmTasks(final DataInfo info, final List<BeeRow> rows,
       long userId, ResponseObject resp) {
@@ -98,14 +83,6 @@ public final class TaskUtils {
   public static String getInsertNote(String label, String value) {
     return BeeUtils.join(NOTE_LABEL_SEPARATOR, label, BeeUtils
         .joinWords(Localized.dictionary().crmAdded().toLowerCase(), value));
-  }
-
-  public static Set<String> getRelationPropertyNames() {
-    return ensureTaskPropertyToRelation().keySet();
-  }
-
-  public static Set<String> getRelations() {
-    return ensureTaskPropertyToRelation().inverse().keySet();
   }
 
   public static List<ScheduleDateRange> getScheduleDateRanges(BeeRowSet rowSet) {
@@ -229,33 +206,6 @@ public final class TaskUtils {
     return notes;
   }
 
-  public static List<String> getUpdatedRelations(IsRow oldRow, IsRow newRow) {
-    List<String> updatedRelations = new ArrayList<>();
-    if (oldRow == null || newRow == null) {
-      return updatedRelations;
-    }
-
-    for (String relation : TASK_RELATIONS) {
-      if (!DataUtils.sameIdSet(oldRow.getProperty(relation), newRow.getProperty(relation))) {
-        updatedRelations.add(relation);
-      }
-    }
-    return updatedRelations;
-  }
-
-  public static boolean hasRelations(IsRow row) {
-    if (row == null) {
-      return false;
-    }
-
-    for (String relation : TaskUtils.TASK_RELATIONS) {
-      if (!BeeUtils.isEmpty(row.getProperty(relation))) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   @Deprecated
   public static boolean isScheduled(DateTime start) {
     return start != null && TimeUtils.dayDiff(TimeUtils.today(), start) > 0;
@@ -279,31 +229,6 @@ public final class TaskUtils {
       return DataUtils.sameIdSet(oldRow.getProperty(PROP_OBSERVERS),
           newRow.getProperty(PROP_OBSERVERS));
     }
-  }
-
-  public static String translateRelationToTaskProperty(String relation) {
-    return ensureTaskPropertyToRelation().inverse().get(relation);
-  }
-
-  public static String translateTaskPropertyToRelation(String propertyName) {
-    return ensureTaskPropertyToRelation().get(propertyName);
-  }
-
-  private static BiMap<String, String> ensureTaskPropertyToRelation() {
-    if (taskPropertyToRelation.isEmpty()) {
-      taskPropertyToRelation.put(PROP_COMPANIES, COL_COMPANY);
-      taskPropertyToRelation.put(PROP_PERSONS, COL_PERSON);
-      taskPropertyToRelation.put(PROP_DOCUMENTS, DocumentConstants.COL_DOCUMENT);
-      taskPropertyToRelation.put(PROP_APPOINTMENTS, CalendarConstants.COL_APPOINTMENT);
-      taskPropertyToRelation.put(PROP_DISCUSSIONS, DiscussionsConstants.COL_DISCUSSION);
-      taskPropertyToRelation.put(PROP_SERVICE_OBJECTS, ServiceConstants.COL_SERVICE_OBJECT);
-      taskPropertyToRelation.put(PROP_PROJECTS, ProjectConstants.COL_PROJECT);
-      taskPropertyToRelation.put(PROP_TASKS, COL_TASK);
-      taskPropertyToRelation.put(PROP_REQUESTS, COL_REQUEST);
-      taskPropertyToRelation.put(PROP_SERVICE_MAINTENANCE,
-          ServiceConstants.COL_SERVICE_MAINTENANCE);
-    }
-    return taskPropertyToRelation;
   }
 
   private TaskUtils() {

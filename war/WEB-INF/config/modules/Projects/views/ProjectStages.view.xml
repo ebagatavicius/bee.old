@@ -18,6 +18,9 @@
       <SimpleColumn name="Company" />
       <SimpleJoin name="Company" joinType="LEFT">
         <SimpleColumn name="Name" alias="CompanyName" />
+        <SimpleJoin joinType="LEFT" name="CompanyType">
+          <SimpleColumn name="Name" alias="CompanyTypeName" />
+        </SimpleJoin>
       </SimpleJoin>
 
       <SimpleColumn name="StartDate" alias="ProjectStartDate" />

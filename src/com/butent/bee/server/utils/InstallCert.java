@@ -1,4 +1,3 @@
-package com.butent.bee.server.utils;
 /*
  * Copyright 2006 Sun Microsystems, Inc.  All Rights Reserved.
  *
@@ -37,6 +36,8 @@ package com.butent.bee.server.utils;
  * Example:
  * % java InstallCert ecc.fedora.redhat.com
  */
+
+package com.butent.bee.server.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

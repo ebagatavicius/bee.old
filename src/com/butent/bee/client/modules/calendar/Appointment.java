@@ -2,17 +2,18 @@ package com.butent.bee.client.modules.calendar;
 
 import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import static com.butent.bee.shared.modules.calendar.CalendarHelper.*;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.cars.CarsConstants.COL_SERVICE_EVENT;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.ALS_COMPANY_NAME;
 
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.modules.cars.CarServiceEvent;
 import com.butent.bee.shared.data.BeeColumn;
-import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
-import com.butent.bee.shared.modules.calendar.CalendarConstants.CalendarVisibility;
-import com.butent.bee.shared.modules.calendar.CalendarConstants.ItemType;
+import com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
@@ -124,7 +125,7 @@ public class Appointment extends CalendarItem {
         wrap(KEY_REMINDERS));
   }
 
-  private final BeeRow row;
+  private final IsRow row;
 
   private final List<Long> attendees = new ArrayList<>();
   private final List<Long> owners = new ArrayList<>();
@@ -133,11 +134,7 @@ public class Appointment extends CalendarItem {
 
   private final Long separatedAttendee;
 
-  public Appointment(BeeRow row) {
-    this(row, null);
-  }
-
-  public Appointment(BeeRow row, Long separatedAttendee) {
+  protected Appointment(IsRow row, Long separatedAttendee) {
     this.row = row;
     this.separatedAttendee = separatedAttendee;
 
@@ -164,7 +161,18 @@ public class Appointment extends CalendarItem {
 
   @Override
   public CalendarItem copy() {
-    return new Appointment(getRow(), getSeparatedAttendee());
+    return Appointment.create(getRow(), getSeparatedAttendee());
+  }
+
+  public static Appointment create(IsRow row) {
+    return Appointment.create(row, null);
+  }
+
+  public static Appointment create(IsRow row, Long separatedAttendee) {
+    if (DataUtils.isId(Data.getLong(VIEW_APPOINTMENTS, row, COL_SERVICE_EVENT))) {
+      return new CarServiceEvent(row, separatedAttendee);
+    }
+    return new Appointment(row, separatedAttendee);
   }
 
   public List<Long> getAttendees() {
@@ -251,7 +259,7 @@ public class Appointment extends CalendarItem {
     return reminders;
   }
 
-  public BeeRow getRow() {
+  public IsRow getRow() {
     return row;
   }
 
@@ -373,6 +381,14 @@ public class Appointment extends CalendarItem {
 
   public String getVehicleParentModel() {
     return row.getString(VEHICLE_PARENT_MODEL_INDEX);
+  }
+
+  public boolean handlesCopyAction(DateTime newStart, DateTime newEnd) {
+    return false;
+  }
+
+  public boolean handlesOpenAction() {
+    return false;
   }
 
   @Override

@@ -21,6 +21,9 @@
     <SimpleColumn name="FxHeaderHeight" />
     <SimpleColumn name="FxFooterHeight" />
 
+    <SimpleColumn name="FxRefreshLocalChanges" />
+    <SimpleColumn name="FxRefreshRemoteChanges" />
+
     <SimpleColumn name="FxTheme" />
     <SimpleJoin name="FxTheme" joinType="LEFT">
       <SimpleColumn alias="FxThemeName" name="Name" />
@@ -58,6 +61,9 @@
     <SimpleColumn name="SsHeaderHeight" />
     <SimpleColumn name="SsFooterHeight" />
 
+    <SimpleColumn name="SsRefreshLocalChanges" />
+    <SimpleColumn name="SsRefreshRemoteChanges" />
+
     <SimpleColumn name="SsTheme" />
     <SimpleJoin name="SsTheme" joinType="LEFT">
       <SimpleColumn alias="SsThemeName" name="Name" />
@@ -90,6 +96,9 @@
 
     <SimpleColumn name="DtbHeaderHeight" />
     <SimpleColumn name="DtbFooterHeight" />
+
+    <SimpleColumn name="DtbRefreshLocalChanges" />
+    <SimpleColumn name="DtbRefreshRemoteChanges" />
 
     <SimpleColumn name="DtbItemOpacity" />
     <SimpleColumn name="DtbStripOpacity" />
@@ -127,6 +136,9 @@
     <SimpleColumn name="TruckHeaderHeight" />
     <SimpleColumn name="TruckFooterHeight" />
 
+    <SimpleColumn name="TruckRefreshLocalChanges" />
+    <SimpleColumn name="TruckRefreshRemoteChanges" />
+
     <SimpleColumn name="TruckTheme" />
     <SimpleJoin name="TruckTheme" joinType="LEFT">
       <SimpleColumn alias="TruckThemeName" name="Name" />
@@ -162,6 +174,9 @@
 
     <SimpleColumn name="TrailerHeaderHeight" />
     <SimpleColumn name="TrailerFooterHeight" />
+
+    <SimpleColumn name="TrailerRefreshLocalChanges" />
+    <SimpleColumn name="TrailerRefreshRemoteChanges" />
 
     <SimpleColumn name="TrailerTheme" />
     <SimpleJoin name="TrailerTheme" joinType="LEFT">

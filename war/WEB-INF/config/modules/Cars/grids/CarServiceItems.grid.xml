@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
+
+        name="CarServiceItems" viewName="CarServiceItems" autoFlex="true"
+>
+  <g:columns>
+    <RelColumn name="Item" renderColumns="ItemName" flexGrow="2" visible="true">
+      <dynStyle>
+        <ui:inline>color:blue;</ui:inline>
+        <ui:expression>row.IsService</ui:expression>
+      </dynStyle>
+    </RelColumn>
+
+    <DataColumn name="Article" flexGrow="1" />
+
+    <DataColumn name="Quantity" scale="0" visible="true" />
+    <DataColumn name="UnitName" label="=unitShort" />
+
+    <DataColumn name="Price" scale="2" />
+    <DataColumn name="Discount" scale="0" carry="true">
+      <editor type="number" percentageTag="DiscountIsPercent" />
+    </DataColumn>
+    <DataColumn name="DiscountIsPercent" width="20" sortable="false" format="%" carry="true" />
+
+    <DataColumn name="Vat" scale="0" carry="true">
+      <editor type="number" percentageTag="VatIsPercent" />
+    </DataColumn>
+    <DataColumn name="VatIsPercent" width="20" sortable="false" format="%" carry="true" />
+
+    <CalcColumn name="Total" type="decimal" caption="=total" scale="2">
+      <style>
+        <bodyStyle>
+          <ui:font>bold</ui:font>
+        </bodyStyle>
+      </style>
+      <renderer type="total" />
+    </CalcColumn>
+  </g:columns>
+</g:Grid>

@@ -84,6 +84,12 @@ public abstract class Message {
         return new OnlineMessage();
       }
     },
+    PARAMETER {
+      @Override
+      Message createMessage() {
+        return new ParameterMessage();
+      }
+    },
     PRESENCE {
       @Override
       Message createMessage() {
@@ -169,11 +175,11 @@ public abstract class Message {
 
   protected abstract String serialize();
 
-  protected String string(Double d) {
+  protected static String string(Double d) {
     return (d == null) ? null : BeeUtils.toString(d, 6);
   }
 
-  protected String string(Enum<?> e) {
+  protected static String string(Enum<?> e) {
     return (e == null) ? null : e.name();
   }
 }

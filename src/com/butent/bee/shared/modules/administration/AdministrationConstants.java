@@ -119,7 +119,6 @@ public final class AdministrationConstants {
 
   public static final String PARAMETERS_PREFIX = "parameters_";
 
-  public static final String SVC_GET_PARAMETER = PARAMETERS_PREFIX + "parameter";
   public static final String SVC_GET_RELATION_PARAMETER = PARAMETERS_PREFIX + "relation_parameter";
   public static final String SVC_SET_PARAMETER = PARAMETERS_PREFIX + "set";
 
@@ -163,6 +162,7 @@ public final class AdministrationConstants {
   public static final String SVC_BLOCK_HOST = "block_host";
   public static final String SVC_CREATE_USER = "create_user";
   public static final String SVC_COPY_RIGHTS = "copy_rights";
+  public static final String SVC_CREATE_DATA_IMPORT_TEMPLATES = "create_data_import_templates";
 
   public static final String VAR_IMPORT_TEST = "Test";
   public static final String VAR_IMPORT_FILE = "File";
@@ -217,6 +217,11 @@ public final class AdministrationConstants {
   public static final String TBL_IMPORT_PROPERTIES = "ImportProperties";
   public static final String TBL_IMPORT_MAPPINGS = "ImportMappings";
   public static final String TBL_IMPORT_CONDITIONS = "ImportConditions";
+
+  public static final String TBL_STAGES = "Stages";
+  public static final String TBL_STAGE_CONDITIONS = "StageConditions";
+  public static final String TBL_STAGE_ACTIONS = "StageActions";
+  public static final String TBL_STAGE_TRIGGERS = "StageTriggers";
 
   public static final String TBL_CUSTOM_CONFIG = "CustomConfig";
 
@@ -283,6 +288,7 @@ public final class AdministrationConstants {
   public static final String COL_PASSWORD = "Password";
   public static final String COL_USER_LOCALE = "Locale";
   public static final String COL_USER_INTERFACE = "Interface";
+  public static final String COL_USER_DATE_FORMAT = "DateFormat";
   public static final String COL_USER_BLOCK_FROM = "BlockAfter";
   public static final String COL_USER_BLOCK_UNTIL = "BlockBefore";
   public static final String COL_REMOTE_HOST = "Host";
@@ -393,6 +399,18 @@ public final class AdministrationConstants {
   public static final String COL_IMPORT_RELATION_OPTION = "RelationOption";
   public static final String COL_IMPORT_MAPPING = "Mapping";
 
+  public static final String COL_STAGE = "Stage";
+  public static final String COL_STAGE_VIEW = "ViewName";
+  public static final String COL_STAGE_NAME = "StageName";
+  public static final String COL_STAGE_CONFIRM = "StageConfirm";
+
+  public static final String COL_STAGE_FIELD = "Field";
+  public static final String COL_STAGE_OPERATOR = "Operator";
+  public static final String COL_STAGE_VALUE = "Value";
+  public static final String COL_STAGE_FROM = "StageFrom";
+  public static final String COL_STAGE_ACTION = "Action";
+  public static final String COL_STAGE_TRIGGER = "Trigger";
+
   public static final String COL_CONFIG_MODULE = "ObjectModule";
   public static final String COL_CONFIG_TYPE = "ObjectType";
   public static final String COL_CONFIG_OBJECT = "ObjectName";
@@ -444,6 +462,8 @@ public final class AdministrationConstants {
 
   public static final String FORM_IMPORT_MAPPINGS = "ImportOptionMappings";
   public static final String FORM_IMPORT_OPTION = "ImportOption";
+
+  public static final String FORM_STAGES = "StageEditor";
 
   public static final String PRM_SQL_MESSAGES = "SQLMessages";
 

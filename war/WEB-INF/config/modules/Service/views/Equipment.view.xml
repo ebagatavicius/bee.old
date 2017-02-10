@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="Equipment" source="Equipment" module="Service"
+  caption="=svcMaintenanceEquipment"
+  >
+  <Columns>
+    <SimpleColumn name="Number" />
+    <SimpleColumn name="Name" />
+    <SimpleColumn name="IsValid" />
+  </Columns>
+  <Order>
+    <OrderBy column="Number" />
+    <OrderBy column="Name" />
+  </Order>
+</View>

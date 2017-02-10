@@ -47,7 +47,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 class HolidaysForm extends AbstractFormInterceptor implements SelectorEvent.Handler {
 
@@ -138,14 +137,11 @@ class HolidaysForm extends AbstractFormInterceptor implements SelectorEvent.Hand
           init(lastCountry, getYear(lastDay));
 
         } else {
-          Global.getParameter(AdministrationConstants.PRM_COUNTRY, new Consumer<String>() {
-            @Override
-            public void accept(String input) {
-              if (DataUtils.isId(input)) {
-                init(BeeUtils.toLongOrNull(input), TimeUtils.year());
-              }
-            }
-          });
+          Long countryId = Global.getParameterRelation(AdministrationConstants.PRM_COUNTRY);
+
+          if (DataUtils.isId(countryId)) {
+            init(countryId, TimeUtils.year());
+          }
         }
       }
     });

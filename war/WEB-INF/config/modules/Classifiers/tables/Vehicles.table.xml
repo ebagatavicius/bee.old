@@ -7,8 +7,17 @@
   <Fields>
     <Relation name="Type" notNull="true" relation="VehicleTypes" label="=vehicleType" />
     <Relation name="Model" notNull="true" relation="VehicleModels" label="=vehicleModel" />
-    <String name="Number" precision="20" unique="true" notNull="true" label="=vehicleNumber" />
+    <String name="Number" precision="20" unique="true" label="=vehicleNumber" />
     <String name="BodyNumber" precision="20" unique="true" label="=vehicleBodyNumber" />
+    <String name="ManufacturerNumber" precision="20" label="=vehicleManufacturerNr" />
+    <String name="ModelNumber" precision="20" label="=vehicleModelNr" />
+    <Relation name="Status" relation="CarStatus" label="=status" />
+    <Relation name="CarWarranty" relation="CarWarranties" label="=vehicleWarranty" />
+    <Relation name="CarGearbox" relation="CarGearboxes" label="=vehicleGearbox" />
+    <Relation name="CarPlaceCode" relation="CarPlaceCodes" label="=vehiclePlaceCode" />
+    <Relation name="CarEmissionStandard" relation="CarEmissionStandards"
+              label="=vehicleEmissionStandard" />
+    <String name="EngineCode" precision="20" unique="true" label="=vehicleEngineCode" />
     <String name="EngineNumber" precision="20" unique="true" label="=vehicleEngineNumber" />
     <Numeric name="EngineVolume" precision="5" label="=vehicleEngineVolume" />
     <Date name="ProductionDate" label="=vehicleProductionDate" />
@@ -19,8 +28,14 @@
     <Relation name="Fuel" relation="FuelTypes" label="=vehicleFuel" />
     <Numeric name="TankCapacity" precision="4" label="=vehicleTankCapacity" />
     <Numeric name="Power" precision="4" label="=vehiclePower" />
+    <Numeric name="Horsepower" precision="4" label="=vehicleHorsepower" />
+    <Numeric name="CylinderNumber" precision="4" label="=vehicleCylinderNumber" />
+    <Numeric name="DoorsNumber" precision="5" label="=vehicleDoorsNumber" />
+    <Numeric name="GearsNumber" precision="5" label="=vehicleGearsNumber" />
     <Double name="Netto" label="=vehicleNetto" />
     <Double name="Brutto" label="=vehicleBrutto" />
+    <String name="ResponsiblePerson" precision="20" label="=vehicleResponsiblePerson" />
+    <String name="Phone" precision="20" label="=phone" />
     <Text name="Notes" label="=notes" />
 
     <Numeric name="Body" precision="1" />

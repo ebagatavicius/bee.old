@@ -692,7 +692,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
 
   @Override
   protected void getReportData(Consumer<BeeRowSet[]> dataConsumer) {
-    SelfServiceUtils.getCargos(Filter.compareId(getLongValue(COL_CARGO)),
+    TransportUtils.getCargos(Filter.compareId(getLongValue(COL_CARGO)),
         cargoInfo -> dataConsumer.accept(new BeeRowSet[] {cargoInfo}));
   }
 
@@ -758,7 +758,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
     table.setText(c, 1, BeeUtils.joinWords(BeeUtils.round(total, 2),
         ClientDefaults.getCurrencyName()));
 
-    SelfServiceUtils.getCargoPlaces(Filter.equals(COL_CARGO, form.getLongValue(COL_CARGO)),
+    TransportUtils.getCargoPlaces(Filter.equals(COL_CARGO, form.getLongValue(COL_CARGO)),
         (loading, unloading) -> {
           for (BeeRowSet places : new BeeRowSet[] {loading, unloading}) {
             int r = table.getRowCount();

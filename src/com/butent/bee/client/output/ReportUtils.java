@@ -23,6 +23,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
+import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.report.ReportInfo;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -76,11 +77,15 @@ public final class ReportUtils {
               reports.add(ReportInfo.restore(rep.serialize()));
             }
             for (BeeRow row : result) {
-              ReportInfo rep = ReportInfo.restore(row.getString(idx));
-              rep.setId(row.getId());
-              rep.setGlobal(BeeUtils.isEmpty(row.getString(userIdx)));
-              reports.remove(rep);
-              reports.add(rep);
+              try {
+                ReportInfo rep = ReportInfo.restore(row.getString(idx));
+                rep.setId(row.getId());
+                rep.setGlobal(BeeUtils.isEmpty(row.getString(userIdx)));
+                reports.remove(rep);
+                reports.add(rep);
+              } catch (Throwable ex) {
+                LogUtils.getRootLogger().error(ex, row.getId(), row.getString(idx));
+              }
             }
             consumer.accept(reports);
           }
@@ -137,7 +142,9 @@ public final class ReportUtils {
         response.notify(BeeKeeper.getScreen());
 
         if (!response.hasErrors()) {
-          responseConsumer.accept(FileInfo.restore(response.getResponseAsString()));
+          FileInfo fileInfo = FileInfo.restore(response.getResponseAsString());
+          fileInfo.setDescription(report);
+          responseConsumer.accept(fileInfo);
         }
       }
     });

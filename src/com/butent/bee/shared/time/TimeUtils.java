@@ -398,6 +398,10 @@ public final class TimeUtils {
     return z + millis;
   }
 
+  public static int getTimezoneOffsetInMillis(long time) {
+    return new DateTime(time).getTimezoneOffsetInMillis();
+  }
+
   public static JustDate goMonth(JustDate ref, int increment) {
     Assert.notNull(ref);
     if (increment == 0) {

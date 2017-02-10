@@ -1,6 +1,6 @@
 package com.butent.bee.client.modules.projects;
 
-import static com.butent.bee.shared.modules.projects.ProjectConstants.*;
+import static com.butent.bee.shared.modules.projects.ProjectConstants.VIEW_PROJECTS;
 
 import com.butent.bee.client.event.logical.ParentRowEvent;
 import com.butent.bee.client.modules.calendar.Appointment;
@@ -11,7 +11,6 @@ import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
-import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.modules.calendar.CalendarConstants;
@@ -29,7 +28,7 @@ public class ProjectAppointmentsGrid extends AbstractGridInterceptor {
   public void onEditStart(EditStartEvent event) {
     event.consume();
 
-    CalendarKeeper.openAppointment(new Appointment((BeeRow) event.getRowValue()), null,
+    CalendarKeeper.openAppointment(Appointment.create(event.getRowValue()), null,
         CalendarConstants.DEFAULT_EDIT_APPOINTMENT_FORM);
   }
 

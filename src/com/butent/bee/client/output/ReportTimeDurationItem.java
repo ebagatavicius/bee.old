@@ -1,13 +1,11 @@
 package com.butent.bee.client.output;
 
-
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.report.ReportFunction;
 import com.butent.bee.shared.time.TimeUtils;
 
 import java.util.Collection;
 import java.util.Collections;
-
 import java.util.TreeSet;
 
 public class ReportTimeDurationItem extends ReportNumericItem  {

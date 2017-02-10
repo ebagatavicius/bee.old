@@ -64,14 +64,11 @@ public class NewOrderInvoiceForm extends AbstractFormInterceptor {
       WidgetDescriptionCallback callback) {
 
     if (BeeUtils.same(name, COL_TRADE_OPERATION)) {
-      ((DataSelector) widget).addSelectorHandler(event -> Global.getParameter(PRM_CHECK_DEBT,
-          input -> {
-            if (Boolean.valueOf(input)) {
-              if (event.isOpened()) {
-                getInfoAboutCompany(event, Holder.of(4), null, null);
-              }
-            }
-          }));
+      ((DataSelector) widget).addSelectorHandler(event -> {
+        if (event.isOpened() && BeeUtils.unbox(Global.getParameterBoolean(PRM_CHECK_DEBT))) {
+          getInfoAboutCompany(event, Holder.of(4), null, null);
+        }
+      });
     } else if (BeeUtils.same(name, NAME_SERIES_LABEL)) {
       seriesLabel = (Label) widget;
       seriesLabel.setStyleName(StyleUtils.NAME_REQUIRED, true);
@@ -86,28 +83,18 @@ public class NewOrderInvoiceForm extends AbstractFormInterceptor {
 
   @Override
   public void onReadyForInsert(HasHandlers listener, ReadyForInsertEvent event) {
+    if (!isProforma()) {
+      if (BeeUtils.unbox(Global.getParameterBoolean(PRM_CHECK_DEBT))) {
+        event.consume();
+        final Holder<Integer> holder = Holder.of(4);
+        getInfoAboutCompany(null, holder, listener, event);
 
-    event.consume();
-
-    Global.getParameter(PRM_CHECK_DEBT, input -> {
-      if (Boolean.valueOf(input)) {
-        if (!isProforma()) {
-          final Holder<Integer> holder = Holder.of(4);
-          getInfoAboutCompany(null, holder, listener, event);
-        } else {
-          listener.fireEvent(event);
-        }
-      } else {
-        if (Data.isNull(VIEW_ORDER_CHILD_INVOICES, getActiveRow(), COL_TRADE_SALE_SERIES)
-            && !isProforma()) {
-          getFormView().notifySevere(Localized.dictionary()
-              .fieldRequired(Localized.dictionary().trdInvoicePrefix()));
-          return;
-        }
-
-        listener.fireEvent(event);
+      } else if (Data.isNull(VIEW_ORDER_CHILD_INVOICES, getActiveRow(), COL_TRADE_SALE_SERIES)) {
+        getFormView().notifySevere(Localized.dictionary()
+            .fieldRequired(Localized.dictionary().trdInvoicePrefix()));
+        event.consume();
       }
-    });
+    }
   }
 
   private void createCellValidationHandler(FormView form, IsRow row) {

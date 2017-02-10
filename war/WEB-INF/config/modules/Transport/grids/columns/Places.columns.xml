@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE columns [
+    <!ENTITY renderLoadingOptions "{
+                         &quot;viewName&quot;:&quot;CargoLoading&quot;,
+                         &quot;render&quot;: {
+                           &quot;City&quot;: &quot;CityName, PostIndex&quot;,
+                           &quot;Country&quot;: &quot;flg_CountryCode, CountryName, CountryCode&quot;
+                         }
+                       }">
+    <!ENTITY renderUnloadingOptions "{
+                         &quot;viewName&quot;:&quot;CargoUnloading&quot;,
+                         &quot;render&quot;: {
+                           &quot;City&quot;: &quot;CityName, PostIndex&quot;,
+                           &quot;Country&quot;: &quot;flg_CountryCode, CountryName, CountryCode&quot;
+                         }
+                       }">
+]>
 <g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
            xmlns:ui="http://www.butent.com/ui">
 
@@ -56,4 +72,27 @@
 
   <PropColumn type="integer" name="EmptyKilometers" label="=trEmptyKilometers" visible="false" />
   <PropColumn type="integer" name="LoadedKilometers" label="=trLoadedKilometers" visible="false" />
+
+  <PropColumn type="string" cellType="html" name="Loading" exportable="false"
+              renderColumns="Date Note Company Contact Address City Country Number"
+              label="=cargoLoading" minWidth="140" flexBasis="120">
+    <style>
+      <bodyStyle>
+        <ui:inline>overflow-y:auto;</ui:inline>
+      </bodyStyle>
+    </style>
+    <renderer type="place" options="&renderLoadingOptions;"/>
+  </PropColumn>
+
+  <PropColumn type="string" cellType="html" name="Unloading" exportable="false"
+              renderColumns="Date Note Company Contact Address City Country Number"
+              label="=cargoUnloading" minWidth="140" flexBasis="120">
+    <style>
+      <bodyStyle>
+        <ui:inline>overflow-y:auto;</ui:inline>
+      </bodyStyle>
+    </style>
+    <renderer type="place" options="&renderUnloadingOptions;"/>
+  </PropColumn>
+
 </g:columns>

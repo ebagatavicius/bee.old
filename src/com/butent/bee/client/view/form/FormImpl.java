@@ -1239,12 +1239,22 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     }
 
     for (EditableWidget editableWidget : getEditableWidgets()) {
-      if (editableWidget.getEditor() instanceof HandlesValueChange
-          && ((HandlesValueChange) editableWidget.getEditor()).isValueChanged()) {
+      if (editableWidget.getEditor() instanceof HandlesValueChange) {
+        boolean changed = ((HandlesValueChange) editableWidget.getEditor()).isValueChanged();
 
-        String label = ((HandlesValueChange) editableWidget.getEditor()).getLabel();
-        if (!BeeUtils.isEmpty(label) && !updatedLabels.contains(label)) {
-          updatedLabels.add(label);
+        if (!changed && editableWidget.hasRowProperty()) {
+          String propertyName = editableWidget.getRowPropertyName();
+          Long userId = BeeKeeper.getUser().idOrNull(editableWidget.getUserMode());
+
+          changed = !BeeUtils.equalsTrim(getOldRow().getProperty(propertyName, userId),
+              getActiveRow().getProperty(propertyName, userId));
+        }
+
+        if (changed) {
+          String label = ((HandlesValueChange) editableWidget.getEditor()).getLabel();
+          if (!BeeUtils.isEmpty(label) && !updatedLabels.contains(label)) {
+            updatedLabels.add(label);
+          }
         }
       }
     }
@@ -1670,11 +1680,17 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
   public void saveChanges(final RowCallback callback) {
     if (DataUtils.hasId(getActiveRow()) && DataUtils.sameId(getActiveRow(), getOldRow())) {
       if (!validate(this, true)) {
+        if (callback != null) {
+          callback.onCancel();
+        }
         return;
       }
 
       GridView gridView = getBackingGrid();
       if (gridView != null && !gridView.validateFormData(this, this, true)) {
+        if (callback != null) {
+          callback.onCancel();
+        }
         return;
       }
 
@@ -1693,6 +1709,9 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       if (getFormInterceptor() != null) {
         getFormInterceptor().onSaveChanges(this, event);
         if (event.isConsumed()) {
+          if (callback != null) {
+            callback.onCancel();
+          }
           return;
         }
       }
@@ -1700,6 +1719,9 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       if (gridView != null && gridView.getGridInterceptor() != null) {
         gridView.getGridInterceptor().onSaveChanges(gridView, event);
         if (event.isConsumed()) {
+          if (callback != null) {
+            callback.onCancel();
+          }
           return;
         }
       }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="CarRecalls"
+       idName="RecallID"
+>
+  <Fields>
+    <Relation name="Vehicle" notNull="true" relation="Vehicles" cascade="DELETE" label="=recall" />
+    <String name="Code" precision="30" label="=code" />
+    <Boolean name="Checked" label="=checked" />
+    <String name="Description" precision="100" label="=description" />
+  </Fields>
+</Table>

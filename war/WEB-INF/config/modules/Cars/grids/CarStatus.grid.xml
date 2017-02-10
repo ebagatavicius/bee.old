@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
+
+        name="CarStatus" viewName="CarStatus" caption="=statuses"
+>
+  <g:columns>
+    <DataColumn name="Name" minWidth="200" />
+  </g:columns>
+</g:Grid>

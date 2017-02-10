@@ -275,6 +275,7 @@ public final class CalendarConstants {
 
   public static final String COL_CALENDAR_NAME = "Name";
   public static final String COL_CALENDAR_OWNER = "Owner";
+  public static final String COL_CALENDAR_IS_SERVICE = "IsService";
 
   public static final String COL_DEFAULT_DISPLAYED_DAYS = "DefaultDisplayedDays";
 

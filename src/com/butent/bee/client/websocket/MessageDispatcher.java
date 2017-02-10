@@ -1,14 +1,10 @@
 package com.butent.bee.client.websocket;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.geolocation.client.Position;
 import com.google.gwt.geolocation.client.Position.Coordinates;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.ChatManager;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.cli.CliWorker;
 import com.butent.bee.client.dialog.DialogBox;
@@ -16,7 +12,6 @@ import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dialog.NotificationOptions;
 import com.butent.bee.client.dialog.WebNotification;
 import com.butent.bee.client.dom.DomUtils;
-import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.images.Images;
 import com.butent.bee.client.layout.Flow;
@@ -61,6 +56,7 @@ import com.butent.bee.shared.websocket.messages.Message;
 import com.butent.bee.shared.websocket.messages.ModificationMessage;
 import com.butent.bee.shared.websocket.messages.NotificationMessage;
 import com.butent.bee.shared.websocket.messages.OnlineMessage;
+import com.butent.bee.shared.websocket.messages.ParameterMessage;
 import com.butent.bee.shared.websocket.messages.PresenceMessage;
 import com.butent.bee.shared.websocket.messages.ProgressMessage;
 import com.butent.bee.shared.websocket.messages.ShowMessage;
@@ -71,9 +67,8 @@ import com.butent.bee.shared.websocket.messages.UsersMessage;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
-class MessageDispatcher {
+final class MessageDispatcher {
 
   private static BeeLogger logger = LogUtils.getLogger(MessageDispatcher.class);
 
@@ -145,13 +140,10 @@ class MessageDispatcher {
         input.addStyleName(CONVERSATION_STYLE_PREFIX + "input");
         input.setMaxLength(NotificationMessage.MAX_LENGTH);
 
-        input.addKeyDownHandler(new KeyDownHandler() {
-          @Override
-          public void onKeyDown(KeyDownEvent event) {
-            if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER && !input.isEmpty()) {
-              if (reply(notificationMessage, input.getValue())) {
-                dialog.close();
-              }
+        input.addKeyDownHandler(event -> {
+          if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER && !input.isEmpty()) {
+            if (reply(notificationMessage, input.getValue())) {
+              dialog.close();
             }
           }
         });
@@ -163,14 +155,11 @@ class MessageDispatcher {
         FaLabel reply = new FaLabel(FontAwesome.REPLY);
         reply.addStyleName(CONVERSATION_STYLE_PREFIX + "reply");
 
-        reply.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            if (input.isEmpty()) {
-              input.setFocus(true);
-            } else if (reply(notificationMessage, input.getValue())) {
-              dialog.close();
-            }
+        reply.addClickHandler(event -> {
+          if (input.isEmpty()) {
+            input.setFocus(true);
+          } else if (reply(notificationMessage, input.getValue())) {
+            dialog.close();
           }
         });
 
@@ -179,12 +168,7 @@ class MessageDispatcher {
         FaLabel cancel = new FaLabel(FontAwesome.TIMES);
         cancel.addStyleName(CONVERSATION_STYLE_PREFIX + "cancel");
 
-        cancel.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            dialog.close();
-          }
-        });
+        cancel.addClickHandler(event -> dialog.close());
 
         commands.add(cancel);
 
@@ -194,12 +178,9 @@ class MessageDispatcher {
         dialog.setAnimationEnabled(true);
         dialog.setHideOnEscape(true);
 
-        dialog.addOpenHandler(new OpenEvent.Handler() {
-          @Override
-          public void onOpen(OpenEvent event) {
-            DomUtils.scrollToBottom(wrapper);
-            input.setFocus(true);
-          }
+        dialog.addOpenHandler(event -> {
+          DomUtils.scrollToBottom(wrapper);
+          input.setFocus(true);
         });
 
         dialog.center();
@@ -262,10 +243,10 @@ class MessageDispatcher {
     }
   }
 
-  MessageDispatcher() {
+  private MessageDispatcher() {
   }
 
-  void dispatch(Message message) {
+  static void dispatch(Message message) {
     String caption;
 
     switch (message.getType()) {
@@ -290,8 +271,7 @@ class MessageDispatcher {
       case CHAT_MESSAGE:
         ChatMessage chatMessage = (ChatMessage) message;
 
-        if (chatMessage.isValid()
-                                || Global.getChatManager().isAssistant(chatMessage.getChatId())) {
+        if (chatMessage.isValid() || ChatManager.isAssistant(chatMessage.getChatId())) {
           Global.getChatManager().addMessage(chatMessage);
         } else {
           WsUtils.onEmptyMessage(message);
@@ -338,19 +318,12 @@ class MessageDispatcher {
         final String from = lm.getFrom();
 
         if (lm.isQuery()) {
-          MapUtils.getCurrentPosition(new Consumer<Position>() {
-            @Override
-            public void accept(Position input) {
-              Coordinates coords = input.getCoordinates();
-              Endpoint.send(LocationMessage.coordinates(Endpoint.getSessionId(), from,
-                  coords.getLatitude(), coords.getLongitude(), coords.getAccuracy()));
-            }
-          }, new Consumer<String>() {
-            @Override
-            public void accept(String input) {
-              Endpoint.send(LocationMessage.response(Endpoint.getSessionId(), from, input));
-            }
-          });
+          MapUtils.getCurrentPosition(input -> {
+            Coordinates coordinates = input.getCoordinates();
+            Endpoint.send(LocationMessage.coordinates(Endpoint.getSessionId(), from,
+                coordinates.getLatitude(), coordinates.getLongitude(), coordinates.getAccuracy()));
+          }, input ->
+              Endpoint.send(LocationMessage.response(Endpoint.getSessionId(), from, input)));
 
         } else if (lm.hasCoordinates()) {
           String title = Global.getUsers().getUserSignatureBySession(from);
@@ -448,6 +421,10 @@ class MessageDispatcher {
         }
         break;
 
+      case PARAMETER:
+        Global.storeParameter(((ParameterMessage) message).getParameter());
+        break;
+
       case PRESENCE:
         SessionUser su = ((PresenceMessage) message).getSessionUser();
 
@@ -467,9 +444,16 @@ class MessageDispatcher {
           WsUtils.onEmptyMessage(message);
 
         } else if (!Endpoint.handleProgress(pm)) {
-          if (pm.isActivated()) {
-            boolean started = Endpoint.startPropgress(progressId);
-            if (started) {
+          if (pm.isOpen()) {
+            progressId = Endpoint.createProgress(pm.getLabel(), progressId);
+
+            if (!BeeUtils.isEmpty(progressId)) {
+              logger.debug("progress", progressId, "created");
+            } else {
+              logger.warning("cannot create progress", progressId);
+            }
+          } else if (pm.isActivated()) {
+            if (Endpoint.startProgress(progressId)) {
               logger.debug("progress", progressId, "started");
             } else {
               logger.warning("cannot start progress", progressId);

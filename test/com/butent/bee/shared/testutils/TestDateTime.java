@@ -65,7 +65,7 @@ public class TestDateTime {
 
   @Test
   public final void testDateTimeJustDate() {
-    JustDate jd = new JustDate(2011, 02, 22);
+    JustDate jd = new JustDate(2011, 2, 22);
     varDate = new DateTime(jd);
 
     assertEquals(2011, varDate.getYear());
@@ -80,6 +80,14 @@ public class TestDateTime {
     } catch (Exception e) {
       fail("Java lang error. Need BeeRuntimeException " + e.getMessage());
     }
+  }
+
+  @Test
+  public final void testClearTimePart() {
+    DateTime dt = new DateTime();
+    JustDate jd = dt.getDate();
+    dt.clearTimePart();
+    assertEquals(dt, jd.getDateTime());
   }
 
   @Test
@@ -146,16 +154,16 @@ public class TestDateTime {
     varDate = new DateTime(2011, 2, 22, 0, 0, 0, 0);
     assertEquals(53, varDate.getDoy());
 
-    varDate = new DateTime(2011, 03, 30, 2, 1, 2);
+    varDate = new DateTime(2011, 3, 30, 2, 1, 2);
     assertEquals(89, varDate.getDoy());
 
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals(65, varDate.getDoy());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45);
     assertEquals(78, varDate.getDoy());
 
-    varDate = new DateTime(2011, 01, 01, 5, 1, 45);
+    varDate = new DateTime(2011, 1, 1, 5, 1, 45);
     assertEquals(1, varDate.getDoy());
 
     varDate = new DateTime(2011, 12, 31, 5, 1, 45);
@@ -177,7 +185,7 @@ public class TestDateTime {
     assertEquals(0, varDate.getHour());
     assertEquals(23, varDate.getDom());
 
-    varDate = new DateTime(2011, 03, 27, 4, 1, 2);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 2);
     assertEquals(4, varDate.getHour());
   }
 
@@ -230,9 +238,34 @@ public class TestDateTime {
 
   @Test
   public final void testGetTimezoneOffset() {
-    varDate = new DateTime(2011, 3, 26);
+    varDate = new DateTime(2017, 3, 26);
     assertEquals(-120, varDate.getTimezoneOffset());
-    varDate = new DateTime(2011, 3, 27);
+    varDate = new DateTime(2017, 3, 27);
+    assertEquals(-180, varDate.getTimezoneOffset());
+
+    varDate = new DateTime(2017, 3, 26, 2, 59, 59, 999);
+    assertEquals(-120, varDate.getTimezoneOffset());
+    varDate = new DateTime(2017, 3, 26, 3, 0, 0);
+    assertEquals(-180, varDate.getTimezoneOffset());
+    varDate = new DateTime(2017, 3, 26, 3, 0, 0, 1);
+    assertEquals(-180, varDate.getTimezoneOffset());
+
+    varDate = new DateTime(-1L);
+    assertEquals(-120, varDate.getTimezoneOffset());
+    varDate = new DateTime(0L);
+    assertEquals(-120, varDate.getTimezoneOffset());
+    varDate = new DateTime(2 * TimeUtils.MILLIS_PER_HOUR);
+    assertEquals(-120, varDate.getTimezoneOffset());
+    varDate = new DateTime(2 * TimeUtils.MILLIS_PER_HOUR + 1);
+    assertEquals(-120, varDate.getTimezoneOffset());
+
+    varDate = new DateTime(1969, 1, 1);
+    assertEquals(-120, varDate.getTimezoneOffset());
+    varDate = new DateTime(1920, 1, 1);
+    assertEquals(-120, varDate.getTimezoneOffset());
+    varDate = new DateTime(1910, 1, 1);
+    assertEquals(-120, varDate.getTimezoneOffset());
+    varDate = new DateTime(1900, 1, 1);
     assertEquals(-120, varDate.getTimezoneOffset());
   }
 
@@ -270,14 +303,14 @@ public class TestDateTime {
     varDate = new DateTime(2011, 2, 22, 0, 0, 0, 0);
     assertEquals(52, varDate.getUtcDoy());
 
-    varDate = new DateTime(2011, 03, 30, 2, 1, 2);
+    varDate = new DateTime(2011, 3, 30, 2, 1, 2);
     assertEquals(23, varDate.getUtcHour());
     assertEquals(88, varDate.getUtcDoy());
 
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals(65, varDate.getUtcDoy());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45);
     assertEquals(78, varDate.getUtcDoy());
   }
 
@@ -285,7 +318,7 @@ public class TestDateTime {
   public final void testGetUtcHour() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals(6, varDate.getUtcHour());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals(3, varDate.getUtcHour());
 
     varDate = new DateTime(2011, 3, 19, 5, 1, 45);
@@ -305,19 +338,19 @@ public class TestDateTime {
   public final void testGetUtcMillis() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals(446, varDate.getUtcMillis());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals(0, varDate.getUtcMillis());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45);
     assertEquals(0, varDate.getUtcMillis());
 
     varDate = new DateTime(2011, 2, 22, 0, 0, 0, 0);
     assertEquals(0, varDate.getUtcMillis());
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals(0, varDate.getUtcMillis());
     assertEquals(0, varDate.getUtcMillis());
 
-    varDate = new DateTime(2011, 03, 30, 2, 1, 2);
+    varDate = new DateTime(2011, 3, 30, 2, 1, 2);
     assertEquals(0, varDate.getUtcMillis());
     assertEquals(0, varDate.getUtcMillis());
   }
@@ -326,19 +359,19 @@ public class TestDateTime {
   public final void testGetUtcMinute() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals(13, varDate.getUtcMinute());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals(1, varDate.getUtcMinute());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45);
     assertEquals(1, varDate.getUtcMinute());
 
     varDate = new DateTime(2011, 2, 22, 0, 0, 0, 0);
     assertEquals(0, varDate.getUtcMinute());
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals(1, varDate.getUtcMinute());
     assertEquals(1, varDate.getUtcMinute());
 
-    varDate = new DateTime(2011, 03, 30, 2, 1, 2);
+    varDate = new DateTime(2011, 3, 30, 2, 1, 2);
     assertEquals(1, varDate.getUtcMinute());
     assertEquals(1, varDate.getUtcMinute());
   }
@@ -347,23 +380,23 @@ public class TestDateTime {
   public final void testGetUtcMonth() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals(2, varDate.getUtcMonth());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals(3, varDate.getUtcMonth());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45);
     assertEquals(3, varDate.getUtcMonth());
 
     varDate = new DateTime(2011, 2, 22, 0, 0, 0, 0);
     assertEquals(2, varDate.getUtcMonth());
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals(3, varDate.getUtcMonth());
     assertEquals(3, varDate.getUtcMonth());
 
-    varDate = new DateTime(2011, 03, 30, 2, 1, 2);
+    varDate = new DateTime(2011, 3, 30, 2, 1, 2);
     assertEquals(3, varDate.getUtcMonth());
     assertEquals(3, varDate.getUtcMonth());
 
-    varDate = new DateTime(2011, 01, 30, 2, 1, 2);
+    varDate = new DateTime(2011, 1, 30, 2, 1, 2);
     assertEquals(1, varDate.getUtcMonth());
     assertEquals(1, varDate.getUtcMonth());
 
@@ -376,21 +409,21 @@ public class TestDateTime {
   public final void testGetUtcSecond() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals(8, varDate.getUtcSecond());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals(45, varDate.getUtcSecond());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45);
     assertEquals(45, varDate.getUtcSecond());
 
     varDate = new DateTime(2011, 2, 22, 0, 0, 0, 0);
     assertEquals(0, varDate.getUtcSecond());
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals(45, varDate.getUtcSecond());
 
-    varDate = new DateTime(2011, 03, 30, 2, 1, 2);
+    varDate = new DateTime(2011, 3, 30, 2, 1, 2);
     assertEquals(2, varDate.getUtcSecond());
 
-    varDate = new DateTime(2011, 01, 30, 2, 1, 2);
+    varDate = new DateTime(2011, 1, 30, 2, 1, 2);
     assertEquals(2, varDate.getUtcSecond());
 
     varDate = new DateTime(2011, 12, 30, 2, 1, 2);
@@ -401,7 +434,7 @@ public class TestDateTime {
   public final void testGetUtcYear() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals(2011, varDate.getUtcYear());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals(2011, varDate.getUtcYear());
     varDate = new DateTime(2011, 1, 1, 1, 1, 45);
     assertEquals(2010, varDate.getUtcYear());
@@ -426,7 +459,7 @@ public class TestDateTime {
   public final void testParse() {
     String s1 = "2011-02-22";
     DateTime d1 = TimeUtils.parseDateTime(s1);
-    varDate = new DateTime(2011, 02, 22);
+    varDate = new DateTime(2011, 2, 22);
 
     assertEquals(d1.getTime(), varDate.getTime());
 
@@ -484,16 +517,16 @@ public class TestDateTime {
   public final void testToDateString() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals("2011-02-22", varDate.toDateString());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals("2011-03-06", varDate.toDateString());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45);
     assertEquals("2011-03-19", varDate.toDateString());
 
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals("2011-03-27", varDate.toDateString());
 
-    varDate = new DateTime(2011, 01, 01, 0, 1, 2);
+    varDate = new DateTime(2011, 1, 1, 0, 1, 2);
     assertEquals("2011-01-01", varDate.toDateString());
   }
 
@@ -501,16 +534,16 @@ public class TestDateTime {
   public final void testToString() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals("2011-02-22 08:13:08.446", varDate.toString());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45, 1);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45, 1);
     assertEquals("2011-03-06 05:01:45.001", varDate.toString());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45, 10);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45, 10);
     assertEquals("2011-03-19 05:01:45.010", varDate.toString());
 
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals("2011-03-27 04:01:45", varDate.toString());
 
-    varDate = new DateTime(2011, 01, 01, 0, 1, 2);
+    varDate = new DateTime(2011, 1, 1, 0, 1, 2);
     assertEquals("2011-01-01 00:01:02", varDate.toString());
   }
 
@@ -518,16 +551,16 @@ public class TestDateTime {
   public final void testToTimeString() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals("08:13:08.446", varDate.toTimeString());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45, 1);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45, 1);
     assertEquals("05:01:45.001", varDate.toTimeString());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45, 10);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45, 10);
     assertEquals("05:01:45.010", varDate.toTimeString());
 
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals("04:01:45", varDate.toTimeString());
 
-    varDate = new DateTime(2011, 01, 01, 0, 1, 2);
+    varDate = new DateTime(2011, 1, 1, 0, 1, 2);
     assertEquals("00:01:02", varDate.toTimeString());
   }
 
@@ -535,16 +568,16 @@ public class TestDateTime {
   public final void testToUtcDateString() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals("2011-02-22", varDate.toUtcDateString());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
     assertEquals("2011-03-06", varDate.toUtcDateString());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45);
     assertEquals("2011-03-19", varDate.toUtcDateString());
 
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals("2011-03-27", varDate.toUtcDateString());
 
-    varDate = new DateTime(2011, 01, 01, 0, 1, 2);
+    varDate = new DateTime(2011, 1, 1, 0, 1, 2);
     assertEquals("2010-12-31", varDate.toUtcDateString());
   }
 
@@ -552,16 +585,16 @@ public class TestDateTime {
   public final void testToUtcString() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals("2011-02-22 06:13:08.446", varDate.toUtcString());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45, 1);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45, 1);
     assertEquals("2011-03-06 03:01:45.001", varDate.toUtcString());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45, 10);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45, 10);
     assertEquals("2011-03-19 03:01:45.010", varDate.toUtcString());
 
-    varDate = new DateTime(2011, 01, 01, 0, 1, 2);
+    varDate = new DateTime(2011, 1, 1, 0, 1, 2);
     assertEquals("2010-12-31 22:01:02", varDate.toUtcString());
 
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals("2011-03-27 01:01:45", varDate.toUtcString());
   }
 
@@ -569,16 +602,16 @@ public class TestDateTime {
   public final void testToUtcTimeString() {
     varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
     assertEquals("06:13:08.446", varDate.toUtcTimeString());
-    varDate = new DateTime(2011, 03, 6, 5, 1, 45, 1);
+    varDate = new DateTime(2011, 3, 6, 5, 1, 45, 1);
     assertEquals("03:01:45.001", varDate.toUtcTimeString());
 
-    varDate = new DateTime(2011, 03, 19, 5, 1, 45, 10);
+    varDate = new DateTime(2011, 3, 19, 5, 1, 45, 10);
     assertEquals("03:01:45.010", varDate.toUtcTimeString());
 
-    varDate = new DateTime(2011, 01, 01, 0, 1, 2);
+    varDate = new DateTime(2011, 1, 1, 0, 1, 2);
     assertEquals("22:01:02", varDate.toUtcTimeString());
 
-    varDate = new DateTime(2011, 03, 27, 4, 1, 45);
+    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
     assertEquals("01:01:45", varDate.toUtcTimeString());
   }
 }

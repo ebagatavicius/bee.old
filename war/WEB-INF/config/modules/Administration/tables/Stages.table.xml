@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="Stages"
+       idName="StageID"
+>
+  <Fields>
+    <String name="ViewName" precision="30" notNull="true" label="=data" />
+    <String name="StageName" precision="30" notNull="true" label="=status" />
+    <Numeric name="Ordinal" precision="2" scale="0" label="=ordinal" />
+    <String name="StageConfirm" precision="50" label="=stageConfirmation" />
+  </Fields>
+  <Constraints>
+    <Unique fields="ViewName StageName" />
+  </Constraints>
+</Table>

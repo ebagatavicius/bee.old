@@ -59,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Consumer;
 
 public final class TradeActKeeper {
 
@@ -196,18 +195,11 @@ public final class TradeActKeeper {
   static void ensureParameters(final ScheduledCommand command) {
     if (parametersLoaded) {
       command.execute();
-
     } else {
-      Global.getParameter(PRM_RETURNED_ACT_STATUS, new Consumer<String>() {
-        @Override
-        public void accept(String input) {
-          parametersLoaded = true;
-          returnedActStatus = DataUtils.isId(input) ? BeeUtils.toLongOrNull(input) : null;
-          logger.debug("trade act parameters loaded");
-
-          command.execute();
-        }
-      });
+      parametersLoaded = true;
+      returnedActStatus = Global.getParameterRelation(PRM_RETURNED_ACT_STATUS);
+      logger.debug("trade act parameters loaded");
+      command.execute();
     }
   }
 

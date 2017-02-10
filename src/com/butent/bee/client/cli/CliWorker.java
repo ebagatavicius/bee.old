@@ -67,10 +67,11 @@ import com.butent.bee.client.event.Previewer;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Collator;
-import com.butent.bee.client.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.i18n.LocaleUtils;
 import com.butent.bee.client.i18n.Money;
+import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.client.images.Flags;
 import com.butent.bee.client.images.Images;
 import com.butent.bee.client.js.Markdown;
@@ -161,6 +162,7 @@ import com.butent.bee.shared.html.Keywords;
 import com.butent.bee.shared.html.Tags;
 import com.butent.bee.shared.html.builder.elements.Input;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogLevel;
@@ -1506,6 +1508,7 @@ public final class CliWorker {
           case PARAMETERS:
           case REPORT:
           case SERVICE_CALENDAR:
+          case SERVICE_MAINTENANCE_LIST:
           case SHIPPING_SCHEDULE:
           case TASK_LIST:
           case TASK_REPORTS:
@@ -2606,7 +2609,7 @@ public final class CliWorker {
 
     char sep = ';';
     if (BeeUtils.contains(args, sep)) {
-      dtf = Format.getDateTimeFormat(BeeUtils.getPrefix(args, sep));
+      dtf = Format.parseDateTimeFormat(BeeUtils.getPrefix(args, sep));
       inp = BeeUtils.getSuffix(args, sep);
     } else if (BeeUtils.contains(cmnd, 'f') && !BeeUtils.isEmpty(args)) {
       dtf = Format.getDefaultDateTimeFormat();
@@ -2691,7 +2694,7 @@ public final class CliWorker {
         "Utc Date String", t.toUtcDateString(),
         "Utc Time String", t.toUtcTimeString(),
         "Utc String", t.toUtcString(),
-        "JustDate", TimeUtils.toDate(t).toString(),
+        "JustDate", Format.renderDate(TimeUtils.toDate(t)),
         "Java Date", TimeUtils.toJava(t).toString());
 
     showPropData(BeeUtils.joinWords(cmnd, args), lst);
@@ -2699,21 +2702,38 @@ public final class CliWorker {
 
   private static void showDateFormat(String args) {
     if (BeeUtils.isEmpty(args)) {
-      int r = DateTimeFormat.PredefinedFormat.values().length;
-      String[][] data = new String[r][3];
+      int r = PredefinedFormat.values().length;
+      int c = SupportedLocale.values().length * 2 + 1;
+
+      String[][] data = new String[r][c];
 
       DateTime d = new DateTime();
       int i = 0;
-      for (DateTimeFormat.PredefinedFormat dtf : DateTimeFormat.PredefinedFormat.values()) {
-        data[i][0] = dtf.toString();
+      int j;
 
-        DateTimeFormat format = DateTimeFormat.getFormat(dtf);
-        data[i][1] = format.getPattern();
-        data[i][2] = format.format(d);
+      for (PredefinedFormat pf : PredefinedFormat.values()) {
+        j = 0;
+        data[i][j++] = pf.name();
+
+        for (SupportedLocale locale : SupportedLocale.values()) {
+          DateTimeFormat dtf = DateTimeFormat.of(pf, locale.getDateTimeFormatInfo());
+          data[i][j++] = dtf.getPattern();
+          data[i][j++] = dtf.format(d);
+        }
+
         i++;
       }
 
-      showMatrix("DateTime", data, "Format", "Pattern", "Value");
+      String[] labels = new String[c];
+      j = 0;
+      labels[j++] = "Format";
+
+      for (SupportedLocale locale : SupportedLocale.values()) {
+        labels[j++] = "Pattern " + locale.getLanguage();
+        labels[j++] = "Value " + locale.getLanguage();
+      }
+
+      showMatrix("DateTimeFormats", data, labels);
 
     } else {
       DateTimeFormat dtf;
@@ -2721,10 +2741,10 @@ public final class CliWorker {
 
       char sep = ';';
       if (BeeUtils.contains(args, sep)) {
-        dtf = Format.getDateTimeFormat(BeeUtils.getPrefix(args, sep));
+        dtf = Format.parseDateTimeFormat(BeeUtils.getPrefix(args, sep));
         t = TimeUtils.parseDateTime(BeeUtils.getSuffix(args, sep));
       } else {
-        dtf = Format.getDateTimeFormat(args);
+        dtf = Format.parseDateTimeFormat(args);
         t = new DateTime();
       }
 

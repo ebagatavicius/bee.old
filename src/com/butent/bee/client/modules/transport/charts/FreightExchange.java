@@ -247,6 +247,16 @@ final class FreightExchange extends ChartBase {
   }
 
   @Override
+  protected String getRefreshLocalChangesColumnName() {
+    return COL_FX_REFRESH_LOCAL_CHANGES;
+  }
+
+  @Override
+  protected String getRefreshRemoteChangesColumnName() {
+    return COL_FX_REFRESH_REMOTE_CHANGES;
+  }
+
+  @Override
   protected String getRowHeightColumnName() {
     return COL_FX_PIXELS_PER_ROW;
   }

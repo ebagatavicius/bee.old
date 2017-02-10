@@ -4,6 +4,7 @@
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="AnalysisRows" viewName="AnalysisRows"
+        autoFlex="true"
 >
   <xi:include href="columns/Selected.columns.xml" />
   <xi:include href="columns/Ordinal.columns.xml" />
@@ -34,7 +35,6 @@
 
     <DataColumn name="RowScript" flexGrow="1" />
 
-    <DataColumn name="RowIsPercent" />
     <DataColumn name="RowScale" minValue="0" maxValue="5" />
 
     <DataColumn name="RowSplit01" />
@@ -47,8 +47,6 @@
     <DataColumn name="RowSplit08" />
     <DataColumn name="RowSplit09" />
     <DataColumn name="RowSplit10" />
-
-    <DataColumn name="RowTotal" />
 
     <DataColumn name="Note" flexGrow="1" visible="false" />
 
@@ -70,6 +68,6 @@
   </g:rowStyle>
 
   <g:rowMessage>
-    <ui:expression>row.RowName</ui:expression>
+    <ui:expression>[row.RowName, row.RowAbbreviation].join(' ')</ui:expression>
   </g:rowMessage>
 </g:Grid>

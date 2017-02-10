@@ -29,7 +29,6 @@ import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
-
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -104,12 +103,13 @@ public class MaintenanceEventsHandler extends EventsBoard {
       DateTime publishTime = row.getDateTime(idxColTerm);
       if (publishTime != null) {
         rowCellTerm.add(createCellHtmlItem(COL_TERM, BeeUtils.joinWords(LC.svcTerm(),
-            Format.getDefaultDateFormat().format(publishTime))));
+            Format.renderDate(publishTime))));
       }
     }
 
     Flow rowCellEdit = createEventRowCell(infoPanel, "Edit", null, false);
     FaLabel editLabel = new FaLabel(FontAwesome.EDIT, STYLE_LABEL);
+    editLabel.setTitle(LC.rightStateEdit());
     rowCellEdit.add(editLabel);
     editLabel.addClickHandler(
         event -> RowEditor.openForm(FORM_MAINTENANCE_COMMENT,
@@ -118,6 +118,7 @@ public class MaintenanceEventsHandler extends EventsBoard {
 
     Flow rowCellDelete = createEventRowCell(infoPanel, "Delete", null, false);
     FaLabel clearLabel = new FaLabel(FontAwesome.TRASH, STYLE_LABEL);
+    clearLabel.setTitle(LC.rightStateDelete());
     rowCellDelete.add(clearLabel);
     clearLabel.addClickHandler(event -> Queries.deleteRow(getEventsDataViewName(), row.getId(),
         new Queries.IntCallback() {

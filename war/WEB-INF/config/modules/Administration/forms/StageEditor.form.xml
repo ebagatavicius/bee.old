@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:Form xmlns="http://www.butent.com/widget"
+        xmlns:f="http://www.butent.com/form"
+
+        name="StageEditor" width="800" height="600" disabledActions="save print"
+>
+  <FlowPanel class="flexBox-horizontal">
+    <GridPanel name="Stages" style="width:30%;" disablable="false" />
+    <FlowPanel class="flexible">
+      <br />
+      <HorizontalPanel>
+        <Label text="=stageConfirmation" style="white-space:nowrap;" />
+        <cell style="width:100%">
+          <InputText name="StageConfirm" style="width:100%" />
+        </cell>
+      </HorizontalPanel>
+      <br />
+      <FlowPanel>
+        <Label text="=stageCondition" style="font-weight:bold;" />
+        <FlowPanel name="StageConditions" />
+      </FlowPanel>
+
+      <VerticalPanel name="StageActions">
+        <br />
+        <Label text="=stageAction" style="font-weight:bold;" />
+      </VerticalPanel>
+
+      <VerticalPanel name="StageTriggers">
+        <br />
+        <Label text="=stageTrigger" style="font-weight:bold;" />
+      </VerticalPanel>
+    </FlowPanel>
+  </FlowPanel>
+</f:Form>

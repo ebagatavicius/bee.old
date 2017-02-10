@@ -16,5 +16,7 @@ public enum NormalBalance implements HasLocalizedCaption {
     public String getCaption(Dictionary dictionary) {
       return dictionary.credit();
     }
-  }
+  };
+
+  public static final NormalBalance DEFAULT = DEBIT;
 }

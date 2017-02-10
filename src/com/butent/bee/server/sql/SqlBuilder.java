@@ -573,7 +573,7 @@ public abstract class SqlBuilder {
         for (int i = 1; i < params.size(); i++) {
           xpr.append(" || ").append(params.get("member" + i));
         }
-        return xpr.toString();
+        return BeeUtils.parenthesize(xpr.toString());
 
       case LENGTH:
         return "LENGTH(" + params.get("expression") + ")";

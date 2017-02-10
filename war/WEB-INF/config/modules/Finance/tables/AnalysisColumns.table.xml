@@ -31,7 +31,6 @@
 
     <Text name="ColumnScript" label="=finAnalysisScript" />
 
-    <Boolean name="ColumnIsPercent" label="=percent" />
     <Integer name="ColumnScale" label="=finAnalysisScale" />
 
     <String name="ColumnSplit01" precision="20" />
@@ -44,8 +43,6 @@
     <String name="ColumnSplit08" precision="20" />
     <String name="ColumnSplit09" precision="20" />
     <String name="ColumnSplit10" precision="20" />
-
-    <Boolean name="ColumnTotal" label="=finAnalysisShowTotal" />
 
     <String name="Note" precision="100" label="=note" />
 

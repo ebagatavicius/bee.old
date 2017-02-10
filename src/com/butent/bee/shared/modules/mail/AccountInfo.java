@@ -4,6 +4,8 @@ import static com.butent.bee.shared.modules.mail.MailConstants.*;
 
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
+import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -32,7 +34,7 @@ public class AccountInfo {
     this.signatureId = row.getLong(COL_SIGNATURE);
 
     for (SystemFolder sysFolder : SystemFolder.values()) {
-      sysFolders.put(sysFolder, row.getLong(sysFolder.name() + COL_FOLDER));
+      setSystemFolder(sysFolder, row.getLong(sysFolder.name() + COL_FOLDER));
     }
   }
 
@@ -61,6 +63,30 @@ public class AccountInfo {
 
   public long getInboxId() {
     return getSystemFolder(SystemFolder.Inbox);
+  }
+
+  public String getFolderCaption(Long folderId) {
+    Dictionary loc = Localized.dictionary();
+    String cap = null;
+
+    if (Objects.isNull(folderId)) {
+      cap = getRootFolder().getName();
+    } else if (isDraftsFolder(folderId)) {
+      cap = loc.mailFolderDrafts();
+    } else if (isInboxFolder(folderId)) {
+      cap = loc.mailFolderInbox();
+    } else if (isSentFolder(folderId)) {
+      cap = loc.mailFolderSent();
+    } else if (isTrashFolder(folderId)) {
+      cap = loc.mailFolderTrash();
+    } else {
+      MailFolder folder = findFolder(folderId);
+
+      if (Objects.nonNull(folder)) {
+        cap = folder.getName();
+      }
+    }
+    return cap;
   }
 
   public MailFolder getRootFolder() {
@@ -109,5 +135,9 @@ public class AccountInfo {
 
   public void setRootFolder(MailFolder folder) {
     this.rootFolder = folder;
+  }
+
+  public void setSystemFolder(SystemFolder sysFolder, Long folderId) {
+    sysFolders.put(sysFolder, folderId);
   }
 }

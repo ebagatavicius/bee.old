@@ -36,7 +36,7 @@
                editEnabled="true" editForm="CargoPurchaseInvoice"
                editViewName="CargoPurchaseInvoices" />
 
-    <RelColumn name="Income" newRowEnabled="false" required="true" />
+    <RelColumn name="Income" newRowEnabled="false" visible="false" caching="none" />
   </g:columns>
 
   <g:rowEditable>

@@ -347,6 +347,25 @@
   margin-top: 5px;
 }
 
+.bee-tr-chart-state-loading .bee-timeboard-progress-container,
+.bee-tr-chart-state-updating .bee-timeboard-progress-container,
+.bee-tr-chart-state-pending .bee-timeboard-progress-container,
+.bee-tr-chart-state-changed .bee-timeboard-progress-container {
+  display: block;
+}
+.bee-tr-chart-state-loading .bee-timeboard-progress-bar {
+  animation: indeterminate 2s linear infinite;
+}
+.bee-tr-chart-state-updating .bee-timeboard-progress-bar {
+  background-color: hotpink;
+}
+.bee-tr-chart-state-pending .bee-timeboard-progress-bar {
+  background-color: gold;
+}
+.bee-tr-chart-state-changed .bee-timeboard-progress-bar {
+  background-color: goldenrod;
+}
+
 .bee-tr-SelfService-screen .bee-MainCommandPanel {
   left: 160px;
 }

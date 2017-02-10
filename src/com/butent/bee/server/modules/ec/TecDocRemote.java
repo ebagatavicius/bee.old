@@ -2,7 +2,6 @@ package com.butent.bee.server.modules.ec;
 
 import com.butent.bee.server.concurrency.ConcurrencyBean;
 import com.butent.bee.server.data.QueryServiceBean;
-import com.butent.bee.server.data.QueryServiceBean.ResultSetProcessor;
 import com.butent.bee.server.data.SystemBean;
 import com.butent.bee.server.sql.IsSql;
 import com.butent.bee.server.sql.SqlBuilder;
@@ -22,8 +21,6 @@ import com.butent.bee.shared.logging.LogLevel;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.Codec;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,12 +81,8 @@ public class TecDocRemote {
 
   public void importTcd(List<TcdData> builds) {
     if (!qs.dbSchemaExists(sys.getDbName(), TecDocBean.TCD_SCHEMA)) {
-      cb.synchronizedCall(new Runnable() {
-        @Override
-        public void run() {
-          qs.updateData(SqlUtils.createSchema(TecDocBean.TCD_SCHEMA));
-        }
-      });
+      cb.synchronizedCall(TecDocBean.TCD_SCHEMA,
+          () -> qs.updateData(SqlUtils.createSchema(TecDocBean.TCD_SCHEMA)));
     }
     for (TcdData entry : builds) {
       SqlCreate create = entry.base;
@@ -103,12 +96,7 @@ public class TecDocRemote {
       String target = SqlUtils.table(TecDocBean.TCD_SCHEMA, create.getTarget());
       create.setTarget(target);
 
-      cb.synchronizedCall(new Runnable() {
-        @Override
-        public void run() {
-          qs.updateData(create);
-        }
-      });
+      cb.synchronizedCall(target, () -> qs.updateData(create));
       List<SqlCreate.SqlField> fields = create.getFields();
 
       int total = 0;
@@ -133,14 +121,11 @@ public class TecDocRemote {
         for (StringBuilder sql : inserts) {
           Holder<Integer> cnt = Holder.of(0);
 
-          cb.synchronizedCall(new Runnable() {
-            @Override
-            public void run() {
-              Object value = qs.doSql(sql.toString());
+          cb.synchronizedCall(target, () -> {
+            Object value = qs.doSql(sql.toString());
 
-              if (value instanceof Integer) {
-                cnt.set((Integer) value);
-              }
+            if (value instanceof Integer) {
+              cnt.set((Integer) value);
             }
           });
           total += cnt.get();
@@ -155,12 +140,7 @@ public class TecDocRemote {
       } while (chunk > 0 && chunkTotal == chunk);
 
       for (String[] index : entry.baseIndexes) {
-        cb.synchronizedCall(new Runnable() {
-          @Override
-          public void run() {
-            qs.sqlIndex(target, index);
-          }
-        });
+        cb.synchronizedCall(target, () -> qs.sqlIndex(target, index));
       }
       cleanup(entry.preparations);
     }
@@ -327,60 +307,57 @@ public class TecDocRemote {
   }
 
   public List<StringBuilder> getRemoteData(SqlSelect query, final SqlInsert insert) {
-    return qs.getData(getDataSource(), query, new ResultSetProcessor<List<StringBuilder>>() {
-      @Override
-      public List<StringBuilder> processResultSet(ResultSet rs) throws SQLException {
-        SqlBuilder builder = SqlBuilderFactory.getBuilder();
-        StringBuilder sb = new StringBuilder();
-        int c = 0;
-        List<StringBuilder> inserts = new ArrayList<>();
+    return qs.getData(getDataSource(), query, rs -> {
+      SqlBuilder builder = SqlBuilderFactory.getBuilder();
+      StringBuilder sb = new StringBuilder();
+      int c = 0;
+      List<StringBuilder> inserts = new ArrayList<>();
 
-        while (rs.next()) {
-          if (c == 0) {
-            sb = new StringBuilder(insert.getSqlString(builder));
-          } else {
+      while (rs.next()) {
+        if (c == 0) {
+          sb = new StringBuilder(insert.getSqlString(builder));
+        } else {
+          sb.append(",");
+        }
+        sb.append("(");
+        int i = 0;
+
+        for (String field : insert.getFields()) {
+          if (i > 0) {
             sb.append(",");
           }
-          sb.append("(");
-          int i = 0;
+          Object value;
 
-          for (String field : insert.getFields()) {
-            if (i > 0) {
-              sb.append(",");
-            }
-            Object value;
-
-            if (rs.getMetaData().getColumnType(i + 1) == -4 /* LONGBLOB */) {
-              value = Codec.toBase64(rs.getBytes(field));
-            } else {
-              value = rs.getObject(field);
-            }
-            sb.append(SqlUtils.constant(value).getSqlString(builder));
-            i++;
+          if (rs.getMetaData().getColumnType(i + 1) == -4 /* LONGBLOB */) {
+            value = Codec.toBase64(rs.getBytes(field));
+          } else {
+            value = rs.getObject(field);
           }
-          sb.append(")");
-          c++;
-
-          if (c == MAX_INSERT_BLOCK) {
-            inserts.add(sb);
-            c = 0;
-          }
+          sb.append(SqlUtils.constant(value).getSqlString(builder));
+          i++;
         }
-        if (c > 0) {
+        sb.append(")");
+        c++;
+
+        if (c == MAX_INSERT_BLOCK) {
           inserts.add(sb);
+          c = 0;
         }
-        return inserts;
       }
+      if (c > 0) {
+        inserts.add(sb);
+      }
+      return inserts;
     });
   }
 
   private DataSource getCrossaiDs() {
     if (crossaiDs == null) {
       try {
-        crossaiDs = (DataSource) InitialContext.doLookup("jdbc/crossai");
+        crossaiDs = InitialContext.doLookup("jdbc/crossai");
       } catch (NamingException ex) {
         try {
-          crossaiDs = (DataSource) InitialContext.doLookup("java:jdbc/crossai");
+          crossaiDs = InitialContext.doLookup("java:jdbc/crossai");
         } catch (NamingException ex2) {
           logger.error(ex);
           crossaiDs = null;
@@ -393,10 +370,10 @@ public class TecDocRemote {
   private DataSource getDataSource() {
     if (dataSource == null) {
       try {
-        dataSource = (DataSource) InitialContext.doLookup("jdbc/tcd");
+        dataSource = InitialContext.doLookup("jdbc/tcd");
       } catch (NamingException ex) {
         try {
-          dataSource = (DataSource) InitialContext.doLookup("java:jdbc/tcd");
+          dataSource = InitialContext.doLookup("java:jdbc/tcd");
         } catch (NamingException ex2) {
           logger.error(ex);
           dataSource = null;

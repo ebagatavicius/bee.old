@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="CarServiceOrders"
+       idName="ServiceOrderID"
+>
+  <Fields>
+    <Relation name="Stage" relation="Stages" label="=status" />
+    <DateTime name="Date" notNull="true" defExpr="CURRENT_TIME" label="=date" />
+
+    <String name="OrderNo" precision="30" unique="true" notNull="true" label="=orderNumber"
+            defExpr="NEXT_NUMBER" defValue="SVC/" />
+
+    <Relation name="Customer" relation="Companies" notNull="true" label="=customer" />
+    <Relation name="CustomerPerson" relation="CompanyPersons" label="=personContact" />
+
+    <Relation name="Manager" relation="Users" notNull="true" defExpr="CURRENT_USER"
+              label="=manager" />
+
+    <Relation name="Car" relation="Vehicles" notNull="true" label="=car" />
+
+    <Relation name="Currency" relation="Currencies" notNull="true" defExpr="MAIN_CURRENCY"
+              label="=currency" />
+
+    <Enum name="DocumentVatMode" key="TradeVatMode" label="=vatMode" />
+
+    <Text name="Notes" label="=notes" />
+  </Fields>
+</Table>

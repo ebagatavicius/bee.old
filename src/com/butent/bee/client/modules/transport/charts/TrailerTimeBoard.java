@@ -111,6 +111,16 @@ final class TrailerTimeBoard extends VehicleTimeBoard {
   }
 
   @Override
+  protected String getRefreshLocalChangesColumnName() {
+    return COL_TRAILER_REFRESH_LOCAL_CHANGES;
+  }
+
+  @Override
+  protected String getRefreshRemoteChangesColumnName() {
+    return COL_TRAILER_REFRESH_REMOTE_CHANGES;
+  }
+
+  @Override
   protected String getRowHeightColumnName() {
     return COL_TRAILER_PIXELS_PER_ROW;
   }

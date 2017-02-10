@@ -201,6 +201,14 @@ public final class ClassifierConstants {
   public static final String COL_ITEM_VAT = "Vat";
   public static final String COL_ITEM_VAT_PERCENT = "VatPercent";
   public static final String COL_ITEM_DEFAULT_QUANTITY = "DefaultQuantity";
+  public static final String COL_ITEM_BRUTTO = "Brutto";
+  public static final String COL_ITEM_NETTO = "Netto";
+  public static final String COL_ITEM_VOLUME = "Volume";
+  public static final String COL_ITEM_FACTOR = "Factor";
+  public static final String COL_ITEM_COUNTRY_OF_ORIGIN = "CountryOfOrigin";
+  public static final String COL_ITEM_ADDITIONAL_UNIT = "AdditionalUnit";
+  public static final String COL_ITEM_KPN_CODE = "KPNCode";
+
 
   public static final String COL_UNIT = "Unit";
   public static final String COL_UNIT_NAME = "Name";

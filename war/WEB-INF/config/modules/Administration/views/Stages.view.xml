@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="Stages" source="Stages"
+      caption="=statuses"
+>
+  <Columns>
+    <SimpleColumn name="ViewName" />
+    <SimpleColumn name="StageName" />
+    <SimpleColumn name="Ordinal" />
+    <SimpleColumn name="StageConfirm" />
+  </Columns>
+  <Order>
+    <OrderBy column="Ordinal" />
+  </Order>
+</View>

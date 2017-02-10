@@ -238,6 +238,7 @@
       <xs:enumeration value="AnalysisColumns" />
       <xs:enumeration value="AnalysisFilters" />
       <xs:enumeration value="AnalysisHeaders" />
+      <xs:enumeration value="AnalysisResults" />
       <xs:enumeration value="AnalysisRows" />
       <xs:enumeration value="AppointmentAttendees" />
       <xs:enumeration value="AppointmentOwners" />
@@ -265,6 +266,14 @@
       <xs:enumeration value="CalendarExecutors" />
       <xs:enumeration value="Calendars" />
       <xs:enumeration value="CalExecutorGroups" />
+      <xs:enumeration value="CarBundleItems" />
+      <xs:enumeration value="CarBundleJobs" />
+      <xs:enumeration value="CarBundles" />
+      <xs:enumeration value="CarEmissionStandards" />
+      <xs:enumeration value="CarGearboxes" />
+      <xs:enumeration value="CarPlaceCodes" />
+      <xs:enumeration value="CarStatus" />
+      <xs:enumeration value="CarWarranties" />
       <xs:enumeration value="CargoCreditSales" />
       <xs:enumeration value="CargoExpenses" />
       <xs:enumeration value="CargoFiles" />
@@ -278,9 +287,17 @@
       <xs:enumeration value="CargoTrips" />
       <xs:enumeration value="CargoTypes" />
       <xs:enumeration value="CargoUnloading" />
+      <xs:enumeration value="CarJobModels" />
+      <xs:enumeration value="CarJobProgress" />
+      <xs:enumeration value="CarJobs" />
       <xs:enumeration value="CarOrderItems" />
       <xs:enumeration value="CarOrders" />
+      <xs:enumeration value="CarRecalls" />
       <xs:enumeration value="Cars" />
+      <xs:enumeration value="CarServiceEvents" />
+      <xs:enumeration value="CarServiceItems" />
+      <xs:enumeration value="CarServiceJobs" />
+      <xs:enumeration value="CarServiceOrders" />
       <xs:enumeration value="CategoryTree" />
       <xs:enumeration value="ChartOfAccounts" />
       <xs:enumeration value="ChatFiles" />
@@ -307,6 +324,7 @@
       <xs:enumeration value="CompRelTypeStore" />
       <xs:enumeration value="ConfGroups" />
       <xs:enumeration value="ConfOptions" />
+      <xs:enumeration value="ConfPacketOptions" />
       <xs:enumeration value="ConfPricelist" />
       <xs:enumeration value="Configuration" />
       <xs:enumeration value="ConfTemplates" />
@@ -382,6 +400,7 @@
       <xs:enumeration value="Emails" />
       <xs:enumeration value="EmployeeObjects" />
       <xs:enumeration value="Employees" />
+      <xs:enumeration value="Equipment" />
       <xs:enumeration value="EventDurations" />
       <xs:enumeration value="EventHistory" />
       <xs:enumeration value="ExpeditionTypes" />

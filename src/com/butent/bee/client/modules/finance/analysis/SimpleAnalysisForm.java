@@ -30,11 +30,10 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.finance.Dimensions;
 import com.butent.bee.shared.modules.finance.FinanceUtils;
 import com.butent.bee.shared.modules.finance.analysis.AnalysisResults;
-import com.butent.bee.shared.modules.finance.analysis.AnalysisValue;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.UiConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -151,10 +150,15 @@ public class SimpleAnalysisForm extends AbstractFormInterceptor {
     }
   }
 
-  private void showResults(AnalysisResults results) {
-    for (AnalysisValue av : results.getValues()) {
-      LogUtils.getRootLogger().debug(av.getColumnId(), av.getRowId(), av.getValue());
+  private static void showResults(AnalysisResults results) {
+    Set<Action> enabledActions = new HashSet<>();
+    if (BeeKeeper.getUser().canCreateData(VIEW_ANALYSIS_RESULTS)) {
+      enabledActions.add(Action.SAVE);
     }
+    enabledActions.add(Action.PRINT);
+
+    AnalysisViewer viewer = new AnalysisViewer(results, enabledActions);
+    BeeKeeper.getScreen().showInNewPlace(viewer);
   }
 
   private String summarizeInfo() {

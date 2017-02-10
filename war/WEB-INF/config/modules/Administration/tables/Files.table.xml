@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="Files"
-  idName="FileID"
-  >
+       name="Files"
+       idName="FileID"
+       audit="false"
+>
   <Fields>
     <String name="Hash" precision="40" notNull="true" unique="true" />
     <Text name="Repository" />

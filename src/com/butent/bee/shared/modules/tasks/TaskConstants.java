@@ -410,7 +410,9 @@ public final class TaskConstants {
     CREATE_NOT_SCHEDULED(Localized.dictionary().crmTaskEventCreated(),
         Localized.dictionary().crmTasksNotScheduledTasks(),
         null,
-        TaskWorkflowAction.hidden());
+        TaskWorkflowAction.hidden()),
+    CREATE_SCHEDULED(Localized.dictionary().crmTaskForwardedForExecution(),
+        Localized.dictionary().crmTaskStatusScheduled(), null, TaskWorkflowAction.hidden());
 
     private final String caption;
     private final String commandLabel;
@@ -761,6 +763,7 @@ public final class TaskConstants {
       + "task_duration_hide_zeros";
 
   public static final String VAR_TASK_RELATIONS = Service.RPC_VAR_PREFIX + "task_relations";
+  public static final String VAR_COPY_RELATIONS = Service.RPC_VAR_PREFIX + "copy_task_relations";
   public static final String VAR_TASK_USERS = Service.RPC_VAR_PREFIX + "task_users";
   public static final String VAR_TASK_PROPERTIES = Service.RPC_VAR_PREFIX + "task_properties";
   public static final String VAR_TASK_PROJECT = Service.RPC_VAR_PREFIX + "task_project";
@@ -982,18 +985,6 @@ public final class TaskConstants {
   public static final String PROP_OBSERVERS = "Observers";
   public static final String PROP_OBSERVER_GROUPS = "ObserverGroups";
 
-  public static final String PROP_COMPANIES = "Companies";
-  public static final String PROP_PERSONS = "Persons";
-  public static final String PROP_DOCUMENTS = "Documents";
-  public static final String PROP_APPOINTMENTS = "Appointments";
-  public static final String PROP_DISCUSSIONS = "Discussions";
-  public static final String PROP_SERVICE_OBJECTS = "ServiceObjects";
-  public static final String PROP_SERVICE_MAINTENANCE = "ServiceMaintenance";
-  public static final String PROP_PROJECTS = "Projects";
-  public static final String PROP_PROJECT_STAGES = "ProjectStages";
-  public static final String PROP_TASKS = "Tasks";
-  public static final String PROP_REQUESTS = "Requests";
-
   public static final String PROP_FILES = "Files";
   public static final String PROP_EVENTS = "Events";
   public static final String PROP_DESCENDING = "Descending";
@@ -1060,6 +1051,8 @@ public final class TaskConstants {
   public static final String TASK_STATUS_STYLE_VISITED = TASK_STATUS_STYLE + "_visited";
   public static final String TASK_STATUS_STYLE_NOT_SCHEDULED = TASK_STATUS_STYLE + "_not_scheduled";
   public static final String TASK_STATUS_STYLE_WITH_BORDER = "_with_border";
+  public static final String DEFAULT_TASK_PROPERTIES  =
+        BeeUtils.join(BeeConst.STRING_COMMA, PROP_OBSERVERS, PROP_FILES, PROP_EVENTS);
 
   private TaskConstants() {
   }

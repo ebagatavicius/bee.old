@@ -2,6 +2,7 @@ package com.butent.bee.client.modules.tasks;
 
 import com.google.common.collect.Lists;
 
+import static com.butent.bee.client.modules.mail.Relations.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -9,7 +10,6 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
@@ -32,7 +32,6 @@ import com.butent.bee.shared.data.event.RowInsertEvent;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.modules.tasks.TaskUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -78,28 +77,25 @@ class RelatedRecurringTasksGrid extends AbstractGridInterceptor {
           });
 
     } else {
-      presenter.getGridView().ensureRelId(new IdCallback() {
-        @Override
-        public void onSuccess(Long relId) {
-          DataInfo dataInfo = Data.getDataInfo(VIEW_RECURRING_TASKS);
+      presenter.getGridView().ensureRelId(relId -> {
+        DataInfo dataInfo = Data.getDataInfo(VIEW_RECURRING_TASKS);
 
-          BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
-          RowActionEvent.fireCreateRow(VIEW_RECURRING_TASKS, row, presenter.getMainView().getId());
+        BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
+        RowActionEvent.fireCreateRow(VIEW_RECURRING_TASKS, row, presenter.getMainView().getId());
 
-          String relColumn = presenter.getGridView().getRelColumn();
-          String property = TaskUtils.translateRelationToTaskProperty(relColumn);
+        String relViewName = presenter.getGridView().getViewName();
 
-          if (!BeeUtils.isEmpty(property) && BeeUtils.isEmpty(row.getProperty(property))) {
-            row.setProperty(property, relId.toString());
-          }
-
-          RowFactory.createRow(dataInfo, row, Modality.ENABLED, new RowCallback() {
-            @Override
-            public void onSuccess(BeeRow result) {
-              presenter.handleAction(Action.REFRESH);
-            }
-          });
+        if (!BeeUtils.isEmpty(relViewName) && BeeUtils.isEmpty(row.getProperty(PFX_RELATED
+          + relViewName))) {
+          row.setProperty(PFX_RELATED + relViewName, DataUtils.buildIdList(relId));
         }
+
+        RowFactory.createRow(dataInfo, row, Modality.ENABLED, new RowCallback() {
+          @Override
+          public void onSuccess(BeeRow result) {
+            presenter.handleAction(Action.REFRESH);
+          }
+        });
       });
     }
 

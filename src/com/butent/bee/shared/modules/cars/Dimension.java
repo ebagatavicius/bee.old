@@ -1,6 +1,7 @@
 package com.butent.bee.shared.modules.cars;
 
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -23,7 +24,8 @@ public class Dimension implements BeeSerializable, Comparable<Dimension> {
 
   @Override
   public int compareTo(Dimension o) {
-    return o == null ? 1 : name.compareTo(o.name);
+    int order = BeeUtils.compareNullsFirst(name, Objects.nonNull(o) ? o.name : null);
+    return order == BeeConst.COMPARE_EQUAL ? BeeUtils.compareNullsFirst(id, o.id) : order;
   }
 
   @Override

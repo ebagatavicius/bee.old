@@ -52,6 +52,43 @@
     </SimplePanel>
 
     <TabbedPages name="pages" class="flexible">
+      <page key="rows">
+        <text>=rows</text>
+        <FlowPanel class="flexBox-vertical">
+          <FlowPanel style="margin: 10px;">
+            <CheckBox name="RowDim01" source="RowDim01" style="&stcdim;" />
+            <CheckBox name="RowDim02" source="RowDim02" style="&stcdim;" />
+            <CheckBox name="RowDim03" source="RowDim03" style="&stcdim;" />
+            <CheckBox name="RowDim04" source="RowDim04" style="&stcdim;" />
+            <CheckBox name="RowDim05" source="RowDim05" style="&stcdim;" />
+            <CheckBox name="RowDim06" source="RowDim06" style="&stcdim;" />
+            <CheckBox name="RowDim07" source="RowDim07" style="&stcdim;" />
+            <CheckBox name="RowDim08" source="RowDim08" style="&stcdim;" />
+            <CheckBox name="RowDim09" source="RowDim09" style="&stcdim;" />
+            <CheckBox name="RowDim10" source="RowDim10" style="&stcdim;" />
+
+            <CheckBox source="RowEmployee" text="=employee" style="margin-left: 2rem;" />
+
+            <InlineLabel text="=finAnalysisSplitLevels" style="margin-left: 2rem;" />
+            <InputSpinner source="RowSplitLevels" minValue="0" maxValue="10" style="&stlvl;" />
+
+            <CheckBox source="RowFilters" text="=filters" style="margin-left: 2rem;" />
+          </FlowPanel>
+
+          <ChildGrid name="AnalysisRows" relColumn="AnalysisHeader" class="flexible" />
+
+          <ChildGrid name="AnalysisRowFilters" parent="AnalysisRows" relColumn="AnalysisRow">
+            <dynStyle>
+              <ui:inline>height: 120px;</ui:inline>
+              <ui:expression>row.RowFilters</ui:expression>
+            </dynStyle>
+            <dynStyle>
+              <ui:inline>display: none;</ui:inline>
+            </dynStyle>
+          </ChildGrid>
+        </FlowPanel>
+      </page>
+
       <page key="columns">
         <text>=columns</text>
         <FlowPanel class="flexBox-vertical">
@@ -82,43 +119,6 @@
             <dynStyle>
               <ui:inline>height: 120px;</ui:inline>
               <ui:expression>row.ColumnFilters</ui:expression>
-            </dynStyle>
-            <dynStyle>
-              <ui:inline>display: none;</ui:inline>
-            </dynStyle>
-          </ChildGrid>
-        </FlowPanel>
-      </page>
-
-      <page key="rows">
-        <text>=rows</text>
-        <FlowPanel class="flexBox-vertical">
-          <FlowPanel style="margin: 10px;">
-            <CheckBox name="RowDim01" source="RowDim01" style="&stcdim;" />
-            <CheckBox name="RowDim02" source="RowDim02" style="&stcdim;" />
-            <CheckBox name="RowDim03" source="RowDim03" style="&stcdim;" />
-            <CheckBox name="RowDim04" source="RowDim04" style="&stcdim;" />
-            <CheckBox name="RowDim05" source="RowDim05" style="&stcdim;" />
-            <CheckBox name="RowDim06" source="RowDim06" style="&stcdim;" />
-            <CheckBox name="RowDim07" source="RowDim07" style="&stcdim;" />
-            <CheckBox name="RowDim08" source="RowDim08" style="&stcdim;" />
-            <CheckBox name="RowDim09" source="RowDim09" style="&stcdim;" />
-            <CheckBox name="RowDim10" source="RowDim10" style="&stcdim;" />
-
-            <CheckBox source="RowEmployee" text="=employee" style="margin-left: 2rem;" />
-
-            <InlineLabel text="=finAnalysisSplitLevels" style="margin-left: 2rem;" />
-            <InputSpinner source="RowSplitLevels" minValue="0" maxValue="10" style="&stlvl;" />
-
-            <CheckBox source="RowFilters" text="=filters" style="margin-left: 2rem;" />
-          </FlowPanel>
-
-          <ChildGrid name="AnalysisRows" relColumn="AnalysisHeader" class="flexible" />
-
-          <ChildGrid name="AnalysisRowFilters" parent="AnalysisRows" relColumn="AnalysisRow">
-            <dynStyle>
-              <ui:inline>height: 120px;</ui:inline>
-              <ui:expression>row.RowFilters</ui:expression>
             </dynStyle>
             <dynStyle>
               <ui:inline>display: none;</ui:inline>
@@ -180,6 +180,11 @@
         <SimplePanel>
           <InputArea source="Description" class="occupy-1" summarize="true" />
         </SimplePanel>
+      </page>
+
+      <page key="results">
+        <text>=results</text>
+        <ChildGrid name="AnalysisResults" relColumn="AnalysisHeader" />
       </page>
     </TabbedPages>
   </FlowPanel>

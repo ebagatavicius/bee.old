@@ -1,9 +1,12 @@
 package com.butent.bee.client.modules.cars;
 
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
+import static com.butent.bee.shared.modules.cars.CarsConstants.COL_OBJECT;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
@@ -22,17 +25,18 @@ import com.butent.bee.client.dialog.ModalGrid;
 import com.butent.bee.client.dialog.Modality;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.HtmlTable;
-import com.butent.bee.client.layout.Flow;
+import com.butent.bee.client.modules.administration.Stage;
+import com.butent.bee.client.modules.administration.StageUtils;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.modules.classifiers.VehiclesGrid;
 import com.butent.bee.client.modules.mail.NewMailMessage;
 import com.butent.bee.client.output.ReportUtils;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.view.HasStages;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
-import com.butent.bee.client.view.form.interceptor.StageFormInterceptor;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.FaLabel;
@@ -69,9 +73,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class CarOrderForm extends SpecificationForm implements StageFormInterceptor {
+public class CarOrderForm extends SpecificationForm implements HasStages {
 
-  private Flow stageContainer = new Flow();
+  private HasWidgets stageContainer;
   private List<Stage> orderStages;
 
   @Override
@@ -81,12 +85,16 @@ public class CarOrderForm extends SpecificationForm implements StageFormIntercep
     if (Objects.equals(name, COL_CAR) && widget instanceof HasClickHandlers) {
       ((HasClickHandlers) widget).addClickHandler(clickEvent -> buildCar());
     }
+    if (Objects.equals(name, TBL_STAGES) && widget instanceof HasWidgets) {
+      stageContainer = (HasWidgets) widget;
+    }
     super.afterCreateWidget(name, widget, callback);
   }
 
   @Override
   public void beforeRefresh(FormView form, IsRow row) {
     refreshStages();
+    super.beforeRefresh(form, row);
   }
 
   @Override
@@ -95,7 +103,7 @@ public class CarOrderForm extends SpecificationForm implements StageFormIntercep
   }
 
   @Override
-  public Flow getStageContainer() {
+  public HasWidgets getStageContainer() {
     return stageContainer;
   }
 
@@ -105,14 +113,8 @@ public class CarOrderForm extends SpecificationForm implements StageFormIntercep
   }
 
   @Override
-  public void onLoad(FormView form) {
-    getHeaderView().addCommandItem(stageContainer);
-    super.onLoad(form);
-  }
-
-  @Override
   public void refreshStages() {
-    StageFormInterceptor.super.refreshStages();
+    HasStages.super.refreshStages();
     Stage stage = StageUtils.findStage(getStages(), getLongValue(COL_STAGE));
     getFormView().setEnabled(Objects.isNull(stage) || !stage.hasAction(STAGE_ACTION_READONLY));
 
@@ -128,7 +130,7 @@ public class CarOrderForm extends SpecificationForm implements StageFormIntercep
 
   @Override
   public void updateStage(Stage stage) {
-    Runnable doDefault = () -> StageFormInterceptor.super.updateStage(stage);
+    Runnable doDefault = () -> HasStages.super.updateStage(stage);
 
     if (stage.hasAction(STAGE_ACTION_LOST)) {
       InputArea comment = new InputArea();

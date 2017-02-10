@@ -15,5 +15,4 @@
   <Item name="ConfTemplates" label="=templates" service="grid" parameters="ConfTemplates" />
 
   <Item name="Cars" label="=cars" service="grid" parameters="Cars" separator="true" />
-  <Item name="VehicleTypes" label="=trVehicleTypes" service="grid" parameters="VehicleTypes" />
 </Entry>

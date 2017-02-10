@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+    <!ENTITY inp "width: 14em;">
+    ]>
+<f:Form xmlns="http://www.butent.com/widget"
+        xmlns:f="http://www.butent.com/form"
+        xmlns:ui="http://www.butent.com/ui"
+
+        name="CarServiceEvent" viewName="CarServiceEvents" caption="=calAppointment">
+
+  <FlowPanel class="flexBox-vertical">
+    <Table kind="controls" style="margin-top: 1ex; margin-bottom: 2ex;">
+      <col index="0" kind="label" />
+      <col index="2" kind="label" />
+
+      <row>
+        <Label for="StartDateTime" visible="true" />
+        <InputDateTime source="StartDateTime" visible="true" style="&inp;" />
+        <Label text="=duration" />
+        <InputTime property="Duration" step="5" style="width:60px;" />
+      </row>
+
+      <row>
+        <Label for="EndDateTime" visible="true" />
+        <InputDateTime source="EndDateTime" visible="true" style="&inp;" />
+        <Label for="Status" visible="true" />
+        <ListBox source="Status" visible="true" style="width: 182px;" />
+      </row>
+
+      <row>
+        <Label for="AppointmentType" />
+        <DataSelector source="AppointmentType" renderColumns="TypeName" style="&inp;" />
+        <Label for="Creator" />
+        <DataSelector source="Creator" editEnabled="false" readOnly="true"
+                      renderColumns="CreatorFirstName CreatorLastName" style="&inp;" />
+      </row>
+
+      <row>
+        <Label for="Company" />
+        <DataSelector source="Company" choiceColumns="Name TypeName"
+                      renderColumns="CompanyName CompanyTypeName" style="&inp;" />
+        <Label for="ServiceOrder" />
+        <DataSelector source="ServiceOrder" newRowEnabled="false" style="&inp;">
+          <editable>
+            <ui:expression>row.ServiceOrder==null</ui:expression>
+          </editable>
+        </DataSelector>
+        <FaLabel name="ServiceOrder" char="plus_circle" style="color:#63a140; font-size:16px;">
+          <dynStyle>
+            <ui:inline>display:none;</ui:inline>
+            <ui:expression>row.ServiceOrder</ui:expression>
+          </dynStyle>
+        </FaLabel>
+      </row>
+
+      <row>
+        <Label for="CompanyPerson" />
+        <DataSelector source="CompanyPerson"
+                      renderColumns="PersonFirstName PersonLastName"
+                      choiceColumns="FirstName LastName CompanyName" options="Company"
+                      style="&inp;" />
+        <Label for="Car" />
+        <DataSelector source="Car" viewName="Cars" style="&inp;"
+                      renderColumns="ParentModelName ModelName CarNumber" />
+      </row>
+
+      <row>
+        <text />
+        <text />
+        <text />
+        <CheckBox source="Arrived" />
+      </row>
+
+      <row>
+        <Label text="=calAttendees" class="bee-required" />
+        <cell colSpan="3">
+          <MultiSelector property="Attendees" viewName="Attendees" renderColumns="Name"
+                         choiceColumns="Name TypeName"
+                         newRowEnabled="false" style="width:100%; max-height:100px; overflow:auto;"
+                         required="true" />
+        </cell>
+      </row>
+    </Table>
+
+    <TabbedPages class="flexible">
+      <page for="Description">
+        <text>=description</text>
+        <SimplePanel>
+          <InputArea source="Description" class="occupy-1" summarize="true" />
+        </SimplePanel>
+      </page>
+    </TabbedPages>
+  </FlowPanel>
+  <f:rowValidation>
+    <ui:function>
+      if (!row.StartDateTime || !row.EndDateTime) {
+      return null;
+      }
+
+      if (row.StartDateTime &lt; row.EndDateTime) {
+      return null;
+      } else {
+      return $wnd.Bee_maybeTranslate("=calPlannedEndDateMustBeGreater");
+      }
+    </ui:function>
+  </f:rowValidation>
+</f:Form>

@@ -167,13 +167,13 @@
   color: black;
 }
 
-.bee-svc-object-title{
+.bee-Header-message .bee-svc-object-title{
   font-size:23px;
   color: #484849;
   font-weight: lighter;
 }
 
-.bee-svc-object-small-title{
+.bee-Header-message .bee-svc-object-small-title{
   font-size:14px;
 }
 
@@ -205,9 +205,9 @@
 .bee-svc-Events-content-EventNote {
   border-radius: 0 1vh 1vh;
   border: 1px solid #ccc;
-  padding: 0.1vh 0.5vh 0.2vh 1vh;
+  padding: 0.1vh 1vh 0.2vh 1vh;
   max-width: 80%;
-  word-break: break-all;
+  word-wrap: normal;
 }
 
 .bee-svc-Events-info-panel {
@@ -222,7 +222,7 @@
 
 .bee-svc-maintenance-panel {
   max-width: 40em;
-  min-width: 10em;
+  min-width: 20em;
   width: 31em;
 }
 
@@ -242,11 +242,25 @@
 }
 
 .bee-svc-maintenance-other-info {
-  width: 52em;
-  padding: 1em;
+  padding: 1em 0 1em 1em;
   min-width: 10em;
 }
 
 .bee-svc-maintenance-creator-info {
   color: #ababab;
+}
+
+.bee-svc-maintenance-input-area {
+  width:100%;
+  height: 75px;
+}
+
+.bee-svc-maintenance-equipment-area {
+  width:100%;
+  min-height: 75px;
+}
+
+.bee-svc-split-panel {
+  min-height: 640px;
+  min-width: 300px;
 }

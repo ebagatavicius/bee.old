@@ -5,7 +5,7 @@
        idName="ItemID"
 >
   <Fields>
-    <String name="Name" precision="100" notNull="true" label="=itemName" />
+    <String name="Name" precision="100" notNull="true" label="=itemName" translatable="true" />
     <String name="Name2" precision="100" label="=itemName2" />
     <String name="Name3" precision="100" label="=itemName3" />
 
@@ -14,13 +14,22 @@
     <String name="Article3" precision="30" label="=article3" />
     <String name="Article4" precision="30" label="=article4" />
     <String name="Barcode" precision="30" unique="true" label="=itemBarcode" />
+    <String name="KPNCode" precision="30" label="=kpnCode" />
 
     <Relation name="Unit" notNull="true" relation="Units" label="=unit" />
     <Numeric name="PackageUnits" label="=packageUnits" precision="10" scale="2" />
     <Enum name="TimeUnit" key="TradeActTimeUnit" label="=taTimeUnit" />
 
-    <Numeric name="Weight" precision="10" scale="3" label="=weight" />
+    <Numeric name="Weight" precision="10" scale="5" label="=weight" />
     <Numeric name="Area" precision="10" scale="3" label="=area" />
+
+    <Numeric name="Volume" precision="12" scale="5" label="=volume" />
+    <Numeric name="Brutto" precision="12" scale="5" label="=brutto" />
+    <Numeric name="Netto" precision="12" scale="5" label="=netto" />
+
+    <String name="AdditionalUnit" precision="10" label="=additionalItemUnit" />
+    <String name="CountryOfOrigin" precision="60" label="=countryOfOrigin" />
+    <Numeric name="Factor" precision="8" scale="3" label="=taFactorShort" />
 
     <Numeric name="Price" precision="15" scale="5" label="=salePrice" />
     <Relation name="Currency" relation="Currencies" label="=currency" />

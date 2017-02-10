@@ -54,6 +54,8 @@
   <DataColumn name="Created" visible="false" />
   <DataColumn name="Completed" visible="false" />
   <DataColumn name="Approved" visible="false" />
+  <RelColumn name="Project" renderColumns="ProjectName" visible="false" autoFit="true"
+             editPopup="false"/>
 
   <RelColumn name="Reminder" visible="false" />
   <DataColumn name="ReminderTime" visible="false" />

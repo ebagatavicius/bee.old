@@ -1,7 +1,5 @@
 package com.butent.bee.client.modules.transport;
 
-import com.google.common.collect.ImmutableMap;
-
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -9,7 +7,6 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowUpdateCallback;
 import com.butent.bee.client.view.form.FormView;
-import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -19,14 +16,8 @@ import com.butent.bee.shared.data.cache.CachingPolicy;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
-import com.butent.bee.shared.utils.BeeUtils;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 final class SelfServiceUtils {
 
@@ -60,58 +51,6 @@ final class SelfServiceUtils {
     private void setRefresh(boolean refresh) {
       this.refresh = refresh;
     }
-  }
-
-  static void getCargoPlaces(Filter filter, BiConsumer<BeeRowSet, BeeRowSet> places) {
-    Queries.getData(Arrays.asList(TBL_CARGO_LOADING, TBL_CARGO_UNLOADING),
-        ImmutableMap.of(TBL_CARGO_LOADING, filter, TBL_CARGO_UNLOADING, filter), null,
-        new Queries.DataCallback() {
-          @Override
-          public void onSuccess(Collection<BeeRowSet> data) {
-            BeeRowSet loading = null;
-            BeeRowSet unloading = null;
-
-            for (BeeRowSet rowSet : data) {
-              if (Objects.isNull(loading)) {
-                loading = rowSet;
-              } else {
-                unloading = rowSet;
-              }
-            }
-            places.accept(loading, unloading);
-          }
-        });
-  }
-
-  static void getCargos(Filter cargoFilter, Consumer<BeeRowSet> cargoConsumer) {
-    Queries.getRowSet(VIEW_ORDER_CARGO, null, cargoFilter, new Queries.RowSetCallback() {
-      @Override
-      public void onSuccess(BeeRowSet cargo) {
-        getCargoPlaces(Filter.any(COL_CARGO, cargo.getRowIds()), (loading, unloading) -> {
-          for (BeeRowSet places : new BeeRowSet[] {loading, unloading}) {
-            for (BeeRow cargoRow : cargo) {
-              BeeRowSet current = new BeeRowSet(places.getViewName(), places.getColumns());
-
-              for (BeeRow place : DataUtils.filterRows(places, COL_CARGO, cargoRow.getId())) {
-                BeeRow cloned = DataUtils.cloneRow(place);
-
-                Stream.of(COL_PLACE_CITY, COL_PLACE_COUNTRY).forEach(key -> {
-                  int idx = current.getColumnIndex(key + "Name");
-
-                  if (!BeeConst.isUndef(idx) && BeeUtils.isEmpty(cloned.getString(idx))) {
-                    cloned.setValue(idx,
-                        cloned.getString(current.getColumnIndex(key + VAR_UNBOUND)));
-                  }
-                });
-                current.addRow(cloned);
-              }
-              cargoRow.setProperty(places.getViewName(), current.serialize());
-            }
-          }
-          cargoConsumer.accept(cargo);
-        });
-      }
-    });
   }
 
   static void setDefaultExpeditionType(FormView form, IsRow newRow, String targetColumn) {

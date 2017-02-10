@@ -5,6 +5,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.IntSupplier;
 
 /**
  * Stores all default values (databases, boolean, separators etc.).
@@ -179,6 +180,8 @@ public final class BeeConst {
   public static final List<Long> EMPTY_IMMUTABLE_LONG_LIST = Collections.emptyList();
 
   public static final Set<Integer> EMPTY_IMMUTABLE_INT_SET = Collections.emptySet();
+
+  public static final IntSupplier INT_ZERO_SUPPLIER = () -> 0;
 
   private static String home = SERVER;
 

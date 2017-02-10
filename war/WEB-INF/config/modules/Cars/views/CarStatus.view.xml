@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarStatus" source="CarStatus" caption="=statuses" newRowCaption="=trdNewStatus"
+>
+  <Columns>
+    <SimpleColumn name="Name" />
+  </Columns>
+</View>

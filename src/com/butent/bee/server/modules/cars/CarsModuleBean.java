@@ -7,8 +7,12 @@ import com.google.common.collect.Table;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
+import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
+import static com.butent.bee.shared.modules.cars.CarsConstants.COL_DESCRIPTION;
+import static com.butent.bee.shared.modules.cars.CarsConstants.COL_ORDINAL;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_PHOTO;
+import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.server.data.DataEvent;
 import com.butent.bee.server.data.DataEventHandler;
@@ -17,6 +21,7 @@ import com.butent.bee.server.data.SystemBean;
 import com.butent.bee.server.data.UserServiceBean;
 import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.modules.BeeModule;
+import com.butent.bee.server.modules.trade.TradeModuleBean;
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.IsQuery;
 import com.butent.bee.server.sql.SqlDelete;
@@ -24,6 +29,7 @@ import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
+import com.butent.bee.server.websocket.Endpoint;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
@@ -31,10 +37,15 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.Defaults;
 import com.butent.bee.shared.data.SimpleRowSet;
+import com.butent.bee.shared.data.event.MultiDeleteEvent;
+import com.butent.bee.shared.data.view.RowInfo;
+import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.cars.Bundle;
+import com.butent.bee.shared.modules.cars.ConfInfo;
 import com.butent.bee.shared.modules.cars.Configuration;
 import com.butent.bee.shared.modules.cars.Dimension;
 import com.butent.bee.shared.modules.cars.Option;
@@ -45,6 +56,7 @@ import com.butent.bee.shared.utils.Codec;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +64,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -89,7 +102,7 @@ public class CarsModuleBean implements BeeModule {
       case SVC_SET_BUNDLE:
         response = setBundle(reqInfo.getParameterLong(COL_BRANCH),
             Bundle.restore(reqInfo.getParameter(COL_BUNDLE)),
-            Configuration.DataInfo.restore(reqInfo.getParameter(Service.VAR_DATA)),
+            ConfInfo.restore(reqInfo.getParameter(Service.VAR_DATA)),
             Codec.unpack(reqInfo.getParameter(COL_BLOCKED)));
         break;
 
@@ -119,13 +132,14 @@ public class CarsModuleBean implements BeeModule {
       case SVC_SET_OPTION:
         response = setOption(reqInfo.getParameterLong(COL_BRANCH),
             reqInfo.getParameterLong(COL_OPTION),
-            Configuration.DataInfo.restore(reqInfo.getParameter(Service.VAR_DATA)));
+            ConfInfo.restore(reqInfo.getParameter(Service.VAR_DATA)));
         break;
 
       case SVC_SET_RELATION:
         response = setRelation(reqInfo.getParameterLong(COL_BRANCH), reqInfo.getParameter(COL_KEY),
             reqInfo.getParameterLong(COL_OPTION),
-            Configuration.DataInfo.restore(reqInfo.getParameter(Service.VAR_DATA)));
+            ConfInfo.restore(reqInfo.getParameter(Service.VAR_DATA)),
+            reqInfo.getParameter(COL_PACKET));
         break;
 
       case SVC_DELETE_RELATION:
@@ -181,12 +195,39 @@ public class CarsModuleBean implements BeeModule {
         response = getObject(reqInfo.getParameterLong(COL_OBJECT));
         break;
 
+      case SVC_GET_CALENDAR:
+        response = getCalendar();
+        break;
+
       default:
         String msg = BeeUtils.joinWords("Cars service not recognized:", service);
         logger.warning(msg);
         response = ResponseObject.error(msg);
     }
     return response;
+  }
+
+  private ResponseObject getCalendar() {
+    Long calendarId = qs.getId(VIEW_CALENDARS, COL_CALENDAR_IS_SERVICE, true);
+
+    if (!DataUtils.isId(calendarId)) {
+      SqlInsert si = new SqlInsert(VIEW_CALENDARS)
+          .addConstant(COL_CALENDAR_NAME, usr.getDictionary().carService())
+          .addConstant(COL_CALENDAR_IS_SERVICE, true);
+
+      Map<String, Pair<Defaults.DefaultExpression, Object>> defs =
+          sys.getTableDefaults(VIEW_CALENDARS);
+
+      if (!BeeUtils.isEmpty(defs)) {
+        defs.forEach((field, pair) -> {
+          if (Objects.isNull(pair.getA())) {
+            si.addConstant(field, pair.getB());
+          }
+        });
+      }
+      calendarId = qs.insertData(si);
+    }
+    return ResponseObject.response(calendarId);
   }
 
   @Override
@@ -247,11 +288,81 @@ public class CarsModuleBean implements BeeModule {
           }
         }
       }
+
+      @Subscribe
+      @AllowConcurrentEvents
+      public void calcAmounts(DataEvent.ViewQueryEvent event) {
+        if (event.isAfter(TBL_SERVICE_ORDERS) && event.hasData()) {
+          BeeRowSet rowSet = event.getRowset();
+          Collection<Long> ids = rowSet.getRowIds();
+
+          for (String tbl : new String[] {TBL_SERVICE_ORDER_ITEMS, TBL_SERVICE_ORDER_JOBS}) {
+            SimpleRowSet data = qs.getData(new SqlSelect()
+                .addFields(tbl, COL_SERVICE_ORDER)
+                .addSum(TradeModuleBean.getTotal(tbl), VAR_TOTAL)
+                .addSum(TradeModuleBean.getDiscount(tbl), COL_TRADE_DISCOUNT)
+                .addSum(TradeModuleBean.getVat(tbl), COL_TRADE_VAT)
+                .addFrom(tbl)
+                .addFromInner(TBL_SERVICE_ORDERS,
+                    sys.joinTables(TBL_SERVICE_ORDERS, tbl, COL_SERVICE_ORDER))
+                .setWhere(SqlUtils.inList(tbl, COL_SERVICE_ORDER, ids))
+                .addGroup(tbl, COL_SERVICE_ORDER));
+
+            for (BeeRow row : rowSet) {
+              Stream.of(VAR_TOTAL, COL_TRADE_DISCOUNT, COL_TRADE_VAT).forEach(col ->
+                  row.setProperty(tbl + col, data.getValueByKey(COL_SERVICE_ORDER,
+                      BeeUtils.toString(row.getId()), col)));
+            }
+          }
+        }
+      }
+
+      @Subscribe
+      @AllowConcurrentEvents
+      public void notifyAppointmentRemoval(DataEvent.ViewDeleteEvent event) {
+        if (event.isTarget(TBL_SERVICE_EVENTS)) {
+          if (event.isBefore()) {
+            RowInfoList rowInfos = new RowInfoList();
+
+            qs.getLongSet(new SqlSelect()
+                .addFields(TBL_SERVICE_EVENTS, COL_APPOINTMENT)
+                .addFrom(TBL_SERVICE_EVENTS)
+                .setWhere(sys.idInList(TBL_SERVICE_EVENTS, event.getIds())))
+                .forEach(id -> rowInfos.add(new RowInfo(id, DataUtils.NEW_ROW_VERSION)));
+
+            event.setUserObject(rowInfos);
+            return;
+          }
+          MultiDeleteEvent.fire(Endpoint.getModificationShooter(), VIEW_APPOINTMENTS,
+              (RowInfoList) event.getUserObject());
+        }
+      }
+
+      @Subscribe
+      @AllowConcurrentEvents
+      public void setEventAttendees(DataEvent.ViewQueryEvent event) {
+        if (event.isAfter(TBL_SERVICE_EVENTS) && event.hasData()) {
+          BeeRowSet rowSet = event.getRowset();
+          int idx = rowSet.getColumnIndex(COL_APPOINTMENT);
+
+          SimpleRowSet rs = qs.getData(new SqlSelect()
+              .addFields(TBL_APPOINTMENT_ATTENDEES, COL_APPOINTMENT, COL_ATTENDEE)
+              .addFrom(TBL_APPOINTMENT_ATTENDEES)
+              .setWhere(SqlUtils.inList(TBL_APPOINTMENT_ATTENDEES, COL_APPOINTMENT,
+                  rowSet.getDistinctLongs(idx))));
+
+          Multimap<Long, Long> attendees = HashMultimap.create();
+          rs.forEach(row -> attendees.put(row.getLong(COL_APPOINTMENT), row.getLong(COL_ATTENDEE)));
+
+          for (BeeRow row : rowSet) {
+            row.setProperty(TBL_ATTENDEES, DataUtils.buildIdList(attendees.get(row.getLong(idx))));
+          }
+        }
+      }
     });
   }
 
-  public ResponseObject setBundle(Long branchId, Bundle bundle, Configuration.DataInfo info,
-      boolean blocked) {
+  public ResponseObject setBundle(Long branchId, Bundle bundle, ConfInfo info, boolean blocked) {
     int c = 0;
     Long bundleId = qs.getLong(new SqlSelect()
         .addFields(TBL_CONF_BUNDLES, sys.getIdName(TBL_CONF_BUNDLES))
@@ -272,6 +383,7 @@ public class CarsModuleBean implements BeeModule {
           .addConstant(COL_PRICE, info.getPrice())
           .addConstant(COL_DESCRIPTION, info.getDescription())
           .addConstant(COL_CRITERIA, Codec.beeSerialize(info.getCriteria()))
+          .addConstant(COL_PHOTO, info.getPhoto())
           .addConstant(COL_BLOCKED, blocked)
           .setWhere(SqlUtils.equals(TBL_CONF_BRANCH_BUNDLES, COL_BRANCH, branchId, COL_BUNDLE,
               bundleId)));
@@ -283,16 +395,18 @@ public class CarsModuleBean implements BeeModule {
           .addNotEmpty(COL_PRICE, info.getPrice())
           .addNotEmpty(COL_DESCRIPTION, info.getDescription())
           .addConstant(COL_CRITERIA, Codec.beeSerialize(info.getCriteria()))
+          .addNotNull(COL_PHOTO, info.getPhoto())
           .addConstant(COL_BLOCKED, blocked));
     }
     return ResponseObject.emptyResponse();
   }
 
-  public ResponseObject setOption(Long branchId, Long optionId, Configuration.DataInfo info) {
+  public ResponseObject setOption(Long branchId, Long optionId, ConfInfo info) {
     int c = qs.updateData(new SqlUpdate(TBL_CONF_BRANCH_OPTIONS)
         .addConstant(COL_PRICE, info.getPrice())
         .addConstant(COL_DESCRIPTION, info.getDescription())
         .addConstant(COL_CRITERIA, Codec.beeSerialize(info.getCriteria()))
+        .addConstant(COL_PHOTO, info.getPhoto())
         .setWhere(SqlUtils.equals(TBL_CONF_BRANCH_OPTIONS, COL_BRANCH, branchId, COL_OPTION,
             optionId)));
 
@@ -302,14 +416,14 @@ public class CarsModuleBean implements BeeModule {
           .addConstant(COL_OPTION, optionId)
           .addNotEmpty(COL_PRICE, info.getPrice())
           .addNotEmpty(COL_DESCRIPTION, info.getDescription())
-          .addConstant(COL_CRITERIA, Codec.beeSerialize(info.getCriteria())));
+          .addConstant(COL_CRITERIA, Codec.beeSerialize(info.getCriteria()))
+          .addNotNull(COL_PHOTO, info.getPhoto()));
     }
     return ResponseObject.emptyResponse();
   }
 
-  public ResponseObject setRelation(Long branchId, String key, Long optionId,
-      Configuration.DataInfo info) {
-
+  public ResponseObject setRelation(Long branchId, String key, Long optionId, ConfInfo info,
+      String packet) {
     SimpleRowSet.SimpleRow row = qs.getRow(new SqlSelect()
         .addField(TBL_CONF_BRANCH_BUNDLES, sys.getIdName(TBL_CONF_BRANCH_BUNDLES),
             COL_BRANCH_BUNDLE)
@@ -336,6 +450,8 @@ public class CarsModuleBean implements BeeModule {
           .addConstant(COL_PRICE, info.getPrice())
           .addConstant(COL_DESCRIPTION, info.getDescription())
           .addConstant(COL_CRITERIA, Codec.beeSerialize(info.getCriteria()))
+          .addConstant(COL_PHOTO, info.getPhoto())
+          .addConstant(COL_PACKET, packet)
           .setWhere(sys.idEquals(TBL_CONF_RELATIONS, relationId)));
     } else {
       Long branchOptionId = row.getLong(COL_BRANCH_OPTION);
@@ -350,7 +466,9 @@ public class CarsModuleBean implements BeeModule {
           .addConstant(COL_BRANCH_OPTION, branchOptionId)
           .addNotEmpty(COL_PRICE, info.getPrice())
           .addNotEmpty(COL_DESCRIPTION, info.getDescription())
-          .addConstant(COL_CRITERIA, Codec.beeSerialize(info.getCriteria())));
+          .addNotEmpty(COL_PACKET, packet)
+          .addConstant(COL_CRITERIA, Codec.beeSerialize(info.getCriteria()))
+          .addNotNull(COL_PHOTO, info.getPhoto()));
     }
     return ResponseObject.emptyResponse();
   }
@@ -452,9 +570,10 @@ public class CarsModuleBean implements BeeModule {
         .addFields(TBL_CONF_BRANCH_BUNDLES, COL_PRICE, COL_BLOCKED)
         .addField(TBL_CONF_BRANCH_BUNDLES, COL_DESCRIPTION, COL_BUNDLE + COL_DESCRIPTION)
         .addField(TBL_CONF_BRANCH_BUNDLES, COL_CRITERIA, COL_BUNDLE + COL_CRITERIA)
+        .addField(TBL_CONF_BRANCH_BUNDLES, COL_PHOTO, COL_BUNDLE + COL_PHOTO)
         .addFields(TBL_CONF_BUNDLE_OPTIONS, COL_BUNDLE, COL_OPTION)
-        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_DESCRIPTION,
-            COL_PHOTO)
+        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_CODE2,
+            COL_DESCRIPTION, COL_PHOTO)
         .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME, COL_REQUIRED)
         .addFrom(TBL_CONF_BRANCH_BUNDLES)
         .addFromInner(TBL_CONF_BUNDLE_OPTIONS,
@@ -465,27 +584,22 @@ public class CarsModuleBean implements BeeModule {
         .setWhere(SqlUtils.equals(TBL_CONF_BRANCH_BUNDLES, COL_BRANCH, branchId)));
 
     Multimap<Long, Option> bundleOptions = HashMultimap.create();
-    Map<Long, Pair<Bundle, Pair<Configuration.DataInfo, Boolean>>> bundles = new HashMap<>();
+    Map<Long, Pair<Bundle, Pair<ConfInfo, Boolean>>> bundles = new HashMap<>();
 
     for (SimpleRowSet.SimpleRow row : data) {
       Long id = row.getLong(COL_BUNDLE);
-
-      bundleOptions.put(id, new Option(row.getLong(COL_OPTION),
-          row.getValue(COL_OPTION_NAME), new Dimension(row.getLong(COL_GROUP),
-          row.getValue(COL_GROUP_NAME)).setRequired(row.getBoolean(COL_REQUIRED)))
-          .setCode(row.getValue(COL_CODE))
-          .setDescription(row.getValue(COL_DESCRIPTION))
-          .setPhoto(row.getLong(COL_PHOTO)));
+      bundleOptions.put(id, new Option(row));
 
       if (!bundles.containsKey(id)) {
-        bundles.put(id, Pair.of(null, Pair.of(Configuration.DataInfo.of(row.getValue(COL_PRICE),
-            row.getValue(COL_BUNDLE + COL_DESCRIPTION), row.getValue(COL_BUNDLE + COL_CRITERIA)),
-            row.getBoolean(COL_BLOCKED))));
+        bundles.put(id, Pair.of(null, Pair.of(ConfInfo.of(row.getValue(COL_PRICE),
+            row.getValue(COL_BUNDLE + COL_DESCRIPTION))
+            .setCriteria(Codec.deserializeLinkedHashMap(row.getValue(COL_BUNDLE + COL_CRITERIA)))
+            .setPhoto(row.getLong(COL_BUNDLE + COL_PHOTO)), row.getBoolean(COL_BLOCKED))));
       }
     }
     for (Long bundleId : bundles.keySet()) {
       Bundle bundle = new Bundle(bundleOptions.get(bundleId));
-      Pair<Bundle, Pair<Configuration.DataInfo, Boolean>> pair = bundles.get(bundleId);
+      Pair<Bundle, Pair<ConfInfo, Boolean>> pair = bundles.get(bundleId);
       pair.setA(bundle);
       configuration.setBundleInfo(bundle, pair.getB().getA(), pair.getB().getB());
     }
@@ -496,12 +610,14 @@ public class CarsModuleBean implements BeeModule {
         .addField(TBL_CONF_BRANCH_OPTIONS, COL_PRICE, COL_OPTION + COL_PRICE)
         .addField(TBL_CONF_BRANCH_OPTIONS, COL_DESCRIPTION, COL_OPTION + COL_DESCRIPTION)
         .addField(TBL_CONF_BRANCH_OPTIONS, COL_CRITERIA, COL_OPTION + COL_CRITERIA)
-        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_DESCRIPTION,
-            COL_PHOTO)
+        .addField(TBL_CONF_BRANCH_OPTIONS, COL_PHOTO, COL_OPTION + COL_PHOTO)
+        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_CODE2,
+            COL_DESCRIPTION, COL_PHOTO)
         .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME, COL_REQUIRED)
-        .addFields(TBL_CONF_RELATIONS, COL_PRICE)
+        .addFields(TBL_CONF_RELATIONS, COL_PRICE, COL_PACKET)
         .addField(TBL_CONF_RELATIONS, COL_DESCRIPTION, TBL_CONF_RELATIONS + COL_DESCRIPTION)
         .addField(TBL_CONF_RELATIONS, COL_CRITERIA, TBL_CONF_RELATIONS + COL_CRITERIA)
+        .addField(TBL_CONF_RELATIONS, COL_PHOTO, TBL_CONF_RELATIONS + COL_PHOTO)
         .addFields(TBL_CONF_BRANCH_BUNDLES, COL_BUNDLE)
         .addFrom(TBL_CONF_BRANCH_OPTIONS)
         .addFromInner(TBL_CONF_OPTIONS,
@@ -519,31 +635,44 @@ public class CarsModuleBean implements BeeModule {
       Long branchOption = row.getLong(COL_BRANCH_OPTION);
 
       if (!branchOptions.containsKey(branchOption)) {
-        Option option = new Option(row.getLong(COL_OPTION),
-            row.getValue(COL_OPTION_NAME), new Dimension(row.getLong(COL_GROUP),
-            row.getValue(COL_GROUP_NAME)).setRequired(row.getBoolean(COL_REQUIRED)))
-            .setCode(row.getValue(COL_CODE))
-            .setDescription(row.getValue(COL_DESCRIPTION))
-            .setPhoto(row.getLong(COL_PHOTO));
-
+        Option option = new Option(row);
         branchOptions.put(branchOption, option);
-        configuration.setOptionInfo(option,
-            Configuration.DataInfo.of(row.getValue(COL_OPTION + COL_PRICE),
-                row.getValue(COL_OPTION + COL_DESCRIPTION),
-                row.getValue(COL_OPTION + COL_CRITERIA)));
+        configuration.setOptionInfo(option, ConfInfo.of(row.getValue(COL_OPTION + COL_PRICE),
+            row.getValue(COL_OPTION + COL_DESCRIPTION))
+            .setCriteria(Codec.deserializeLinkedHashMap(row.getValue(COL_OPTION + COL_CRITERIA)))
+            .setPhoto(row.getLong(COL_OPTION + COL_PHOTO)));
       }
       if (DataUtils.isId(row.getLong(COL_BUNDLE))) {
         configuration.setRelationInfo(branchOptions.get(branchOption),
-            bundles.get(row.getLong(COL_BUNDLE)).getA(),
-            Configuration.DataInfo.of(row.getValue(COL_PRICE),
-                row.getValue(TBL_CONF_RELATIONS + COL_DESCRIPTION),
-                row.getValue(TBL_CONF_RELATIONS + COL_CRITERIA)));
+            bundles.get(row.getLong(COL_BUNDLE)).getA(), ConfInfo.of(row.getValue(COL_PRICE),
+                row.getValue(TBL_CONF_RELATIONS + COL_DESCRIPTION))
+                .setCriteria(Codec.deserializeLinkedHashMap(row.getValue(TBL_CONF_RELATIONS
+                    + COL_CRITERIA))).setPhoto(row.getLong(TBL_CONF_RELATIONS + COL_PHOTO)),
+            row.getValue(COL_PACKET));
       }
+    }
+    if (!branchOptions.isEmpty()) {
+      Map<Long, Option> optMap = new HashMap<>();
+      branchOptions.values().forEach(opt -> optMap.put(opt.getId(), opt));
+
+      data = qs.getData(new SqlSelect()
+          .addFields(TBL_CONF_PACKET_OPTIONS, COL_PACKET, COL_OPTION)
+          .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_CODE2)
+          .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME)
+          .addFrom(TBL_CONF_PACKET_OPTIONS)
+          .addFromInner(TBL_CONF_OPTIONS,
+              sys.joinTables(TBL_CONF_OPTIONS, TBL_CONF_PACKET_OPTIONS, COL_OPTION))
+          .addFromInner(TBL_CONF_GROUPS,
+              sys.joinTables(TBL_CONF_GROUPS, TBL_CONF_OPTIONS, COL_GROUP))
+          .setWhere(SqlUtils.inList(TBL_CONF_PACKET_OPTIONS, COL_PACKET, optMap.keySet())));
+
+      data.forEach(simpleRow -> configuration.getPackets(optMap.get(simpleRow.getLong(COL_PACKET)))
+          .add(new Option(simpleRow)));
     }
     data = qs.getData(new SqlSelect()
         .addFields(TBL_CONF_RESTRICTIONS, COL_BRANCH_OPTION, COL_OPTION, COL_DENIED)
-        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_DESCRIPTION,
-            COL_PHOTO)
+        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_CODE2,
+            COL_DESCRIPTION, COL_PHOTO)
         .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME, COL_REQUIRED)
         .addFrom(TBL_CONF_RESTRICTIONS)
         .addFromInner(TBL_CONF_OPTIONS,
@@ -554,13 +683,7 @@ public class CarsModuleBean implements BeeModule {
         .setWhere(SqlUtils.equals(TBL_CONF_BRANCH_OPTIONS, COL_BRANCH, branchId)));
 
     for (SimpleRowSet.SimpleRow row : data) {
-      Option option = new Option(row.getLong(COL_OPTION),
-          row.getValue(COL_OPTION_NAME), new Dimension(row.getLong(COL_GROUP),
-          row.getValue(COL_GROUP_NAME)).setRequired(row.getBoolean(COL_REQUIRED)))
-          .setCode(row.getValue(COL_CODE))
-          .setDescription(row.getValue(COL_DESCRIPTION))
-          .setPhoto(row.getLong(COL_PHOTO));
-
+      Option option = new Option(row);
       configuration.setRestriction(branchOptions.get(row.getLong(COL_BRANCH_OPTION)), option,
           BeeUtils.unbox(row.getBoolean(COL_DENIED)));
     }
@@ -573,8 +696,8 @@ public class CarsModuleBean implements BeeModule {
         .addField(TBL_CONF_OBJECTS, COL_DESCRIPTION, COL_BUNDLE + COL_DESCRIPTION)
         .addField(TBL_CONF_OBJECTS, COL_PRICE, COL_BUNDLE + COL_PRICE)
         .addFields(TBL_CONF_OBJECT_OPTIONS, COL_OPTION, COL_PRICE)
-        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_DESCRIPTION,
-            COL_PHOTO_CODE, COL_PHOTO)
+        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_CODE2,
+            COL_DESCRIPTION, COL_PHOTO_CODE, COL_PHOTO)
         .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME, COL_REQUIRED)
         .addFrom(TBL_CONF_OBJECTS)
         .addFromInner(TBL_CONF_OBJECT_OPTIONS,
@@ -599,23 +722,15 @@ public class CarsModuleBean implements BeeModule {
         bundlePrice = row.getInt(COL_BUNDLE + COL_PRICE);
       }
       Integer price = row.getInt(COL_PRICE);
-      Option option = new Option(row.getLong(COL_OPTION),
-          row.getValue(COL_OPTION_NAME), new Dimension(row.getLong(COL_GROUP),
-          row.getValue(COL_GROUP_NAME)).setRequired(row.getBoolean(COL_REQUIRED)))
-          .setCode(row.getValue(COL_CODE))
-          .setDescription(row.getValue(COL_DESCRIPTION))
-          .setPhoto(row.getLong(COL_PHOTO));
+      Option option = new Option(row);
 
-      boolean isBundleOption = Objects.isNull(price);
-
-      if (isBundleOption) {
+      if (Objects.isNull(price)) {
+        if (BeeUtils.allNotNull(row.getValue(COL_PHOTO_CODE), option.getPhoto())) {
+          specification.getPhotos().put(row.getValue(COL_PHOTO_CODE), option.getPhoto());
+        }
         bundleOptions.add(option);
       } else {
         specification.addOption(option, price);
-      }
-      if (BeeUtils.allNotNull(row.getValue(COL_PHOTO_CODE), row.getLong(COL_PHOTO))
-          && (isBundleOption || option.getDimension().isRequired())) {
-        specification.getPhotos().put(row.getValue(COL_PHOTO_CODE), row.getLong(COL_PHOTO));
       }
     }
     if (Objects.nonNull(specification)) {
@@ -623,6 +738,27 @@ public class CarsModuleBean implements BeeModule {
         specification.setBundle(new Bundle(bundleOptions), bundlePrice);
       }
       if (DataUtils.isId(specification.getBranchId())) {
+        Long branchBundle = null;
+        Long bundlePhoto = null;
+
+        if (Objects.nonNull(specification.getBundle())) {
+          SimpleRowSet.SimpleRow row = qs.getRow(new SqlSelect()
+              .addField(TBL_CONF_BRANCH_BUNDLES, sys.getIdName(TBL_CONF_BRANCH_BUNDLES),
+                  COL_BRANCH_BUNDLE)
+              .addFields(TBL_CONF_BRANCH_BUNDLES, COL_PHOTO)
+              .addFrom(TBL_CONF_BRANCH_BUNDLES)
+              .addFromInner(TBL_CONF_BUNDLES,
+                  SqlUtils.and(sys.joinTables(TBL_CONF_BUNDLES, TBL_CONF_BRANCH_BUNDLES,
+                      COL_BUNDLE), SqlUtils.equals(TBL_CONF_BUNDLES, COL_KEY,
+                      specification.getBundle().getKey())))
+              .setWhere(SqlUtils.equals(TBL_CONF_BRANCH_BUNDLES, COL_BRANCH,
+                  specification.getBranchId())));
+
+          if (Objects.nonNull(row)) {
+            branchBundle = row.getLong(COL_BRANCH_BUNDLE);
+            bundlePhoto = row.getLong(COL_PHOTO);
+          }
+        }
         String idName = sys.getIdName(TBL_CONF_PRICELIST);
 
         rs = qs.getData(new SqlSelect()
@@ -632,9 +768,44 @@ public class CarsModuleBean implements BeeModule {
         SimpleRowSet.SimpleRow row = rs.getRowByKey(idName,
             BeeUtils.toString(specification.getBranchId()));
 
+        if (BeeUtils.allNotNull(row.getValue(COL_PHOTO_CODE), bundlePhoto)) {
+          specification.getPhotos().put(row.getValue(COL_PHOTO_CODE), bundlePhoto);
+        }
+        if (DataUtils.isId(branchBundle)) {
+          Set<Long> opts = specification.getOptions().stream()
+              .filter(o -> o.getDimension().isRequired())
+              .map(Option::getId).collect(Collectors.toSet());
+
+          if (!opts.isEmpty()) {
+            SimpleRowSet photoRs = qs.getData(new SqlSelect()
+                .addFields(TBL_CONF_OPTIONS, COL_PHOTO_CODE)
+                .addExpr(SqlUtils.nvl(SqlUtils.field(TBL_CONF_RELATIONS, COL_PHOTO),
+                    SqlUtils.field(TBL_CONF_BRANCH_OPTIONS, COL_PHOTO),
+                    SqlUtils.field(TBL_CONF_OPTIONS, COL_PHOTO)), COL_PHOTO)
+                .addFrom(TBL_CONF_BRANCH_OPTIONS)
+                .addFromInner(TBL_CONF_OPTIONS, SqlUtils.and(sys.joinTables(TBL_CONF_OPTIONS,
+                    TBL_CONF_BRANCH_OPTIONS, COL_OPTION), SqlUtils.notNull(TBL_CONF_OPTIONS,
+                    COL_PHOTO_CODE)))
+                .addFromLeft(TBL_CONF_RELATIONS,
+                    SqlUtils.and(sys.joinTables(TBL_CONF_BRANCH_OPTIONS, TBL_CONF_RELATIONS,
+                        COL_BRANCH_OPTION), SqlUtils.equals(TBL_CONF_RELATIONS, COL_BRANCH_BUNDLE,
+                        branchBundle)))
+                .setWhere(SqlUtils.and(SqlUtils.equals(TBL_CONF_BRANCH_OPTIONS, COL_BRANCH,
+                    specification.getBranchId()), SqlUtils.inList(TBL_CONF_BRANCH_OPTIONS,
+                    COL_OPTION, opts))));
+
+            for (SimpleRowSet.SimpleRow photoRow : photoRs) {
+              if (DataUtils.isId(photoRow.getLong(COL_PHOTO))) {
+                specification.getPhotos().put(photoRow.getValue(COL_PHOTO_CODE),
+                    photoRow.getLong(COL_PHOTO));
+              }
+            }
+          }
+        }
         while (Objects.nonNull(row)) {
           if (BeeUtils.allNotNull(row.getValue(COL_PHOTO_CODE), row.getLong(COL_PHOTO))) {
-            specification.getPhotos().put(row.getValue(COL_PHOTO_CODE), row.getLong(COL_PHOTO));
+            specification.getPhotos().putIfAbsent(row.getValue(COL_PHOTO_CODE),
+                row.getLong(COL_PHOTO));
           }
           String id = row.getValue(COL_BRANCH);
           row = DataUtils.isId(id) ? rs.getRowByKey(idName, id) : null;

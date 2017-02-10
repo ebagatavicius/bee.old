@@ -56,13 +56,10 @@ public abstract class RafCallback implements RequestAnimationFrameCallback {
 
   public void start() {
     if (Features.supportsRequestAnimationFrame()) {
-      request(new RequestAnimationFrameCallback() {
-        @Override
-        public boolean onRequestAnimationFrameCallback(double time) {
-          RafCallback.this.setStartTime(time);
-          request(RafCallback.this);
-          return false;
-        }
+      request(time -> {
+        RafCallback.this.setStartTime(time);
+        request(RafCallback.this);
+        return false;
       });
 
     } else {

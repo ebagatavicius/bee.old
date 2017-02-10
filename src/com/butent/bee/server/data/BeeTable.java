@@ -622,8 +622,8 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
                       state.isChecked() ? mask : 0)));
         }
       }
-      if (wh.isEmpty() && !state.isChecked()) {
-        wh.add(SqlUtils.sqlFalse());
+      if (wh.isEmpty()) {
+        wh.add(defaultCondition);
       }
       return wh;
     }

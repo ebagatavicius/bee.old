@@ -2,6 +2,7 @@ package com.butent.bee.client.modules.projects;
 
 import com.google.common.collect.Lists;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.PRM_ERP_ADDRESS;
 import static com.butent.bee.shared.modules.projects.ProjectConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -39,7 +40,6 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Client-side projects module handler.
@@ -152,21 +152,15 @@ public final class ProjectsKeeper {
       public void beforeCreateColumns(List<? extends IsColumn> dataColumns,
           final List<ColumnDescription> columnDescriptions) {
 
-        Global.getParameter(AdministrationConstants.PRM_ERP_ADDRESS, new Consumer<String>() {
+        setErpConnectionActive(!BeeUtils.isEmpty(Global.getParameterText(PRM_ERP_ADDRESS)));
 
-          @Override
-          public void accept(String erpAddress) {
-            setErpConnectionActive(!BeeUtils.isEmpty(erpAddress));
-
-            for (ColumnDescription columnDescription : columnDescriptions) {
-              if (BeeUtils.inListSame(columnDescription.getId(),
-                  TradeConstants.COL_TRADE_PAYMENT_TIME,
-                  TradeConstants.COL_TRADE_PAID)) {
-                columnDescription.setEditInPlace(!isErpConnectionActive());
-              }
-            }
+        for (ColumnDescription columnDescription : columnDescriptions) {
+          if (BeeUtils.inListSame(columnDescription.getId(),
+              TradeConstants.COL_TRADE_PAYMENT_TIME,
+              TradeConstants.COL_TRADE_PAID)) {
+            columnDescription.setEditInPlace(!isErpConnectionActive());
           }
-        });
+        }
       }
 
       @Override
@@ -226,13 +220,13 @@ public final class ProjectsKeeper {
     }
 
     Queries.getRowSet(viewName, null, filter, new Queries.RowSetCallback() {
-          @Override
-          public void onSuccess(BeeRowSet result) {
-            for (BeeRow row : result) {
-              RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, row);
-            }
-          }
-        });
+      @Override
+      public void onSuccess(BeeRowSet result) {
+        for (BeeRow row : result) {
+          RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, row);
+        }
+      }
+    });
   }
 
   private ProjectsKeeper() {

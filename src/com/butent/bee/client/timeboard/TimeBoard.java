@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Callback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
@@ -96,6 +97,9 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   private static final String STYLE_HEADER = STYLE_PREFIX + "header";
   private static final String STYLE_HEADER_SPLITTER = STYLE_HEADER + "-splitter";
 
+  private static final String STYLE_PROGRESS_CONTAINER = STYLE_PREFIX + "progress-container";
+  private static final String STYLE_PROGRESS_BAR = STYLE_PREFIX + "progress-bar";
+
   private static final String STYLE_SCROLL_AREA = STYLE_PREFIX + "scroll-area";
   private static final String STYLE_CONTENT = STYLE_PREFIX + "content";
   private static final String STYLE_ROW_RESIZER = STYLE_CONTENT + "-row-resizer";
@@ -122,7 +126,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   private static final String STYLE_ITEM_HAS_HANDLING = STYLE_ITEM_PREFIX + "has-handling";
 
   private static final String STYLE_SHEET_NAME = "timeboard";
-  private static final JustDate STYLE_SHEET_VERSION = new JustDate(2015, 7, 6);
+  private static final JustDate STYLE_SHEET_VERSION = new JustDate(2017, 2, 7);
 
   private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
 
@@ -167,6 +171,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
 
   private final HeaderView headerView;
   private final Flow canvas;
+  private final Flow progress;
 
   private final List<HandlerRegistration> registry = new ArrayList<>();
 
@@ -246,11 +251,16 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     this.canvas = new Flow(STYLE_CANVAS);
     StyleUtils.setTop(canvas, headerView.getHeight());
     add(canvas);
+
+    this.progress = new Flow(STYLE_PROGRESS_CONTAINER);
+    progress.add(new CustomDiv(STYLE_PROGRESS_BAR));
+    add(progress);
   }
 
   @Override
   public com.google.gwt.event.shared.HandlerRegistration addReadyHandler(
       ReadyEvent.Handler handler) {
+
     return addHandler(handler, ReadyEvent.getType());
   }
 
@@ -337,14 +347,14 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   @Override
   public void onCellUpdate(CellUpdateEvent event) {
     if (isDataEventRelevant(event)) {
-      refresh();
+      onRelevantDataEvent(event);
     }
   }
 
   @Override
   public void onDataChange(DataChangeEvent event) {
     if (isDataEventRelevant(event)) {
-      refresh();
+      onRelevantDataEvent(event);
     }
   }
 
@@ -511,7 +521,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   @Override
   public void onMultiDelete(MultiDeleteEvent event) {
     if (isDataEventRelevant(event)) {
-      refresh();
+      onRelevantDataEvent(event);
     }
   }
 
@@ -549,21 +559,21 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   @Override
   public void onRowDelete(RowDeleteEvent event) {
     if (isDataEventRelevant(event)) {
-      refresh();
+      onRelevantDataEvent(event);
     }
   }
 
   @Override
   public void onRowInsert(RowInsertEvent event) {
     if (isDataEventRelevant(event)) {
-      refresh();
+      onRelevantDataEvent(event);
     }
   }
 
   @Override
   public void onRowUpdate(RowUpdateEvent event) {
     if (isDataEventRelevant(event)) {
-      refresh();
+      onRelevantDataEvent(event);
     }
   }
 
@@ -855,6 +865,10 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     return content.getClientHeight() - scrollArea.getClientHeight();
   }
 
+  protected Element getProgressElement() {
+    return progress.getElement();
+  }
+
   protected Rectangle getRectangle(Range<JustDate> range, int row) {
     return getRectangle(range, row, row);
   }
@@ -953,10 +967,6 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     }
   }
 
-  /**
-   * @param row
-   * @param date
-   */
   protected void onDoubleClickChart(int row, JustDate date) {
   }
 
@@ -1010,6 +1020,10 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     render(true);
 
     ReadyEvent.fire(this);
+  }
+
+  protected void onRelevantDataEvent(ModificationEvent<?> event) {
+    refresh();
   }
 
   protected void onRowResizerMove(MoveEvent event) {
@@ -1076,10 +1090,17 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
   }
 
   protected void render(boolean updateRange) {
+    render(updateRange, null);
+  }
+
+  protected void render(boolean updateRange, Callback<Integer> callback) {
     long startMillis = System.currentTimeMillis();
 
     canvas.clear();
     if (getMaxRange() == null) {
+      if (callback != null) {
+        callback.onFailure("max range not available");
+      }
       return;
     }
 
@@ -1087,6 +1108,9 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
     int height = getCanvasHeight();
     if (width < 30 || height < 30) {
       setRenderPending(true);
+      if (callback != null) {
+        callback.onFailure(BeeUtils.joinWords("canvas not available", width, height));
+      }
       return;
     }
 
@@ -1142,14 +1166,18 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
 
     DateRange vr = DateRange.closed(getVisibleRange().lowerEndpoint(),
         getVisibleRange().upperEndpoint());
+    int descendants = DomUtils.countDescendants(canvas);
 
     logger.debug(vr.toCompactString(true),
-        BeeUtils.parenthesize(BeeUtils.joinWords(content.getWidgetCount(),
-            DomUtils.countDescendants(canvas))),
+        BeeUtils.parenthesize(BeeUtils.joinWords(content.getWidgetCount(), descendants)),
         BeeUtils.bracket(BeeUtils.joinWords(headerMillis - startMillis,
             BeeConst.STRING_PLUS, contentMillis - headerMillis,
             BeeConst.STRING_PLUS, endMillis - contentMillis,
             BeeConst.STRING_EQ, endMillis - startMillis)));
+
+    if (callback != null) {
+      callback.onSuccess(descendants);
+    }
   }
 
   protected abstract void renderContent(ComplexPanel panel);

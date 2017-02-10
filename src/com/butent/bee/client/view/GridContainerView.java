@@ -6,6 +6,7 @@ import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.ui.HandlesHistory;
 import com.butent.bee.client.ui.UiOption;
+import com.butent.bee.client.view.grid.CellGrid;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.data.filter.Filter;
@@ -18,6 +19,8 @@ public interface GridContainerView extends View, HasAllDragAndDropHandlers, HasG
     HandlesHistory, HasWidgetSupplier, HasNavigation {
 
   void bind();
+
+  void bindDisplay(CellGrid display);
 
   void create(GridDescription gridDescription, GridView gridView, int rowCount, Filter userFilter,
       GridInterceptor gridInterceptor, Collection<UiOption> uiOptions,

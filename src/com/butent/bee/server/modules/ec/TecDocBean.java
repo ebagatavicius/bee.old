@@ -41,7 +41,6 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.ec.EcUtils;
 import com.butent.bee.shared.rights.Module;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -331,9 +330,9 @@ public class TecDocBean implements HasTimerService {
 
   @Override
   public void ejbTimeout(Timer timer) {
-    if (cb.isParameterTimer(timer, PRM_BUTENT_INTERVAL)) {
+    if (ConcurrencyBean.isParameterTimer(timer, PRM_BUTENT_INTERVAL)) {
       suckButent(true);
-    } else if (cb.isParameterTimer(timer, PRM_MOTONET_HOURS)) {
+    } else if (ConcurrencyBean.isParameterTimer(timer, PRM_MOTONET_HOURS)) {
       suckMotonet(true);
     }
   }
@@ -408,8 +407,8 @@ public class TecDocBean implements HasTimerService {
 
       SimpleRowSet rows = ButentWS.connect(remoteAddress, remoteLogin, remotePassword)
           .getSQLData("SELECT " + fldList.toString()
-              + " FROM prekes"
-              + " WHERE " + itemsFilter,
+                  + " FROM prekes"
+                  + " WHERE " + itemsFilter,
               fields.keySet().toArray(new String[0]));
 
       if (rows.getNumberOfRows() > 0) {
@@ -430,11 +429,11 @@ public class TecDocBean implements HasTimerService {
       }
       rows = ButentWS.connect(remoteAddress, remoteLogin, remotePassword)
           .getSQLData("SELECT likuciai.sandelis AS sn, likuciai.preke AS pr,"
-              + " sum(likuciai.kiekis) AS lk"
-              + " FROM likuciai INNER JOIN sand"
-              + " ON likuciai.sandelis = sand.sandelis AND sand.sand_mode LIKE '%e%'"
-              + " INNER JOIN prekes ON likuciai.preke = prekes.preke AND " + itemsFilter
-              + " GROUP by likuciai.sandelis, likuciai.preke HAVING lk > 0",
+                  + " sum(likuciai.kiekis) AS lk"
+                  + " FROM likuciai INNER JOIN sand"
+                  + " ON likuciai.sandelis = sand.sandelis AND sand.sand_mode LIKE '%e%'"
+                  + " INNER JOIN prekes ON likuciai.preke = prekes.preke AND " + itemsFilter
+                  + " GROUP by likuciai.sandelis, likuciai.preke HAVING lk > 0",
               "sn", "pr", "lk");
 
       if (rows.getNumberOfRows() > 0) {
@@ -457,11 +456,6 @@ public class TecDocBean implements HasTimerService {
         @Override
         public String getId() {
           return BeeUtils.join("-", TecDocBean.class.getName(), PRM_MOTONET_HOURS);
-        }
-
-        @Override
-        public long getTimeout() {
-          return TimeUtils.MILLIS_PER_DAY * 2;
         }
 
         @Override
@@ -595,7 +589,7 @@ public class TecDocBean implements HasTimerService {
                             SqlUtils.join("tof_designations", "des_lng_id", "tof_languages",
                                 "lng_id"),
                             SqlUtils.equals("tof_languages", "lng_iso2", "lt")))
-                    ))))));
+                ))))));
 
     init.add(SqlUtils.createPrimaryKey(des, SqlUtils.uniqueName(),
         Collections.singletonList("des_id")));
@@ -1070,11 +1064,11 @@ public class TecDocBean implements HasTimerService {
     qs.updateData(new SqlUpdate(TBL_TCD_CATEGORIES)
         .addExpression(COL_TCD_CATEGORY_PARENT, SqlUtils.field(als, COL_TCD_CATEGORY_PARENT))
         .setFrom(new SqlSelect()
-            .addFields(categ, COL_TCD_CATEGORY_PARENT)
-            .addFields(TBL_TCD_TECDOC_CATEGORIES, COL_TCD_CATEGORY)
-            .addFrom(categ)
-            .addFromInner(TBL_TCD_TECDOC_CATEGORIES, SqlUtils.join(categ, TCD_CATEGORY_ID,
-                TBL_TCD_TECDOC_CATEGORIES, TCD_TECDOC_ID)),
+                .addFields(categ, COL_TCD_CATEGORY_PARENT)
+                .addFields(TBL_TCD_TECDOC_CATEGORIES, COL_TCD_CATEGORY)
+                .addFrom(categ)
+                .addFromInner(TBL_TCD_TECDOC_CATEGORIES, SqlUtils.join(categ, TCD_CATEGORY_ID,
+                    TBL_TCD_TECDOC_CATEGORIES, TCD_TECDOC_ID)),
             als, sys.joinTables(TBL_TCD_CATEGORIES, als, COL_TCD_CATEGORY)));
 
     qs.sqlDropTemp(categ);

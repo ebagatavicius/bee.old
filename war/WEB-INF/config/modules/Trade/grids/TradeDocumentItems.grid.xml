@@ -77,8 +77,10 @@
               expression="(row.Parent ? row.ParentCost : row.Cost) * row.Quantity" />
     </CalcColumn>
 
-    <RelColumn name="Warehouse" choiceColumns="Code Name" renderColumns="WarehouseCode"
-               newRowEnabled="false" visible="false" />
+    <RelColumn name="ItemWarehouseFrom" caption="=trdWarehouseFromShort" choiceColumns="Code Name"
+               renderColumns="ItemWarehouseFromCode" newRowEnabled="false" visible="false" />
+    <RelColumn name="ItemWarehouseTo" caption="=trdWarehouseToShort" choiceColumns="Code Name"
+               renderColumns="ItemWarehouseToCode" newRowEnabled="false" visible="false" />
 
     <RelColumn name="Employee" renderColumns="EmployeeFirstName EmployeeLastName"
                sortBy="EmployeeLastName EmployeeFirstName" newRowEnabled="false" visible="false" />

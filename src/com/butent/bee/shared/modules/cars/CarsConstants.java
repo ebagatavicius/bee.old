@@ -13,9 +13,11 @@ public final class CarsConstants {
   public static final String SVC_SAVE_OBJECT = "SaveObject";
   public static final String SVC_SAVE_OBJECT_INFO = "SaveObjectInfo";
   public static final String SVC_GET_OBJECT = "GetObject";
+  public static final String SVC_GET_CALENDAR = "GetCalendar";
 
   public static final String TBL_CONF_GROUPS = "ConfGroups";
   public static final String TBL_CONF_OPTIONS = "ConfOptions";
+  public static final String TBL_CONF_PACKET_OPTIONS = "ConfPacketOptions";
   public static final String TBL_CONF_PRICELIST = "ConfPricelist";
   public static final String TBL_CONF_DIMENSIONS = "ConfDimensions";
   public static final String TBL_CONF_BUNDLES = "ConfBundles";
@@ -31,18 +33,25 @@ public final class CarsConstants {
   public static final String TBL_CAR_ORDERS = "CarOrders";
   public static final String TBL_CAR_ORDER_ITEMS = "CarOrderItems";
 
-  public static final String TBL_STAGES = "Stages";
-  public static final String TBL_STAGE_CONDITIONS = "StageConditions";
-  public static final String TBL_STAGE_ACTIONS = "StageActions";
-  public static final String TBL_STAGE_TRIGGERS = "StageTriggers";
+  public static final String TBL_CAR_BUNDLES = "CarBundles";
+  public static final String TBL_CAR_BUNDLE_JOBS = "CarBundleJobs";
+  public static final String TBL_CAR_BUNDLE_ITEMS = "CarBundleItems";
+
+  public static final String TBL_SERVICE_ORDERS = "CarServiceOrders";
+  public static final String TBL_SERVICE_ORDER_ITEMS = "CarServiceItems";
+  public static final String TBL_SERVICE_ORDER_JOBS = "CarServiceJobs";
+  public static final String TBL_SERVICE_JOB_PROGRESS = "CarJobProgress";
+  public static final String TBL_SERVICE_EVENTS = "CarServiceEvents";
 
   public static final String VIEW_CARS = "Cars";
+  public static final String VIEW_CAR_RECALLS = "CarRecalls";
 
   public static final String COL_BRANCH = "Branch";
   public static final String COL_BRANCH_NAME = "BranchName";
   public static final String COL_OPTION = "Option";
   public static final String COL_OPTION_NAME = "OptionName";
   public static final String COL_CODE = "Code";
+  public static final String COL_CODE2 = "Code2";
   public static final String COL_DESCRIPTION = "Description";
   public static final String COL_CRITERIA = "Criteria";
   public static final String COL_BUNDLE = "Bundle";
@@ -59,25 +68,25 @@ public final class CarsConstants {
   public static final String COL_DENIED = "Denied";
   public static final String COL_OBJECT = "Object";
   public static final String COL_PHOTO_CODE = "PhotoCode";
+  public static final String COL_PACKET = "Packet";
 
   public static final String COL_ORDER = "Order";
   public static final String COL_CAR = "Car";
+  public static final String COL_SERVICE_ORDER = "ServiceOrder";
+  public static final String COL_JOB = "Job";
+  public static final String COL_DURATION = "Duration";
+  public static final String COL_SERVICE_EVENT = "ServiceEvent";
+  public static final String COL_BUNDLE_NAME = "BundleName";
+  public static final String COL_VALID_UNTIL = "ValidUntil";
 
-  public static final String COL_STAGE = "Stage";
-  public static final String COL_STAGE_VIEW = "ViewName";
-  public static final String COL_STAGE_NAME = "StageName";
-
-  public static final String COL_STAGE_FIELD = "Field";
-  public static final String COL_STAGE_OPERATOR = "Operator";
-  public static final String COL_STAGE_VALUE = "Value";
-  public static final String COL_STAGE_ACTION = "Action";
-  public static final String COL_STAGE_TRIGGER = "Trigger";
+  public static final String COL_CHECKED = "Checked";
 
   public static final String FORM_CONF_OPTION = "ConfOption";
   public static final String FORM_CAR_ORDER = "CarOrder";
   public static final String FORM_CAR = "Car";
   public static final String FORM_TEMPLATE = "ConfTemplate";
-  public static final String FORM_STAGES = "StageEditor";
+  public static final String FORM_CAR_SERVICE_ORDER = "CarServiceOrder";
+  public static final String FORM_CAR_SERVICE_EVENT = "CarServiceEvent";
 
   public static final String VAR_PRICE_DEFAULT = "PriceDefault";
   public static final String VAR_PRICE_OPTIONAL = "PriceOptional";

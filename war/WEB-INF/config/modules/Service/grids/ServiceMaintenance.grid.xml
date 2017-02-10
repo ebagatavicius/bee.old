@@ -7,7 +7,7 @@
   >
   <g:columns>
     <IdColumn name="Id" />
-    <DataColumn name="CreatorDepartmentName" visible="true"/>
+    <DataColumn name="DepartmentName" visible="true"/>
     <RelColumn name="Type" renderColumns="TypeName" visible="true" />
     <DataColumn name="CompanyName" label="=client" visible="true"/>
     <RelColumn name="Contact" renderColumns="ContactFirstName ContactLastName" label="=contact" visible="true" />

@@ -48,9 +48,12 @@ data-source add \
         ("rolesQuery"=>"SELECT ?, 'Roles'") \
     ])
 
+/subsystem=ee/managed-executor-service=default:write-attribute(name=hung-task-threshold,value=3600000)
+/subsystem=ee/managed-executor-service=default:write-attribute(name=core-threads,value=45)
+/subsystem=ee/managed-executor-service=default:write-attribute(name=max-threads,value=45)
+/subsystem=ee/managed-executor-service=default:write-attribute(name=queue-length,value=2147483647)
+
 /subsystem=transactions:write-attribute(name=default-timeout,value=1800)
-/subsystem=ee/managed-executor-service=default:write-attribute(name=max-threads,value=250)
-/subsystem=ee/managed-executor-service=default:write-attribute(name=queue-length,value=0)
 /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=max-post-size,value=104857600)
 
 reload

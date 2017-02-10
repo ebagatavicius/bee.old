@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="ConfPacketOptions" source="ConfPacketOptions" caption="=packets"
+>
+  <Columns>
+    <SimpleColumn name="Packet" />
+    <SimpleColumn name="Option" />
+  </Columns>
+</View>
