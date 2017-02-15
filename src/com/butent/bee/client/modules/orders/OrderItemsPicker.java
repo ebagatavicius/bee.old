@@ -32,6 +32,11 @@ class OrderItemsPicker extends ItemsPicker {
       params.addDataItem(ClassifierConstants.COL_WAREHOUSE, getWarehouseFrom());
     }
 
+    if (getRemainderValue()) {
+      params.addDataItem(ClassifierConstants.COL_WAREHOUSE_REMAINDER, String
+          .valueOf(getRemainderValue()));
+    }
+
     if (filter != null) {
       params.addDataItem(Service.VAR_VIEW_WHERE, filter.serialize());
     }

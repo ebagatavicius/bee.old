@@ -1,57 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<View xmlns="http://www.butent.com/view"
+<View xmlns="http://www.butent.com/view" xmlns:xi="http://www.w3.org/2001/XInclude"
 
-  name="Discounts" source="Discounts" module="Classifiers"
-  caption="=discounts" newRowCaption="=discountNew"
-  >
+      name="Discounts" source="Discounts" module="Classifiers"
+      caption="=discounts" newRowCaption="=discountNew"
+      filter="!(CarDiscount)"
+>
   <Columns>
-    <SimpleColumn name="Company" />
-    <SimpleJoin name="Company" joinType="LEFT">
-      <SimpleColumn name="Name" alias="CompanyName" />
-    </SimpleJoin>
+    <xi:include href="viewcolumns/Discounts.viewcolumns.xml" />
 
-    <SimpleColumn name="Category" />
-    <SimpleJoin name="Category" joinType="LEFT">
-      <SimpleColumn name="Name" alias="CategoryName" />
-    </SimpleJoin>
-    
-    <SimpleColumn name="Item" />
-    <SimpleJoin name="Item" joinType="LEFT">
-      <SimpleColumn name="Name" alias="ItemName" />
-      <SimpleColumn name="Article" />
-    </SimpleJoin>
-
-    <SimpleColumn name="Operation" />
-    <SimpleJoin name="Operation" joinType="LEFT">
-      <SimpleColumn name="OperationName" />
-    </SimpleJoin>
-
-    <SimpleColumn name="Warehouse" />
-    <SimpleJoin name="Warehouse" joinType="LEFT">
-      <SimpleColumn name="Code" alias="WarehouseCode" />
-      <SimpleColumn name="Name" alias="WarehouseName" />
-    </SimpleJoin>
-
-    <SimpleColumn name="DateFrom" />
-    <SimpleColumn name="DateTo" />
-
-    <SimpleColumn name="QuantityFrom" />
-    <SimpleColumn name="QuantityTo" />
-    <SimpleColumn name="Unit" />
-    <SimpleJoin joinType="LEFT" name="Unit">
-      <SimpleColumn name="Name" alias="UnitName" />
-    </SimpleJoin>
-
-    <SimpleColumn name="PriceName" />
-
-    <SimpleColumn name="Percent" />
-
-    <SimpleColumn name="Price" />
-    <SimpleColumn name="Currency" />
-    <SimpleJoin joinType="LEFT" name="Currency">
-      <SimpleColumn name="Name" alias="CurrencyName" />
-    </SimpleJoin>
-
-    <SimpleColumn name="Note" />
+    <HiddenColumn name="CarDiscount" />
   </Columns>
 </View>

@@ -5,7 +5,7 @@
         name="CarServiceItems" viewName="CarServiceItems" autoFlex="true"
 >
   <g:columns>
-    <RelColumn name="Item" renderColumns="ItemName" flexGrow="2" visible="true">
+    <RelColumn name="Item" renderColumns="ItemName" flexGrow="2" visible="true" readOnly="true">
       <dynStyle>
         <ui:inline>color:blue;</ui:inline>
         <ui:expression>row.IsService</ui:expression>
@@ -18,10 +18,10 @@
     <DataColumn name="UnitName" label="=unitShort" />
 
     <DataColumn name="Price" scale="2" />
-    <DataColumn name="Discount" scale="0" carry="true">
+    <DataColumn name="Discount" scale="0">
       <editor type="number" percentageTag="DiscountIsPercent" />
     </DataColumn>
-    <DataColumn name="DiscountIsPercent" width="20" sortable="false" format="%" carry="true" />
+    <DataColumn name="DiscountIsPercent" width="20" sortable="false" format="%" />
 
     <DataColumn name="Vat" scale="0" carry="true">
       <editor type="number" percentageTag="VatIsPercent" />

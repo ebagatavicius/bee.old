@@ -7,7 +7,7 @@
   <g:columns>
     <DataColumn name="FirstName" visible="true" />
     <DataColumn name="LastName" visible="true" />
-    <DataColumn name="DateOfBirth" visible="true" minValue="1900" maxValue="2010" />
+    <DataColumn name="DateOfBirth" visible="true" minValue="1900" />
     <RelColumn name="Relation" visible="true" />
     <DataColumn name="Phone" visible="true" />
   </g:columns>

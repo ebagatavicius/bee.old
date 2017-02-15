@@ -27,7 +27,7 @@ public final class CellSource extends AbstractRenderer<IsRow> implements HasPrec
   }
 
   private enum SourceType {
-    COLUMN, PROPERTY, ID, VERSION;
+    COLUMN, PROPERTY, ID, VERSION
   }
 
   public static CellSource forColumn(IsColumn column, int index) {
@@ -319,7 +319,7 @@ public final class CellSource extends AbstractRenderer<IsRow> implements HasPrec
           return row.getValue(index);
         case PROPERTY:
           String s = row.getProperty(name, userId);
-          return BeeUtils.isEmpty(s) ? null : Value.parseValue(valueType, s, false);
+          return BeeUtils.isEmpty(s) ? null : Value.parseValue(valueType, s, false, null);
         case ID:
           return new LongValue(row.getId());
         case VERSION:

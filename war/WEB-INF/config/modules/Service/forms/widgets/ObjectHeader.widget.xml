@@ -58,12 +58,16 @@
 
   <center>
     <FlowPanel class="bee-svc-contact-panel">
-      <FlowPanel class="&mrcl;" style="&mrst;" for="Category">
-
-        <FlowPanel style="&mfld; width: 40em;" >
+      <FlowPanel class="&mrcl;" style="&mrst;">
+        <FlowPanel style="&mfld; width: 39em;" for="Category">
           <Label for="Category" style="&flbl;" />
           <DataSelector source="Category" viewName="ServiceTree" renderColumns="CategoryName"
                         choiceColumns="ParentName Name" style="&finp;"/>
+        </FlowPanel>
+
+        <FlowPanel style="&mfld; width: 20em;" for="ArticleNo">
+          <Label for="ArticleNo" style="&flbl;" />
+          <InputText source="ArticleNo" style="&finp;" />
         </FlowPanel>
       </FlowPanel>
 

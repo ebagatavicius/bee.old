@@ -15,5 +15,7 @@
     <Relation name="Manufacturer" relation="Companies" label="=tcdBrand" />
     <String name="Model" precision="200" label="=svcModel" />
     <String name="SerialNo" precision="200" label="=svcSerialNo" />
+
+    <String name="ArticleNo" precision="50" label="=ecItemCode" />
   </Fields>
 </Table>

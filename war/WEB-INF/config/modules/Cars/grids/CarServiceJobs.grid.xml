@@ -5,7 +5,8 @@
         name="CarServiceJobs" viewName="CarServiceJobs" autoFlex="true"
 >
   <g:columns>
-    <RelColumn name="Job" renderColumns="JobName" flexGrow="2" visible="true" caching="none" />
+    <RelColumn name="Job" renderColumns="JobName" flexGrow="2" visible="true" readOnly="true"
+               caching="none" />
     <DataColumn name="Code" flexGrow="1" />
 
     <DataColumn name="Duration">
@@ -14,10 +15,10 @@
     <DataColumn name="Quantity" scale="0" visible="true" />
 
     <DataColumn name="Price" scale="2" />
-    <DataColumn name="Discount" scale="0" carry="true">
+    <DataColumn name="Discount" scale="0">
       <editor type="number" percentageTag="DiscountIsPercent" />
     </DataColumn>
-    <DataColumn name="DiscountIsPercent" width="20" sortable="false" format="%" carry="true" />
+    <DataColumn name="DiscountIsPercent" width="20" sortable="false" format="%" />
 
     <DataColumn name="Vat" scale="0" carry="true">
       <editor type="number" percentageTag="VatIsPercent" />

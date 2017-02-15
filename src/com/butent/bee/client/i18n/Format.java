@@ -10,6 +10,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.value.ValueType;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.HasDateTimeFormat;
@@ -22,7 +23,9 @@ import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -219,12 +222,8 @@ public final class Format {
     return Localized.MONEY_SCALE;
   }
 
-  public static DateTimeFormat getDefaultDateFormat() {
-    return getPredefinedFormat(PredefinedFormat.DATE_SHORT);
-  }
-
-  public static DateTimeFormat getDefaultDateTimeFormat() {
-    return getPredefinedFormat(PredefinedFormat.DATE_TIME_SHORT);
+  public static DateOrdering getDefaultDateOrdering() {
+    return getDefaultDateTimeFormatInfo().dateOrdering();
   }
 
   public static NumberFormat getDefaultDoubleFormat() {
@@ -288,6 +287,18 @@ public final class Format {
     return dateTimeFormat;
   }
 
+  public static List<String> getWeekdaysNarrowStandalone() {
+    List<String> names = new ArrayList<>(TimeUtils.DAYS_PER_WEEK);
+
+    String[] arr = getDefaultDateTimeFormatInfo().weekdaysNarrowStandalone();
+    for (int i = 1; i < arr.length; i++) {
+      names.add(arr[i]);
+    }
+    names.add(arr[0]);
+
+    return names;
+  }
+
   public static DateTimeFormat parseDateTimeFormat(String pattern) {
     DateTimeFormat format = parsePredefinedFormat(pattern);
     if (format == null) {
@@ -304,7 +315,7 @@ public final class Format {
     if (BeeUtils.isEmpty(s)) {
       return null;
     } else if (format == null) {
-      return TimeUtils.parseDate(s);
+      return TimeUtils.parseDate(s, getDefaultDateOrdering());
     } else {
       return JustDate.get(parseDateTimeQuietly(format, s));
     }
@@ -322,7 +333,7 @@ public final class Format {
       }
     }
 
-    return TimeUtils.parseDateTime(s);
+    return TimeUtils.parseDateTime(s, getDefaultDateOrdering());
   }
 
   public static Double parseQuietly(NumberFormat format, String s) {
@@ -531,10 +542,6 @@ public final class Format {
     }
   }
 
-  public static String renderMonthFull(HasYearMonth date) {
-    return (date == null) ? null : getDefaultDateTimeFormatInfo().monthsFull()[date.getMonth() - 1];
-  }
-
   public static String renderMonthFullStandalone(HasYearMonth date) {
     return (date == null) ? null : renderMonthFullStandalone(date.getMonth());
   }
@@ -563,7 +570,7 @@ public final class Format {
       return render(PredefinedFormat.DATE_LONG, start);
 
     } else if (start.getDom() == 1 && end.getDom() == 1 && TimeUtils.monthDiff(start, end) == 1) {
-      return BeeUtils.joinWords(start.getYear(), renderMonthFullStandalone(start.getMonth()));
+      return render(PredefinedFormat.YEAR_MONTH_STANDALONE, start);
 
     } else if (start.getMonth() % 3 == 1 && start.getDom() == 1 && end.getDom() == 1
         && TimeUtils.monthDiff(start, end) == 3) {
@@ -571,7 +578,7 @@ public final class Format {
 
     } else if (start.getMonth() == 1 && start.getDom() == 1
         && end.getYear() == start.getYear() + 1 && end.getMonth() == 1 && end.getDom() == 1) {
-      return BeeUtils.toString(start.getYear());
+      return render(PredefinedFormat.YEAR, start);
 
     } else {
       return TimeUtils.renderPeriod(start, end);
@@ -582,7 +589,7 @@ public final class Format {
     if (ym == null) {
       return null;
     } else {
-      return BeeUtils.joinWords(ym.getYear(), renderMonthFullStandalone(ym).toLowerCase());
+      return render(PredefinedFormat.YEAR_MONTH_STANDALONE, ym.getDate());
     }
   }
 

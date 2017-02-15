@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view" xmlns:xi="http://www.w3.org/2001/XInclude"
+
+      name="CarDiscounts" source="Discounts"
+      caption="=discounts" newRowCaption="=discountNew"
+>
+  <Columns>
+    <xi:include href="../../Classifiers/views/viewcolumns/Discounts.viewcolumns.xml" />
+
+    <SimpleJoin name="CarDiscount" joinType="LEFT">
+      <SimpleColumn name="Model" />
+      <SimpleJoin name="Model" joinType="LEFT">
+        <SimpleJoin name="Parent" joinType="LEFT">
+          <SimpleColumn name="Name" alias="ParentModelName" />
+        </SimpleJoin>
+        <SimpleColumn name="Name" alias="ModelName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="ProducedFrom" />
+      <SimpleColumn name="ProducedTo" />
+
+      <SimpleColumn name="Job" />
+      <SimpleJoin joinType="LEFT" name="Job">
+        <SimpleColumn name="JobName" />
+        <SimpleColumn name="Code" />
+      </SimpleJoin>
+    </SimpleJoin>
+  </Columns>
+</View>

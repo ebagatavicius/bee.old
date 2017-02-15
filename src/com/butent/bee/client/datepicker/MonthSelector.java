@@ -6,6 +6,7 @@ import com.google.gwt.dom.client.Element;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.datepicker.DatePicker.CssClasses;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Image;
@@ -81,7 +82,7 @@ class MonthSelector extends Component {
   @Override
   protected void refresh() {
     YearMonth current = getModel().getCurrentMonth();
-    monthName.setHtml(getModel().format(current));
+    monthName.setHtml(Format.renderYearMonth(current));
 
     refresh(prevYear, current.previousYear());
     refresh(prevMonth, current.previousMonth());
@@ -112,7 +113,7 @@ class MonthSelector extends Component {
     widget.setEnabled(enabled);
 
     if (enabled) {
-      widget.setTitle(getModel().format(ym));
+      widget.setTitle(Format.renderYearMonth(ym));
     } else {
       widget.setTitle(BeeConst.STRING_EMPTY);
     }

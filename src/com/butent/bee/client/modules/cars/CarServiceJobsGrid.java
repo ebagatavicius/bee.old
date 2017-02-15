@@ -5,6 +5,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_CURRENCY;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.Global;
@@ -16,6 +18,7 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.i18n.Money;
+import com.butent.bee.client.modules.classifiers.ClassifierKeeper;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.DataView;
@@ -24,6 +27,8 @@ import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.interceptor.ParentRowRefreshGrid;
 import com.butent.bee.client.widget.CustomAction;
+import com.butent.bee.shared.Latch;
+import com.butent.bee.shared.Service;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
@@ -36,6 +41,7 @@ import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -83,12 +89,11 @@ public class CarServiceJobsGrid extends ParentRowRefreshGrid implements Selector
     } else if (event.isChangePending()) {
       String srcView = event.getRelatedViewName();
       IsRow srcRow = event.getRelatedRow();
-
       if (srcRow == null) {
         return;
       }
       DataView dataView = ViewHelper.getDataView(event.getSelector());
-      if (dataView == null || BeeUtils.isEmpty(dataView.getViewName())) {
+      if (dataView == null || BeeUtils.isEmpty(dataView.getViewName()) || !dataView.isFlushable()) {
         return;
       }
       IsRow target = dataView.getActiveRow();
@@ -106,22 +111,43 @@ public class CarServiceJobsGrid extends ParentRowRefreshGrid implements Selector
       Long currency = BeeUtils.nvl(Data.getLong(srcView, srcRow, COL_MODEL + COL_CURRENCY),
           Data.getLong(srcView, srcRow, COL_CURRENCY));
 
+      DateTime mainDate = parentForm.getDateTimeValue(COL_DATE);
+      Long mainCurrency = parentForm.getLongValue(COL_CURRENCY);
+
       if (BeeUtils.allNotNull(price, currency)) {
-        price = BeeUtils.round(Money.exchange(currency, parentForm.getLongValue(COL_CURRENCY),
-            price, parentForm.getDateTimeValue(COL_DATE)), 2);
+        price = BeeUtils.round(Money.exchange(currency, mainCurrency, price, mainDate), 2);
       }
       values.put(COL_PRICE, BeeUtils.toStringOrNull(price));
+      values.put(COL_TRADE_DOCUMENT_ITEM_DISCOUNT, null);
+      values.put(COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT, null);
 
-      values.forEach((col, val) -> {
-        int colIndex = dataView.getDataIndex(col);
-
-        if (dataView.isFlushable()) {
-          target.setValue(colIndex, val);
-          dataView.refreshBySource(col);
-        } else {
-          target.preliminaryUpdate(colIndex, val);
-        }
+      Runnable action = () -> values.forEach((col, val) -> {
+        target.setValue(dataView.getDataIndex(col), val);
+        dataView.refreshBySource(col);
       });
+      Long item = Data.getLong(srcView, srcRow, COL_ITEM);
+
+      if (DataUtils.isId(item)) {
+        Map<String, Long> options = new HashMap<>();
+        options.put(COL_DISCOUNT_COMPANY, parentForm.getLongValue(COL_CUSTOMER));
+        options.put(Service.VAR_TIME, mainDate.getTime());
+        options.put(COL_DISCOUNT_CURRENCY, mainCurrency);
+        options.put(COL_MODEL, parentForm.getLongValue(COL_MODEL));
+        options.put(COL_PRODUCTION_DATE, parentForm.getLongValue(COL_PRODUCTION_DATE));
+        options.put(COL_JOB, event.getValue());
+
+        ClassifierKeeper.getPriceAndDiscount(item, options, (prc, percent) -> {
+          if (BeeUtils.isPositive(prc)) {
+            values.put(COL_PRICE, BeeUtils.toString(prc, 2));
+          }
+          values.put(COL_TRADE_DOCUMENT_ITEM_DISCOUNT, BeeUtils.toStringOrNull(percent));
+          values.put(COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT,
+              BeeUtils.toString(BeeUtils.isPositive(percent)));
+          action.run();
+        });
+      } else {
+        action.run();
+      }
     }
   }
 
@@ -181,6 +207,8 @@ public class CarServiceJobsGrid extends ParentRowRefreshGrid implements Selector
 
                 List<BeeColumn> cols = new ArrayList<>();
                 cols.add(info.getColumn(COL_SERVICE_ORDER));
+                cols.add(info.getColumn(COL_TRADE_DOCUMENT_ITEM_DISCOUNT));
+                cols.add(info.getColumn(COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT));
 
                 rs.getColumns().stream()
                     .filter(BeeColumn::isEditable)
@@ -189,7 +217,14 @@ public class CarServiceJobsGrid extends ParentRowRefreshGrid implements Selector
                     .forEach(col -> cols.add(info.getColumn(col)));
 
                 BeeRowSet newRs = new BeeRowSet(info.getViewName(), cols);
+                Latch latch = new Latch(rs.getNumberOfRows());
 
+                Runnable action = () -> {
+                  latch.decrement();
+                  if (latch.isOpen()) {
+                    Queries.insertRows(newRs, insertCallback);
+                  }
+                };
                 rs.forEach(beeRow -> {
                   BeeRow newRow = newRs.addEmptyRow();
 
@@ -212,13 +247,43 @@ public class CarServiceJobsGrid extends ParentRowRefreshGrid implements Selector
                         }
                         break;
 
+                      case COL_TRADE_DOCUMENT_ITEM_DISCOUNT:
+                      case COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT:
+                        break;
+
                       default:
                         newRow.setValue(i, beeRow.getString(rs.getColumnIndex(col)));
                         break;
                     }
                   }
+                  Long item = beeRow.getLong(rs.getColumnIndex(COL_ITEM));
+
+                  if (DataUtils.isId(item)) {
+                    Map<String, Long> options = new HashMap<>();
+                    options.put(COL_DISCOUNT_COMPANY, parentForm.getLongValue(COL_CUSTOMER));
+                    options.put(Service.VAR_TIME, parentForm.getLongValue(COL_DATE));
+                    options.put(COL_DISCOUNT_CURRENCY, parentForm.getLongValue(COL_CURRENCY));
+                    options.put(COL_MODEL, parentForm.getLongValue(COL_MODEL));
+                    options.put(COL_PRODUCTION_DATE, parentForm.getLongValue(COL_PRODUCTION_DATE));
+
+                    if (rs.containsColumn(COL_JOB)) {
+                      options.put(COL_JOB, beeRow.getLong(rs.getColumnIndex(COL_JOB)));
+                    }
+                    ClassifierKeeper.getPriceAndDiscount(item, options, (price, percent) -> {
+                      if (BeeUtils.isPositive(price)) {
+                        newRow.setValue(newRs.getColumnIndex(COL_PRICE), BeeUtils.round(price, 2));
+                      }
+                      newRow.setValue(newRs.getColumnIndex(COL_TRADE_DOCUMENT_ITEM_DISCOUNT),
+                          percent);
+                      newRow.setValue(newRs
+                              .getColumnIndex(COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT),
+                          BeeUtils.isPositive(percent));
+                      action.run();
+                    });
+                  } else {
+                    action.run();
+                  }
                 });
-                Queries.insertRows(newRs, insertCallback);
               });
             }
           });

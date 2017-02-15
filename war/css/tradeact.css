@@ -25,6 +25,10 @@
   display: none;
 }
 
+.bee-ta-picker-name-cell-bold {
+  font-weight: bold;
+}
+
 .bee-ta-picker-search-panel {
   margin-top: 2ex;
   margin-bottom: 2ex;
@@ -42,6 +46,12 @@
 }
 .bee-ta-picker-search-command:hover {
   color: black;
+}
+
+.bee-ta-picker-search-remainder{
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
 }
 
 .bee-ta-picker-search-spinner{

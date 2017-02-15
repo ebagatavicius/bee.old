@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public final class ClassifierKeeper {
@@ -95,6 +96,41 @@ public final class ClassifierKeeper {
     } else {
       consumer.accept(BeeConst.EMPTY_IMMUTABLE_INT_SET);
     }
+  }
+
+  public static void getPriceAndDiscount(Long item, Map<String, Long> options,
+      BiConsumer<Double, Double> consumer) {
+
+    Assert.notEmpty(options);
+    Assert.notNull(item);
+    Assert.notNull(consumer);
+
+    ParameterList params = createArgs(SVC_GET_PRICE_AND_DISCOUNT);
+
+    for (Map.Entry<String, Long> entry : options.entrySet()) {
+      if (!BeeUtils.isEmpty(entry.getKey()) && entry.getValue() != null) {
+        params.addQueryItem(entry.getKey(), entry.getValue());
+      }
+    }
+    params.addQueryItem(COL_DISCOUNT_ITEM, item);
+
+    if (Global.getExplain() > 0) {
+      params.addQueryItem(Service.VAR_EXPLAIN, Global.getExplain());
+    }
+    BeeKeeper.getRpc().makeGetRequest(params, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        Double price = null;
+        Double percent = null;
+
+        if (response.hasResponse()) {
+          Pair<String, String> pair = Pair.restore(response.getResponseAsString());
+          price = BeeUtils.toDoubleOrNull(pair.getA());
+          percent = BeeUtils.toDoubleOrNull(pair.getB());
+        }
+        consumer.accept(price, percent);
+      }
+    });
   }
 
   public static void getPricesAndDiscounts(Map<String, Long> options,

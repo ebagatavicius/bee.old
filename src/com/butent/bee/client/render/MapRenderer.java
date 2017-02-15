@@ -7,6 +7,7 @@ import com.butent.bee.shared.HasItems;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -47,7 +48,7 @@ public class MapRenderer extends AbstractCellRenderer implements HasItems {
     for (String s : splitter.split(item)) {
       switch (index) {
         case 0:
-          key = parse(s, true);
+          key = parse(s, true, DateOrdering.DEFAULT);
           break;
         case 1:
           value = Localized.maybeTranslate(s);
@@ -80,7 +81,8 @@ public class MapRenderer extends AbstractCellRenderer implements HasItems {
   public List<String> getItems() {
     List<String> result = new ArrayList<>();
     for (Map.Entry<String, String> entry : map.entrySet()) {
-      String key = Value.parseValue(getValueType(), entry.getKey(), false).toString();
+      String key = Value.parseValue(getValueType(), entry.getKey(),
+          false, DateOrdering.DEFAULT).toString();
       if (!BeeUtils.isEmpty(key)) {
         result.add(BeeUtils.joinWords(key, separator, entry.getValue()));
       }

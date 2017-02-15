@@ -1,5 +1,7 @@
 package com.butent.bee.shared.i18n.DateTimeFormatInfo;
 
+import com.butent.bee.shared.i18n.DateOrdering;
+
 /**
  * Implementation of DateTimeFormatInfo for the "fi" locale.
  */
@@ -40,6 +42,11 @@ public final class DateTimeFormatInfoFI implements DateTimeFormatInfo {
   @Override
   public String dateFormatShort() {
     return "d.M.y";
+  }
+
+  @Override
+  public DateOrdering dateOrdering() {
+    return DateOrdering.DMY;
   }
 
   @Override
@@ -120,6 +127,11 @@ public final class DateTimeFormatInfoFI implements DateTimeFormatInfo {
 
   @Override
   public String formatYearMonthFull() {
+    return "MMMM y";
+  }
+
+  @Override
+  public String formatYearMonthStandalone() {
     return "LLLL y";
   }
 

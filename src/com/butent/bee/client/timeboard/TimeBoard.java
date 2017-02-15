@@ -23,6 +23,7 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.MoveEvent;
 import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.event.logical.VisibilityChangeEvent;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.output.Printable;
@@ -490,8 +491,8 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
         JustDate end = TimeUtils.clamp(TimeBoardHelper.getDate(min, endPos, dayWidth),
             start, max);
 
-        String startLabel = start.toString();
-        String endLabel = end.toString();
+        String startLabel = Format.renderDate(start);
+        String endLabel = Format.renderDate(end);
 
         getStartSliderLabel().setVisible(true);
         getEndSliderLabel().setVisible(true);
@@ -1354,7 +1355,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
       StyleUtils.setLeft(startSlider, startPos);
       StyleUtils.setWidth(startSlider, getSliderWidth());
 
-      startSlider.setTitle(firstVisible.toString());
+      startSlider.setTitle(Format.renderDate(firstVisible));
 
       startSlider.addMoveHandler(this);
       rangeMovers.put(RangeMover.START_SLIDER, startSlider.getElement());
@@ -1365,7 +1366,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
       StyleUtils.setLeft(endSlider, endPos + getSliderWidth());
       StyleUtils.setWidth(endSlider, getSliderWidth());
 
-      endSlider.setTitle(TimeUtils.nextDay(lastVisible).toString());
+      endSlider.setTitle(Format.renderDate(TimeUtils.nextDay(lastVisible)));
 
       endSlider.addMoveHandler(this);
       rangeMovers.put(RangeMover.END_SLIDER, endSlider.getElement());

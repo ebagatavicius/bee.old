@@ -3,7 +3,6 @@ package com.butent.bee.client.modules.payroll;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.event.shared.HasHandlers;
-import com.google.gwt.i18n.client.LocaleInfo;
 
 import static com.butent.bee.shared.modules.payroll.PayrollConstants.*;
 
@@ -32,6 +31,7 @@ import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.shared.time.Grego;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -221,17 +221,15 @@ class WorkScheduleEditor extends AbstractFormInterceptor {
 
     panel.addStyleName(STYLE_CALENDAR_PANEL);
 
-    Label label = new Label(BeeUtils.joinWords(date.getYear(),
-        Format.renderMonthFullStandalone(date.getMonth()).toLowerCase()));
+    Label label = new Label(Format.render(PredefinedFormat.YEAR_MONTH_STANDALONE, date));
     label.addStyleName(STYLE_CALENDAR_LABEL);
     panel.add(label);
 
     HtmlTable table = new HtmlTable(STYLE_CALENDAR_TABLE);
 
-    String[] wn = LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().weekdaysNarrow();
-    for (int i = 0; i < TimeUtils.DAYS_PER_WEEK; i++) {
-      String text = (i == 6) ? wn[0] : wn[i + 1];
-      table.setText(0, i, text, STYLE_WEEKDAY_CELL);
+    List<String> wn = Format.getWeekdaysNarrowStandalone();
+    for (int i = 0; i < wn.size(); i++) {
+      table.setText(0, i, wn.get(i), STYLE_WEEKDAY_CELL);
     }
 
     JustDate startOfMonth = new JustDate(date.getYear(), date.getMonth(), 1);

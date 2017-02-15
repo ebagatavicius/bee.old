@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.view.edit.SimpleEditorHandler;
 import com.butent.bee.client.widget.Button;
@@ -265,7 +266,7 @@ public class DateTimeFilterSupplier extends AbstractFilterSupplier {
 
     if (start != null && end != null && TimeUtils.isMeq(start, end)) {
       List<String> messages = Lists.newArrayList(Localized.dictionary().invalidRange(),
-          start.toString(), end.toString());
+          Format.renderDate(start), Format.renderDate(end));
       Global.showError(messages);
       return;
     }

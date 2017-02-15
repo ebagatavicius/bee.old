@@ -2,6 +2,7 @@ package com.butent.bee.shared.modules.finance;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -14,6 +15,7 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public final class Dimensions {
+public final class Dimensions implements BeeSerializable {
 
   public static final int SPACETIME = 10;
 
@@ -237,6 +239,12 @@ public final class Dimensions {
     return new Dimensions(values);
   }
 
+  public static Dimensions restore(String s) {
+    Dimensions dimensions = new Dimensions(new Long[observed]);
+    dimensions.deserialize(s);
+    return dimensions;
+  }
+
   private static String getColumnPrefix(int ordinal) {
     return "Dim" + BeeUtils.toLeadingZeroes(ordinal, 2);
   }
@@ -277,6 +285,20 @@ public final class Dimensions {
       filter.add(Filter.equalsOrIsNull(RELATION_COLUMNS[i], values[i]));
     }
     return filter;
+  }
+
+  @Override
+  public void deserialize(String s) {
+    String[] arr = Codec.beeDeserializeCollection(s);
+
+    for (int i = 0; i < values.length; i++) {
+      values[i] = BeeUtils.toLongOrNull(ArrayUtils.getQuietly(arr, i));
+    }
+  }
+
+  @Override
+  public String serialize() {
+    return Codec.beeSerialize(values);
   }
 
   @Override

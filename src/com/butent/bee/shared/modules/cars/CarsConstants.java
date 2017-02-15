@@ -33,6 +33,8 @@ public final class CarsConstants {
   public static final String TBL_CAR_ORDERS = "CarOrders";
   public static final String TBL_CAR_ORDER_ITEMS = "CarOrderItems";
 
+  public static final String TBL_CAR_DISCOUNTS = "CarDiscounts";
+
   public static final String TBL_CAR_BUNDLES = "CarBundles";
   public static final String TBL_CAR_BUNDLE_JOBS = "CarBundleJobs";
   public static final String TBL_CAR_BUNDLE_ITEMS = "CarBundleItems";
@@ -80,6 +82,9 @@ public final class CarsConstants {
   public static final String COL_VALID_UNTIL = "ValidUntil";
 
   public static final String COL_CHECKED = "Checked";
+  public static final String COL_CAR_DISCOUNT = "CarDiscount";
+  public static final String COL_PRODUCED_FROM = "ProducedFrom";
+  public static final String COL_PRODUCED_TO = "ProducedTo";
 
   public static final String FORM_CONF_OPTION = "ConfOption";
   public static final String FORM_CAR_ORDER = "CarOrder";

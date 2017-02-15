@@ -245,7 +245,8 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
         filters.add(Filter.equals(columnId, BeeUtils.toLongOrNull(value)));
 
       } else {
-        filters.add(Filter.isEqual(columnId, Value.parseValue(getColumnType(), value, false)));
+        filters.add(Filter.isEqual(columnId,
+            Value.parseValue(getColumnType(), value, false, null)));
       }
     }
 

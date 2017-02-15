@@ -1,5 +1,7 @@
 package com.butent.bee.shared.utils;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
 import com.butent.bee.shared.Assert;
@@ -301,6 +303,10 @@ public final class Codec {
     } else if (obj instanceof BeeSerializable) {
       sb.append(beeSerialize(((BeeSerializable) obj).serialize()));
 
+    } else if (obj instanceof Multimap) {
+      items = ((Multimap) obj).size() * 2;
+      ((Multimap<?, ?>) obj).forEach((k, v) -> sb.append(beeSerialize(k)).append(beeSerialize(v)));
+
     } else {
       String s;
 
@@ -485,12 +491,24 @@ public final class Codec {
     return result;
   }
 
+  public static Multimap<String, String> deserializeMultiMap(String data) {
+    Multimap<String, String> result = ArrayListMultimap.create();
+
+    String[] arr = beeDeserializeCollection(data);
+    if (arr != null) {
+      for (int i = 0; i < arr.length - 1; i += 2) {
+        result.put(arr[i], arr[i + 1]);
+      }
+    }
+
+    return result;
+  }
+
   /**
    * Encodes {@code s} using Base64 algorithm.
    * @param s a String to encode
    * @return encoded String.
    */
-
   public static String encodeBase64(String s) {
     Assert.notNull(s);
     int len = s.length();

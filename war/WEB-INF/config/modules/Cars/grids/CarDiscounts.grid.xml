@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui" xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="CarDiscounts" viewName="CarDiscounts" caption="=discounts"
+        flexGrow="1"
+>
+  <g:columns>
+    <RelColumn name="Company" editPopup="true" />
+    <RelColumn name="Category" choiceColumns="ParentName Name" />
+    <RelColumn name="Item" editPopup="true" />
+  </g:columns>
+
+  <xi:include href="../../Classifiers/grids/columns/Discount.columns.xml" />
+
+  <g:columns>
+    <RelColumn name="Model" newRowEnabled="false" />
+    <DataColumn name="ProducedFrom" />
+    <DataColumn name="ProducedTo" />
+    <RelColumn name="Job" newRowEnabled="false" />
+  </g:columns>
+
+  <g:rowValidation>
+    <ui:function>
+      if (!(row.Company || row.Category || row.Item || row.Model || row.Job)) {
+      return $wnd.Bee_maybeTranslate("=company+, +=category+, +=item+, +=vehicleModel+, +=serviceJob+: +=allValuesCannotBeEmpty");
+      }
+      if (!(row.PriceName || row.Percent || row.Price > 0)) {
+      return $wnd.Bee_maybeTranslate("=priceName+, +=discountPercent+, +=discountPrice+: +=allValuesCannotBeEmpty");
+      }
+      return null;
+    </ui:function>
+  </g:rowValidation>
+</g:Grid>

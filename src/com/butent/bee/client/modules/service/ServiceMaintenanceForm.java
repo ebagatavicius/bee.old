@@ -5,12 +5,15 @@ import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
+import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.Disclosure;
+import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.InputBoolean;
@@ -55,8 +58,10 @@ import com.butent.bee.shared.utils.Codec;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
     implements SelectorEvent.Handler, RowUpdateEvent.Handler {
@@ -203,6 +208,42 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
 
   public Flow getMaintenanceComments() {
     return maintenanceComments;
+  }
+
+  @Override
+  protected void getReportData(Consumer<BeeRowSet[]> dataConsumer) {
+    super.getReportData(dataConsumer);
+  }
+
+  @Override
+  protected void getReportParameters(Consumer<Map<String, String>> parametersConsumer) {
+    super.getReportParameters(defaultParameters -> {
+      Widget widget = getFormView().getWidgetBySource(COL_EQUIPMENT);
+
+      if (widget instanceof MultiSelector) {
+        MultiSelector selector = (MultiSelector) widget;
+        List<Long> ids = DataUtils.parseIdList(selector.getValue());
+
+        if (!ids.isEmpty()) {
+          List<String> labels = new ArrayList<>();
+          for (Long id : ids) {
+            labels.add(selector.getRowLabel(id));
+          }
+          defaultParameters.put(COL_EQUIPMENT, BeeUtils.joinItems(labels));
+        }
+      }
+      defaultParameters.put(PRM_EXTERNAL_MAINTENANCE_URL,
+          Global.getParameterText(PRM_EXTERNAL_MAINTENANCE_URL));
+
+      Map<String, Long> companies = new HashMap<>();
+      String creatorCompanyAlias = COL_CREATOR + COL_COMPANY;
+      companies.put(creatorCompanyAlias, getLongValue(creatorCompanyAlias));
+
+      ClassifierUtils.getCompaniesInfo(companies, companiesInfo -> {
+        defaultParameters.putAll(companiesInfo);
+        parametersConsumer.accept(defaultParameters);
+      });
+    });
   }
 
   @Override
@@ -578,6 +619,8 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
             eventRow.getValue(Data.getColumnIndex(viewName, COL_MODEL)));
         row.setValue(form.getDataIndex(COL_SERIAL_NO),
             eventRow.getValue(Data.getColumnIndex(viewName, COL_SERIAL_NO)));
+        row.setValue(form.getDataIndex(COL_ARTICLE_NO),
+            eventRow.getValue(Data.getColumnIndex(viewName, COL_ARTICLE_NO)));
         row.setValue(form.getDataIndex(ALS_SERVICE_CONTRACTOR_NAME),
             eventRow.getValue(Data.getColumnIndex(viewName, ALS_SERVICE_CONTRACTOR_NAME)));
         ServiceUtils.fillContactValues(row, eventRow);

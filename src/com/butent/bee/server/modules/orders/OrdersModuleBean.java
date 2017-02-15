@@ -51,11 +51,7 @@ import com.butent.bee.shared.exceptions.BeeException;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
-import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
-import com.butent.bee.shared.modules.orders.OrdersConstants;
-import com.butent.bee.shared.modules.orders.OrdersConstants.*;
 import com.butent.bee.shared.modules.trade.Totalizer;
-import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
@@ -127,7 +123,7 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
         response = getTemplateItems(reqInfo);
         break;
 
-      case OrdersConstants.SVC_CREATE_INVOICE_ITEMS:
+      case com.butent.bee.shared.modules.orders.OrdersConstants.SVC_CREATE_INVOICE_ITEMS:
         response = createInvoiceItems(reqInfo);
         break;
 
@@ -299,7 +295,8 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
   private ResponseObject getItemsForSelection(RequestInfo reqInfo) {
 
     String where = reqInfo.getParameter(Service.VAR_VIEW_WHERE);
-    Long warehouse = reqInfo.getParameterLong(ClassifierConstants.COL_WAREHOUSE);
+    Long warehouse = reqInfo.getParameterLong(COL_WAREHOUSE);
+    boolean remChecked = reqInfo.hasParameter(COL_WAREHOUSE_REMAINDER);
 
     CompoundFilter filter = Filter.and();
     filter.add(Filter.isNull(COL_ITEM_IS_SERVICE));
@@ -308,9 +305,9 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
       filter.add(Filter.restore(where));
     }
 
-    if (warehouse != null) {
-      filter.add(Filter.in(sys.getIdName(TBL_ITEMS), VIEW_ITEM_REMAINDERS, COL_ITEM, Filter.equals(
-          ClassifierConstants.COL_WAREHOUSE, warehouse)));
+    if (warehouse != null && !remChecked) {
+      filter.add(Filter.in(sys.getIdName(TBL_ITEMS), VIEW_ITEM_REMAINDERS, COL_ITEM, Filter.and(
+          Filter.equals(COL_WAREHOUSE, warehouse), Filter.notNull(COL_WAREHOUSE_REMAINDER))));
     }
 
     BeeRowSet items = qs.getViewData(VIEW_ITEMS, filter);
@@ -424,7 +421,7 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
 
     SqlSelect query = new SqlSelect();
     query.addFields(TBL_ORDER_ITEMS, sys.getIdName(TBL_ORDER_ITEMS), COL_ORDER, COL_TRADE_VAT_PLUS,
-        TradeConstants.COL_TRADE_VAT, COL_TRADE_VAT_PERC, COL_INCOME_ITEM, COL_RESERVED_REMAINDER,
+        COL_TRADE_VAT, COL_TRADE_VAT_PERC, COL_INCOME_ITEM, COL_RESERVED_REMAINDER,
         COL_TRADE_DISCOUNT, COL_TRADE_ITEM_QUANTITY)
         .addFields(TBL_ITEMS, COL_ITEM_ARTICLE)
         .addFrom(TBL_ORDER_ITEMS)

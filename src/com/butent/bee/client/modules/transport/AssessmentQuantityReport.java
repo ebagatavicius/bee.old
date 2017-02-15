@@ -3,8 +3,6 @@ package com.butent.bee.client.modules.transport;
 import com.google.common.collect.Lists;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
@@ -49,7 +47,6 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
-import com.butent.bee.shared.modules.transport.TransportConstants.AssessmentStatus;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.time.YearMonth;
@@ -767,23 +764,20 @@ public class AssessmentQuantityReport extends ReportInterceptor {
       sheet.add(xr);
     }
 
-    table.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        TableCellElement cellElement =
-            DomUtils.getParentCell(EventUtils.getEventTargetElement(event), true);
-        TableRowElement rowElement = DomUtils.getParentRow(cellElement, false);
+    table.addClickHandler(event -> {
+      TableCellElement cellElement =
+          DomUtils.getParentCell(EventUtils.getEventTargetElement(event), true);
+      TableRowElement rowElement = DomUtils.getParentRow(cellElement, false);
 
-        if (cellElement != null
-            && !BeeUtils.isEmpty(cellElement.getInnerText())
-            && (cellElement.hasClassName(STYLE_QUANTITY) || cellElement.hasClassName(STYLE_PERCENT))
-            && rowElement != null && rowElement.hasClassName(STYLE_DETAILS)) {
+      if (cellElement != null
+          && !BeeUtils.isEmpty(cellElement.getInnerText())
+          && (cellElement.hasClassName(STYLE_QUANTITY) || cellElement.hasClassName(STYLE_PERCENT))
+          && rowElement != null && rowElement.hasClassName(STYLE_DETAILS)) {
 
-          int dataIndex = DomUtils.getDataIndexInt(rowElement);
+        int dataIndex = DomUtils.getDataIndexInt(rowElement);
 
-          if (!BeeConst.isUndef(dataIndex)) {
-            showDetails(data.getRow(dataIndex), cellElement);
-          }
+        if (!BeeConst.isUndef(dataIndex)) {
+          showDetails(data.getRow(dataIndex), cellElement);
         }
       }
     });
@@ -807,11 +801,11 @@ public class AssessmentQuantityReport extends ReportInterceptor {
       Integer month = BeeUtils.unbox(dataRow.getInt(BeeConst.MONTH));
 
       if (TimeUtils.isYear(year) && TimeUtils.isMonth(month)) {
-        if (start == null && end == null) {
-          captions.add(BeeUtils.joinWords(year, Format.renderMonthFullStandalone(month)));
-        }
-
         YearMonth ym = new YearMonth(year, month);
+
+        if (start == null && end == null) {
+          captions.add(Format.renderYearMonth(ym));
+        }
 
         start = BeeUtils.max(start, ym.getDate().getDateTime());
         end = BeeUtils.min(end, TimeUtils.startOfNextMonth(ym).getDateTime());

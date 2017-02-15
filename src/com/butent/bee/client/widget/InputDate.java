@@ -9,6 +9,7 @@ import com.butent.bee.client.datepicker.DatePicker;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dialog.Popup.OutsideClick;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.shared.i18n.HasDateTimeFormat;
@@ -151,9 +152,9 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
     if (date == null) {
       text = BeeConst.STRING_EMPTY;
     } else if (getDateTimeFormat() == null) {
-      text = Format.renderDate(date.getDate());
+      text = Format.renderDate(date);
     } else {
-      text = getDateTimeFormat().format(date.getDate());
+      text = getDateTimeFormat().format(date);
     }
     setText(text);
   }
@@ -169,7 +170,7 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
 
   @Override
   public void setMaxValue(String maxValue) {
-    setMaxDate(TimeUtils.parseDate(maxValue));
+    setMaxDate(TimeUtils.parseDate(maxValue, DateOrdering.DEFAULT));
   }
 
   public void setMinDate(HasDateValue minDate) {
@@ -178,7 +179,7 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
 
   @Override
   public void setMinValue(String minValue) {
-    setMinDate(TimeUtils.parseDate(minValue));
+    setMinDate(TimeUtils.parseDate(minValue, DateOrdering.DEFAULT));
   }
 
   @Override
@@ -194,7 +195,9 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
   @Override
   public void startEdit(String oldValue, char charCode, EditorAction onEntry,
       Element sourceElement) {
+
     setValue(oldValue);
+
     if (!handleChar(charCode)) {
       if (BeeUtils.isDigit(charCode)) {
         setText(BeeUtils.toString(charCode));

@@ -18,14 +18,15 @@ import com.google.zxing.common.ByteMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
-import com.butent.bee.shared.Assert;
-import com.butent.bee.shared.modules.calendar.CalendarHelper;
-
 import static com.butent.bee.shared.html.builder.Factory.*;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
+import static com.butent.bee.shared.modules.cars.CarsConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.orders.OrdersConstants.COL_ORDER;
 import static com.butent.bee.shared.modules.orders.OrdersConstants.*;
+import static com.butent.bee.shared.modules.orders.OrdersConstants.TBL_ORDERS;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
+import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.server.data.BeeTable;
 import com.butent.bee.server.data.BeeView;
@@ -55,6 +56,7 @@ import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
 import com.butent.bee.server.websocket.Endpoint;
+import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
@@ -87,6 +89,7 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.calendar.CalendarConstants;
 import com.butent.bee.shared.modules.calendar.CalendarConstants.AppointmentStatus;
+import com.butent.bee.shared.modules.calendar.CalendarHelper;
 import com.butent.bee.shared.modules.classifiers.ItemPrice;
 import com.butent.bee.shared.modules.classifiers.PriceInfo;
 import com.butent.bee.shared.modules.documents.DocumentConstants;
@@ -128,7 +131,12 @@ import java.util.OptionalDouble;
 import java.util.Set;
 
 import javax.annotation.Resource;
-import javax.ejb.*;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Schedule;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.ejb.TimerService;
 import javax.imageio.ImageIO;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -1420,6 +1428,16 @@ public class ClassifiersModuleBean implements BeeModule {
         .addFrom(TBL_DISCOUNTS)
         .setWhere(discountWhere);
 
+    IsCondition carDiscountsWhere = getCarDiscountCondition(reqInfo);
+
+    if (Objects.nonNull(carDiscountsWhere)) {
+      discountWhere.add(carDiscountsWhere);
+      discountQuery.addFromLeft(TBL_CAR_DISCOUNTS,
+          sys.joinTables(TBL_CAR_DISCOUNTS, TBL_DISCOUNTS, COL_CAR_DISCOUNT));
+    } else {
+      discountWhere.add(SqlUtils.isNull(TBL_DISCOUNTS, COL_CAR_DISCOUNT));
+    }
+
     if (explain > 1) {
       explain(discountQuery);
     }
@@ -1825,7 +1843,7 @@ public class ClassifiersModuleBean implements BeeModule {
       remainderMap.put(Long.valueOf(orderId), Pair.of(resQty, invoiceQty));
     }
 
-   return ResponseObject.response(remainderMap);
+    return ResponseObject.response(remainderMap);
   }
 
   private static String format(Pair<Double, Double> pp) {
@@ -1961,6 +1979,51 @@ public class ClassifiersModuleBean implements BeeModule {
         explain(source, COL_DISCOUNT_PERCENT, priceAndPercent.getB(), "from", priceInfo);
       }
     }
+  }
+
+  private IsCondition getCarDiscountCondition(RequestInfo reqInfo) {
+    Long model = reqInfo.getParameterLong(COL_MODEL);
+    JustDate prodDate = TimeUtils.toDateOrNull(reqInfo.getParameterInt(COL_PRODUCTION_DATE));
+    Long job = reqInfo.getParameterLong(COL_JOB);
+
+    if (!BeeUtils.anyNotNull(model, prodDate, job)) {
+      return null;
+    }
+    if (BeeUtils.isPositive(reqInfo.getParameterInt(Service.VAR_EXPLAIN))) {
+      explain(SVC_GET_PRICE_AND_DISCOUNT, TBL_CAR_DISCOUNTS,
+          BeeUtils.joinOptions(COL_MODEL, model, COL_PRODUCTION_DATE, prodDate, COL_JOB, job));
+    }
+    HasConditions carDiscountWhere = SqlUtils.and();
+
+    Map<String, Long> crit = new HashMap<>();
+    crit.put(COL_MODEL, model);
+    crit.put(COL_JOB, job);
+
+    crit.forEach((fld, id) -> {
+      IsCondition clause = SqlUtils.isNull(TBL_CAR_DISCOUNTS, fld);
+
+      if (DataUtils.isId(id)) {
+        clause = SqlUtils.or(clause, SqlUtils.equals(TBL_CAR_DISCOUNTS, fld, id));
+      }
+      carDiscountWhere.add(clause);
+    });
+    IsCondition clause = SqlUtils.isNull(TBL_CAR_DISCOUNTS, COL_PRODUCED_FROM);
+
+    if (Objects.nonNull(prodDate)) {
+      clause = SqlUtils.or(clause,
+          SqlUtils.lessEqual(TBL_CAR_DISCOUNTS, COL_PRODUCED_FROM, prodDate));
+    }
+    carDiscountWhere.add(clause);
+
+    clause = SqlUtils.isNull(TBL_CAR_DISCOUNTS, COL_PRODUCED_TO);
+
+    if (Objects.nonNull(prodDate)) {
+      clause = SqlUtils.or(clause,
+          SqlUtils.more(TBL_CAR_DISCOUNTS, COL_PRODUCED_TO, prodDate));
+    }
+    carDiscountWhere.add(clause);
+
+    return carDiscountWhere;
   }
 
   private List<Long> getDiscountParents(Long company) {

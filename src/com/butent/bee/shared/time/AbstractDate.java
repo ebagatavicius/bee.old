@@ -30,23 +30,6 @@ public abstract class AbstractDate implements HasDateValue {
     }
   }
 
-  public static AbstractDate parse(String s, ValueType type) {
-    if (BeeUtils.isEmpty(s)) {
-      return null;
-    }
-    assertType(type);
-
-    switch (type) {
-      case DATE:
-        return TimeUtils.parseDate(s);
-      case DATE_TIME:
-        return TimeUtils.parseDateTime(s);
-      default:
-        Assert.untouchable();
-        return null;
-    }
-  }
-
   public static AbstractDate restore(String s, ValueType type) {
     if (BeeUtils.isEmpty(s)) {
       return null;

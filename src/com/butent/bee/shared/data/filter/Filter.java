@@ -18,6 +18,7 @@ import com.butent.bee.shared.data.value.NumberValue;
 import com.butent.bee.shared.data.value.TextValue;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.value.ValueType;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
@@ -231,9 +232,9 @@ public abstract class Filter implements BeeSerializable, RowFilter {
     return new VersionFilter(op, value);
   }
 
-  public static Filter compareVersion(Operator op, String value) {
+  public static Filter compareVersion(Operator op, String value, DateOrdering dateOrdering) {
     Assert.notNull(op);
-    DateTime time = TimeUtils.parseDateTime(value);
+    DateTime time = TimeUtils.parseDateTime(value, dateOrdering);
 
     if (time == null) {
       LogUtils.getRootLogger().warning("Not a DATETIME value:", value);
@@ -264,7 +265,9 @@ public abstract class Filter implements BeeSerializable, RowFilter {
     return new ColumnColumnFilter(leftColumn, op, rightColumn);
   }
 
-  public static Filter compareWithValue(IsColumn column, Operator op, String value) {
+  public static Filter compareWithValue(IsColumn column, Operator op, String value,
+      DateOrdering dateOrdering) {
+
     Assert.noNulls(column, op);
     Assert.notEmpty(value);
 
@@ -272,7 +275,8 @@ public abstract class Filter implements BeeSerializable, RowFilter {
       LogUtils.getRootLogger().warning("Not a numeric value:", value);
       return null;
     }
-    return compareWithValue(column.getId(), op, Value.parseValue(column.getType(), value, true));
+    return compareWithValue(column.getId(), op,
+        Value.parseValue(column.getType(), value, true, dateOrdering));
   }
 
   public static Filter compareWithValue(String column, Operator op, Value value) {

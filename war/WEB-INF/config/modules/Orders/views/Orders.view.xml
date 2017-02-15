@@ -21,6 +21,14 @@
       <SimpleColumn name="Name" alias="WarehouseName" />
     </SimpleJoin>
 
+    <SimpleColumn name="TradeOperation" />
+    <SimpleJoin name="TradeOperation" joinType="LEFT">
+      <SimpleColumn name="OperationName" />
+      <SimpleColumn name="CashRegisterNo" />
+      <SimpleColumn name="OperationVatMode" />
+      <SimpleColumn name="VatPercent" />
+    </SimpleJoin>
+
     <SimpleColumn name="Series" />
     <SimpleJoin joinType="LEFT" name="Series">
       <SimpleColumn name="SeriesName" />

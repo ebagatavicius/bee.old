@@ -513,6 +513,10 @@
 .bee-conf-packet {
   color: silver;
 }
+.bee-conf-packet-collapsed {
+  color: blue;
+  cursor: pointer;
+}
 .bee-conf-row-hdr {
   font-weight: bold;
 }

@@ -11,6 +11,7 @@
     <SimpleJoin joinType="LEFT" name="Job">
       <SimpleColumn name="JobName" />
       <SimpleColumn name="Code" />
+      <SimpleColumn name="Item" />
     </SimpleJoin>
 
     <SimpleColumn name="Duration" />

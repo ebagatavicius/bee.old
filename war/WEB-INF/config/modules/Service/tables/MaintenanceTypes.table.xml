@@ -7,5 +7,6 @@
   <Fields>
     <String name="Name" precision="200" notNull="true" label="=type" />
     <Boolean name="AddressRequired" label="=scvAddressRequired" />
+    <Text name="Conditions" label="=conditions" />
   </Fields>
 </Table>

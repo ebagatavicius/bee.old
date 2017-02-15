@@ -526,7 +526,7 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
 
       } else {
         return BeeUtils.join(PERIOD_SEPARATOR,
-            Format.renderYearMonth(minYm), Format.renderMonthFullStandalone(maxYm).toLowerCase());
+            Format.renderYearMonth(minYm), Format.renderMonthFullStandalone(maxYm));
       }
 
     } else {

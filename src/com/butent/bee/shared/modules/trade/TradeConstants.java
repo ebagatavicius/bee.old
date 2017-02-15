@@ -31,6 +31,8 @@ public final class TradeConstants {
   public static final String SVC_REBUILD_STOCK = "RebuildStock";
   public static final String SVC_CALCULATE_COST = "CalculateCost";
 
+  public static final String SVC_GET_STOCK = "GetStock";
+
   public static final String TBL_PURCHASES = "Purchases";
   public static final String TBL_PURCHASE_USAGE = "PurchaseUsage";
   public static final String TBL_PURCHASE_ITEMS = "PurchaseItems";
@@ -273,6 +275,7 @@ public final class TradeConstants {
   public static final String VAR_TOTAL = "Total";
   public static final String VAR_DEBT = "Debt";
   public static final String VAR_OVERDUE = "Overdue";
+  public static final String VAR_ITEMS = "Items";
 
   public static final String GRID_TRADE_OPERATIONS = "TradeOperations";
   public static final String GRID_TRADE_STATUSES = "TradeStatuses";

@@ -142,7 +142,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
       for (int i = 0; i < DAYS_IN_WEEK; i++) {
         setHtml(0, i, Model.formatDayOfWeek(i));
 
-        if (Model.isWeekend(i + 1)) {
+        if (TimeUtils.isWeekend(i + 1)) {
           formatter.setStyleName(0, i, css().weekendLabel());
         } else {
           formatter.setStyleName(0, i, css().weekdayLabel());
@@ -153,7 +153,7 @@ class MonthView extends Component implements HasKeyDownHandlers {
       for (int row = 1; row <= WEEKS_IN_MONTH; row++) {
         for (int column = 0; column < DAYS_IN_WEEK; column++) {
           Element element = formatter.ensureElement(row, column);
-          Cell cell = new Cell(index++, element, Model.isWeekend(column));
+          Cell cell = new Cell(index++, element, TimeUtils.isWeekend(column + 1));
 
           cellList.add(cell);
           elementToCell.put(cell);

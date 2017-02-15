@@ -74,6 +74,7 @@ import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.html.builder.elements.Tbody;
 import com.butent.bee.shared.html.builder.elements.Td;
 import com.butent.bee.shared.html.builder.elements.Tr;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
@@ -1842,8 +1843,8 @@ public class EcModuleBean implements BeeModule {
                   "data", "dokumentas", "dok_serija", "kitas_dok", "viso", "skola_w", "terminas");
 
           for (SimpleRow row : data) {
-            DateTime date = TimeUtils.parseDateTime(row.getValue("data"));
-            DateTime term = TimeUtils.parseDateTime(row.getValue("terminas"));
+            DateTime date = TimeUtils.parseDateTime(row.getValue("data"), DateOrdering.YMD);
+            DateTime term = TimeUtils.parseDateTime(row.getValue("terminas"), DateOrdering.YMD);
 
             if (term == null) {
               term = TimeUtils.nextDay(date, BeeUtils.unbox(finInfo.getDaysForPayment()))

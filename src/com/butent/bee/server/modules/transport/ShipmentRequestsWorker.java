@@ -32,6 +32,7 @@ import com.butent.bee.shared.html.builder.Document;
 import com.butent.bee.shared.html.builder.FertileElement;
 import com.butent.bee.shared.html.builder.elements.Form;
 import com.butent.bee.shared.html.builder.elements.Input;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.logging.LogUtils;
@@ -248,14 +249,14 @@ public class ShipmentRequestsWorker {
               val = BeeUtils.toBoolean(value);
               break;
             case DATE:
-              JustDate date = TimeUtils.parseDate(value);
+              JustDate date = TimeUtils.parseDate(value, DateOrdering.YMD);
 
               if (Objects.nonNull(date)) {
                 val = date.serialize();
               }
               break;
             case DATE_TIME:
-              DateTime datetime = TimeUtils.parseDateTime(value);
+              DateTime datetime = TimeUtils.parseDateTime(value, DateOrdering.YMD);
 
               if (Objects.nonNull(datetime)) {
                 val = datetime.serialize();

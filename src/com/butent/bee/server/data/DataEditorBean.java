@@ -228,7 +228,8 @@ public class DataEditorBean {
           } else {
             String oldValue = row.getShadowString(i);
             ValueType colType = view.getColumnType(colName).toValueType();
-            Object newValue = Value.parseValue(colType, row.getString(i), false).getObjectValue();
+            Object newValue = Value.parseValue(colType, row.getString(i), false, null)
+                .getObjectValue();
             String locale = view.getColumnLocale(colName);
 
             if (!registerField(colName,

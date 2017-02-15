@@ -21,7 +21,7 @@
         </row>
         <row>
           <Label for="DateOfBirth" style="&lbl1;" />
-          <InputDate source="DateOfBirth" style="&inp1;" minValue="1900" maxValue="2000" />
+          <InputDate source="DateOfBirth" style="&inp1;" minValue="1900" />
           <Label text="=phone" style="&lbl1;" for="Phone" />
           <InputText style="&inp1;" source="Phone" />
         </row>

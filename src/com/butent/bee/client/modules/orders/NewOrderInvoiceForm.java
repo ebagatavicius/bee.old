@@ -124,9 +124,8 @@ public class NewOrderInvoiceForm extends AbstractFormInterceptor {
     if (!isProforma()) {
       if (creditLimit == 0 || debt > creditLimit || notValid) {
         if (wrhResult.getNumberOfRows() > 0 && hasCashRegisterNo) {
-          filter =
-              Filter.and(Filter.equals(COL_TRADE_WAREHOUSE_FROM, warehouse), Filter
-                  .notNull(COL_OPERATION_CASH_REGISTER_NO));
+          filter = Filter.and(Filter.equals(COL_TRADE_WAREHOUSE_FROM, warehouse), Filter.notNull(
+              COL_OPERATION_CASH_REGISTER_NO));
         } else {
           filter = Filter.notNull(COL_OPERATION_CASH_REGISTER_NO);
         }
@@ -221,8 +220,7 @@ public class NewOrderInvoiceForm extends AbstractFormInterceptor {
                         }
 
                         if (listener != null && holder.get() == 0) {
-                          boolean emptyCashRegNo =
-                              BeeUtils.isEmpty(activeRow.getString(
+                          boolean emptyCashRegNo = BeeUtils.isEmpty(activeRow.getString(
                                   Data.getColumnIndex(VIEW_ORDER_CHILD_INVOICES,
                                       COL_OPERATION_CASH_REGISTER_NO)));
 

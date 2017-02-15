@@ -10,12 +10,9 @@ import static com.butent.bee.shared.modules.orders.OrdersConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
-import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
@@ -205,6 +202,13 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
       newRow.setValue(targetInfo.getColumnIndex("WarehouseFromCode"), data.getRow(0)
           .getString(Data.getColumnIndex(VIEW_ORDER_SALES, ALS_WAREHOUSE_CODE)));
 
+      newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_OPERATION), data.getRow(0)
+          .getLong(Data.getColumnIndex(VIEW_ORDER_SALES, COL_ORDER_TRADE_OPERATION)));
+      newRow.setValue(targetInfo.getColumnIndex(COL_OPERATION_NAME), data.getRow(0)
+          .getString(Data.getColumnIndex(VIEW_ORDER_SALES, COL_TRADE_OPERATION_NAME)));
+      newRow.setValue(targetInfo.getColumnIndex(COL_OPERATION_CASH_REGISTER_NO), data.getRow(0)
+          .getString(Data.getColumnIndex(VIEW_ORDER_SALES, COL_OPERATION_CASH_REGISTER_NO)));
+
       Integer creditDays =
           data.getRow(0).getInteger(Data.getColumnIndex(VIEW_ORDER_SALES, COL_COMPANY_CREDIT_DAYS));
 
@@ -223,8 +227,7 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
     newRow.setValue(targetInfo.getColumnIndex(TradeConstants.COL_TRADE_SUPPLIER), BeeKeeper
         .getUser().getCompany());
 
-    newRow
-        .setValue(targetInfo.getColumnIndex(ALS_SUPPLIER_NAME), BeeKeeper.getUser()
+    newRow.setValue(targetInfo.getColumnIndex(ALS_SUPPLIER_NAME), BeeKeeper.getUser()
             .getCompanyName());
 
     newRow.setValue(targetInfo.getColumnIndex(TradeConstants.COL_TRADE_MANAGER), BeeKeeper
@@ -236,24 +239,7 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
     newRow.setValue(targetInfo.getColumnIndex(TradeConstants.COL_TRADE_MANAGER
         + ClassifierConstants.COL_LAST_NAME), BeeKeeper.getUser().getLastName());
 
-    Global.getParameterRelation(PRM_DEFAULT_SALE_OPERATION, (t, u) -> {
-      if (DataUtils.isId(t)) {
-        newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_OPERATION), t);
-        newRow.setValue(targetInfo.getColumnIndex(COL_OPERATION_NAME), u);
-        Queries.getValue(TBL_TRADE_OPERATIONS, t, COL_OPERATION_CASH_REGISTER_NO,
-            new RpcCallback<String>() {
-
-              @Override
-              public void onSuccess(String result) {
-                newRow
-                    .setValue(targetInfo.getColumnIndex(COL_OPERATION_CASH_REGISTER_NO), result);
-                getInvoiceItems(data, newRow);
-              }
-            });
-      } else {
-        getInvoiceItems(data, newRow);
-      }
-    });
+    getInvoiceItems(data, newRow);
   }
 
   private void getInvoiceItems(final BeeRowSet data, BeeRow newRow) {

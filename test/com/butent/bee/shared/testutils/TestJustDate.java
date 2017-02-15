@@ -1,5 +1,6 @@
 package com.butent.bee.shared.testutils;
 
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -31,7 +32,7 @@ public class TestJustDate {
     JustDate jd = new JustDate(2011, 4, 8);
     JustDate jd1 = new JustDate(1298362388227L);
     JustDate jd2 = new JustDate(2021, 4, 8);
-    JustDate jd3 = TimeUtils.parseDate("2011,04,08");
+    JustDate jd3 = TimeUtils.parseDate("2011,04,08", DateOrdering.YMD);
 
     assertEquals(true, jd.compareTo(jd1) > 0);
     assertEquals(0, jd.compareTo(jd3));
@@ -294,7 +295,7 @@ public class TestJustDate {
   @Test
   public final void testParse() {
     String str = "2046";
-    JustDate jd = TimeUtils.parseDate(str);
+    JustDate jd = TimeUtils.parseDate(str, DateOrdering.YMD);
 
     assertEquals(2046, jd.getYear());
     assertEquals(1, jd.getMonth());
@@ -302,7 +303,7 @@ public class TestJustDate {
 
     str = "2011-04-06";
 
-    jd = TimeUtils.parseDate(str);
+    jd = TimeUtils.parseDate(str, DateOrdering.YMD);
 
     assertEquals(2011, jd.getYear());
     assertEquals(4, jd.getMonth());
@@ -310,7 +311,7 @@ public class TestJustDate {
 
     str = "2011;-04;-06";
 
-    jd = TimeUtils.parseDate(str);
+    jd = TimeUtils.parseDate(str, DateOrdering.YMD);
 
     assertEquals(2011, jd.getYear());
     assertEquals(4, jd.getMonth());
@@ -318,7 +319,7 @@ public class TestJustDate {
 
     str = "2011/04/06";
 
-    jd = TimeUtils.parseDate(str);
+    jd = TimeUtils.parseDate(str, DateOrdering.YMD);
 
     assertEquals(2011, jd.getYear());
     assertEquals(4, jd.getMonth());
@@ -326,7 +327,7 @@ public class TestJustDate {
 
     str = "2011/04/06 12:36:59,78";
 
-    jd = TimeUtils.parseDate(str);
+    jd = TimeUtils.parseDate(str, DateOrdering.YMD);
 
     assertEquals(2011, jd.getYear());
     assertEquals(4, jd.getMonth());
@@ -334,15 +335,15 @@ public class TestJustDate {
 
     str = "2011-02";
 
-    jd = TimeUtils.parseDate(str);
+    jd = TimeUtils.parseDate(str, DateOrdering.YMD);
 
     assertEquals(2011, jd.getYear());
     assertEquals(2, jd.getMonth());
     assertEquals(1, jd.getDom());
 
-    String str1 = "2010-";
-    JustDate jd1 = TimeUtils.parseDate(str1);
-    assertEquals("2010-01-01", jd1.toString());
+    str = "2010-";
+    jd = TimeUtils.parseDate(str, DateOrdering.YMD);
+    assertEquals("2010-01-01", jd.toString());
   }
 
   @Test

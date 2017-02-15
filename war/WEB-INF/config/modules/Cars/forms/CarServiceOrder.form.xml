@@ -44,13 +44,14 @@
         </row>
         <row>
           <Label for="CustomerPerson" style="&lbl;" />
-          <DataSelector source="CustomerPerson" newRowEnabled="false" style="&inpw;"
+          <DataSelector source="CustomerPerson" style="&inpw;"
                         renderColumns="ContactFirstName ContactLastName"
                         choiceColumns="FirstName LastName CompanyName" options="Customer" />
 
           <Label for="Car" style="&lbl;" />
           <FlowPanel>
             <DataSelector source="Car" viewName="Cars" style="&inpw;"
+                          choiceColumns="ParentModelName ModelName BodyNumber CarNumber"
                           renderColumns="ParentModelName ModelName CarNumber" />
             <FlowPanel style="display:inline-block;">
               <FaLabel char="exclamation_circle" name="CarWarning"

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Columns xmlns="http://www.butent.com/view">
+  <SimpleColumn name="Company" />
+  <SimpleJoin name="Company" joinType="LEFT">
+    <SimpleColumn name="Name" alias="CompanyName" />
+  </SimpleJoin>
+
+  <SimpleColumn name="Category" />
+  <SimpleJoin name="Category" joinType="LEFT">
+    <SimpleColumn name="Name" alias="CategoryName" />
+  </SimpleJoin>
+
+  <SimpleColumn name="Item" />
+  <SimpleJoin name="Item" joinType="LEFT">
+    <SimpleColumn name="Name" alias="ItemName" />
+    <SimpleColumn name="Article" />
+  </SimpleJoin>
+
+  <SimpleColumn name="Operation" />
+  <SimpleJoin name="Operation" joinType="LEFT">
+    <SimpleColumn name="OperationName" />
+  </SimpleJoin>
+
+  <SimpleColumn name="Warehouse" />
+  <SimpleJoin name="Warehouse" joinType="LEFT">
+    <SimpleColumn name="Code" alias="WarehouseCode" />
+    <SimpleColumn name="Name" alias="WarehouseName" />
+  </SimpleJoin>
+
+  <SimpleColumn name="DateFrom" />
+  <SimpleColumn name="DateTo" />
+
+  <SimpleColumn name="QuantityFrom" />
+  <SimpleColumn name="QuantityTo" />
+  <SimpleColumn name="Unit" />
+  <SimpleJoin joinType="LEFT" name="Unit">
+    <SimpleColumn name="Name" alias="UnitName" />
+  </SimpleJoin>
+
+  <SimpleColumn name="PriceName" />
+
+  <SimpleColumn name="Percent" />
+
+  <SimpleColumn name="Price" />
+  <SimpleColumn name="Currency" />
+  <SimpleJoin joinType="LEFT" name="Currency">
+    <SimpleColumn name="Name" alias="CurrencyName" />
+  </SimpleJoin>
+
+  <SimpleColumn name="Note" />
+</Columns>

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.Pair;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -406,11 +407,11 @@ public final class BeeParameter implements BeeSerializable {
         break;
 
       case DATE:
-        val = TimeUtils.parseDate(expr);
+        val = TimeUtils.parseDate(expr, DateOrdering.DEFAULT);
         break;
 
       case DATETIME:
-        val = TimeUtils.parseDateTime(expr);
+        val = TimeUtils.parseDateTime(expr, DateOrdering.DEFAULT);
         break;
 
       case COLLECTION:

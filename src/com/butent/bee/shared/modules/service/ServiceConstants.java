@@ -80,11 +80,14 @@ public final class ServiceConstants {
   public static final String VIEW_SERVICE_SETTINGS = "ServiceSettings";
 
   public static final String COL_ADDRESS_REQUIRED = "AddressRequired";
+  public static final String COL_ARTICLE_NO = "ArticleNo";
+  public static final String COL_CREATOR = "Creator";
   public static final String COL_COMMENT = "Comment";
   public static final String COL_CUSTOMER_SENT = "CustomerSent";
   public static final String COL_DAYS_ACTIVE = "DaysActive";
   public static final String COL_ENDING_DATE = "EndingDate";
   public static final String COL_EVENT_NOTE = "EventNote";
+  public static final String COL_EQUIPMENT = "Equipment";
   public static final String COL_INITIAL = "Initial";
   public static final String COL_FINITE = "Finite";
   public static final String COL_TYPE = "Type";

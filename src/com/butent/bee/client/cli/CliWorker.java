@@ -2189,24 +2189,11 @@ public final class CliWorker {
     });
   }
 
-  //@formatter:off
-  // CHECKSTYLE:OFF
-  private static native void sampleCanvas(Element el) /*-{
-    var ctx = el.getContext("2d");
-
-    for (var i = 0; i < 6; i++) {
-      for (var j = 0; j < 6; j++) {
-        ctx.fillStyle = 'rgb(' + Math.floor(255 - 42.5 * i) + ', ' + Math.floor(255 - 42.5 * j) + ', 0)';
-        ctx.fillRect(j * 25, i * 25, 25, 25);
-      }
-    }
-  }-*/;
-  // CHECKSTYLE:ON
-//@formatter:on
-
   private static void scheduleTasks(String[] arr, boolean errorPopup) {
-    JustDate from = (arr.length > 1) ? TimeUtils.parseDate(arr[1]) : TimeUtils.today();
-    JustDate until = (arr.length > 2) ? TimeUtils.parseDate(arr[2]) : null;
+    JustDate from = (arr.length > 1)
+        ? TimeUtils.parseDate(arr[1], Format.getDefaultDateOrdering()) : TimeUtils.today();
+    JustDate until = (arr.length > 2)
+        ? TimeUtils.parseDate(arr[2], Format.getDefaultDateOrdering()) : null;
 
     if (from == null || until != null && TimeUtils.isLess(until, from)) {
       showError(errorPopup, arr);
@@ -2612,7 +2599,7 @@ public final class CliWorker {
       dtf = Format.parseDateTimeFormat(BeeUtils.getPrefix(args, sep));
       inp = BeeUtils.getSuffix(args, sep);
     } else if (BeeUtils.contains(cmnd, 'f') && !BeeUtils.isEmpty(args)) {
-      dtf = Format.getDefaultDateTimeFormat();
+      dtf = Format.getPredefinedFormat(PredefinedFormat.DATE_TIME_SHORT);
       inp = args;
     }
 
@@ -2631,11 +2618,11 @@ public final class CliWorker {
       }
 
     } else if (!BeeUtils.isEmpty(args)) {
-      t = TimeUtils.parseDateTime(args);
+      t = TimeUtils.parseDateTime(args, Format.getDefaultDateOrdering());
       if (t == null) {
         logger.severe("cannot parse", args);
       } else {
-        d = TimeUtils.parseDate(args);
+        d = TimeUtils.parseDate(args, Format.getDefaultDateOrdering());
       }
 
     } else {
@@ -2742,7 +2729,7 @@ public final class CliWorker {
       char sep = ';';
       if (BeeUtils.contains(args, sep)) {
         dtf = Format.parseDateTimeFormat(BeeUtils.getPrefix(args, sep));
-        t = TimeUtils.parseDateTime(BeeUtils.getSuffix(args, sep));
+        t = TimeUtils.parseDateTime(BeeUtils.getSuffix(args, sep), Format.getDefaultDateOrdering());
       } else {
         dtf = Format.parseDateTimeFormat(args);
         t = new DateTime();
@@ -3641,7 +3628,7 @@ public final class CliWorker {
   }
 
   private static void showRates(String args, final boolean errorPopup) {
-    final DateTime dt = TimeUtils.parseDateTime(args);
+    final DateTime dt = TimeUtils.parseDateTime(args, Format.getDefaultDateOrdering());
     final Table<Long, Long, Double> rates = Money.getRates(dt);
 
     if (rates.isEmpty()) {

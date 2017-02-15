@@ -5,10 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.TableRowElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -23,12 +20,10 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
-import com.butent.bee.client.dialog.ConfirmationCallback;
 import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
-import com.butent.bee.client.event.logical.CloseEvent;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
@@ -69,7 +64,7 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
-import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
+import com.butent.bee.shared.modules.tasks.TaskConstants.*;
 import com.butent.bee.shared.modules.tasks.TaskUtils;
 import com.butent.bee.shared.time.CronExpression;
 import com.butent.bee.shared.time.CronExpression.Field;
@@ -219,30 +214,15 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
   private static final int COL_OFFSPRING_DELETE = 4;
 
   private static void initDayOfMonthHelp(HasClickHandlers widget, final Element target) {
-    widget.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        showExamples(target, CronExpression.getDayOfMonthExamples());
-      }
-    });
+    widget.addClickHandler(event -> showExamples(target, CronExpression.getDayOfMonthExamples()));
   }
 
   private static void initDayOfWeekHelp(HasClickHandlers widget, final Element target) {
-    widget.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        showExamples(target, CronExpression.getDayOfWeekExamples());
-      }
-    });
+    widget.addClickHandler(event -> showExamples(target, CronExpression.getDayOfWeekExamples()));
   }
 
   private static void initMonthHelp(HasClickHandlers widget, final Element target) {
-    widget.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        showExamples(target, CronExpression.getMonthExamples());
-      }
-    });
+    widget.addClickHandler(event -> showExamples(target, CronExpression.getMonthExamples()));
   }
 
   private static void setProjectScheduleTimeLimit(FormView form, IsRow row) {
@@ -374,43 +354,40 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
       schedule.addStyleName(STYLE_PREFIX + "actionSchedule");
       schedule.setTitle(Localized.dictionary().crmRTActionSchedule());
 
-      schedule.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          IsRow activeRow = getActiveRow();
-          if (!validateBounds(activeRow)) {
-            return;
-          }
+      schedule.addClickHandler(event -> {
+        IsRow activeRow = getActiveRow();
+        if (!validateBounds(activeRow)) {
+          return;
+        }
 
-          clearOffspring();
-          setExecutors(null);
+        clearOffspring();
+        setExecutors(null);
 
-          if (DataUtils.hasId(activeRow)) {
-            int updateSize;
+        if (DataUtils.hasId(activeRow)) {
+          int updateSize;
 
-            if (getFormView().isRowEnabled(activeRow)) {
-              updateSize = Queries.update(getViewName(), getFormView().getDataColumns(),
-                  getFormView().getOldRow(), activeRow, getFormView().getChildrenForUpdate(),
-                  new RowCallback() {
-                    @Override
-                    public void onSuccess(BeeRow result) {
-                      RowUpdateEvent.fire(BeeKeeper.getBus(), getViewName(), result);
-                      showSchedule(result.getId());
-                    }
-                  });
-
-            } else {
-              updateSize = 0;
-            }
-
-            if (updateSize == 0) {
-              showSchedule(activeRow.getId());
-            }
+          if (getFormView().isRowEnabled(activeRow)) {
+            updateSize = Queries.update(getViewName(), getFormView().getDataColumns(),
+                getFormView().getOldRow(), activeRow, getFormView().getChildrenForUpdate(),
+                new RowCallback() {
+                  @Override
+                  public void onSuccess(BeeRow result) {
+                    RowUpdateEvent.fire(BeeKeeper.getBus(), getViewName(), result);
+                    showSchedule(result.getId());
+                  }
+                });
 
           } else {
-            List<ScheduleDateRange> scheduleDateRanges = new ArrayList<>();
-            timeCube(scheduleDateRanges, false);
+            updateSize = 0;
           }
+
+          if (updateSize == 0) {
+            showSchedule(activeRow.getId());
+          }
+
+        } else {
+          List<ScheduleDateRange> scheduleDateRanges = new ArrayList<>();
+          timeCube(scheduleDateRanges, false);
         }
       });
 
@@ -511,46 +488,43 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
     dialog.setAnimationEnabled(true);
     dialog.setHideOnEscape(true);
 
-    RowUpdateEvent.Handler updateHandler = new RowUpdateEvent.Handler() {
-      @Override
-      public void onRowUpdate(RowUpdateEvent event) {
-        if (event.hasView(VIEW_TASKS) && table.isAttached() && !offspring.isEmpty()) {
-          long id = event.getRowId();
-          int oldKey = BeeConst.UNDEF;
+    RowUpdateEvent.Handler updateHandler = event -> {
+      if (event.hasView(VIEW_TASKS) && table.isAttached() && !offspring.isEmpty()) {
+        long id = event.getRowId();
+        int oldKey = BeeConst.UNDEF;
 
-          for (Map.Entry<Integer, BeeRow> entry : offspring.entries()) {
-            if (DataUtils.idEquals(entry.getValue(), id)) {
-              oldKey = entry.getKey();
-              break;
+        for (Map.Entry<Integer, BeeRow> entry : offspring.entries()) {
+          if (DataUtils.idEquals(entry.getValue(), id)) {
+            oldKey = entry.getKey();
+            break;
+          }
+        }
+
+        if (!BeeConst.isUndef(oldKey)) {
+          offspring.remove(oldKey, getOffspring(id));
+
+          BeeRow row = event.getRow();
+          JustDate start = JustDate.get(Data.getDateTime(VIEW_TASKS, row, COL_START_TIME));
+
+          int newKey = (start == null) ? BeeConst.UNDEF : start.getDays();
+          if (start != null) {
+            offspring.put(newKey, row);
+          }
+
+          if (oldKey != newKey) {
+            if (!offspring.containsKey(oldKey)) {
+              toggleDayStyle(oldKey, false);
+            }
+            if (!BeeConst.isUndef(newKey) && offspring.get(newKey).size() == 1) {
+              toggleDayStyle(newKey, true);
             }
           }
 
-          if (!BeeConst.isUndef(oldKey)) {
-            offspring.remove(oldKey, getOffspring(id));
-
-            BeeRow row = event.getRow();
-            JustDate start = JustDate.get(Data.getDateTime(VIEW_TASKS, row, COL_START_TIME));
-
-            int newKey = (start == null) ? BeeConst.UNDEF : start.getDays();
-            if (start != null) {
-              offspring.put(newKey, row);
-            }
-
-            if (oldKey != newKey) {
-              if (!offspring.containsKey(oldKey)) {
-                toggleDayStyle(oldKey, false);
-              }
-              if (!BeeConst.isUndef(newKey) && offspring.get(newKey).size() == 1) {
-                toggleDayStyle(newKey, true);
-              }
-            }
-
-            if (oldKey == dayNumber || newKey == dayNumber) {
-              if (offspring.containsKey(dayNumber)) {
-                renderOffspring(table, dayNumber);
-              } else {
-                UiHelper.closeDialog(table);
-              }
+          if (oldKey == dayNumber || newKey == dayNumber) {
+            if (offspring.containsKey(dayNumber)) {
+              renderOffspring(table, dayNumber);
+            } else {
+              UiHelper.closeDialog(table);
             }
           }
         }
@@ -560,12 +534,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
     final HandlerRegistration handlerRegistration =
         BeeKeeper.getBus().registerRowUpdateHandler(updateHandler, false);
 
-    dialog.addCloseHandler(new CloseEvent.Handler() {
-      @Override
-      public void onClose(CloseEvent event) {
-        handlerRegistration.removeHandler();
-      }
-    });
+    dialog.addCloseHandler(event -> handlerRegistration.removeHandler());
 
     dialog.showRelativeTo(target);
   }
@@ -590,28 +559,25 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
     }
     clearErrors(cron);
 
-    return new Consumer<Map<Integer, String>>() {
-      @Override
-      public void accept(Map<Integer, String> failures) {
-        StringBuilder sb = new StringBuilder();
+    return failures -> {
+      StringBuilder sb = new StringBuilder();
 
-        int index = 0;
-        while (index < input.length()) {
-          if (failures.containsKey(index)) {
-            String failure = failures.get(index);
-            Span span = new Span().addClass(STYLE_FAILURE).text(failure);
+      int index = 0;
+      while (index < input.length()) {
+        if (failures.containsKey(index)) {
+          String failure = failures.get(index);
+          Span span = new Span().addClass(STYLE_FAILURE).text(failure);
 
-            sb.append(span.build());
-            index += failure.length();
+          sb.append(span.build());
+          index += failure.length();
 
-          } else {
-            sb.append(input.charAt(index));
-            index++;
-          }
+        } else {
+          sb.append(input.charAt(index));
+          index++;
         }
-
-        errorLabels.get(cron).setHtml(sb.toString());
       }
+
+      errorLabels.get(cron).setHtml(sb.toString());
     };
   }
 
@@ -660,12 +626,9 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
         break;
 
       case ADD:
-        maybeSpawn(rowElement, dayNumber, dataId, new Runnable() {
-          @Override
-          public void run() {
-            if (source.isAttached()) {
-              refreshOffspring(source, dayNumber);
-            }
+        maybeSpawn(rowElement, dayNumber, dataId, () -> {
+          if (source.isAttached()) {
+            refreshOffspring(source, dayNumber);
           }
         });
         break;
@@ -673,20 +636,15 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
       case DELETE:
         Global.confirmDelete(getOffspringLabel(dataId), Icon.WARNING,
             Collections.singletonList(Localized.dictionary().crmTaskDeleteQuestion()),
-            new ConfirmationCallback() {
+            () -> Queries.delete(VIEW_TASKS, Filter.compareId(dataId), new Queries.IntCallback() {
               @Override
-              public void onConfirm() {
-                Queries.delete(VIEW_TASKS, Filter.compareId(dataId), new Queries.IntCallback() {
-                  @Override
-                  public void onSuccess(Integer result) {
-                    if (BeeUtils.isPositive(result)) {
-                      RowDeleteEvent.fire(BeeKeeper.getBus(), VIEW_TASKS, dataId);
-                      onOffspringDelete(dataId, dayNumber, source);
-                    }
-                  }
-                });
+              public void onSuccess(Integer result) {
+                if (BeeUtils.isPositive(result)) {
+                  RowDeleteEvent.fire(BeeKeeper.getBus(), VIEW_TASKS, dataId);
+                  onOffspringDelete(dataId, dayNumber, source);
+                }
               }
-            }, rowElement);
+            }), rowElement);
         break;
 
       default:
@@ -695,12 +653,9 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
   }
 
   private void initToggle(final Cron cron, final Toggle toggle, final int value) {
-    toggle.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        String updated = updateCronValue(cron.source, value, toggle.isChecked());
-        refreshErrors(getActiveRowId(), cron, updated);
-      }
+    toggle.addClickHandler(event -> {
+      String updated = updateCronValue(cron.source, value, toggle.isChecked());
+      refreshErrors(getActiveRowId(), cron, updated);
     });
   }
 
@@ -759,45 +714,42 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
 
     Global.confirm(caption, Icon.QUESTION, messages,
         Localized.dictionary().actionCreate(), Localized.dictionary().actionCancel(),
-        new ConfirmationCallback() {
-          @Override
-          public void onConfirm() {
-            long rtId = getActiveRowId();
+        () -> {
+          long rtId = getActiveRowId();
 
-            if (DataUtils.isId(rtId)) {
-              ParameterList params = TasksKeeper.createArgs(SVC_RT_SPAWN);
-              params.addQueryItem(VAR_RT_ID, rtId);
-              params.addQueryItem(VAR_RT_DAY, dayNumber);
+          if (DataUtils.isId(rtId)) {
+            ParameterList params = TasksKeeper.createArgs(SVC_RT_SPAWN);
+            params.addQueryItem(VAR_RT_ID, rtId);
+            params.addQueryItem(VAR_RT_DAY, dayNumber);
 
-              if (DataUtils.isId(executor)) {
-                params.addQueryItem(COL_EXECUTOR, executor);
-              }
+            if (DataUtils.isId(executor)) {
+              params.addQueryItem(COL_EXECUTOR, executor);
+            }
 
-              BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
-                @Override
-                public void onResponse(ResponseObject response) {
-                  if (response.hasResponse(BeeRowSet.class)) {
-                    BeeRowSet taskData = BeeRowSet.restore(response.getResponseAsString());
+            BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
+              @Override
+              public void onResponse(ResponseObject response) {
+                if (response.hasResponse(BeeRowSet.class)) {
+                  BeeRowSet taskData = BeeRowSet.restore(response.getResponseAsString());
 
-                    if (!DataUtils.isEmpty(taskData)) {
-                      for (BeeRow row : taskData.getRows()) {
-                        offspring.put(dayNumber, row);
-                      }
+                  if (!DataUtils.isEmpty(taskData)) {
+                    for (BeeRow row : taskData.getRows()) {
+                      offspring.put(dayNumber, row);
+                    }
 
-                      String message =
-                          Localized.dictionary().crmCreatedNewTasks(taskData.getNumberOfRows());
-                      BeeKeeper.getScreen().notifyInfo(message);
+                    String message =
+                        Localized.dictionary().crmCreatedNewTasks(taskData.getNumberOfRows());
+                    BeeKeeper.getScreen().notifyInfo(message);
 
-                      DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_TASKS);
+                    DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_TASKS);
 
-                      if (callback != null) {
-                        callback.run();
-                      }
+                    if (callback != null) {
+                      callback.run();
                     }
                   }
                 }
-              });
-            }
+              }
+            });
           }
         }, target);
   }
@@ -844,18 +796,16 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
   private Widget renderMonth(YearMonth ym, List<DayOfMonth> days, final boolean fertile) {
     Flow panel = new Flow(STYLE_MONTH_PANEL);
 
-    Label monthLabel = new Label(BeeUtils.joinWords(ym.getYear(),
-        Format.renderMonthFullStandalone(ym).toLowerCase()));
+    Label monthLabel = new Label(Format.renderYearMonth(ym));
     monthLabel.addStyleName(STYLE_MONTH_LABEL);
 
     panel.add(monthLabel);
 
     HtmlTable table = new HtmlTable(STYLE_MONTH_TABLE);
 
-    String[] wn = LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().weekdaysNarrow();
-    for (int i = 0; i < TimeUtils.DAYS_PER_WEEK; i++) {
-      String text = (i == 6) ? wn[0] : wn[i + 1];
-      table.setText(0, i, text, STYLE_WEEKDAY_CELL);
+    List<String> wn = Format.getWeekdaysNarrowStandalone();
+    for (int i = 0; i < wn.size(); i++) {
+      table.setText(0, i, wn.get(i), STYLE_WEEKDAY_CELL);
     }
 
     JustDate startOfMonth = ym.getDate();
@@ -877,24 +827,16 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
         if (fertile || hasOffspring) {
           dayElementIds.put(dayNumber, widget.getId());
 
-          widget.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              Element target = EventUtils.getEventTargetElement(event);
-              final int number = DomUtils.getDataIndexInt(target);
+          widget.addClickHandler(event -> {
+            Element target = EventUtils.getEventTargetElement(event);
+            final int number = DomUtils.getDataIndexInt(target);
 
-              if (number > 0) {
-                if (offspring.containsKey(number)) {
-                  editOffspring(target, number);
+            if (number > 0) {
+              if (offspring.containsKey(number)) {
+                editOffspring(target, number);
 
-                } else if (fertile && !DataUtils.isEmpty(getExecutors())) {
-                  maybeSpawn(target, number, null, new Runnable() {
-                    @Override
-                    public void run() {
-                      toggleDayStyle(number, true);
-                    }
-                  });
-                }
+              } else if (fertile && !DataUtils.isEmpty(getExecutors())) {
+                maybeSpawn(target, number, null, () -> toggleDayStyle(number, true));
               }
             }
           });
@@ -961,12 +903,9 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
         FaLabel open = new FaLabel(FontAwesome.EDIT);
         open.setTitle(Localized.dictionary().actionEdit());
 
-        open.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            if (event.getSource() instanceof Widget) {
-              handleOffspring(Action.EDIT, dayNumber, (Widget) event.getSource());
-            }
+        open.addClickHandler(event -> {
+          if (event.getSource() instanceof Widget) {
+            handleOffspring(Action.EDIT, dayNumber, (Widget) event.getSource());
           }
         });
 
@@ -976,12 +915,9 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
           FaLabel delete = new FaLabel(FontAwesome.TRASH_O);
           delete.setTitle(Localized.dictionary().actionDelete());
 
-          delete.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-              if (event.getSource() instanceof FaLabel) {
-                handleOffspring(Action.DELETE, dayNumber, (Widget) event.getSource());
-              }
+          delete.addClickHandler(event -> {
+            if (event.getSource() instanceof FaLabel) {
+              handleOffspring(Action.DELETE, dayNumber, (Widget) event.getSource());
             }
           });
 
@@ -1011,12 +947,9 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
         FaLabel create = new FaLabel(FontAwesome.PLUS_SQUARE_O);
         create.setTitle(Localized.dictionary().actionCreate());
 
-        create.addClickHandler(new ClickHandler() {
-          @Override
-          public void onClick(ClickEvent event) {
-            if (event.getSource() instanceof FaLabel) {
-              handleOffspring(Action.ADD, dayNumber, (Widget) event.getSource());
-            }
+        create.addClickHandler(event -> {
+          if (event.getSource() instanceof FaLabel) {
+            handleOffspring(Action.ADD, dayNumber, (Widget) event.getSource());
           }
         });
 

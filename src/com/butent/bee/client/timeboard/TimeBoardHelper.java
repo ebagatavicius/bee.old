@@ -578,7 +578,7 @@ public final class TimeBoardHelper {
     if (date == null) {
       return null;
     } else {
-      return BeeUtils.buildLines(date.toString(), Format.renderDayOfWeek(date));
+      return BeeUtils.buildLines(Format.renderDate(date), Format.renderDayOfWeek(date));
     }
   }
 
@@ -638,11 +638,11 @@ public final class TimeBoardHelper {
     if (start == null && end == null) {
       return BeeConst.STRING_EMPTY;
     } else if (start == null) {
-      return end.toString();
+      return Format.renderDate(end);
     } else if (end == null || start.equals(end)) {
-      return start.toString();
+      return Format.renderDate(start);
     } else {
-      return BeeUtils.joinWords(start, end);
+      return BeeUtils.joinWords(Format.renderDate(start), Format.renderDate(end));
     }
   }
 
@@ -1085,7 +1085,7 @@ public final class TimeBoardHelper {
   private static Widget renderDate(JustDate date, String styleName, int width, int height) {
     Size maxSize = new Size(width, height);
 
-    String text = date.toString();
+    String text = Format.renderDate(date);
     Size size = Rulers.getLineSize(null, text, false);
 
     if (maxSize.encloses(size)) {

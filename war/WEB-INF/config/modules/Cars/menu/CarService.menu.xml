@@ -8,4 +8,6 @@
   <Item name="Stages" label="=statuses" service="stages" parameters="CarServiceOrders" separator="true" />
   <Item name="CarJobs" label="=serviceJobs" service="grid" parameters="CarJobs" />
   <Item name="CarBundles" label="=bundles" service="grid" parameters="CarBundles" />
+
+  <Item name="CarDiscounts" label="=discounts" service="grid" parameters="CarDiscounts" separator="true" />
 </Entry>

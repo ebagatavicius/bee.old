@@ -8,6 +8,8 @@ import com.google.common.collect.Lists;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.i18n.DateOrdering;
+import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.RangeOptions;
@@ -21,8 +23,6 @@ import java.util.Objects;
  * Contains methods for date/time calculations.
  */
 public final class TimeUtils {
-
-  public static final int FIELD_ERA = 0;
 
   public static final int FIELD_YEAR = 1;
   public static final int FIELD_MONTH = 2;
@@ -41,14 +41,8 @@ public final class TimeUtils {
   public static final int FIELD_SECOND = 13;
   public static final int FIELD_MILLISECOND = 14;
 
-  public static final int FIELD_ZONE_OFFSET = 15;
-  public static final int FIELD_DST_OFFSET = 16;
-
-  public static final int FIELD_YEAR_WOY = 17;
-
   public static final int FIELD_DOW_LOCAL = 18;
 
-  public static final int FIELD_EXTENDED_YEAR = 19;
   public static final int FIELD_JULIAN_DAY = 20;
 
   public static final int FIELD_MILLISECONDS_IN_DAY = 21;
@@ -183,8 +177,7 @@ public final class TimeUtils {
       } else if (d2 instanceof JustDate) {
         return d1.getDate().compareTo((JustDate) d2);
       } else if (d2 instanceof HasDateValue) {
-        return d1.getDate().getDateTime()
-            .compareTo(((HasDateValue) d2).getDateTime());
+        return d1.getDate().getDateTime().compareTo(((HasDateValue) d2).getDateTime());
       }
 
     } else if (d1 instanceof JustDate) {
@@ -517,7 +510,11 @@ public final class TimeUtils {
   }
 
   public static boolean isWeekend(HasDateValue dt) {
-    return dt != null && dt.getDow() >= 6;
+    return dt != null && isWeekend(dt.getDow());
+  }
+
+  public static boolean isWeekend(int dow) {
+    return dow >= 6;
   }
 
   public static boolean isYear(Integer year) {
@@ -676,7 +673,7 @@ public final class TimeUtils {
     }
   }
 
-  public static JustDate parseDate(String input) {
+  public static JustDate parseDate(String input, DateOrdering ordering) {
     if (BeeUtils.isEmpty(input)) {
       return null;
     }
@@ -692,9 +689,9 @@ public final class TimeUtils {
       }
     }
 
-    List<Integer> fields = parseFields(input);
+    List<Integer> fields = splitFields(input);
     if (BeeUtils.isPositive(BeeUtils.max(fields))) {
-      return parseDate(input, fields);
+      return parseDate(input, fields, ordering);
     } else {
       return null;
     }
@@ -861,7 +858,7 @@ public final class TimeUtils {
     }
   }
 
-  public static DateTime parseDateTime(String input) {
+  public static DateTime parseDateTime(String input, DateOrdering ordering) {
     if (BeeUtils.isEmpty(input)) {
       return null;
     }
@@ -877,8 +874,13 @@ public final class TimeUtils {
       }
     }
 
-    List<Integer> fields = parseFields(input);
+    List<Integer> fields = splitFields(input);
     if (!BeeUtils.isPositive(BeeUtils.max(fields))) {
+      return null;
+    }
+
+    if (ordering == null) {
+      requireDateOrdering("parseDateTime");
       return null;
     }
 
@@ -890,42 +892,45 @@ public final class TimeUtils {
         int len = digits.length();
 
         if (len <= 8) {
-          return DateTime.get(parseDate(input, fields));
-        } else if (len <= 10) {
-          return parseDateTime(splitDigits(digits, BeeConst.STRING_SPACE, 4, 2, 2, 2));
-        } else if (len <= 12) {
-          return parseDateTime(splitDigits(digits, BeeConst.STRING_SPACE, 4, 2, 2, 2, 2));
+          return DateTime.get(parseDate(input, fields, ordering));
+
         } else {
-          return parseDateTime(splitDigits(digits, BeeConst.STRING_SPACE, 4, 2, 2, 2, 2, 2));
+          List<Integer> slices = ordering.getDateSplitLengths(digits);
+
+          if (slices.size() == 3) {
+            slices.add(2);
+            if (len > 10) {
+              slices.add(2);
+            }
+            if (len > 12) {
+              slices.add(2);
+            }
+            if (len > 14) {
+              slices.add(3);
+            }
+
+            List<Integer> split = splitDigits(digits, slices);
+
+            return ordering.dateTime(getField(split, 0),
+                getField(split, 1), getField(split, 2),
+                getField(split, 3), getField(split, 4),
+                getField(split, 5), getField(split, 6));
+
+          } else {
+            return null;
+          }
         }
 
       case 2:
       case 3:
-        return DateTime.get(parseDate(input, fields));
+        return DateTime.get(parseDate(input, fields, ordering));
 
       default:
-        return new DateTime(normalizeYear(getField(fields, 0)),
+        return ordering.dateTime(getField(fields, 0),
             getField(fields, 1), getField(fields, 2),
             getField(fields, 3), getField(fields, 4),
             getField(fields, 5), getField(fields, 6));
     }
-  }
-
-  public static List<Integer> parseFields(String input) {
-    List<Integer> result = new ArrayList<>();
-    if (BeeUtils.isEmpty(input)) {
-      return result;
-    }
-
-    for (String field : FIELD_SPLITTER.split(input)) {
-      for (int i = field.length(); i > 0; i--) {
-        if (BeeUtils.isInt(field.substring(0, i))) {
-          result.add(BeeUtils.toInt(field.substring(0, i)));
-          break;
-        }
-      }
-    }
-    return result;
   }
 
   public static Integer parseMonth(String input) {
@@ -950,7 +955,7 @@ public final class TimeUtils {
       return null;
     }
 
-    List<Integer> fields = parseFields(input);
+    List<Integer> fields = splitFields(input);
     if (fields.isEmpty()) {
       return null;
     }
@@ -979,7 +984,7 @@ public final class TimeUtils {
       }
 
       fields.clear();
-      fields.addAll(parseDigits(digits, slices));
+      fields.addAll(splitDigits(digits, slices));
     }
 
     return MILLIS_PER_HOUR * getField(fields, 0) + MILLIS_PER_MINUTE * getField(fields, 1)
@@ -1091,14 +1096,6 @@ public final class TimeUtils {
     }
   }
 
-  public static String renderDate(HasDateValue dt) {
-    if (dt == null) {
-      return BeeConst.STRING_EMPTY;
-    } else {
-      return dt.getDate().toString();
-    }
-  }
-
   public static String renderDateTime(long time) {
     return renderDateTime(time, false);
   }
@@ -1207,22 +1204,6 @@ public final class TimeUtils {
     } else {
       return renderCompact(start, dropCurrentYear) + PERIOD_SEPARATOR
           + renderCompact(end, dropCurrentYear);
-    }
-  }
-
-  public static String renderPeriod(JustDate start, JustDate end) {
-    if (start == null) {
-      if (end == null) {
-        return BeeConst.STRING_EMPTY;
-      } else {
-        return PERIOD_SEPARATOR + end.toString();
-      }
-
-    } else if (end == null) {
-      return start.toString() + PERIOD_SEPARATOR;
-
-    } else {
-      return start.toString() + PERIOD_SEPARATOR + end.toString();
     }
   }
 
@@ -1338,6 +1319,23 @@ public final class TimeUtils {
       return false;
     }
     return x.getYear() == y.getYear() && x.getMonth() == y.getMonth();
+  }
+
+  public static List<Integer> splitFields(String input) {
+    List<Integer> result = new ArrayList<>();
+    if (BeeUtils.isEmpty(input)) {
+      return result;
+    }
+
+    for (String field : FIELD_SPLITTER.split(input)) {
+      for (int i = field.length(); i > 0; i--) {
+        if (BeeUtils.isInt(field.substring(0, i))) {
+          result.add(BeeUtils.toInt(field.substring(0, i)));
+          break;
+        }
+      }
+    }
+    return result;
   }
 
   public static DateTime startOfDay() {
@@ -1700,17 +1698,17 @@ public final class TimeUtils {
     return delta;
   }
 
-  private static JustDate parseDate(String input, List<Integer> fields) {
+  private static JustDate parseDate(String input, List<Integer> fields, DateOrdering ordering) {
+    if (ordering == null) {
+      requireDateOrdering("parseDate");
+      return null;
+    }
+
     int count = fields.size();
 
     switch (count) {
       case 1:
         int v = fields.get(0);
-
-        String digits = BeeUtils.parseDigits(input);
-        int len = digits.length();
-
-        String sep = String.valueOf(DATE_FIELD_SEPARATOR);
 
         if (isYear(v)) {
           return new JustDate(v, 1, 1);
@@ -1718,30 +1716,15 @@ public final class TimeUtils {
         } else if (maybeDom(v)) {
           return new JustDate(year(), month(), v);
 
-        } else if (len == 2) {
-          return parseDate(splitDigits(digits, sep, 1, 1));
-
-        } else if (len == 3) {
-          return parseDate(splitDigits(digits, sep, 1, 2));
-
-        } else if (len == 4) {
-          return parseDate(splitDigits(digits, sep, 2, 2));
-
-        } else if (len == 5) {
-          return parseDate(splitDigits(digits, sep, 1, 2, 2));
-
-        } else if (len == 6) {
-          return parseDate(splitDigits(digits, sep, 2, 2, 2));
-
-        } else if (len == 7) {
-          if (Objects.equals(digits.substring(4, 5), BeeConst.STRING_ZERO)) {
-            return parseDate(splitDigits(digits, sep, 4, 2, 1));
-          } else {
-            return parseDate(splitDigits(digits, sep, 4, 1, 2));
-          }
-
         } else {
-          return parseDate(splitDigits(digits, sep, 4, 2, 2));
+          String digits = BeeUtils.parseDigits(input);
+          List<Integer> split = splitDigits(digits, ordering.getDateSplitLengths(digits));
+
+          if (split.size() > 1) {
+            return parseDate(input, split, ordering);
+          } else {
+            return null;
+          }
         }
 
       case 2:
@@ -1750,36 +1733,29 @@ public final class TimeUtils {
 
         if (isYear(v0)) {
           return new JustDate(v0, v1, 1);
+        } else if (isYear(v1)) {
+          return new JustDate(v1, v0, 1);
 
         } else if (isMonth(v0)) {
-          return new JustDate(year(), v0, v1);
+          if (isMonth(v1)) {
+            return new JustDate(year(), ordering.month(v0, v1), ordering.day(v0, v1));
+          } else {
+            return new JustDate(year(), v0, v1);
+          }
 
         } else if (isMonth(v1)) {
-          return new JustDate(normalizeYear(v0), v1, 1);
+          return new JustDate(year(), v1, v0);
 
         } else {
           return null;
         }
 
       default:
-        return new JustDate(normalizeYear(getField(fields, 0)),
-            getField(fields, 1), getField(fields, 2));
+        return ordering.date(getField(fields, 0), getField(fields, 1), getField(fields, 2));
     }
   }
 
-  private static List<Integer> parseDigits(String s, int first, int second, int... rest) {
-    List<Integer> slices = Lists.newArrayList(first, second);
-
-    if (rest != null) {
-      for (int len : rest) {
-        slices.add(len);
-      }
-    }
-
-    return parseDigits(s, slices);
-  }
-
-  private static List<Integer> parseDigits(String input, List<Integer> slices) {
+  private static List<Integer> splitDigits(String input, List<Integer> slices) {
     List<Integer> result = new ArrayList<>();
     if (BeeUtils.isEmpty(input) || slices.isEmpty()) {
       return result;
@@ -1795,9 +1771,9 @@ public final class TimeUtils {
     return result;
   }
 
-  private static String splitDigits(String input, String separator, int first, int second,
-      int... rest) {
-    return BeeUtils.join(separator, parseDigits(input, first, second, rest));
+  private static void requireDateOrdering(String method) {
+    LogUtils.getRootLogger().severe(TimeUtils.class.getSimpleName(), method,
+        DateOrdering.class.getSimpleName(), "required");
   }
 
   private TimeUtils() {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
 
   name="MaintenanceTypes" viewName="MaintenanceTypes"
   caption="=svcServiceTypes" newRowCaption="=svcNewServiceType"
@@ -8,5 +9,8 @@
   <g:columns>
     <DataColumn name="Name" caption="=type" visible="true" />
     <DataColumn name="AddressRequired" caption="=scvAddressRequired" visible="true" />
+    <DataColumn name="Conditions" cellType="html">
+      <style><bodyStyle><ui:inline>overflow:auto;</ui:inline></bodyStyle></style>
+    </DataColumn>
   </g:columns>
 </g:Grid>

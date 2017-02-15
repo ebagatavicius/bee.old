@@ -379,19 +379,41 @@ public class SpecificationBuilder implements InputCallback {
   }
 
   private void filter(HtmlTable table, String value) {
+    int nameIdx = 2;
+
     for (int i = 0; i < table.getRowCount(); i++) {
       List<TableCellElement> cells = table.getRowCells(i);
 
       if (cells.size() > 2) {
         boolean show = BeeUtils.isEmpty(value)
             || BeeUtils.containsSame(cells.get(1).getInnerText(), value)
-            || BeeUtils.containsSame(cells.get(2).getInnerText(), value);
+            || BeeUtils.containsSame(cells.get(nameIdx).getInnerText(), value);
 
-        if (show) {
-          int packetIdx = DomUtils.getDataIndexInt(table.getRow(i));
+        Widget packetWidget = table.getWidget(i, nameIdx);
+        int packetIdx = DomUtils.getDataIndexInt(table.getRow(i));
 
-          if (!BeeConst.isUndef(packetIdx)) {
-            table.getRowFormatter().setVisible(packetIdx, show);
+        if (Objects.nonNull(packetWidget)) {
+          table.setText(i, nameIdx, packetWidget.getElement().getInnerText());
+
+        } else if (!BeeConst.isUndef(packetIdx)) {
+          if (show) {
+            table.getRowFormatter().setVisible(packetIdx, true);
+
+          } else if (Objects.isNull(table.getWidget(packetIdx, nameIdx))) {
+            Label name = new Label(table.getCellFormatter().getElement(packetIdx, nameIdx)
+                .getInnerText());
+            name.setStyleName(STYLE_PACKET_COLLAPSED);
+
+            name.addClickHandler(clickEvent -> {
+              for (int j = packetIdx + 1; j < table.getRowCount(); j++) {
+                if (!Objects.equals(DomUtils.getDataIndexInt(table.getRow(j)), packetIdx)) {
+                  break;
+                }
+                table.getRowFormatter().setVisible(j, true);
+              }
+              table.setText(packetIdx, nameIdx, name.getText());
+            });
+            table.setWidget(packetIdx, nameIdx, name);
           }
         }
         table.getRowFormatter().setVisible(i, show);

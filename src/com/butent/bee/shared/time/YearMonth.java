@@ -40,7 +40,7 @@ public class YearMonth implements Comparable<YearMonth>, BeeSerializable, HasYea
       return null;
     }
 
-    List<Integer> fields = TimeUtils.parseFields(s);
+    List<Integer> fields = TimeUtils.splitFields(s);
     if (!BeeUtils.isPositive(BeeUtils.max(fields))) {
       return null;
     } else {

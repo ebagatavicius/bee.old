@@ -2,7 +2,6 @@ package com.butent.bee.client.modules.discussions;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
@@ -69,6 +68,7 @@ import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.io.FileNameUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -435,8 +435,6 @@ class AnnouncementsBoardInterceptor extends AbstractFormInterceptor implements
   private static final String STYLE_TOPIC_HB = STYLE_PREFIX + "topic-hb";
   private static final String STYLE_SEPARATOR_LINE = STYLE_PREFIX + "line";
 
-  private static final String LOCALE_NAME_LT = "lt";
-
   private static final String DEFAULT_PHOTO_IMAGE = "images/defaultUser.png";
 
   private static final String DAY = Localized.dictionary().unitDayShort().toLowerCase();
@@ -781,9 +779,8 @@ class AnnouncementsBoardInterceptor extends AbstractFormInterceptor implements
 
       listTbl.setHtml(row, 1, birthListData[rs.getColumnIndex(COL_NAME)]);
       listTbl.addStyleName(STYLE_NAME_SUR_HB);
-      String locale =
-          LocaleInfo.getCurrentLocale().getLocaleName();
-      if (locale.equals(LOCALE_NAME_LT)) {
+
+      if (BeeKeeper.getUser().getSupportedLocale() == SupportedLocale.LT) {
         Flow happyBirthdayDate = new Flow();
         listTbl.setWidget(row, 2, happyBirthdayDate);
         TextLabel date = new TextLabel(true);

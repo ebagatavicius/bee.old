@@ -214,6 +214,8 @@ public class ServiceObjectForm extends MaintenanceExpanderForm implements ClickH
                     objectRow.getString(objectDataInfo.getColumnIndex(COL_MODEL)));
                 newRow.setValue(maintenanceDataInfo.getColumnIndex(COL_SERIAL_NO),
                     objectRow.getString(objectDataInfo.getColumnIndex(COL_SERIAL_NO)));
+                newRow.setValue(maintenanceDataInfo.getColumnIndex(COL_ARTICLE_NO),
+                    objectRow.getString(objectDataInfo.getColumnIndex(COL_ARTICLE_NO)));
 
                 ServiceUtils.fillContactValues(newRow, objectRow);
                 ServiceUtils.fillCompanyValues(newRow, objectRow, parentForm.getViewName(),

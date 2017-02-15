@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.event.logical.OpenEvent;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -25,6 +26,7 @@ import com.butent.bee.shared.data.filter.FilterParser;
 import com.butent.bee.shared.data.filter.FilterValue;
 import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.value.ValueType;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -189,13 +191,15 @@ public class ValueFilterSupplier extends AbstractFilterSupplier {
   }
 
   private Filter buildComparison(Operator operator, String value) {
+    DateOrdering dateOrdering = Format.getDefaultDateOrdering();
+
     if (searchBy.size() <= 1) {
-      return ColumnValueFilter.compareWithValue(getColumn(), operator, value);
+      return ColumnValueFilter.compareWithValue(getColumn(), operator, value, dateOrdering);
 
     } else {
       CompoundFilter filter = Filter.or();
       for (BeeColumn by : searchBy) {
-        filter.add(ColumnValueFilter.compareWithValue(by, operator, value));
+        filter.add(ColumnValueFilter.compareWithValue(by, operator, value, dateOrdering));
       }
       return filter;
     }

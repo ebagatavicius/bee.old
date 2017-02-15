@@ -2,6 +2,7 @@ package com.butent.bee.server.modules.trade;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -77,6 +78,7 @@ import com.butent.bee.shared.html.builder.elements.Table;
 import com.butent.bee.shared.html.builder.elements.Td;
 import com.butent.bee.shared.html.builder.elements.Th;
 import com.butent.bee.shared.html.builder.elements.Tr;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogLevel;
@@ -87,6 +89,7 @@ import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.orders.OrdersConstants;
 import com.butent.bee.shared.modules.payroll.PayrollConstants;
+import com.butent.bee.shared.modules.trade.ItemStock;
 import com.butent.bee.shared.modules.trade.OperationType;
 import com.butent.bee.shared.modules.trade.TradeCostBasis;
 import com.butent.bee.shared.modules.trade.TradeDiscountMode;
@@ -238,6 +241,11 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
 
     } else if (BeeUtils.same(svc, SVC_CALCULATE_COST)) {
       response = calculateCost(reqInfo);
+
+    } else if (BeeUtils.same(svc, SVC_GET_STOCK)) {
+      Multimap<Long, ItemStock> stock = getStock(reqInfo.getParameterLong(COL_STOCK_WAREHOUSE),
+          DataUtils.parseIdSet(reqInfo.getParameter(VAR_ITEMS)));
+      response = stock.isEmpty() ? ResponseObject.emptyResponse() : ResponseObject.response(stock);
 
     } else {
       String msg = BeeUtils.joinWords("Trade service not recognized:", svc);
@@ -414,6 +422,39 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
   @Override
   public String getResourcePath() {
     return getModule().getName();
+  }
+
+  public Multimap<Long, ItemStock> getStock(Long warehouse, Collection<Long> items) {
+    Multimap<Long, ItemStock> result = ArrayListMultimap.create();
+
+    SqlSelect query = new SqlSelect()
+        .addFields(TBL_TRADE_DOCUMENT_ITEMS, COL_ITEM, COL_TRADE_ITEM_ARTICLE)
+        .addSum(TBL_TRADE_STOCK, COL_STOCK_QUANTITY)
+        .addFrom(TBL_TRADE_STOCK)
+        .addFromInner(TBL_TRADE_DOCUMENT_ITEMS, sys.joinTables(TBL_TRADE_DOCUMENT_ITEMS,
+            TBL_TRADE_STOCK, COL_TRADE_DOCUMENT_ITEM))
+        .addGroup(TBL_TRADE_DOCUMENT_ITEMS, COL_ITEM, COL_TRADE_ITEM_ARTICLE)
+        .addOrder(TBL_TRADE_DOCUMENT_ITEMS, COL_ITEM, COL_TRADE_ITEM_ARTICLE);
+
+    HasConditions where = SqlUtils.and(SqlUtils.positive(TBL_TRADE_STOCK, COL_STOCK_QUANTITY));
+    if (DataUtils.isId(warehouse)) {
+      where.add(SqlUtils.equals(TBL_TRADE_STOCK, COL_STOCK_WAREHOUSE, warehouse));
+    }
+    if (!BeeUtils.isEmpty(items)) {
+      where.add(SqlUtils.inList(TBL_TRADE_DOCUMENT_ITEMS, COL_ITEM, items));
+    }
+
+    query.setWhere(where);
+
+    SimpleRowSet data = qs.getData(query);
+    if (!DataUtils.isEmpty(data)) {
+      for (SimpleRow row : data) {
+        result.put(row.getLong(COL_ITEM),
+            new ItemStock(row.getValue(COL_TRADE_ITEM_ARTICLE), row.getDouble(COL_STOCK_QUANTITY)));
+      }
+    }
+
+    return result;
   }
 
   @Override
@@ -1236,7 +1277,7 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
               c += qs.updateData(new SqlUpdate(table)
                   .addConstant(COL_TRADE_PAID, paid)
                   .addConstant(COL_TRADE_PAYMENT_TIME,
-                      TimeUtils.parseDateTime(payment.getValue("data")))
+                      TimeUtils.parseDateTime(payment.getValue("data"), DateOrdering.YMD))
                   .setWhere(SqlUtils.equals(table, idName, id)));
             }
           }

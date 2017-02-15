@@ -1,0 +1,1134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-02-14T15:03:30 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ServiceMaintenanceTicket" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="febbd589-b0c9-4c2a-8f14-f6b6d5181445">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<import value="com.butent.bee.shared.i18n.Localized"/>
+	<import value="com.butent.bee.server.i18n.Localizations"/>
+	<import value="com.butent.bee.shared.data.BeeRowSet"/>
+	<import value="com.butent.bee.shared.time.DateTime"/>
+	<import value="com.butent.bee.shared.utils.BeeUtils"/>
+	<import value="com.butent.bee.server.RsDataSource"/>
+	<subDataset name="CreatorCompanyBank" whenResourceMissingType="Error" uuid="b2c93c41-aec5-4a69-9054-c94408a432e4">
+		<parameter name="d" class="com.butent.bee.shared.i18n.Dictionary">
+			<parameterDescription><![CDATA[]]></parameterDescription>
+		</parameter>
+		<parameter name="CompanyDefaultBankAccount" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="BankName" class="java.lang.String"/>
+		<field name="BankCode" class="java.lang.String"/>
+		<field name="SWIFTCode" class="java.lang.String"/>
+		<field name="CurrencyName" class="java.lang.String"/>
+		<field name="BankAccount" class="java.lang.String"/>
+		<field name="DefaultBankAccount" class="java.lang.Long"/>
+		<field name="Address" class="java.lang.String"/>
+		<field name="Correspondent" class="java.lang.Boolean"/>
+		<filterExpression><![CDATA[BeeUtils.same(BeeUtils.toString($F{DefaultBankAccount}), $P{CompanyDefaultBankAccount})]]></filterExpression>
+	</subDataset>
+	<parameter name="Date" class="java.lang.String"/>
+	<parameter name="ID" class="java.lang.String"/>
+	<parameter name="CompanyName" class="java.lang.String"/>
+	<parameter name="CompanyTypeName" class="java.lang.String"/>
+	<parameter name="CompanyCode" class="java.lang.String"/>
+	<parameter name="CompanyAddress" class="java.lang.String"/>
+	<parameter name="CompanyCityName" class="java.lang.String"/>
+	<parameter name="ContactFirstName" class="java.lang.String"/>
+	<parameter name="ContactLastName" class="java.lang.String"/>
+	<parameter name="ContactPhone" class="java.lang.String"/>
+	<parameter name="ContactMobile" class="java.lang.String"/>
+	<parameter name="ContactEmail" class="java.lang.String"/>
+	<parameter name="WarrantyMaintenance" class="java.lang.String"/>
+	<parameter name="CategoryName" class="java.lang.String"/>
+	<parameter name="ManufacturerName" class="java.lang.String"/>
+	<parameter name="Model" class="java.lang.String"/>
+	<parameter name="ArticleNo" class="java.lang.String"/>
+	<parameter name="SerialNo" class="java.lang.String"/>
+	<parameter name="Description" class="java.lang.String"/>
+	<parameter name="Equipment" class="java.lang.String"/>
+	<parameter name="CreatorFirstName" class="java.lang.String"/>
+	<parameter name="CreatorLastName" class="java.lang.String"/>
+	<parameter name="Conditions" class="java.lang.String"/>
+	<parameter name="CreatorCompanyCode" class="java.lang.String"/>
+	<parameter name="CreatorCompanyVATCode" class="java.lang.String"/>
+	<parameter name="CreatorCompanyAddress" class="java.lang.String"/>
+	<parameter name="CreatorCompanyPostIndex" class="java.lang.String"/>
+	<parameter name="CreatorCompanyCityName" class="java.lang.String"/>
+	<parameter name="CreatorCompanyPhone" class="java.lang.String"/>
+	<parameter name="CreatorCompanyFax" class="java.lang.String"/>
+	<parameter name="CreatorCompanyEmail" class="java.lang.String"/>
+	<parameter name="CreatorCompanyWebsite" class="java.lang.String"/>
+	<parameter name="ContactCityName" class="java.lang.String"/>
+	<parameter name="ContactAddress" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="CreatorCompanyCompanyBankAccounts" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="CreatorCompanyDefaultBankAccount" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<variable name="d" class="com.butent.bee.shared.i18n.Dictionary">
+		<variableExpression><![CDATA[$V{d}]]></variableExpression>
+		<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
+	</variable>
+	<group name="Group1" keepTogether="true">
+		<groupHeader>
+			<band height="502">
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<frame>
+					<reportElement positionType="Float" x="0" y="0" width="555" height="260" uuid="7fe97b5f-d735-493e-b9e2-16ec9fe2af6d">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A9A9A9"/>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="1.0" lineStyle="Dashed" lineColor="#A9A9A9"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="21" width="280" height="12" isRemoveLineWhenBlank="true" uuid="f4d6e6a6-4eac-4c4d-a192-44e64f3e4c73">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement markup="html">
+							<font fontName="DejaVu Sans" size="9" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA["<u>" + $R{dataAboutCustomer} + ":" + "</u>"]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="33" width="80" height="12" isRemoveLineWhenBlank="true" uuid="f101e3fd-77e6-4ce5-9159-1d6e717bfd7b">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box rightPadding="0"/>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.customer()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="280" y="33" width="100" height="12" isRemoveLineWhenBlank="true" uuid="d361dd89-37d6-43f8-ae36-8077f33c1716">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.companyCode()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="45" width="80" height="12" isRemoveLineWhenBlank="true" uuid="924714f9-cc79-41ab-9694-a26c2195f370">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.city()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="180" y="45" width="100" height="12" isRemoveLineWhenBlank="true" uuid="28a9cdcd-98a5-46f9-b068-e1d5d3d84647">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.address()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="68" width="280" height="12" isRemoveLineWhenBlank="true" uuid="c1c9a347-f43b-4b5b-b642-123c7680bb78">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box topPadding="0"/>
+						<textElement markup="html">
+							<font fontName="DejaVu Sans" size="9" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA["<u>" + $V{d}.companyPerson() + ":" + "</u>"]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="280" y="80" width="100" height="12" isRemoveLineWhenBlank="true" uuid="90f0fd56-1aa3-4c18-bd00-14edd7aa2045">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.phone()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="80" width="80" height="12" isRemoveLineWhenBlank="true" uuid="e2f886d7-9f9b-4219-b6b1-8582935cec11">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.personFullName()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="92" width="80" height="12" isRemoveLineWhenBlank="true" uuid="497cfc45-1ee0-44e7-80c6-abf262d25070">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.email()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="280" y="92" width="100" height="12" isRemoveLineWhenBlank="true" uuid="cddc2381-979b-4a37-b314-060b75e5f936">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.mobile()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="115" width="280" height="12" isRemoveLineWhenBlank="true" uuid="48bd9095-41de-4380-81e0-84a048a6ed00">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement markup="html">
+							<font fontName="DejaVu Sans" size="9" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA["<u>" + $R{dataAboutDevice} + ":" + "</u>"]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="80" y="33" width="200" height="11" uuid="31e6d610-fb37-415c-9423-4a2ad8d1f839">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineWidth="1.0" lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.notEmpty($P{CompanyName}, $P{CompanyTypeName})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="380" y="33" width="175" height="11" uuid="70df8b5b-9c4e-48bf-bfdc-2e6774d03837">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{CompanyCode}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="280" y="45" width="275" height="11" uuid="2b69a98e-8958-4158-b9ce-72ca9d20111b">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.notEmpty($P{CompanyAddress}, $P{ContactAddress})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="80" y="45" width="100" height="11" uuid="d5bf2a77-0794-47ff-b4b3-f4813b1f1bc3">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.notEmpty($P{CompanyCityName}, $P{ContactCityName})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="80" y="80" width="200" height="11" uuid="6a91f9c9-d60e-4508-b353-5bbdd0b4359a">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($P{ContactFirstName}, $P{ContactLastName})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="380" y="80" width="175" height="11" uuid="175e6013-b22d-403c-998a-a88272b8c433">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{ContactPhone}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="380" y="92" width="175" height="11" uuid="c6df3c88-d4ec-46c4-a43a-2be39a6d1703">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{ContactMobile}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="80" y="92" width="200" height="11" uuid="f0dcaffa-5576-4902-a531-17a78806dd3c">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{ContactEmail}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="230" y="127" width="150" height="12" isRemoveLineWhenBlank="true" uuid="dfd4cb07-b49d-4169-903b-1e819dd2a879">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.svcWarrantyMaintenance()]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement x="381" y="127" width="8" height="10" uuid="216560f3-7116-4dc0-a5a8-03cb5aed29d3">
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box topPadding="1" leftPadding="1">
+							<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="7"/>
+						</textElement>
+						<textFieldExpression><![CDATA[(BeeUtils.isEmpty($P{WarrantyMaintenance}) ? "" : "X")]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="390" y="127" width="165" height="12" isRemoveLineWhenBlank="true" uuid="8d907542-f094-4b97-aa71-4b35d835033b">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5">
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{WarrantyMaintenance}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="127" width="230" height="12" isRemoveLineWhenBlank="true" uuid="bd291c82-7445-4b28-bfd5-fd37c3dedc6e">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{CategoryName}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="149" width="80" height="12" isRemoveLineWhenBlank="true" uuid="1b2b1c6e-603f-4472-a00e-ada26efde7a6">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.tcdBrand()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="280" y="149" width="100" height="12" isRemoveLineWhenBlank="true" uuid="c8eb34b1-4abe-42d4-8414-83f7c358da38">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$R{brandCode}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="161" width="80" height="12" isRemoveLineWhenBlank="true" uuid="21bf850d-b7e3-42fb-ba69-5fff38e9015a">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.svcModel()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="280" y="161" width="100" height="12" isRemoveLineWhenBlank="true" uuid="89742ede-3fbf-46b6-ad9c-dadc5fe0ba37">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.svcSerialNo()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="80" y="149" width="200" height="11" uuid="83719218-4d3f-4ab8-9244-7725a11280e2">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{ManufacturerName}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="80" y="161" width="200" height="11" uuid="35728a45-f46b-49c4-9d35-19adb3402b16">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{Model}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="380" y="149" width="175" height="11" uuid="61f9a3ff-04aa-4154-984e-0af5955ba531">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{ArticleNo}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="380" y="161" width="175" height="11" uuid="a587b21a-faac-48c6-b922-deb66b0b1111">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{SerialNo}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" evaluationTime="Report" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="225" width="380" height="12" uuid="c217c328-c97c-4f2e-a611-fec659becb4a">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement markup="html">
+							<font fontName="DejaVu Sans" size="9" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA["<u>" + $R{registeredBy} + ":" + "</u>"]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="237" width="119" height="12" isRemoveLineWhenBlank="true" uuid="a1903be6-3295-4bf8-bd8f-7f3a2e9c1c09">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.personFullName()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="119" y="237" width="436" height="11" uuid="c57416dd-c001-4d5a-ac25-e41fb802cd94">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($P{CreatorFirstName}, $P{CreatorLastName})]]></textFieldExpression>
+					</textField>
+					<frame>
+						<reportElement positionType="Float" x="0" y="180" width="555" height="20" uuid="8800fc9d-ce52-4a78-8e6d-82bf9ac22635">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<bottomPen lineWidth="1.0" lineColor="#A9A9A9"/>
+						</box>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement positionType="Float" x="0" y="0" width="119" height="12" isRemoveLineWhenBlank="true" uuid="d15771a2-938f-4fda-8546-3c35c0a20fd0">
+								<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							</reportElement>
+							<textElement markup="html">
+								<font fontName="DejaVu Sans" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{d}.svcFaultInfo()]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement positionType="Float" x="119" y="0" width="436" height="12" isRemoveLineWhenBlank="true" uuid="f9e7da39-66ac-42dc-be9d-4dfc2cb3ef7b">
+								<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+								<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							</reportElement>
+							<box>
+								<pen lineColor="#A9A9A9"/>
+								<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textElement markup="html">
+								<font fontName="DejaVu Sans" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{Description}]]></textFieldExpression>
+						</textField>
+					</frame>
+					<frame>
+						<reportElement positionType="Float" x="0" y="200" width="555" height="20" uuid="9117ac4e-508d-41ea-8aab-8ae170c6e602">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<bottomPen lineWidth="1.0" lineColor="#A9A9A9"/>
+						</box>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement positionType="Float" x="0" y="0" width="119" height="12" isRemoveLineWhenBlank="true" uuid="b19b0edb-7589-4aca-a085-48fe61fecbab">
+								<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							</reportElement>
+							<textElement markup="html">
+								<font fontName="DejaVu Sans" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$R{equipment}]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement positionType="Float" x="119" y="0" width="436" height="12" isRemoveLineWhenBlank="true" uuid="51e05bd1-0e13-4a73-81d5-98edf257da3b">
+								<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+								<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							</reportElement>
+							<box>
+								<pen lineColor="#A9A9A9"/>
+								<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textElement markup="html">
+								<font fontName="DejaVu Sans" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{Equipment}]]></textFieldExpression>
+						</textField>
+					</frame>
+					<textField isStretchWithOverflow="true">
+						<reportElement x="0" y="0" width="555" height="20" uuid="f4f89b1d-532e-42d9-a23b-eacbf43a138a">
+							<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						</reportElement>
+						<box leftPadding="10">
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement textAlignment="Left">
+							<font fontName="DejaVu Sans" size="13.5" isBold="false" isItalic="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$R{serviceMaintenanceTicket} + " " +  $P{ID}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" pattern="MMMM d, yyyy">
+						<reportElement x="348" y="0" width="207" height="20" uuid="286b6b44-8207-428e-b2e0-ebfbeab11eed"/>
+						<textElement textAlignment="Right" verticalAlignment="Middle">
+							<font fontName="DejaVu Sans" size="9"/>
+						</textElement>
+						<textFieldExpression><![CDATA[new DateTime(BeeUtils.toLong($P{Date})).toCompactString()]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement positionType="Float" x="0" y="274" width="555" height="48" uuid="786abbe8-7163-4359-aa54-4f2f07011f52">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<image hAlign="Right" vAlign="Middle" onErrorType="Blank">
+						<reportElement positionType="Float" x="1" y="0" width="553" height="48" uuid="d65511d0-5c03-4560-ba7b-8932ab4eea99"/>
+						<box topPadding="0" bottomPadding="2" rightPadding="5">
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<imageExpression><![CDATA["images/logo.png"]]></imageExpression>
+					</image>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="0" width="160" height="12" isRemoveLineWhenBlank="true" uuid="69e9714b-8e97-43d6-baf6-312e529f526a">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="8" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.companyCode() + ":", $P{CreatorCompanyCode})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="12" width="160" height="12" isRemoveLineWhenBlank="true" uuid="06171465-b81b-4382-be2b-7223aea90f4a">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="8" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.companyVATCode() + ": ", $P{CreatorCompanyVATCode})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="24" width="160" height="12" isRemoveLineWhenBlank="true" uuid="eb4c5629-5e80-426f-a3ae-212c81dc28aa">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="8" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.address() + ":", $P{CreatorCompanyAddress})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="170" y="0" width="160" height="12" isRemoveLineWhenBlank="true" uuid="b9ed3a4f-b7d9-4194-a1db-cafad4687663">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="8" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.phone() + ":", $P{CreatorCompanyPhone})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="170" y="12" width="160" height="12" isRemoveLineWhenBlank="true" uuid="955c533b-3314-4e4c-8ae9-ffce95c69d53">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="8" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.fax() + ":", $P{CreatorCompanyFax})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="170" y="24" width="160" height="12" isRemoveLineWhenBlank="true" uuid="d5dd4836-6f52-4b0e-9216-846d8c476915">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="8" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.email() + ":", $P{CreatorCompanyEmail})]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="170" y="36" width="160" height="12" isRemoveLineWhenBlank="true" uuid="3930ef70-5364-4e6e-9926-23facce98407">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="8" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{CreatorCompanyWebsite}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="36" width="160" height="12" isRemoveLineWhenBlank="true" uuid="28027e30-5c5d-471b-b010-06587d5d30c9">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="8" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($P{CreatorCompanyPostIndex}, $P{CreatorCompanyCityName})]]></textFieldExpression>
+					</textField>
+					<componentElement>
+						<reportElement positionType="Float" x="340" y="0" width="156" height="48" isRemoveLineWhenBlank="true" uuid="77c2fc95-4906-4a09-ad9a-8a2936ba9037">
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+							<datasetRun subDataset="CreatorCompanyBank" uuid="f6e0b215-9d8b-4ddf-a890-266dfaffb43c">
+								<datasetParameter name="d">
+									<datasetParameterExpression><![CDATA[$V{d}]]></datasetParameterExpression>
+								</datasetParameter>
+								<datasetParameter name="REPORT_RESOURCE_BUNDLE">
+									<datasetParameterExpression><![CDATA[$P{REPORT_RESOURCE_BUNDLE}]]></datasetParameterExpression>
+								</datasetParameter>
+								<datasetParameter name="CompanyDefaultBankAccount">
+									<datasetParameterExpression><![CDATA[$P{CreatorCompanyDefaultBankAccount}]]></datasetParameterExpression>
+								</datasetParameter>
+								<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($P{CreatorCompanyCompanyBankAccounts}))]]></dataSourceExpression>
+							</datasetRun>
+							<jr:listContents height="48" width="156">
+								<textField isStretchWithOverflow="true">
+									<reportElement positionType="Float" x="0" y="12" width="156" height="12" isRemoveLineWhenBlank="true" uuid="6fd79626-6b12-4c4e-86c8-a20e4a096f81">
+										<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+										<printWhenExpression><![CDATA[!BeeUtils.isEmpty($F{BankAccount})]]></printWhenExpression>
+									</reportElement>
+									<textElement markup="html">
+										<font size="8"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$F{BankAccount}]]></textFieldExpression>
+								</textField>
+								<textField isStretchWithOverflow="true">
+									<reportElement positionType="Float" x="0" y="24" width="156" height="12" isRemoveLineWhenBlank="true" uuid="52e3cac7-d9e1-40b2-bab1-1f1c8fd93213">
+										<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+									</reportElement>
+									<textElement markup="html">
+										<font size="8"/>
+									</textElement>
+									<textFieldExpression><![CDATA[BeeUtils.joinWords($P{d}.bank() + ":", $F{BankName})]]></textFieldExpression>
+								</textField>
+								<textField isStretchWithOverflow="true">
+									<reportElement positionType="Float" x="0" y="36" width="156" height="12" isRemoveLineWhenBlank="true" uuid="cac2e064-2a4d-4fab-a2a4-dd7ef14a0278">
+										<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+									</reportElement>
+									<textElement markup="html">
+										<font size="8"/>
+									</textElement>
+									<textFieldExpression><![CDATA[BeeUtils.joinWords($P{d}.code() + ":",$F{BankCode})]]></textFieldExpression>
+								</textField>
+								<textField isStretchWithOverflow="true">
+									<reportElement positionType="Float" x="0" y="0" width="156" height="12" isRemoveLineWhenBlank="true" uuid="1f481ae9-ebcb-4431-bda2-31ef22207ab6">
+										<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+										<printWhenExpression><![CDATA[!BeeUtils.isEmpty($F{BankAccount})]]></printWhenExpression>
+									</reportElement>
+									<textElement markup="html">
+										<font size="8"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$P{d}.bankAccount()]]></textFieldExpression>
+								</textField>
+							</jr:listContents>
+						</jr:list>
+					</componentElement>
+				</frame>
+				<frame>
+					<reportElement positionType="Float" x="0" y="334" width="555" height="156" uuid="58e547b8-78c5-41a6-a936-8e7e5ea32c45"/>
+					<box>
+						<pen lineWidth="1.0" lineStyle="Dashed" lineColor="#A9A9A9"/>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="20" width="280" height="12" isRemoveLineWhenBlank="true" uuid="a7bc3862-1537-4a5f-ae84-14ad9dc1ace5">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement markup="html">
+							<font fontName="DejaVu Sans" size="9" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA["<u>" + $R{dataAboutDevice} + ":" + "</u>"]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="230" y="32" width="150" height="12" isRemoveLineWhenBlank="true" uuid="35670743-5031-48b6-9c9c-6c6f811de390">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.svcWarrantyMaintenance()]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement x="381" y="32" width="8" height="10" uuid="e4b63223-0a36-49ce-bb4c-3810973fa2dc">
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box topPadding="1" leftPadding="1">
+							<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+							<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="7"/>
+						</textElement>
+						<textFieldExpression><![CDATA[(BeeUtils.isEmpty($P{WarrantyMaintenance}) ? "" : "X")]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="390" y="32" width="165" height="12" isRemoveLineWhenBlank="true" uuid="415381ab-ab34-4709-9aab-074ffe33b959">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5">
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{WarrantyMaintenance}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="32" width="230" height="12" isRemoveLineWhenBlank="true" uuid="2cbe1642-231b-4570-8bea-675e1b7c83d2">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{CategoryName}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="54" width="80" height="12" isRemoveLineWhenBlank="true" uuid="0db78a37-b868-4729-a736-e97a6b92154b">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.tcdBrand()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="280" y="54" width="100" height="12" isRemoveLineWhenBlank="true" uuid="d40c9c45-c715-4f9f-9032-395ebd14f889">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$R{brandCode}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="66" width="80" height="12" isRemoveLineWhenBlank="true" uuid="7b6a91d7-5fac-41e9-a78d-a3441ece988e">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.svcModel()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="280" y="66" width="100" height="12" isRemoveLineWhenBlank="true" uuid="71216c6e-e666-46c3-84e0-9187c0ceecbd">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box leftPadding="5" rightPadding="5"/>
+						<textElement textAlignment="Right">
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.svcSerialNo()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="80" y="54" width="200" height="11" uuid="e82111da-22e6-4130-9012-34ad235145c3">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{ManufacturerName}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="80" y="66" width="200" height="11" uuid="51e66290-f147-4b7a-9c2f-acf156e4fd39">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{Model}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="380" y="54" width="175" height="11" uuid="9056ed3e-055a-4158-a647-eed93a5cb0a3">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{ArticleNo}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="380" y="66" width="175" height="11" uuid="ad39bef7-5b38-4a65-9ba2-5c4944c0f22a">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$P{SerialNo}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" evaluationTime="Report" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="132" width="380" height="12" uuid="1be81c84-5870-487d-ac00-cf985ca22073">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement markup="html">
+							<font fontName="DejaVu Sans" size="9" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA["<u>" + $R{registeredBy} + ":" + "</u>"]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="0" y="144" width="119" height="12" isRemoveLineWhenBlank="true" uuid="2ec24a86-ed0b-4bbd-bc23-9e1d4d5e5283">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$V{d}.personFullName()]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+						<reportElement positionType="Float" x="119" y="144" width="436" height="11" uuid="105f1a78-8206-4292-a750-012879405927">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<pen lineColor="#A9A9A9"/>
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#A9A9A9"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement>
+							<font fontName="DejaVu Sans" size="9" isBold="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($P{CreatorFirstName}, $P{CreatorLastName})]]></textFieldExpression>
+					</textField>
+					<frame>
+						<reportElement positionType="Float" x="0" y="87" width="555" height="20" uuid="6b5ba71f-4cf7-45aa-a238-94dab47a3ddc">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<bottomPen lineWidth="1.0" lineColor="#A9A9A9"/>
+						</box>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement positionType="Float" x="0" y="0" width="119" height="12" isRemoveLineWhenBlank="true" uuid="08ab1fd8-bc8c-4a26-a8e2-3d7fbc25a544">
+								<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							</reportElement>
+							<textElement markup="html">
+								<font fontName="DejaVu Sans" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{d}.svcFaultInfo()]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement positionType="Float" x="119" y="0" width="436" height="12" isRemoveLineWhenBlank="true" uuid="33849c46-2326-437e-8e7e-57390647836f">
+								<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+								<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							</reportElement>
+							<box>
+								<pen lineColor="#A9A9A9"/>
+								<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textElement markup="html">
+								<font fontName="DejaVu Sans" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{Description}]]></textFieldExpression>
+						</textField>
+					</frame>
+					<frame>
+						<reportElement positionType="Float" x="0" y="107" width="555" height="20" uuid="e5d19767-6f03-499a-b98c-c957427901dc">
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						</reportElement>
+						<box>
+							<bottomPen lineWidth="1.0" lineColor="#A9A9A9"/>
+						</box>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement positionType="Float" x="0" y="0" width="119" height="12" isRemoveLineWhenBlank="true" uuid="2a5fa80d-a0a1-4186-97d9-4225065d302f">
+								<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							</reportElement>
+							<textElement markup="html">
+								<font fontName="DejaVu Sans" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$R{equipment}]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement positionType="Float" x="119" y="0" width="436" height="12" isRemoveLineWhenBlank="true" uuid="013f0e96-00b5-4859-a000-90c5f122cc40">
+								<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+								<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							</reportElement>
+							<box>
+								<pen lineColor="#A9A9A9"/>
+								<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textElement markup="html">
+								<font fontName="DejaVu Sans" size="9" isBold="false"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$P{Equipment}]]></textFieldExpression>
+						</textField>
+					</frame>
+					<textField isStretchWithOverflow="true">
+						<reportElement x="0" y="0" width="555" height="20" uuid="5a6434a7-492d-4f3d-97ce-0100519573b5">
+							<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						</reportElement>
+						<box leftPadding="10">
+							<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+							<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textElement textAlignment="Left">
+							<font fontName="DejaVu Sans" size="13.5" isBold="false" isItalic="false"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$R{serviceMaintenanceTicket} + " " +  $P{ID}]]></textFieldExpression>
+					</textField>
+					<textField isStretchWithOverflow="true" pattern="MMMM d, yyyy">
+						<reportElement x="348" y="0" width="207" height="20" uuid="a4c5e8ba-c573-4379-b662-a88aa3b2bf8c"/>
+						<textElement textAlignment="Right" verticalAlignment="Middle">
+							<font fontName="DejaVu Sans" size="9"/>
+						</textElement>
+						<textFieldExpression><![CDATA[new DateTime(BeeUtils.toLong($P{Date})).toCompactString()]]></textFieldExpression>
+					</textField>
+				</frame>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<summary>
+		<band height="47" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="330" y="36" width="225" height="11" uuid="b5c58920-e308-4519-a14d-f104d0d36a78">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{signature}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="0" width="554" height="12" uuid="1e086ce6-35a2-44d3-8a45-39bf34db9aa0">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#A9A9A9"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement markup="html">
+					<font fontName="DejaVu Sans" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Conditions}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="24" width="330" height="12" uuid="cf4d25d0-e3c6-4b52-ac3c-beb1eaa170e1">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineColor="#A9A9A9"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement markup="html">
+					<font fontName="DejaVu Sans" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[BeeUtils.joinWords("<b>" + $R{brought} + ":" + "</b>", $R{agreeConditions})]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

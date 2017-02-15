@@ -851,7 +851,8 @@ public class TransportModuleBean implements BeeModule {
             sys.joinTables(TBL_COUNTRIES, TBL_CARGO_PLACES, COL_PLACE_COUNTRY));
 
       } else if (Objects.equals(col, COL_PLACE_DATE)) {
-        clause = SqlUtils.equals(TBL_CARGO_PLACES, col, TimeUtils.parseDateTime(val));
+        clause = SqlUtils.equals(TBL_CARGO_PLACES, col,
+            TimeUtils.parseDateTime(val, usr.getDateOrdering()));
 
       } else if (table.hasField(col)) {
         clause = SqlUtils.contains(TBL_CARGO_PLACES, col, val);

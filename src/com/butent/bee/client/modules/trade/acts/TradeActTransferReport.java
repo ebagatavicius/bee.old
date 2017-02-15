@@ -387,7 +387,7 @@ public class TradeActTransferReport extends ReportInterceptor {
             text = TimeUtils.renderCompact(data.getDateTime(i, j));
 
           } else if (ValueType.DATE == type) {
-            text = TimeUtils.renderDate(data.getDate(i, j));
+            text = Format.renderDate(data.getDate(i, j));
 
           } else {
             text = data.getValue(i, j);

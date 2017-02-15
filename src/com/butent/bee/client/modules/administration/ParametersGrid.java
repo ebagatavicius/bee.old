@@ -13,8 +13,6 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dialog.Popup.OutsideClick;
-import com.butent.bee.client.event.logical.CloseEvent;
-import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.presenter.GridPresenter;
@@ -26,7 +24,6 @@ import com.butent.bee.client.view.ViewFactory;
 import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.edit.EditChangeHandler;
 import com.butent.bee.client.view.edit.EditStartEvent;
-import com.butent.bee.client.view.edit.EditStopEvent;
 import com.butent.bee.client.view.edit.EditableColumn;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
@@ -64,7 +61,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public final class ParametersGrid extends AbstractGridInterceptor {
 
@@ -118,7 +114,7 @@ public final class ParametersGrid extends AbstractGridInterceptor {
           DateTime dateTime = prm.supportsUsers() ? prm.getDateTime(userId) : prm.getDateTime();
 
           if (dateTime != null) {
-            value = Format.renderDate(dateTime);
+            value = Format.renderDateTime(dateTime);
           }
           break;
 
@@ -268,50 +264,37 @@ public final class ParametersGrid extends AbstractGridInterceptor {
           Global.inputCollection(prm.getName(), Localized.dictionary().parameter(),
               BeeUtils.toBoolean(prm.getOptions()),
               prm.supportsUsers() ? prm.getCollection(userId) : prm.getCollection(),
-              new Consumer<Collection<String>>() {
-                @Override
-                public void accept(Collection<String> result) {
-                  set(prm, Codec.beeSerialize(result), null);
-                }
-              }, null);
+              result -> set(prm, Codec.beeSerialize(result), null), null);
           break;
 
         case MAP:
           Global.inputMap(prm.getName(), Localized.dictionary().parameter(),
               Localized.dictionary().value(),
               prm.supportsUsers() ? prm.getMap(userId) : prm.getMap(),
-              new Consumer<Map<String, String>>() {
-                @Override
-                public void accept(Map<String, String> result) {
-                  set(prm, Codec.beeSerialize(result), null);
-                }
-              });
+              result -> set(prm, Codec.beeSerialize(result), null));
           break;
 
         default:
           final Popup popup = new Popup(OutsideClick.CLOSE, null);
           final Editor editor = getEditor(prm, event);
 
-          final ScheduledCommand executor = new ScheduledCommand() {
-            @Override
-            public void execute() {
-              if (popup.isShowing()) {
-                popup.close();
-              }
-              List<String> errors = editor.validate(true);
+          final ScheduledCommand executor = () -> {
+            if (popup.isShowing()) {
+              popup.close();
+            }
+            List<String> errors = editor.validate(true);
 
-              if (!BeeUtils.isEmpty(errors)) {
-                Global.showError(errors);
-              } else {
-                String selection = null;
+            if (!BeeUtils.isEmpty(errors)) {
+              Global.showError(errors);
+            } else {
+              String selection = null;
 
-                if (editor instanceof UnboundSelector) {
-                  UnboundSelector selector = (UnboundSelector) editor;
-                  selector.render(selector.getRelatedRow());
-                  selection = selector.getRenderedValue();
-                }
-                set(prm, editor.getValue(), selection);
+              if (editor instanceof UnboundSelector) {
+                UnboundSelector selector = (UnboundSelector) editor;
+                selector.render(selector.getRelatedRow());
+                selection = selector.getRenderedValue();
               }
+              set(prm, editor.getValue(), selection);
             }
           };
           editor.addEditChangeHandler(new EditChangeHandler() {
@@ -341,31 +324,20 @@ public final class ParametersGrid extends AbstractGridInterceptor {
             }
           });
 
-          editor.addEditStopHandler(new EditStopEvent.Handler() {
-            @Override
-            public void onEditStop(EditStopEvent e) {
-              executor.execute();
-            }
-          });
+          editor.addEditStopHandler(e -> executor.execute());
           popup.setWidget(editor);
 
-          popup.addCloseHandler(new CloseEvent.Handler() {
-            @Override
-            public void onClose(CloseEvent ev) {
-              if (ev.mouseOutside()) {
-                executor.execute();
-              }
-              getGridView().getGrid().refocus();
+          popup.addCloseHandler(ev -> {
+            if (ev.mouseOutside()) {
+              executor.execute();
             }
+            getGridView().getGrid().refocus();
           });
           final char character = (char) event.getCharCode();
 
-          popup.addOpenHandler(new OpenEvent.Handler() {
-            @Override
-            public void onOpen(OpenEvent ev) {
-              editor.setFocus(true);
-              editor.startEdit(editor.getNormalizedValue(), character, EditorAction.REPLACE, null);
-            }
+          popup.addOpenHandler(ev -> {
+            editor.setFocus(true);
+            editor.startEdit(editor.getNormalizedValue(), character, EditorAction.REPLACE, null);
           });
           popup.showOnTop(event.getSourceElement());
           break;

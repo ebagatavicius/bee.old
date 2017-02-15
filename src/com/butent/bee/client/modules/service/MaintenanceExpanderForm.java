@@ -8,13 +8,13 @@ import com.butent.bee.client.layout.Split;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.form.FormView;
-import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
+import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasOptions;
 import com.butent.bee.shared.ui.HasCheckedness;
 import com.butent.bee.shared.utils.BeeUtils;
 
-abstract class MaintenanceExpanderForm extends AbstractFormInterceptor {
+abstract class MaintenanceExpanderForm extends PrintFormInterceptor {
 
   private static final String NAME_SOUTH_EXPANDER = "SouthExpander";
   private static final String NAME_SPLIT = "Split";

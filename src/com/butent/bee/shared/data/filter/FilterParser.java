@@ -6,6 +6,7 @@ import com.butent.bee.shared.data.value.DateTimeValue;
 import com.butent.bee.shared.data.value.DateValue;
 import com.butent.bee.shared.data.value.LongValue;
 import com.butent.bee.shared.data.value.ValueType;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.TimeUtils;
@@ -20,6 +21,7 @@ public final class FilterParser {
 
   public static Filter parse(String input, List<? extends IsColumn> columns,
       String idColumnName, String versionColumnName, Long userId) {
+
     Filter flt = null;
 
     if (!BeeUtils.isEmpty(input)) {
@@ -154,6 +156,7 @@ public final class FilterParser {
 
   private static Filter parseExpression(String expr, List<? extends IsColumn> columns,
       String idColumnName, String versionColumnName, Long userId) {
+
     Filter flt = null;
 
     if (!BeeUtils.isEmpty(expr)) {
@@ -189,7 +192,7 @@ public final class FilterParser {
           flt = Filter.compareId(operator, value);
 
         } else if (BeeUtils.same(colName, versionColumnName)) {
-          flt = Filter.compareVersion(operator, value);
+          flt = Filter.compareVersion(operator, value, DateOrdering.DEFAULT);
 
         } else if (column2 != null) {
           flt = Filter.compareWithColumn(column, operator, column2);
@@ -216,7 +219,7 @@ public final class FilterParser {
                 new DateTimeValue(TimeUtils.nowMinutes()));
 
           } else {
-            flt = Filter.compareWithValue(column, operator, value);
+            flt = Filter.compareWithValue(column, operator, value, DateOrdering.DEFAULT);
           }
         }
 

@@ -3,9 +3,6 @@ package com.butent.bee.client.modules.classifiers;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gwt.dom.client.TableCellElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
@@ -351,10 +348,9 @@ class HolidaysForm extends AbstractFormInterceptor implements SelectorEvent.Hand
 
     HtmlTable table = new HtmlTable(STYLE_MONTH_TABLE);
 
-    String[] wn = LocaleInfo.getCurrentLocale().getDateTimeFormatInfo().weekdaysNarrow();
-    for (int i = 0; i < TimeUtils.DAYS_PER_WEEK; i++) {
-      String text = (i == 6) ? wn[0] : wn[i + 1];
-      table.setText(0, i, text, STYLE_WEEKDAY_CELL);
+    List<String> wn = Format.getWeekdaysNarrowStandalone();
+    for (int i = 0; i < wn.size(); i++) {
+      table.setText(0, i, wn.get(i), STYLE_WEEKDAY_CELL);
     }
 
     JustDate startOfMonth = new JustDate(year, month, 1);
@@ -383,28 +379,25 @@ class HolidaysForm extends AbstractFormInterceptor implements SelectorEvent.Hand
       }
     }
 
-    table.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        TableCellElement cell =
-            DomUtils.getParentCell(EventUtils.getEventTargetElement(event), true);
-        String text = (cell == null) ? null : cell.getInnerText();
+    table.addClickHandler(event -> {
+      TableCellElement cell =
+          DomUtils.getParentCell(EventUtils.getEventTargetElement(event), true);
+      String text = (cell == null) ? null : cell.getInnerText();
 
-        if (BeeUtils.isDigit(text)) {
-          JustDate date = new JustDate(year, month, BeeUtils.toInt(text));
-          onDayClick(date.getDays());
+      if (BeeUtils.isDigit(text)) {
+        JustDate date = new JustDate(year, month, BeeUtils.toInt(text));
+        onDayClick(date.getDays());
 
-          if (cell.hasClassName(STYLE_HOLIDAY)) {
-            cell.removeClassName(STYLE_HOLIDAY);
+        if (cell.hasClassName(STYLE_HOLIDAY)) {
+          cell.removeClassName(STYLE_HOLIDAY);
 
-            cell.addClassName(TimeUtils.isWeekend(date) ? STYLE_WEEKEND : STYLE_DAY_CELL);
+          cell.addClassName(TimeUtils.isWeekend(date) ? STYLE_WEEKEND : STYLE_DAY_CELL);
 
-          } else {
-            cell.removeClassName(STYLE_DAY_CELL);
-            cell.removeClassName(STYLE_WEEKEND);
+        } else {
+          cell.removeClassName(STYLE_DAY_CELL);
+          cell.removeClassName(STYLE_WEEKEND);
 
-            cell.addClassName(STYLE_HOLIDAY);
-          }
+          cell.addClassName(STYLE_HOLIDAY);
         }
       }
     });
@@ -426,12 +419,7 @@ class HolidaysForm extends AbstractFormInterceptor implements SelectorEvent.Hand
 
     DomUtils.setDataIndex(panel.getElement(), year);
 
-    panel.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        selectYear(country, year);
-      }
-    });
+    panel.addClickHandler(event -> selectYear(country, year));
 
     return panel;
   }
@@ -445,12 +433,7 @@ class HolidaysForm extends AbstractFormInterceptor implements SelectorEvent.Hand
       FaLabel addFirst = new FaLabel(FontAwesome.PLUS_SQUARE_O, STYLE_ADD_FIRST);
       addFirst.setTitle(BeeUtils.toString(years.get(0) - 1));
 
-      addFirst.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          addFirst(country);
-        }
-      });
+      addFirst.addClickHandler(event -> addFirst(country));
 
       yearPanel.add(addFirst);
     }
@@ -463,12 +446,7 @@ class HolidaysForm extends AbstractFormInterceptor implements SelectorEvent.Hand
       FaLabel addLast = new FaLabel(FontAwesome.PLUS_SQUARE_O, STYLE_ADD_LAST);
       addLast.setTitle(BeeUtils.toString(years.get(years.size() - 1) + 1));
 
-      addLast.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          addLast(country);
-        }
-      });
+      addLast.addClickHandler(event -> addLast(country));
 
       yearPanel.add(addLast);
     }

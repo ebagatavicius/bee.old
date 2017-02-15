@@ -48,6 +48,7 @@ import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.data.view.ViewColumn;
 import com.butent.bee.shared.exceptions.BeeRuntimeException;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.imports.ImportProperty;
@@ -1578,7 +1579,7 @@ public class ImportBean {
                   date = null;
                 }
               } else {
-                date = TimeUtils.parseDateTime(value);
+                date = TimeUtils.parseDateTime(value, DateOrdering.DEFAULT);
               }
               if (Objects.nonNull(date)) {
                 JustDate dt = date.getDate();

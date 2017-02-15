@@ -16,6 +16,8 @@
     <Enum name="Price" key="ItemPrice" label="=price" />
 
     <Enum name="OperationVatMode" key="TradeVatMode" label="=vatMode" />
+    <Numeric name="VatPercent" precision="3" label="=vatPercent" />
+
     <Enum name="OperationDiscountMode" key="TradeDiscountMode" label="=discountMode" />
 
     <Relation name="WarehouseFrom" relation="Warehouses" label="=trdWarehouseFrom" />

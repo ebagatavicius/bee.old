@@ -56,7 +56,11 @@
 
       <row>
         <Label for="OperationVatMode" />
-        <ListBox source="OperationVatMode" style="&lstw;" />
+        <FlowPanel>
+          <ListBox source="OperationVatMode" style="7rem" />
+          <InlineLabel for="VatPercent" style="margin-left: 32px; margin-right: 5px;"/>
+          <InputDecimal source="VatPercent" style="width: 40px;" />
+        </FlowPanel>
 
         <Label for="OperationDiscountMode" />
         <ListBox source="OperationDiscountMode" style="&lstw;" />

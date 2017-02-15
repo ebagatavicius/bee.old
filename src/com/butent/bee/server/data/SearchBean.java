@@ -10,6 +10,7 @@ import com.butent.bee.shared.data.SearchResult;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.DateTime;
@@ -32,9 +33,9 @@ public class SearchBean {
   @EJB
   SystemBean sys;
   @EJB
-  QueryServiceBean qs;
-  @EJB
   ModuleHolderBean mh;
+  @EJB
+  UserServiceBean usr;
 
   private static final BeeLogger logger = LogUtils.getLogger(SearchBean.class);
 
@@ -103,6 +104,7 @@ public class SearchBean {
     }
 
     List<String> phrases = parseQuery(query);
+    DateOrdering dateOrdering = usr.getDateOrdering();
 
     for (String part : phrases) {
       if (BeeUtils.isEmpty(part)) {
@@ -142,22 +144,22 @@ public class SearchBean {
             }
             break;
           case DATE_TIME:
-            DateTime dt = TimeUtils.parseDateTime(part);
+            DateTime dt = TimeUtils.parseDateTime(part, dateOrdering);
             if (dt != null) {
               sub = Filter.or(sub, Filter.equals(column, dt));
             }
             break;
           case DATE:
-            JustDate date = TimeUtils.parseDate(part);
+            JustDate date = TimeUtils.parseDate(part, dateOrdering);
             if (date != null) {
               sub = Filter.or(sub, Filter.equals(column, date));
             }
             break;
           case TEXT:
-            sub = Filter.or(sub, parseWordSearch(col, part));
+            sub = Filter.or(sub, parseWordSearch(col, part, dateOrdering));
             break;
           default:
-            sub = Filter.or(sub, Filter.compareWithValue(col, op, part));
+            sub = Filter.or(sub, Filter.compareWithValue(col, op, part, dateOrdering));
         }
       }
 
@@ -211,26 +213,30 @@ public class SearchBean {
     return result;
   }
 
-  private static Filter parseWordSearch(IsColumn col, String text) {
+  private static Filter parseWordSearch(IsColumn col, String text, DateOrdering dateOrdering) {
     Filter filter = Filter.contains(col.getId(), text);
 
-    if (BeeUtils.isPrefix(text, BeeConst.STRING_ASTERISK) && BeeUtils.isSuffix(text,
-        BeeConst.STRING_ASTERISK)) {
+    if (BeeUtils.isPrefix(text, BeeConst.STRING_ASTERISK)
+        && BeeUtils.isSuffix(text, BeeConst.STRING_ASTERISK)) {
+
       String t = text.substring(1, text.length() - 1);
       if (!BeeUtils.isEmpty(t)) {
         filter = Filter.contains(col.getId(), t);
       }
+
     } else if (BeeUtils.isPrefix(text, BeeConst.STRING_ASTERISK)) {
       String t = text.substring(1);
 
       if (!BeeUtils.isEmpty(t)) {
-        filter = Filter.compareWithValue(col, Operator.ENDS, t);
+        filter = Filter.compareWithValue(col, Operator.ENDS, t, dateOrdering);
       }
+
     } else if (BeeUtils.isSuffix(text, BeeConst.STRING_ASTERISK)) {
       String t = text.substring(0, text.length() - 1);
       if (!BeeUtils.isEmpty(t)) {
-        filter = Filter.compareWithValue(col, Operator.STARTS, t);
+        filter = Filter.compareWithValue(col, Operator.STARTS, t, dateOrdering);
       }
+
     } else if (BeeUtils.isQuoted(text)) {
       String t = BeeUtils.unquote(text);
 
@@ -241,5 +247,4 @@ public class SearchBean {
 
     return filter;
   }
-
 }

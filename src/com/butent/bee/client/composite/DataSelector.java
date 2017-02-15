@@ -1488,7 +1488,7 @@ public class DataSelector extends Composite implements Editor, HasVisibleLines, 
     if (BeeUtils.isEmpty(value)) {
       return null;
     } else {
-      return Value.parseValue(valueType, value, false);
+      return Value.parseValue(valueType, value, false, null);
     }
   }
 

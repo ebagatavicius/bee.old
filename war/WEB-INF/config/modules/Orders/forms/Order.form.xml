@@ -58,6 +58,12 @@
         <DataSelector source="Manager" editSource="ManagerPerson" renderColumns="ManagerFirstName ManagerLastName"
           newRowEnabled="false" style="&inpw;" />
       </row>
+
+      <row>
+        <Label for="TradeOperation" style="&lbl;" class="bee-required" />
+        <DataSelector source="TradeOperation" style="&inpw;" required="true"
+                      renderColumns="OperationName" />
+      </row>
     </Table>
     <br />
     <TabbedPages class="flexible" name="TabbedPages">

@@ -59,6 +59,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ItemPrice;
 import com.butent.bee.shared.modules.orders.OrdersConstants.*;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
+import com.butent.bee.shared.modules.trade.TradeVatMode;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -596,10 +597,9 @@ public class OrderItemsGrid extends AbstractGridInterceptor implements Selection
   private void addItems(IsRow parentRow, List<BeeColumn> parentColumns, BeeRowSet items) {
 
     List<String> colNames =
-        Lists.newArrayList(COL_ORDER, COL_TA_ITEM,
-            COL_TRADE_ITEM_QUANTITY, COL_TRADE_ITEM_PRICE, COL_TRADE_DISCOUNT,
-            COL_INVISIBLE_DISCOUNT, COL_RESERVED_REMAINDER, COL_TRADE_VAT, COL_TRADE_VAT_PERC,
-            COL_TRADE_SUPPLIER, COL_UNPACKING);
+        Lists.newArrayList(COL_ORDER, COL_TA_ITEM, COL_TRADE_ITEM_QUANTITY, COL_TRADE_ITEM_PRICE,
+            COL_TRADE_DISCOUNT, COL_INVISIBLE_DISCOUNT, COL_RESERVED_REMAINDER, COL_TRADE_VAT,
+            COL_TRADE_VAT_PERC, COL_TRADE_VAT_PLUS, COL_TRADE_SUPPLIER, COL_UNPACKING);
 
     final BeeRowSet rowSet = new BeeRowSet(getViewName(), Data.getColumns(getViewName(), colNames));
 
@@ -614,6 +614,7 @@ public class OrderItemsGrid extends AbstractGridInterceptor implements Selection
     final int supplierIdx = rowSet.getColumnIndex(COL_TRADE_SUPPLIER);
     final int unpackingIdx = rowSet.getColumnIndex(COL_UNPACKING);
     final int vatPrcIndex = rowSet.getColumnIndex(COL_TRADE_VAT_PERC);
+    final int vatPlusIdx = rowSet.getColumnIndex(COL_TRADE_VAT_PLUS);
     final int vatPrcItemIdx = items.getColumnIndex(COL_TRADE_VAT_PERC);
     final int vatPrcDefaultIdx = items.getNumberOfColumns() - 5;
     final int vatItemIdx = items.getColumnIndex(COL_TRADE_VAT);
@@ -622,6 +623,11 @@ public class OrderItemsGrid extends AbstractGridInterceptor implements Selection
 
     Map<Long, Double> quantities = new HashMap<>();
     Map<Long, ItemPrice> priceNames = new HashMap<>();
+
+    Integer trOperationVat = parentRow.getInteger(Data.getColumnIndex(VIEW_ORDERS,
+        COL_TRADE_VAT_PERC));
+    TradeVatMode vatMode = Data.getEnum(VIEW_ORDERS, parentRow, COL_OPERATION_VAT_MODE,
+        TradeVatMode.class);
 
     for (BeeRow item : items) {
       Double qty = BeeUtils.toDouble(item.getProperty(PRP_QUANTITY));
@@ -654,14 +660,18 @@ public class OrderItemsGrid extends AbstractGridInterceptor implements Selection
           }
         }
 
-        if (BeeUtils.unbox(item.getBoolean(vatItemIdx))) {
+        Integer itemVat = item.getInteger(vatPrcItemIdx);
 
-          if (BeeUtils.unbox(item.getInteger(vatPrcItemIdx)) > 0) {
-            row.setValue(vatIdx, item.getInteger(vatPrcItemIdx));
-          } else {
-            row.setValue(vatIdx, item.getInteger(vatPrcDefaultIdx));
-          }
+        if (BeeUtils.unbox(item.getBoolean(vatItemIdx)) || BeeUtils.isPositive(trOperationVat)) {
+          Integer vat = BeeUtils.isPositive(trOperationVat) ? trOperationVat
+              : BeeUtils.isPositive(itemVat) ?  itemVat : item.getInteger(vatPrcDefaultIdx);
+
+          row.setValue(vatIdx, vat);
           row.setValue(vatPrcIndex, true);
+
+          if (Objects.equals(TradeVatMode.PLUS, vatMode)) {
+            row.setValue(vatPlusIdx, true);
+          }
         }
         rowSet.addRow(row);
       }

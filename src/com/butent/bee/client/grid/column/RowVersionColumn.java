@@ -17,7 +17,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 public class RowVersionColumn extends AbstractColumn<DateTime> implements HasDateTimeFormat {
 
-  private static final String DEFAULT_PATTERN = "yy-MM-dd HH:mm:ss.SSS";
+  private static final String DEFAULT_PATTERN = "y-MM-dd HH:mm:ss.SSS";
 
   public RowVersionColumn() {
     this(Format.parseDateTimePattern(DEFAULT_PATTERN));

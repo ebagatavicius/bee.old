@@ -134,8 +134,7 @@
           </FlowPanel>
           <FlowPanel  style="&flow;">
             <Label for="DateOfBirth" style="&l1;" />
-            <InputDate source="DateOfBirth" style="&inp;"
-              minValue="1900" maxValue="2000" />
+            <InputDate source="DateOfBirth" style="&inp;" minValue="1900" />
           </FlowPanel>
           </FlowPanel>
           </FlowPanel>

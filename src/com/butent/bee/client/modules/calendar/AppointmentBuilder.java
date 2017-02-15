@@ -667,7 +667,7 @@ class AppointmentBuilder extends AppointmentForm implements SelectorEvent.Handle
   }
 
   void setDuration(String duration) {
-    List<Integer> fields = TimeUtils.parseFields(duration);
+    List<Integer> fields = TimeUtils.splitFields(duration);
 
     if (fields.size() >= 1 && !BeeUtils.isEmpty(getHourWidgetId())) {
       Integer hours = fields.get(0);

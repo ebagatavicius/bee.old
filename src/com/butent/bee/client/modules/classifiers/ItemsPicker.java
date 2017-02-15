@@ -36,6 +36,7 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.modules.trade.acts.TradeActKeeper;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.edit.Editor;
+import com.butent.bee.client.widget.CheckBox;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.InputNumber;
 import com.butent.bee.client.widget.InputText;
@@ -83,6 +84,7 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
   private static final String STYLE_SEARCH_COMMAND = STYLE_SEARCH_PREFIX + "command";
   private static final String STYLE_SEARCH_SPINNER = STYLE_SEARCH_PREFIX + "spinner";
   public static final String STYLE_SEARCH_SPINNER_LOADING = STYLE_SEARCH_SPINNER + "-loading";
+  private static final String STYLE_SEARCH_REMAINDER = STYLE_SEARCH_PREFIX + "remainder";
 
   private static final String STYLE_ITEM_PANEL = STYLE_PREFIX + "item-panel";
   private static final String STYLE_ITEM_TABLE = STYLE_PREFIX + "item-table";
@@ -93,6 +95,7 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
 
   private static final String STYLE_HEADER_CELL_SUFFIX = "label";
   private static final String STYLE_CELL_SUFFIX = "cell";
+  private static final String STYLE_CELL_BOLD = "-bold";
 
   private static final String STYLE_ID_PREFIX = STYLE_PREFIX + "id-";
 
@@ -224,6 +227,7 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
   private ChangeHandler quantityChangeHandler;
   private boolean isOrder;
   private FaLabel spinner;
+  private CheckBox cb;
 
   public ItemsPicker() {
     super(STYLE_CONTAINER);
@@ -245,10 +249,18 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
     return addHandler(handler, SelectionEvent.getType());
   }
 
+  public boolean getRemainderValue() {
+    return cb.isChecked();
+  }
+
   public void show(IsRow row, Element target) {
     lastRow = DataUtils.cloneRow(row);
 
     isOrder = setIsOrder(row);
+
+    if (!isOrder) {
+      cb.setVisible(false);
+    }
 
     warehouseFrom = getWarehouseFrom(row);
     itemPrice = TradeActKeeper.getItemPrice(VIEW_TRADE_ACTS, row);
@@ -268,6 +280,10 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
 
   private Widget createSearch() {
     Flow panel = new Flow(STYLE_SEARCH_PANEL);
+
+    cb = new CheckBox(Localized.dictionary().withoutRemainder());
+    cb.addStyleName(STYLE_SEARCH_REMAINDER);
+    panel.add(cb);
 
     final ListBox searchBy = new ListBox();
     searchBy.addStyleName(STYLE_SEARCH_BY);
@@ -322,6 +338,11 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
   }
 
   private void doSearch(String by, String query) {
+    if (BeeUtils.isEmpty(query)) {
+      BeeKeeper.getScreen().notifyWarning(Localized.dictionary().ordAskSearchValue());
+      return;
+    }
+
     Filter filter = null;
     boolean ok;
 
@@ -358,13 +379,14 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
 
             List<BeeRow> rows = new ArrayList<>();
 
-            for (BeeRow row : items) {
-              if (quantities.containsKey(row.getId())) {
+            for (BeeRow row : result) {
+              if (!quantities.containsKey(row.getId())) {
                 rows.add(row);
               }
             }
-            for (BeeRow row : result) {
-              if (!quantities.containsKey(row.getId())) {
+
+            for (BeeRow row : items) {
+              if (quantities.containsKey(row.getId())) {
                 rows.add(row);
               }
             }
@@ -579,6 +601,14 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
 
     dialog.setWidget(this);
     dialog.showOnTop(target);
+
+    dialog.setHideOnSave(true);
+    dialog.setOnSave(event -> {
+      Map<Long, Double> quantities = getQuantities();
+      if (!quantities.isEmpty()) {
+        selectItems(quantities);
+      }
+    });
   }
 
   private void renderItems(Map<Long, Double> quantities, Map<Long, String> warehouses) {
@@ -668,8 +698,23 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
       table.setText(r, c++, DataUtils.join(items.getColumns(), item, groupIndexes,
           BeeConst.STRING_EOL), STYLE_GROUP_PREFIX + STYLE_CELL_SUFFIX);
 
-      table.setText(r, c++, item.getString(nameIndex),
-          STYLE_NAME_PREFIX + STYLE_CELL_SUFFIX);
+      if (isOrder) {
+        int notMnfctIdx = items.getColumnIndex(COL_ITEM_NOT_MANUFACTURED);
+        if (!BeeConst.isUndef(notMnfctIdx)) {
+          Boolean notMnfct = item.getBoolean(notMnfctIdx);
+          if (BeeUtils.unbox(notMnfct)) {
+            table.setText(r, c++, item.getString(nameIndex),
+                STYLE_NAME_PREFIX + STYLE_CELL_SUFFIX + STYLE_CELL_BOLD);
+          } else {
+            table.setText(r, c++, item.getString(nameIndex),
+                STYLE_NAME_PREFIX + STYLE_CELL_SUFFIX);
+          }
+        }
+      } else {
+        table.setText(r, c++, item.getString(nameIndex),
+            STYLE_NAME_PREFIX + STYLE_CELL_SUFFIX);
+      }
+
       table.setText(r, c++, item.getString(articleIndex),
           STYLE_ARTICLE_PREFIX + STYLE_CELL_SUFFIX);
 

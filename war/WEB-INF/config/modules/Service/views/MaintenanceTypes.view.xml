@@ -7,6 +7,7 @@
   <Columns>
     <SimpleColumn name="Name" />
     <SimpleColumn name="AddressRequired" />
+    <SimpleColumn name="Conditions" />
   </Columns>
   <Order>
     <OrderBy column="Name" />

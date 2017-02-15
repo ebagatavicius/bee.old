@@ -30,6 +30,7 @@ import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.SupportedLocale;
@@ -423,6 +424,14 @@ public class UserServiceBean {
 
   public SupportedLocale getSupportedLocale(String user) {
     return getSupportedLocale(getUserId(user));
+  }
+
+  public DateOrdering getDateOrdering() {
+    return getDateOrdering(getCurrentUserId());
+  }
+
+  public DateOrdering getDateOrdering(Long userId) {
+    return getDateTimeFormatInfo(userId).dateOrdering();
   }
 
   public DateTimeFormatInfo getDateTimeFormatInfo() {

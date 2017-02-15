@@ -4,11 +4,10 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.event.logical.OpenEvent;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -24,6 +23,7 @@ import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.FilterValue;
 import com.butent.bee.shared.data.filter.Operator;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.List;
@@ -223,19 +223,22 @@ public class RangeFilterSupplier extends AbstractFilterSupplier {
   private Filter buildFilter(String lower, String upper) {
     if (BeeUtils.allEmpty(lower, upper)) {
       return null;
+    }
 
-    } else if (BeeUtils.isEmpty(lower)) {
-      return Filter.compareWithValue(getColumn(), UPPER_OPERATOR, upper);
+    DateOrdering dateOrdering = Format.getDefaultDateOrdering();
+
+    if (BeeUtils.isEmpty(lower)) {
+      return Filter.compareWithValue(getColumn(), UPPER_OPERATOR, upper, dateOrdering);
 
     } else if (BeeUtils.isEmpty(upper)) {
-      return Filter.compareWithValue(getColumn(), LOWER_OPERATOR, lower);
+      return Filter.compareWithValue(getColumn(), LOWER_OPERATOR, lower, dateOrdering);
 
     } else if (lower.equals(upper)) {
-      return Filter.compareWithValue(getColumn(), Operator.EQ, lower);
+      return Filter.compareWithValue(getColumn(), Operator.EQ, lower, dateOrdering);
 
     } else {
-      return Filter.and(Filter.compareWithValue(getColumn(), LOWER_OPERATOR, lower),
-          Filter.compareWithValue(getColumn(), UPPER_OPERATOR, upper));
+      return Filter.and(Filter.compareWithValue(getColumn(), LOWER_OPERATOR, lower, dateOrdering),
+          Filter.compareWithValue(getColumn(), UPPER_OPERATOR, upper, dateOrdering));
     }
   }
 
@@ -275,21 +278,11 @@ public class RangeFilterSupplier extends AbstractFilterSupplier {
     if (hasEmptiness()) {
       Flow emptinessWrapper = new Flow(STYLE_EMPTINESS);
 
-      Button notEmpty = new Button(NOT_NULL_VALUE_LABEL, new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          onEmptiness(false);
-        }
-      });
+      Button notEmpty = new Button(NOT_NULL_VALUE_LABEL, event -> onEmptiness(false));
       notEmpty.addStyleName(STYLE_NOT_NULL);
       emptinessWrapper.add(notEmpty);
 
-      Button empty = new Button(NULL_VALUE_LABEL, new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          onEmptiness(true);
-        }
-      });
+      Button empty = new Button(NULL_VALUE_LABEL, event -> onEmptiness(true));
       empty.addStyleName(STYLE_NULL);
       emptinessWrapper.add(empty);
 

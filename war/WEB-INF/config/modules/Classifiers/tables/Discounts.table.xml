@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="Discounts"
-  idName="DiscountID"
-  >
+       name="Discounts"
+       idName="DiscountID"
+>
   <Fields>
     <Relation name="Company" relation="Companies" cascade="DELETE" label="=company" />
     <Relation name="Category" relation="CategoryTree" cascade="DELETE" label="=itemCategory" />
     <Relation name="Item" relation="Items" cascade="DELETE" label="=item" />
-    
+
     <Relation name="Operation" relation="TradeOperations" label="=trdOperation" />
     <Relation name="Warehouse" relation="Warehouses" label="=warehouse" />
 
     <DateTime name="DateFrom" label="=discountDateFrom" />
     <DateTime name="DateTo" label="=discountDateTo" />
-    
+
     <Integer name="QuantityFrom" label="=quantityFrom" />
     <Integer name="QuantityTo" label="=quantityTo" />
     <Relation name="Unit" relation="Units" label="=unit" />
@@ -25,7 +25,9 @@
 
     <Numeric name="Price" precision="10" scale="2" label="=discountPrice" />
     <Relation name="Currency" relation="Currencies" label="=currency" />
-    
+
     <String name="Note" precision="100" label="=discountNote" />
+
+    <Relation name="CarDiscount" relation="CarDiscounts" unique="true" editable="true" />
   </Fields>
 </Table>

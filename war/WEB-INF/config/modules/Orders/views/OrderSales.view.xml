@@ -19,6 +19,11 @@
       <SimpleJoin name="Warehouse" joinType="LEFT">
         <SimpleColumn alias="WarehouseCode" name="Code" />
       </SimpleJoin>
+      <SimpleColumn name="TradeOperation" />
+      <SimpleJoin name="TradeOperation" joinType="LEFT">
+        <SimpleColumn name="OperationName" />
+        <SimpleColumn name="CashRegisterNo" />
+      </SimpleJoin>
       <SimpleColumn name="Notes" />
     </SimpleJoin>
 

@@ -3,6 +3,7 @@ package com.butent.bee.client.widget;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.ui.FormWidget;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.time.JustDate;
@@ -77,12 +78,12 @@ public class InputDateTime extends InputDate {
 
   @Override
   public void setMaxValue(String maxValue) {
-    setMaxDate(TimeUtils.parseDateTime(maxValue));
+    setMaxDate(TimeUtils.parseDateTime(maxValue, DateOrdering.DEFAULT));
   }
 
   @Override
   public void setMinValue(String minValue) {
-    setMinDate(TimeUtils.parseDateTime(minValue));
+    setMinDate(TimeUtils.parseDateTime(minValue, DateOrdering.DEFAULT));
   }
 
   @Override

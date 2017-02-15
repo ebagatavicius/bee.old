@@ -11,6 +11,7 @@ import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.export.XCell;
 import com.butent.bee.shared.export.XSheet;
+import com.butent.bee.shared.i18n.DateOrdering;
 
 public abstract class AbstractCellRenderer extends AbstractRenderer<IsRow> implements HasValueType {
 
@@ -102,11 +103,11 @@ public abstract class AbstractCellRenderer extends AbstractRenderer<IsRow> imple
     }
   }
 
-  protected Value parse(String value, boolean parseDates) {
+  protected Value parse(String value, boolean parseDates, DateOrdering dateOrdering) {
     if (value == null || value.isEmpty() || cellSource == null) {
       return null;
     } else {
-      return Value.parseValue(getValueType(), value, parseDates);
+      return Value.parseValue(getValueType(), value, parseDates, dateOrdering);
     }
   }
 }

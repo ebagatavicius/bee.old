@@ -1062,7 +1062,7 @@ public class TradeActInvoiceBuilder extends AbstractFormInterceptor implements
 
     } else if (TimeUtils.isMeq(start, end)) {
       Collections.addAll(messages, Localized.dictionary().invalidRange(),
-          TimeUtils.renderPeriod(start, end));
+          TimeUtils.renderPeriod(Format.renderDate(start), Format.renderDate(end)));
     }
 
     if (messages.isEmpty()) {
@@ -1498,9 +1498,9 @@ public class TradeActInvoiceBuilder extends AbstractFormInterceptor implements
         table.setText(r, c++, BeeUtils.toString(actId),
             STYLE_SVC_ACT_PREFIX + STYLE_CELL_SUFFIX);
 
-        table.setText(r, c++, TimeUtils.renderDate(svc.dateFrom(idx)),
+        table.setText(r, c++, Format.renderDate(svc.dateFrom(idx)),
             STYLE_SVC_FROM_PREFIX + STYLE_CELL_SUFFIX);
-        table.setText(r, c++, TimeUtils.renderDate(svc.dateTo(idx)),
+        table.setText(r, c++, Format.renderDate(svc.dateTo(idx)),
             STYLE_SVC_TO_PREFIX + STYLE_CELL_SUFFIX);
 
         table.setText(r, c++, svc.row.getString(itemIndex),
@@ -1525,7 +1525,7 @@ public class TradeActInvoiceBuilder extends AbstractFormInterceptor implements
             STYLE_SVC_CURRENCY_PREFIX + STYLE_CELL_SUFFIX);
 
         if (svc.timeUnit == null) {
-          table.setText(r, c++, TimeUtils.renderDate(svc.dateFrom(idx)),
+          table.setText(r, c++, Format.renderDate(svc.dateFrom(idx)),
               STYLE_SVC_FACTOR_PREFIX + STYLE_CELL_SUFFIX);
         } else {
           table.setWidget(r, c++, createFactorWidget(svc.factors.get(idx)),

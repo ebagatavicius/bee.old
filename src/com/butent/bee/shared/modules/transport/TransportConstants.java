@@ -555,6 +555,7 @@ public final class TransportConstants {
   public static final String COL_MODEL = "Model";
   public static final String COL_PARENT_MODEL_NAME = "ParentModelName";
   public static final String COL_MODEL_NAME = "ModelName";
+  public static final String COL_PRODUCTION_DATE = "ProductionDate";
   public static final String COL_NUMBER = "Number";
   public static final String COL_TYPE_NAME = "TypeName";
   public static final String COL_EXPORTED = "Exported";

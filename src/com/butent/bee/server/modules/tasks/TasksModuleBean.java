@@ -74,7 +74,10 @@ import com.butent.bee.shared.html.builder.Element;
 import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.html.builder.elements.Tbody;
 import com.butent.bee.shared.html.builder.elements.Td;
+import com.butent.bee.shared.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -3435,7 +3438,9 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
       return;
     }
 
-    String dateNow = TimeUtils.today().toString();
+    DateTimeFormatInfo dateTimeFormatInfo = usr.getDateTimeFormatInfo();
+    String dateNow = DateTimeFormat.of(PredefinedFormat.DATE_SHORT, dateTimeFormatInfo)
+        .format(TimeUtils.today());
     String subject =
         BeeUtils.joinWords(usr.getDictionary(userId).crmMailTasksSummarySubject(), dateNow);
 

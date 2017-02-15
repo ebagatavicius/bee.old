@@ -307,13 +307,17 @@ public class OrderForm extends PrintFormInterceptor {
         }
       }
 
-      newRow.setValue(Data.getColumnIndex(VIEW_ORDERS, COL_WAREHOUSE), aLong);
+      newRow.setValue(getDataIndex(COL_WAREHOUSE), aLong);
       newRow.setValue(Data.getColumnIndex(VIEW_ORDERS, ALS_WAREHOUSE_CODE), s);
-
       getFormView().refreshBySource(COL_WAREHOUSE);
 
-      OrderForm.super.onStartNewRow(form, oldRow, newRow);
+      Global.getParameterRelation(PRM_DEFAULT_SALE_OPERATION, (t, u) -> {
+        newRow.setValue(getDataIndex(COL_ORDER_TRADE_OPERATION), t);
+        newRow.setValue(Data.getColumnIndex(VIEW_ORDERS, COL_TRADE_OPERATION_NAME), u);
+        getFormView().refreshBySource(COL_ORDER_TRADE_OPERATION);
+      });
     });
+    super.onStartNewRow(form, oldRow, newRow);
   }
 
   @Override

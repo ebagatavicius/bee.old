@@ -73,6 +73,7 @@
       </SimpleJoin>
 
       <SimpleColumn name="Number" alias="CarNumber" />
+      <SimpleColumn name="ProductionDate" />
     </SimpleJoin>
 
     <SimpleColumn name="Currency" />

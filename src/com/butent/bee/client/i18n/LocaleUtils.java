@@ -1,13 +1,11 @@
 package com.butent.bee.client.i18n;
 
 import com.google.gwt.i18n.client.LocaleInfo;
-import com.google.gwt.i18n.client.LocalizedNames;
 import com.google.gwt.i18n.client.constants.NumberConstants;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.i18n.HasDateTimeFormat;
 import com.butent.bee.shared.utils.ArrayUtils;
-import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.ExtendedProperty;
 import com.butent.bee.shared.utils.PropertyUtils;
 
@@ -55,25 +53,6 @@ public final class LocaleUtils {
     PropertyUtils.addProperties(lst, false, "Current Locale", cl.getLocaleName(),
         "Locale Native Display Name", LocaleInfo.getLocaleNativeDisplayName(cl.getLocaleName()),
         "Is RTL", cl.isRTL());
-
-    LocalizedNames localizedNames = cl.getLocalizedNames();
-    if (localizedNames != null) {
-      String[] codes = localizedNames.getLikelyRegionCodes();
-      PropertyUtils.addExtended(lst, "Likely Region Codes", ArrayUtils.length(codes));
-      i = 0;
-      for (String code : codes) {
-        PropertyUtils.addExtended(lst, BeeUtils.joinWords("Region", i++),
-            localizedNames.getRegionName(code), code);
-      }
-
-      codes = localizedNames.getSortedRegionCodes();
-      PropertyUtils.addExtended(lst, "Sorted Region Codes", ArrayUtils.length(codes));
-      i = 0;
-      for (String code : codes) {
-        PropertyUtils.addExtended(lst, BeeUtils.joinWords("Region", i++),
-            localizedNames.getRegionName(code), code);
-      }
-    }
 
     NumberConstants nc = cl.getNumberConstants();
     if (nc != null) {

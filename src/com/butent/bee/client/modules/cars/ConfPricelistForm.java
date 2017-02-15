@@ -283,6 +283,7 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
   private static final String STYLE_ROW_ADD = STYLE_ROW + "-add";
   private static final String STYLE_ROW_DEL = STYLE_ROW + "-del";
   public static final String STYLE_PACKET = STYLE_PREFIX + "-packet";
+  public static final String STYLE_PACKET_COLLAPSED = STYLE_PACKET + "-collapsed";
 
   private static final String STYLE_COL = STYLE_PREFIX + "-col";
   private static final String STYLE_COL_HEADER = STYLE_COL + "-hdr";

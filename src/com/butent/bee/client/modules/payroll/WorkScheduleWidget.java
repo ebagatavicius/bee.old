@@ -80,6 +80,7 @@ import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.html.builder.elements.Span;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.payroll.PayrollUtils;
 import com.butent.bee.shared.modules.payroll.PayrollConstants.WorkScheduleKind;
@@ -338,10 +339,10 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
 
   private static String extendWorkScheduleMessage(YearMonth ym) {
     if (ym == null) {
-      return Localized.dictionary().extendWorkSchedule(BeeConst.STRING_EMPTY,
-          BeeConst.STRING_EMPTY);
+      return Localized.dictionary().extendWorkSchedule(BeeConst.STRING_EMPTY);
     } else {
-      return Localized.dictionary().extendWorkSchedule(ym.getYear(), Format.renderMonthFull(ym));
+      return Localized.dictionary().extendWorkSchedule(
+          Format.render(PredefinedFormat.YEAR_MONTH_FULL, ym.getDate()));
     }
   }
 
@@ -844,7 +845,7 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
 
     Element selectorElement = Selectors.getElementByClassName(getElement(), STYLE_MONTH_SELECTOR);
     if (selectorElement != null) {
-      selectorElement.setInnerText(PayrollHelper.format(ym));
+      selectorElement.setInnerText(Format.renderYearMonth(ym));
     }
 
     setActiveMonth(ym);
@@ -1003,7 +1004,7 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
 
     if (hasSchedule(partIds, range)) {
       String caption = getPartitionCaption(partIds);
-      List<String> messages = Lists.newArrayList(PayrollHelper.format(activeMonth),
+      List<String> messages = Lists.newArrayList(Format.renderYearMonth(activeMonth),
           kind.getClearDataQuestion(Localized.dictionary()));
 
       Global.confirmDelete(caption, Icon.WARNING, messages, () -> {
@@ -1693,7 +1694,7 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
       @Override
       public void onSuccess(final BeeRowSet rowSet) {
         if (DataUtils.isEmpty(rowSet)) {
-          notifyWarning(PayrollHelper.format(previousMonth),
+          notifyWarning(Format.renderYearMonth(previousMonth),
               BeeUtils.joinWords(Localized.dictionary().workSchedule(), kind.getCaption()),
               Localized.dictionary().nothingFound());
 
@@ -1710,10 +1711,7 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
 
           } else {
             String caption = Localized.dictionary().workScheduleExtension(
-                previousMonth.getYear(),
-                Format.renderMonthFullStandalone(previousMonth).toLowerCase(),
-                activeMonth.getYear(),
-                Format.renderMonthFullStandalone(activeMonth).toLowerCase());
+                Format.renderYearMonth(previousMonth), Format.renderYearMonth(activeMonth));
 
             renderFetch(caption, keys, extension, extendWorkScheduleMessage(null),
                 WorkScheduleWidget.this::doFetch);
@@ -1813,10 +1811,10 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
       @Override
       public void onSuccess(final BeeRowSet wsPlanned) {
         final String caption = Localized.dictionary().workSchedule()
-            + BeeUtils.space(10) + PayrollHelper.format(activeMonth);
+            + BeeUtils.space(10) + Format.renderYearMonth(activeMonth);
 
         if (DataUtils.isEmpty(wsPlanned)) {
-          notifyWarning(PayrollHelper.format(activeMonth),
+          notifyWarning(Format.renderYearMonth(activeMonth),
               Localized.dictionary().workSchedulePlanned(), Localized.dictionary().nothingFound());
 
         } else if (eoFilter == null) {
@@ -2361,7 +2359,7 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
     int from = Math.max(size - 6, 0);
 
     for (YearMonth ym : months.subList(from, size)) {
-      Label widget = new Label(PayrollHelper.format(ym));
+      Label widget = new Label(Format.renderYearMonth(ym));
 
       widget.addStyleName(STYLE_MONTH_LABEL);
       if (ym.equals(activeMonth)) {
@@ -2388,7 +2386,7 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
   private Widget renderMonthSelector() {
     Button selector = new Button();
     if (activeMonth != null) {
-      selector.setText(PayrollHelper.format(activeMonth));
+      selector.setText(Format.renderYearMonth(activeMonth));
     }
 
     selector.addClickHandler(event -> {
@@ -2396,7 +2394,7 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
 
       List<String> labels = new ArrayList<>();
       for (YearMonth ym : months) {
-        labels.add(PayrollHelper.format(ym));
+        labels.add(Format.renderYearMonth(ym));
       }
 
       Global.choiceWithCancel(Localized.dictionary().yearMonth(), null, labels, value -> {
