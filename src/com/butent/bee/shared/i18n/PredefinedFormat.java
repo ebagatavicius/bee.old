@@ -40,6 +40,12 @@ public enum PredefinedFormat {
       return dateTimeFormatInfo.dateFormatShort();
     }
   },
+  DATE_COMPACT {
+    @Override
+    public String getPattern(DateTimeFormatInfo dateTimeFormatInfo) {
+      return dateTimeFormatInfo.dateFormatCompact();
+    }
+  },
 
   TIME_FULL {
     @Override

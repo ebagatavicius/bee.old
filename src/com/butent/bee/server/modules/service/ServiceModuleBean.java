@@ -978,14 +978,6 @@ public class ServiceModuleBean implements BeeModule {
       columnValues.put(ALS_STATE_NAME, stateRow.getValue(ALS_STATE_NAME));
     }
 
-    Pair<Long, String> warrantyInfo = prm.getRelationInfo(PRM_DEFAULT_WARRANTY_TYPE);
-    Long warrantyId = warrantyInfo.getA();
-
-    if (DataUtils.isId(warrantyId)) {
-      columnValues.put(COL_WARRANTY_TYPE, BeeUtils.toString(warrantyId));
-      columnValues.put(ALS_WARRANTY_TYPE_NAME, warrantyInfo.getB());
-    }
-
     IsQuery departmentSelect = new SqlSelect()
         .addFields(VIEW_DEPARTMENTS, sys.getIdName(VIEW_DEPARTMENTS), ALS_DEPARTMENT_NAME)
         .addFrom(VIEW_DEPARTMENTS)

@@ -32,6 +32,7 @@ public final class TradeConstants {
   public static final String SVC_CALCULATE_COST = "CalculateCost";
 
   public static final String SVC_GET_STOCK = "GetStock";
+  public static final String SVC_CREATE_DOCUMENT = "CreateDocument";
 
   public static final String TBL_PURCHASES = "Purchases";
   public static final String TBL_PURCHASE_USAGE = "PurchaseUsage";
@@ -166,6 +167,7 @@ public final class TradeConstants {
   public static final String COL_OPERATION_KIND = "Kind";
   public static final String COL_OPERATION_PRICE = "Price";
   public static final String COL_OPERATION_VAT_MODE = "OperationVatMode";
+  public static final String COL_OPERATION_VAT_PERCENT = "VatPercent";
   public static final String COL_OPERATION_DISCOUNT_MODE = "OperationDiscountMode";
   public static final String COL_OPERATION_WAREHOUSE_FROM = "WarehouseFrom";
   public static final String COL_OPERATION_WAREHOUSE_TO = "WarehouseTo";
@@ -275,6 +277,7 @@ public final class TradeConstants {
   public static final String VAR_TOTAL = "Total";
   public static final String VAR_DEBT = "Debt";
   public static final String VAR_OVERDUE = "Overdue";
+  public static final String VAR_DOCUMENT = "Document";
   public static final String VAR_ITEMS = "Items";
 
   public static final String GRID_TRADE_OPERATIONS = "TradeOperations";

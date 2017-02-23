@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarServiceInvoices" source="TradeDocuments" readOnly="true"
+>
+  <Columns>
+    <ExternalJoin name="TradeDocument" joinType="LEFT" source="CarServiceInvoices">
+      <SimpleJoin name="ServiceItem" joinType="LEFT">
+        <HiddenColumn name="ServiceOrder" alias="ItemOrder" />
+      </SimpleJoin>
+      <SimpleJoin name="ServiceJob" joinType="LEFT">
+        <HiddenColumn name="ServiceOrder" alias="JobOrder" />
+      </SimpleJoin>
+      <AggregateColumn name="Quantity" aggregate="SUM" alias="Completed" />
+    </ExternalJoin>
+
+    <SimpleColumn name="Date" />
+
+    <SimpleColumn name="Series" />
+    <SimpleColumn name="Number" />
+
+    <SimpleJoin name="Operation" joinType="LEFT">
+      <SimpleColumn name="OperationName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Phase" />
+
+    <SimpleJoin joinType="LEFT" name="Status">
+      <SimpleColumn name="StatusName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Supplier" />
+    <SimpleJoin joinType="LEFT" name="Supplier">
+      <SimpleColumn name="Name" alias="SupplierName" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="SupplierTypeName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Customer" />
+    <SimpleJoin joinType="LEFT" name="Customer">
+      <SimpleColumn name="Name" alias="CustomerName" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="CustomerTypeName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleJoin joinType="LEFT" name="WarehouseFrom">
+      <SimpleColumn name="Code" alias="WarehouseFromCode" />
+    </SimpleJoin>
+
+    <SimpleJoin joinType="LEFT" name="WarehouseTo">
+      <SimpleColumn name="Code" alias="WarehouseToCode" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Payer" />
+    <SimpleJoin joinType="LEFT" name="Payer">
+      <SimpleColumn name="Name" alias="PayerName" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="PayerTypeName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Term" />
+
+    <SimpleColumn name="Manager" />
+    <SimpleJoin name="Manager" joinType="LEFT">
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" alias="ManagerFirstName" />
+          <SimpleColumn name="LastName" alias="ManagerLastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+  </Columns>
+
+  <Order>
+    <OrderBy column="Date" descending="true" />
+  </Order>
+</View>

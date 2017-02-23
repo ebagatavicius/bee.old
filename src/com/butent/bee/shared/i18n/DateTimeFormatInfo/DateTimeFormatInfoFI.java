@@ -45,6 +45,11 @@ public final class DateTimeFormatInfoFI implements DateTimeFormatInfo {
   }
 
   @Override
+  public String dateFormatCompact() {
+    return "d.M.yy";
+  }
+
+  @Override
   public DateOrdering dateOrdering() {
     return DateOrdering.DMY;
   }

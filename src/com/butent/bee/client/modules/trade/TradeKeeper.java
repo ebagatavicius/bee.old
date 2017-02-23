@@ -10,6 +10,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
@@ -41,6 +42,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.menu.MenuItem;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.trade.ItemStock;
+import com.butent.bee.shared.modules.trade.TradeDocument;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.SubModule;
@@ -65,6 +67,25 @@ public final class TradeKeeper implements HandlesAllDataEvents {
 
   public static ParameterList createArgs(String method) {
     return BeeKeeper.getRpc().createParameters(Module.TRADE, method);
+  }
+
+  public static void createDocument(TradeDocument tradeDocument, IdCallback callback) {
+    Assert.notNull(tradeDocument, SVC_CREATE_DOCUMENT + " document required");
+    Assert.notNull(callback, SVC_CREATE_DOCUMENT + " callback required");
+
+    ParameterList parameters = createArgs(SVC_CREATE_DOCUMENT);
+    parameters.addDataItem(VAR_DOCUMENT, tradeDocument.serialize());
+
+    BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        if (response.hasErrors()) {
+          callback.onFailure(response.getErrors());
+        } else {
+          callback.onSuccess(response.getResponseAsLong());
+        }
+      }
+    });
   }
 
   public static void getStock(Long warehouse, Collection<Long> items,

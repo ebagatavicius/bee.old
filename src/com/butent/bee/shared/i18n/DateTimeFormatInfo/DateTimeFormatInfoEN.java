@@ -45,6 +45,11 @@ public final class DateTimeFormatInfoEN implements DateTimeFormatInfo {
   }
 
   @Override
+  public String dateFormatCompact() {
+    return "yy-MM-dd";
+  }
+
+  @Override
   public DateOrdering dateOrdering() {
     return DateOrdering.YMD;
   }

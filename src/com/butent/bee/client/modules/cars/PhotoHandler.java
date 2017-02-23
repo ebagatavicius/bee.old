@@ -39,7 +39,7 @@ public class PhotoHandler extends AbstractFormInterceptor {
       if (DataUtils.isId(fileId)) {
         url = FileUtils.getUrl(fileId);
       } else {
-        url = "images/logo.png";
+        url = "images/copyright.png";
       }
       image.setUrl(url);
     }

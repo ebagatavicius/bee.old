@@ -2044,7 +2044,9 @@ class TaskEditor extends ProductSupportInterceptor {
   private void setCommentsLayout() {
     if (isDefaultLayout) {
       if (taskWidget != null) {
-        int height = getFormView().getWidgetByName("TaskContainer").getElement().getScrollHeight();
+        int height = BeeUtils.max(getFormView().getWidgetByName("TaskContainer").getElement()
+          .getScrollHeight(), 660);
+
         split.addNorth(taskWidget, height + 52);
         StyleUtils.autoWidth(taskWidget.getElement());
         split.updateCenter(taskEventsWidget);

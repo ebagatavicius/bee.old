@@ -4669,6 +4669,10 @@ public interface Dictionary {
 
   default String prmSendNewslettersInterval() {return g("prmSendNewslettersInterval");}
 
+  default String prmServiceTradeOperation() {return g("prmServiceTradeOperation");}
+
+  default String prmServiceWarehouse() {return g("prmServiceWarehouse");}
+
   default String prmSmsRequestContactInfoFrom() {return g("prmSmsRequestContactInfoFrom");}
 
   default String prmSmsRequestServiceAddress() {return g("prmSmsRequestServiceAddress");}
@@ -6987,9 +6991,9 @@ public interface Dictionary {
 
   default String winter() {return g("winter");}
 
-  default String withoutVat() {return g("withoutVat");}
-
   default String withoutRemainder() {return g("withoutRemainder");}
+
+  default String withoutVat() {return g("withoutVat");}
 
   default String workSchedule() {return g("workSchedule");}
 

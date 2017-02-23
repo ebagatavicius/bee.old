@@ -66,6 +66,8 @@ import com.butent.bee.shared.data.event.CellUpdateEvent;
 import com.butent.bee.shared.data.filter.CompoundFilter;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
+import com.butent.bee.shared.data.value.LongValue;
+import com.butent.bee.shared.data.value.NumberValue;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.data.view.DataInfo;
@@ -87,13 +89,17 @@ import com.butent.bee.shared.menu.Menu;
 import com.butent.bee.shared.menu.MenuItem;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.BeeParameter;
+import com.butent.bee.shared.modules.finance.Dimensions;
+import com.butent.bee.shared.modules.finance.TradeAccounts;
 import com.butent.bee.shared.modules.orders.OrdersConstants;
 import com.butent.bee.shared.modules.payroll.PayrollConstants;
 import com.butent.bee.shared.modules.trade.ItemStock;
 import com.butent.bee.shared.modules.trade.OperationType;
 import com.butent.bee.shared.modules.trade.TradeCostBasis;
 import com.butent.bee.shared.modules.trade.TradeDiscountMode;
+import com.butent.bee.shared.modules.trade.TradeDocument;
 import com.butent.bee.shared.modules.trade.TradeDocumentData;
+import com.butent.bee.shared.modules.trade.TradeDocumentItem;
 import com.butent.bee.shared.modules.trade.TradeDocumentPhase;
 import com.butent.bee.shared.modules.trade.TradeDocumentSums;
 import com.butent.bee.shared.modules.trade.TradeVatMode;
@@ -106,14 +112,12 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
-import com.butent.bee.shared.utils.Codec;
 import com.butent.webservice.ButentWS;
 import com.butent.webservice.WSDocument;
 import com.butent.webservice.WSDocument.WSDocumentItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -122,6 +126,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -246,6 +251,9 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
       Multimap<Long, ItemStock> stock = getStock(reqInfo.getParameterLong(COL_STOCK_WAREHOUSE),
           DataUtils.parseIdSet(reqInfo.getParameter(VAR_ITEMS)));
       response = stock.isEmpty() ? ResponseObject.emptyResponse() : ResponseObject.response(stock);
+
+    } else if (BeeUtils.same(svc, SVC_CREATE_DOCUMENT)) {
+      response = createDocument(TradeDocument.restore(reqInfo.getParameter(VAR_DOCUMENT)));
 
     } else {
       String msg = BeeUtils.joinWords("Trade service not recognized:", svc);
@@ -455,6 +463,195 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
     }
 
     return result;
+  }
+
+  public ResponseObject createDocument(TradeDocument document) {
+    if (document == null) {
+      return ResponseObject.error(SVC_CREATE_DOCUMENT, "document is null");
+    }
+    if (!document.isValid()) {
+      return ResponseObject.error(SVC_CREATE_DOCUMENT, "document is not valid");
+    }
+    List<TradeDocumentItem> tradeDocumentItems = document.getItems().stream()
+        .filter(item -> item != null && item.isValid())
+        .collect(Collectors.toList());
+
+    if (BeeUtils.isEmpty(tradeDocumentItems)) {
+      return ResponseObject.error(SVC_CREATE_DOCUMENT, "no valid items found");
+    }
+
+    OperationType operationType = getOperationTypeByOperation(document.getOperation());
+    if (operationType == null) {
+      return ResponseObject.error(SVC_CREATE_DOCUMENT,
+          COL_TRADE_OPERATION, document.getOperation(), COL_OPERATION_TYPE, "is null");
+    }
+
+    TradeDocumentPhase phase = document.getPhase();
+
+    if (operationType.producesStock() && phase.modifyStock()
+        && !DataUtils.isId(document.getWarehouseTo())) {
+      return ResponseObject.error(SVC_CREATE_DOCUMENT, COL_TRADE_WAREHOUSE_TO, "is null");
+    }
+
+    Multimap<Integer, Pair<Long, Double>> parents = ArrayListMultimap.create();
+
+    if (operationType.consumesStock() && phase.modifyStock()) {
+      Map<Long, Double> usedParents = new HashMap<>();
+
+      for (int i = 0; i < tradeDocumentItems.size(); i++) {
+        TradeDocumentItem tradeDocumentItem = tradeDocumentItems.get(i);
+        Long item = tradeDocumentItem.getItem();
+
+        if (isStockItem(item)) {
+          double quantity = tradeDocumentItem.getQuantity();
+          Long warehouse = BeeUtils.nvl(tradeDocumentItem.getItemWarehouseFrom(),
+              document.getWarehouseFrom());
+
+          Map<Long, Double> parentQuantities = getParentQuantities(item, warehouse, usedParents);
+          double totalStock = parentQuantities.values().stream().mapToDouble(d -> d).sum();
+
+          if (!parentQuantities.isEmpty() && totalStock >= quantity) {
+            for (Map.Entry<Long, Double> entry : parentQuantities.entrySet()) {
+              long parent = entry.getKey();
+              double stock = entry.getValue();
+
+              double q = Math.min(quantity, stock);
+
+              parents.put(i, Pair.of(parent, q));
+              usedParents.merge(parent, q, Double::sum);
+
+              quantity -= q;
+
+              if (!BeeUtils.isPositive(quantity)) {
+                break;
+              }
+            }
+
+          } else {
+            return ResponseObject.error("stock", totalStock,
+                "item", item, tradeDocumentItem.getArticle(),
+                "quantity", tradeDocumentItem.getQuantity(),
+                "warehouse", warehouse);
+          }
+        }
+      }
+    }
+
+    SqlInsert insertDocument = new SqlInsert(TBL_TRADE_DOCUMENTS).addAll(document.getValues());
+
+    ResponseObject insertDocumentResponse = qs.insertDataWithResponse(insertDocument);
+    if (insertDocumentResponse.hasErrors()) {
+      return insertDocumentResponse;
+    }
+
+    Long docId = insertDocumentResponse.getResponseAsLong();
+
+    ResponseObject extraDimensionsResponse =
+        maybeCreateExtraDimensions(TBL_TRADE_DOCUMENTS, docId, document.getDimensionValues());
+    if (extraDimensionsResponse.hasErrors()) {
+      return extraDimensionsResponse;
+    }
+
+    ResponseObject tradeAccountsResponse =
+        maybeCreateTradeAccounts(TBL_TRADE_DOCUMENTS, docId, document.getTradeAccountValues());
+    if (tradeAccountsResponse.hasErrors()) {
+      return tradeAccountsResponse;
+    }
+
+    for (int i = 0; i < tradeDocumentItems.size(); i++) {
+      TradeDocumentItem tradeDocumentItem = tradeDocumentItems.get(i);
+
+      Map<String, Value> values = tradeDocumentItem.getValues();
+      values.put(COL_TRADE_DOCUMENT, new LongValue(docId));
+
+      if (parents.containsKey(i)) {
+        for (Pair<Long, Double> p : parents.get(i)) {
+          long parent = p.getA();
+          double quantity = p.getB();
+
+          values.put(COL_TRADE_ITEM_QUANTITY, new NumberValue(quantity));
+          values.put(COL_TRADE_ITEM_PARENT, new LongValue(parent));
+
+          SqlInsert insertItem = new SqlInsert(TBL_TRADE_DOCUMENT_ITEMS).addAll(values);
+
+          ResponseObject insertItemResponse = qs.insertDataWithResponse(insertItem);
+          if (insertItemResponse.hasErrors()) {
+            return insertItemResponse;
+          }
+
+          SqlUpdate stockUpdate = new SqlUpdate(TBL_TRADE_STOCK)
+              .addExpression(COL_STOCK_QUANTITY,
+                  SqlUtils.minus(SqlUtils.field(TBL_TRADE_STOCK, COL_STOCK_QUANTITY), quantity))
+              .setWhere(SqlUtils.equals(TBL_TRADE_STOCK, COL_TRADE_DOCUMENT_ITEM, parent));
+
+          ResponseObject stockUpdateResponse = qs.updateDataWithResponse(stockUpdate);
+          if (stockUpdateResponse.hasErrors()) {
+            return stockUpdateResponse;
+          }
+
+          Long itemId = insertItemResponse.getResponseAsLong();
+
+          extraDimensionsResponse = maybeCreateExtraDimensions(TBL_TRADE_DOCUMENT_ITEMS, itemId,
+              tradeDocumentItem.getDimensionValues());
+          if (extraDimensionsResponse.hasErrors()) {
+            return extraDimensionsResponse;
+          }
+
+          tradeAccountsResponse = maybeCreateTradeAccounts(TBL_TRADE_DOCUMENT_ITEMS, itemId,
+              tradeDocumentItem.getTradeAccountValues());
+          if (tradeAccountsResponse.hasErrors()) {
+            return tradeAccountsResponse;
+          }
+        }
+
+      } else {
+        SqlInsert insertItem = new SqlInsert(TBL_TRADE_DOCUMENT_ITEMS).addAll(values);
+
+        ResponseObject insertItemResponse = qs.insertDataWithResponse(insertItem);
+        if (insertItemResponse.hasErrors()) {
+          return insertItemResponse;
+        }
+
+        Long itemId = insertItemResponse.getResponseAsLong();
+
+        extraDimensionsResponse = maybeCreateExtraDimensions(TBL_TRADE_DOCUMENT_ITEMS, itemId,
+            tradeDocumentItem.getDimensionValues());
+        if (extraDimensionsResponse.hasErrors()) {
+          return extraDimensionsResponse;
+        }
+
+        tradeAccountsResponse = maybeCreateTradeAccounts(TBL_TRADE_DOCUMENT_ITEMS, itemId,
+            tradeDocumentItem.getTradeAccountValues());
+        if (tradeAccountsResponse.hasErrors()) {
+          return tradeAccountsResponse;
+        }
+      }
+    }
+
+    if (operationType.producesStock() && phase.modifyStock()) {
+      ResponseObject insertStockResponse =
+          insertStock(SqlUtils.equals(TBL_TRADE_DOCUMENT_ITEMS, COL_TRADE_DOCUMENT, docId),
+              document.getWarehouseTo());
+      if (insertStockResponse.hasErrors()) {
+        return insertStockResponse;
+      }
+    }
+
+    if (operationType.providesCost() && phase.modifyStock()) {
+      ResponseObject calculateCostResponse =
+          calculateCost(docId, document.getDate(), document.getCurrency(),
+              document.getDocumentVatMode(), document.getDocumentDiscountMode(),
+              document.getDocumentDiscount());
+      if (calculateCostResponse.hasErrors()) {
+        return calculateCostResponse;
+      }
+    }
+
+    if (!parents.isEmpty()) {
+      refreshStock();
+    }
+
+    return ResponseObject.response(docId);
   }
 
   @Override
@@ -954,13 +1151,6 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
     }
 
     Set<Long> companyIds = DataUtils.parseIdSet(reqInfo.getParameter(VIEW_COMPANIES));
-
-    Set<String> currencyNames = new HashSet<>();
-
-    String[] arr = Codec.beeDeserializeCollection(reqInfo.getParameter(VIEW_CURRENCIES));
-    if (arr != null) {
-      Collections.addAll(currencyNames, arr);
-    }
 
     BeeRowSet companies;
     BeeRowSet bankAccounts;
@@ -2153,6 +2343,15 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
     return qs.getEnum(query, OperationType.class);
   }
 
+  private OperationType getOperationTypeByOperation(long operation) {
+    SqlSelect query = new SqlSelect()
+        .addFields(TBL_TRADE_OPERATIONS, COL_OPERATION_TYPE)
+        .addFrom(TBL_TRADE_OPERATIONS)
+        .setWhere(sys.idEquals(TBL_TRADE_OPERATIONS, operation));
+
+    return qs.getEnum(query, OperationType.class);
+  }
+
   private String getDocumentFieldByTradeItem(long itemId, String fieldName) {
     SqlSelect query = new SqlSelect()
         .addFields(TBL_TRADE_DOCUMENTS, fieldName)
@@ -3113,5 +3312,45 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
 
     return ResponseObject.response(DataUtils.buildIdList(changedItems))
         .setSize(changedItems.size());
+  }
+
+  private ResponseObject maybeCreateExtraDimensions(String tbl, long id, Map<String, ?> values) {
+    if (!BeeUtils.isEmpty(values)) {
+      SqlInsert insert = new SqlInsert(Dimensions.TBL_EXTRA_DIMENSIONS).addAll(values);
+
+      ResponseObject insertResponse = qs.insertDataWithResponse(insert);
+      if (insertResponse.hasErrors()) {
+        return insertResponse;
+      }
+
+      SqlUpdate update = new SqlUpdate(tbl)
+          .addConstant(Dimensions.COL_EXTRA_DIMENSIONS, insertResponse.getResponseAsLong())
+          .setWhere(sys.idEquals(tbl, id));
+
+      return qs.updateDataWithResponse(update);
+
+    } else {
+      return ResponseObject.emptyResponse();
+    }
+  }
+
+  private ResponseObject maybeCreateTradeAccounts(String tbl, long id, Map<String, ?> values) {
+    if (!BeeUtils.isEmpty(values)) {
+      SqlInsert insert = new SqlInsert(TradeAccounts.TBL_TRADE_ACCOUNTS).addAll(values);
+
+      ResponseObject insertResponse = qs.insertDataWithResponse(insert);
+      if (insertResponse.hasErrors()) {
+        return insertResponse;
+      }
+
+      SqlUpdate update = new SqlUpdate(tbl)
+          .addConstant(TradeAccounts.COL_TRADE_ACCOUNTS, insertResponse.getResponseAsLong())
+          .setWhere(sys.idEquals(tbl, id));
+
+      return qs.updateDataWithResponse(update);
+
+    } else {
+      return ResponseObject.emptyResponse();
+    }
   }
 }

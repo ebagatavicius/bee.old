@@ -298,6 +298,7 @@
       <xs:enumeration value="CarRecalls" />
       <xs:enumeration value="Cars" />
       <xs:enumeration value="CarServiceEvents" />
+      <xs:enumeration value="CarServiceInvoices" />
       <xs:enumeration value="CarServiceItems" />
       <xs:enumeration value="CarServiceJobs" />
       <xs:enumeration value="CarServiceOrders" />

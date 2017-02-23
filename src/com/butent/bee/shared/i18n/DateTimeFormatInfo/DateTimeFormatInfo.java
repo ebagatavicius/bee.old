@@ -40,6 +40,8 @@ public interface DateTimeFormatInfo {
    */
   String dateFormatShort();
 
+  String dateFormatCompact();
+
   DateOrdering dateOrdering();
 
   /**

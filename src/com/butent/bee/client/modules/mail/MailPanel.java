@@ -27,6 +27,7 @@ import com.butent.bee.client.event.DndHelper;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.ActiveRowChangeEvent;
 import com.butent.bee.client.grid.GridPanel;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.images.star.Stars;
 import com.butent.bee.client.layout.Direction;
 import com.butent.bee.client.layout.Flow;
@@ -385,7 +386,7 @@ public class MailPanel extends AbstractFormInterceptor {
       add(new Label(loc.period()));
       InputDateTime dateFrom = new InputDateTime();
       dateFrom.addStyleName(CSS_SEARCH_PREFIX + "DateFrom");
-      DomUtils.setPlaceholder(dateFrom, defaultFrom.toString());
+      DomUtils.setPlaceholder(dateFrom, Format.renderDate(defaultFrom));
       add(dateFrom);
       criteria.put(Service.VAR_FROM, dateFrom);
 

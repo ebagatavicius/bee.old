@@ -110,7 +110,7 @@ public class TestBuilder {
     }
 
     html.add("<div class=\"bee-SignIn-Logo-container\">");
-    html.add("<img class=\"bee-SignIn-Logo\" src=\"images/logo.png\" />");
+    html.add("<img class=\"bee-SignIn-Logo\" src=\"images/copyright.png\" />");
     html.add("</div>");
 
     String text = userNameLabel;
@@ -336,7 +336,7 @@ public class TestBuilder {
     form.append(
         div().addClass("bee-SignIn-Logo-container")
             .append(
-                img().addClass("bee-SignIn-Logo").src("images/logo.png")),
+                img().addClass("bee-SignIn-Logo").src("images/copyright.png")),
         div().addClass("bee-SignIn-Label").addClass("bee-SignIn-Label-user").text(userNameLabel),
         input().addClass("bee-SignIn-Input").addClass("bee-SignIn-Input-user")
             .type(Type.TEXT)

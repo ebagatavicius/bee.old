@@ -11,6 +11,7 @@
     <RelColumn name="Customer" visible="true" renderColumns="CustomerName CustomerTypeName" />
     <RelColumn name="CustomerPerson" renderColumns="ContactFirstName ContactLastName" />
     <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
+    <RelColumn name="Warehouse" />
     <RelColumn name="Car" renderColumns="ParentModelName ModelName CarNumber" />
   </g:columns>
 </g:Grid>

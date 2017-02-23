@@ -1,29 +1,57 @@
 package com.butent.bee.client.modules.cars;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
-import static com.butent.bee.shared.modules.trade.TradeConstants.COL_TRADE_DOCUMENT_VAT_MODE;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.payroll.PayrollConstants.COL_EMPLOYEE;
+import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
+import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.communication.ParameterList;
+import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowUpdateCallback;
+import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.ChildGrid;
+import com.butent.bee.client.grid.GridPanel;
+import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.modules.administration.Stage;
+import com.butent.bee.client.modules.trade.TradeKeeper;
+import com.butent.bee.client.presenter.Presenter;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.HasStages;
 import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
+import com.butent.bee.client.widget.CustomAction;
+import com.butent.bee.client.widget.DoubleLabel;
+import com.butent.bee.client.widget.FaLabel;
+import com.butent.bee.client.widget.InlineLabel;
+import com.butent.bee.client.widget.InputNumber;
+import com.butent.bee.client.widget.InputText;
+import com.butent.bee.client.widget.Label;
+import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Latch;
+import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.css.values.FontStyle;
+import com.butent.bee.shared.css.values.FontWeight;
+import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
@@ -31,19 +59,42 @@ import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.exceptions.BeeRuntimeException;
+import com.butent.bee.shared.font.FontAwesome;
+import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.cars.CarsConstants;
+import com.butent.bee.shared.modules.trade.ItemStock;
+import com.butent.bee.shared.modules.trade.Totalizer;
+import com.butent.bee.shared.modules.trade.TradeDiscountMode;
+import com.butent.bee.shared.modules.trade.TradeDocument;
+import com.butent.bee.shared.modules.trade.TradeDocumentItem;
+import com.butent.bee.shared.modules.trade.TradeDocumentPhase;
+import com.butent.bee.shared.modules.trade.TradeVatMode;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class CarServiceOrderForm extends PrintFormInterceptor implements HasStages,
     SelectorEvent.Handler {
 
   private HasWidgets stageContainer;
   private List<Stage> orderStages;
+
+  private CustomAction createInvoice = new CustomAction(FontAwesome.FILE_TEXT_O,
+      clickEvent -> selectServicesAndJobs());
 
   Widget customerWarning;
   List<String> customerMessages = new ArrayList<>();
@@ -67,6 +118,15 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
   }
 
   @Override
+  public void afterCreatePresenter(Presenter presenter) {
+    if (Data.isViewEditable(TBL_TRADE_DOCUMENTS)) {
+      createInvoice.setTitle(Localized.dictionary().createInvoice());
+      presenter.getHeader().addCommandItem(createInvoice);
+    }
+    super.afterCreatePresenter(presenter);
+  }
+
+  @Override
   public void afterCreateWidget(String name, IdentifiableWidget widget,
       FormFactory.WidgetDescriptionCallback callback) {
 
@@ -85,6 +145,9 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
           ((ChildGrid) widget).setGridInterceptor(new CarJobProgressGrid());
           break;
       }
+    }
+    if (Objects.equals(name, TBL_SERVICE_INVOICES) && widget instanceof GridPanel) {
+      ((GridPanel) widget).setGridInterceptor(new CarServiceInvoicesGrid());
     }
     if (Objects.equals(name, COL_CUSTOMER + "Warning") && widget instanceof HasClickHandlers) {
       customerWarning = widget.asWidget();
@@ -107,6 +170,7 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
     refreshStages();
     showCustomerWarning();
     showCarWarning();
+    createInvoice.setVisible(!DataUtils.isNewRow(row));
     super.beforeRefresh(form, row);
   }
 
@@ -165,8 +229,262 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
   }
 
   @Override
+  public void onStartNewRow(FormView form, IsRow oldRow, IsRow newRow) {
+    Global.getParameterRelation(PRM_SERVICE_WAREHOUSE, (id, text) -> {
+      if (DataUtils.isId(id)) {
+        newRow.setValue(getDataIndex(COL_WAREHOUSE), id);
+        newRow.setValue(Data.getColumnIndex(TBL_SERVICE_ORDERS, ALS_WAREHOUSE_CODE), text);
+        form.refreshBySource(COL_WAREHOUSE);
+      }
+    });
+    super.onStartNewRow(form, oldRow, newRow);
+  }
+
+  @Override
   public void setStages(List<Stage> stages) {
     orderStages = stages;
+  }
+
+  private void renderInvoiceTable(Collection<BeeRowSet> result, Map<Long, Double> stocks) {
+    Map<IsRow, InputNumber> items = new HashMap<>();
+    DoubleLabel itemsTotal = new DoubleLabel(true);
+    Map<IsRow, InputNumber> jobs = new HashMap<>();
+    DoubleLabel jobsTotal = new DoubleLabel(true);
+    HashMap<Long, Double> copyOfStocks = new HashMap<>(stocks);
+
+    Consumer<Map<IsRow, InputNumber>> totalizer = map -> {
+      boolean isJobs = Objects.equals(map, jobs);
+      Totalizer tot = new Totalizer(Data.getColumns(isJobs ? TBL_SERVICE_ORDER_JOBS
+          : TBL_SERVICE_ORDER_ITEMS));
+      tot.setQuantityFunction(row -> map.get(row).getNumber());
+
+      (isJobs ? jobsTotal : itemsTotal).setValue(map.keySet().stream()
+          .mapToDouble(row -> BeeUtils.round(BeeUtils.unbox(tot.getTotal(row)), 2)).sum());
+    };
+    for (BeeRowSet rs : result) {
+      Map<IsRow, InputNumber> map = rs.getViewName().equals(TBL_SERVICE_ORDER_JOBS) ? jobs : items;
+
+      rs.forEach(row -> {
+        double qty = BeeUtils.unbox(row.getDouble(rs.getColumnIndex(COL_TRADE_ITEM_QUANTITY)))
+            - BeeUtils.unbox(row.getDouble(rs.getColumnIndex(ALS_COMPLETED)));
+
+        if (BeeUtils.isPositive(qty)) {
+          row.setProperty(COL_ITEM_DEFAULT_QUANTITY, qty);
+          Long item = row.getLong(rs.getColumnIndex(COL_ITEM));
+
+          double stock = copyOfStocks.getOrDefault(item,
+              row.isTrue(rs.getColumnIndex(COL_ITEM_IS_SERVICE)) ? Double.MAX_VALUE
+                  : BeeConst.DOUBLE_ZERO);
+          qty = BeeUtils.min(qty, stock);
+          copyOfStocks.put(item, stock - qty);
+
+          InputNumber input = new InputNumber();
+          input.addInputHandler(event -> totalizer.accept(map));
+          input.setWidth("80px");
+          input.setMinValue("0");
+
+          if (BeeUtils.isPositive(qty)) {
+            input.setValue(qty);
+          }
+          map.put(row, input);
+        }
+      });
+    }
+    Dictionary d = Localized.dictionary();
+    Latch rNo = new Latch(0);
+
+    HtmlTable table = new HtmlTable(StyleUtils.NAME_INFO_TABLE);
+    table.getRowFormatter().addStyleName(rNo.get(), StyleUtils.className(FontWeight.BOLD));
+    table.getRowFormatter().addStyleName(rNo.get(), StyleUtils.className(TextAlign.CENTER));
+
+    Flow container = new Flow();
+    container.add(new InlineLabel(d.quantity() + BeeConst.STRING_SPACE));
+    FaLabel clear = new FaLabel(FontAwesome.TIMES, true);
+    StyleUtils.setColor(clear, "red");
+    clear.addClickHandler(event -> {
+      items.values().forEach(InputText::clearValue);
+      totalizer.accept(items);
+      jobs.values().forEach(InputText::clearValue);
+      totalizer.accept(jobs);
+    });
+    container.add(clear);
+    int c = 0;
+    table.setText(rNo.get(), c++, d.name());
+    table.setText(rNo.get(), c++, d.article());
+    table.setText(rNo.get(), c++, d.ordUncompleted());
+    table.setText(rNo.get(), c++, d.unitShort());
+    table.setWidget(rNo.get(), c++, container);
+    table.setText(rNo.get(), c++, d.price());
+    table.setText(rNo.get(), c++, d.discount());
+    table.setText(rNo.get(), c, d.vat());
+
+    Stream.of(2, 5, 6, 7).forEach(col ->
+        table.setColumnCellClasses(col, StyleUtils.className(TextAlign.RIGHT)));
+
+    ImmutableMap.of(TBL_SERVICE_ORDER_ITEMS, items, TBL_SERVICE_ORDER_JOBS, jobs)
+        .forEach((view, map) -> {
+          if (!map.isEmpty()) {
+            boolean isJobs = Objects.equals(map, jobs);
+            rNo.increment();
+            table.getRowFormatter().addStyleName(rNo.get(), StyleUtils.className(FontStyle.ITALIC));
+            table.getRowFormatter().addStyleName(rNo.get(), StyleUtils.className(FontWeight.BOLD));
+            table.getCellFormatter().setColSpan(rNo.get(), 0, 8);
+            Flow flow = new Flow(StyleUtils.NAME_FLEX_BOX_HORIZONTAL);
+            flow.add(new Label(Data.getViewCaption(view)));
+            flow.getWidget(0).addStyleName(StyleUtils.NAME_FLEXIBLE);
+            flow.add(new Label(d.total() + ": "));
+            flow.add(isJobs ? jobsTotal : itemsTotal);
+            table.setWidget(rNo.get(), 0, flow);
+
+            map.forEach((row, input) -> {
+              rNo.increment();
+              int cNo = 0;
+              table.setText(rNo.get(), cNo++, BeeUtils.joinWords(Data.getString(view, row,
+                  ALS_ITEM_NAME), isJobs ? BeeUtils.parenthesize(Data.getString(view, row,
+                  COL_JOB_NAME)) : null));
+              table.setText(rNo.get(), cNo++, BeeUtils.joinWords(Data.getString(view, row,
+                  COL_ITEM_ARTICLE), isJobs ? BeeUtils.parenthesize(Data.getString(view, row,
+                  COL_CODE)) : null));
+              table.setText(rNo.get(), cNo++, row.getProperty(COL_ITEM_DEFAULT_QUANTITY));
+              table.setText(rNo.get(), cNo++, Data.getString(view, row, ALS_UNIT_NAME));
+              table.setWidget(rNo.get(), cNo++, input);
+              table.setText(rNo.get(), cNo++, Data.getString(view, row, COL_PRICE));
+
+              table.setText(rNo.get(), cNo++, BeeUtils.join("", Data.getString(view, row,
+                  COL_TRADE_DOCUMENT_ITEM_DISCOUNT), Data.isNull(view, row,
+                  COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT) ? "" : "%"));
+
+              table.setText(rNo.get(), cNo, BeeUtils.join("", Data.getString(view, row,
+                  COL_TRADE_DOCUMENT_ITEM_VAT), Data.isNull(view, row,
+                  COL_TRADE_DOCUMENT_ITEM_VAT_IS_PERCENT) ? "" : "%"));
+            });
+            totalizer.accept(map);
+          }
+        });
+    Global.inputWidget(d.createInvoice(), table, new InputCallback() {
+      @Override
+      public String getErrorMessage() {
+        copyOfStocks.clear();
+        copyOfStocks.putAll(stocks);
+
+        for (Map<IsRow, InputNumber> map : Arrays.asList(items, jobs)) {
+          String view = (map == jobs) ? TBL_SERVICE_ORDER_JOBS : TBL_SERVICE_ORDER_ITEMS;
+
+          for (Map.Entry<IsRow, InputNumber> entry : map.entrySet()) {
+            IsRow row = entry.getKey();
+            InputNumber input = entry.getValue();
+            Long item = Data.getLong(view, row, COL_ITEM);
+
+            double stock = copyOfStocks.getOrDefault(item, Data.isNull(view, row,
+                COL_ITEM_IS_SERVICE) ? BeeConst.DOUBLE_ZERO : Double.MAX_VALUE);
+            double qty = BeeUtils.min(row.getPropertyDouble(COL_ITEM_DEFAULT_QUANTITY), stock);
+
+            input.setMaxValue(BeeUtils.toString(qty));
+            List<String> messages = input.validate(true);
+
+            if (!BeeUtils.isEmpty(messages)) {
+              input.setFocus(true);
+              return BeeUtils.joinItems(messages);
+            }
+            copyOfStocks.put(item, stock - qty);
+          }
+        }
+        return InputCallback.super.getErrorMessage();
+      }
+
+      @Override
+      public void onSuccess() {
+        ParameterList args = CarsKeeper.createSvcArgs(SVC_CREATE_INVOICE);
+        TradeDocument doc = new TradeDocument(Global
+            .getParameterRelation(PRM_SERVICE_TRADE_OPERATION), TradeDocumentPhase.COMPLETED);
+
+        ImmutableMap.of(TBL_SERVICE_ORDER_ITEMS, items, TBL_SERVICE_ORDER_JOBS, jobs)
+            .forEach((view, map) -> {
+              Map<Long, Double> data = new HashMap<>();
+
+              map.forEach((row, input) -> {
+                Double qty = input.getNumber();
+
+                if (BeeUtils.isPositive(qty)) {
+                  TradeDocumentItem tradeItem = doc.addItem(Data.getLong(view, row, COL_ITEM), qty);
+
+                  tradeItem.setPrice(Data.getDouble(view, row, COL_PRICE));
+
+                  tradeItem.setDiscount(Data.getDouble(view, row,
+                      COL_TRADE_DOCUMENT_ITEM_DISCOUNT));
+                  tradeItem.setDiscountIsPercent(Data.getBoolean(view, row,
+                      COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT));
+
+                  tradeItem.setVat(Data.getDouble(view, row, COL_TRADE_DOCUMENT_ITEM_VAT));
+                  tradeItem.setVatIsPercent(Data.getBoolean(view, row,
+                      COL_TRADE_DOCUMENT_ITEM_VAT_IS_PERCENT));
+
+                  data.put(row.getId(), qty);
+                }
+              });
+              args.addDataItem(view, Codec.beeSerialize(data));
+            });
+        if (!doc.isValid()) {
+          getFormView().notifyWarning(d.noData());
+          return;
+        }
+        doc.setDocumentDiscountMode(TradeDiscountMode.FROM_AMOUNT);
+        doc.setDate(TimeUtils.nowSeconds());
+        doc.setCurrency(getLongValue(COL_CURRENCY));
+        doc.setNumber1(getStringValue(COL_ORDER_NO));
+        doc.setCustomer(getLongValue(COL_CUSTOMER));
+        doc.setManager(getLongValue(COL_EMPLOYEE));
+        doc.setWarehouseFrom(getLongValue(COL_WAREHOUSE));
+        doc.setDocumentVatMode(EnumUtils.getEnumByIndex(TradeVatMode.class,
+            getIntegerValue(COL_TRADE_DOCUMENT_VAT_MODE)));
+
+        args.addDataItem(VAR_DOCUMENT, Codec.beeSerialize(doc));
+        createInvoice.running();
+
+        BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
+          @Override
+          public void onResponse(ResponseObject response) {
+            createInvoice.idle();
+            response.notify(getFormView());
+
+            if (!response.hasErrors()) {
+              getFormView().refresh();
+              RowEditor.open(VIEW_TRADE_DOCUMENTS, response.getResponseAsLong(), Opener.NEW_TAB);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  private void selectServicesAndJobs() {
+    Filter filter = Filter.equals(COL_SERVICE_ORDER, getActiveRowId());
+
+    Map<String, Filter> filters = new HashMap<>();
+    filters.put(TBL_SERVICE_ORDER_ITEMS, filter);
+    filters.put(TBL_SERVICE_ORDER_JOBS, Filter.and(filter, Filter.notNull(COL_ITEM)));
+
+    Queries.getData(filters.keySet(), filters, null, new Queries.DataCallback() {
+      @Override
+      public void onSuccess(Collection<BeeRowSet> result) {
+        BeeRowSet itemsRs = result.stream()
+            .filter(rs -> Objects.equals(rs.getViewName(), TBL_SERVICE_ORDER_ITEMS)).findFirst()
+            .orElseThrow(() -> new BeeRuntimeException(Localized.dictionary().error()));
+
+        Set<Long> items = itemsRs.getDistinctLongs(itemsRs.getColumnIndex(COL_ITEM));
+        Map<Long, Double> stocks = new HashMap<>();
+
+        if (items.isEmpty()) {
+          renderInvoiceTable(result, stocks);
+        } else {
+          TradeKeeper.getStock(getLongValue(COL_WAREHOUSE), items, stockMultimap -> {
+            stockMultimap.keySet().forEach(item -> stocks.put(item, stockMultimap.get(item)
+                .stream().mapToDouble(ItemStock::getQuantity).sum()));
+            renderInvoiceTable(result, stocks);
+          });
+        }
+      }
+    });
   }
 
   private void showCarWarning() {
@@ -177,7 +495,7 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
     Long car = getLongValue(COL_CAR);
 
     if (DataUtils.isId(car)) {
-      Queries.getRowSet(VIEW_CAR_RECALLS, null, Filter.and(Filter.equals(COL_VEHICLE, car),
+      Queries.getRowSet(TBL_CAR_RECALLS, null, Filter.and(Filter.equals(COL_VEHICLE, car),
           Filter.isNull(COL_CHECKED)), new Queries.RowSetCallback() {
         @Override
         public void onSuccess(BeeRowSet result) {

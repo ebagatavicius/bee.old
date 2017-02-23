@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Builds an INSERT SQL statement for a given target using specified field and value lists.
@@ -23,7 +24,7 @@ public class SqlInsert extends SqlQuery<SqlInsert> implements HasTarget {
   private SqlSelect dataSource;
 
   /**
-   * Creates an SqlInserte statement with a specified target {@code target}. Target type is
+   * Creates an SqlInsert statement with a specified target {@code target}. Target type is
    * FromSingle.
    * 
    * @param target the FromSingle target
@@ -31,6 +32,13 @@ public class SqlInsert extends SqlQuery<SqlInsert> implements HasTarget {
   public SqlInsert(String target) {
     Assert.notEmpty(target);
     this.target = target;
+  }
+
+  public SqlInsert addAll(Map<String, ?> map) {
+    if (map != null) {
+      map.forEach(this::addConstant);
+    }
+    return getReference();
   }
 
   /**
@@ -165,7 +173,7 @@ public class SqlInsert extends SqlQuery<SqlInsert> implements HasTarget {
   /**
    * Returns a list of sources found in the {@code dataSource}.
    * 
-   * @returns a list of sources found in the {@code dataSource}.
+   * @return a list of sources found in the {@code dataSource}.
    */
   @Override
   public Collection<String> getSources() {
@@ -210,7 +218,7 @@ public class SqlInsert extends SqlQuery<SqlInsert> implements HasTarget {
   /**
    * Checks if the current instance of SqlInsert is empty.
    * 
-   * @returns true if it is empty, otherwise false.
+   * @return true if it is empty, otherwise false.
    */
   @Override
   public boolean isEmpty() {

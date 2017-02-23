@@ -3,6 +3,8 @@ package com.butent.bee.client.modules.transport.charts;
 import com.google.gwt.user.client.ui.HasEnabled;
 
 import com.butent.bee.client.Global;
+import com.butent.bee.client.i18n.Format;
+import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.HasCaption;
@@ -10,6 +12,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,31 +22,33 @@ import java.util.Set;
 class ChartData implements HasEnabled {
 
   enum Type implements HasCaption {
-    DRIVER(Localized.dictionary().drivers()),
-    DRIVER_GROUP(Localized.dictionary().driverGroupsShort()),
-    CARGO(Localized.dictionary().cargos()),
-    CARGO_TYPE(Localized.dictionary().trCargoTypes()),
-    CUSTOMER(Localized.dictionary().transportationCustomers()),
-    MANAGER(Localized.dictionary().managers()),
-    LOADING(Localized.dictionary().cargoLoading()),
-    ORDER(Localized.dictionary().trOrders()),
-    ORDER_STATUS(Localized.dictionary().trOrderStatus()),
-    PLACE(Localized.dictionary().cargoHandlingPlaces()),
-    TRAILER(Localized.dictionary().trailers()),
-    TRIP(Localized.dictionary().trips()),
-    TRIP_STATUS(Localized.dictionary().trTripStatus()),
-    TRIP_ARRIVAL(Localized.dictionary().transportArrival()),
-    TRIP_DEPARTURE(Localized.dictionary().transportDeparture()),
-    TRUCK(Localized.dictionary().trucks()),
-    UNLOADING(Localized.dictionary().cargoUnloading()),
-    VEHICLE_GROUP(Localized.dictionary().vehicleGroupsShort()),
-    VEHICLE_MODEL(Localized.dictionary().vehicleModelsShort()),
-    VEHICLE_TYPE(Localized.dictionary().trVehicleTypesShort());
+    DRIVER(Localized.dictionary().drivers(), ValueType.TEXT),
+    DRIVER_GROUP(Localized.dictionary().driverGroupsShort(), ValueType.TEXT),
+    CARGO(Localized.dictionary().cargos(), ValueType.TEXT),
+    CARGO_TYPE(Localized.dictionary().trCargoTypes(), ValueType.TEXT),
+    CUSTOMER(Localized.dictionary().transportationCustomers(), ValueType.TEXT),
+    MANAGER(Localized.dictionary().managers(), ValueType.TEXT),
+    LOADING(Localized.dictionary().cargoLoading(), ValueType.TEXT),
+    ORDER(Localized.dictionary().trOrders(), ValueType.TEXT),
+    ORDER_STATUS(Localized.dictionary().trOrderStatus(), ValueType.TEXT),
+    PLACE(Localized.dictionary().cargoHandlingPlaces(), ValueType.TEXT),
+    TRAILER(Localized.dictionary().trailers(), ValueType.TEXT),
+    TRIP(Localized.dictionary().trips(), ValueType.TEXT),
+    TRIP_STATUS(Localized.dictionary().trTripStatus(), ValueType.TEXT),
+    TRIP_ARRIVAL(Localized.dictionary().transportArrival(), ValueType.DATE),
+    TRIP_DEPARTURE(Localized.dictionary().transportDeparture(), ValueType.DATE),
+    TRUCK(Localized.dictionary().trucks(), ValueType.TEXT),
+    UNLOADING(Localized.dictionary().cargoUnloading(), ValueType.TEXT),
+    VEHICLE_GROUP(Localized.dictionary().vehicleGroupsShort(), ValueType.TEXT),
+    VEHICLE_MODEL(Localized.dictionary().vehicleModelsShort(), ValueType.TEXT),
+    VEHICLE_TYPE(Localized.dictionary().trVehicleTypesShort(), ValueType.TEXT);
 
     private final String caption;
+    private final ValueType valueType;
 
-    Type(String caption) {
+    Type(String caption, ValueType valueType) {
       this.caption = caption;
+      this.valueType = valueType;
     }
 
     @Override
@@ -106,7 +111,7 @@ class ChartData implements HasEnabled {
 
   void add(JustDate date) {
     if (date != null) {
-      add(date.toString(), (long) date.getDays());
+      add(Format.renderDate(date), (long) date.getDays());
     }
   }
 
@@ -175,7 +180,15 @@ class ChartData implements HasEnabled {
       orderedItems.addAll(items);
 
       if (size() > 1) {
-        orderedItems.sort(null);
+        Comparator<String> comparator;
+
+        if (type.valueType == ValueType.DATE) {
+          comparator = (o1, o2) -> BeeUtils.compareNullsFirst(itemToId.get(o1), itemToId.get(o2));
+        } else {
+          comparator = null;
+        }
+
+        orderedItems.sort(comparator);
       }
     }
     return orderedItems;

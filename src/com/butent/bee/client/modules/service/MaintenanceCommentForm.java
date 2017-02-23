@@ -8,7 +8,11 @@ import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Global;
+import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
@@ -25,12 +29,12 @@ import com.butent.bee.shared.data.event.RowUpdateEvent;
 
 public class MaintenanceCommentForm extends AbstractFormInterceptor {
 
-  private static final String WIDGET_ITEM_LABEL_NAME = "ItemLabel";
-  private static final String WIDGET_TERM_LABEL_NAME = "TermLabel";
-  private static final String WIDGET_WARRANTY_LABEL_NAME = "WarrantyLabel";
+  private static final String WIDGET_LABEL_NAME = "Label";
 
   private final IsRow serviceMaintenance;
   private IsRow stateProcessRow;
+  private UnboundSelector widgetTypeSelector;
+  private InputDateTime warrantyValidToDate;
 
   MaintenanceCommentForm(IsRow serviceMaintenance) {
     this.serviceMaintenance = serviceMaintenance;
@@ -40,6 +44,18 @@ public class MaintenanceCommentForm extends AbstractFormInterceptor {
     super();
     this.serviceMaintenance = maintenanceRow;
     this.stateProcessRow = stateProcessRow;
+  }
+
+  @Override
+  public void afterCreateWidget(String name, IdentifiableWidget widget,
+      FormFactory.WidgetDescriptionCallback callback) {
+    if (BeeUtils.same(name, COL_WARRANTY_TYPE) && widget instanceof UnboundSelector) {
+      widgetTypeSelector = (UnboundSelector) widget;
+
+    } else if (BeeUtils.same(name, COL_WARRANTY) && widget instanceof InputDateTime) {
+      warrantyValidToDate = (InputDateTime) widget;
+    }
+    super.afterCreateWidget(name, widget, callback);
   }
 
   @Override
@@ -57,6 +73,10 @@ public class MaintenanceCommentForm extends AbstractFormInterceptor {
         if (!BeeUtils.isEmpty(warrantyDateTimeValue)) {
           result.setProperty(COL_WARRANTY_VALID_TO, warrantyDateTimeValue);
         }
+      }
+
+      if (widgetTypeSelector != null && !BeeUtils.isEmpty(widgetTypeSelector.getValue())) {
+        result.setProperty(COL_WARRANTY_TYPE, widgetTypeSelector.getValue());
       }
     }
     ServiceUtils.informClient((BeeRow) result);
@@ -117,14 +137,14 @@ public class MaintenanceCommentForm extends AbstractFormInterceptor {
         setWidgetsVisibility(BeeUtils.isTrue(stateProcessRow
             .getBoolean(Data.getColumnIndex(TBL_STATE_PROCESS, COL_TERM))),
             form.getWidgetBySource(COL_TERM),
-            form.getWidgetByName(WIDGET_TERM_LABEL_NAME, false));
+            form.getWidgetByName(COL_TERM + WIDGET_LABEL_NAME, false));
 
         Long itemId = stateProcessRow.getLong(Data.getColumnIndex(TBL_STATE_PROCESS,
             COL_MAINTENANCE_ITEM));
 
         boolean visibleItem = DataUtils.isId(itemId);
         setWidgetsVisibility(DataUtils.isId(itemId),
-            form.getWidgetByName(WIDGET_ITEM_LABEL_NAME, false),
+            form.getWidgetByName(COL_ITEM + WIDGET_LABEL_NAME, false),
             form.getWidgetBySource(COL_MAINTENANCE_ITEM),
             form.getWidgetBySource(COL_ITEM_PRICE),
             form.getWidgetBySource(COL_ITEM_CURRENCY));
@@ -159,14 +179,20 @@ public class MaintenanceCommentForm extends AbstractFormInterceptor {
 
         boolean isWarrantyVisible = BeeUtils.toBoolean(stateProcessRow
             .getString(Data.getColumnIndex(TBL_STATE_PROCESS, COL_WARRANTY)));
-        Widget warrantyWidget = form.getWidgetByName(COL_WARRANTY, false);
         setWidgetsVisibility(isWarrantyVisible,
-            form.getWidgetByName(WIDGET_WARRANTY_LABEL_NAME, false), warrantyWidget);
+            form.getWidgetByName(COL_WARRANTY + WIDGET_LABEL_NAME, false), warrantyValidToDate);
 
-        if (warrantyWidget instanceof InputDateTime) {
-          ((InputDateTime) warrantyWidget).setNullable(!isWarrantyVisible);
+        if (warrantyValidToDate != null) {
+          warrantyValidToDate.setNullable(!isWarrantyVisible);
         }
 
+        setWidgetsVisibility(isWarrantyVisible, form.getWidgetByName(
+            COL_WARRANTY_TYPE + WIDGET_LABEL_NAME, false), widgetTypeSelector);
+
+        if (widgetTypeSelector != null) {
+          widgetTypeSelector.setNullable(!isWarrantyVisible);
+          widgetTypeSelector.setValue(Global.getParameterRelation(PRM_DEFAULT_WARRANTY_TYPE), true);
+        }
       } else {
         updateTermVisibility(form, newRow);
       }
@@ -189,6 +215,6 @@ public class MaintenanceCommentForm extends AbstractFormInterceptor {
   private void updateTermVisibility(FormView form, IsRow row) {
     Boolean isStateComment = row.getBoolean(getDataIndex(COL_STATE_COMMENT));
     setWidgetsVisibility(BeeUtils.isTrue(isStateComment),
-        form.getWidgetBySource(COL_TERM), form.getWidgetByName(WIDGET_TERM_LABEL_NAME));
+        form.getWidgetBySource(COL_TERM), form.getWidgetByName(COL_TERM + WIDGET_LABEL_NAME));
   }
 }

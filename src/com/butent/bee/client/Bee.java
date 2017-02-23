@@ -18,6 +18,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.decorator.TuningFactory;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.i18n.Money;
 import com.butent.bee.client.logging.ClientLogManager;
 import com.butent.bee.client.modules.ModuleManager;
@@ -329,11 +330,11 @@ public class Bee implements EntryPoint, ClosingHandler {
     List<Property> info = PropertyUtils.createProperties("State", getState());
 
     if (getEntryTime() > 0) {
-      info.add(new Property("Entry Time", TimeUtils.renderDateTime(getEntryTime(), true)));
+      info.add(new Property("Entry Time", Format.renderDateTime(getEntryTime())));
     }
 
     if (getReadyTime() > 0) {
-      info.add(new Property("Ready Time", TimeUtils.renderDateTime(getReadyTime(), true)));
+      info.add(new Property("Ready Time", Format.renderDateTime(getReadyTime())));
       info.add(new Property("Ready Seconds", TimeUtils.toSeconds(getReadyTime() - getEntryTime())));
     }
 

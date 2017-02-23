@@ -3,6 +3,7 @@ package com.butent.bee.shared.modules.finance;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
+import com.butent.bee.shared.NonNullMap;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
@@ -12,8 +13,12 @@ import com.butent.bee.shared.utils.Codec;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public final class TradeAccounts implements BeeSerializable {
+
+  public static final String TBL_TRADE_ACCOUNTS = "TradeAccounts";
+  public static final String COL_TRADE_ACCOUNTS = "TradeAccounts";
 
   private static final String COL_COST_ACCOUNT = "CostAccount";
 
@@ -214,6 +219,26 @@ public final class TradeAccounts implements BeeSerializable {
         && vatPayable == null && vatReceivable == null
         && salesRevenue == null && salesDiscounts == null
         && costOfGoodsSold == null && writeOffAccount == null;
+  }
+
+  public Map<String, Long> getValues() {
+    Map<String, Long> values = new NonNullMap<>();
+
+    values.put(COL_COST_ACCOUNT, getCostAccount());
+
+    values.put(COL_TRADE_PAYABLES, getTradePayables());
+    values.put(COL_TRADE_RECEIVABLES, getTradeReceivables());
+
+    values.put(COL_VAT_PAYABLE, getVatPayable());
+    values.put(COL_VAT_RECEIVABLE, getVatReceivable());
+
+    values.put(COL_SALES_REVENUE, getSalesRevenue());
+    values.put(COL_SALES_DISCOUNTS, getSalesDiscounts());
+
+    values.put(COL_COST_OF_GOODS_SOLD, getCostOfGoodsSold());
+    values.put(COL_WRITE_OFF_ACCOUNT, getWriteOffAccount());
+
+    return values;
   }
 
   @Override

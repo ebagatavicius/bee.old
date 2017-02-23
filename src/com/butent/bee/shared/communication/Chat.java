@@ -8,7 +8,7 @@ import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.HasInfo;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
-import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
@@ -32,7 +32,7 @@ public class Chat implements BeeSerializable, HasInfo, Comparable<Chat> {
   }
 
   private static String formatMillis(long millis) {
-    return (millis > 0) ? TimeUtils.renderDateTime(millis, true) : null;
+    return (millis > 0) ? new DateTime(millis).toString() : null;
   }
 
   private long id;

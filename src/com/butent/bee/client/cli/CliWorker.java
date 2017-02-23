@@ -2665,7 +2665,6 @@ public final class CliWorker {
         "Minute", t.getMinute(),
         "Second", t.getSecond(),
         "Millis", t.getMillis(),
-        "Date String", t.toDateString(),
         "Time String", t.toTimeString(),
         "String", t.toString(),
         "Timezone Offset", t.getTimezoneOffset(),

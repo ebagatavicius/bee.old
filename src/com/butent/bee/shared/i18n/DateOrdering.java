@@ -6,15 +6,11 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 public enum DateOrdering {
   YMD {
-    @Override
-    public JustDate date(int v1, int v2, int v3) {
-      return new JustDate(TimeUtils.normalizeYear(v1), v2, v3);
-    }
-
     @Override
     public int month(int v1, int v2) {
       return v1;
@@ -69,14 +65,24 @@ public enum DateOrdering {
 
       return slices;
     }
+
+    @Override
+    Position yearPosition() {
+      return Position.A;
+    }
+
+    @Override
+    Position monthPosition() {
+      return Position.B;
+    }
+
+    @Override
+    Position dayPosition() {
+      return Position.C;
+    }
   },
 
   DMY {
-    @Override
-    public JustDate date(int v1, int v2, int v3) {
-      return new JustDate(TimeUtils.normalizeYear(v3), v2, v1);
-    }
-
     @Override
     public int month(int v1, int v2) {
       return v2;
@@ -118,7 +124,7 @@ public enum DateOrdering {
 
       } else if (len == 7) {
         List<Integer> mdSlices = getDateSlices(digits.substring(0, 3), 3);
-        if (!mdSlices.isEmpty() && TimeUtils.isYear(BeeUtils.toInt(digits.substring(4)))) {
+        if (!mdSlices.isEmpty() && TimeUtils.isYear(BeeUtils.toInt(digits.substring(3)))) {
           slices.addAll(mdSlices);
           slices.add(4);
         }
@@ -131,14 +137,24 @@ public enum DateOrdering {
 
       return slices;
     }
+
+    @Override
+    Position yearPosition() {
+      return Position.C;
+    }
+
+    @Override
+    Position monthPosition() {
+      return Position.B;
+    }
+
+    @Override
+    Position dayPosition() {
+      return Position.A;
+    }
   },
 
   MDY {
-    @Override
-    public JustDate date(int v1, int v2, int v3) {
-      return new JustDate(TimeUtils.normalizeYear(v3), v1, v2);
-    }
-
     @Override
     public int month(int v1, int v2) {
       return v1;
@@ -165,7 +181,7 @@ public enum DateOrdering {
 
       } else if (len == 7) {
         List<Integer> mdSlices = getDateSlices(digits.substring(0, 3), 3);
-        if (!mdSlices.isEmpty() && TimeUtils.isYear(BeeUtils.toInt(digits.substring(4)))) {
+        if (!mdSlices.isEmpty() && TimeUtils.isYear(BeeUtils.toInt(digits.substring(3)))) {
           slices.addAll(mdSlices);
           slices.add(4);
         }
@@ -178,11 +194,111 @@ public enum DateOrdering {
 
       return slices;
     }
+
+    @Override
+    Position yearPosition() {
+      return Position.C;
+    }
+
+    @Override
+    Position monthPosition() {
+      return Position.A;
+    }
+
+    @Override
+    Position dayPosition() {
+      return Position.B;
+    }
   };
 
   public static final DateOrdering DEFAULT = YMD;
 
-  public abstract JustDate date(int v1, int v2, int v3);
+  private enum Position {
+    A, B, C
+  }
+
+  public JustDate date(int v1, int v2, int v3) {
+    EnumMap<Position, Integer> input = new EnumMap<>(Position.class);
+    input.put(Position.A, v1);
+    input.put(Position.B, v2);
+    input.put(Position.C, v3);
+
+    List<Position> yearCandidates = new ArrayList<>();
+    List<Position> monthCandidates = new ArrayList<>();
+    List<Position> dayCandidates = new ArrayList<>();
+
+    input.forEach((p, v) -> {
+      if (TimeUtils.isYear(v)) {
+        yearCandidates.add(p);
+
+      } else {
+        if (TimeUtils.isMonth(v)) {
+          monthCandidates.add(p);
+        }
+        if (TimeUtils.maybeDom(v)) {
+          dayCandidates.add(p);
+        }
+      }
+    });
+
+    if (yearCandidates.size() > 1) {
+      return null;
+    }
+    if (yearCandidates.isEmpty()) {
+      Position p = yearPosition();
+      yearCandidates.add(p);
+
+      monthCandidates.remove(p);
+      dayCandidates.remove(p);
+    }
+
+    int y = input.get(yearCandidates.get(0));
+
+    int mc = monthCandidates.size();
+    int dc = dayCandidates.size();
+
+    if (mc == 1 && dc > 1) {
+      dayCandidates.remove(monthCandidates.get(0));
+      dc = dayCandidates.size();
+    }
+    if (dc == 1 && mc > 1) {
+      monthCandidates.remove(dayCandidates.get(0));
+      mc = monthCandidates.size();
+    }
+
+    if (mc == 1 && dc == 1 && monthCandidates.equals(dayCandidates)) {
+      Position p = monthCandidates.get(0);
+
+      if (p == monthPosition()) {
+        dayCandidates.clear();
+        dc = 0;
+      } else if (p == dayPosition()) {
+        monthCandidates.clear();
+        mc = 0;
+      }
+    }
+
+    int m;
+    int d;
+
+    if (mc <= 0) {
+      m = 1;
+    } else if (mc == 1) {
+      m = input.get(monthCandidates.get(0));
+    } else {
+      m = month(input.get(monthCandidates.get(0)), input.get(monthCandidates.get(1)));
+    }
+
+    if (dc <= 0) {
+      d = 1;
+    } else if (dc == 1) {
+      d = input.get(dayCandidates.get(0));
+    } else {
+      d = day(input.get(dayCandidates.get(0)), input.get(dayCandidates.get(1)));
+    }
+
+    return new JustDate(TimeUtils.normalizeYear(y), m, d);
+  }
 
   public DateTime dateTime(int v1, int v2, int v3, int hour, int minute, int second, long millis) {
     return new DateTime(date(v1, v2, v3), hour, minute, second, millis);
@@ -232,4 +348,10 @@ public enum DateOrdering {
   }
 
   abstract List<Integer> getDateSlices(String digits, int len);
+
+  abstract Position yearPosition();
+
+  abstract Position monthPosition();
+
+  abstract Position dayPosition();
 }

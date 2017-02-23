@@ -45,6 +45,11 @@ public final class DateTimeFormatInfoET implements DateTimeFormatInfo {
   }
 
   @Override
+  public String dateFormatCompact() {
+    return "dd.MM.yy";
+  }
+
+  @Override
   public DateOrdering dateOrdering() {
     return DateOrdering.DMY;
   }

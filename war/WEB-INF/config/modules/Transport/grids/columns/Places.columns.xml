@@ -37,7 +37,7 @@
     </render>
   </PropColumn>
   <PropColumn type="string" name="LoadingCountryCode" cellType="html"
-              width="30" caption="-" label="=from" sortable="false"
+              width="30" label="=from" sortable="false"
               horizontalAlignment="center" exportWidthFactor="0.5" visible="false">
     <renderer type="flag" />
   </PropColumn>
@@ -63,7 +63,7 @@
     </render>
   </PropColumn>
   <PropColumn type="string" name="UnloadingCountryCode" cellType="html"
-              width="30" caption="-" label="=to" sortable="false"
+              width="30" label="=to" sortable="false"
               horizontalAlignment="center" exportWidthFactor="0.5" visible="false">
     <renderer type="flag" />
   </PropColumn>
@@ -73,7 +73,7 @@
   <PropColumn type="integer" name="EmptyKilometers" label="=trEmptyKilometers" visible="false" />
   <PropColumn type="integer" name="LoadedKilometers" label="=trLoadedKilometers" visible="false" />
 
-  <PropColumn type="string" cellType="html" name="Loading" exportable="false"
+  <PropColumn type="string" cellType="html" name="Loading" exportable="false" sortable="false"
               renderColumns="Date Note Company Contact Address City Country Number"
               label="=cargoLoading" minWidth="140" flexBasis="120">
     <style>
@@ -84,7 +84,7 @@
     <renderer type="place" options="&renderLoadingOptions;"/>
   </PropColumn>
 
-  <PropColumn type="string" cellType="html" name="Unloading" exportable="false"
+  <PropColumn type="string" cellType="html" name="Unloading" exportable="false" sortable="false"
               renderColumns="Date Note Company Contact Address City Country Number"
               label="=cargoUnloading" minWidth="140" flexBasis="120">
     <style>

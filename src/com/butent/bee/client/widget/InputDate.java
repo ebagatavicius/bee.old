@@ -434,9 +434,9 @@ public class InputDate extends InputText implements HasDateTimeFormat, HasIntSte
     List<String> result = new ArrayList<>();
 
     if (dateValue != null && !checkBounds(dateValue)) {
-      result.add(TimeUtils.renderCompact(dateValue));
-      result.addAll(ValidationHelper.getBounds(TimeUtils.renderCompact(getMinBound()),
-          TimeUtils.renderCompact(getMaxBound())));
+      result.add(Format.renderDate(dateValue));
+      result.addAll(ValidationHelper.getBounds(Format.renderDate(getMinBound()),
+          Format.renderDate(getMaxBound())));
     }
     return result;
   }

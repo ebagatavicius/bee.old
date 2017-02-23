@@ -12,6 +12,7 @@ import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.dialog.ChoiceCallback;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -23,7 +24,6 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -163,7 +163,7 @@ public class PrintTripForm extends AbstractFormInterceptor {
               int r = driverCosts.getRowCount();
               driverCosts.setText(r, index.get(COL_NUMBER), cost.getValue(COL_NUMBER));
               driverCosts.setText(r, index.get(COL_COSTS_DATE),
-                  TimeUtils.dateToString(cost.getDateTime(COL_COSTS_DATE)));
+                  Format.renderDate(cost.getDateTime(COL_COSTS_DATE)));
               driverCosts.setText(r, index.get(COL_COSTS_ITEM), BeeUtils.joinWords(itemName,
                   dailyCostsItems.contains(cost.getLong(COL_COSTS_ITEM))
                       ? BeeUtils.parenthesize(cost.getValue(COL_COSTS_COUNTRY)) : null));
@@ -291,7 +291,7 @@ public class PrintTripForm extends AbstractFormInterceptor {
                   driverAdvances.setText(r, index.get(COL_COSTS_ITEM),
                       Localized.dictionary().advance());
                   driverAdvances.setText(r, index.get(COL_DATE),
-                      TimeUtils.dateToString(advance.getDate(COL_DATE)));
+                      Format.renderDate(advance.getDate(COL_DATE)));
                   driverAdvances.setText(r, index.get(COL_AMOUNT), BeeUtils.toString(amount));
                   driverAdvances.setText(r, index.get(remainder),
                       BeeUtils.toString(BeeUtils.round(total, 2)));

@@ -22,7 +22,9 @@ import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 abstract class MaintenanceStateChangeInterceptor extends MaintenanceExpanderForm {
 
@@ -62,15 +64,16 @@ abstract class MaintenanceStateChangeInterceptor extends MaintenanceExpanderForm
                   List<String> newValues = Lists.newArrayList(event.getNewValue());
                   IsRow oldRow = getFormView().getOldRow();
 
-                  String warrantyValidToValue = result.getB();
-
-                  if (!BeeUtils.isEmpty(warrantyValidToValue)) {
-                    columns.add(COL_WARRANTY_VALID_TO);
-
-                    int warrantyIndex = getDataIndex(COL_WARRANTY_VALID_TO);
-                    oldValues.add(oldRow.getString(warrantyIndex));
-                    newValues.add(warrantyValidToValue);
+                  Map<String, String> maintenanceValues = result.getB();
+                  maintenanceValues.forEach((column, value) -> {
+                    if (!BeeUtils.isEmpty(value)) {
+                      columns.add(column);
+                      int columnIndex = getDataIndex(column);
+                      oldValues.add(oldRow.getString(columnIndex));
+                      newValues.add(value);
+                    }
                   }
+                  );
 
                   Boolean isFinalState = stateProcessRow.getBoolean(Data
                       .getColumnIndex(TBL_STATE_PROCESS, COL_FINITE));
@@ -113,7 +116,7 @@ abstract class MaintenanceStateChangeInterceptor extends MaintenanceExpanderForm
   }
 
   private static void registerReason(IsRow maintenanceRow, IsRow stateProcessRow,
-      final Callback<Pair<Boolean, String>> success) {
+      final Callback<Pair<Boolean, Map<String, String>>> success) {
     DataInfo data = Data.getDataInfo(TBL_MAINTENANCE_COMMENTS);
     BeeRow emptyRow = RowFactory.createEmptyRow(data, false);
 
@@ -126,8 +129,11 @@ abstract class MaintenanceStateChangeInterceptor extends MaintenanceExpanderForm
             if (success != null) {
               createMaintenanceItem(maintenanceRow, result);
 
-              String commentWarrantyValidToValue = result.getProperty(COL_WARRANTY_VALID_TO);
-              success.onSuccess(Pair.of(true, commentWarrantyValidToValue));
+              Map<String, String> maintenanceValues = new HashMap<>();
+              maintenanceValues.put(COL_WARRANTY_VALID_TO,
+                  result.getProperty(COL_WARRANTY_VALID_TO));
+              maintenanceValues.put(COL_WARRANTY_TYPE, result.getProperty(COL_WARRANTY_TYPE));
+              success.onSuccess(Pair.of(true, maintenanceValues));
             }
           }
 

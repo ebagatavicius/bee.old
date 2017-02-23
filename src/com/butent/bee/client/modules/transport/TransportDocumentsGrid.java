@@ -25,13 +25,13 @@ class TransportDocumentsGrid extends RelatedDocumentsHandler {
   private static final BeeLogger logger = LogUtils.getLogger(TransportDocumentsGrid.class);
 
   private String parentColumn;
-  private final String childColumm;
+  private final String childColumn;
 
   private Long pendingId;
 
-  TransportDocumentsGrid(String childColumm) {
+  TransportDocumentsGrid(String childColumn) {
     super();
-    this.childColumm = childColumm;
+    this.childColumn = childColumn;
   }
 
   @Override
@@ -47,7 +47,7 @@ class TransportDocumentsGrid extends RelatedDocumentsHandler {
 
   @Override
   public GridInterceptor getInstance() {
-    return new TransportDocumentsGrid(childColumm);
+    return new TransportDocumentsGrid(childColumn);
   }
 
   @Override
@@ -79,7 +79,7 @@ class TransportDocumentsGrid extends RelatedDocumentsHandler {
     if (DataUtils.isId(parentId) && !BeeUtils.isEmpty(getParentColumn())) {
       switch (getParentColumn()) {
         case COL_CARGO:
-          switch (childColumm) {
+          switch (childColumn) {
             case COL_TRANSPORTATION_ORDER:
               return Filter.in(COL_TRANSPORTATION_ORDER, VIEW_ORDER_CARGO, COL_ORDER,
                   Filter.compareId(parentId));
@@ -90,7 +90,7 @@ class TransportDocumentsGrid extends RelatedDocumentsHandler {
           break;
 
         case COL_TRANSPORTATION_ORDER:
-          switch (childColumm) {
+          switch (childColumn) {
             case COL_CARGO:
               return Filter.in(COL_CARGO, VIEW_ORDER_CARGO, COL_CARGO_ID,
                   Filter.equals(COL_ORDER, parentId));
@@ -102,7 +102,7 @@ class TransportDocumentsGrid extends RelatedDocumentsHandler {
           break;
 
         case COL_TRIP:
-          switch (childColumm) {
+          switch (childColumn) {
             case COL_CARGO:
               return Filter.in(COL_CARGO, VIEW_CARGO_TRIPS, COL_CARGO,
                   Filter.equals(COL_TRIP, parentId));
@@ -114,7 +114,7 @@ class TransportDocumentsGrid extends RelatedDocumentsHandler {
           break;
       }
 
-      logger.severe(NameUtils.getName(this), "relation", getParentColumn(), childColumm,
+      logger.severe(NameUtils.getName(this), "relation", getParentColumn(), childColumn,
           "not supported");
     }
 

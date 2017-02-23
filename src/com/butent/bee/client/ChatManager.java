@@ -30,6 +30,7 @@ import com.butent.bee.client.event.Previewer;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.screen.BodyPanel;
 import com.butent.bee.client.style.StyleUtils;
@@ -1316,7 +1317,7 @@ public class ChatManager implements HasInfo, HasEnabled {
     if (chat.getCreated() > 0) {
       row++;
       table.setText(row, 0, Localized.dictionary().creationDate());
-      table.setText(row, 2, TimeUtils.renderDateTime(chat.getCreated()));
+      table.setText(row, 2, Format.renderDateTime(chat.getCreated()));
     }
 
     if (DataUtils.isId(chat.getCreator())) {
@@ -1344,7 +1345,7 @@ public class ChatManager implements HasInfo, HasEnabled {
     table.setText(row, 1, BeeUtils.bracket(chat.getMessageCount()));
     if (chat.getMaxTime() > 0) {
       table.setText(row, 2, BeeUtils.joinWords(ChatUtils.elapsed(chat.getMaxTime()),
-          TimeUtils.renderDateTime(chat.getMaxTime(), false)));
+          Format.renderDateTime(TimeUtils.dropMillis(chat.getMaxTime()))));
     }
 
     Global.showModalWidget(Localized.dictionary().chat(), table);

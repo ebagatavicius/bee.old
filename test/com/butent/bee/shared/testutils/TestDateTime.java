@@ -466,7 +466,7 @@ public class TestDateTime {
 
     s1 = "21:02:52";
     d1 = TimeUtils.parseDateTime(s1, DateOrdering.YMD);
-    varDate = new DateTime(2021, 2, 52, 0, 0, 0, 0);
+    varDate = new DateTime(2021, 2, 1);
     assertEquals(d1.getTime(), varDate.getTime());
 
     s1 = "2011-02-22 10:15:10,5";
@@ -512,23 +512,6 @@ public class TestDateTime {
     assertEquals(13, varDate.getMinute());
     assertEquals(8, varDate.getSecond());
     assertEquals(227, varDate.getMillis());
-  }
-
-  @Test
-  public final void testToDateString() {
-    varDate = new DateTime(2011, 2, 22, 8, 13, 8, 446);
-    assertEquals("2011-02-22", varDate.toDateString());
-    varDate = new DateTime(2011, 3, 6, 5, 1, 45);
-    assertEquals("2011-03-06", varDate.toDateString());
-
-    varDate = new DateTime(2011, 3, 19, 5, 1, 45);
-    assertEquals("2011-03-19", varDate.toDateString());
-
-    varDate = new DateTime(2011, 3, 27, 4, 1, 45);
-    assertEquals("2011-03-27", varDate.toDateString());
-
-    varDate = new DateTime(2011, 1, 1, 0, 1, 2);
-    assertEquals("2011-01-01", varDate.toDateString());
   }
 
   @Test

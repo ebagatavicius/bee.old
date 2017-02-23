@@ -6,7 +6,7 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.io.FileInfo;
-import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -129,7 +129,7 @@ public class ChatItem implements BeeSerializable, Comparable<ChatItem> {
   @Override
   public String toString() {
     return BeeUtils.joinOptions("userId", getUserId(),
-        "time", (getTime() > 0) ? TimeUtils.renderDateTime(getTime(), true) : null,
+        "time", (getTime() > 0) ? new DateTime(getTime()).toString() : null,
         "text", BeeUtils.clip(getText(), 50),
         "files", BeeUtils.isEmpty(getFiles()) ? null : BeeUtils.bracket(BeeUtils.size(getFiles())),
         "linkData", Codec.beeSerialize(getLinkData()));

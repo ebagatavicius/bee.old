@@ -45,6 +45,11 @@
         <Label name="WarrantyLabel" text="=svcWarrantyValidTo" class="bee-required"/>
         <InputDateTime name="Warranty" text="=svcWarrantyValidTo"/>
       </row>
+      <row>
+        <Label name="WarrantyTypeLabel" text="=svcWarrantyType" class="bee-required"/>
+        <UnboundSelector name="WarrantyType" viewName="WarrantyTypes" editViewName="WarrantyTypes"
+                      renderColumns="Name" />
+      </row>
     </Table>
   </FlowPanel>
 </f:Form>

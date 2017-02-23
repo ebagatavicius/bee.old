@@ -88,7 +88,7 @@ public final class UiConstants {
   }
 
   public static String wtfplLogo() {
-    return Paths.buildPath(Paths.IMAGE_DIR, "logo.png");
+    return Paths.buildPath(Paths.IMAGE_DIR, "copyright.png");
   }
 
   public static String wtfplUrl() {

@@ -312,15 +312,18 @@ public class LoginServlet extends HttpServlet {
     for (SupportedLocale locale : SupportedLocale.values()) {
       String language = locale.getLanguage();
 
-      localeContainer.append(
-          label().addClass(STYLE_PREFIX + "Locale-label").id(language).text(locale.getCaption())
-              .append(
-                  input().addClass(STYLE_PREFIX + "Locale-input").type(Type.RADIO)
-                      .id(language).name(HttpConst.PARAM_LOCALE).value(language)
-                      .onChange("onSelectLanguage(this.id)")));
+      if (locale.isActive() || language.equals(requestLanguage)) {
+        localeContainer.append(
+            label().addClass(STYLE_PREFIX + "Locale-label").id("label-" + language)
+                .text(locale.getCaption())
+                .append(
+                    input().addClass(STYLE_PREFIX + "Locale-input").type(Type.RADIO)
+                        .id(language).name(HttpConst.PARAM_LOCALE).value(language)
+                        .onChange("onSelectLanguage(this.id)")));
 
-      String dictionary = generateDictionary(locale);
-      dictionaries.text("var dictionary" + language + " = " + dictionary + ";");
+        String dictionary = generateDictionary(locale);
+        dictionaries.text("var dictionary" + language + " = " + dictionary + ";");
+      }
     }
 
     panel.append(label().addClass(STYLE_PREFIX + "infoLabel").id(INFO_LABEL_ID));

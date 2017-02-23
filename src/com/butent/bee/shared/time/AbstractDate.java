@@ -121,4 +121,8 @@ public abstract class AbstractDate implements HasDateValue {
   }
 
   public abstract ValueType getType();
+
+  protected String toDateString() {
+    return TimeUtils.dateToString(getYear(), getMonth(), getDom());
+  }
 }

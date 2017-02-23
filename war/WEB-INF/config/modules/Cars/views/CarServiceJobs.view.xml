@@ -14,6 +14,17 @@
     <SimpleJoin joinType="LEFT" name="Job">
       <SimpleColumn name="JobName" />
       <SimpleColumn name="Code" />
+
+      <SimpleColumn name="Item" />
+      <SimpleJoin name="Item" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ItemName" />
+        <SimpleColumn name="Article" />
+        <SimpleColumn name="IsService" />
+
+        <SimpleJoin joinType="LEFT" name="Unit">
+          <SimpleColumn name="Name" alias="UnitName" />
+        </SimpleJoin>
+      </SimpleJoin>
     </SimpleJoin>
 
     <SimpleColumn name="Duration" />
@@ -26,5 +37,9 @@
 
     <SimpleColumn name="Vat" />
     <SimpleColumn name="VatIsPercent" />
+
+    <ExternalJoin source="CarServiceInvoices" name="ServiceJob" joinType="LEFT">
+      <AggregateColumn name="Quantity" alias="Completed" aggregate="SUM" />
+    </ExternalJoin>
   </Columns>
 </View>

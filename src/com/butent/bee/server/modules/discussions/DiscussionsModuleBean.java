@@ -243,9 +243,10 @@ public class DiscussionsModuleBean implements BeeModule {
               SimpleRow lastCommentData = commentData.getRowByKey(COL_DISCUSSION,
                   BeeUtils.toString(row.getId()));
 
+              long publishTime = BeeUtils.unbox(lastCommentData.getLong(COL_PUBLISH_TIME));
+
               String lastCommentVal = lastCommentData != null
-                  ? BeeUtils.joinWords(TimeUtils.renderDateTime(
-                  BeeUtils.unbox(lastCommentData.getLong(COL_PUBLISH_TIME)))
+                  ? BeeUtils.joinWords(new DateTime(TimeUtils.dropMillis(publishTime)).toString()
                       + ",", lastCommentData.getValue(COL_FIRST_NAME),
                   lastCommentData.getValue(COL_LAST_NAME))
                   : BeeConst.STRING_EMPTY;

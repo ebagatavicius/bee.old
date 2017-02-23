@@ -17,6 +17,8 @@
     <Relation name="Manager" relation="Users" notNull="true" defExpr="CURRENT_USER"
               label="=manager" />
 
+    <Relation name="Warehouse" relation="Warehouses" label="=warehouse" />
+
     <Relation name="Car" relation="Vehicles" notNull="true" label="=car" />
 
     <Relation name="Currency" relation="Currencies" notNull="true" defExpr="MAIN_CURRENCY"

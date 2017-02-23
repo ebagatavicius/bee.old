@@ -14,6 +14,7 @@ import com.butent.bee.client.Bee;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Settings;
 import com.butent.bee.client.dom.DomUtils;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.view.View;
 import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.shared.Assert;
@@ -22,7 +23,6 @@ import com.butent.bee.shared.HasInfo;
 import com.butent.bee.shared.communication.Presence;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
@@ -224,12 +224,12 @@ public final class Previewer implements NativePreviewHandler, HasInfo {
     }
 
     if (lastClick != null) {
-      info.add(new Property("Last Click", TimeUtils.renderDateTime(lastClick.time, true)));
+      info.add(new Property("Last Click", Format.renderDateTime(lastClick.time)));
       info.add(new Property("Last Click X", BeeUtils.toString(lastClick.x, 3)));
       info.add(new Property("Last Click Y", BeeUtils.toString(lastClick.y, 3)));
     }
     if (lastKeyPress > 0) {
-      info.add(new Property("Last Key Press", TimeUtils.renderDateTime(lastKeyPress, true)));
+      info.add(new Property("Last Key Press", Format.renderDateTime(lastKeyPress)));
     }
 
     return info;

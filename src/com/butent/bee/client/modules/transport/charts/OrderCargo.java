@@ -9,6 +9,7 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.timeboard.HasColorSource;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.data.BeeColumn;
@@ -20,7 +21,6 @@ import com.butent.bee.shared.modules.transport.TransportConstants.*;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
@@ -108,7 +108,7 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
     this.loadingDate = loadingDate;
     this.unloadingDate = unloadingDate;
 
-    this.orderName = BeeUtils.joinWords(TimeUtils.renderCompact(this.orderDate), this.orderNo);
+    this.orderName = BeeUtils.joinWords(this.orderNo, Format.renderDate(this.orderDate));
 
     this.range = TimeBoardHelper.getActivity(loadingDate, unloadingDate);
   }
@@ -270,7 +270,7 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
   }
 
   String getOrderTitle() {
-    return TimeBoardHelper.buildTitle(orderDateLabel, TimeUtils.renderCompact(getOrderDate()),
+    return TimeBoardHelper.buildTitle(orderDateLabel, Format.renderDate(getOrderDate()),
         orderStatusLabel, (getOrderStatus() == null) ? null : getOrderStatus().getCaption());
   }
 

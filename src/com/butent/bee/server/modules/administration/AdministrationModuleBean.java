@@ -1003,7 +1003,7 @@ public class AdministrationModuleBean implements BeeModule, HasTimerService {
                   value = BeeUtils.toBoolean(value) ? loc.yes() : loc.no();
                   break;
                 case DATE:
-                  value = TimeUtils.toDateTimeOrNull(BeeUtils.toLong(value)).toDateString();
+                  value = new JustDate(BeeUtils.toLong(value)).toString();
                   break;
                 case DATETIME:
                   value = TimeUtils.toDateTimeOrNull(BeeUtils.toLong(value)).toCompactString();

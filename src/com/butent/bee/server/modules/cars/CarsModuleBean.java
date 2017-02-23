@@ -2,6 +2,7 @@ package com.butent.bee.server.modules.cars;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.google.common.eventbus.AllowConcurrentEvents;
@@ -9,9 +10,10 @@ import com.google.common.eventbus.Subscribe;
 
 import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
+import static com.butent.bee.shared.modules.cars.CarsConstants.COL_BRANCH_NAME;
 import static com.butent.bee.shared.modules.cars.CarsConstants.COL_DESCRIPTION;
 import static com.butent.bee.shared.modules.cars.CarsConstants.COL_ORDINAL;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_PHOTO;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.server.data.DataEvent;
@@ -44,12 +46,14 @@ import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.cars.Bundle;
 import com.butent.bee.shared.modules.cars.ConfInfo;
 import com.butent.bee.shared.modules.cars.Configuration;
 import com.butent.bee.shared.modules.cars.Dimension;
 import com.butent.bee.shared.modules.cars.Option;
 import com.butent.bee.shared.modules.cars.Specification;
+import com.butent.bee.shared.modules.trade.TradeDocument;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -82,6 +86,8 @@ public class CarsModuleBean implements BeeModule {
   SystemBean sys;
   @EJB
   UserServiceBean usr;
+  @EJB
+  TradeModuleBean trd;
 
   @Override
   public ResponseObject doService(String service, RequestInfo reqInfo) {
@@ -199,6 +205,18 @@ public class CarsModuleBean implements BeeModule {
         response = getCalendar();
         break;
 
+      case SVC_CREATE_INVOICE:
+        TradeDocument doc = TradeDocument.restore(reqInfo.getParameter(VAR_DOCUMENT));
+        Map<Long, Double> items = new HashMap<>();
+        Map<Long, Double> jobs = new HashMap<>();
+
+        ImmutableMap.of(TBL_SERVICE_ORDER_ITEMS, items, TBL_SERVICE_ORDER_JOBS, jobs)
+            .forEach((view, map) -> Codec.deserializeHashMap(reqInfo.getParameter(view))
+                .forEach((id, qty) -> map.put(BeeUtils.toLong(id), BeeUtils.toDouble(qty))));
+
+        response = createInvoice(doc, items, jobs);
+        break;
+
       default:
         String msg = BeeUtils.joinWords("Cars service not recognized:", service);
         logger.warning(msg);
@@ -228,6 +246,18 @@ public class CarsModuleBean implements BeeModule {
       calendarId = qs.insertData(si);
     }
     return ResponseObject.response(calendarId);
+  }
+
+  @Override
+  public Collection<BeeParameter> getDefaultParameters() {
+    String module = getModule().getName();
+
+    return Arrays.asList(
+        BeeParameter.createRelation(module, PRM_SERVICE_WAREHOUSE, true, VIEW_WAREHOUSES,
+            COL_WAREHOUSE_CODE),
+        BeeParameter.createRelation(module, PRM_SERVICE_TRADE_OPERATION, true,
+            VIEW_TRADE_OPERATIONS, COL_OPERATION_NAME)
+    );
   }
 
   @Override
@@ -548,6 +578,24 @@ public class CarsModuleBean implements BeeModule {
       }
     }
     return ResponseObject.emptyResponse();
+  }
+
+  private ResponseObject createInvoice(TradeDocument document, Map<Long, Double> items,
+      Map<Long, Double> jobs) {
+    ResponseObject response = trd.createDocument(document);
+
+    if (response.hasErrors()) {
+      return response;
+    }
+    Long tradeId = response.getResponseAsLong();
+
+    ImmutableMap.of(COL_SERVICE_ITEM, items, COL_SERVICE_JOB, jobs).forEach((col, map) ->
+        map.forEach((id, qty) -> qs.insertData(new SqlInsert(TBL_SERVICE_INVOICES)
+            .addConstant(COL_TRADE_DOCUMENT, tradeId)
+            .addConstant(col, id)
+            .addConstant(COL_TRADE_ITEM_QUANTITY, qty))));
+
+    return ResponseObject.response(tradeId);
   }
 
   private ResponseObject getConfiguration(Long branchId) {

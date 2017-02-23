@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Manages localized number and date formats.
@@ -175,6 +176,14 @@ public final class Format {
   private static final NumberFormat defaultPercentFormat = getNumberFormat("0.0%");
 
   private static final Map<PredefinedFormat, DateTimeFormat> pfCache = new HashMap<>();
+
+  public static Function<HasDateValue, String> getDateRenderer() {
+    return Format::renderDate;
+  }
+
+  public static Function<DateTime, String> getDateTimeRenderer() {
+    return Format::renderDateTime;
+  }
 
   public static NumberFormat getDecimalFormat(int scale) {
     return getNumberFormat(getDecimalPattern(scale));
@@ -474,6 +483,10 @@ public final class Format {
     return render(PredefinedFormat.DATE_SHORT, date);
   }
 
+  public static String renderDateCompact(HasDateValue date) {
+    return render(PredefinedFormat.DATE_COMPACT, date);
+  }
+
   public static String renderDateFull(HasDateValue date) {
     return render(PredefinedFormat.DATE_FULL, date);
   }
@@ -488,6 +501,10 @@ public final class Format {
 
       return render(predefinedFormat, date);
     }
+  }
+
+  public static String renderDateTime(long time) {
+    return renderDateTime(new DateTime(time));
   }
 
   public static String renderDateTime(DateTime dateTime) {

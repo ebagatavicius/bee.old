@@ -24,6 +24,9 @@
         <row>
           <Label for="OrderNo" visible="true" style="&lbl;" />
           <InputText source="OrderNo" style="&inpw;" />
+
+          <Label for="Warehouse" style="&lbl;" class="bee-required" />
+          <DataSelector source="Warehouse" required="true" />
         </row>
 
         <row>
@@ -143,6 +146,10 @@
       <page>
         <text>=calAppointments</text>
         <ChildGrid name="CarServiceEvents" relColumn="ServiceOrder" />
+      </page>
+      <page>
+        <text>=trdInvoices</text>
+        <GridPanel name="CarServiceInvoices" child="true" parent="{form}" />
       </page>
       <page>
         <text>=notes</text>

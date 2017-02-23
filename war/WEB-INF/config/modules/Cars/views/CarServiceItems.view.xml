@@ -28,5 +28,9 @@
 
     <SimpleColumn name="Vat" />
     <SimpleColumn name="VatIsPercent" />
+
+    <ExternalJoin source="CarServiceInvoices" name="ServiceItem" joinType="LEFT">
+      <AggregateColumn name="Quantity" alias="Completed" aggregate="SUM" />
+    </ExternalJoin>
   </Columns>
 </View>

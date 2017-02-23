@@ -221,24 +221,6 @@ public final class TimeUtils {
     return fieldDifference(start, end, FIELD_DATE);
   }
 
-  public static String dateToString(HasDateValue date) {
-    return dateToString(date, false);
-  }
-
-  public static String dateToString(HasDateValue date, boolean dropCentury) {
-    if (date == null) {
-      return BeeConst.STRING_EMPTY;
-
-    } else {
-      int year = date.getYear();
-      if (dropCentury) {
-        year %= 100;
-      }
-
-      return dateToString(year, date.getMonth(), date.getDom());
-    }
-  }
-
   public static String dateToString(int year, int month, int dom) {
     return yearToString(year) + DATE_FIELD_SEPARATOR + monthToString(month)
         + DATE_FIELD_SEPARATOR + dayOfMonthToString(dom);
@@ -261,6 +243,10 @@ public final class TimeUtils {
 
   public static int dom() {
     return today().getDom();
+  }
+
+  public static long dropMillis(long time) {
+    return time - time % MILLIS_PER_SECOND;
   }
 
   public static String elapsedMillis(long start) {
@@ -1094,14 +1080,6 @@ public final class TimeUtils {
     } else {
       return dt.toString();
     }
-  }
-
-  public static String renderDateTime(long time) {
-    return renderDateTime(time, false);
-  }
-
-  public static String renderDateTime(long time, boolean showMillis) {
-    return new DateTime(showMillis ? time : (time - time % MILLIS_PER_SECOND)).toString();
   }
 
   public static String renderMillis(long millis) {

@@ -14,6 +14,25 @@
     </DataColumn>
     <DataColumn name="Quantity" scale="0" visible="true" />
 
+    <DataColumn name="Completed" scale="0" label="=ordCompleted">
+      <style>
+        <bodyStyle>
+          <ui:inline>color:green;</ui:inline>
+        </bodyStyle>
+      </style>
+    </DataColumn>
+
+    <CalcColumn name="Uncompleted" type="double" scale="0" label="=ordUncompleted">
+      <style>
+        <bodyStyle>
+          <ui:inline>color:red;</ui:inline>
+        </bodyStyle>
+      </style>
+      <render>
+        <ui:expression>row.Quantity>row.Completed ? row.Quantity-row.Completed : ""</ui:expression>
+      </render>
+    </CalcColumn>
+
     <DataColumn name="Price" scale="2" />
     <DataColumn name="Discount" scale="0">
       <editor type="number" percentageTag="DiscountIsPercent" />
@@ -34,4 +53,7 @@
       <renderer type="total" />
     </CalcColumn>
   </g:columns>
+  <g:rowEditable>
+    <ui:expression>!row.Completed</ui:expression>
+  </g:rowEditable>
 </g:Grid>

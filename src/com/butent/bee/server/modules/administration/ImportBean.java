@@ -294,7 +294,8 @@ public class ImportBean {
     };
 
     Stream.of(
-      TBL_BANKS, TBL_CITIES, VIEW_COLORS, TBL_COMPANIES, TBL_COMPANY_PERSONS, TBL_PERSONS
+      TBL_BANKS, VIEW_CARS, TBL_CITIES, VIEW_COLORS, TBL_COMPANIES, TBL_COMPANY_PERSONS,
+      TBL_DRIVERS, TBL_PERSONS
     ).forEach(viewName -> {
       final DataInfo viewInfo = sys.getDataInfo(viewName);
 
@@ -323,6 +324,27 @@ public class ImportBean {
           insertEmailOptions(optionId, "=F");
           insertCityAndCountryOptions(optionId, "=I", "=J");
           insertCountryOptions(optionId, "=J");
+          break;
+        case VIEW_CARS:
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, VAR_IMPORT_START_ROW, "5")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_VEHICLE_NUMBER, "=A")
+          );
+          // Cars->Model
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_VEHICLE_MODELS));
+          insertSubOption(optionId, subOptionId, COL_MODEL);
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_VEHICLE_MODEL_NAME, "=B")
+          );
+          // Cars->Type
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_VEHICLE_TYPES));
+          insertSubOption(optionId, subOptionId, COL_TYPE);
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_VEHICLE_TYPE_NAME, "=D")
+          );
           break;
         case TBL_CITIES:
           qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
@@ -485,6 +507,33 @@ public class ImportBean {
           insertEmailOptions(optionId, "=J");
           insertCityAndCountryOptions(optionId, "=N", "=O");
           insertCountryOptions(optionId, "=O");
+          break;
+        case TBL_DRIVERS:
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, VAR_IMPORT_START_ROW, "6")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_DRIVER_EXPERIENCE, "=C")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_NOTES, "=D")
+          );
+          // Drivers->CompanyPerson
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_COMPANY_PERSONS));
+          insertSubOption(optionId, subOptionId, COL_COMPANY_PERSON);
+          // Drivers->CompanyPerson->Person
+          subOptionIdL2 = qs.insertData(createImportOptionsInsertionQuery(TBL_PERSONS));
+          insertSubOption(subOptionId, subOptionIdL2, COL_PERSON);
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionIdL2, COL_FIRST_NAME, "=A")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionIdL2, COL_LAST_NAME, "=B")
+          );
+          // Drivers->CompanyPerson->Company
+          subOptionIdL2 = qs.insertData(createImportOptionsInsertionQuery(TBL_COMPANIES));
+          insertSubOption(subOptionId, subOptionIdL2, COL_COMPANY);
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionIdL2, COL_COMPANY_NAME, "=E")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionIdL2, COL_COMPANY_CODE, "=F")
+          );
           break;
         case TBL_PERSONS:
           qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)

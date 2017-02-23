@@ -287,6 +287,18 @@ public final class Dimensions implements BeeSerializable {
     return filter;
   }
 
+  public Map<String, Long> getRelationValues() {
+    Map<String, Long> result = new HashMap<>();
+
+    for (int i = 0; i < values.length; i++) {
+      if (values[i] != null) {
+        result.put(RELATION_COLUMNS[i], values[i]);
+      }
+    }
+
+    return result;
+  }
+
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);

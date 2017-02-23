@@ -166,46 +166,6 @@ public final class DateRange implements HasDateRange, BeeSerializable {
     return getMaxDays() - getMinDays() + 1;
   }
 
-  public String toCompactString() {
-    return toCompactString(false);
-  }
-
-  public String toCompactString(boolean dropCurrentCentury) {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append((range.lowerBoundType() == BoundType.OPEN)
-        ? BeeConst.STRING_LEFT_PARENTHESIS : BeeConst.STRING_LEFT_BRACKET);
-
-    boolean dropCentury;
-    if (dropCurrentCentury) {
-      int century = TimeUtils.today().getCentury();
-      dropCentury = range.lowerEndpoint().getCentury() == century
-          && range.upperEndpoint().getCentury() == century;
-    } else {
-      dropCentury = false;
-    }
-
-    sb.append(TimeUtils.dateToString(range.lowerEndpoint(), dropCentury))
-        .append(TimeUtils.PERIOD_SEPARATOR);
-
-    if (range.lowerEndpoint().getYear() == range.upperEndpoint().getYear()) {
-      if (range.lowerEndpoint().getMonth() == range.upperEndpoint().getMonth()) {
-        sb.append(TimeUtils.dayOfMonthToString(range.upperEndpoint().getDom()));
-      } else {
-        sb.append(TimeUtils.monthToString(range.upperEndpoint().getMonth()))
-            .append(TimeUtils.DATE_FIELD_SEPARATOR)
-            .append(TimeUtils.dayOfMonthToString(range.upperEndpoint().getDom()));
-      }
-    } else {
-      sb.append(TimeUtils.dateToString(range.upperEndpoint(), dropCentury));
-    }
-
-    sb.append((range.upperBoundType() == BoundType.OPEN)
-        ? BeeConst.STRING_RIGHT_PARENTHESIS : BeeConst.STRING_RIGHT_BRACKET);
-
-    return sb.toString();
-  }
-
   @Override
   public String toString() {
     return range.toString();

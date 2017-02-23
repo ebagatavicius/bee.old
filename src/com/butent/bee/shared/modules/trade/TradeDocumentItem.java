@@ -1,12 +1,23 @@
 package com.butent.bee.shared.modules.trade;
 
+import static com.butent.bee.shared.modules.trade.TradeConstants.*;
+
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.value.BooleanValue;
+import com.butent.bee.shared.data.value.LongValue;
+import com.butent.bee.shared.data.value.NumberValue;
+import com.butent.bee.shared.data.value.TextValue;
+import com.butent.bee.shared.data.value.Value;
+import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.finance.Dimensions;
 import com.butent.bee.shared.modules.finance.TradeAccounts;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TradeDocumentItem implements BeeSerializable {
 
@@ -52,7 +63,7 @@ public class TradeDocumentItem implements BeeSerializable {
   private Dimensions extraDimensions;
   private TradeAccounts tradeAccounts;
 
-  public TradeDocumentItem(Long item, Double quantity) {
+  TradeDocumentItem(Long item, Double quantity) {
     this.item = item;
     this.quantity = quantity;
 
@@ -348,5 +359,85 @@ public class TradeDocumentItem implements BeeSerializable {
 
   public boolean isValid() {
     return DataUtils.isId(getItem()) && BeeUtils.nonZero(getQuantity());
+  }
+
+  public Map<String, Value> getValues() {
+    Map<String, Value> values = new HashMap<>();
+
+    if (getTradeDocument() != null) {
+      values.put(COL_TRADE_DOCUMENT, new LongValue(getTradeDocument()));
+    }
+    if (getItem() != null) {
+      values.put(ClassifierConstants.COL_ITEM, new LongValue(getItem()));
+    }
+
+    if (!BeeUtils.isEmpty(getArticle())) {
+      values.put(COL_TRADE_ITEM_ARTICLE, new TextValue(getArticle()));
+    }
+
+    if (BeeUtils.nonZero(getQuantity())) {
+      values.put(COL_TRADE_ITEM_QUANTITY, new NumberValue(getQuantity()));
+    }
+    if (BeeUtils.nonZero(getPrice())) {
+      values.put(COL_TRADE_ITEM_PRICE, new NumberValue(getPrice()));
+    }
+
+    if (BeeUtils.nonZero(getDiscount())) {
+      values.put(COL_TRADE_DOCUMENT_ITEM_DISCOUNT, new NumberValue(getDiscount()));
+    }
+    if (getDiscountIsPercent() != null) {
+      values.put(COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT,
+          BooleanValue.of(getDiscountIsPercent()));
+    }
+
+    if (BeeUtils.nonZero(getVat())) {
+      values.put(COL_TRADE_DOCUMENT_ITEM_VAT, new NumberValue(getVat()));
+    }
+    if (getVatIsPercent() != null) {
+      values.put(COL_TRADE_DOCUMENT_ITEM_VAT_IS_PERCENT, BooleanValue.of(getVatIsPercent()));
+    }
+
+    if (getItemWarehouseFrom() != null) {
+      values.put(COL_TRADE_ITEM_WAREHOUSE_FROM, new LongValue(getItemWarehouseFrom()));
+    }
+    if (getItemWarehouseTo() != null) {
+      values.put(COL_TRADE_ITEM_WAREHOUSE_TO, new LongValue(getItemWarehouseTo()));
+    }
+
+    if (getEmployee() != null) {
+      values.put(COL_TRADE_ITEM_EMPLOYEE, new LongValue(getEmployee()));
+    }
+
+    if (!BeeUtils.isEmpty(getNote())) {
+      values.put(COL_TRADE_ITEM_NOTE, new TextValue(getNote()));
+    }
+
+    if (getParent() != null) {
+      values.put(COL_TRADE_ITEM_PARENT, new LongValue(getParent()));
+    }
+
+    return values;
+  }
+
+  public Map<String, Value> getDimensionValues() {
+    Map<String, Value> values = new HashMap<>();
+
+    if (getExtraDimensions() != null) {
+      getExtraDimensions().getRelationValues()
+          .forEach((key, value) -> values.put(key, new LongValue(value)));
+    }
+
+    return values;
+  }
+
+  public Map<String, Value> getTradeAccountValues() {
+    Map<String, Value> values = new HashMap<>();
+
+    if (getTradeAccounts() != null) {
+      getTradeAccounts().getValues()
+          .forEach((key, value) -> values.put(key, new LongValue(value)));
+    }
+
+    return values;
   }
 }

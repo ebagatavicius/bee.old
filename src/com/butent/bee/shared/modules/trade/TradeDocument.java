@@ -1,8 +1,16 @@
 package com.butent.bee.shared.modules.trade;
 
+import static com.butent.bee.shared.modules.trade.TradeConstants.*;
+
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.value.DateTimeValue;
+import com.butent.bee.shared.data.value.IntegerValue;
+import com.butent.bee.shared.data.value.LongValue;
+import com.butent.bee.shared.data.value.NumberValue;
+import com.butent.bee.shared.data.value.TextValue;
+import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.modules.classifiers.ItemPrice;
 import com.butent.bee.shared.modules.finance.Dimensions;
 import com.butent.bee.shared.modules.finance.TradeAccounts;
@@ -10,13 +18,18 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class TradeDocument implements BeeSerializable {
 
   private enum Serial {
     ID, VERSION, DATE, SERIES, NUMBER, NUMBER_1, NUMBER_2, OPERATION, PHASE, STATUS,
     SUPPLIER, CUSTOMER, WAREHOUSE_FROM, WAREHOUSE_TO, CURRENCY, PAYER, TERM, MANAGER,
     DOCUMENT_DISCOUNT, PRICE_NAME, DOCUMENT_VAT_MODE, DOCUMENT_DISCOUNT_MODE,
-    RECEIVED_DATE, NOTES, EXTRA_DIMENSIONS, TRADE_ACCOUNTS
+    RECEIVED_DATE, NOTES, EXTRA_DIMENSIONS, TRADE_ACCOUNTS, ITEMS
   }
 
   public static TradeDocument restore(String s) {
@@ -66,6 +79,8 @@ public class TradeDocument implements BeeSerializable {
   private Dimensions extraDimensions;
   private TradeAccounts tradeAccounts;
 
+  private final List<TradeDocumentItem> items = new ArrayList<>();
+
   public TradeDocument(Long operation, TradeDocumentPhase phase) {
     this.operation = operation;
     this.phase = phase;
@@ -75,6 +90,12 @@ public class TradeDocument implements BeeSerializable {
   }
 
   private TradeDocument() {
+  }
+
+  public TradeDocumentItem addItem(Long item, Double quantity) {
+    TradeDocumentItem tradeItem = new TradeDocumentItem(item, quantity);
+    items.add(tradeItem);
+    return tradeItem;
   }
 
   @Override
@@ -165,6 +186,13 @@ public class TradeDocument implements BeeSerializable {
             break;
           case TRADE_ACCOUNTS:
             setTradeAccounts(TradeAccounts.restore(value));
+            break;
+          case ITEMS:
+            items.clear();
+
+            for (String item : Codec.beeDeserializeCollection(value)) {
+              items.add(TradeDocumentItem.restore(item));
+            }
             break;
         }
       }
@@ -258,10 +286,17 @@ public class TradeDocument implements BeeSerializable {
         case TRADE_ACCOUNTS:
           arr[i++] = getTradeAccounts();
           break;
+        case ITEMS:
+          arr[i++] = getItems();
+          break;
       }
     }
 
     return Codec.beeSerialize(arr);
+  }
+
+  public List<TradeDocumentItem> getItems() {
+    return items;
   }
 
   public long getId() {
@@ -473,6 +508,113 @@ public class TradeDocument implements BeeSerializable {
   }
 
   public boolean isValid() {
-    return DataUtils.isId(getOperation()) && getPhase() != null;
+    return DataUtils.isId(getOperation()) && getPhase() != null && !items.isEmpty();
+  }
+
+  public Map<String, Value> getValues() {
+    Map<String, Value> values = new HashMap<>();
+
+    if (getDate() != null) {
+      values.put(COL_TRADE_DATE, new DateTimeValue(getDate()));
+    }
+
+    if (!BeeUtils.isEmpty(getSeries())) {
+      values.put(COL_SERIES, new TextValue(getSeries()));
+    }
+    if (!BeeUtils.isEmpty(getNumber())) {
+      values.put(COL_TRADE_NUMBER, new TextValue(getNumber()));
+    }
+
+    if (!BeeUtils.isEmpty(getNumber1())) {
+      values.put(COL_TRADE_DOCUMENT_NUMBER_1, new TextValue(getNumber1()));
+    }
+    if (!BeeUtils.isEmpty(getNumber2())) {
+      values.put(COL_TRADE_DOCUMENT_NUMBER_2, new TextValue(getNumber2()));
+    }
+
+    if (getOperation() != null) {
+      values.put(COL_TRADE_OPERATION, new LongValue(getOperation()));
+    }
+    if (getPhase() != null) {
+      values.put(COL_TRADE_DOCUMENT_PHASE, IntegerValue.of(getPhase()));
+    }
+    if (getStatus() != null) {
+      values.put(COL_TRADE_DOCUMENT_STATUS, new LongValue(getStatus()));
+    }
+
+    if (getSupplier() != null) {
+      values.put(COL_TRADE_SUPPLIER, new LongValue(getSupplier()));
+    }
+    if (getCustomer() != null) {
+      values.put(COL_TRADE_CUSTOMER, new LongValue(getCustomer()));
+    }
+
+    if (getWarehouseFrom() != null) {
+      values.put(COL_TRADE_WAREHOUSE_FROM, new LongValue(getWarehouseFrom()));
+    }
+    if (getWarehouseTo() != null) {
+      values.put(COL_TRADE_WAREHOUSE_TO, new LongValue(getWarehouseTo()));
+    }
+
+    if (getCurrency() != null) {
+      values.put(COL_TRADE_CURRENCY, new LongValue(getCurrency()));
+    }
+
+    if (getPayer() != null) {
+      values.put(COL_TRADE_PAYER, new LongValue(getPayer()));
+    }
+    if (getTerm() != null) {
+      values.put(COL_TRADE_TERM, new DateTimeValue(getTerm()));
+    }
+
+    if (getManager() != null) {
+      values.put(COL_TRADE_MANAGER, new LongValue(getManager()));
+    }
+
+    if (BeeUtils.nonZero(getDocumentDiscount())) {
+      values.put(COL_TRADE_DOCUMENT_DISCOUNT, new NumberValue(getDocumentDiscount()));
+    }
+    if (getPriceName() != null) {
+      values.put(COL_TRADE_DOCUMENT_PRICE_NAME, IntegerValue.of(getPriceName()));
+    }
+
+    if (getDocumentVatMode() != null) {
+      values.put(COL_TRADE_DOCUMENT_VAT_MODE, IntegerValue.of(getDocumentVatMode()));
+    }
+    if (getDocumentDiscountMode() != null) {
+      values.put(COL_TRADE_DOCUMENT_DISCOUNT_MODE, IntegerValue.of(getDocumentDiscountMode()));
+    }
+
+    if (getReceivedDate() != null) {
+      values.put(COL_TRADE_DOCUMENT_RECEIVED_DATE, new DateTimeValue(getReceivedDate()));
+    }
+
+    if (!BeeUtils.isEmpty(getNotes())) {
+      values.put(COL_TRADE_NOTES, new TextValue(getNotes()));
+    }
+
+    return values;
+  }
+
+  public Map<String, Value> getDimensionValues() {
+    Map<String, Value> values = new HashMap<>();
+
+    if (getExtraDimensions() != null) {
+      getExtraDimensions().getRelationValues()
+          .forEach((key, value) -> values.put(key, new LongValue(value)));
+    }
+
+    return values;
+  }
+
+  public Map<String, Value> getTradeAccountValues() {
+    Map<String, Value> values = new HashMap<>();
+
+    if (getTradeAccounts() != null) {
+      getTradeAccounts().getValues()
+          .forEach((key, value) -> values.put(key, new LongValue(value)));
+    }
+
+    return values;
   }
 }

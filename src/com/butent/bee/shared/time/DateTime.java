@@ -164,7 +164,7 @@ public class DateTime extends AbstractDate implements Comparable<DateTime> {
   }
 
   /**
-   * Compare two {@code DateTime} objects by date and time for eqaulity.
+   * Compare two {@code DateTime} objects by date and time for equality.
    * @return true if the {@code obj} are the same.
    */
   @Override
@@ -232,8 +232,8 @@ public class DateTime extends AbstractDate implements Comparable<DateTime> {
   }
 
   /**
-   * Returns the number of miliseconds the past of second. The value returned between 0 and 999.
-   * @return the number miliseconds the past of second.
+   * Returns the number of milliseconds the past of second. The value returned between 0 and 999.
+   * @return the number milliseconds the past of second.
    */
   @Override
   public int getMillis() {
@@ -508,9 +508,7 @@ public class DateTime extends AbstractDate implements Comparable<DateTime> {
     if (timeString.isEmpty()) {
       return toDateString();
     } else {
-      StringBuilder sb = new StringBuilder();
-      sb.append(toDateString()).append(TimeUtils.DATE_TIME_SEPARATOR).append(timeString);
-      return sb.toString();
+      return toDateString() + TimeUtils.DATE_TIME_SEPARATOR + timeString;
     }
   }
 
@@ -533,22 +531,12 @@ public class DateTime extends AbstractDate implements Comparable<DateTime> {
   }
 
   /**
-   * Converts the {@code DateTime} in date to {@code String}.
-   * @return String of date
-   */
-  public String toDateString() {
-    return TimeUtils.dateToString(this);
-  }
-
-  /**
    * Converts the {@code DateTime} to {@code String} with date and time.
    * @return String of date and time
    */
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder(23);
-    sb.append(toDateString()).append(TimeUtils.DATE_TIME_SEPARATOR).append(toTimeString());
-    return sb.toString();
+    return toDateString() + TimeUtils.DATE_TIME_SEPARATOR + toTimeString();
   }
 
   @Override
@@ -584,9 +572,7 @@ public class DateTime extends AbstractDate implements Comparable<DateTime> {
    * @return String of UTC date and time
    */
   public String toUtcString() {
-    StringBuilder sb = new StringBuilder(23);
-    sb.append(toUtcDateString()).append(TimeUtils.DATE_TIME_SEPARATOR).append(toUtcTimeString());
-    return sb.toString();
+    return toUtcDateString() + TimeUtils.DATE_TIME_SEPARATOR + toUtcTimeString();
   }
 
   /**
