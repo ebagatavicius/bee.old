@@ -64,13 +64,13 @@ import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.cars.CarsConstants;
-import com.butent.bee.shared.modules.trade.ItemStock;
 import com.butent.bee.shared.modules.trade.Totalizer;
 import com.butent.bee.shared.modules.trade.TradeDiscountMode;
 import com.butent.bee.shared.modules.trade.TradeDocument;
 import com.butent.bee.shared.modules.trade.TradeDocumentItem;
 import com.butent.bee.shared.modules.trade.TradeDocumentPhase;
 import com.butent.bee.shared.modules.trade.TradeVatMode;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -80,6 +80,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -203,10 +204,14 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
       event.getSelector().setAdditionalFilter(Objects.isNull(owner) ? null
           : Filter.equals(COL_OWNER, owner));
 
-    } else if (event.isChanged() && Objects.isNull(owner)) {
-      RelationUtils.copyWithDescendants(carInfo, COL_OWNER, event.getRelatedRow(),
-          eventInfo, COL_CUSTOMER, getActiveRow());
-      getFormView().refresh();
+    } else if (event.isChanged()) {
+      if (Objects.isNull(owner)) {
+        RelationUtils.copyWithDescendants(carInfo, COL_OWNER, event.getRelatedRow(),
+            eventInfo, COL_CUSTOMER, getActiveRow());
+        getFormView().refresh();
+      } else {
+        showCarWarning();
+      }
     }
   }
 
@@ -269,7 +274,7 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
             - BeeUtils.unbox(row.getDouble(rs.getColumnIndex(ALS_COMPLETED)));
 
         if (BeeUtils.isPositive(qty)) {
-          row.setProperty(COL_ITEM_DEFAULT_QUANTITY, qty);
+          row.setProperty(COL_RESERVE, qty);
           Long item = row.getLong(rs.getColumnIndex(COL_ITEM));
 
           double stock = copyOfStocks.getOrDefault(item,
@@ -345,7 +350,7 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
               table.setText(rNo.get(), cNo++, BeeUtils.joinWords(Data.getString(view, row,
                   COL_ITEM_ARTICLE), isJobs ? BeeUtils.parenthesize(Data.getString(view, row,
                   COL_CODE)) : null));
-              table.setText(rNo.get(), cNo++, row.getProperty(COL_ITEM_DEFAULT_QUANTITY));
+              table.setText(rNo.get(), cNo++, row.getProperty(COL_RESERVE));
               table.setText(rNo.get(), cNo++, Data.getString(view, row, ALS_UNIT_NAME));
               table.setWidget(rNo.get(), cNo++, input);
               table.setText(rNo.get(), cNo++, Data.getString(view, row, COL_PRICE));
@@ -375,9 +380,9 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
             InputNumber input = entry.getValue();
             Long item = Data.getLong(view, row, COL_ITEM);
 
-            double stock = copyOfStocks.getOrDefault(item, Data.isNull(view, row,
-                COL_ITEM_IS_SERVICE) ? BeeConst.DOUBLE_ZERO : Double.MAX_VALUE);
-            double qty = BeeUtils.min(row.getPropertyDouble(COL_ITEM_DEFAULT_QUANTITY), stock);
+            double stock = copyOfStocks.getOrDefault(item, BeeUtils.unbox(Data.getBoolean(view, row,
+                COL_ITEM_IS_SERVICE)) ? Double.MAX_VALUE : BeeConst.DOUBLE_ZERO);
+            double qty = BeeUtils.min(row.getPropertyDouble(COL_RESERVE), stock);
 
             input.setMaxValue(BeeUtils.toString(qty));
             List<String> messages = input.validate(true);
@@ -468,18 +473,38 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
       @Override
       public void onSuccess(Collection<BeeRowSet> result) {
         BeeRowSet itemsRs = result.stream()
-            .filter(rs -> Objects.equals(rs.getViewName(), TBL_SERVICE_ORDER_ITEMS)).findFirst()
-            .orElseThrow(() -> new BeeRuntimeException(Localized.dictionary().error()));
+            .filter(rs -> Objects.equals(rs.getViewName(), TBL_SERVICE_ORDER_ITEMS)).findAny()
+            .orElseThrow(() -> new BeeRuntimeException(Localized.dictionary()
+                .keyNotFound(TBL_SERVICE_ORDER_ITEMS)));
 
-        Set<Long> items = itemsRs.getDistinctLongs(itemsRs.getColumnIndex(COL_ITEM));
+        Set<Long> items = new HashSet<>();
+        Set<Long> rsv = new HashSet<>();
+
+        itemsRs.forEach(beeRow -> {
+          Long item = beeRow.getLong(itemsRs.getColumnIndex(COL_ITEM));
+
+          if (beeRow.isTrue(itemsRs.getColumnIndex(COL_RESERVE))) {
+            rsv.add(item);
+          }
+          items.add(item);
+        });
         Map<Long, Double> stocks = new HashMap<>();
 
         if (items.isEmpty()) {
           renderInvoiceTable(result, stocks);
         } else {
-          TradeKeeper.getStock(getLongValue(COL_WAREHOUSE), items, stockMultimap -> {
-            stockMultimap.keySet().forEach(item -> stocks.put(item, stockMultimap.get(item)
-                .stream().mapToDouble(ItemStock::getQuantity).sum()));
+          DateTime dateTime = getDateTimeValue(COL_DATE);
+
+          TradeKeeper.getStock(getLongValue(COL_WAREHOUSE), items, true, stockMultimap -> {
+            stockMultimap.keySet()
+                .forEach(item -> stocks.put(item, Double.max(stockMultimap.get(item)
+                    .stream().mapToDouble(itemQuantities ->
+                        itemQuantities.getStock() - itemQuantities.getReservedMap().entrySet()
+                            .stream().filter(entry ->
+                                !rsv.contains(item) || TimeUtils.isLess(entry.getKey(), dateTime))
+                            .mapToDouble(Map.Entry::getValue).sum())
+                    .sum(), BeeConst.DOUBLE_ZERO)));
+
             renderInvoiceTable(result, stocks);
           });
         }

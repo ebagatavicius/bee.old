@@ -6,15 +6,15 @@ import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.shared.modules.calendar.CalendarConstants.CalendarVisibility;
 import com.butent.bee.shared.modules.calendar.CalendarHelper;
 import com.butent.bee.shared.modules.calendar.CalendarItem;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Map;
 
-class ItemRenderer {
+final class ItemRenderer {
 
   private static final Splitter TEMPLATE_SPLITTER =
       Splitter.on(CharMatcher.inRange('\u0000', '\u001f'));
@@ -28,11 +28,10 @@ class ItemRenderer {
 
   private static final String STRING_SEPARATOR = ", ";
 
-  ItemRenderer() {
-    super();
+  private ItemRenderer() {
   }
 
-  void render(long calendarId, ItemWidget itemWidget, String headerTemplate,
+  static void render(long calendarId, ItemWidget itemWidget, String headerTemplate,
       String bodyTemplate, String titleTemplate, boolean multi) {
 
     CalendarItem item = itemWidget.getItem();
@@ -64,7 +63,7 @@ class ItemRenderer {
     }
   }
 
-  void renderCompact(long calendarId, CalendarItem item, String compactTemplate,
+  static void renderCompact(long calendarId, CalendarItem item, String compactTemplate,
       Widget htmlWidget, String titleTemplate, Widget titleWidget) {
 
     if (item.isVisible(BeeKeeper.getUser().getUserId())) {
@@ -91,13 +90,13 @@ class ItemRenderer {
     }
   }
 
-  void renderMulti(long calendarId, ItemWidget itemWidget) {
+  static void renderMulti(long calendarId, ItemWidget itemWidget) {
     CalendarItem item = itemWidget.getItem();
     render(calendarId, itemWidget, item.getMultiHeaderTemplate(),
         item.getMultiBodyTemplate(), item.getTitleTemplate(), true);
   }
 
-  void renderSimple(long calendarId, ItemWidget itemWidget) {
+  static void renderSimple(long calendarId, ItemWidget itemWidget) {
     CalendarItem item = itemWidget.getItem();
 
     render(calendarId, itemWidget,
@@ -106,14 +105,16 @@ class ItemRenderer {
         item.getTitleTemplate(), false);
   }
 
-  String renderString(long calendarId, CalendarItem item) {
+  static String renderString(long calendarId, CalendarItem item) {
     return parseTemplate(item.getStringTemplate(), getSubstitutes(calendarId, item, false),
         STRING_SEPARATOR);
   }
 
   private static Map<String, String> getSubstitutes(long calendarId, CalendarItem item,
       boolean addLabels) {
-    return item.getSubstitutes(calendarId, Global.getUsers().getUserData(), addLabels);
+
+    return item.getSubstitutes(calendarId, Global.getUsers().getUserData(), addLabels,
+        Format.getDateTimeRenderer(), Format.getPeriodRenderer());
   }
 
   private static String parseLine(String line, Map<String, String> substitutes) {
@@ -150,7 +151,7 @@ class ItemRenderer {
   }
 
   private static String renderEmpty(CalendarItem item) {
-    return TimeUtils.renderPeriod(item.getStartTime(), item.getEndTime(), true);
+    return Format.renderPeriod(item.getStartTime(), item.getEndTime());
   }
 
   private static String renderPrivate() {

@@ -150,7 +150,7 @@ public final class CalendarKeeper {
                 ALS_OWNER_LAST_NAME), BeeConst.STRING_SPACE));
 
       } else if (event.hasView(VIEW_APPOINTMENTS)) {
-        event.setResult(ITEM_RENDERER.renderString(BeeConst.UNDEF,
+        event.setResult(ItemRenderer.renderString(BeeConst.UNDEF,
             Appointment.create(event.getRow())));
       }
     }
@@ -164,8 +164,6 @@ public final class CalendarKeeper {
           VIEW_THEMES, VIEW_THEME_COLORS, VIEW_ATTENDEE_PROPS,
           VIEW_APPOINTMENT_STYLES, VIEW_CALENDARS, VIEW_CAL_APPOINTMENT_TYPES,
           VIEW_CALENDAR_EXECUTORS, VIEW_CAL_EXECUTOR_GROUPS);
-
-  private static final ItemRenderer ITEM_RENDERER = new ItemRenderer();
 
   private static final ReportManager REPORT_MANAGER = new ReportManager();
 
@@ -654,13 +652,13 @@ public final class CalendarKeeper {
 
   static void renderItem(long calendarId, ItemWidget itemWidget, boolean multi) {
     CalendarItem item = itemWidget.getItem();
-
     BeeRow row = getAppointmentTypeRow(item);
+
     if (row == null) {
       if (multi) {
-        ITEM_RENDERER.renderMulti(calendarId, itemWidget);
+        ItemRenderer.renderMulti(calendarId, itemWidget);
       } else {
-        ITEM_RENDERER.renderSimple(calendarId, itemWidget);
+        ItemRenderer.renderSimple(calendarId, itemWidget);
       }
 
     } else {
@@ -669,7 +667,7 @@ public final class CalendarKeeper {
       String body = Data.getString(viewName, row, multi ? COL_MULTI_BODY : COL_SIMPLE_BODY);
       String title = Data.getString(viewName, row, COL_APPOINTMENT_TITLE);
 
-      ITEM_RENDERER.render(calendarId, itemWidget, header, body, title, multi);
+      ItemRenderer.render(calendarId, itemWidget, header, body, title, multi);
     }
 
     BeeRow styleRow = getStyleRow(item, row);
@@ -702,7 +700,7 @@ public final class CalendarKeeper {
       title = Data.getString(viewName, row, COL_APPOINTMENT_TITLE);
     }
 
-    ITEM_RENDERER.renderCompact(calendarId, panel.getItem(), compact, htmlWidget,
+    ItemRenderer.renderCompact(calendarId, panel.getItem(), compact, htmlWidget,
         title, titleWidget);
 
     BeeRow styleRow = getStyleRow(panel.getItem(), row);

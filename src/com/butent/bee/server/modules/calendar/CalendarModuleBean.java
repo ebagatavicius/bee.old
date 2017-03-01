@@ -64,7 +64,10 @@ import com.butent.bee.shared.data.value.LongValue;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.html.builder.Document;
+import com.butent.bee.shared.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
@@ -648,11 +651,23 @@ public class CalendarModuleBean extends TimerBuilder implements BeeModule {
 
         List<String> subtitles = new ArrayList<>();
 
-        String period = TimeUtils.renderPeriod(
-            DataUtils.getDateTime(rowSet, row, COL_START_DATE_TIME),
-            DataUtils.getDateTime(rowSet, row, COL_END_DATE_TIME));
-        if (!BeeUtils.isEmpty(period)) {
-          subtitles.add(period);
+        DateTime start = DataUtils.getDateTime(rowSet, row, COL_START_DATE_TIME);
+        DateTime end = DataUtils.getDateTime(rowSet, row, COL_END_DATE_TIME);
+
+        if (start != null || end != null) {
+          DateTimeFormatInfo dateTimeFormatInfo = usr.getDateTimeFormatInfo(userId);
+
+          if (dateTimeFormatInfo != null) {
+            DateTimeFormat format =
+                DateTimeFormat.of(PredefinedFormat.DATE_TIME_SHORT, dateTimeFormatInfo);
+
+            String period = BeeUtils.joinWords(
+                (start == null) ? null : format.format(start),
+                TimeUtils.PERIOD_SEPARATOR,
+                (end == null) ? null : format.format(end));
+
+            subtitles.add(period);
+          }
         }
 
         AppointmentStatus status = EnumUtils.getEnumByIndex(AppointmentStatus.class,

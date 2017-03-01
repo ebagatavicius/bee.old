@@ -42,6 +42,7 @@ import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -247,6 +248,11 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
   }
 
   @Override
+  public boolean isRowEditable(IsRow row) {
+    return super.isRowEditable(row) && TradeUtils.isDocumentEditable(row);
+  }
+
+  @Override
   public void onSetActiveRow(IsRow row) {
     if (row == null) {
       tdSums.clear();
@@ -366,6 +372,47 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
 
       getFormView().updateCell(COL_TRADE_DOCUMENT_DISCOUNT_MODE,
           Data.getString(VIEW_TRADE_OPERATIONS, operationRow, COL_OPERATION_DISCOUNT_MODE));
+
+      OperationType operationType = Data.getEnum(VIEW_TRADE_OPERATIONS, operationRow,
+          COL_OPERATION_TYPE, OperationType.class);
+      TradeDocumentPhase phase = getPhase();
+
+      Long warehouseFrom = Data.getLong(VIEW_TRADE_OPERATIONS, operationRow,
+          COL_OPERATION_WAREHOUSE_FROM);
+      Long warehouseTo = Data.getLong(VIEW_TRADE_OPERATIONS, operationRow,
+          COL_OPERATION_WAREHOUSE_TO);
+
+      if (operationType != null && phase != null && !phase.modifyStock()
+          && operationType.consumesStock() == DataUtils.isId(warehouseFrom)
+          && operationType.producesStock() == DataUtils.isId(warehouseTo)) {
+
+        DataInfo targetInfo = Data.getDataInfo(getViewName());
+        DataInfo sourceInfo = Data.getDataInfo(VIEW_TRADE_OPERATIONS);
+
+        if (!Objects.equals(warehouseFrom, getLongValue(COL_TRADE_WAREHOUSE_FROM))) {
+          RelationUtils.maybeUpdateColumn(targetInfo, COL_TRADE_WAREHOUSE_FROM, getActiveRow(),
+              sourceInfo, COL_OPERATION_WAREHOUSE_FROM, operationRow);
+
+          RelationUtils.maybeUpdateColumn(targetInfo, ALS_WAREHOUSE_FROM_CODE, getActiveRow(),
+              sourceInfo, ALS_WAREHOUSE_FROM_CODE, operationRow);
+          RelationUtils.maybeUpdateColumn(targetInfo, ALS_WAREHOUSE_FROM_NAME, getActiveRow(),
+              sourceInfo, ALS_WAREHOUSE_FROM_NAME, operationRow);
+
+          getFormView().refreshBySource(COL_TRADE_WAREHOUSE_FROM);
+        }
+
+        if (!Objects.equals(warehouseTo, getLongValue(COL_TRADE_WAREHOUSE_TO))) {
+          RelationUtils.maybeUpdateColumn(targetInfo, COL_TRADE_WAREHOUSE_TO, getActiveRow(),
+              sourceInfo, COL_OPERATION_WAREHOUSE_TO, operationRow);
+
+          RelationUtils.maybeUpdateColumn(targetInfo, ALS_WAREHOUSE_TO_CODE, getActiveRow(),
+              sourceInfo, ALS_WAREHOUSE_TO_CODE, operationRow);
+          RelationUtils.maybeUpdateColumn(targetInfo, ALS_WAREHOUSE_TO_NAME, getActiveRow(),
+              sourceInfo, ALS_WAREHOUSE_TO_NAME, operationRow);
+
+          getFormView().refreshBySource(COL_TRADE_WAREHOUSE_TO);
+        }
+      }
     }
   }
 

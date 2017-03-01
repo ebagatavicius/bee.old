@@ -45,6 +45,7 @@ import com.butent.bee.client.grid.ColumnHeader;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.grid.cell.AbstractCell;
 import com.butent.bee.client.grid.column.AbstractColumn;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.TabbedPages;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.modules.mail.NewMailMessage;
@@ -745,7 +746,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
           }
         }
         table.setText(c, 1, BeeUtils.joinWords(fld.contains("Date")
-            ? TimeUtils.renderCompact(DateTime.restore(value)) : value, value2));
+            ? Format.renderDateTime(DateTime.restore(value)) : value, value2));
         c++;
       }
     }
@@ -770,7 +771,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
 
             for (int i = 0; i < places.getNumberOfRows(); i++) {
               table.getCellFormatter().setColSpan(r, 0, 2);
-              table.setText(r, 0, BeeUtils.joinItems(TimeUtils.renderCompact(places
+              table.setText(r, 0, BeeUtils.joinItems(Format.renderDateTime(places
                       .getDateTime(i, COL_PLACE_DATE)), places.getString(i, COL_PLACE_ADDRESS),
                   places.getString(i, COL_PLACE_POST_INDEX),
                   places.getString(i, ALS_COUNTRY_NAME)));

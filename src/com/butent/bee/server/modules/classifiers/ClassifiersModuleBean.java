@@ -83,6 +83,7 @@ import com.butent.bee.shared.html.builder.elements.Td;
 import com.butent.bee.shared.html.builder.elements.Th;
 import com.butent.bee.shared.html.builder.elements.Tr;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -1282,12 +1283,12 @@ public class ClassifiersModuleBean implements BeeModule {
   private ResponseObject getPriceAndDiscount(RequestInfo reqInfo) {
     Long company = reqInfo.getParameterLong(COL_DISCOUNT_COMPANY);
     if (company == null) {
-      return ResponseObject.parameterNotFound(SVC_GET_PRICE_AND_DISCOUNT, COL_DISCOUNT_COMPANY);
+      return ResponseObject.parameterNotFound(reqInfo.getLabel(), COL_DISCOUNT_COMPANY);
     }
 
     Long item = reqInfo.getParameterLong(COL_DISCOUNT_ITEM);
     if (!DataUtils.isId(item)) {
-      return ResponseObject.parameterNotFound(SVC_GET_PRICE_AND_DISCOUNT, COL_DISCOUNT_ITEM);
+      return ResponseObject.parameterNotFound(reqInfo.getLabel(), COL_DISCOUNT_ITEM);
     }
 
     Long operation = reqInfo.getParameterLong(COL_DISCOUNT_OPERATION);
@@ -1312,13 +1313,16 @@ public class ClassifiersModuleBean implements BeeModule {
       defPriceName = ItemPrice.SALE;
     }
 
+    Set<String> requiredColumns = NameUtils.toSet(reqInfo.getParameter(Service.VAR_REQUIRED));
+
     int explain = BeeUtils.unbox(reqInfo.getParameterInt(Service.VAR_EXPLAIN));
     if (explain > 0) {
       explain(SVC_GET_PRICE_AND_DISCOUNT,
           BeeUtils.joinOptions(COL_DISCOUNT_COMPANY, company, COL_DISCOUNT_ITEM, item,
               COL_DISCOUNT_OPERATION, operation, COL_DISCOUNT_WAREHOUSE, warehouse,
               Service.VAR_TIME, time, Service.VAR_QTY, qty, COL_DISCOUNT_UNIT, unit,
-              COL_DISCOUNT_CURRENCY, currency, COL_DISCOUNT_PRICE_NAME, defPriceName));
+              COL_DISCOUNT_CURRENCY, currency, COL_DISCOUNT_PRICE_NAME, defPriceName,
+              Service.VAR_REQUIRED, requiredColumns));
     }
 
     List<Long> companyParents = getDiscountParents(company);
@@ -1343,8 +1347,10 @@ public class ClassifiersModuleBean implements BeeModule {
 
     HasConditions discountWhere = SqlUtils.and();
 
-    HasConditions companyWhere = SqlUtils.or(
-        SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_COMPANY));
+    HasConditions companyWhere = SqlUtils.or();
+    if (!requiredColumns.contains(COL_DISCOUNT_COMPANY) || !DataUtils.isId(company)) {
+      companyWhere.add(SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_COMPANY));
+    }
     if (DataUtils.isId(company)) {
       companyWhere.add(SqlUtils.equals(TBL_DISCOUNTS, COL_DISCOUNT_COMPANY, company));
       if (!BeeUtils.isEmpty(companyParents)) {
@@ -1352,33 +1358,51 @@ public class ClassifiersModuleBean implements BeeModule {
       }
     }
 
-    discountWhere.add(companyWhere);
-
-    HasConditions categoryWhere = SqlUtils.or(
-        SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_CATEGORY));
-    if (!BeeUtils.isEmpty(categories)) {
-      categoryWhere.add(SqlUtils.inList(TBL_DISCOUNTS, COL_DISCOUNT_CATEGORY, categories.keySet()));
+    if (!companyWhere.isEmpty()) {
+      discountWhere.add(companyWhere);
     }
 
-    discountWhere.add(SqlUtils.or(
-        SqlUtils.equals(TBL_DISCOUNTS, COL_DISCOUNT_ITEM, item),
-        SqlUtils.and(SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_ITEM), categoryWhere)));
+    IsCondition itemWhere = SqlUtils.equals(TBL_DISCOUNTS, COL_DISCOUNT_ITEM, item);
+    if (requiredColumns.contains(COL_DISCOUNT_ITEM)) {
+      discountWhere.add(itemWhere);
 
-    HasConditions operationWhere = SqlUtils.or(
-        SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_OPERATION));
+    } else {
+      HasConditions categoryWhere = SqlUtils.or();
+      if (!requiredColumns.contains(COL_DISCOUNT_CATEGORY) || BeeUtils.isEmpty(categories)) {
+        categoryWhere.add(SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_CATEGORY));
+      }
+      if (!BeeUtils.isEmpty(categories)) {
+        categoryWhere.add(SqlUtils.inList(TBL_DISCOUNTS, COL_DISCOUNT_CATEGORY,
+            categories.keySet()));
+      }
+
+      discountWhere.add(SqlUtils.or(itemWhere,
+          SqlUtils.and(SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_ITEM), categoryWhere)));
+    }
+
+    HasConditions operationWhere = SqlUtils.or();
+    if (!requiredColumns.contains(COL_DISCOUNT_OPERATION) || !DataUtils.isId(operation)) {
+      operationWhere.add(SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_OPERATION));
+    }
     if (DataUtils.isId(operation)) {
       operationWhere.add(SqlUtils.equals(TBL_DISCOUNTS, COL_DISCOUNT_OPERATION, operation));
     }
 
-    discountWhere.add(operationWhere);
+    if (!operationWhere.isEmpty()) {
+      discountWhere.add(operationWhere);
+    }
 
-    HasConditions warehouseWhere = SqlUtils.or(
-        SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_WAREHOUSE));
+    HasConditions warehouseWhere = SqlUtils.or();
+    if (!requiredColumns.contains(COL_DISCOUNT_WAREHOUSE) || !DataUtils.isId(warehouse)) {
+      warehouseWhere.add(SqlUtils.isNull(TBL_DISCOUNTS, COL_DISCOUNT_WAREHOUSE));
+    }
     if (DataUtils.isId(warehouse)) {
       warehouseWhere.add(SqlUtils.equals(TBL_DISCOUNTS, COL_DISCOUNT_WAREHOUSE, warehouse));
     }
 
-    discountWhere.add(warehouseWhere);
+    if (!warehouseWhere.isEmpty()) {
+      discountWhere.add(warehouseWhere);
+    }
 
     HasConditions timeWhere = SqlUtils.and(
         SqlUtils.or(
@@ -1460,7 +1484,7 @@ public class ClassifiersModuleBean implements BeeModule {
       }
     }
 
-    if (DataUtils.isId(company)) {
+    if (DataUtils.isId(company) && requiredColumns.isEmpty()) {
       String companyIdName = sys.getIdName(TBL_COMPANIES);
 
       HasConditions cw = SqlUtils.or(SqlUtils.equals(TBL_COMPANIES, companyIdName, company));
@@ -1515,7 +1539,7 @@ public class ClassifiersModuleBean implements BeeModule {
           }
 
           double fromRate = getRate(pi.getCurrency(), time);
-          pi.setPrice(pi.getPrice() * fromRate / toRate);
+          pi.setPrice(Localized.normalizeMoney(pi.getPrice() * fromRate / toRate));
           pi.setCurrency(currency);
 
           if (explain > 0) {
@@ -1546,7 +1570,9 @@ public class ClassifiersModuleBean implements BeeModule {
       result = getPriceAndDiscount(discounts, company, companyParents, categories, explain);
     }
 
-    if (!BeeUtils.isPositive(result.getA()) && BeeUtils.isPositive(defPrice)) {
+    if (!BeeUtils.isPositive(result.getA()) && BeeUtils.isPositive(defPrice)
+        && requiredColumns.isEmpty()) {
+
       result.setA(defPrice);
       if (explain > 0) {
         explain(COL_DISCOUNT_PRICE_NAME, "default", defPriceName, result.getA());
@@ -1596,7 +1622,7 @@ public class ClassifiersModuleBean implements BeeModule {
     }
 
     List<PriceInfo> input = new ArrayList<>(discounts);
-    Collections.sort(input, (o1, o2) -> {
+    input.sort((o1, o2) -> {
       boolean x1 = o1.hasPrice() && o1.hasPercent();
       boolean x2 = o2.hasPrice() && o2.hasPercent();
 
@@ -1674,7 +1700,7 @@ public class ClassifiersModuleBean implements BeeModule {
         List<Long> branch = new ArrayList<>(roots.get(root));
 
         if (branch.size() > 1) {
-          Collections.sort(branch, (o1, o2) ->
+          branch.sort((o1, o2) ->
               BeeUtils.compareNullsLast(categoryLevels.get(o2), categoryLevels.get(o1)));
         }
 
@@ -2133,7 +2159,7 @@ public class ClassifiersModuleBean implements BeeModule {
           Long c = row.getLong(ip.getCurrencyColumn());
           if (!Objects.equals(currency, c)) {
             double fromRate = getRate(c, time);
-            price = price * fromRate / toRate;
+            price = Localized.normalizeMoney(price * fromRate / toRate);
           }
 
           if (BeeUtils.isPositive(price)) {

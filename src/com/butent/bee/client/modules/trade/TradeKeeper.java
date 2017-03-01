@@ -41,7 +41,7 @@ import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.menu.MenuItem;
 import com.butent.bee.shared.menu.MenuService;
-import com.butent.bee.shared.modules.trade.ItemStock;
+import com.butent.bee.shared.modules.trade.ItemQuantities;
 import com.butent.bee.shared.modules.trade.TradeDocument;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
@@ -88,8 +88,8 @@ public final class TradeKeeper implements HandlesAllDataEvents {
     });
   }
 
-  public static void getStock(Long warehouse, Collection<Long> items,
-      final Consumer<Multimap<Long, ItemStock>> consumer) {
+  public static void getStock(Long warehouse, Collection<Long> items, boolean includeReservations,
+      Consumer<Multimap<Long, ItemQuantities>> consumer) {
 
     Assert.notNull(consumer, SVC_GET_STOCK + " consumer required");
 
@@ -100,15 +100,16 @@ public final class TradeKeeper implements HandlesAllDataEvents {
     if (!BeeUtils.isEmpty(items)) {
       parameters.addDataItem(VAR_ITEMS, DataUtils.buildIdList(items));
     }
+    parameters.addDataItem(VAR_RESERVATIONS, includeReservations);
 
     BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
-        Multimap<Long, ItemStock> result = ArrayListMultimap.create();
+        Multimap<Long, ItemQuantities> result = ArrayListMultimap.create();
 
         if (response.hasResponse()) {
           Codec.deserializeMultiMap(response.getResponseAsString())
-              .forEach((k, v) -> result.put(BeeUtils.toLong(k), ItemStock.restore(v)));
+              .forEach((k, v) -> result.put(BeeUtils.toLong(k), ItemQuantities.restore(v)));
         }
 
         consumer.accept(result);
@@ -123,9 +124,6 @@ public final class TradeKeeper implements HandlesAllDataEvents {
     GridFactory.registerGridInterceptor(GRID_SERIES_MANAGERS,
         UniqueChildInterceptor.forUsers(Localized.dictionary().managers(),
             COL_SERIES, COL_TRADE_MANAGER));
-    GridFactory.registerGridInterceptor(GRID_DEBTS, new DebtsGrid());
-    GridFactory.registerGridInterceptor(GRID_DEBT_REPORTS, new DebtReportsGrid());
-
     GridFactory.registerGridInterceptor(GRID_TRADE_DOCUMENT_FILES,
         new FileGridInterceptor(COL_TRADE_DOCUMENT, COL_FILE, COL_FILE_CAPTION, ALS_FILE_NAME));
 
@@ -187,6 +185,11 @@ public final class TradeKeeper implements HandlesAllDataEvents {
     if (ModuleAndSub.of(Module.TRADE, SubModule.ACTS).isEnabled()) {
       TradeActKeeper.register();
     }
+  }
+
+  public static void registerCommons() {
+    GridFactory.registerGridInterceptor(GRID_DEBTS, new DebtsGrid());
+    GridFactory.registerGridInterceptor(GRID_DEBT_REPORTS, new DebtReportsGrid());
   }
 
   private static String getDocumentGridSupplierKey(long typeId) {

@@ -17,7 +17,9 @@
         service="update_exchange_rates" />
 
   <Item name="TradeOperations" label="=trdOperations" service="grid" parameters="TradeOperations"
-        separator="true" module="Trade Orders" />
+        separator="true" />
+
+  <Item name="SaleSeries" label="=trdSaleSeries" service="grid" parameters="SaleSeries"/>
 
   <Item name="Warehouses" label="=warehouses" service="grid" parameters="Warehouses"
         separator="true" module="Trade Ec Orders" />

@@ -15,7 +15,9 @@ import static com.butent.bee.shared.modules.cars.CarsConstants.COL_DESCRIPTION;
 import static com.butent.bee.shared.modules.cars.CarsConstants.COL_ORDINAL;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
+import static com.butent.bee.shared.modules.transport.TransportConstants.COL_DATE;
 
+import com.butent.bee.server.Invocation;
 import com.butent.bee.server.data.DataEvent;
 import com.butent.bee.server.data.DataEventHandler;
 import com.butent.bee.server.data.QueryServiceBean;
@@ -25,6 +27,7 @@ import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.modules.BeeModule;
 import com.butent.bee.server.modules.trade.TradeModuleBean;
 import com.butent.bee.server.sql.IsCondition;
+import com.butent.bee.server.sql.IsExpression;
 import com.butent.bee.server.sql.IsQuery;
 import com.butent.bee.server.sql.SqlDelete;
 import com.butent.bee.server.sql.SqlInsert;
@@ -41,6 +44,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.Defaults;
 import com.butent.bee.shared.data.SimpleRowSet;
+import com.butent.bee.shared.data.SqlConstants;
 import com.butent.bee.shared.data.event.MultiDeleteEvent;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.data.view.RowInfoList;
@@ -53,8 +57,11 @@ import com.butent.bee.shared.modules.cars.Configuration;
 import com.butent.bee.shared.modules.cars.Dimension;
 import com.butent.bee.shared.modules.cars.Option;
 import com.butent.bee.shared.modules.cars.Specification;
+import com.butent.bee.shared.modules.trade.ItemQuantities;
 import com.butent.bee.shared.modules.trade.TradeDocument;
 import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
+import com.butent.bee.shared.rights.SubModule;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -225,29 +232,6 @@ public class CarsModuleBean implements BeeModule {
     return response;
   }
 
-  private ResponseObject getCalendar() {
-    Long calendarId = qs.getId(VIEW_CALENDARS, COL_CALENDAR_IS_SERVICE, true);
-
-    if (!DataUtils.isId(calendarId)) {
-      SqlInsert si = new SqlInsert(VIEW_CALENDARS)
-          .addConstant(COL_CALENDAR_NAME, usr.getDictionary().carService())
-          .addConstant(COL_CALENDAR_IS_SERVICE, true);
-
-      Map<String, Pair<Defaults.DefaultExpression, Object>> defs =
-          sys.getTableDefaults(VIEW_CALENDARS);
-
-      if (!BeeUtils.isEmpty(defs)) {
-        defs.forEach((field, pair) -> {
-          if (Objects.isNull(pair.getA())) {
-            si.addConstant(field, pair.getB());
-          }
-        });
-      }
-      calendarId = qs.insertData(si);
-    }
-    return ResponseObject.response(calendarId);
-  }
-
   @Override
   public Collection<BeeParameter> getDefaultParameters() {
     String module = getModule().getName();
@@ -265,8 +249,62 @@ public class CarsModuleBean implements BeeModule {
     return Module.CARS;
   }
 
+  public Multimap<Long, ItemQuantities> getServiceReservations(Long warehouse,
+      Collection<Long> items) {
+
+    Multimap<Long, ItemQuantities> reservations = HashMultimap.create();
+
+    IsExpression xpr = SqlUtils.aggregate(SqlConstants.SqlFunction.SUM,
+        SqlUtils.field(TBL_SERVICE_INVOICES, COL_TRADE_ITEM_QUANTITY));
+
+    SqlSelect query = new SqlSelect()
+        .addFields(TBL_SERVICE_ORDERS, COL_DATE)
+        .addFields(TBL_SERVICE_ORDER_ITEMS, COL_ITEM, COL_TRADE_ITEM_QUANTITY)
+        .addExpr(xpr, ALS_COMPLETED)
+        .addFrom(TBL_SERVICE_ORDER_ITEMS)
+        .addFromInner(TBL_ITEMS, sys.joinTables(TBL_ITEMS, TBL_SERVICE_ORDER_ITEMS, COL_ITEM))
+        .addFromInner(TBL_SERVICE_ORDERS,
+            sys.joinTables(TBL_SERVICE_ORDERS, TBL_SERVICE_ORDER_ITEMS, COL_SERVICE_ORDER))
+        .addFromLeft(TBL_SERVICE_INVOICES,
+            sys.joinTables(TBL_SERVICE_ORDER_ITEMS, TBL_SERVICE_INVOICES, COL_SERVICE_ITEM))
+        .setWhere(SqlUtils.and(SqlUtils.notNull(TBL_SERVICE_ORDER_ITEMS, COL_RESERVE),
+            SqlUtils.isNull(TBL_ITEMS, COL_ITEM_IS_SERVICE),
+            SqlUtils.positive(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY)))
+        .addGroup(TBL_SERVICE_ORDERS, COL_DATE)
+        .addGroup(TBL_SERVICE_ORDER_ITEMS, COL_ITEM, COL_TRADE_ITEM_QUANTITY)
+        .setHaving(SqlUtils.or(SqlUtils.isNull(xpr),
+            SqlUtils.more(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY, xpr)));
+
+    if (DataUtils.isId(warehouse)) {
+      query.setWhere(SqlUtils.and(query.getWhere(),
+          SqlUtils.equals(TBL_SERVICE_ORDERS, COL_WAREHOUSE, warehouse)));
+    }
+    if (!BeeUtils.isEmpty(items)) {
+      query.setWhere(SqlUtils.and(query.getWhere(),
+          SqlUtils.inList(TBL_SERVICE_ORDER_ITEMS, COL_ITEM, items)));
+    }
+    qs.getData(query).forEach(row -> {
+      Long item = row.getLong(COL_ITEM);
+      double reserved = BeeUtils.unbox(row.getDouble(COL_TRADE_ITEM_QUANTITY))
+          - BeeUtils.unbox(row.getDouble(ALS_COMPLETED));
+
+      ItemQuantities existing = BeeUtils.peek(reservations.get(item));
+
+      if (Objects.isNull(existing)) {
+        existing = new ItemQuantities(null);
+        reservations.put(item, existing);
+      }
+      existing.addReserved(row.getDateTime(COL_DATE), reserved);
+    });
+    return reservations;
+  }
+
   @Override
   public void init() {
+    TradeModuleBean.registerStockReservationsProvider(ModuleAndSub.of(getModule(),
+        SubModule.SERVICE), (warehouse, items) -> Invocation.locateRemoteBean(CarsModuleBean.class)
+        .getServiceReservations(warehouse, items));
+
     sys.registerDataEventHandler(new DataEventHandler() {
       @Subscribe
       @AllowConcurrentEvents
@@ -596,6 +634,29 @@ public class CarsModuleBean implements BeeModule {
             .addConstant(COL_TRADE_ITEM_QUANTITY, qty))));
 
     return ResponseObject.response(tradeId);
+  }
+
+  private ResponseObject getCalendar() {
+    Long calendarId = qs.getId(VIEW_CALENDARS, COL_CALENDAR_IS_SERVICE, true);
+
+    if (!DataUtils.isId(calendarId)) {
+      SqlInsert si = new SqlInsert(VIEW_CALENDARS)
+          .addConstant(COL_CALENDAR_NAME, usr.getDictionary().carService())
+          .addConstant(COL_CALENDAR_IS_SERVICE, true);
+
+      Map<String, Pair<Defaults.DefaultExpression, Object>> defs =
+          sys.getTableDefaults(VIEW_CALENDARS);
+
+      if (!BeeUtils.isEmpty(defs)) {
+        defs.forEach((field, pair) -> {
+          if (Objects.isNull(pair.getA())) {
+            si.addConstant(field, pair.getB());
+          }
+        });
+      }
+      calendarId = qs.insertData(si);
+    }
+    return ResponseObject.response(calendarId);
   }
 
   private ResponseObject getConfiguration(Long branchId) {

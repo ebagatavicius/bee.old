@@ -459,7 +459,7 @@ public class ProjectsModuleBean extends TimerBuilder implements BeeModule {
         Long timerId = row.getLong(sys.getIdName(VIEW_PROJECT_DATES));
         DateTime timerTime = TimeUtils.toDateTimeOrNull(row.getValue(COL_DATES_START_DATE));
 
-        if (timerTime == null || !TimeUtils.hasTimePart(timerTime)) {
+        if (timerTime == null || !timerTime.hasTimePart()) {
           continue;
         }
 

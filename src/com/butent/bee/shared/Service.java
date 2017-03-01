@@ -197,6 +197,7 @@ public final class Service {
   public static final String VAR_FILE_NAME = RPC_VAR_PREFIX + "file_name";
 
   public static final String VAR_OPTIONS = RPC_VAR_PREFIX + "options";
+  public static final String VAR_REQUIRED = RPC_VAR_PREFIX + "required";
 
   public static final String VAR_REPORT = RPC_VAR_PREFIX + "report";
   public static final String VAR_REPORT_PARAMETERS = VAR_REPORT + "_params";

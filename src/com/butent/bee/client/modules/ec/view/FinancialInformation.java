@@ -21,6 +21,7 @@ import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.ElementSize;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.modules.ec.EcKeeper;
 import com.butent.bee.client.modules.ec.EcStyles;
@@ -181,7 +182,7 @@ class FinancialInformation extends EcView {
     Widget label = renderOrderDetailLabel(Localized.dictionary().ecOrderSubmissionDate());
     orderTable.setWidgetAndStyle(row, col++, label, stylePrefix + STYLE_SUFFIX_LABEL);
 
-    Widget value = renderOrderDetailValue(TimeUtils.renderCompact(order.getDate()));
+    Widget value = renderOrderDetailValue(Format.renderDateTime(order.getDate()));
     orderTable.setWidgetAndStyle(row, col++, value, stylePrefix + STYLE_SUFFIX_VALUE);
 
     stylePrefix = STYLE_PREFIX_ORDER_DETAILS + "number-";
@@ -224,7 +225,7 @@ class FinancialInformation extends EcView {
           label = renderOrderDetailLabel(eventStatus.getCaption());
           orderTable.setWidgetAndStyle(row, col++, label, stylePrefix + STYLE_SUFFIX_LABEL);
 
-          value = renderOrderDetailValue(TimeUtils.renderCompact(eventDate));
+          value = renderOrderDetailValue(Format.renderDateTime(eventDate));
           orderTable.setWidgetAndStyle(row, col++, value, stylePrefix + STYLE_SUFFIX_VALUE);
         }
       }
@@ -524,12 +525,12 @@ class FinancialInformation extends EcView {
       }
 
       if (invoice.getDate() != null) {
-        widget = new Label(TimeUtils.renderCompact(invoice.getDate()));
+        widget = new Label(Format.renderDateTime(invoice.getDate()));
         table.setWidgetAndStyle(row, INVOICE_DATE_COL, widget, STYLE_INVOICE_DATE);
       }
 
       if (invoice.getTerm() != null) {
-        widget = new Label(TimeUtils.renderCompact(invoice.getTerm()));
+        widget = new Label(Format.renderDateTime(invoice.getTerm()));
         table.setWidgetAndStyle(row, INVOICE_TERM_COL, widget, STYLE_INVOICE_TERM);
 
         if (invoice.getDate() != null) {
@@ -647,7 +648,7 @@ class FinancialInformation extends EcView {
 
     for (final EcOrder order : orders) {
       if (order.getDate() != null) {
-        widget = new Label(TimeUtils.renderCompact(order.getDate()));
+        widget = new Label(Format.renderDateTime(order.getDate()));
         table.setWidgetAndStyle(row, ORDER_DATE_COL, widget, STYLE_ORDER_DATE);
       }
 
@@ -761,7 +762,7 @@ class FinancialInformation extends EcView {
     Widget widget;
 
     for (final BeeRow dataRow : rowSet.getRows()) {
-      widget = new Label(TimeUtils.renderCompact(dataRow.getDateTime(dateIndex)));
+      widget = new Label(Format.renderDateTime(dataRow.getDateTime(dateIndex)));
       table.setWidgetAndStyle(row, UNSUPPLIED_DATE_COL, widget, STYLE_UNSUPPLIED_DATE);
 
       widget = new Label(dataRow.getString(orderIndex));

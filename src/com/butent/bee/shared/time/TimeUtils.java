@@ -400,14 +400,6 @@ public final class TimeUtils {
     }
   }
 
-  public static boolean hasTimePart(HasDateValue dt) {
-    if (dt instanceof DateTime) {
-      return dt.getHour() > 0 || dt.getMinute() > 0 || dt.getSecond() > 0 || dt.getMillis() > 0;
-    } else {
-      return false;
-    }
-  }
-
   public static boolean isBetween(HasDateValue dt, HasDateValue min, HasDateValue max,
       RangeOptions options) {
     Assert.notNull(options);
@@ -1050,38 +1042,6 @@ public final class TimeUtils {
     return new DateTime(BeeUtils.randomLong(min.getTime(), max.getTime()));
   }
 
-  public static String render(HasYearMonth dt) {
-    if (dt == null) {
-      return BeeConst.STRING_EMPTY;
-    } else {
-      return dt.toString();
-    }
-  }
-
-  public static String renderCompact(HasDateValue dt) {
-    return renderCompact(dt, false);
-  }
-
-  public static String renderCompact(HasDateValue dt, boolean dropCurrentYear) {
-    if (dt == null) {
-      return BeeConst.STRING_EMPTY;
-
-    } else if (dt instanceof DateTime) {
-      if (dropCurrentYear && isCurrentYear(dt)) {
-        String ds = renderMonthDay(dt);
-        String ts = ((DateTime) dt).toCompactTimeString();
-        return BeeUtils.isEmpty(ts) ? ds : (ds + DATE_TIME_SEPARATOR + ts);
-      } else {
-        return ((DateTime) dt).toCompactString();
-      }
-
-    } else if (dropCurrentYear && isCurrentYear(dt)) {
-      return renderMonthDay(dt);
-    } else {
-      return dt.toString();
-    }
-  }
-
   public static String renderMillis(long millis) {
     if (millis < 0) {
       return BeeConst.STRING_EMPTY;
@@ -1135,54 +1095,6 @@ public final class TimeUtils {
     int hours = minutes / MINUTES_PER_HOUR;
     return (leadingZero ? padTwo(hours) : BeeUtils.toString(hours)) + TIME_FIELD_SEPARATOR
         + padTwo(minutes % MINUTES_PER_HOUR);
-  }
-
-  public static String renderMinutes(long time, boolean leadingZero) {
-    if (time < 0) {
-      return BeeConst.STRING_EMPTY;
-    } else {
-      return renderMinutes(BeeUtils.toInt(time % MILLIS_PER_DAY / MILLIS_PER_MINUTE), leadingZero);
-    }
-  }
-
-  public static String renderMonthDay(HasDateValue date) {
-    if (date == null) {
-      return BeeConst.STRING_EMPTY;
-    } else {
-      return renderMonthDay(date.getMonth(), date.getDom());
-    }
-  }
-
-  public static String renderMonthDay(int month, int dom) {
-    return monthToString(month) + DATE_FIELD_SEPARATOR + dayOfMonthToString(dom);
-  }
-
-  public static String renderPeriod(DateTime start, DateTime end) {
-    return renderPeriod(start, end, false);
-  }
-
-  public static String renderPeriod(DateTime start, DateTime end, boolean dropCurrentYear) {
-    if (start == null) {
-      if (end == null) {
-        return BeeConst.STRING_EMPTY;
-      } else {
-        return PERIOD_SEPARATOR + renderCompact(end, dropCurrentYear);
-      }
-
-    } else if (end == null) {
-      return renderCompact(start, dropCurrentYear) + PERIOD_SEPARATOR;
-
-    } else if (start.equals(end)) {
-      return renderCompact(start, dropCurrentYear);
-
-    } else if (sameDate(start, end)) {
-      return renderCompact(start, dropCurrentYear) + PERIOD_SEPARATOR
-          + (hasTimePart(end) ? end.toCompactTimeString() : renderCompact(end, dropCurrentYear));
-
-    } else {
-      return renderCompact(start, dropCurrentYear) + PERIOD_SEPARATOR
-          + renderCompact(end, dropCurrentYear);
-    }
   }
 
   public static String renderPeriod(String start, String end) {

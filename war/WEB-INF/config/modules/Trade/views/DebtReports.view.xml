@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view" xmlns:x="http://www.butent.com/expression"
       xmlns:xs="http://www.w3.org/2001/XMLSchema" name="DebtReports" source="Sales"
+      module="Trade Transport Orders Service"
       caption="=trdDebtReports" filter="Debt AND (Debt &gt; 0)">
   <Columns>
     <HiddenColumn name="Customer" />

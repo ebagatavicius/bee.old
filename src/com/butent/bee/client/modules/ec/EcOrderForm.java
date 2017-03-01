@@ -25,6 +25,7 @@ import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.style.StyleUtils;
@@ -54,7 +55,6 @@ import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.ec.EcConstants.EcOrderStatus;
 import com.butent.bee.shared.modules.ec.EcUtils;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
@@ -470,7 +470,7 @@ class EcOrderForm extends AbstractFormInterceptor {
 
       table.setWidgetAndStyle(row, col++, selection, STYLE_UNSUPPLIED_SELECTION);
 
-      Label dateWidget = new Label(TimeUtils.renderCompact(dataRow.getDateTime(dateIndex)));
+      Label dateWidget = new Label(Format.renderDateTime(dataRow.getDateTime(dateIndex)));
       table.setWidgetAndStyle(row, col++, dateWidget, STYLE_UNSUPPLIED_DATE);
 
       Label nameWidget = new Label(dataRow.getString(nameIndex));

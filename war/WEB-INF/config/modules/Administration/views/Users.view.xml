@@ -26,6 +26,8 @@
 
     <SimpleColumn name="Interface" />
 
+    <SimpleColumn name="EulaAgreement" />
+
     <SimpleColumn name="BlockAfter" />
     <SimpleColumn name="BlockBefore" />
   </Columns>

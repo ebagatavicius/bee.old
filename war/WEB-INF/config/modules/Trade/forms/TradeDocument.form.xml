@@ -34,7 +34,7 @@
     <south size="300">
       <FlowPanel class="flexBox-vertical">
         <Toggle name="SouthExpander" upFace="chevron_up" downFace="chevron_down"
-                stylePrefix="&tgcl;" options="116" />
+                stylePrefix="&tgcl;" disablable="false" options="116" />
 
         <TabbedPages class="flexible" resizable="false">
           <page>
@@ -179,7 +179,7 @@
             </FlowPanel>
 
             <Toggle name="SumExpander" upFace="chevron_down" downFace="chevron_up"
-                    stylePrefix="&tgcl;" />
+                    stylePrefix="&tgcl;" disablable="false" />
           </FlowPanel>
 
           <TabGroup name="Phase" source="Phase" stylePrefix="bee-trade-document-phase-"

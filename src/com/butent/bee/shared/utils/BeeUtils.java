@@ -3449,10 +3449,19 @@ public final class BeeUtils {
   static String transform(Object x) {
     if (x == null) {
       return BeeConst.STRING_EMPTY;
+
     } else if (x instanceof String) {
       return ((String) x).trim();
+
     } else if (ArrayUtils.isArray(x)) {
       return ArrayUtils.toString(x);
+
+    } else if (x instanceof Collection) {
+      return isEmpty((Collection<?>) x) ? BeeConst.STRING_EMPTY : x.toString();
+
+    } else if (x instanceof Map) {
+      return isEmpty((Map<?, ?>) x) ? BeeConst.STRING_EMPTY : x.toString();
+
     } else {
       return x.toString();
     }

@@ -7,9 +7,12 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.modules.calendar.CalendarConstants.ItemType;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.time.TimeUtils;
 
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public abstract class CalendarItem implements Comparable<CalendarItem> {
 
@@ -86,7 +89,8 @@ public abstract class CalendarItem implements Comparable<CalendarItem> {
   public abstract Long getStyle();
 
   public abstract Map<String, String> getSubstitutes(long calendarId, Map<Long, UserData> users,
-      boolean addLabels);
+      boolean addLabels, Function<HasDateValue, String> dateTimeRenderer,
+      BiFunction<HasDateValue, HasDateValue, String> periodRenderer);
 
   public abstract String getSummary();
 

@@ -6,6 +6,7 @@ import static com.butent.bee.shared.modules.cars.CarsConstants.COL_SERVICE_EVENT
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.ALS_COMPANY_NAME;
 
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.cars.CarServiceEvent;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.DataUtils;
@@ -16,7 +17,7 @@ import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import com.butent.bee.shared.modules.calendar.CalendarItem;
 import com.butent.bee.shared.time.DateTime;
-import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class Appointment extends CalendarItem {
 
@@ -295,7 +298,8 @@ public class Appointment extends CalendarItem {
 
   @Override
   public Map<String, String> getSubstitutes(long calendarId, Map<Long, UserData> users,
-      boolean addLabels) {
+      boolean addLabels, Function<HasDateValue, String> dateTimeRenderer,
+      BiFunction<HasDateValue, HasDateValue, String> periodRenderer) {
 
     Map<String, String> result = new HashMap<>();
 
@@ -349,7 +353,7 @@ public class Appointment extends CalendarItem {
     result.put(wrap(KEY_REMINDERS), joinChildren(remindNames));
 
     result.put(wrap(KEY_PERIOD), build(Localized.dictionary().period(),
-        TimeUtils.renderPeriod(getStart(), getEnd(), !addLabels), addLabels));
+        Format.renderPeriod(getStart(), getEnd()), addLabels));
 
     result.put(wrap(KEY_CREATOR_NAME), build(Localized.dictionary().creator(), getCreatorName(),
         addLabels));

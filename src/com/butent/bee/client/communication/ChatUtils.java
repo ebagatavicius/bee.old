@@ -116,7 +116,7 @@ public final class ChatUtils {
       return format(time, diff / TimeUtils.MILLIS_PER_HOUR, "h");
 
     } else {
-      return TimeUtils.renderCompact(dt, true);
+      return Format.renderDateTime(dt);
     }
   }
 

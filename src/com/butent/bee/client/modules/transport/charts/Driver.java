@@ -5,12 +5,12 @@ import com.google.common.collect.Range;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
@@ -72,9 +72,9 @@ class Driver extends Filterable implements HasDateRange, HasItemName {
 
     this.range = TimeBoardHelper.getActivity(startDate, endDate);
 
-    this.title = TimeBoardHelper.buildTitle(startDateLabel, TimeUtils.renderCompact(startDate),
-        endDateLabel, TimeUtils.renderCompact(endDate),
-        experienceLabel, TimeUtils.renderCompact(experience), notesLabel, notes);
+    this.title = TimeBoardHelper.buildTitle(startDateLabel, Format.renderDateTime(startDate),
+        endDateLabel, Format.renderDateTime(endDate),
+        experienceLabel, Format.renderDateTime(experience), notesLabel, notes);
   }
 
   @Override

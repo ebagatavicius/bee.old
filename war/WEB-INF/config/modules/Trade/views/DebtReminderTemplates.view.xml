@@ -3,6 +3,7 @@
 
       name="DebtReminderTemplates" source="DebtRemindTemplates"
       caption="=trdReminderTemplates" newRowCaption="=reminderTemplate"
+      module="Trade Transport Orders Service"
 >
   <Columns>
     <SimpleColumn name="Name" />

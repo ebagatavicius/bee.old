@@ -60,7 +60,9 @@ import com.butent.bee.shared.html.builder.Document;
 import com.butent.bee.shared.html.builder.Element;
 import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.html.builder.elements.Tbody;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
@@ -596,6 +598,7 @@ public class DocumentsModuleBean extends TimerBuilder implements BeeModule {
 
     Long userId = dRow.getLong(COL_DOCUMENT_USER);
     Dictionary dic = usr.getDictionary(userId);
+    DateTimeFormatInfo dtfInfo = usr.getDateTimeFormatInfo(userId);
 
     doc.getHead().append(meta().encodingDeclarationUtf8());
 
@@ -612,10 +615,10 @@ public class DocumentsModuleBean extends TimerBuilder implements BeeModule {
                 dRow.getValue(ALS_TYPE_NAME)))),
         tr().append(
             td().text(dic.documentDate()),
-            td().text(TimeUtils.renderCompact(dRow.getDateTime(COL_DOCUMENT_DATE)))),
+            td().text(Formatter.renderDateTime(dtfInfo, dRow.getDateTime(COL_DOCUMENT_DATE)))),
         tr().append(
             td().text(dic.documentExpires()),
-            td().text(TimeUtils.renderCompact(dRow.getDateTime(COL_DOCUMENT_EXPIRES)))),
+            td().text(Formatter.renderDateTime(dtfInfo, dRow.getDateTime(COL_DOCUMENT_EXPIRES)))),
         tr().append(
             td().text(dic.documentNumber()),
             td().text(dRow.getValue(COL_DOCUMENT_NUMBER))),

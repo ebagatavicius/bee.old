@@ -21,4 +21,11 @@
     <Numeric name="Vat" precision="12" scale="2" label="=vat" />
     <Boolean name="VatIsPercent" label="=vatIsPercent" />
   </Fields>
+  <Constraints>
+    <Check>
+      <PostgreSql>"Quantity" > 0</PostgreSql>
+      <MsSql />
+      <Oracle />
+    </Check>
+  </Constraints>
 </Table>

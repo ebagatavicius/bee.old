@@ -148,6 +148,69 @@ public final class RelationUtils {
     return result;
   }
 
+  public static boolean maybeUpdateColumn(DataInfo targetInfo, String targetColumn,
+      IsRow targetRow, DataInfo sourceInfo, String sourceColumn, IsRow sourceRow) {
+
+    if (targetInfo == null || BeeUtils.isEmpty(targetColumn) || targetRow == null
+        || sourceInfo == null || BeeUtils.isEmpty(sourceColumn) || sourceRow == null) {
+      return false;
+    }
+
+    int targetIndex = DataUtils.getColumnIndex(targetColumn, targetInfo.getColumns());
+    if (BeeConst.isUndef(targetIndex)) {
+      return false;
+    }
+
+    int sourceIndex = DataUtils.getColumnIndex(sourceColumn, sourceInfo.getColumns());
+    if (BeeConst.isUndef(sourceIndex)) {
+      return false;
+    }
+
+    String value = sourceRow.getString(sourceIndex);
+
+    if (Objects.equals(value, targetRow.getString(targetIndex))) {
+      return false;
+    } else {
+      targetRow.setValue(targetIndex, value);
+      return true;
+    }
+  }
+
+  public static Collection<String> maybeUpdateCurrency(DataInfo dataInfo, IsRow row,
+      String currencyColumn, boolean set) {
+
+    Collection<String> result = new HashSet<>();
+    if (dataInfo == null || row == null || BeeUtils.isEmpty(currencyColumn)) {
+      return result;
+    }
+
+    Long currency;
+    String currencyName;
+
+    if (set) {
+      currency = ClientDefaults.getCurrency();
+      currencyName = ClientDefaults.getCurrencyName();
+    } else {
+      currency = null;
+      currencyName = null;
+    }
+
+    int index = dataInfo.getColumnIndex(currencyColumn);
+    if (BeeConst.isUndef(index) || (row.isNull(index) == (currency == null))) {
+      return result;
+    }
+
+    row.setValue(index, currency);
+    result.add(currencyColumn);
+
+    String nameColumn = setCurrencyName(dataInfo, row, currencyColumn, currencyName);
+    if (!BeeUtils.isEmpty(nameColumn)) {
+      result.add(nameColumn);
+    }
+
+    return result;
+  }
+
   public static int setDefaults(DataInfo dataInfo, IsRow row, Collection<String> colNames,
       List<BeeColumn> columns, UserData userData) {
 
@@ -243,41 +306,6 @@ public final class RelationUtils {
     return result;
   }
 
-  public static Collection<String> maybeUpdateCurrency(DataInfo dataInfo, IsRow row,
-      String currencyColumn, boolean set) {
-
-    Collection<String> result = new HashSet<>();
-    if (dataInfo == null || row == null || BeeUtils.isEmpty(currencyColumn)) {
-      return result;
-    }
-
-    Long currency;
-    String currencyName;
-
-    if (set) {
-      currency = ClientDefaults.getCurrency();
-      currencyName = ClientDefaults.getCurrencyName();
-    } else {
-      currency = null;
-      currencyName = null;
-    }
-
-    int index = dataInfo.getColumnIndex(currencyColumn);
-    if (BeeConst.isUndef(index) || (row.isNull(index) == (currency == null))) {
-      return result;
-    }
-
-    row.setValue(index, currency);
-    result.add(currencyColumn);
-
-    String nameColumn = setCurrencyName(dataInfo, row, currencyColumn, currencyName);
-    if (!BeeUtils.isEmpty(nameColumn)) {
-      result.add(nameColumn);
-    }
-
-    return result;
-  }
-
   /**
    * Setting related values from sourceRow to targetRow using view data information. The targetRow
    * has index of field to targetColumn where targetInfo view data information has references of
@@ -291,8 +319,8 @@ public final class RelationUtils {
    * @param sourceInfo sourceRow data information about source view.
    * @param sourceRow set of values where contains related data for set to sourceRow.
    * @param updateRelationColumn if source row is main (first level) data set, using this
-   *                             parameter, targetColumn value will be replaced own source ID
-   *                             value using sourceRow.getId().
+   * parameter, targetColumn value will be replaced own source ID
+   * value using sourceRow.getId().
    * @return set of targetRow columns, where was effected from source row.
    */
   public static Collection<String> updateRow(DataInfo targetInfo, String targetColumn,
@@ -345,7 +373,7 @@ public final class RelationUtils {
             tc.getLevel() + tcLevel - 1);
         if (!BeeConst.isUndef(sourceIndex)
             && !BeeUtils.equalsTrimRight(targetRow.getString(targetIndex),
-                sourceRow.getString(sourceIndex))) {
+            sourceRow.getString(sourceIndex))) {
           targetRow.setValue(targetIndex, sourceRow.getString(sourceIndex));
           result.add(tc.getName());
         }

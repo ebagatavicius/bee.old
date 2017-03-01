@@ -359,7 +359,7 @@ public final class CellSource implements HasPrecision, HasScale, HasValueType, B
   }
 
   public String render(IsRow row, Function<HasDateValue, String> dateRenderer,
-      Function<DateTime, String> dateTimeRenderer) {
+      Function<HasDateValue, String> dateTimeRenderer) {
 
     if (row == null) {
       return null;

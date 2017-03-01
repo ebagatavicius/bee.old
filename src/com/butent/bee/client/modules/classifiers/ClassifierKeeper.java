@@ -98,7 +98,7 @@ public final class ClassifierKeeper {
     }
   }
 
-  public static void getPriceAndDiscount(Long item, Map<String, Long> options,
+  public static void getPriceAndDiscount(Long item, Map<String, String> options,
       BiConsumer<Double, Double> consumer) {
 
     Assert.notEmpty(options);
@@ -107,16 +107,18 @@ public final class ClassifierKeeper {
 
     ParameterList params = createArgs(SVC_GET_PRICE_AND_DISCOUNT);
 
-    for (Map.Entry<String, Long> entry : options.entrySet()) {
-      if (!BeeUtils.isEmpty(entry.getKey()) && entry.getValue() != null) {
+    for (Map.Entry<String, String> entry : options.entrySet()) {
+      if (BeeUtils.allNotEmpty(entry.getKey(), entry.getValue())) {
         params.addQueryItem(entry.getKey(), entry.getValue());
       }
     }
+
     params.addQueryItem(COL_DISCOUNT_ITEM, item);
 
     if (Global.getExplain() > 0) {
       params.addQueryItem(Service.VAR_EXPLAIN, Global.getExplain());
     }
+
     BeeKeeper.getRpc().makeGetRequest(params, new ResponseCallback() {
       @Override
       public void onResponse(ResponseObject response) {
@@ -128,6 +130,7 @@ public final class ClassifierKeeper {
           price = BeeUtils.toDoubleOrNull(pair.getA());
           percent = BeeUtils.toDoubleOrNull(pair.getB());
         }
+
         consumer.accept(price, percent);
       }
     });

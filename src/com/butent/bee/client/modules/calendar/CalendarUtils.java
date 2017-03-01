@@ -16,6 +16,7 @@ import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.Modality;
 import com.butent.bee.client.event.Modifiers;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.calendar.event.AppointmentEvent;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.ViewHelper;
@@ -421,7 +422,7 @@ public final class CalendarUtils {
 
   public static String renderRange(Range<DateTime> range) {
     return (range == null) ? BeeConst.STRING_EMPTY
-        : TimeUtils.renderPeriod(range.lowerEndpoint(), range.upperEndpoint(), true);
+        : Format.renderPeriod(range.lowerEndpoint(), range.upperEndpoint());
   }
 
   private static boolean intersects(CalendarItem item, long min, long max) {

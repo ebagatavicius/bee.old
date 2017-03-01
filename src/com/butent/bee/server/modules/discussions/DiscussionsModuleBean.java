@@ -53,7 +53,9 @@ import com.butent.bee.shared.html.builder.Document;
 import com.butent.bee.shared.html.builder.Element;
 import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.html.builder.elements.Tbody;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -1246,7 +1248,7 @@ public class DiscussionsModuleBean implements BeeModule {
 
   private Document renderDiscussionDocument(long discussionId, boolean typeAnnoucement,
       String anouncmentTopic, SimpleRow discussMailRow, Dictionary constants,
-      boolean isPublic) {
+      DateTimeFormatInfo dateTimeFormatInfo, boolean isPublic) {
 
     Document doc = new Document();
     doc.getHead().append(meta().encodingDeclarationUtf8());
@@ -1256,7 +1258,8 @@ public class DiscussionsModuleBean implements BeeModule {
 
     Tbody tableFields = tbody().append(
         tr().append(td().text(constants.date()),
-            td().text(TimeUtils.renderCompact(discussMailRow.getDate(COL_CREATED)))));
+            td().text(Formatter.renderDate(dateTimeFormatInfo,
+                discussMailRow.getDate(COL_CREATED)))));
 
     if (typeAnnoucement) {
       tableFields.append(
@@ -1498,6 +1501,7 @@ public class DiscussionsModuleBean implements BeeModule {
       }
 
       Dictionary constants = usr.getDictionary(member);
+      DateTimeFormatInfo dateTimeFormatInfo = usr.getDateTimeFormatInfo(member);
 
       if (constants == null) {
         logger.warning(label, discussionId, "member", member, "localization not available");
@@ -1506,7 +1510,7 @@ public class DiscussionsModuleBean implements BeeModule {
 
       Document discussMailDocument =
           renderDiscussionDocument(discussionId, typeAnnoucement, annoucementTopic, discussMailRow,
-              constants, sendAll);
+              constants, dateTimeFormatInfo, sendAll);
 
       String htmlDiscussMailContent = discussMailDocument.buildLines();
       String discussSubject = BeeUtils.joinWords(

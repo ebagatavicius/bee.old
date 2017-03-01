@@ -9,9 +9,11 @@
 
     <Relation name="CompanyPerson" relation="CompanyPersons" notNull="true" unique="true"
       label="=companyPerson" />
-    
+
     <Enum name="Interface" key="UserInterface" label="=userInterface" />
-    
+
+    <DateTime name="EulaAgreement" label="=eulaAgreement" />
+
     <DateTime name="BlockAfter" label="=blockAfter" />
     <DateTime name="BlockBefore" label="=blockBefore" />
   </Fields>

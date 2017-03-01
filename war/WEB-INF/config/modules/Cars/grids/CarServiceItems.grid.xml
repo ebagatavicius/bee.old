@@ -36,6 +36,8 @@
       </render>
     </CalcColumn>
 
+    <DataColumn name="Reserve" />
+
     <DataColumn name="Price" scale="2" />
     <DataColumn name="Discount" scale="0">
       <editor type="number" percentageTag="DiscountIsPercent" />

@@ -47,7 +47,6 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.trade.acts.TradeActTimeUnit;
 import com.butent.bee.shared.time.DateTime;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 import com.butent.bee.shared.utils.NameUtils;
@@ -384,7 +383,7 @@ public class TradeActTransferReport extends ReportInterceptor {
         } else {
           if (ValueType.DATE_TIME == type
               || COL_TA_SERVICE_FROM.equals(colName) || COL_TA_SERVICE_TO.equals(colName)) {
-            text = TimeUtils.renderCompact(data.getDateTime(i, j));
+            text = Format.renderDateTime(data.getDateTime(i, j));
 
           } else if (ValueType.DATE == type) {
             text = Format.renderDate(data.getDate(i, j));

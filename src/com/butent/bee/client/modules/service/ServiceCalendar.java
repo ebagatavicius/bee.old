@@ -200,10 +200,9 @@ final class ServiceCalendar extends TimeBoard {
     if (range == null) {
       return BeeConst.STRING_EMPTY;
     } else if (Objects.equals(range.lowerEndpoint(), range.upperEndpoint())) {
-      return TimeUtils.render(range.lowerEndpoint());
+      return Format.renderDate(range.lowerEndpoint());
     } else {
-      return BeeUtils.join(TimeUtils.PERIOD_SEPARATOR,
-          range.lowerEndpoint(), range.upperEndpoint());
+      return Format.renderPeriod(range.lowerEndpoint(), range.upperEndpoint());
     }
   }
 
@@ -768,8 +767,8 @@ final class ServiceCalendar extends TimeBoard {
     if (groupColumns == 1) {
       row.add(new XCell(colIndex++, exportPeriod(range), headerStyleRef));
     } else {
-      row.add(new XCell(colIndex++, TimeUtils.render(range.lowerEndpoint()), headerStyleRef));
-      row.add(new XCell(colIndex++, TimeUtils.render(range.upperEndpoint()), headerStyleRef));
+      row.add(new XCell(colIndex++, Format.renderDate(range.lowerEndpoint()), headerStyleRef));
+      row.add(new XCell(colIndex++, Format.renderDate(range.upperEndpoint()), headerStyleRef));
     }
 
     exportMonthLabels(range, row, colIndex, headerStyleRef);

@@ -43,8 +43,10 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ItemPrice;
 import com.butent.bee.shared.modules.trade.OperationType;
 import com.butent.bee.shared.modules.trade.Totalizer;
+import com.butent.bee.shared.modules.trade.TradeDiscountMode;
 import com.butent.bee.shared.modules.trade.TradeDocumentPhase;
 import com.butent.bee.shared.modules.trade.TradeVatMode;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -432,6 +434,23 @@ public final class TradeUtils {
     }
   }
 
+  static DateTime getDocumentDate(IsRow row) {
+    if (row == null) {
+      return null;
+    } else {
+      return Data.getDateTime(VIEW_TRADE_DOCUMENTS, row, COL_TRADE_DATE);
+    }
+  }
+
+  static TradeDiscountMode getDocumentDiscountMode(IsRow row) {
+    if (row == null) {
+      return null;
+    } else {
+      return Data.getEnum(VIEW_TRADE_DOCUMENTS, row, COL_TRADE_DOCUMENT_DISCOUNT_MODE,
+          TradeDiscountMode.class);
+    }
+  }
+
   static ItemPrice getDocumentItemPrice(IsRow row) {
     if (row == null) {
       return null;
@@ -458,6 +477,14 @@ public final class TradeUtils {
     }
   }
 
+  static Long getDocumentRelation(IsRow row, String colName) {
+    if (row == null) {
+      return null;
+    } else {
+      return Data.getLong(VIEW_TRADE_DOCUMENTS, row, colName);
+    }
+  }
+
   static TradeVatMode getDocumentVatMode(IsRow row) {
     if (row == null) {
       return null;
@@ -465,6 +492,15 @@ public final class TradeUtils {
       return Data.getEnum(VIEW_TRADE_DOCUMENTS, row, COL_TRADE_DOCUMENT_VAT_MODE,
           TradeVatMode.class);
     }
+  }
+
+  static boolean isDocumentEditable(IsRow row) {
+    TradeDocumentPhase phase = getDocumentPhase(row);
+    return phase != null && phase.isEditable(BeeKeeper.getUser().isAdministrator());
+  }
+
+  static double roundPrice(Double price) {
+    return Localized.normalizeMoney(price);
   }
 
   private static Multimap<String, Element> getNamedElements(Element element) {

@@ -6,6 +6,7 @@ import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.Global;
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskPriority;
@@ -13,7 +14,6 @@ import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
 class TaskWrapper implements HasDateRange {
@@ -58,8 +58,8 @@ class TaskWrapper implements HasDateRange {
     this.range = TimeBoardHelper.getRange(start, end);
 
     this.title = TimeBoardHelper.buildTitle(
-        startLabel, TimeUtils.renderCompact(start),
-        endLabel, TimeUtils.renderCompact(end),
+        startLabel, Format.renderDateTime(start),
+        endLabel, Format.renderDateTime(end),
         typeLabel, row.getValue(ALS_TASK_TYPE_NAME),
         priorityLabel, (priority == null) ? null : priority.getCaption(),
         statusLabel, (status == null) ? null : status.getCaption(),

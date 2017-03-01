@@ -1384,7 +1384,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
     }
 
     if (captions.isEmpty() && (start != null || end != null)) {
-      captions.add(TimeUtils.renderPeriod(start, end));
+      captions.add(Format.renderPeriod(start, end));
     }
 
     if (ArrayUtils.contains(colNames, COL_COMPANY_PERSON)) {

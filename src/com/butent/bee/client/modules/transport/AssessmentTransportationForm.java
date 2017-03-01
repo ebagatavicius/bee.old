@@ -11,6 +11,7 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.Queries.RowSetCallback;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
@@ -27,7 +28,6 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.HashMap;
@@ -123,7 +123,7 @@ public class AssessmentTransportationForm extends PrintFormInterceptor {
 
                   for (int i = 0; i < places.getNumberOfRows(); i++) {
                     if (Objects.equals(places.getLong(i, COL_CARGO), r.getLong(cargoIdx))) {
-                      pl.add(new Label(BeeUtils.joinItems(TimeUtils.renderCompact(places
+                      pl.add(new Label(BeeUtils.joinItems(Format.renderDateTime(places
                               .getDateTime(i, COL_PLACE_DATE)),
                           places.getString(i, COL_PLACE_ADDRESS),
                           places.getString(i, COL_PLACE_POST_INDEX),

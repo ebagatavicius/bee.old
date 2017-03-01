@@ -289,6 +289,7 @@ public final class AdministrationConstants {
   public static final String COL_USER_LOCALE = "Locale";
   public static final String COL_USER_INTERFACE = "Interface";
   public static final String COL_USER_DATE_FORMAT = "DateFormat";
+  public static final String COL_USER_EULA_AGREEMENT = "EulaAgreement";
   public static final String COL_USER_BLOCK_FROM = "BlockAfter";
   public static final String COL_USER_BLOCK_UNTIL = "BlockBefore";
   public static final String COL_REMOTE_HOST = "Host";

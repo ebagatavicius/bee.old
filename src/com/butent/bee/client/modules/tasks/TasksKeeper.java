@@ -150,7 +150,7 @@ public final class TasksKeeper {
           if (!Objects.equals(newEnd, oldEnd)) {
             params.addQueryItem(COL_FINISH_TIME, newEnd.getTime());
             notes.add(TaskUtils.getUpdateNote(Localized.dictionary().crmFinishDate(),
-                TimeUtils.renderCompact(oldEnd), TimeUtils.renderCompact(newEnd)));
+                Format.renderDateTime(oldEnd), Format.renderDateTime(newEnd)));
           }
 
           String comment = dialog.getComment(cid);

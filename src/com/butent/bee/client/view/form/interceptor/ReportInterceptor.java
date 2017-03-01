@@ -254,7 +254,7 @@ public abstract class ReportInterceptor extends AbstractFormInterceptor implemen
   protected boolean checkRange(DateTime start, DateTime end) {
     if (start != null && end != null && TimeUtils.isMeq(start, end)) {
       getFormView().notifyWarning(Localized.dictionary().invalidRange(),
-          TimeUtils.renderPeriod(start, end));
+          Format.renderPeriod(start, end));
       return false;
     } else {
       return true;

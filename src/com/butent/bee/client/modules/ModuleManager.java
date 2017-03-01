@@ -28,6 +28,7 @@ public final class ModuleManager {
   public static void onLoad() {
     AdministrationKeeper.register();
     ClassifierKeeper.register();
+    registerCommons();
 
     if (Module.TRANSPORT.isEnabled()) {
       TransportHandler.register();
@@ -84,6 +85,10 @@ public final class ModuleManager {
     if (Module.FINANCE.isEnabled()) {
       FinanceKeeper.register();
     }
+  }
+
+  public static void registerCommons() {
+    TradeKeeper.registerCommons();
   }
 
   private ModuleManager() {

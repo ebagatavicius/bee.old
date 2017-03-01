@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view" xmlns:x="http://www.butent.com/expression"
 
-      name="Debts" source="Sales" caption="=trdDebts">
+      name="Debts" source="Sales" caption="=trdDebts" module="Trade Transport Orders Service">
   <Columns>
     <SimpleColumn name="Date" />
 

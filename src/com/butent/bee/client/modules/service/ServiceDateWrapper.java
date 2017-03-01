@@ -2,13 +2,13 @@ package com.butent.bee.client.modules.service;
 
 import com.google.common.collect.Range;
 
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 class ServiceDateWrapper implements HasDateRange {
@@ -37,7 +37,7 @@ class ServiceDateWrapper implements HasDateRange {
     this.range = TimeBoardHelper.getRange(from, until);
 
     String period = BeeUtils.isMore(until, from)
-        ? TimeUtils.renderPeriod(from, until) : TimeUtils.renderCompact(from);
+        ? Format.renderPeriod(from, until) : Format.renderDateTime(from);
 
     this.title = BeeUtils.buildLines(period, note);
   }

@@ -46,7 +46,6 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.DateTime;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.utils.StringList;
@@ -363,7 +362,7 @@ public class TradeActServicesReport extends ReportInterceptor {
 
         } else {
           if (ValueType.DATE_TIME == type) {
-            text = TimeUtils.renderCompact(data.getDateTime(i, j));
+            text = Format.renderDateTime(data.getDateTime(i, j));
 
           } else if (ValueType.DATE == type) {
             text = Format.renderDate(data.getDate(i, j));

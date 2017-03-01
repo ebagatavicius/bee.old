@@ -365,11 +365,31 @@
   margin: 5px 5px 0 5px;
 }
 
+@keyframes waitMessageTime {
+  0% {color: gray; letter-spacing: 3px;}
+  25% {letter-spacing: 4px;}
+  50% {color: #1eb2d8; letter-spacing: 6px;}
+  75% {letter-spacing: 4px;}
+  100% {color: #6bae45; letter-spacing: 3px;}
+}
+
+.bee-Chat-message-time:empty::before {
+  content: '...';
+  font-weight: bolder;
+  animation-name: waitMessageTime;
+  animation-duration: 3s;
+  animation-iteration-count: 10;
+  border: 1px solid #f5f5f5;
+  border-radius: 25px;
+  padding: 0px 50px 10px 50px;
+}
+
 .bee-Chat-message-time {
   font-size: 11pt;
   color: #777;
   text-align: center;
   margin-bottom: 2px;
+  min-height: calc(11pt + 5px);
 }
 .bee-Chat-message-fast .bee-Chat-message-time {
   display: none;

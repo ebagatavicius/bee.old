@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   xmlns:ui="http://www.butent.com/ui"
-  
+
   name="Users" viewName="Users" caption="=users"
   newRowPopup="true"
   >
@@ -17,6 +17,8 @@
     <DataColumn name="DateOfBirth" visible="false" />
 
     <DataColumn name="Interface" />
+
+    <DataColumn name="EulaAgreement" readOnly="true" visible="false" />
 
     <DataColumn name="BlockAfter" />
     <DataColumn name="BlockBefore" />

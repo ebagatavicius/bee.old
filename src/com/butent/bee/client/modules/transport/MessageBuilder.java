@@ -323,7 +323,7 @@ public class MessageBuilder extends FaLabel implements ClickHandler {
                             value = BeeUtils.notEmpty(value, BeeUtils.toString(x));
                             break;
                           case COL_PLACE_DATE:
-                            value = TimeUtils.renderCompact(TimeUtils.toDateTimeOrNull(value));
+                            value = Format.renderDateTime(TimeUtils.toDateTimeOrNull(value));
                             break;
                         }
                       } else {
@@ -526,7 +526,7 @@ public class MessageBuilder extends FaLabel implements ClickHandler {
         break;
 
       case DATE_TIME:
-        value = TimeUtils.renderCompact(row.getDateTime(col));
+        value = Format.renderDateTime(row.getDateTime(col));
         break;
 
       default:

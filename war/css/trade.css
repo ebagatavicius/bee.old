@@ -250,3 +250,14 @@
 .bee-trade-document-new-item-selector td:nth-child(5) {
   text-align: right;
 }
+
+.bee-grid-TradeDocumentItems.bee-GridContainer-no-data .bee-trade-price-calculation,
+.bee-grid-TradeDocumentItems.bee-GridContainer-no-data .bee-trade-cost-calculation,
+.bee-grid-TradeExpenditures.bee-GridContainer-no-data .bee-trade-cost-calculation {
+  visibility: hidden;
+}
+.bee-Form-disabled .bee-trade-price-calculation,
+.bee-Form-disabled .bee-trade-cost-calculation,
+.bee-Form-disabled .bee-trade-fin-post {
+  visibility: hidden;
+}

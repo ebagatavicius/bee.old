@@ -1169,8 +1169,8 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
         getVisibleRange().upperEndpoint());
     int descendants = DomUtils.countDescendants(canvas);
 
-    logger.debug(vr.toString(),
-        BeeUtils.parenthesize(BeeUtils.joinWords(content.getWidgetCount(), descendants)),
+    logger.debug(vr);
+    logger.debug(content.getWidgetCount(), descendants,
         BeeUtils.bracket(BeeUtils.joinWords(headerMillis - startMillis,
             BeeConst.STRING_PLUS, contentMillis - headerMillis,
             BeeConst.STRING_PLUS, endMillis - contentMillis,

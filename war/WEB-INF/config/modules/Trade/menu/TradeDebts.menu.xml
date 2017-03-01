@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-       name="TradeDebts" label="=trdDebts" parent="Contacts" order="30" separator="true" module="Trade"
+       name="TradeDebts" label="=trdDebts" parent="Contacts" order="30" separator="true"
+       module="Trade Transport Orders Service"
 >
-  <Item name="Debts" label="=trdDebts" service="grid" parameters="Debts" module="Trade" separator="true"/>
-  <Item name="DebtReports" label="=trdDebtReports" service="grid" parameters="DebtReports" module="Trade" />
-  <Item name="ReminderTemplates" label="=trdReminderTemplates" service="grid" parameters="DebtReminderTemplates" module="Trade" />
+  <Item name="Debts" label="=trdDebts" service="grid" parameters="Debts" separator="true"/>
+  <Item name="DebtReports" label="=trdDebtReports" service="grid" parameters="DebtReports" />
+  <Item name="ReminderTemplates" label="=trdReminderTemplates" service="grid" parameters="DebtReminderTemplates" />
   <Item name="Parameters" label="=parameters" service="parameters" parameters="Classifiers"
         separator="true" module="Orders" />
 </Entry>

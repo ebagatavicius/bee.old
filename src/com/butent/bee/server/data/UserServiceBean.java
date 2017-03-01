@@ -100,6 +100,8 @@ public class UserServiceBean {
 
     private UserInterface userInterface;
 
+    private DateTime eulaAgreement;
+
     private DateTime blockAfter;
     private DateTime blockBefore;
 
@@ -121,6 +123,10 @@ public class UserServiceBean {
 
     private DateTime getBlockBefore() {
       return blockBefore;
+    }
+
+    public DateTime getEulaAgreement() {
+      return eulaAgreement;
     }
 
     private String getPassword() {
@@ -166,6 +172,11 @@ public class UserServiceBean {
 
     private UserInfo setBlockBefore(DateTime before) {
       this.blockBefore = before;
+      return this;
+    }
+
+    private UserInfo setEulaAgreement(DateTime eulaAgreement) {
+      this.eulaAgreement = eulaAgreement;
       return this;
     }
 
@@ -269,6 +280,25 @@ public class UserServiceBean {
     } else {
       return null;
     }
+  }
+
+  @Lock(LockType.WRITE)
+  public void eulaAccept(String user) {
+    qs.updateData(new SqlUpdate(TBL_USERS)
+        .addConstant(COL_USER_EULA_AGREEMENT, TimeUtils.nowMillis())
+        .setWhere(sys.idEquals(TBL_USERS, getUserId(user))));
+  }
+
+  @Lock(LockType.WRITE)
+  public void eulaDecline(String user) {
+    qs.updateData(new SqlUpdate(TBL_USERS)
+        .addConstant(COL_USER_BLOCK_FROM, TimeUtils.nowMillis())
+        .setWhere(sys.idEquals(TBL_USERS, getUserId(user))));
+  }
+
+  public boolean eulaIsAccepted(String user) {
+    UserInfo userInfo = getUserInfo(getUserId(user));
+    return Objects.nonNull(userInfo) && Objects.nonNull(userInfo.getEulaAgreement());
   }
 
   public List<UserData> getAllUserData() {
@@ -659,7 +689,7 @@ public class UserServiceBean {
     SqlSelect ss = new SqlSelect()
         .addField(TBL_USERS, sys.getIdName(TBL_USERS), COL_USER)
         .addFields(TBL_USERS, COL_LOGIN, COL_PASSWORD, COL_USER_INTERFACE,
-            COL_USER_BLOCK_FROM, COL_USER_BLOCK_UNTIL)
+            COL_USER_EULA_AGREEMENT, COL_USER_BLOCK_FROM, COL_USER_BLOCK_UNTIL)
         .addFrom(TBL_USERS);
 
     for (SimpleRow row : qs.getData(ss)) {
@@ -673,6 +703,7 @@ public class UserServiceBean {
           .setRoles(userRoles.get(userId))
           .setUserInterface(EnumUtils.getEnumByIndex(UserInterface.class,
               row.getInt(COL_USER_INTERFACE)))
+          .setEulaAgreement(TimeUtils.toDateTimeOrNull(row.getLong(COL_USER_EULA_AGREEMENT)))
           .setBlockAfter(TimeUtils.toDateTimeOrNull(row.getLong(COL_USER_BLOCK_FROM)))
           .setBlockBefore(TimeUtils.toDateTimeOrNull(row.getLong(COL_USER_BLOCK_UNTIL)));
 

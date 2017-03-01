@@ -6,6 +6,7 @@ import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.Global;
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.timeboard.TimeBoardHelper;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.modules.tasks.TaskConstants.TaskPriority;
@@ -156,10 +157,10 @@ final class RecurringTaskWrapper implements HasDateRange {
     this.range = TimeBoardHelper.getRange(start, end);
 
     this.title = TimeBoardHelper.buildTitle(
-        fromLabel, TimeUtils.renderCompact(row.getDate(COL_RT_SCHEDULE_FROM)),
-        untilLabel, TimeUtils.renderCompact(row.getDate(COL_RT_SCHEDULE_UNTIL)),
-        startLabel, TimeUtils.renderCompact(start),
-        endLabel, TimeUtils.renderCompact(end),
+        fromLabel, Format.renderDateTime(row.getDate(COL_RT_SCHEDULE_FROM)),
+        untilLabel, Format.renderDateTime(row.getDate(COL_RT_SCHEDULE_UNTIL)),
+        startLabel, Format.renderDateTime(start),
+        endLabel, Format.renderDateTime(end),
         typeLabel, row.getValue(ALS_TASK_TYPE_NAME),
         priorityLabel, (priority == null) ? null : priority.getCaption(),
         summaryLabel, row.getValue(COL_SUMMARY),

@@ -89,6 +89,8 @@ public final class CarsConstants {
   public static final String COL_SERVICE_ITEM = "ServiceItem";
   public static final String COL_SERVICE_JOB = "ServiceJob";
 
+  public static final String COL_RESERVE = "Reserve";
+
   public static final String COL_CHECKED = "Checked";
   public static final String COL_CAR_DISCOUNT = "CarDiscount";
   public static final String COL_PRODUCED_FROM = "ProducedFrom";

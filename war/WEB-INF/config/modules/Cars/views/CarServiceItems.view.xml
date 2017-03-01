@@ -32,5 +32,7 @@
     <ExternalJoin source="CarServiceInvoices" name="ServiceItem" joinType="LEFT">
       <AggregateColumn name="Quantity" alias="Completed" aggregate="SUM" />
     </ExternalJoin>
+
+    <SimpleColumn name="Reserve" />
   </Columns>
 </View>

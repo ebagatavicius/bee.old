@@ -404,6 +404,7 @@ public class DateTime extends AbstractDate implements Comparable<DateTime> {
     return Long.valueOf(getTime()).hashCode();
   }
 
+  @Override
   public boolean hasTimePart() {
     return getHour() != 0 || getMinute() != 0 || getSecond() != 0 || getMillis() != 0;
   }

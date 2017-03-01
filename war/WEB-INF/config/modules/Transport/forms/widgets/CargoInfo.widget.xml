@@ -20,8 +20,8 @@
     <InputArea source="CargoNotes" style="width:400px;" />
   </FlowPanel>
 
-  <ChildGrid name="CargoLoading" relColumn="Cargo" source="Cargo" />
-  <ChildGrid name="CargoUnloading" relColumn="Cargo" source="Cargo" />
+  <ChildGrid name="CargoLoading" relColumn="Cargo" source="Cargo" style="min-height: 170px;" />
+  <ChildGrid name="CargoUnloading" relColumn="Cargo" source="Cargo" style="min-height: 170px;" />
 
   &separator;
   <FlowPanel style="&section;">

@@ -22,6 +22,7 @@ import com.butent.bee.client.dom.Rectangle;
 import com.butent.bee.client.dom.Rulers;
 import com.butent.bee.client.event.DndHelper;
 import com.butent.bee.client.event.logical.MoveEvent;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.modules.transport.TransportHandler;
@@ -119,8 +120,8 @@ final class DriverTimeBoard extends ChartBase {
       this.dateFrom = dateFrom;
       this.dateTo = dateTo;
 
-      this.title = TimeBoardHelper.buildTitle(dateFromLabel, TimeUtils.renderCompact(dateFrom),
-          dateToLabel, TimeUtils.renderCompact(dateTo), noteLabel, note);
+      this.title = TimeBoardHelper.buildTitle(dateFromLabel, Format.renderDateTime(dateFrom),
+          dateToLabel, Format.renderDateTime(dateTo), noteLabel, note);
 
       this.range = TimeBoardHelper.getActivity(JustDate.get(dateFrom), JustDate.get(dateTo));
     }

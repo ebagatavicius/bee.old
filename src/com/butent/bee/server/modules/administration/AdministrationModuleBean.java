@@ -10,6 +10,7 @@ import com.google.common.eventbus.Subscribe;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.server.Config;
 import com.butent.bee.server.concurrency.ConcurrencyBean;
@@ -235,7 +236,9 @@ public class AdministrationModuleBean implements BeeModule, HasTimerService {
         BeeParameter.createText(module, PRM_ERP_PASSWORD),
         BeeParameter.createText(module, PRM_URL),
         BeeParameter.createNumber(module, Dimensions.PRM_DIMENSIONS, false,
-            Dimensions.SPACETIME / 2));
+            Dimensions.SPACETIME / 2),
+        BeeParameter.createNumber(module, PRM_ERP_REFRESH_INTERVAL),
+        BeeParameter.createBoolean(module, PRM_OVERDUE_INVOICES));
 
     params.addAll(getSqlEngineParameters());
     return params;

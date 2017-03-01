@@ -6,6 +6,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.RowCallback;
+import com.butent.bee.client.modules.trade.TradeKeeper;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.form.FormView;
@@ -35,6 +36,8 @@ class TradeDocumentFinancialRecordsGrid extends FinanceGrid {
         && BeeKeeper.getUser().canCreateData(VIEW_FINANCIAL_RECORDS)) {
 
       Button post = new Button(Localized.dictionary().finPostAction(), event -> post());
+      post.addStyleName(TradeKeeper.STYLE_PREFIX + "fin-post");
+
       presenter.getHeader().addCommandItem(post);
     }
 

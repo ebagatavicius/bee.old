@@ -58,7 +58,9 @@ import com.butent.bee.shared.html.builder.Document;
 import com.butent.bee.shared.html.builder.Element;
 import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.html.builder.elements.Tbody;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
@@ -1054,9 +1056,10 @@ public class ServiceModuleBean implements BeeModule {
         boolean isSendSms = false;
 
         Dictionary dic = usr.getDictionary();
+        DateTimeFormatInfo dtfInfo = usr.getDateTimeFormatInfo();
 
         if (!BeeUtils.toBoolean(commentInfoRow.getValue(COL_SEND_EMAIL))) {
-          ResponseObject mailResponse = informCustomerWithEmail(dic, commentInfoRow);
+          ResponseObject mailResponse = informCustomerWithEmail(dic, dtfInfo, commentInfoRow);
           isSendEmail = !mailResponse.hasErrors();
         }
 
@@ -1113,7 +1116,7 @@ public class ServiceModuleBean implements BeeModule {
             error = dic.svcEmptySmsFromError();
 
           } else {
-            ResponseObject smsResponse = informCustomerWithSms(dic, commentInfoRow, from);
+            ResponseObject smsResponse = informCustomerWithSms(dic, dtfInfo, commentInfoRow, from);
             isSendSms = !smsResponse.hasErrors();
           }
         }
@@ -1147,7 +1150,9 @@ public class ServiceModuleBean implements BeeModule {
     return ResponseObject.emptyResponse();
   }
 
-  private ResponseObject informCustomerWithEmail(Dictionary dic, SimpleRow commentInfoRow) {
+  private ResponseObject informCustomerWithEmail(Dictionary dic, DateTimeFormatInfo dtfInfo,
+      SimpleRow commentInfoRow) {
+
     Long accountId = mail.getSenderAccountId(SVC_INFORM_CUSTOMER);
 
     if (!DataUtils.isId(accountId)) {
@@ -1182,7 +1187,8 @@ public class ServiceModuleBean implements BeeModule {
 
     fields.append(tr().append(
             td().text(dic.date()),
-            td().text(TimeUtils.renderCompact(commentInfoRow.getDateTime(COL_PUBLISH_TIME)))),
+            td().text(Formatter.renderDateTime(dtfInfo,
+                commentInfoRow.getDateTime(COL_PUBLISH_TIME)))),
         tr().append(
             td().text(dic.svcMaintenanceState()),
             td().text(commentInfoRow.getValue(COL_EVENT_NOTE))));
@@ -1190,7 +1196,7 @@ public class ServiceModuleBean implements BeeModule {
 
     if (termValue != null) {
       fields.append(tr().append(
-          td().text(dic.svcTerm()), td().text(TimeUtils.renderCompact(termValue))));
+          td().text(dic.svcTerm()), td().text(Formatter.renderDateTime(dtfInfo, termValue))));
     }
 
     List<Element> cells = fields.queryTag(Tags.TD);
@@ -1232,8 +1238,9 @@ public class ServiceModuleBean implements BeeModule {
     return mail.sendStyledMail(accountId, recipientEmail, subject, doc.buildLines(), emailHeader);
   }
 
-  private ResponseObject informCustomerWithSms(Dictionary dic, SimpleRow commentInfoRow,
-      String from) {
+  private ResponseObject informCustomerWithSms(Dictionary dic, DateTimeFormatInfo dtfInfo,
+      SimpleRow commentInfoRow, String from) {
+
     String phone = commentInfoRow.getValue(COL_PHONE);
     phone = phone.replaceAll("\\D+", "");
 
@@ -1250,7 +1257,7 @@ public class ServiceModuleBean implements BeeModule {
         maintenanceId + BeeConst.STRING_COLON,
         BeeUtils.notEmpty(commentInfoRow.getValue(COL_COMMENT), ""),
         termValue != null ? BeeUtils.joinWords(dic.svcTerm() + BeeConst.STRING_COLON,
-            TimeUtils.renderCompact(termValue)) : "", externalServiceUrl);
+            Formatter.renderDateTime(dtfInfo, termValue)) : "", externalServiceUrl);
 
     if (BeeUtils.isEmpty(message) || BeeUtils.isEmpty(phone)) {
       return ResponseObject.error("message or phone is empty");

@@ -9,7 +9,6 @@ import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.value.ValueType;
-import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -29,7 +28,7 @@ public class JoinRenderer extends AbstractCellRenderer implements HasItems {
   private final String separator;
 
   private final Function<HasDateValue, String> dateRenderer;
-  private final Function<DateTime, String> dateTimeRenderer;
+  private final Function<HasDateValue, String> dateTimeRenderer;
 
   public JoinRenderer(List<BeeColumn> dataColumns, String sep, List<String> items) {
     super(null);

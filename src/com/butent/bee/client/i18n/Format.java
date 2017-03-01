@@ -13,6 +13,7 @@ import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.i18n.HasDateTimeFormat;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.PredefinedFormat;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -181,8 +183,12 @@ public final class Format {
     return Format::renderDate;
   }
 
-  public static Function<DateTime, String> getDateTimeRenderer() {
+  public static Function<HasDateValue, String> getDateTimeRenderer() {
     return Format::renderDateTime;
+  }
+
+  public static BiFunction<HasDateValue, HasDateValue, String> getPeriodRenderer() {
+    return Format::renderPeriod;
   }
 
   public static NumberFormat getDecimalFormat(int scale) {
@@ -496,7 +502,7 @@ public final class Format {
       return null;
 
     } else {
-      PredefinedFormat predefinedFormat = TimeUtils.hasTimePart(date)
+      PredefinedFormat predefinedFormat = date.hasTimePart()
           ? PredefinedFormat.DATE_TIME_LONG : PredefinedFormat.DATE_LONG;
 
       return render(predefinedFormat, date);
@@ -507,30 +513,8 @@ public final class Format {
     return renderDateTime(new DateTime(time));
   }
 
-  public static String renderDateTime(DateTime dateTime) {
-    if (dateTime == null) {
-      return null;
-
-    } else if (dateTime.hasTimePart()) {
-      PredefinedFormat timeFormat;
-
-      if (dateTime.getMillis() != 0) {
-        timeFormat = PredefinedFormat.HOUR24_MINUTE_SECOND_MILLISECOND;
-      } else if (dateTime.getSecond() != 0) {
-        timeFormat = PredefinedFormat.HOUR24_MINUTE_SECOND;
-      } else {
-        timeFormat = PredefinedFormat.HOUR24_MINUTE;
-      }
-
-      DateTimeFormatInfo dtfInfo = getDefaultDateTimeFormatInfo();
-      String pattern = dtfInfo.dateTime(PredefinedFormat.DATE_SHORT.getPattern(dtfInfo),
-          timeFormat.getPattern(dtfInfo));
-
-      return DateTimeFormat.of(pattern, dtfInfo).format(dateTime);
-
-    } else {
-      return render(PredefinedFormat.DATE_SHORT, dateTime);
-    }
+  public static String renderDateTime(HasDateValue dateTime) {
+    return Formatter.renderDateTime(getDefaultDateTimeFormatInfo(), dateTime);
   }
 
   public static String renderDateTimeFull(DateTime dateTime) {
@@ -579,12 +563,27 @@ public final class Format {
     }
   }
 
-  public static String renderPeriod(DateTime start, DateTime end) {
-    if (start == null || end == null || start.hasTimePart() || end.hasTimePart()) {
-      return TimeUtils.renderPeriod(start, end);
+  public static String renderPeriod(HasDateValue start, HasDateValue end) {
+    if (start == null) {
+      if (end == null) {
+        return null;
+      } else {
+        return TimeUtils.PERIOD_SEPARATOR + renderDateTime(end);
+      }
+
+    } else if (end == null) {
+      return renderDateTime(start) + TimeUtils.PERIOD_SEPARATOR;
+
+    } else if (start.equals(end)) {
+      return renderDateTime(start);
+
+    } else if (start.hasTimePart() || end.hasTimePart()) {
+      return renderDateTime(start) + TimeUtils.PERIOD_SEPARATOR
+          + (end.hasTimePart() && TimeUtils.sameDate(start, end)
+          ? renderTime(end) : renderDateTime(end));
 
     } else if (TimeUtils.dayDiff(start, end) == 1) {
-      return render(PredefinedFormat.DATE_LONG, start);
+      return renderDate(start);
 
     } else if (start.getDom() == 1 && end.getDom() == 1 && TimeUtils.monthDiff(start, end) == 1) {
       return render(PredefinedFormat.YEAR_MONTH_STANDALONE, start);
@@ -598,8 +597,12 @@ public final class Format {
       return render(PredefinedFormat.YEAR, start);
 
     } else {
-      return TimeUtils.renderPeriod(start, end);
+      return renderDate(start) + TimeUtils.PERIOD_SEPARATOR + renderDate(end);
     }
+  }
+
+  public static String renderTime(HasDateValue dateTime) {
+    return Formatter.renderTime(getDefaultDateTimeFormatInfo(), dateTime);
   }
 
   public static String renderYearMonth(HasYearMonth ym) {

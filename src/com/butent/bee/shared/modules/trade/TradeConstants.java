@@ -264,6 +264,10 @@ public final class TradeConstants {
   public static final String ALS_EXPENDITURE_TYPE_SUPPLIER = "TypeSupplier";
 
   public static final String ALS_WAREHOUSE_FROM_CODE = "WarehouseFromCode";
+  public static final String ALS_WAREHOUSE_FROM_NAME = "WarehouseFromName";
+  public static final String ALS_WAREHOUSE_TO_CODE = "WarehouseToCode";
+  public static final String ALS_WAREHOUSE_TO_NAME = "WarehouseToName";
+
   public static final String ALS_STOCK_PRIMARY_DATE = "PrimaryDate";
 
   public static final String ALS_COST_CURRENCY = "CostCurrency";
@@ -279,6 +283,8 @@ public final class TradeConstants {
   public static final String VAR_OVERDUE = "Overdue";
   public static final String VAR_DOCUMENT = "Document";
   public static final String VAR_ITEMS = "Items";
+
+  public static final String VAR_RESERVATIONS = "Reservations";
 
   public static final String GRID_TRADE_OPERATIONS = "TradeOperations";
   public static final String GRID_TRADE_STATUSES = "TradeStatuses";

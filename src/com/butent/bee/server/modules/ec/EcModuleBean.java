@@ -75,7 +75,9 @@ import com.butent.bee.shared.html.builder.elements.Tbody;
 import com.butent.bee.shared.html.builder.elements.Td;
 import com.butent.bee.shared.html.builder.elements.Tr;
 import com.butent.bee.shared.i18n.DateOrdering;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -2757,7 +2759,8 @@ public class EcModuleBean implements BeeModule {
     Dictionary constants = usr.getDictionary(clientUser);
     Assert.notNull(constants);
 
-    Document document = orderToHtml(orderData.getColumns(), orderRow, constants);
+    Document document = orderToHtml(orderData.getColumns(), orderRow, constants,
+        usr.getDateTimeFormatInfo(clientUser));
     String content = document.buildLines();
 
     ResponseObject mailResponse = mail.sendMail(account, recipients.toArray(new String[0]), null,
@@ -2839,7 +2842,7 @@ public class EcModuleBean implements BeeModule {
   }
 
   private Document orderToHtml(List<BeeColumn> orderColumns, BeeRow orderRow,
-      Dictionary constants) {
+      Dictionary constants, DateTimeFormatInfo dateTimeFormatInfo) {
 
     String clientFirstName = orderRow.getString(DataUtils.getColumnIndex(
         ALS_ORDER_CLIENT_FIRST_NAME, orderColumns));
@@ -2919,7 +2922,7 @@ public class EcModuleBean implements BeeModule {
     Tbody fields = tbody().append(
         tr().append(
             td().text(constants.ecOrderSubmissionDate()),
-            td().text(TimeUtils.renderCompact(date)),
+            td().text(Formatter.renderDateTime(dateTimeFormatInfo, date)),
             td().text(constants.ecOrderNumber()),
             td().text(BeeUtils.toString(orderRow.getId()))));
 
@@ -2941,7 +2944,7 @@ public class EcModuleBean implements BeeModule {
         if (eventStatus != null && eventDate != null) {
           fields.append(tr().append(
               td().text(eventStatus.getCaption(constants)),
-              td().text(TimeUtils.renderCompact(eventDate))));
+              td().text(Formatter.renderDateTime(dateTimeFormatInfo, eventDate))));
         }
       }
     }

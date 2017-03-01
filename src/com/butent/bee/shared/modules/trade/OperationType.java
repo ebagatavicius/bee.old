@@ -5,7 +5,7 @@ import com.butent.bee.shared.modules.finance.TradeAccounts;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
 
 public enum OperationType implements HasLocalizedCaption {
-  PURCHASE(false, true, true) {
+  PURCHASE(false, true, true, true) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypePurchase();
@@ -37,7 +37,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  SALE(true, false, false) {
+  SALE(true, false, false, false) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeSale();
@@ -69,7 +69,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  TRANSFER(true, true, false) {
+  TRANSFER(true, true, false, false) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeTransfer();
@@ -101,7 +101,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  WRITE_OFF(true, false, false) {
+  WRITE_OFF(true, false, false, false) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeWriteOff();
@@ -133,7 +133,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  POS(true, false, false) {
+  POS(true, false, false, false) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypePointOfSale();
@@ -165,7 +165,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  CUSTOMER_RETURN(false, true, true) {
+  CUSTOMER_RETURN(false, true, true, false) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeCustomerReturn();
@@ -197,7 +197,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  RETURN_TO_SUPPLIER(true, false, false) {
+  RETURN_TO_SUPPLIER(true, false, false, true) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeReturnToSupplier();
@@ -234,11 +234,17 @@ public enum OperationType implements HasLocalizedCaption {
 
   private final boolean providesCost;
 
-  OperationType(boolean consumesStock, boolean producesStock, boolean providesCost) {
+  private final boolean requireOperationForPriceCalculation;
+
+  OperationType(boolean consumesStock, boolean producesStock, boolean providesCost,
+      boolean requireOperationForPriceCalculation) {
+
     this.consumesStock = consumesStock;
     this.producesStock = producesStock;
 
     this.providesCost = providesCost;
+
+    this.requireOperationForPriceCalculation = requireOperationForPriceCalculation;
   }
 
   public boolean consumesStock() {
@@ -251,6 +257,10 @@ public enum OperationType implements HasLocalizedCaption {
 
   public boolean providesCost() {
     return providesCost;
+  }
+
+  public boolean requireOperationForPriceCalculation() {
+    return requireOperationForPriceCalculation;
   }
 
   public abstract Long getAmountDebit(TradeAccounts tradeAccounts);

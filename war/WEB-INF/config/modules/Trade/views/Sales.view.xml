@@ -3,7 +3,7 @@
       xmlns:x="http://www.butent.com/expression"
 
   name="Sales" source="Sales" caption="=trdSales"
-  editForm="SalesInvoice"
+  editForm="SalesInvoice" module="Trade Transport Orders Service"
   >
   <Columns>
     <SimpleColumn name="Date" />

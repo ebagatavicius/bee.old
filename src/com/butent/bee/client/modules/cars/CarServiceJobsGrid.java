@@ -128,13 +128,13 @@ public class CarServiceJobsGrid extends ParentRowRefreshGrid implements Selector
       Long item = Data.getLong(srcView, srcRow, COL_ITEM);
 
       if (DataUtils.isId(item)) {
-        Map<String, Long> options = new HashMap<>();
-        options.put(COL_DISCOUNT_COMPANY, parentForm.getLongValue(COL_CUSTOMER));
-        options.put(Service.VAR_TIME, mainDate.getTime());
-        options.put(COL_DISCOUNT_CURRENCY, mainCurrency);
-        options.put(COL_MODEL, parentForm.getLongValue(COL_MODEL));
-        options.put(COL_PRODUCTION_DATE, parentForm.getLongValue(COL_PRODUCTION_DATE));
-        options.put(COL_JOB, event.getValue());
+        Map<String, String> options = new HashMap<>();
+        options.put(COL_DISCOUNT_COMPANY, parentForm.getStringValue(COL_CUSTOMER));
+        options.put(Service.VAR_TIME, BeeUtils.toString(mainDate.getTime()));
+        options.put(COL_DISCOUNT_CURRENCY, BeeUtils.toStringOrNull(mainCurrency));
+        options.put(COL_MODEL, parentForm.getStringValue(COL_MODEL));
+        options.put(COL_PRODUCTION_DATE, parentForm.getStringValue(COL_PRODUCTION_DATE));
+        options.put(COL_JOB, BeeUtils.toString(event.getValue()));
 
         ClassifierKeeper.getPriceAndDiscount(item, options, (prc, percent) -> {
           if (BeeUtils.isPositive(prc)) {
@@ -259,15 +259,16 @@ public class CarServiceJobsGrid extends ParentRowRefreshGrid implements Selector
                   Long item = beeRow.getLong(rs.getColumnIndex(COL_ITEM));
 
                   if (DataUtils.isId(item)) {
-                    Map<String, Long> options = new HashMap<>();
-                    options.put(COL_DISCOUNT_COMPANY, parentForm.getLongValue(COL_CUSTOMER));
-                    options.put(Service.VAR_TIME, parentForm.getLongValue(COL_DATE));
-                    options.put(COL_DISCOUNT_CURRENCY, parentForm.getLongValue(COL_CURRENCY));
-                    options.put(COL_MODEL, parentForm.getLongValue(COL_MODEL));
-                    options.put(COL_PRODUCTION_DATE, parentForm.getLongValue(COL_PRODUCTION_DATE));
+                    Map<String, String> options = new HashMap<>();
+                    options.put(COL_DISCOUNT_COMPANY, parentForm.getStringValue(COL_CUSTOMER));
+                    options.put(Service.VAR_TIME, parentForm.getStringValue(COL_DATE));
+                    options.put(COL_DISCOUNT_CURRENCY, parentForm.getStringValue(COL_CURRENCY));
+                    options.put(COL_MODEL, parentForm.getStringValue(COL_MODEL));
+                    options.put(COL_PRODUCTION_DATE,
+                        parentForm.getStringValue(COL_PRODUCTION_DATE));
 
                     if (rs.containsColumn(COL_JOB)) {
-                      options.put(COL_JOB, beeRow.getLong(rs.getColumnIndex(COL_JOB)));
+                      options.put(COL_JOB, beeRow.getString(rs.getColumnIndex(COL_JOB)));
                     }
                     ClassifierKeeper.getPriceAndDiscount(item, options, (price, percent) -> {
                       if (BeeUtils.isPositive(price)) {

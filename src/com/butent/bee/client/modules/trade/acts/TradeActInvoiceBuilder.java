@@ -818,7 +818,7 @@ public class TradeActInvoiceBuilder extends AbstractFormInterceptor implements
 
         for (Integer idx : ss.get(svc.id())) {
           Range<DateTime> r = svc.ranges.get(idx);
-          String period = TimeUtils.renderPeriod(r.lowerEndpoint(), r.upperEndpoint());
+          String period = Format.renderPeriod(r.lowerEndpoint(), r.upperEndpoint());
           notes.add(BeeUtils.joinItems(itemName, period, objectInfo));
         }
       }
@@ -1320,9 +1320,9 @@ public class TradeActInvoiceBuilder extends AbstractFormInterceptor implements
       table.setText(r, c++, act.row.getString(nameIndex),
           STYLE_ACT_NAME_PREFIX + STYLE_CELL_SUFFIX);
 
-      table.setText(r, c++, TimeUtils.renderCompact(act.row.getDateTime(dateIndex)),
+      table.setText(r, c++, Format.renderDateTime(act.row.getDateTime(dateIndex)),
           STYLE_ACT_DATE_PREFIX + STYLE_CELL_SUFFIX);
-      table.setText(r, c++, TimeUtils.renderCompact(act.row.getDateTime(untilIndex)),
+      table.setText(r, c++, Format.renderDateTime(act.row.getDateTime(untilIndex)),
           STYLE_ACT_UNTIL_PREFIX + STYLE_CELL_SUFFIX);
 
       table.setText(r, c++, act.row.getString(seriesNameIndex),

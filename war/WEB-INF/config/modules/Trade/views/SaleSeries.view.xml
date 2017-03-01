@@ -3,7 +3,7 @@
 
   name="SaleSeries" source="SaleSeries"
   caption="=trdSaleSeries" newRowCaption="=trdNewSeries"
-  editForm="SaleSeries" newRowForm="SaleSeries"
+  editForm="SaleSeries" newRowForm="SaleSeries" module="Trade Transport Orders Service"
   >
   <Columns>
     <SimpleColumn name="SeriesName" />

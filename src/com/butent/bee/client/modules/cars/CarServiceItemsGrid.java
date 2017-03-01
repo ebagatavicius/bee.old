@@ -1,16 +1,19 @@
 package com.butent.bee.client.modules.cars;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_CURRENCY;
-import static com.butent.bee.shared.modules.cars.CarsConstants.COL_PRICE;
+import static com.butent.bee.shared.modules.cars.CarsConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.composite.DataSelector;
+import com.butent.bee.client.data.Data;
+import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.modules.classifiers.ClassifierKeeper;
 import com.butent.bee.client.view.DataView;
 import com.butent.bee.client.view.ViewHelper;
+import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.interceptor.ParentRowRefreshGrid;
@@ -53,12 +56,12 @@ public class CarServiceItemsGrid extends ParentRowRefreshGrid implements Selecto
       values.put(COL_TRADE_DOCUMENT_ITEM_DISCOUNT, null);
       values.put(COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT, null);
 
-      Map<String, Long> options = new HashMap<>();
-      options.put(COL_DISCOUNT_COMPANY, parentForm.getLongValue(COL_CUSTOMER));
-      options.put(Service.VAR_TIME, parentForm.getLongValue(COL_DATE));
-      options.put(COL_DISCOUNT_CURRENCY, parentForm.getLongValue(COL_CURRENCY));
-      options.put(COL_MODEL, parentForm.getLongValue(COL_MODEL));
-      options.put(COL_PRODUCTION_DATE, parentForm.getLongValue(COL_PRODUCTION_DATE));
+      Map<String, String> options = new HashMap<>();
+      options.put(COL_DISCOUNT_COMPANY, parentForm.getStringValue(COL_CUSTOMER));
+      options.put(Service.VAR_TIME, parentForm.getStringValue(COL_DATE));
+      options.put(COL_DISCOUNT_CURRENCY, parentForm.getStringValue(COL_CURRENCY));
+      options.put(COL_MODEL, parentForm.getStringValue(COL_MODEL));
+      options.put(COL_PRODUCTION_DATE, parentForm.getStringValue(COL_PRODUCTION_DATE));
 
       ClassifierKeeper.getPriceAndDiscount(event.getValue(), options, (price, percent) -> {
         if (BeeUtils.isPositive(price)) {
@@ -73,6 +76,20 @@ public class CarServiceItemsGrid extends ParentRowRefreshGrid implements Selecto
           dataView.refreshBySource(col);
         });
       });
+    }
+  }
+
+  @Override
+  public void onEditStart(EditStartEvent event) {
+    if (Objects.equals(event.getColumnId(), COL_RESERVE)) {
+      event.consume();
+      IsRow row = event.getRowValue();
+      String value = Data.getString(getViewName(), row, COL_RESERVE);
+
+      Queries.updateCellAndFire(getViewName(), row.getId(), row.getVersion(), COL_RESERVE,
+          value, BeeUtils.toString(!BeeUtils.toBoolean(value)));
+    } else {
+      super.onEditStart(event);
     }
   }
 }

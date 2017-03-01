@@ -80,6 +80,10 @@ public class ParameterList extends ArrayList<RpcParameter> {
     addDataItem(name, BeeUtils.toString(value));
   }
 
+  public void addDataItem(String name, boolean value) {
+    addDataItem(name, BeeUtils.toString(value));
+  }
+
   public void addDataItem(String name, String value) {
     addItem(new RpcParameter(Section.DATA, name, value));
   }

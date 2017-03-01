@@ -77,6 +77,7 @@ import com.butent.bee.shared.html.builder.elements.Td;
 import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -2497,7 +2498,7 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
             row.getDateTime(COL_FINISH_TIME), row.getValue(COL_SUMMARY),
             row.getValue(COL_DESCRIPTION), BeeUtils.joinItems(row.getValue(ALS_COMPANY_NAME), row
                 .getValue(ALS_COMPANY_TYPE_NAME)), row.getLong(COL_OWNER),
-            executor, constants);
+            executor, constants, usr.getDateTimeFormatInfo(recipientUser));
     String content = document.buildLines();
 
     logger.info(label, taskId, "mail to", recipientUser, recipientEmail);
@@ -2935,7 +2936,7 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
               row.getDateTime(COL_FINISH_TIME), row.getValue(COL_SUMMARY),
               row.getValue(COL_DESCRIPTION), BeeUtils.joinItems(row.getValue(ALS_COMPANY_NAME), row
                   .getValue(ALS_COMPANY_TYPE_NAME)), row.getLong(COL_OWNER),
-              executor, constants);
+              executor, constants, usr.getDateTimeFormatInfo(executor));
       String content = document.buildLines();
       String headerCaption = BeeUtils.joinWords(constants.crmTask(), taskId,
           row.getValue(COL_SUMMARY));
@@ -3181,7 +3182,7 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
 
   private Document taskToHtml(long taskId, DateTime startTime, DateTime finishTime,
       String summary, String description, String company, Long owner, Long executor,
-      Dictionary constants) {
+      Dictionary constants, DateTimeFormatInfo dateTimeFormatInfo) {
 
     Document doc = new Document();
 
@@ -3192,9 +3193,11 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
 
     Tbody fields = tbody().append(
         tr().append(
-            td().text(constants.crmStartDate()), td().text(TimeUtils.renderCompact(startTime))),
+            td().text(constants.crmStartDate()),
+            td().text(Formatter.renderDateTime(dateTimeFormatInfo, startTime))),
         tr().append(
-            td().text(constants.crmFinishDate()), td().text(TimeUtils.renderCompact(finishTime))),
+            td().text(constants.crmFinishDate()),
+            td().text(Formatter.renderDateTime(dateTimeFormatInfo, finishTime))),
         tr().append(
             td().text(constants.crmTaskSubject()), td().text(BeeUtils.trim(summary))));
 
@@ -3358,7 +3361,7 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
               row.getDateTime(COL_FINISH_TIME), row.getValue(COL_SUMMARY),
               row.getValue(COL_DESCRIPTION), BeeUtils.joinItems(row.getValue(ALS_COMPANY_NAME), row
                   .getValue(ALS_COMPANY_TYPE_NAME)), row.getLong(COL_OWNER),
-              row.getLong(COL_EXECUTOR), constants);
+              row.getLong(COL_EXECUTOR), constants, usr.getDateTimeFormatInfo(executor));
       String content = document.buildLines();
 
       logger.info(TIMER_REMIND_USER_TASKS, "task reminder id",

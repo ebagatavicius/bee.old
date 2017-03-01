@@ -45,7 +45,6 @@ import com.butent.bee.shared.export.XSheet;
 import com.butent.bee.shared.export.XStyle;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.DateTime;
-import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.time.YearMonth;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -155,7 +154,7 @@ public class CompanyTypeReport extends ReportInterceptor {
     DateTime upper = (ym == null) ? end : BeeUtils.min(ym.nextMonth().getDate().getDateTime(), end);
 
     if (lower != null || upper != null) {
-      labels.add(TimeUtils.renderPeriod(lower, upper));
+      labels.add(Format.renderPeriod(lower, upper));
     }
 
     filterArgs.add((lower == null) ? null : lower.serialize());

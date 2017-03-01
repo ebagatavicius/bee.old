@@ -3,12 +3,16 @@ package com.butent.bee.server;
 import com.google.common.base.Strings;
 
 import static com.butent.bee.shared.html.builder.Factory.*;
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_USER_EULA_AGREEMENT;
 
 import com.butent.bee.server.data.UserServiceBean;
 import com.butent.bee.server.http.HttpConst;
 import com.butent.bee.server.http.HttpUtils;
 import com.butent.bee.server.i18n.Localizations;
 import com.butent.bee.server.io.FileUtils;
+import com.butent.bee.server.modules.administration.FileStorageBean;
+import com.butent.bee.server.ui.UiHolderBean;
+import com.butent.bee.server.utils.XmlUtils;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.CommUtils;
 import com.butent.bee.shared.html.builder.Document;
@@ -22,23 +26,31 @@ import com.butent.bee.shared.html.builder.elements.Link.Rel;
 import com.butent.bee.shared.html.builder.elements.Meta;
 import com.butent.bee.shared.html.builder.elements.Script;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.io.FileNameUtils;
 import com.butent.bee.shared.io.Paths;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.ui.UiConstants;
 import com.butent.bee.shared.ui.UserInterface;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.ejb.EJB;
 import javax.json.Json;
@@ -85,6 +97,10 @@ public class LoginServlet extends HttpServlet {
 
   @EJB
   UserServiceBean usr;
+  @EJB
+  FileStorageBean fs;
+  @EJB
+  UiHolderBean ui;
 
   protected static String event(String func, String param) {
     return func + BeeConst.STRING_LEFT_PARENTHESIS + BeeConst.STRING_QUOT + param
@@ -123,13 +139,13 @@ public class LoginServlet extends HttpServlet {
     return requestPath;
   }
 
-  private static String customBackground(String dir) {
+  private static String customBackground() {
     File customDir = new File(Config.WAR_DIR, Paths.CUSTOM_DIR);
     if (!FileUtils.isDirectory(customDir)) {
       return null;
     }
 
-    File bgDir = new File(customDir, dir);
+    File bgDir = new File(customDir, "loginbg");
     if (!FileUtils.isDirectory(bgDir)) {
       return null;
     }
@@ -150,13 +166,13 @@ public class LoginServlet extends HttpServlet {
     return FileNameUtils.separatorsToUnix(path.toString());
   }
 
-  private static String customResource(String contextPath, String fileName) {
+  private static String customResource(String contextPath) {
     File customDir = new File(Config.WAR_DIR, Paths.CUSTOM_DIR);
     if (!FileUtils.isDirectory(customDir)) {
       return null;
     }
 
-    File file = new File(customDir, fileName);
+    File file = new File(customDir, "login_plus.css");
     if (!file.exists()) {
       return null;
     }
@@ -270,17 +286,12 @@ public class LoginServlet extends HttpServlet {
         link().rel(Rel.SHORTCUT_ICON).href(resource(contextPath, Paths.getImagePath(FAV_ICON))),
         link().styleSheet(resource(contextPath, Paths.getStyleSheetPath("login"))));
 
-    String customStyleSheet = customResource(contextPath, "login_plus.css");
+    String customStyleSheet = customResource(contextPath);
     if (!BeeUtils.isEmpty(customStyleSheet)) {
       doc.getHead().append(link().styleSheet(customStyleSheet));
     }
 
     doc.getHead().append(script().src(resource(contextPath, Paths.getScriptPath("login"))));
-
-    String scriptName = getLoginScriptName();
-    if (!BeeUtils.isEmpty(scriptName)) {
-      doc.getHead().append(script().src(resource(contextPath, Paths.getScriptPath(scriptName))));
-    }
 
     doc.getBody().onLoad(event("onload", requestLanguage));
 
@@ -288,7 +299,7 @@ public class LoginServlet extends HttpServlet {
         .addClass(STYLE_PREFIX + "Background")
         .id("background");
 
-    String bg = customBackground("loginbg");
+    String bg = customBackground();
     if (!BeeUtils.isEmpty(bg)) {
       doc.getBody().setBackgroundImage(BeeConst.NONE);
       background.addClass(STYLE_PREFIX + "has-src").src(Paths.buildPath(contextPath, bg));
@@ -390,7 +401,8 @@ public class LoginServlet extends HttpServlet {
   protected String getInitialPage(HttpServletRequest req, UserInterface userInterface) {
     String remoteUser = req.getRemoteUser();
     String contextPath = req.getServletContext().getContextPath();
-    final String html;
+    String eula = req.getParameter(COL_USER_EULA_AGREEMENT);
+    String html;
 
     if (isBlocked(remoteUser)) {
       try {
@@ -400,8 +412,30 @@ public class LoginServlet extends HttpServlet {
       }
       html = verboten(contextPath);
 
+    } else if (Objects.equals(eula, "decline")) {
+      usr.eulaDecline(remoteUser);
+
+      try {
+        req.logout();
+      } catch (ServletException e) {
+        logger.error(e);
+      }
+      html = getLoginForm(req, null);
+
     } else {
       String language = BeeUtils.trim(req.getParameter(HttpConst.PARAM_LOCALE));
+
+      if (usr.isUser(remoteUser) && !usr.eulaIsAccepted(remoteUser)) {
+        if (Objects.equals(eula, "accept")) {
+          usr.eulaAccept(remoteUser);
+        } else {
+          html = eulaAgreement(language, contextPath);
+
+          if (!BeeUtils.isEmpty(html)) {
+            return html;
+          }
+        }
+      }
       SupportedLocale userLocale = getUserLocale(remoteUser);
 
       if (!BeeUtils.isEmpty(language)) {
@@ -412,32 +446,23 @@ public class LoginServlet extends HttpServlet {
           userLocale = loginLocale;
         }
       }
+      UserInterface anInterface = userInterface;
 
-      UserInterface ui = userInterface;
-      if (ui == null) {
-        ui = usr.getUserInterface(remoteUser);
+      if (anInterface == null) {
+        anInterface = usr.getUserInterface(remoteUser);
       }
-      if (ui == null) {
-        ui = UserInterface.DEFAULT;
+      if (anInterface == null) {
+        anInterface = UserInterface.DEFAULT;
       }
-
-      html = render(contextPath, ui, userLocale);
+      html = render(contextPath, anInterface, userLocale);
     }
     return html;
   }
 
-  @SuppressWarnings("unused")
   protected Node getLoginExtension(HttpServletRequest req) {
     return null;
   }
 
-  protected String getLoginScriptName() {
-    return null;
-  }
-
-  /**
-   * @param req
-   */
   protected boolean isProtected(HttpServletRequest req) {
     return true;
   }
@@ -487,6 +512,54 @@ public class LoginServlet extends HttpServlet {
     } else {
       HttpUtils.sendResponse(resp, getLoginForm(req, userName));
     }
+  }
+
+  private String eulaAgreement(String language, String contextPath) {
+    String fileName = "EULA";
+    String path = Config.getLocalPath(Localized.setLanguage(fileName, language) + ".pdf");
+
+    if (BeeUtils.isEmpty(path) && !BeeUtils.isEmpty(language)) {
+      path = Config.getLocalPath(fileName + ".pdf");
+    }
+    if (!BeeUtils.isEmpty(path)) {
+      Long id;
+
+      try {
+        File file = new File(path);
+        id = fs.storeFile(new FileInputStream(file), file.getName(), null);
+        path = BeeUtils.join("/", contextPath, AdministrationConstants.FILE_URL, id);
+
+      } catch (IOException e) {
+        logger.error(e);
+        path = null;
+      }
+    }
+    if (BeeUtils.isEmpty(path)) {
+      return null;
+    }
+    org.w3c.dom.Document form = ui.getFormDocument(COL_USER_EULA_AGREEMENT, false);
+
+    if (Objects.isNull(form)) {
+      return null;
+    }
+    NodeList nodeList = form.getElementsByTagName("iframe");
+
+    if (nodeList.getLength() != 1) {
+      return null;
+    }
+    ((Element) nodeList.item(0)).setAttribute("src", path);
+
+    Map<String, String> dictionary = Localizations.getGlossary(language);
+
+    for (String tag : new String[] {"title", "button"}) {
+      NodeList captions = form.getElementsByTagName(tag);
+
+      for (int i = 0; i < captions.getLength(); i++) {
+        org.w3c.dom.Node node = captions.item(i);
+        node.setTextContent(Localized.maybeTranslate(node.getTextContent(), dictionary));
+      }
+    }
+    return XmlUtils.toString(form, false);
   }
 
   private SupportedLocale getUserLocale(String userName) {

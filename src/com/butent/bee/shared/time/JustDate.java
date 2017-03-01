@@ -232,6 +232,11 @@ public class JustDate extends AbstractDate implements Comparable<JustDate> {
     return fields[Grego.IDX_YEAR];
   }
 
+  @Override
+  public boolean hasTimePart() {
+    return false;
+  }
+
   /**
    * Returns hash code of {@code JustDate} object.
    */

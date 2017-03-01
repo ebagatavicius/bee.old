@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,14 +47,14 @@ public class MailAccount {
   private static final long TIMEOUT = TimeUtils.MILLIS_PER_MINUTE * 10L;
 
   static final class MailStore {
-    private static final int MAX_CONCURRENT_THEADS = 15;
-
     final Store store;
+    final int maxSessions;
     long lastActivity = System.currentTimeMillis();
     int cnt;
 
-    private MailStore(Store store) {
+    private MailStore(Store store, int maxSessions) {
       this.store = Assert.notNull(store);
+      this.maxSessions = BeeUtils.positive(maxSessions, 15);
     }
 
     public Store getStore() {
@@ -70,7 +71,7 @@ public class MailAccount {
     }
 
     private boolean full() {
-      return cnt == MAX_CONCURRENT_THEADS;
+      return cnt == maxSessions;
     }
 
     private boolean idle() {
@@ -141,7 +142,7 @@ public class MailAccount {
   private final String storeLogin;
   private final String storePassword;
   private final boolean storeSSL;
-  private final Map<String, String> storeProperties;
+  private final Map<String, String> storeProperties = new LinkedHashMap<>();
 
   private final Protocol transportProtocol = Protocol.SMTP;
   private final String transportHost;
@@ -149,7 +150,7 @@ public class MailAccount {
   private final String transportLogin;
   private final String transportPassword;
   private final boolean transportSSL;
-  private final Map<String, String> transportProperties;
+  private final Map<String, String> transportProperties = new LinkedHashMap<>();
 
   private final AccountInfo accountInfo;
   private Collection<Long> accountUsers = new HashSet<>();
@@ -165,7 +166,8 @@ public class MailAccount {
     storePassword = BeeUtils.isEmpty(data.getValue(COL_STORE_PASSWORD))
         ? null : Codec.decodeBase64(data.getValue(COL_STORE_PASSWORD));
     storeSSL = BeeUtils.isTrue(data.getBoolean(COL_STORE_SSL));
-    storeProperties = Codec.deserializeLinkedHashMap(data.getValue(COL_STORE_PROPERTIES));
+    Codec.deserializeLinkedHashMap(data.getValue(COL_STORE_PROPERTIES))
+        .forEach((p, v) -> storeProperties.put(BeeUtils.normalize(p), v));
 
     transportHost = data.getValue(COL_TRANSPORT_SERVER);
     transportPort = data.getInt(COL_TRANSPORT_PORT);
@@ -174,7 +176,8 @@ public class MailAccount {
     transportPassword = BeeUtils.isEmpty(data.getValue(COL_TRANSPORT_PASSWORD))
         ? null : Codec.decodeBase64(data.getValue(COL_TRANSPORT_PASSWORD));
     transportSSL = BeeUtils.isTrue(data.getBoolean(COL_TRANSPORT_SSL));
-    transportProperties = Codec.deserializeLinkedHashMap(data.getValue(COL_TRANSPORT_PROPERTIES));
+    Codec.deserializeLinkedHashMap(data.getValue(COL_TRANSPORT_PROPERTIES))
+        .forEach((p, v) -> transportProperties.put(BeeUtils.normalize(p), v));
 
     accountInfo = new AccountInfo(data);
   }
@@ -355,7 +358,8 @@ public class MailAccount {
           props.put(BeeUtils.isPrefix(key, "mail.") ? key : pfx + key, prop.getValue());
         }
         Session session = Session.getInstance(props, null);
-        mailStore = new MailStore(session.getStore(protocol));
+        mailStore = new MailStore(session.getStore(protocol),
+            BeeUtils.toInt(getStoreProperties().get("maxsessions")));
 
         stores.put(getAccountId(), mailStore);
         storesLock.unlock();
