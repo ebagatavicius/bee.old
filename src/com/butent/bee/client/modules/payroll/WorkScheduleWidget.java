@@ -2418,12 +2418,14 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
     Flow container = new Flow(STYLE_PARTITION_CONTAINER);
 
     Label nameWidget = new Label(DataUtils.join(getPartitionDataColumns(), partition.getRow(),
-        nameIndexes, BeeConst.STRING_SPACE));
+        nameIndexes, BeeConst.STRING_SPACE, Format.getDateRenderer(),
+        Format.getDateTimeRenderer()));
     nameWidget.addStyleName(STYLE_PARTITION_NAME);
 
     if (!BeeUtils.isEmpty(contactIndexes)) {
       String title = DataUtils.join(getPartitionDataColumns(), partition.getRow(),
-          contactIndexes, BeeConst.STRING_EOL);
+          contactIndexes, BeeConst.STRING_EOL, Format.getDateRenderer(),
+          Format.getDateTimeRenderer());
       if (!BeeUtils.isEmpty(title)) {
         nameWidget.setTitle(title);
       }
@@ -2443,7 +2445,8 @@ abstract class WorkScheduleWidget extends Flow implements HasSummaryChangeHandle
 
     if (!BeeUtils.isEmpty(infoIndexes)) {
       Label infoWidget = new Label(DataUtils.join(getPartitionDataColumns(), partition.getRow(),
-          infoIndexes, BeeConst.DEFAULT_LIST_SEPARATOR));
+          infoIndexes, BeeConst.DEFAULT_LIST_SEPARATOR,
+          Format.getDateRenderer(), Format.getDateTimeRenderer()));
       infoWidget.addStyleName(STYLE_PARTITION_INFO);
 
       container.add(infoWidget);

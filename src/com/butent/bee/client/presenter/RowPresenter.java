@@ -8,6 +8,7 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.ElementSize;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
@@ -50,7 +51,9 @@ public class RowPresenter extends AbstractPresenter implements Printable, SaveCh
 
     @Override
     public String getCaption() {
-      String caption = DataUtils.getRowCaption(dataInfo, getForm().getActiveRow());
+      String caption = DataUtils.getRowCaption(dataInfo, getForm().getActiveRow(),
+          Format.getDateRenderer(), Format.getDateTimeRenderer());
+
       if (BeeUtils.isEmpty(caption)) {
         return BeeUtils.notEmpty(initialCaption, getHeader().getCaption());
       } else {

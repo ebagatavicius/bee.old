@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -46,6 +47,7 @@ import com.butent.bee.shared.modules.trade.TradeDocument;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.SubModule;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -55,7 +57,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -88,12 +93,43 @@ public final class TradeKeeper implements HandlesAllDataEvents {
     });
   }
 
+  public static void getReservationsInfo(Long warehouse, Long item, DateTime dateTo,
+      Consumer<Map<ModuleAndSub, Map<String, Double>>> consumer) {
+
+    Assert.notNull(consumer, SVC_GET_RESERVATIONS_INFO + " consumer required");
+    ParameterList parameters = createArgs(SVC_GET_RESERVATIONS_INFO);
+
+    if (DataUtils.isId(warehouse)) {
+      parameters.addQueryItem(COL_STOCK_WAREHOUSE, warehouse);
+    }
+    parameters.addDataItem(COL_ITEM, item);
+
+    if (Objects.nonNull(dateTo)) {
+      parameters.addDataItem(COL_DATE_TO, dateTo.serialize());
+    }
+    BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        Map<ModuleAndSub, Map<String, Double>> reservationsInfo = new LinkedHashMap<>();
+
+        Codec.deserializeLinkedHashMap(response.getResponseAsString())
+            .forEach((k, v) -> {
+              Map<String, Double> map = new LinkedHashMap<>();
+              reservationsInfo.put(ModuleAndSub.parse(k), map);
+              Codec.deserializeLinkedHashMap(v)
+                  .forEach((s, q) -> map.put(s, BeeUtils.toDouble(q)));
+            });
+        consumer.accept(reservationsInfo);
+      }
+    });
+  }
+
   public static void getStock(Long warehouse, Collection<Long> items, boolean includeReservations,
       Consumer<Multimap<Long, ItemQuantities>> consumer) {
 
     Assert.notNull(consumer, SVC_GET_STOCK + " consumer required");
-
     ParameterList parameters = createArgs(SVC_GET_STOCK);
+
     if (DataUtils.isId(warehouse)) {
       parameters.addQueryItem(COL_STOCK_WAREHOUSE, warehouse);
     }
@@ -111,7 +147,6 @@ public final class TradeKeeper implements HandlesAllDataEvents {
           Codec.deserializeMultiMap(response.getResponseAsString())
               .forEach((k, v) -> result.put(BeeUtils.toLong(k), ItemQuantities.restore(v)));
         }
-
         consumer.accept(result);
       }
     });

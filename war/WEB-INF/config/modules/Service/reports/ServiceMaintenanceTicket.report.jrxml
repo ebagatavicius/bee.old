@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
-<!-- 2017-02-14T15:03:30 -->
+<!-- 2017-02-23T09:44:59 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ServiceMaintenanceTicket" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="febbd589-b0c9-4c2a-8f14-f6b6d5181445">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<import value="com.butent.bee.shared.i18n.Localized"/>
@@ -52,13 +52,13 @@
 	<parameter name="Conditions" class="java.lang.String"/>
 	<parameter name="CreatorCompanyCode" class="java.lang.String"/>
 	<parameter name="CreatorCompanyVATCode" class="java.lang.String"/>
-	<parameter name="CreatorCompanyAddress" class="java.lang.String"/>
-	<parameter name="CreatorCompanyPostIndex" class="java.lang.String"/>
-	<parameter name="CreatorCompanyCityName" class="java.lang.String"/>
-	<parameter name="CreatorCompanyPhone" class="java.lang.String"/>
-	<parameter name="CreatorCompanyFax" class="java.lang.String"/>
-	<parameter name="CreatorCompanyEmail" class="java.lang.String"/>
-	<parameter name="CreatorCompanyWebsite" class="java.lang.String"/>
+	<parameter name="DepartmentAddress" class="java.lang.String"/>
+	<parameter name="DepartmentPostIndex" class="java.lang.String"/>
+	<parameter name="DepartmentCityName" class="java.lang.String"/>
+	<parameter name="DepartmentPhone" class="java.lang.String"/>
+	<parameter name="DepartmentFax" class="java.lang.String"/>
+	<parameter name="DepartmentEmail" class="java.lang.String"/>
+	<parameter name="DepartmentWebsite" class="java.lang.String"/>
 	<parameter name="ContactCityName" class="java.lang.String"/>
 	<parameter name="ContactAddress" class="java.lang.String">
 		<parameterDescription><![CDATA[]]></parameterDescription>
@@ -653,7 +653,7 @@
 						<textElement>
 							<font fontName="DejaVu Sans" size="8" isBold="false"/>
 						</textElement>
-						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.address() + ":", $P{CreatorCompanyAddress})]]></textFieldExpression>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.address() + ":", $P{DepartmentAddress})]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 						<reportElement positionType="Float" x="170" y="0" width="160" height="12" isRemoveLineWhenBlank="true" uuid="b9ed3a4f-b7d9-4194-a1db-cafad4687663">
@@ -663,7 +663,7 @@
 						<textElement>
 							<font fontName="DejaVu Sans" size="8" isBold="false"/>
 						</textElement>
-						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.phone() + ":", $P{CreatorCompanyPhone})]]></textFieldExpression>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.phone() + ":", $P{DepartmentPhone})]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 						<reportElement positionType="Float" x="170" y="12" width="160" height="12" isRemoveLineWhenBlank="true" uuid="955c533b-3314-4e4c-8ae9-ffce95c69d53">
@@ -673,7 +673,7 @@
 						<textElement>
 							<font fontName="DejaVu Sans" size="8" isBold="false"/>
 						</textElement>
-						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.fax() + ":", $P{CreatorCompanyFax})]]></textFieldExpression>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.fax() + ":", $P{DepartmentFax})]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 						<reportElement positionType="Float" x="170" y="24" width="160" height="12" isRemoveLineWhenBlank="true" uuid="d5dd4836-6f52-4b0e-9216-846d8c476915">
@@ -683,7 +683,7 @@
 						<textElement>
 							<font fontName="DejaVu Sans" size="8" isBold="false"/>
 						</textElement>
-						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.email() + ":", $P{CreatorCompanyEmail})]]></textFieldExpression>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.email() + ":", $P{DepartmentEmail})]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 						<reportElement positionType="Float" x="170" y="36" width="160" height="12" isRemoveLineWhenBlank="true" uuid="3930ef70-5364-4e6e-9926-23facce98407">
@@ -693,7 +693,7 @@
 						<textElement>
 							<font fontName="DejaVu Sans" size="8" isBold="false"/>
 						</textElement>
-						<textFieldExpression><![CDATA[$P{CreatorCompanyWebsite}]]></textFieldExpression>
+						<textFieldExpression><![CDATA[$P{DepartmentWebsite}]]></textFieldExpression>
 					</textField>
 					<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 						<reportElement positionType="Float" x="0" y="36" width="160" height="12" isRemoveLineWhenBlank="true" uuid="28027e30-5c5d-471b-b010-06587d5d30c9">
@@ -703,7 +703,7 @@
 						<textElement>
 							<font fontName="DejaVu Sans" size="8" isBold="false"/>
 						</textElement>
-						<textFieldExpression><![CDATA[BeeUtils.joinWords($P{CreatorCompanyPostIndex}, $P{CreatorCompanyCityName})]]></textFieldExpression>
+						<textFieldExpression><![CDATA[BeeUtils.joinWords($P{DepartmentPostIndex}, $P{DepartmentCityName})]]></textFieldExpression>
 					</textField>
 					<componentElement>
 						<reportElement positionType="Float" x="340" y="0" width="156" height="48" isRemoveLineWhenBlank="true" uuid="77c2fc95-4906-4a09-ad9a-8a2936ba9037">

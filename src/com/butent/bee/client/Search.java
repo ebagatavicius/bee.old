@@ -20,6 +20,7 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.ReadyEvent;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.modules.ModuleManager;
 import com.butent.bee.client.output.Printable;
@@ -450,7 +451,8 @@ public class Search {
       BeeKeeper.getBus().fireEvent(event);
 
       if (BeeUtils.isEmpty(event.getResult())) {
-        return DataUtils.join(dataInfo, getRow(), BeeConst.STRING_SPACE);
+        return DataUtils.join(dataInfo, getRow(), BeeConst.STRING_SPACE,
+            Format.getDateRenderer(), Format.getDateTimeRenderer());
       } else {
         return event.getResult();
       }

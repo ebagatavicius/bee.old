@@ -27,6 +27,7 @@ import com.butent.bee.client.dialog.StringCallback;
 import com.butent.bee.client.dom.Features;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.images.Images;
 import com.butent.bee.client.modules.administration.AdministrationKeeper;
 import com.butent.bee.client.output.Printer;
@@ -439,7 +440,8 @@ public final class Global {
       for (int i = 0; i < c; i++) {
         if (!row.isNull(i)) {
           ValueType type = data.getColumnType(i);
-          String value = DataUtils.render(data.getColumn(i), row, i);
+          String value = DataUtils.render(data.getColumn(i), row, i,
+              Format.getDateRenderer(), Format.getDateTimeRenderer());
 
           if (type == ValueType.LONG) {
             Long x = row.getLong(i);

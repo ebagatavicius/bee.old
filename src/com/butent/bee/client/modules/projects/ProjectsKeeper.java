@@ -15,6 +15,7 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.grid.ChildGrid;
 import com.butent.bee.client.grid.GridFactory;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.trade.InvoicesGrid;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.ui.FormFactory;
@@ -55,7 +56,7 @@ public final class ProjectsKeeper {
         event.setResult(DataUtils.join(Data.getDataInfo(VIEW_PROJECT_FILES), event.getRow(),
             Lists.newArrayList(COL_PROJECT, AdministrationConstants.ALS_FILE_NAME,
                 AdministrationConstants.ALS_FILE_TYPE),
-            BeeConst.STRING_SPACE));
+            BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer()));
       }
     }
   }

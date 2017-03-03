@@ -308,7 +308,8 @@ public class Appointment extends CalendarItem {
     for (int i = 0; i < columns.size(); i++) {
       BeeColumn column = columns.get(i);
       String key = column.getId();
-      String value = DataUtils.render(column, row, i);
+      String value = DataUtils.render(column, row, i, Format.getDateRenderer(),
+          Format.getDateTimeRenderer());
 
       result.put(wrap(key), build(Localized.getLabel(column), value, addLabels));
     }

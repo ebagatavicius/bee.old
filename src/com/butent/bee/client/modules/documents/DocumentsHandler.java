@@ -59,7 +59,8 @@ public final class DocumentsHandler {
                 COL_DOCUMENT_RECEIVED, COL_DOCUMENT_SENT, COL_DOCUMENT_RECEIVED_NUMBER,
                 COL_DOCUMENT_SENT_NUMBER, COL_DESCRIPTION, ClassifierConstants.COL_FIRST_NAME,
                 ClassifierConstants.COL_LAST_NAME, ClassifierConstants.ALS_POSITION_NAME, "Notes"),
-            BeeConst.STRING_SPACE));
+            BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer()));
+
       } else if (event.hasView(VIEW_DOCUMENT_FILES)) {
         event.setResult(BeeUtils.joinWords(
             Data.getString(event.getViewName(), event.getRow(), COL_FILE_CAPTION),

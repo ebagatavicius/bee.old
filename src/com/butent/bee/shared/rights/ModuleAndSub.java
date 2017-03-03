@@ -4,13 +4,14 @@ import com.google.common.collect.Lists;
 
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ModuleAndSub implements Comparable<ModuleAndSub> {
+public final class ModuleAndSub implements Comparable<ModuleAndSub>, BeeSerializable {
 
   public static ModuleAndSub of(Module module) {
     return of(module, null);
@@ -92,6 +93,11 @@ public final class ModuleAndSub implements Comparable<ModuleAndSub> {
   }
 
   @Override
+  public void deserialize(String s) {
+    Assert.unsupported();
+  }
+
+  @Override
   public boolean equals(Object obj) {
     if (obj instanceof ModuleAndSub) {
       return module == ((ModuleAndSub) obj).module && subModule == ((ModuleAndSub) obj).subModule;
@@ -131,6 +137,11 @@ public final class ModuleAndSub implements Comparable<ModuleAndSub> {
 
   public boolean isEnabled() {
     return Module.ENABLED_MODULES.contains(this);
+  }
+
+  @Override
+  public String serialize() {
+    return getName();
   }
 
   @Override

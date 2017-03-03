@@ -12,10 +12,12 @@ import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.COL_BRANCH_NAME;
 import static com.butent.bee.shared.modules.cars.CarsConstants.COL_DESCRIPTION;
+import static com.butent.bee.shared.modules.cars.CarsConstants.COL_GROUP;
+import static com.butent.bee.shared.modules.cars.CarsConstants.COL_GROUP_NAME;
 import static com.butent.bee.shared.modules.cars.CarsConstants.COL_ORDINAL;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
-import static com.butent.bee.shared.modules.transport.TransportConstants.COL_DATE;
+import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.server.Invocation;
 import com.butent.bee.server.data.DataEvent;
@@ -25,6 +27,7 @@ import com.butent.bee.server.data.SystemBean;
 import com.butent.bee.server.data.UserServiceBean;
 import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.modules.BeeModule;
+import com.butent.bee.server.modules.trade.StockReservationsProvider;
 import com.butent.bee.server.modules.trade.TradeModuleBean;
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.IsExpression;
@@ -62,6 +65,7 @@ import com.butent.bee.shared.modules.trade.TradeDocument;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.SubModule;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -70,6 +74,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -252,8 +257,6 @@ public class CarsModuleBean implements BeeModule {
   public Multimap<Long, ItemQuantities> getServiceReservations(Long warehouse,
       Collection<Long> items) {
 
-    Multimap<Long, ItemQuantities> reservations = HashMultimap.create();
-
     IsExpression xpr = SqlUtils.aggregate(SqlConstants.SqlFunction.SUM,
         SqlUtils.field(TBL_SERVICE_INVOICES, COL_TRADE_ITEM_QUANTITY));
 
@@ -283,27 +286,84 @@ public class CarsModuleBean implements BeeModule {
       query.setWhere(SqlUtils.and(query.getWhere(),
           SqlUtils.inList(TBL_SERVICE_ORDER_ITEMS, COL_ITEM, items)));
     }
+    Multimap<Long, ItemQuantities> reservations = HashMultimap.create();
+
     qs.getData(query).forEach(row -> {
       Long item = row.getLong(COL_ITEM);
-      double reserved = BeeUtils.unbox(row.getDouble(COL_TRADE_ITEM_QUANTITY))
-          - BeeUtils.unbox(row.getDouble(ALS_COMPLETED));
-
       ItemQuantities existing = BeeUtils.peek(reservations.get(item));
 
       if (Objects.isNull(existing)) {
         existing = new ItemQuantities(null);
         reservations.put(item, existing);
       }
-      existing.addReserved(row.getDateTime(COL_DATE), reserved);
+      existing.addReserved(row.getDateTime(COL_DATE),
+          row.getDouble(COL_TRADE_ITEM_QUANTITY) - BeeUtils.unbox(row.getDouble(ALS_COMPLETED)));
     });
     return reservations;
+  }
+
+  public Map<String, Double> getServiceReservationsInfo(Long warehouse, Long item, DateTime date) {
+    IsExpression xpr = SqlUtils.aggregate(SqlConstants.SqlFunction.SUM,
+        SqlUtils.field(TBL_SERVICE_INVOICES, COL_TRADE_ITEM_QUANTITY));
+
+    SqlSelect query = new SqlSelect()
+        .addFields(TBL_SERVICE_ORDERS, COL_DATE, COL_ORDER_NO)
+        .addFields(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY)
+        .addExpr(xpr, ALS_COMPLETED)
+        .addFrom(TBL_SERVICE_ORDER_ITEMS)
+        .addFromInner(TBL_ITEMS, sys.joinTables(TBL_ITEMS, TBL_SERVICE_ORDER_ITEMS, COL_ITEM))
+        .addFromInner(TBL_SERVICE_ORDERS,
+            sys.joinTables(TBL_SERVICE_ORDERS, TBL_SERVICE_ORDER_ITEMS, COL_SERVICE_ORDER))
+        .addFromLeft(TBL_SERVICE_INVOICES,
+            sys.joinTables(TBL_SERVICE_ORDER_ITEMS, TBL_SERVICE_INVOICES, COL_SERVICE_ITEM))
+        .setWhere(SqlUtils.and(SqlUtils.equals(TBL_SERVICE_ORDER_ITEMS, COL_ITEM, item),
+            SqlUtils.notNull(TBL_SERVICE_ORDER_ITEMS, COL_RESERVE),
+            SqlUtils.isNull(TBL_ITEMS, COL_ITEM_IS_SERVICE),
+            SqlUtils.positive(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY)))
+        .addGroup(TBL_SERVICE_ORDERS, COL_DATE, COL_ORDER_NO)
+        .addGroup(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY)
+        .setHaving(SqlUtils.or(SqlUtils.isNull(xpr),
+            SqlUtils.more(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY, xpr)))
+        .addOrder(TBL_SERVICE_ORDERS, COL_DATE, COL_ORDER_NO);
+
+    if (DataUtils.isId(warehouse)) {
+      query.setWhere(SqlUtils.and(query.getWhere(),
+          SqlUtils.equals(TBL_SERVICE_ORDERS, COL_WAREHOUSE, warehouse)));
+    }
+    if (Objects.nonNull(date)) {
+      query.setWhere(SqlUtils.and(query.getWhere(),
+          SqlUtils.less(TBL_SERVICE_ORDERS, COL_DATE, date)));
+    }
+    Map<String, Double> map = new LinkedHashMap<>();
+
+    qs.getData(query).forEach(row -> {
+      String key = BeeUtils.joinItems(row.getDateTime(COL_DATE).toCompactString(),
+          row.getValue(COL_ORDER_NO));
+
+      map.put(key, BeeUtils.unbox(map.get(key))
+          + row.getDouble(COL_TRADE_ITEM_QUANTITY) - BeeUtils.unbox(row.getDouble(ALS_COMPLETED)));
+    });
+    return map;
   }
 
   @Override
   public void init() {
     TradeModuleBean.registerStockReservationsProvider(ModuleAndSub.of(getModule(),
-        SubModule.SERVICE), (warehouse, items) -> Invocation.locateRemoteBean(CarsModuleBean.class)
-        .getServiceReservations(warehouse, items));
+        SubModule.SERVICE), new StockReservationsProvider() {
+
+      @Override
+      public Map<String, Double> getItemReservationsInfo(Long warehouse, Long item, DateTime date) {
+        return Invocation.locateRemoteBean(CarsModuleBean.class)
+            .getServiceReservationsInfo(warehouse, item, date);
+      }
+
+      @Override
+      public Multimap<Long, ItemQuantities> getStockReservations(Long warehouse,
+          Collection<Long> items) {
+        return Invocation.locateRemoteBean(CarsModuleBean.class)
+            .getServiceReservations(warehouse, items);
+      }
+    });
 
     sys.registerDataEventHandler(new DataEventHandler() {
       @Subscribe

@@ -281,11 +281,12 @@ public final class ProjectsHelper {
     IsColumn col = info.getColumn(column);
 
     if (row != null) {
-      result = DataUtils.render(col, row, info.getColumnIndex(column));
+      result = DataUtils.render(col, row, info.getColumnIndex(column),
+          Format.getDateRenderer(), Format.getDateTimeRenderer());
     } else if (ValueType.DATE_TIME.equals(type)) {
       DateTime time = TimeUtils.toDateTimeOrNull(value);
 
-      result = time == null ? result : time.toCompactString();
+      result = time == null ? result : Format.renderDateTime(time);
     } else if (ValueType.DATE.equals(type)) {
       JustDate date = TimeUtils.toDateOrNull(value);
 

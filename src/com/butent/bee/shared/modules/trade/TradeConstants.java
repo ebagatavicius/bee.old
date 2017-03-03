@@ -32,6 +32,7 @@ public final class TradeConstants {
   public static final String SVC_CALCULATE_COST = "CalculateCost";
 
   public static final String SVC_GET_STOCK = "GetStock";
+  public static final String SVC_GET_RESERVATIONS_INFO = "GetReservationsInfo";
   public static final String SVC_CREATE_DOCUMENT = "CreateDocument";
 
   public static final String TBL_PURCHASES = "Purchases";
@@ -182,6 +183,7 @@ public final class TradeConstants {
   public static final String COL_TEMPLATE_LAST_PARAGRAPH = "LastParagraph";
 
   public static final String COL_TRADE_DOCUMENT_PHASE = "Phase";
+  public static final String COL_TRADE_DOCUMENT_OWNER = "Owner";
   public static final String COL_TRADE_DOCUMENT_STATUS = "Status";
   public static final String COL_TRADE_DOCUMENT_NUMBER_1 = "Number1";
   public static final String COL_TRADE_DOCUMENT_NUMBER_2 = "Number2";

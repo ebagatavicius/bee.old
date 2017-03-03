@@ -16,6 +16,7 @@
     <Relation name="Operation" notNull="true" relation="TradeOperations" label="=trdOperation" />
     <Enum name="Phase" notNull="true" key="TradeDocumentPhase" defValue="1"
           label="=trdDocumentPhase" />
+    <Relation name="Owner" relation="Users" defExpr="CURRENT_USER" label="=owner" />
     <Relation name="Status" relation="TradeStatuses" label="=status" />
 
     <Relation name="Supplier" relation="Companies" label="=trdSupplier" />

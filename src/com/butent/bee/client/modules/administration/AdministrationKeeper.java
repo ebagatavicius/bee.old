@@ -13,6 +13,7 @@ import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.i18n.DictionaryGrid;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.imports.ImportOptionForm;
 import com.butent.bee.client.imports.ImportOptionsGrid;
 import com.butent.bee.client.modules.finance.DimensionNamesGrid;
@@ -54,7 +55,7 @@ public final class AdministrationKeeper {
       if (event.hasView(VIEW_USERS)) {
         event.setResult(DataUtils.join(Data.getDataInfo(VIEW_USERS), event.getRow(),
             Lists.newArrayList(COL_LOGIN, COL_FIRST_NAME, COL_LAST_NAME, ALS_COMPANY_NAME),
-            BeeConst.STRING_SPACE));
+            BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer()));
       }
     }
   }

@@ -24,6 +24,16 @@
 
     <SimpleColumn name="Phase" />
 
+    <SimpleColumn name="Owner" />
+    <SimpleJoin name="Owner" joinType="LEFT">
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" alias="OwnerFirstName" />
+          <SimpleColumn name="LastName" alias="OwnerLastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+
     <SimpleColumn name="Status" />
     <SimpleJoin joinType="LEFT" name="Status">
       <SimpleColumn name="StatusName" />

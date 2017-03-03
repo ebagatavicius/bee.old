@@ -600,7 +600,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
     } else {
       return DataUtils.join(Data.getDataInfo(VIEW_TASKS), row,
           Lists.newArrayList(ALS_EXECUTOR_FIRST_NAME, ALS_EXECUTOR_LAST_NAME, COL_STATUS),
-          BeeConst.STRING_SPACE);
+          BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer());
     }
   }
 
@@ -691,7 +691,7 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
       }
 
       String userName = DataUtils.join(getExecutors().getColumns(), row, indexes,
-          BeeConst.STRING_SPACE);
+          BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer());
       messages.add(userName);
 
       count++;

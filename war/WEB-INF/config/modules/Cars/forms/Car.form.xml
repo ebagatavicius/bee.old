@@ -67,7 +67,7 @@
     </Table>
 
     <TabbedPages class="flexible" style="margin-top: 1ex;">
-      <page module="Transport">
+      <page>
         <text>=additionalInfo</text>
         <FlowPanel>
           <Table kind="controls" cellStyle="vertical-align: middle;">

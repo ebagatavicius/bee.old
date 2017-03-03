@@ -17,7 +17,11 @@
     <DataColumn name="Number2" />
 
     <RelColumn name="Operation" renderColumns="OperationName" carry="true" visible="true" />
+
     <DataColumn name="Phase" visible="true" />
+    <RelColumn name="Owner" renderColumns="OwnerFirstName OwnerLastName"
+               sortBy="OwnerLastName OwnerFirstName" visible="false" />
+
     <RelColumn name="Status" renderColumns="StatusName" />
 
     <RelColumn name="Supplier" renderColumns="SupplierName" />

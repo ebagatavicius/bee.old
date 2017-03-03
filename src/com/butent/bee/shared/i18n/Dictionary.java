@@ -4859,6 +4859,8 @@ public interface Dictionary {
 
   default String required() {return g("required");}
 
+  default String reservation() {return g("reservation");}
+
   default String reserve() {return g("reserve");}
 
   default String resource() {return g("resource");}
@@ -6522,6 +6524,8 @@ public interface Dictionary {
   default String trdInvoiceId() {return g("trdInvoiceId");}
 
   default String trdInvoiceNo() {return g("trdInvoiceNo");}
+
+  default String trdInvoiceOverdue() {return g("trdInvoiceOverdue");}
 
   default String trdInvoicePrefix() {return g("trdInvoicePrefix");}
 

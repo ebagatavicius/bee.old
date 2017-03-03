@@ -1,5 +1,6 @@
 package com.butent.bee.client.render;
 
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
@@ -44,7 +45,8 @@ public class MailAddressRenderer extends AbstractCellRenderer {
     if (labelIndexes.isEmpty()) {
       labels = null;
     } else if (labelIndexes.size() > 1) {
-      labels = DataUtils.join(row, labelIndexes);
+      labels = DataUtils.join(row, labelIndexes, Format.getDateRenderer(),
+          Format.getDateTimeRenderer());
     } else {
       labels = row.getString(labelIndexes.get(0));
     }

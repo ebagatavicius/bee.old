@@ -12,6 +12,7 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.view.ViewFactory;
@@ -35,7 +36,7 @@ public final class DiscussionsKeeper {
         event.setResult(DataUtils.join(Data.getDataInfo(VIEW_DISCUSSIONS_FILES), event.getRow(),
             Lists.newArrayList(COL_CAPTION, AdministrationConstants.ALS_FILE_TYPE,
                 COL_COMMENT_TEXT),
-            BeeConst.STRING_SPACE));
+            BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer()));
       }
     }
   }

@@ -6,6 +6,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.dialog.ModalForm;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.event.logical.RowActionEvent;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.presenter.RowPresenter;
 import com.butent.bee.client.ui.AutocompleteProvider;
@@ -280,7 +281,8 @@ public final class RowEditor {
     }
 
     final RowPresenter presenter = new RowPresenter(formView, dataInfo, oldRow.getId(),
-        DataUtils.getRowCaption(dataInfo, oldRow), enabledActions, disabledActions);
+        DataUtils.getRowCaption(dataInfo, oldRow, Format.getDateRenderer(),
+            Format.getDateTimeRenderer()), enabledActions, disabledActions);
 
     if (formView.getFormInterceptor() != null) {
       formView.getFormInterceptor().afterCreatePresenter(presenter);

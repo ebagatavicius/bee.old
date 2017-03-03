@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import static com.butent.bee.shared.modules.discussions.DiscussionsConstants.*;
 
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
@@ -24,7 +25,8 @@ class RowTransformHandler implements RowTransformEvent.Handler {
   public void onRowTransform(RowTransformEvent event) {
     if (event.hasView(VIEW_DISCUSSIONS)) {
       event.setResult(BeeUtils.joinWords(DataUtils.join(getDiscussionsViewInfo(), event.getRow(),
-          discussionColumns, BeeConst.STRING_SPACE), getDiscussionOwner(event.getRow()),
+          discussionColumns, BeeConst.STRING_SPACE, Format.getDateRenderer(),
+          Format.getDateTimeRenderer()), getDiscussionOwner(event.getRow()),
           getDiscussionStatusCaption(event.getRow())));
     }
   }

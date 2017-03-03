@@ -76,7 +76,7 @@ public final class TasksKeeper {
     public void onRowTransform(RowTransformEvent event) {
       if (event.hasView(VIEW_TASKS)) {
         event.setResult(DataUtils.join(getTaskViewInfo(), event.getRow(), taskColumns,
-            BeeConst.STRING_SPACE));
+            BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer()));
 
       } else if (event.hasView(VIEW_TASK_EVENTS)) {
         event.setResult(BeeUtils.joinWords(
@@ -90,7 +90,7 @@ public final class TasksKeeper {
         event.setResult(DataUtils.join(Data.getDataInfo(VIEW_TASK_FILES), event.getRow(),
             Lists.newArrayList(COL_TASK, AdministrationConstants.ALS_FILE_NAME,
                 AdministrationConstants.ALS_FILE_TYPE),
-            BeeConst.STRING_SPACE));
+            BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer()));
       }
     }
 
@@ -376,11 +376,11 @@ public final class TasksKeeper {
       public void onResponse(ResponseObject response) {
         if (response.hasResponse() && BeeUtils.isPositiveInt(response.getResponseAsString())) {
           DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_TASKS);
-          BeeKeeper.getScreen().notifyInfo(BeeUtils.joinWords(range, "sheduled",
+          BeeKeeper.getScreen().notifyInfo(BeeUtils.joinWords(range, "scheduled",
               response.getResponseAsString(), "tasks"));
 
         } else {
-          BeeKeeper.getScreen().notifyWarning(range.toString(), "no tasks sheduled");
+          BeeKeeper.getScreen().notifyWarning(range.toString(), "no tasks scheduled");
         }
       }
     });

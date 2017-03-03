@@ -21,6 +21,7 @@ import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dialog.MessageBoxes;
 import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.grid.GridFactory;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.administration.HistoryHandler;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Printer;
@@ -402,7 +403,8 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
         DataInfo dataInfo = Data.getDataInfo(form.getViewName());
 
         if (dataInfo != null) {
-          String label = DataUtils.getRowCaption(dataInfo, form.getActiveRow());
+          String label = DataUtils.getRowCaption(dataInfo, form.getActiveRow(),
+              Format.getDateRenderer(), Format.getDateTimeRenderer());
 
           if (!BeeUtils.isEmpty(label)) {
             return Lists.newArrayList(label);
@@ -1054,7 +1056,8 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
 
     if (!indexes.isEmpty()) {
       for (IsRow row : rows) {
-        result.add(DataUtils.join(columns, row, indexes, BeeConst.DEFAULT_LIST_SEPARATOR));
+        result.add(DataUtils.join(columns, row, indexes, BeeConst.DEFAULT_LIST_SEPARATOR,
+            Format.getDateRenderer(), Format.getDateTimeRenderer()));
       }
     }
 
@@ -1068,7 +1071,8 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
           result.add(idLabel);
         } else {
           result.add(BeeUtils.joinItems(idLabel,
-              DataUtils.join(columns, row, indexes, BeeConst.DEFAULT_LIST_SEPARATOR)));
+              DataUtils.join(columns, row, indexes, BeeConst.DEFAULT_LIST_SEPARATOR,
+                  Format.getDateRenderer(), Format.getDateTimeRenderer())));
         }
       }
     }

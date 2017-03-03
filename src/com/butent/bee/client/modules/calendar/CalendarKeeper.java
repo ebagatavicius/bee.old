@@ -26,6 +26,7 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.calendar.view.AppointmentForm;
 import com.butent.bee.client.screen.Domain;
 import com.butent.bee.client.style.ColorStyleProvider;
@@ -147,7 +148,8 @@ public final class CalendarKeeper {
       if (event.hasView(VIEW_CALENDARS)) {
         event.setResult(DataUtils.join(Data.getDataInfo(VIEW_CALENDARS), event.getRow(),
             Lists.newArrayList(COL_CALENDAR_NAME, COL_DESCRIPTION, ALS_OWNER_FIRST_NAME,
-                ALS_OWNER_LAST_NAME), BeeConst.STRING_SPACE));
+                ALS_OWNER_LAST_NAME), BeeConst.STRING_SPACE, Format.getDateRenderer(),
+            Format.getDateTimeRenderer()));
 
       } else if (event.hasView(VIEW_APPOINTMENTS)) {
         event.setResult(ItemRenderer.renderString(BeeConst.UNDEF,

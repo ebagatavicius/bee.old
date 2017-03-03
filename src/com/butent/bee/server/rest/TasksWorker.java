@@ -27,6 +27,8 @@ import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.exceptions.BeeException;
 import com.butent.bee.shared.exceptions.BeeRuntimeException;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.tasks.TaskUtils;
@@ -312,7 +314,11 @@ public class TasksWorker extends CrudWorker {
           Map<String, String> params = new HashMap<>();
           params.put(VAR_TASK_DATA, Codec.beeSerialize(updated));
 
-          List<String> notes = TaskUtils.getUpdateNotes(info, oldRow, row);
+          DateTimeFormatInfo dateTimeFormatInfo = usr.getDateTimeFormatInfo();
+
+          List<String> notes = TaskUtils.getUpdateNotes(info, oldRow, row,
+              Formatter.getDateRenderer(dateTimeFormatInfo),
+              Formatter.getDateTimeRenderer(dateTimeFormatInfo));
 
           if (!notes.isEmpty()) {
             params.put(VAR_TASK_NOTES, Codec.beeSerialize(notes));

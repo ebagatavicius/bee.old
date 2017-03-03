@@ -49,7 +49,7 @@ public enum SubModule implements HasLocalizedCaption {
   SERVICE {
     @Override
     public String getCaption(Dictionary constants) {
-      return constants.service();
+      return constants.svcModule();
     }
   },
   ACTS {

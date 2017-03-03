@@ -44,6 +44,7 @@ import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.trade.OperationType;
@@ -426,11 +427,14 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
     boolean fromStock = from != null && from.modifyStock();
     boolean toStock = to != null && to.modifyStock();
 
-    if (row == null || to == null) {
+    if (row == null || to == null || from == to) {
       event.cancel();
 
     } else if (fromStock == toStock || DataUtils.isNewRow(row)) {
       setPhase(row, to);
+      if (setOwner(row)) {
+        getFormView().refreshBySource(COL_TRADE_DOCUMENT_OWNER);
+      }
 
       final int statusIndex = getDataIndex(COL_TRADE_DOCUMENT_STATUS);
       Long status = row.getLong(statusIndex);
@@ -463,6 +467,7 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
             if (DataUtils.sameId(row, getActiveRow())) {
               BeeRow newRow = DataUtils.cloneRow(getActiveRow());
               setPhase(newRow, to);
+              setOwner(newRow);
 
               BeeRowSet rowSet = new BeeRowSet(getViewName(), getFormView().getDataColumns());
               rowSet.addRow(newRow);
@@ -485,6 +490,21 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
               });
             }
           });
+    }
+  }
+
+  private boolean setOwner(IsRow row) {
+    int index = getDataIndex(COL_TRADE_DOCUMENT_OWNER);
+
+    if (row == null || BeeKeeper.getUser().is(row.getLong(index))) {
+      return false;
+
+    } else {
+      row.setValue(index, BeeKeeper.getUser().getUserId());
+      RelationUtils.setUserFields(Data.getDataInfo(getViewName()), row, COL_TRADE_DOCUMENT_OWNER,
+          BeeKeeper.getUser().getUserData());
+
+      return true;
     }
   }
 
@@ -515,7 +535,8 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
               public void onSuccess(DateTime result) {
                 if (result != null && Objects.equals(getActiveRowId(), id)) {
                   ((HasHtml) widget).setText(BeeUtils.joinWords(
-                      Localized.dictionary().statusUpdated(), Format.renderDateTime(result)));
+                      Localized.dictionary().statusUpdated(),
+                      Format.render(PredefinedFormat.DATE_SHORT_TIME_MEDIUM, result)));
                 }
               }
             });

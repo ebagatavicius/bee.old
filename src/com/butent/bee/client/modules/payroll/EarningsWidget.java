@@ -757,14 +757,15 @@ abstract class EarningsWidget extends Flow implements HasSummaryChangeHandlers, 
 
     String text = (row == null)
         ? DataUtils.buildIdList(getPartitionId(item))
-        : DataUtils.join(getPartitionDataColumns(), row, nameIndexes, BeeConst.STRING_SPACE);
+        : DataUtils.join(getPartitionDataColumns(), row, nameIndexes, BeeConst.STRING_SPACE,
+        Format.getDateRenderer(), Format.getDateTimeRenderer());
 
     Label nameWidget = new Label(text);
     nameWidget.addStyleName(STYLE_PARTITION_NAME);
 
     if (!BeeUtils.isEmpty(contactIndexes) && row != null) {
       String title = DataUtils.join(getPartitionDataColumns(), row, contactIndexes,
-          BeeConst.STRING_EOL);
+          BeeConst.STRING_EOL, Format.getDateRenderer(), Format.getDateTimeRenderer());
       if (!BeeUtils.isEmpty(title)) {
         nameWidget.setTitle(title);
       }
@@ -783,7 +784,7 @@ abstract class EarningsWidget extends Flow implements HasSummaryChangeHandlers, 
 
     if (!BeeUtils.isEmpty(infoIndexes) && row != null) {
       Label infoWidget = new Label(DataUtils.join(getPartitionDataColumns(), row, infoIndexes,
-          BeeConst.DEFAULT_LIST_SEPARATOR));
+          BeeConst.DEFAULT_LIST_SEPARATOR, Format.getDateRenderer(), Format.getDateTimeRenderer()));
       infoWidget.addStyleName(STYLE_PARTITION_INFO);
 
       panel.add(infoWidget);
@@ -794,7 +795,7 @@ abstract class EarningsWidget extends Flow implements HasSummaryChangeHandlers, 
 
     if (activeMonth != null
         && (from != null && !Objects.equals(from, activeMonth.getDate())
-            || until != null && !Objects.equals(until, activeMonth.getLast()))) {
+        || until != null && !Objects.equals(until, activeMonth.getLast()))) {
 
       Label periodWidget = new Label(TimeUtils.renderPeriod(Format.renderDate(from),
           Format.renderDate(until)));

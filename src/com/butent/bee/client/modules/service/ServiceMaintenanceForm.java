@@ -19,6 +19,7 @@ import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.InputBoolean;
 import com.butent.bee.client.widget.InputText;
+import com.butent.bee.shared.Latch;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.*;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
@@ -31,8 +32,7 @@ import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_DEPARTMENT;
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.VIEW_DEPARTMENT_EMPLOYEES;
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.ALS_COMPANY_TYPE_NAME;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
@@ -58,6 +58,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -79,7 +80,7 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
       BeeConst.CSS_CLASS_PREFIX + "Grid-ProgressContainer";
   private static final String STYLE_PROGRESS_BAR =
       BeeConst.CSS_CLASS_PREFIX + "Grid-ProgressBar";
-
+  private static final int REPORT_DATA_CONSUMPTIONS_COUNT = 2;
 
   private final MaintenanceEventsHandler eventsHandler = new MaintenanceEventsHandler();
   private Flow maintenanceComments;
@@ -255,14 +256,41 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
       defaultParameters.put(PRM_EXTERNAL_MAINTENANCE_URL,
           Global.getParameterText(PRM_EXTERNAL_MAINTENANCE_URL));
 
+      Latch latch = new Latch(REPORT_DATA_CONSUMPTIONS_COUNT);
+
+      Runnable action = () -> {
+        latch.decrement();
+        if (latch.isOpen()) {
+          parametersConsumer.accept(defaultParameters);
+        }
+      };
+
       Map<String, Long> companies = new HashMap<>();
       String creatorCompanyAlias = COL_CREATOR + COL_COMPANY;
       companies.put(creatorCompanyAlias, getLongValue(creatorCompanyAlias));
 
       ClassifierUtils.getCompaniesInfo(companies, companiesInfo -> {
         defaultParameters.putAll(companiesInfo);
-        parametersConsumer.accept(defaultParameters);
+        action.run();
       });
+
+      Long departmentId = getActiveRow().getLong(getDataIndex(COL_DEPARTMENT));
+
+      if (DataUtils.isId(departmentId)) {
+        Queries.getRow(VIEW_DEPARTMENTS, departmentId, new RowCallback() {
+          @Override
+          public void onSuccess(BeeRow departmentRow) {
+            for (String column : Arrays.asList(COL_PHONE, COL_FAX, COL_EMAIL, COL_ADDRESS,
+                COL_POST_INDEX, ALS_CITY_NAME, COL_WEBSITE)) {
+              defaultParameters.put(COL_DEPARTMENT + column,
+                  departmentRow.getString(Data.getColumnIndex(VIEW_DEPARTMENTS, column)));
+            }
+            action.run();
+          }
+        });
+      } else {
+        action.run();
+      }
     });
   }
 

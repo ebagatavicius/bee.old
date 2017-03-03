@@ -391,8 +391,8 @@ public class TransportReportsBean {
         currency);
 
     query.addFields(trips, COL_TRIP)
-        .setWhere(SqlUtils.equals(TBL_TRIP_CONSTANTS, COL_TRIP_CONSTANT,
-            TripConstant.ECONOMY_BONUS))
+        .setWhere(SqlUtils.and(query.getWhere(),
+            SqlUtils.equals(TBL_TRIP_CONSTANTS, COL_TRIP_CONSTANT, TripConstant.ECONOMY_BONUS)))
         .addGroup(trips, COL_TRIP);
 
     qs.updateData(new SqlUpdate(tmp)
@@ -868,8 +868,18 @@ public class TransportReportsBean {
     clause.add(report.getCondition(TBL_TRIPS, COL_TRIP_NO));
     clause.add(report.getCondition(TBL_TRIPS, COL_TRIP_STATUS));
     clause.add(report.getCondition(TBL_TRIPS, COL_TRIP_DATE));
-    clause.add(report.getCondition(TBL_TRIPS, COL_TRIP_DATE_FROM));
-    clause.add(report.getCondition(TBL_TRIPS, COL_TRIP_DATE_TO));
+
+    clause.add(SqlUtils.or(SqlUtils.and(SqlUtils.notNull(TBL_TRIPS, COL_TRIP_DATE_FROM),
+        report.getCondition(TBL_TRIPS, COL_TRIP_DATE_FROM)),
+        SqlUtils.and(SqlUtils.isNull(TBL_TRIPS, COL_TRIP_DATE_FROM),
+            report.getCondition(SqlUtils.field(TBL_TRIPS, COL_DATE), COL_TRIP_DATE_FROM))));
+
+    clause.add(SqlUtils.or(SqlUtils.and(SqlUtils.notNull(TBL_TRIPS, COL_TRIP_DATE_TO),
+        report.getCondition(TBL_TRIPS, COL_TRIP_DATE_TO)),
+        SqlUtils.and(SqlUtils.isNull(TBL_TRIPS, COL_TRIP_DATE_TO),
+            report.getCondition(SqlUtils.field(TBL_TRIPS, COL_TRIP_PLANNED_END_DATE),
+                COL_TRIP_DATE_TO))));
+
     clause.add(report.getCondition(SqlUtils.field(trucks, COL_VEHICLE_NUMBER), COL_VEHICLE));
     clause.add(report.getCondition(SqlUtils.field(trailers, COL_VEHICLE_NUMBER), COL_TRAILER));
 
@@ -1075,8 +1085,9 @@ public class TransportReportsBean {
               SqlUtils.divide(SqlUtils.field(tt, fuelCosts), 100)), plannedFuelCosts, currency);
 
       query.addFields(tt, COL_TRIP, COL_CARGO)
-          .setWhere(SqlUtils.and(SqlUtils.equals(TBL_TRIP_CONSTANTS, COL_TRIP_CONSTANT,
-              TripConstant.AVERAGE_FUEL_COST),
+          .setWhere(SqlUtils.and(query.getWhere(),
+              SqlUtils.equals(TBL_TRIP_CONSTANTS, COL_TRIP_CONSTANT,
+                  TripConstant.AVERAGE_FUEL_COST),
               SqlUtils.or(SqlUtils.isNull(TBL_TRIP_CONSTANTS, COL_CARGO_TYPE),
                   SqlUtils.joinUsing(tt, TBL_TRIP_CONSTANTS, COL_CARGO_TYPE))))
           .addGroup(tt, COL_TRIP, COL_CARGO);
@@ -1097,7 +1108,8 @@ public class TransportReportsBean {
       query.addFields(tmpTripCargo, COL_TRIP, COL_CARGO)
           .addFromInner(TBL_TRIP_DRIVERS,
               SqlUtils.joinUsing(tmpTripCargo, TBL_TRIP_DRIVERS, COL_TRIP))
-          .setWhere(SqlUtils.joinUsing(TBL_TRIP_DRIVERS, TBL_DRIVER_DAILY_COSTS, COL_DRIVER))
+          .setWhere(SqlUtils.and(query.getWhere(),
+              SqlUtils.joinUsing(TBL_TRIP_DRIVERS, TBL_DRIVER_DAILY_COSTS, COL_DRIVER)))
           .addGroup(tmpTripCargo, COL_TRIP, COL_CARGO);
 
       qs.updateData(new SqlUpdate(tmpTripCargo)
@@ -1112,8 +1124,8 @@ public class TransportReportsBean {
           SqlUtils.field(tmpTripCargo, plannedKilometers), plannedRoadCosts, currency);
 
       query.addFields(tmpTripCargo, COL_TRIP, COL_CARGO)
-          .setWhere(SqlUtils.and(SqlUtils.equals(TBL_TRIP_CONSTANTS, COL_TRIP_CONSTANT,
-              TripConstant.AVERAGE_KM_COST),
+          .setWhere(SqlUtils.and(query.getWhere(),
+              SqlUtils.equals(TBL_TRIP_CONSTANTS, COL_TRIP_CONSTANT, TripConstant.AVERAGE_KM_COST),
               SqlUtils.or(SqlUtils.isNull(TBL_TRIP_CONSTANTS, COL_CARGO_TYPE),
                   SqlUtils.joinUsing(tmpTripCargo, TBL_TRIP_CONSTANTS, COL_CARGO_TYPE))))
           .addGroup(tmpTripCargo, COL_TRIP, COL_CARGO);
@@ -1147,8 +1159,8 @@ public class TransportReportsBean {
               SqlUtils.field(tmp, COL_TRIP_DATE_TO)), 1), constantCosts, currency);
 
       query.addFields(tmp, COL_TRIP)
-          .setWhere(SqlUtils.equals(TBL_TRIP_CONSTANTS, COL_TRIP_CONSTANT,
-              TripConstant.CONSTANT_COSTS))
+          .setWhere(SqlUtils.and(query.getWhere(),
+              SqlUtils.equals(TBL_TRIP_CONSTANTS, COL_TRIP_CONSTANT, TripConstant.CONSTANT_COSTS)))
           .addGroup(tmp, COL_TRIP);
 
       qs.updateData(new SqlUpdate(tmp)
@@ -1438,8 +1450,11 @@ public class TransportReportsBean {
         SqlUtils.field(src, COL_CARGO_VALUE));
 
     if (Objects.nonNull(factor)) {
-      xpr = SqlUtils.divide(SqlUtils.multiply(xpr, factor),
-          dayDiff(SqlUtils.field(tmp, COL_TRIP_DATE_FROM), SqlUtils.field(tmp, COL_TRIP_DATE_TO)));
+      IsExpression diff = dayDiff(SqlUtils.field(tmp, COL_TRIP_DATE_FROM),
+          SqlUtils.field(tmp, COL_TRIP_DATE_TO));
+
+      xpr = SqlUtils.divide(SqlUtils.multiply(xpr, factor), diff);
+      ss.setWhere(SqlUtils.notEqual(diff, 0));
     }
     if (DataUtils.isId(currency)) {
       xpr = ExchangeUtils.exchangeFieldTo(ss, xpr,
@@ -1453,8 +1468,12 @@ public class TransportReportsBean {
   }
 
   private static IsExpression dayDiff(IsExpression dateFrom, IsExpression dateTo) {
+    long tz = TimeUtils.MILLIS_PER_HOUR * 3;
     long mpd = TimeUtils.MILLIS_PER_DAY;
-    return SqlUtils.divide(SqlUtils.minus(SqlUtils.multiply(SqlUtils.divide(dateTo, mpd), mpd),
-        SqlUtils.multiply(SqlUtils.divide(dateFrom, mpd), mpd)), mpd);
+    return SqlUtils.divide(
+        SqlUtils.minus(
+            SqlUtils.multiply(SqlUtils.divide(SqlUtils.multiply(dateTo, tz), mpd), mpd),
+            SqlUtils.multiply(SqlUtils.divide(SqlUtils.multiply(dateFrom, tz), mpd), mpd)),
+        mpd);
   }
 }

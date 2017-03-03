@@ -694,9 +694,11 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
           STYLE_ID_PREFIX + STYLE_CELL_SUFFIX);
 
       table.setText(r, c++, DataUtils.join(items.getColumns(), item, typeIndexes,
-          BeeConst.STRING_EOL), STYLE_TYPE_PREFIX + STYLE_CELL_SUFFIX);
+          BeeConst.STRING_EOL, Format.getDateRenderer(), Format.getDateTimeRenderer()),
+          STYLE_TYPE_PREFIX + STYLE_CELL_SUFFIX);
       table.setText(r, c++, DataUtils.join(items.getColumns(), item, groupIndexes,
-          BeeConst.STRING_EOL), STYLE_GROUP_PREFIX + STYLE_CELL_SUFFIX);
+          BeeConst.STRING_EOL, Format.getDateRenderer(), Format.getDateTimeRenderer()),
+          STYLE_GROUP_PREFIX + STYLE_CELL_SUFFIX);
 
       if (isOrder) {
         int notMnfctIdx = items.getColumnIndex(COL_ITEM_NOT_MANUFACTURED);

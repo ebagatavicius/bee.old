@@ -124,6 +124,10 @@ public class ColumnMapper implements HasExtendedInfo {
     return row.isNull(getIndex(viewName, colName));
   }
 
+  public boolean isTrue(String viewName, IsRow row, String colName) {
+    return row.isTrue(getIndex(viewName, colName));
+  }
+
   public ImmutableList<String> remove(String viewName) {
     return map.remove(viewName);
   }

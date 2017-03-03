@@ -296,6 +296,10 @@ public final class Data {
     return COLUMN_MAPPER.isNull(viewName, row, colName);
   }
 
+  public static boolean isTrue(String viewName, IsRow row, String colName) {
+    return COLUMN_MAPPER.isTrue(viewName, row, colName);
+  }
+
   public static boolean isViewEditable(String viewName) {
     if (BeeUtils.isEmpty(viewName) || !BeeKeeper.getUser().canEditData(viewName)) {
       return false;

@@ -14,6 +14,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -29,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -320,7 +322,7 @@ public final class DataUtils {
 
   /**
    * Finds column place in the list.
-   * 
+   *
    * @param columnId the name of target column
    * @param columns a list of columns
    * @return an index of target column in columns list
@@ -331,7 +333,7 @@ public final class DataUtils {
 
   /**
    * Finds column place in the list with the warning.
-   * 
+   *
    * @param columnId the name of target column
    * @param columns a list of columns
    * @param warn value to show or not the warning
@@ -656,7 +658,10 @@ public final class DataUtils {
     return (rowSet == null) ? 0 : rowSet.getNumberOfRows();
   }
 
-  public static String getRowCaption(DataInfo dataInfo, IsRow row) {
+  public static String getRowCaption(DataInfo dataInfo, IsRow row,
+      Function<HasDateValue, String> dateRenderer,
+      Function<HasDateValue, String> dateTimeRenderer) {
+
     Assert.notNull(dataInfo);
     if (row == null) {
       return null;
@@ -678,7 +683,7 @@ public final class DataUtils {
     if (colNames.isEmpty()) {
       return null;
     } else {
-      return join(dataInfo, row, colNames, BeeConst.STRING_SPACE);
+      return join(dataInfo, row, colNames, BeeConst.STRING_SPACE, dateRenderer, dateTimeRenderer);
     }
   }
 
@@ -838,7 +843,7 @@ public final class DataUtils {
 
   /**
    * Checks if row has id.
-   * 
+   *
    * @param row data entry
    * @return true if a row has id value, otherwise false.
    */
@@ -848,7 +853,7 @@ public final class DataUtils {
 
   /**
    * Checks if the id of the row and specific id are equal.
-   * 
+   *
    * @param row data entry
    * @param id specific id value
    * @return true if both id are equal, otherwise false.
@@ -859,7 +864,7 @@ public final class DataUtils {
 
   /**
    * Checks if the rowSet is empty or null.
-   * 
+   *
    * @param rowSet data set (BeeRowSet object)
    * @return True if rowSet is empty, otherwise false.
    */
@@ -869,7 +874,7 @@ public final class DataUtils {
 
   /**
    * Checks if the rowSet is empty or null.
-   * 
+   *
    * @param rowSet data set (SimpleRowSet object)
    * @return True if rowSet is empty, otherwise false.
    */
@@ -879,7 +884,7 @@ public final class DataUtils {
 
   /**
    * Checks if the id is truly correct.
-   * 
+   *
    * @param id target id value (Long object)
    * @return True if the {@code id} is positive, otherwise false.
    */
@@ -889,7 +894,7 @@ public final class DataUtils {
 
   /**
    * Checks if the id is truly correct.
-   * 
+   *
    * @param s target String value
    * @return True if the {@code s} is positive, otherwise false.
    */
@@ -899,7 +904,7 @@ public final class DataUtils {
 
   /**
    * Checks if the target row is a new row.
-   * 
+   *
    * @param row data entry
    * @return True if id of the {@code row} equals 0, otherwise false.
    */
@@ -909,7 +914,7 @@ public final class DataUtils {
 
   /**
    * Checks if the value at {@code row} {@code columnId} is {@code null}.
-   * 
+   *
    * @param rowSet data set (BeeRowSet object)
    * @param row data entry
    * @param columnId the name of target column
@@ -919,7 +924,10 @@ public final class DataUtils {
     return row.isNull(getColumnIndex(columnId, rowSet.getColumns()));
   }
 
-  public static String join(DataInfo dataInfo, IsRow row, List<String> colNames, String separator) {
+  public static String join(DataInfo dataInfo, IsRow row, List<String> colNames, String separator,
+      Function<HasDateValue, String> dateRenderer,
+      Function<HasDateValue, String> dateTimeRenderer) {
+
     Assert.notNull(dataInfo);
     Assert.notNull(row);
     Assert.notEmpty(colNames);
@@ -934,7 +942,9 @@ public final class DataUtils {
         continue;
       }
 
-      String value = render((i >= 0) ? dataInfo.getColumns().get(i) : null, row, i);
+      String value = render((i >= 0) ? dataInfo.getColumns().get(i) : null, row, i,
+          dateRenderer, dateTimeRenderer);
+
       if (!BeeUtils.isEmpty(value)) {
         if (sb.length() > 0) {
           sb.append(sep);
@@ -945,7 +955,10 @@ public final class DataUtils {
     return sb.toString();
   }
 
-  public static String join(DataInfo dataInfo, IsRow row, String separator) {
+  public static String join(DataInfo dataInfo, IsRow row, String separator,
+      Function<HasDateValue, String> dateRenderer,
+      Function<HasDateValue, String> dateTimeRenderer) {
+
     Assert.notNull(dataInfo);
     Assert.notNull(row);
 
@@ -958,7 +971,7 @@ public final class DataUtils {
         continue;
       }
 
-      String value = render(column, row, i);
+      String value = render(column, row, i, dateRenderer, dateTimeRenderer);
       if (!BeeUtils.isEmpty(value)) {
         if (sb.length() > 0) {
           sb.append(sep);
@@ -969,12 +982,18 @@ public final class DataUtils {
     return sb.toString();
   }
 
-  public static String join(IsRow row, List<Integer> indexes) {
-    return join(null, row, indexes, BeeConst.DEFAULT_LIST_SEPARATOR);
+  public static String join(IsRow row, List<Integer> indexes,
+      Function<HasDateValue, String> dateRenderer,
+      Function<HasDateValue, String> dateTimeRenderer) {
+
+    return join(null, row, indexes, BeeConst.DEFAULT_LIST_SEPARATOR, dateRenderer,
+        dateTimeRenderer);
   }
 
   public static String join(List<BeeColumn> columns, IsRow row, List<Integer> indexes,
-      String separator) {
+      String separator, Function<HasDateValue, String> dateRenderer,
+      Function<HasDateValue, String> dateTimeRenderer) {
+
     Assert.notNull(row);
     Assert.notEmpty(indexes);
 
@@ -982,7 +1001,9 @@ public final class DataUtils {
     String sep = BeeUtils.nvl(separator, BeeConst.DEFAULT_LIST_SEPARATOR);
 
     for (int index : indexes) {
-      String value = render(BeeUtils.getQuietly(columns, index), row, index);
+      String value = render(BeeUtils.getQuietly(columns, index), row,
+          index, dateRenderer, dateTimeRenderer);
+
       if (!BeeUtils.isEmpty(value)) {
         if (sb.length() > 0) {
           sb.append(sep);
@@ -1141,7 +1162,10 @@ public final class DataUtils {
     return (dataInfo == null) ? null : dataInfo.parseOrder(input);
   }
 
-  public static String render(DataInfo dataInfo, IsRow row, BeeColumn column, int index) {
+  public static String render(DataInfo dataInfo, IsRow row, BeeColumn column, int index,
+      Function<HasDateValue, String> dateRenderer,
+      Function<HasDateValue, String> dateTimeRenderer) {
+
     if (dataInfo == null || row == null || column == null) {
       return null;
     }
@@ -1149,14 +1173,17 @@ public final class DataUtils {
     if (dataInfo.hasRelation(column.getId())) {
       List<String> columns = RelationUtils.getRenderColumns(dataInfo, column.getId());
       if (!columns.isEmpty()) {
-        return join(dataInfo, row, columns, BeeConst.STRING_SPACE);
+        return join(dataInfo, row, columns, BeeConst.STRING_SPACE, dateRenderer, dateTimeRenderer);
       }
     }
 
-    return render(column, row, index);
+    return render(column, row, index, dateRenderer, dateTimeRenderer);
   }
 
-  public static String render(IsColumn column, IsRow row, int index) {
+  public static String render(IsColumn column, IsRow row, int index,
+      Function<HasDateValue, String> dateRenderer,
+      Function<HasDateValue, String> dateTimeRenderer) {
+
     if (row == null) {
       return null;
 
@@ -1164,7 +1191,7 @@ public final class DataUtils {
       return BeeUtils.toString(row.getId());
 
     } else if (index == VERSION_INDEX) {
-      return new DateTime(row.getVersion()).toString();
+      return dateTimeRenderer.apply(new DateTime(row.getVersion()));
 
     } else if (row.isNull(index)) {
       return null;
@@ -1172,8 +1199,11 @@ public final class DataUtils {
     } else if (column == null || ValueType.isString(column.getType())) {
       return row.getString(index);
 
-    } else if (ValueType.DATE_TIME.equals(column.getType())) {
-      return row.getDateTime(index).toCompactString();
+    } else if (ValueType.DATE == column.getType()) {
+      return dateRenderer.apply(row.getDate(index));
+
+    } else if (ValueType.DATE_TIME == column.getType()) {
+      return dateTimeRenderer.apply(row.getDateTime(index));
 
     } else if (!BeeUtils.isEmpty(column.getEnumKey())) {
       return EnumUtils.getCaption(column.getEnumKey(), row.getInteger(index));
@@ -1201,7 +1231,7 @@ public final class DataUtils {
 
   /**
    * Checks if the rows have same id.
-   * 
+   *
    * @param r1 first row
    * @param r2 second row
    * @return true if the rows have the same id, otherwise false.
@@ -1212,7 +1242,7 @@ public final class DataUtils {
 
   /**
    * Checks if the rows have same id and version.
-   * 
+   *
    * @param r1 first row
    * @param r2 second row
    * @return true if the rows have the same id and same version, otherwise false.

@@ -28,6 +28,7 @@ import com.butent.bee.client.grid.ColumnHeader;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.grid.column.AbstractColumn;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.images.star.Stars;
 import com.butent.bee.client.modules.projects.ProjectsKeeper;
 import com.butent.bee.client.presenter.GridPresenter;
@@ -669,13 +670,16 @@ class TasksGrid extends AbstractGridInterceptor implements RowUpdateEvent.Handle
 
       notes.add(TaskUtils.getUpdateNote(Localized.getLabel(info.getColumn(COL_STATUS)),
           DataUtils.render(info, row, info.getColumn(COL_STATUS),
-              info.getColumnIndex(COL_STATUS)),
+              info.getColumnIndex(COL_STATUS),
+              Format.getDateRenderer(), Format.getDateTimeRenderer()),
           DataUtils.render(info, newRow, info.getColumn(COL_STATUS),
-              info.getColumnIndex(COL_STATUS))));
+              info.getColumnIndex(COL_STATUS),
+              Format.getDateRenderer(), Format.getDateTimeRenderer())));
 
       notes.add(TaskUtils.getInsertNote(Localized.getLabel(info.getColumn(COL_APPROVED)),
           DataUtils.render(info, newRow, info.getColumn(COL_APPROVED),
-              info.getColumnIndex(COL_APPROVED))));
+              info.getColumnIndex(COL_APPROVED),
+              Format.getDateRenderer(), Format.getDateTimeRenderer())));
 
       ParameterList params = TasksKeeper.createArgs(SVC_CONFIRM_TASKS);
       params.addDataItem(VAR_TASK_DATA, Codec.beeSerialize(Lists.newArrayList(row.getId())));

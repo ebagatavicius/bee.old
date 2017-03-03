@@ -28,7 +28,9 @@ import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.FiresModificationEvents;
 import com.butent.bee.shared.data.event.ModificationEvent;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.news.Channel;
@@ -523,6 +525,8 @@ public class NewsBean {
         }
       }
 
+      DateTimeFormatInfo dateTimeFormatInfo = usr.getDateTimeFormatInfo();
+
       for (BeeRow row : rowSet.getRows()) {
         boolean isNew = hasNew && newIds.contains(row.getId());
 
@@ -534,13 +538,16 @@ public class NewsBean {
 
         } else {
           String caption = DataUtils.join(rowSet.getColumns(), row, labelIndexes,
-              Headline.SEPARATOR);
+              Headline.SEPARATOR, Formatter.getDateRenderer(dateTimeFormatInfo),
+              Formatter.getDateTimeRenderer(dateTimeFormatInfo));
 
           String title;
           if (titleIndexes.isEmpty()) {
             title = null;
           } else {
-            title = DataUtils.join(rowSet.getColumns(), row, titleIndexes, Headline.SEPARATOR);
+            title = DataUtils.join(rowSet.getColumns(), row, titleIndexes, Headline.SEPARATOR,
+                Formatter.getDateRenderer(dateTimeFormatInfo),
+                Formatter.getDateTimeRenderer(dateTimeFormatInfo));
           }
 
           if (BeeUtils.isEmpty(caption)) {

@@ -14,6 +14,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.style.ColorStyleProvider;
 import com.butent.bee.client.style.ConditionalStyle;
 import com.butent.bee.client.ui.FormFactory;
@@ -59,12 +60,14 @@ public final class ClassifierKeeper {
       if (event.hasView(VIEW_COMPANIES)) {
         event.setResult(DataUtils.join(Data.getDataInfo(VIEW_COMPANIES), event.getRow(),
             Lists.newArrayList(COL_COMPANY_NAME, COL_COMPANY_CODE, COL_PHONE, COL_EMAIL_ADDRESS,
-                COL_ADDRESS, ALS_CITY_NAME, ALS_COUNTRY_NAME), BeeConst.STRING_SPACE));
+                COL_ADDRESS, ALS_CITY_NAME, ALS_COUNTRY_NAME), BeeConst.STRING_SPACE,
+            Format.getDateRenderer(), Format.getDateTimeRenderer()));
 
       } else if (event.hasView(VIEW_PERSONS)) {
         event.setResult(DataUtils.join(Data.getDataInfo(VIEW_PERSONS), event.getRow(),
             Lists.newArrayList(COL_FIRST_NAME, COL_LAST_NAME, COL_PHONE, COL_EMAIL_ADDRESS,
-                COL_ADDRESS, ALS_CITY_NAME, ALS_COUNTRY_NAME), BeeConst.STRING_SPACE));
+                COL_ADDRESS, ALS_CITY_NAME, ALS_COUNTRY_NAME), BeeConst.STRING_SPACE,
+            Format.getDateRenderer(), Format.getDateTimeRenderer()));
       }
     }
   }

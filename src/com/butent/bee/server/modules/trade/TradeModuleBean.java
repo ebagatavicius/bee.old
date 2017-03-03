@@ -81,6 +81,8 @@ import com.butent.bee.shared.html.builder.elements.Td;
 import com.butent.bee.shared.html.builder.elements.Th;
 import com.butent.bee.shared.html.builder.elements.Tr;
 import com.butent.bee.shared.i18n.DateOrdering;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogLevel;
@@ -256,6 +258,11 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
           DataUtils.parseIdSet(reqInfo.getParameter(VAR_ITEMS)),
           reqInfo.getParameterBoolean(VAR_RESERVATIONS));
       response = stock.isEmpty() ? ResponseObject.emptyResponse() : ResponseObject.response(stock);
+
+    } else if (BeeUtils.same(svc, SVC_GET_RESERVATIONS_INFO)) {
+      response = ResponseObject
+          .response(getReservationsInfo(reqInfo.getParameterLong(COL_STOCK_WAREHOUSE),
+              reqInfo.getParameterLong(COL_ITEM), reqInfo.getParameterDateTime(COL_DATE_TO)));
 
     } else if (BeeUtils.same(svc, SVC_CREATE_DOCUMENT)) {
       response = createDocument(TradeDocument.restore(reqInfo.getParameter(VAR_DOCUMENT)));
@@ -451,6 +458,21 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
       }
     });
     return reservations;
+  }
+
+  public static Map<ModuleAndSub, Map<String, Double>> getReservationsInfo(Long warehouse,
+      Long item, DateTime dateTo) {
+    Map<ModuleAndSub, Map<String, Double>> reservationsInfo = new LinkedHashMap<>();
+
+    stockReservationsProviders.forEach((moduleAndSub, stockReservationsProvider) -> {
+      Map<String, Double> info = stockReservationsProvider.getItemReservationsInfo(warehouse, item,
+          dateTo);
+
+      if (!BeeUtils.isEmpty(info)) {
+        reservationsInfo.put(moduleAndSub, info);
+      }
+    });
+    return reservationsInfo;
   }
 
   @Override
@@ -1305,6 +1327,8 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
         TimeUtils.startOfYear(TimeUtils.today(), -10).getTime(),
         TimeUtils.startOfYear(TimeUtils.today(), 100).getTime());
 
+    DateTimeFormatInfo dateTimeFormatInfo = usr.getDateTimeFormatInfo();
+
     for (IsRow row : rs) {
       Tr tr = tr();
 
@@ -1315,7 +1339,9 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
         }
 
         ValueType type = rs.getColumnType(i);
-        String value = DataUtils.render(rs.getColumn(i), row, i);
+        String value = DataUtils.render(rs.getColumn(i), row, i,
+            Formatter.getDateRenderer(dateTimeFormatInfo),
+            Formatter.getDateTimeRenderer(dateTimeFormatInfo));
 
         if (type == ValueType.LONG) {
           Long x = row.getLong(i);
@@ -2602,23 +2628,26 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
                 SqlUtils.equals(TBL_TRADE_DOCUMENT_ITEMS, COL_TRADE_DOCUMENT, docId),
                 SqlUtils.notNull(TBL_TRADE_DOCUMENT_ITEMS, COL_TRADE_ITEM_PARENT)));
 
-        SimpleRow row = qs.getRow(query);
-        if (row != null) {
-          Long parent = row.getLong(COL_TRADE_ITEM_PARENT);
-          Double qty = row.getDouble(COL_TRADE_ITEM_QUANTITY);
+        SimpleRowSet data = qs.getData(query);
 
-          if (DataUtils.isId(parent) && BeeUtils.nonZero(qty)) {
-            SqlUpdate stockUpdate = new SqlUpdate(TBL_TRADE_STOCK)
-                .addExpression(COL_STOCK_QUANTITY,
-                    SqlUtils.plus(SqlUtils.field(TBL_TRADE_STOCK, COL_STOCK_QUANTITY), qty))
-                .setWhere(SqlUtils.equals(TBL_TRADE_STOCK, COL_TRADE_DOCUMENT_ITEM, parent));
+        if (!DataUtils.isEmpty(data)) {
+          for (SimpleRow row : data) {
+            Long parent = row.getLong(COL_TRADE_ITEM_PARENT);
+            Double qty = row.getDouble(COL_TRADE_ITEM_QUANTITY);
 
-            ResponseObject response = qs.updateDataWithResponse(stockUpdate);
-            if (response.hasErrors()) {
-              return response;
+            if (DataUtils.isId(parent) && BeeUtils.nonZero(qty)) {
+              SqlUpdate stockUpdate = new SqlUpdate(TBL_TRADE_STOCK)
+                  .addExpression(COL_STOCK_QUANTITY,
+                      SqlUtils.plus(SqlUtils.field(TBL_TRADE_STOCK, COL_STOCK_QUANTITY), qty))
+                  .setWhere(SqlUtils.equals(TBL_TRADE_STOCK, COL_TRADE_DOCUMENT_ITEM, parent));
+
+              ResponseObject response = qs.updateDataWithResponse(stockUpdate);
+              if (response.hasErrors()) {
+                return response;
+              }
+
+              refresh = true;
             }
-
-            refresh = true;
           }
         }
       }

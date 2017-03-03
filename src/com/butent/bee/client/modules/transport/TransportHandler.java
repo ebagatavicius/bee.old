@@ -17,6 +17,7 @@ import com.butent.bee.client.data.Queries.RowSetCallback;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.trade.InvoiceForm;
 import com.butent.bee.client.modules.trade.InvoicesGrid;
 import com.butent.bee.client.modules.transport.charts.ChartBase;
@@ -108,7 +109,7 @@ public final class TransportHandler {
       if (event.hasView(VIEW_ASSESSMENTS)) {
         event.setResult(DataUtils.join(Data.getDataInfo(VIEW_ASSESSMENTS), event.getRow(),
             Lists.newArrayList("ID", COL_STATUS, COL_DATE, "CustomerName", "OrderNotes"),
-            BeeConst.STRING_SPACE));
+            BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer()));
       }
     }
   }

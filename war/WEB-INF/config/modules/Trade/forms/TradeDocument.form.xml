@@ -191,6 +191,9 @@
           </FlowPanel>
           <DataSelector name="Status" source="Status" renderColumns="StatusName"
                         newRowEnabled="false" style="width: 100%;" />
+
+          <TextLabel source="Owner" renderColumns="OwnerFirstName OwnerLastName"
+                     style="margin-top: 1vh; text-align: right;" />
         </FlowPanel>
       </FlowPanel>
     </east>
