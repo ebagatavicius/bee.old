@@ -32,6 +32,7 @@ import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
+import com.butent.bee.client.render.PhotoRenderer;
 import com.butent.bee.client.screen.BodyPanel;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -210,17 +211,12 @@ public class ChatManager implements HasInfo, HasEnabled {
     private Widget createPicture(List<Long> users) {
       switch (users.size()) {
         case 0:
-          Image photo = new Image(DEFAULT_PHOTO_IMAGE);
+          Image photo = new Image(PhotoRenderer.DEFAULT_PHOTO_IMAGE);
           photo.addStyleName(STYLE_CHATS_ITEM_PREFIX + "photo");
           return photo;
 
         case 1:
-          if (Global.getUsers().hasPhoto(users.get(0))) {
-            photo = Global.getUsers().getPhoto(users.get(0));
-          } else {
-            photo = new Image(DEFAULT_PHOTO_IMAGE);
-          }
-
+          photo = Global.getUsers().getPhoto(users.get(0));
           photo.addStyleName(STYLE_CHATS_ITEM_PREFIX + "photo");
           return photo;
 
@@ -384,8 +380,6 @@ public class ChatManager implements HasInfo, HasEnabled {
   private static final Integer MAX_CHAT_NOTIFIER_COUNT = 5;
 
   private static final int TIMER_PERIOD = 10_000;
-
-  private static final String DEFAULT_PHOTO_IMAGE = "images/defaultUser.png";
 
   public static final long ASSISTANT_ID = 0;
 
@@ -744,7 +738,7 @@ public class ChatManager implements HasInfo, HasEnabled {
     info.add(new Property("Chats", BeeUtils.bracket(chats.size())));
 
     for (Chat chat : chats) {
-      info.addAll(chat.getInfo());
+      info.addAll(chat.getInfo(Format.getDateTimeRenderer()));
 
       ChatView chatView = findChatView(chat.getId());
       if (chatView != null) {

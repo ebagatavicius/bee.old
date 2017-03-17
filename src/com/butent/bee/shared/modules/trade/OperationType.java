@@ -1,6 +1,7 @@
 package com.butent.bee.shared.modules.trade;
 
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.modules.classifiers.ItemPrice;
 import com.butent.bee.shared.modules.finance.TradeAccounts;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
 
@@ -35,6 +36,11 @@ public enum OperationType implements HasLocalizedCaption {
     public Long getVatCredit(TradeAccounts tradeAccounts) {
       return (tradeAccounts == null) ? null : tradeAccounts.getTradePayables();
     }
+
+    @Override
+    public ItemPrice getDefaultPrice() {
+      return ItemPrice.COST;
+    }
   },
 
   SALE(true, false, false, false) {
@@ -66,6 +72,11 @@ public enum OperationType implements HasLocalizedCaption {
     @Override
     public Long getVatCredit(TradeAccounts tradeAccounts) {
       return (tradeAccounts == null) ? null : tradeAccounts.getVatPayable();
+    }
+
+    @Override
+    public ItemPrice getDefaultPrice() {
+      return ItemPrice.SALE;
     }
   },
 
@@ -99,6 +110,11 @@ public enum OperationType implements HasLocalizedCaption {
     public Long getVatCredit(TradeAccounts tradeAccounts) {
       return null;
     }
+
+    @Override
+    public ItemPrice getDefaultPrice() {
+      return ItemPrice.COST;
+    }
   },
 
   WRITE_OFF(true, false, false, false) {
@@ -130,6 +146,11 @@ public enum OperationType implements HasLocalizedCaption {
     @Override
     public Long getVatCredit(TradeAccounts tradeAccounts) {
       return null;
+    }
+
+    @Override
+    public ItemPrice getDefaultPrice() {
+      return ItemPrice.COST;
     }
   },
 
@@ -163,6 +184,11 @@ public enum OperationType implements HasLocalizedCaption {
     public Long getVatCredit(TradeAccounts tradeAccounts) {
       return (tradeAccounts == null) ? null : tradeAccounts.getVatPayable();
     }
+
+    @Override
+    public ItemPrice getDefaultPrice() {
+      return ItemPrice.SALE;
+    }
   },
 
   CUSTOMER_RETURN(false, true, true, false) {
@@ -195,6 +221,11 @@ public enum OperationType implements HasLocalizedCaption {
     public Long getVatCredit(TradeAccounts tradeAccounts) {
       return (tradeAccounts == null) ? null : tradeAccounts.getTradeReceivables();
     }
+
+    @Override
+    public ItemPrice getDefaultPrice() {
+      return ItemPrice.SALE;
+    }
   },
 
   RETURN_TO_SUPPLIER(true, false, false, true) {
@@ -226,6 +257,11 @@ public enum OperationType implements HasLocalizedCaption {
     @Override
     public Long getVatCredit(TradeAccounts tradeAccounts) {
       return (tradeAccounts == null) ? null : tradeAccounts.getVatReceivable();
+    }
+
+    @Override
+    public ItemPrice getDefaultPrice() {
+      return ItemPrice.COST;
     }
   };
 
@@ -272,4 +308,6 @@ public enum OperationType implements HasLocalizedCaption {
   public abstract Long getVatDebit(TradeAccounts tradeAccounts);
 
   public abstract Long getVatCredit(TradeAccounts tradeAccounts);
+
+  public abstract ItemPrice getDefaultPrice();
 }

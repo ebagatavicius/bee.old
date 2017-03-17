@@ -1,5 +1,6 @@
 package com.butent.bee.client.output;
 
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.widget.InputDateTime;
 import com.butent.bee.client.widget.ListBox;
@@ -31,7 +32,7 @@ public class ReportDateTimeItem extends ReportDateItem {
       switch (getFormat()) {
         case DATETIME:
           value = ReportValue.of(BeeUtils.padLeft(val, 15, BeeConst.CHAR_ZERO))
-              .setDisplay(date.toCompactString());
+              .setDisplay(Format.renderDateTime(date));
           break;
         case HOUR:
         case MINUTE:

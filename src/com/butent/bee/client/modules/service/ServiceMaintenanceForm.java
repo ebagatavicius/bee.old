@@ -16,6 +16,8 @@ import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.validation.CellValidation;
+import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.InputBoolean;
 import com.butent.bee.client.widget.InputText;
@@ -23,7 +25,9 @@ import com.butent.bee.shared.Latch;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.*;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
+import com.butent.bee.shared.data.value.NumberValue;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.modules.orders.OrdersConstants;
 import com.butent.bee.shared.ui.HasCheckedness;
 import com.butent.bee.client.grid.ChildGrid;
 import com.butent.bee.client.view.ViewHelper;
@@ -63,6 +67,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
@@ -80,13 +85,51 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
       BeeConst.CSS_CLASS_PREFIX + "Grid-ProgressContainer";
   private static final String STYLE_PROGRESS_BAR =
       BeeConst.CSS_CLASS_PREFIX + "Grid-ProgressBar";
-  private static final int REPORT_DATA_CONSUMPTIONS_COUNT = 2;
+  private static final int REPORT_DATA_CONSUMPTIONS_COUNT = 3;
 
   private final MaintenanceEventsHandler eventsHandler = new MaintenanceEventsHandler();
   private Flow maintenanceComments;
   private Disclosure otherInfo;
   private final Collection<HandlerRegistration> registry = new ArrayList<>();
   private FlowPanel warrantyMaintenancePanel;
+
+  @Override
+  public void afterCreateEditableWidget(EditableWidget editableWidget, IdentifiableWidget widget) {
+    if (BeeUtils.same(editableWidget.getColumnId(), COL_WAREHOUSE)) {
+      editableWidget.addCellValidationHandler(event -> {
+        CellValidation cv = event.getCellValidation();
+        final String newValue = cv.getNewValue();
+        String oldValue = cv.getOldValue();
+
+        if (!Objects.equals(newValue, oldValue) && oldValue != null
+            && DataUtils.hasId(getActiveRow())) {
+
+          Global.confirm(Localized.dictionary().ordAskChangeWarehouse() + " "
+              + Localized.dictionary().saveChanges(), () -> {
+            if (DataUtils.isId(newValue)) {
+              Filter filter = Filter.equals(COL_SERVICE_MAINTENANCE, getActiveRowId());
+              Queries.update(TBL_SERVICE_ITEMS, filter, OrdersConstants.COL_RESERVED_REMAINDER,
+                  new NumberValue(BeeConst.DOUBLE_ZERO), new Queries.IntCallback() {
+
+                    @Override
+                    public void onSuccess(Integer result) {
+                      getActiveRow().setValue(getDataIndex(COL_WAREHOUSE), newValue);
+                      update();
+                    }
+                  });
+            }
+          });
+          return false;
+        } else if (!Objects.equals(newValue, oldValue) && DataUtils.hasId(getActiveRow())) {
+          getActiveRow().setValue(getDataIndex(COL_WAREHOUSE), newValue);
+          update();
+          return false;
+        }
+        return true;
+      });
+    }
+    super.afterCreateEditableWidget(editableWidget, widget);
+  }
 
   @Override
   public void afterCreateWidget(String name, IdentifiableWidget widget,
@@ -174,6 +217,9 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
     } else if (BeeUtils.same(name, COL_WARRANTY_MAINTENANCE + WIDGET_PANEL_NAME)
         && widget instanceof FlowPanel) {
       warrantyMaintenancePanel = (FlowPanel) widget;
+
+    } else if (BeeUtils.same(name, TBL_SERVICE_ITEMS) && widget instanceof ChildGrid) {
+      ((ChildGrid) widget).setGridInterceptor(new ServiceItemsGrid());
     }
 
     super.afterCreateWidget(name, widget, callback);
@@ -185,7 +231,7 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
 
     updateServiceObject(result.getId(), null);
 
-    fillDataByStateProcessSettings(result, null);
+    fillDataByStateProcessSettings(result, null, null);
   }
 
   @Override
@@ -212,6 +258,9 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
     if (warrantyPanel != null) {
       warrantyPanel.setVisible(!DataUtils.isNewRow(row));
     }
+
+    ServiceHelper.setGridEnabled(form, TBL_SERVICE_ITEMS,
+        BeeUtils.isEmpty(row.getString(getDataIndex(COL_ENDING_DATE))));
   }
 
   @Override
@@ -233,7 +282,18 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
 
   @Override
   protected void getReportData(Consumer<BeeRowSet[]> dataConsumer) {
-    super.getReportData(dataConsumer);
+    ParameterList params = ServiceKeeper.createArgs(SVC_GET_ITEMS_INFO);
+    params.addDataItem(COL_SERVICE_MAINTENANCE, getActiveRowId());
+
+    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        if (!response.isEmpty() && !response.hasErrors()) {
+          BeeRowSet items = BeeRowSet.restore((String) response.getResponse());
+          dataConsumer.accept(new BeeRowSet[] {items});
+        }
+      }
+    });
   }
 
   @Override
@@ -291,6 +351,17 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
       } else {
         action.run();
       }
+
+      Filter commentsFilter = Filter.and(Filter.equals(COL_SERVICE_MAINTENANCE, getActiveRowId()),
+          Filter.notNull(COL_SHOW_CUSTOMER));
+      Queries.getRowSet(TBL_MAINTENANCE_COMMENTS, null, commentsFilter,
+          new Queries.RowSetCallback() {
+            @Override
+            public void onSuccess(BeeRowSet comments) {
+              defaultParameters.put(TBL_MAINTENANCE_COMMENTS, comments.serialize());
+              action.run();
+            }
+      });
     });
   }
 
@@ -466,7 +537,7 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
 
       if (event.getColumns().contains(Data.getColumn(getViewName(),
           AdministrationConstants.COL_STATE))) {
-        fillDataByStateProcessSettings(event.getNewRow(), event.getOldRow());
+        fillDataByStateProcessSettings(event.getNewRow(), event.getOldRow(), event);
       }
 
     } else {
@@ -574,7 +645,7 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
     eventsHandler.setMaintenanceRow(row);
   }
 
-  private void fillDataByStateProcessSettings(IsRow row, IsRow oldRow) {
+  private void fillDataByStateProcessSettings(IsRow row, IsRow oldRow, SaveChangesEvent event) {
     Long stateId = row.getLong(getDataIndex(AdministrationConstants.COL_STATE));
     Long maintenanceTypeId = row.getLong(getDataIndex(COL_TYPE));
 
@@ -593,9 +664,17 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
           }
 
           if (BeeUtils.toBoolean(stateProcessRow.getString(result.getColumnIndex(COL_FINITE)))) {
-            Queries.updateAndFire(getViewName(), row.getId(), row.getVersion(), COL_ENDING_DATE,
-                oldValue, BeeUtils.toString(System.currentTimeMillis()),
-                ModificationEvent.Kind.UPDATE_ROW);
+            Consumer<Boolean> changeStateConsumer = canChangeState -> {
+              if (canChangeState) {
+                Queries.updateAndFire(getViewName(), row.getId(), row.getVersion(),
+                    COL_ENDING_DATE, oldValue, BeeUtils.toString(System.currentTimeMillis()),
+                    ModificationEvent.Kind.UPDATE_ROW);
+              } else {
+                event.consume();
+                getFormView().notifySevere(Localized.dictionary().ordEmptyInvoice());
+              }
+            };
+            ServiceUtils.checkCanChangeState(true, changeStateConsumer, getFormView());
 
           } else if (!BeeUtils.isEmpty(oldValue)) {
             Queries.updateAndFire(getViewName(), row.getId(), row.getVersion(), COL_ENDING_DATE,
@@ -640,6 +719,22 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
     }
 
     return true;
+  }
+
+  private void update() {
+    FormView form = getFormView();
+    BeeRowSet rowSet =
+        DataUtils.getUpdated(form.getViewName(), form.getDataColumns(), form.getOldRow(),
+            getActiveRow(), form.getChildrenForUpdate());
+
+    Queries.updateRow(rowSet, new RowCallback() {
+
+      @Override
+      public void onSuccess(BeeRow result) {
+        RowUpdateEvent.fire(BeeKeeper.getBus(), form.getViewName(), result);
+        form.refresh();
+      }
+    });
   }
 
   private void updateContactAddressLabel(boolean addressRequired) {

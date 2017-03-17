@@ -1,8 +1,5 @@
 package com.butent.bee.shared;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Splitter;
-
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -19,9 +16,6 @@ public class Pair<A, B> implements BeeSerializable {
   private enum Serial {
     A, B
   }
-
-  public static final Splitter SPLITTER =
-      Splitter.on(CharMatcher.anyOf(" ,;=")).trimResults().omitEmptyStrings().limit(2);
 
   public static <A, B> Pair<A, B> empty() {
     return new Pair<>();
@@ -59,24 +53,6 @@ public class Pair<A, B> implements BeeSerializable {
       }
     }
     return Pair.of(aa, bb);
-  }
-
-  public static Pair<String, String> split(String input) {
-    if (BeeUtils.isEmpty(input)) {
-      return null;
-    }
-
-    String a = null;
-    String b = null;
-
-    for (String s : SPLITTER.split(input)) {
-      if (a == null) {
-        a = s;
-      } else {
-        b = s;
-      }
-    }
-    return Pair.of(a, b);
   }
 
   private A a;

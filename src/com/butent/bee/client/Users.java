@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class Users {
@@ -197,18 +198,17 @@ public class Users {
   }
 
   public Image getPhoto(Long userId) {
-    UserData userData = getUserData(userId);
+    Image image;
 
-    if (userData == null || !DataUtils.isId(userData.getPhotoFile())) {
-      return null;
-
-    } else {
-      Image image = new Image(PhotoRenderer.getUrl(userData.getPhotoFile()));
+    if (DataUtils.isId(userId) && Objects.nonNull(getUserData(userId))) {
+      UserData userData = getUserData(userId);
+      image = new Image(PhotoRenderer.getPhotoUrl(userData.getPhotoFile()));
       image.setAlt(userData.getLogin());
       image.setTitle(userData.getUserSign());
-
-      return image;
+    } else {
+      image = new Image(PhotoRenderer.getPhotoUrl(null));
     }
+    return image;
   }
 
   public Presence getPresenceBySession(String sessionId) {
@@ -288,11 +288,6 @@ public class Users {
     UserData userData = (userId == null) ? null : users.get(userId);
 
     return (userData == null) ? null : userData.getUserSign();
-  }
-
-  public boolean hasPhoto(Long userId) {
-    UserData userData = getUserData(userId);
-    return userData != null && userData.hasPhoto();
   }
 
   public boolean isOpen(String sessionId) {

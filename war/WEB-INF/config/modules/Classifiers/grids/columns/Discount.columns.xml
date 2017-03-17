@@ -6,8 +6,8 @@
   <DataColumn name="DateFrom" carry="true" />
   <DataColumn name="DateTo" carry="true" />
 
-  <DataColumn name="QuantityFrom" />
-  <DataColumn name="QuantityTo" />
+  <DataColumn name="QuantityFrom" visible="false" />
+  <DataColumn name="QuantityTo" visible="false" />
   <RelColumn name="Unit" visible="false" />
 
   <DataColumn name="PriceName" carry="true" />

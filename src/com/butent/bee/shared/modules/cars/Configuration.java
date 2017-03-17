@@ -75,7 +75,7 @@ public class Configuration implements BeeSerializable {
       return null;
     }
 
-    public Long getRelationPhoto(Bundle bundle) {
+    public String getRelationPhoto(Bundle bundle) {
       if (hasRelation(bundle)) {
         return relations.get(bundle.getKey()).getA().getPhoto();
       }
@@ -233,7 +233,7 @@ public class Configuration implements BeeSerializable {
     return pair != null && pair.getA() != null ? pair.getA().getDescription() : null;
   }
 
-  public Long getBundlePhoto(Bundle bundle) {
+  public String getBundlePhoto(Bundle bundle) {
     Pair<ConfInfo, Boolean> pair = bundles.get(bundle);
     return pair != null && pair.getA() != null ? pair.getA().getPhoto() : null;
   }
@@ -312,7 +312,7 @@ public class Configuration implements BeeSerializable {
     return Objects.nonNull(optionInfo) ? optionInfo.getDescription() : null;
   }
 
-  public Long getOptionPhoto(Option option) {
+  public String getOptionPhoto(Option option) {
     OptionInfo optionInfo = options.get(option);
     return Objects.nonNull(optionInfo) ? optionInfo.getPhoto() : null;
   }
@@ -346,7 +346,7 @@ public class Configuration implements BeeSerializable {
     return Objects.nonNull(optionInfo) ? optionInfo.getRelationPackets(bundle) : null;
   }
 
-  public Long getRelationPhoto(Option option, Bundle bundle) {
+  public String getRelationPhoto(Option option, Bundle bundle) {
     OptionInfo optionInfo = options.get(option);
     return Objects.nonNull(optionInfo) ? optionInfo.getRelationPhoto(bundle) : null;
   }

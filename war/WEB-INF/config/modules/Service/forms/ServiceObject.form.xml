@@ -22,6 +22,10 @@
             <ChildGrid name="ServiceMaintenance" relColumn="ServiceObject" />
           </page>
           <page>
+            <text>=goods</text>
+            <ChildGrid name="ServiceItems" relColumn="ServiceObject" />
+          </page>
+          <page>
             <text>=svcMaintenanceItemsServices</text>
             <ChildGrid name="Maintenance" relColumn="ServiceObject" />
           </page>

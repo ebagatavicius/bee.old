@@ -607,11 +607,12 @@ public class GridContainerImpl extends Split implements GridContainerView,
 
   @Override
   public void setEnabled(boolean enabled) {
-    if (enabled == isEnabled()) {
-      return;
+    if (enabled != isEnabled()) {
+      this.enabled = enabled;
+
+      UiHelper.enableChildren(this, enabled);
+      setStyleName(StyleUtils.NAME_DISABLED, !enabled);
     }
-    this.enabled = enabled;
-    UiHelper.enableChildren(this, enabled);
   }
 
   @Override

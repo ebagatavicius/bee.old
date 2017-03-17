@@ -507,7 +507,7 @@ public final class MessageBoxes {
     int index = 0;
 
     for (int j = 0; j < c; j++) {
-      grid.setHtml(index, j, table.getColumnLabel(j));
+      grid.setHtml(index, j, Localized.maybeTranslate(table.getColumnLabel(j)));
       grid.alignCenter(index, j);
     }
     index++;

@@ -9,6 +9,12 @@
         <SimpleJoin name="OrderItem" joinType="LEFT">
           <HiddenColumn name="Order" />
           <AggregateColumn name="Order" aggregate="COUNT_DISTINCT" alias="OrderCount" />
+
+          <HiddenColumn name="ServiceItem" />
+          <SimpleJoin name="ServiceItem" joinType="LEFT">
+            <SimpleColumn name="ServiceMaintenance" />
+            <SimpleColumn name="ServiceObject"/>
+          </SimpleJoin>
         </SimpleJoin>
       </ExternalJoin>
     </ExternalJoin>

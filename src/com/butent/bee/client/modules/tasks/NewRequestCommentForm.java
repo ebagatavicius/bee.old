@@ -125,26 +125,23 @@ class NewRequestCommentForm extends AbstractFormInterceptor {
                 COL_CAPTION));
 
     for (final FileInfo fileInfo : files) {
-      FileUtils.uploadFile(fileInfo, new Callback<Long>() {
-        @Override
-        public void onSuccess(Long result) {
-          List<String> values = Lists.newArrayList(BeeUtils.toString(projectId),
-              BeeUtils.toString(eventId), BeeUtils.toString(result), fileInfo.getCaption());
+      FileUtils.uploadFile(fileInfo, result -> {
+        List<String> values = Lists.newArrayList(BeeUtils.toString(projectId),
+            BeeUtils.toString(eventId), BeeUtils.toString(result.getId()), fileInfo.getCaption());
 
-          Queries.insert(eventFilesViewName, columns, values, null, new RowCallback() {
+        Queries.insert(eventFilesViewName, columns, values, null, new RowCallback() {
+          @Override
+          public void onSuccess(BeeRow row) {
+            counter.set(counter.get() + 1);
 
-            @Override
-            public void onSuccess(BeeRow row) {
-              counter.set(counter.get() + 1);
-              if (counter.get() == files.size()) {
-                if (allUploadCallback != null) {
-                  allUploadCallback.onSuccess(Boolean.TRUE);
-                  RowInsertEvent.fire(BeeKeeper.getBus(), eventFilesViewName, row, null);
-                }
+            if (counter.get() == files.size()) {
+              if (allUploadCallback != null) {
+                allUploadCallback.onSuccess(Boolean.TRUE);
+                RowInsertEvent.fire(BeeKeeper.getBus(), eventFilesViewName, row, null);
               }
             }
-          });
-        }
+          }
+        });
       });
     }
   }

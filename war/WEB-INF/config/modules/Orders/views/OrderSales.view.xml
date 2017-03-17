@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<View xmlns="http://www.butent.com/view" xmlns:x="http://www.butent.com/expression" name="OrderSales" source="OrderItems"
+<View xmlns="http://www.butent.com/view" xmlns:xi="http://www.w3.org/2001/XInclude" name="OrderSales" source="OrderItems"
   module="Orders" caption="=tradeActItems">
 
   <Columns>
@@ -26,43 +26,6 @@
       </SimpleJoin>
       <SimpleColumn name="Notes" />
     </SimpleJoin>
-
-    <SimpleColumn name="Unpacking" />
-
-    <SimpleColumn name="Item" />
-    <SimpleJoin joinType="INNER" name="Item">
-      <SimpleColumn name="Name" alias="ItemName" />
-      <SimpleColumn name="Article" />
-
-      <SimpleJoin joinType="INNER" name="Unit">
-        <SimpleColumn name="Name" alias="UnitName" />
-      </SimpleJoin>
-
-      <SimpleColumn name="Currency" alias="ItemCurrency" />
-      <SimpleJoin name="Currency" joinType="LEFT">
-        <SimpleColumn name="Name" alias="ItemCurrencyName" />
-      </SimpleJoin>
-    </SimpleJoin>
-    <SimpleColumn name="Quantity" />
-    <SimpleColumn name="CompletedQty" />
-    <SimpleColumn name="ResRemainder" />
-    <SimpleColumn name="Price" />
-    <SimpleColumn name="Discount" />
-
-    <SimpleColumn name="VatPlus" />
-    <SimpleColumn name="Vat" />
-    <SimpleColumn name="VatPercent" />
-
-    <ExternalJoin source="OrderChildInvoices" name="OrderItem" joinType="LEFT" >
-      <SimpleJoin name="SaleItem" joinType="LEFT" filter="SaleItem = Item" >
-        <HiddenColumn name="Item" alias="SaleItem" />
-        <AggregateColumn name="Quantity" alias="Completed" aggregate="SUM" />
-      </SimpleJoin>
-    </ExternalJoin>
-
-    <SimpleColumn name="Currency" />
-    <SimpleJoin name="Currency" joinType="LEFT">
-      <SimpleColumn name="Name" alias="CurrencyName" />
-    </SimpleJoin>
+    <xi:include href="viewcolumns/SalesReservation.viewcolumns.xml" />
   </Columns>
 </View>

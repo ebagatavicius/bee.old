@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Grid[
+    <!ENTITY itemExpression "!row.IsService &amp;&amp;">
+    ]>
+<g:Grid
+  xmlns="http://www.butent.com/column"
+  xmlns:g="http://www.butent.com/grid"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:ui="http://www.butent.com/ui"
+  name="ServiceItems" viewName="ServiceItems"
+  flexGrow="1" renderMode="full"
+  newRowCaption="=newItem" disabledActions="filter">
+
+  <g:columns>
+    <RelColumn name="Item" renderColumns="ItemName"
+               choiceColumns="Name Article" filter="!(IsService)" editPopup="true"
+               visible="true" readOnly="true">
+      <dynStyle>
+        <ui:inline>color: #ff5252; font-weight: bold;</ui:inline>
+        <ui:expression>!row.IsService &amp;&amp; (row.Quantity - row.CompletedInvoices) &gt; (row.FreeRemainder + row.ResRemainder)</ui:expression>
+      </dynStyle>
+      <footer text="=totalOf" horizontalAlignment="right" />
+    </RelColumn>
+  </g:columns>
+
+  <xi:include href="../../Orders/grids/columns/ItemsReservation.columns.xml" />
+
+  <g:columns>
+    <RelColumn name="Repairer" renderColumns="RepairerFirstName RepairerLastName"
+               choiceColumns="FirstName LastName" visible="true" editInPlace="true" />
+  </g:columns>
+</g:Grid>

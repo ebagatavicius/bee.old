@@ -1,12 +1,4 @@
-#/opt/wildfly/bin/jboss-cli.sh -c controller=localhost:12190 --file=config.cli
-
-#=====HTTPS======
-#go to $JBOSS_HOME/standalone/configuration
-#keytool -genkeypair -alias serverkey -keyalg RSA -keysize 2048 -validity 3650 -keystore server.keystore -keypass changeit -storepass changeit -dname "CN=127.0.0.1,O=B-NOVO,C=LT"
-
-/core-service=management/security-realm=SSLRealm:add()
-/core-service=management/security-realm=SSLRealm/server-identity=ssl/:add(keystore-path=server.keystore,keystore-relative-to=jboss.server.config.dir, keystore-password=changeit, alias=serverkey, key-password=changeit)
-/subsystem=undertow/server=default-server/https-listener=https/:add(socket-binding=https, security-realm=SSLRealm, max-post-size=104857600)
+#/opt/wildfly/bin/jboss-cli.sh -c controller=127.0.0.1:9990 --file=jboss_config.txt
 
 # REPLACE
 #<periodic-rotating-file-handler...>
@@ -22,16 +14,22 @@
 #    ...
 #</size-rotating-file-handler>
 
-module add --name=org.postgres --resources=/opt/postgresql-9.4-1201.jdbc41.jar --dependencies=javax.api,javax.transaction.api
+#=====HTTPS====== (if we have a certificate, then create keystore bnovo.jks and uncomment following lines):
+#/core-service=management/security-realm=SSLRealm:add()
+#/core-service=management/security-realm=SSLRealm/server-identity=ssl/:add(keystore-path=bnovo.jks, keystore-relative-to=jboss.server.config.dir, keystore-password=changeit, alias=bnovo)
+#/subsystem=undertow/server=default-server/https-listener=https:write-attribute(name=security-realm, value=SSLRealm)
+#/subsystem=undertow/server=default-server/https-listener=https:write-attribute(name=max-post-size, value=104857600)
+
+module add --name=org.postgres --resources=/opt/postgresql.jar --dependencies=javax.api,javax.transaction.api
 /subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres",driver-module-name="org.postgres",driver-class-name=org.postgresql.Driver)
 data-source add \
   --jndi-name=java:/jdbc/BeeDS \
   --name=PostgrePool \
-  --connection-url=jdbc:postgresql://192.168.0.210/DB \
+  --connection-url=jdbc:postgresql://127.0.0.1/bnovodb \
   --driver-name=postgres \
-  --user-name=postgres \
-  --password=admin \
-  --max-pool-size=50 \
+  --user-name=bnovo \
+  --password=no_password \
+  --max-pool-size=95 \
   --blocking-timeout-wait-millis=60000 \
   --check-valid-connection-sql="SELECT 1" \
   --background-validation=true \
@@ -49,10 +47,11 @@ data-source add \
     ])
 
 /subsystem=ee/managed-executor-service=default:write-attribute(name=hung-task-threshold,value=3600000)
-/subsystem=ee/managed-executor-service=default:write-attribute(name=core-threads,value=45)
-/subsystem=ee/managed-executor-service=default:write-attribute(name=max-threads,value=45)
+/subsystem=ee/managed-executor-service=default:write-attribute(name=core-threads,value=90)
+/subsystem=ee/managed-executor-service=default:write-attribute(name=max-threads,value=90)
 /subsystem=ee/managed-executor-service=default:write-attribute(name=queue-length,value=2147483647)
 
+/subsystem=ejb3:write-attribute(name=default-singleton-bean-access-timeout,value=60000)
 /subsystem=transactions:write-attribute(name=default-timeout,value=1800)
 /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=max-post-size,value=104857600)
 

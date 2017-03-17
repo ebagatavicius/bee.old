@@ -62,6 +62,8 @@ public interface HeaderView extends View, IndexedPanel, Printable, HasClickHandl
 
   void showAction(Action action, boolean visible);
 
+  void showReadOnly(boolean readOnly);
+
   void showRowId(IsRow row);
 
   void showRowMessage(Evaluator evaluator, IsRow row);

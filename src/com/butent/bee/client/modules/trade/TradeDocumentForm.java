@@ -16,6 +16,7 @@ import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.composite.TabGroup;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.grid.ChildGrid;
 import com.butent.bee.client.i18n.Format;
@@ -29,6 +30,7 @@ import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.widget.DecimalLabel;
+import com.butent.bee.client.widget.InputDate;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasHtml;
 import com.butent.bee.shared.HasOptions;
@@ -53,6 +55,7 @@ import com.butent.bee.shared.modules.trade.TradeDocumentPhase;
 import com.butent.bee.shared.modules.trade.TradeDocumentSums;
 import com.butent.bee.shared.modules.trade.TradeVatMode;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.HasCheckedness;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
@@ -191,6 +194,13 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
           expandSouth(expand, top);
         }
       });
+
+    } else if (COL_TRADE_DATE.equals(name) || COL_TRADE_DOCUMENT_RECEIVED_DATE.equals(name)) {
+      JustDate minDate = Global.getParameterDate(PRM_PROTECT_TRADE_DOCUMENTS_BEFORE);
+
+      if (minDate != null && widget instanceof InputDate) {
+        ((InputDate) widget).setMinDate(minDate);
+      }
     }
 
     super.afterCreateWidget(name, widget, callback);
@@ -363,6 +373,34 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
     return (phase == null) ? null : Filter.notNull(phase.getStatusColumnName());
   }
 
+  private boolean isOwner(IsRow row) {
+    Long owner = row.getLong(getDataIndex(COL_TRADE_DOCUMENT_OWNER));
+    return owner == null || BeeKeeper.getUser().is(owner);
+  }
+
+  private void maybeClearStatus(final IsRow row) {
+    TradeDocumentPhase phase = TradeUtils.getDocumentPhase(row);
+
+    final int statusIndex = getDataIndex(COL_TRADE_DOCUMENT_STATUS);
+    Long status = row.getLong(statusIndex);
+
+    if (DataUtils.isId(status) && phase != null) {
+      Queries.getValue(VIEW_TRADE_STATUSES, status, phase.getStatusColumnName(),
+          new RpcCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+              if (!BeeConst.isTrue(result) && DataUtils.sameId(row, getActiveRow())) {
+                getActiveRow().clearCell(statusIndex);
+                RelationUtils.clearRelatedValues(Data.getDataInfo(getViewName()),
+                    COL_TRADE_DOCUMENT_STATUS, getActiveRow());
+
+                getFormView().refreshBySource(COL_TRADE_DOCUMENT_STATUS);
+              }
+            }
+          });
+    }
+  }
+
   private void onOperationChange(IsRow operationRow) {
     if (operationRow != null) {
       getFormView().updateCell(COL_TRADE_DOCUMENT_PRICE_NAME,
@@ -429,31 +467,40 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
 
     if (row == null || to == null || from == to) {
       event.cancel();
+      return;
+    }
 
-    } else if (fromStock == toStock || DataUtils.isNewRow(row)) {
+    if (TradeUtils.isDocumentProtected(row) || !super.isRowEditable(row)) {
+      event.cancel();
+      return;
+    }
+
+    if (from != null && !from.isEditable(BeeKeeper.getUser().isAdministrator()) && !isOwner(row)) {
+      event.cancel();
+      return;
+    }
+
+    if (DataUtils.isNewRow(row)) {
       setPhase(row, to);
       if (setOwner(row)) {
         getFormView().refreshBySource(COL_TRADE_DOCUMENT_OWNER);
       }
 
-      final int statusIndex = getDataIndex(COL_TRADE_DOCUMENT_STATUS);
-      Long status = row.getLong(statusIndex);
+      maybeClearStatus(row);
 
-      if (DataUtils.isId(status)) {
-        Queries.getValue(VIEW_TRADE_STATUSES, status, to.getStatusColumnName(),
-            new RpcCallback<String>() {
-              @Override
-              public void onSuccess(String result) {
-                if (!BeeConst.isTrue(result) && DataUtils.sameId(row, getActiveRow())) {
-                  getActiveRow().clearCell(statusIndex);
-                  RelationUtils.clearRelatedValues(Data.getDataInfo(getViewName()),
-                      COL_TRADE_DOCUMENT_STATUS, getActiveRow());
-
-                  getFormView().refreshBySource(COL_TRADE_DOCUMENT_STATUS);
-                }
-              }
-            });
+    } else if (fromStock == toStock) {
+      setPhase(row, to);
+      if (setOwner(row)) {
+        getFormView().refreshBySource(COL_TRADE_DOCUMENT_OWNER);
       }
+
+      getFormView().saveChanges(new RowCallback() {
+        @Override
+        public void onSuccess(BeeRow result) {
+          getFormView().setEnabled(isRowEditable(result));
+          maybeClearStatus(result);
+        }
+      });
 
     } else {
       event.cancel();
@@ -485,6 +532,8 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
 
                     RowUpdateEvent.fire(BeeKeeper.getBus(), getViewName(), r, true);
                     DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_TRADE_STOCK);
+
+                    getFormView().setEnabled(isRowEditable(getActiveRow()));
                   }
                 }
               });
@@ -515,7 +564,7 @@ public class TradeDocumentForm extends AbstractFormInterceptor {
   private void refreshItems() {
     GridView gridView = ViewHelper.getChildGrid(getFormView(), GRID_TRADE_DOCUMENT_ITEMS);
 
-    if (gridView != null && !gridView.isEmpty()) {
+    if (gridView != null) {
       gridView.refresh(false, false);
     }
   }

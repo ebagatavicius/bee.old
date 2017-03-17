@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Grid[
+    <!ENTITY tarifscale "2">
+    ]>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+  name="MaintenanceTariffs" viewName="MaintenanceTariffs"
+  caption="=svcTariffs" newRowCaption="=svcNewTariff"
+  flexGrow="1" flexShrink="1"
+  >
+  <g:columns>
+    <IdColumn name="Id" visible="true"/>
+    <RelColumn name="Repairer" renderColumns="RepairerFirstName RepairerLastName" visible="true" />
+    <DataColumn name="Tariff" scale="&tarifscale;" visible="true"/>
+    <DataColumn name="DateFrom" visible="true" />
+    <DataColumn name="DateTo" visible="true" />
+  </g:columns>
+</g:Grid>

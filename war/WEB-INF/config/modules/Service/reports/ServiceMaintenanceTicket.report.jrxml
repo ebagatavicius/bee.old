@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
-<!-- 2017-02-23T09:44:59 -->
+<!-- 2017-03-07T10:10:00 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ServiceMaintenanceTicket" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="febbd589-b0c9-4c2a-8f14-f6b6d5181445">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-	<import value="com.butent.bee.shared.i18n.Localized"/>
+	<import value="com.butent.bee.server.Invocation"/>
 	<import value="com.butent.bee.server.i18n.Localizations"/>
 	<import value="com.butent.bee.shared.data.BeeRowSet"/>
+	<import value="com.butent.bee.server.data.UserServiceBean"/>
 	<import value="com.butent.bee.shared.time.DateTime"/>
 	<import value="com.butent.bee.shared.utils.BeeUtils"/>
+	<import value="com.butent.bee.shared.i18n.Formatter"/>
 	<import value="com.butent.bee.server.RsDataSource"/>
 	<subDataset name="CreatorCompanyBank" whenResourceMissingType="Error" uuid="b2c93c41-aec5-4a69-9054-c94408a432e4">
 		<parameter name="d" class="com.butent.bee.shared.i18n.Dictionary">
@@ -65,6 +67,9 @@
 	</parameter>
 	<parameter name="CreatorCompanyCompanyBankAccounts" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="CreatorCompanyDefaultBankAccount" class="java.lang.String"/>
+	<parameter name="usr" class="com.butent.bee.server.data.UserServiceBean">
+		<defaultValueExpression><![CDATA[Invocation.locateRemoteBean(UserServiceBean.class)]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -603,12 +608,12 @@
 						</textElement>
 						<textFieldExpression><![CDATA[$R{serviceMaintenanceTicket} + " " +  $P{ID}]]></textFieldExpression>
 					</textField>
-					<textField isStretchWithOverflow="true" pattern="MMMM d, yyyy">
+					<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
 						<reportElement x="348" y="0" width="207" height="20" uuid="286b6b44-8207-428e-b2e0-ebfbeab11eed"/>
 						<textElement textAlignment="Right" verticalAlignment="Middle">
 							<font fontName="DejaVu Sans" size="9"/>
 						</textElement>
-						<textFieldExpression><![CDATA[new DateTime(BeeUtils.toLong($P{Date})).toCompactString()]]></textFieldExpression>
+						<textFieldExpression><![CDATA[Formatter.renderDateTime($P{usr}.getDateTimeFormatInfo(), new DateTime(BeeUtils.toLong($P{Date})))]]></textFieldExpression>
 					</textField>
 				</frame>
 				<frame>
@@ -1066,12 +1071,12 @@
 						</textElement>
 						<textFieldExpression><![CDATA[$R{serviceMaintenanceTicket} + " " +  $P{ID}]]></textFieldExpression>
 					</textField>
-					<textField isStretchWithOverflow="true" pattern="MMMM d, yyyy">
+					<textField isStretchWithOverflow="true" pattern="">
 						<reportElement x="348" y="0" width="207" height="20" uuid="a4c5e8ba-c573-4379-b662-a88aa3b2bf8c"/>
 						<textElement textAlignment="Right" verticalAlignment="Middle">
 							<font fontName="DejaVu Sans" size="9"/>
 						</textElement>
-						<textFieldExpression><![CDATA[new DateTime(BeeUtils.toLong($P{Date})).toCompactString()]]></textFieldExpression>
+						<textFieldExpression><![CDATA[Formatter.renderDateTime($P{usr}.getDateTimeFormatInfo(), new DateTime(BeeUtils.toLong($P{Date})))]]></textFieldExpression>
 					</textField>
 				</frame>
 			</band>

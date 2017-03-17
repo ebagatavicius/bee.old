@@ -1,6 +1,7 @@
 package com.butent.bee.server;
 
 import com.butent.bee.server.communication.ChatBean;
+import com.butent.bee.server.concurrency.ConcurrencyBean;
 import com.butent.bee.server.data.SystemBean;
 import com.butent.bee.server.data.UserServiceBean;
 import com.butent.bee.server.i18n.LocalizationBean;
@@ -38,6 +39,8 @@ public class InitializationBean {
   @EJB
   ParamHolderBean prm;
   @EJB
+  ConcurrencyBean cb;
+  @EJB
   ChatBean chat;
   @EJB
   UiHolderBean ui;
@@ -56,8 +59,9 @@ public class InitializationBean {
     Localized.setGlossary(Localizations.getGlossary(SupportedLocale.USER_DEFAULT));
 
     sys.init();
-
     prm.init();
+    cb.init();
+
     moduleBean.getModules().forEach(moduleName -> prm.refreshParameters(moduleName));
 
     Map<String, String> props = prm.getMap(AdministrationConstants.PRM_SERVER_PROPERTIES);

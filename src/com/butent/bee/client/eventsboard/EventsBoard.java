@@ -16,6 +16,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_FILE_HASH;
+
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.composite.FileGroup;
 import com.butent.bee.client.data.Data;
@@ -101,7 +103,7 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
     }
 
     public List<String> getColumnsList() {
-      List<String> cols = Lists.newArrayList(eventColName, fileColName);
+      List<String> cols = Lists.newArrayList(eventColName, fileColName, COL_FILE_HASH);
 
       if (!BeeUtils.isEmpty(fileNameColName)) {
         cols.add(fileNameColName);
@@ -144,8 +146,6 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
   private static final String CONTENT_COL_EVENT_NOTE = "EventNote";
   private static final String CONTENT_COL_EVENT_FILES = "EventFiles";
   private static final String CONTENT_COL_PUBLISHER_CONTENT = "EventContent";
-
-  private static final String DEFAULT_PHOTO_IMAGE = "images/defaultUser.png";
 
   private static final int MAX_PADDING_LEFT = 5;
 
@@ -507,7 +507,6 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
 
     createCellContent(rs, row, contentRow);
 
-
     afterCreateEventRow(rs, row, contentRow);
 
     widget.add(contentRow);
@@ -624,16 +623,7 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
           getEventsDataViewName());
       return;
     }
-
-    Long photo = row.getLong(idxPhoto);
-
-    String photoUrl;
-
-    if (!DataUtils.isId(photo)) {
-      photoUrl = DEFAULT_PHOTO_IMAGE;
-    } else {
-      photoUrl = PhotoRenderer.getUrl(photo);
-    }
+    String photoUrl = PhotoRenderer.getPhotoUrl(row.getString(idxPhoto));
 
     Image image = new Image(photoUrl);
     image.addStyleName(STYLE_PREFIX + STYLE_CONTENT_PHOTO);
@@ -715,7 +705,7 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
         if (!clearCache && getOldData() != null && result != null) {
           if (getOldData().getNumberOfRows() == result.getNumberOfRows()
               && getOldData().getRow(getOldData().getNumberOfRows() - 1).getId() == result.getRow(
-                  result.getNumberOfRows() - 1).getId()) {
+              result.getNumberOfRows() - 1).getId()) {
             // TODO: create some methods validate that data is same;
             return;
           }
@@ -817,6 +807,7 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
 
         for (BeeRow fileRow : result) {
           Long fileId = fileRow.getLong(idxFileId);
+          String hash = fileRow.getString(result.getColumnIndex(COL_FILE_HASH));
 
           String fileName = null;
           Long fileSize = null;
@@ -839,8 +830,7 @@ public abstract class EventsBoard extends Flow implements Presenter, RowInsertEv
             fileCaption = fileRow.getString(idxFileCaption);
           }
 
-          FileInfo fi = new FileInfo(fileId, fileName, fileSize, fileType);
-
+          FileInfo fi = new FileInfo(fileId, hash, fileName, fileSize, fileType);
           fi.setRelatedId(fileRow.getLong(idxEventId));
 
           if (!BeeUtils.isEmpty(fileCaption)) {

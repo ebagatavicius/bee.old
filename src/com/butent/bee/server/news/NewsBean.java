@@ -531,7 +531,8 @@ public class NewsBean {
         boolean isNew = hasNew && newIds.contains(row.getId());
 
         if (hasProducer) {
-          Headline headline = NewsHelper.getHeadline(feed, userId, rowSet, row, isNew, constants);
+          Headline headline = NewsHelper.getHeadline(feed, userId, rowSet, row, isNew, constants,
+              dateTimeFormatInfo);
           if (headline != null) {
             headlines.add(headline);
           }

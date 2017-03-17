@@ -5,7 +5,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
@@ -20,7 +20,7 @@ import com.butent.bee.client.dialog.StringCallback;
 import com.butent.bee.client.grid.CellContext;
 import com.butent.bee.client.grid.ColumnFooter;
 import com.butent.bee.client.grid.ColumnHeader;
-import com.butent.bee.client.layout.Flow;
+import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.layout.Vertical;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.utils.Duration;
@@ -30,7 +30,6 @@ import com.butent.bee.client.view.grid.ColumnInfo;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Label;
-import com.butent.bee.client.widget.Link;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
@@ -41,7 +40,6 @@ import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.css.values.VerticalAlign;
 import com.butent.bee.shared.data.BeeRowSet;
-import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.cache.CachingPolicy;
 import com.butent.bee.shared.data.filter.Filter;
@@ -57,6 +55,7 @@ import com.butent.bee.shared.export.XSheet;
 import com.butent.bee.shared.export.XStyle;
 import com.butent.bee.shared.export.XWorkbook;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.io.FileNameUtils;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -187,21 +186,20 @@ public final class Exporter {
       this.outputLooper = outputLooper;
     }
 
-    private void showResult(long fileId, String fileName) {
+    private void showResult(FileInfo fileInfo, String fileName) {
       stopTimer();
       updateClock();
 
       panel.addStyleName(STYLE_PREFIX + "completed");
       panel.removeStyleName(STYLE_SUBMITTING);
 
-      Flow linkContainer = new Flow();
+      Horizontal linkContainer = new Horizontal();
 
-      InlineLabel linkLabel = new InlineLabel(Localized.dictionary().createdFile());
+      Label linkLabel = new Label(Localized.dictionary().createdFile());
       linkLabel.addStyleName(STYLE_PREFIX + "link-label");
       linkContainer.add(linkLabel);
 
-      String name = FileNameUtils.defaultExtension(fileName, XWorkbook.FILE_EXTENSION);
-      Link link = new Link(fileName, FileUtils.getUrl(fileId, name));
+      Widget link = FileUtils.getLink(fileInfo, fileName);
       link.addStyleName(STYLE_PREFIX + "link");
       linkContainer.add(link);
 
@@ -911,11 +909,7 @@ public final class Exporter {
 
           @Override
           public void onSuccess(String result) {
-            if (DataUtils.isId(result)) {
-              controller.showResult(BeeUtils.toLong(result), fileName);
-            } else {
-              onFailure(Service.EXPORT_WORKBOOK, id, fileName, "response", result, "not an id");
-            }
+            controller.showResult(FileInfo.restore(result), fileName);
           }
         });
   }

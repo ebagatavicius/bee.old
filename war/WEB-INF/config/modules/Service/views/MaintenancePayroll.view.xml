@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="MaintenancePayroll" source="MaintenancePayroll" module="Service"
+  caption="=payroll"
+  >
+  <Columns>
+    <SimpleColumn name="ServiceMaintenance" />
+    <SimpleColumn name="Repairer" editable="true" />
+    <SimpleJoin name="Repairer" joinType="LEFT">
+      <SimpleJoin name="Person" joinType="LEFT">
+        <SimpleColumn alias="RepairerFirstName" name="FirstName" />
+        <SimpleColumn alias="RepairerLastName" name="LastName" />
+      </SimpleJoin>
+    </SimpleJoin>
+    <SimpleColumn name="Date" />
+    <SimpleColumn name="BasicAmount" />
+    <SimpleColumn name="PayrollDate" />
+    <SimpleColumn name="Tariff" />
+    <SimpleColumn name="Salary" />
+    <SimpleColumn name="Currency" />
+    <SimpleJoin joinType="LEFT" name="Currency">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
+    <SimpleColumn name="Confirmed" />
+    <SimpleColumn name="ConfirmedUser" />
+    <SimpleJoin name="ConfirmedUser" joinType="LEFT">
+      <SimpleColumn alias="ConfirmedUserCompanyPerson" name="CompanyPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn alias="ConfirmedUserFirstName" name="FirstName" />
+          <SimpleColumn alias="ConfirmedUserLastName" name="LastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+    <SimpleColumn name="ConfirmationDate" />
+    <SimpleColumn name="Notes" />
+  </Columns>
+  <Order>
+    <OrderBy column="Date" descending="true"/>
+  </Order>
+</View>

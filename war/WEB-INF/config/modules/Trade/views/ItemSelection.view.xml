@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="ItemSelection" caption="=itemSelection" source="Items" module="Trade"
+>
+  <Columns>
+    <SimpleColumn name="Name" />
+    <SimpleColumn name="Name2" />
+    <SimpleColumn name="Name3" />
+
+    <SimpleColumn name="Article" />
+    <SimpleColumn name="Article2" />
+    <SimpleColumn name="Barcode" />
+
+    <SimpleColumn name="Unit" />
+    <SimpleJoin joinType="LEFT" name="Unit">
+      <SimpleColumn name="Name" alias="UnitName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Price" />
+    <SimpleColumn name="Currency" />
+
+    <SimpleColumn name="Cost" />
+    <SimpleColumn name="CostCurrency" />
+
+    <SimpleColumn name="Price1" />
+    <SimpleColumn name="Currency1" />
+
+    <SimpleColumn name="Price2" />
+    <SimpleColumn name="Currency2" />
+
+    <SimpleColumn name="Price3" />
+    <SimpleColumn name="Currency3" />
+
+    <SimpleColumn name="Price4" />
+    <SimpleColumn name="Currency4" />
+
+    <SimpleColumn name="Price5" />
+    <SimpleColumn name="Currency5" />
+
+    <SimpleColumn name="Price6" />
+    <SimpleColumn name="Currency6" />
+
+    <SimpleColumn name="Price7" />
+    <SimpleColumn name="Currency7" />
+
+    <SimpleColumn name="Price8" />
+    <SimpleColumn name="Currency8" />
+
+    <SimpleColumn name="Price9" />
+    <SimpleColumn name="Currency9" />
+
+    <SimpleColumn name="Price10" />
+    <SimpleColumn name="Currency10" />
+
+    <SimpleColumn name="Vat" />
+    <SimpleColumn name="VatPercent" />
+
+    <SimpleColumn name="IsService" />
+
+    <SimpleColumn name="Type" />
+    <SimpleJoin joinType="LEFT" name="Type">
+      <SimpleColumn name="Parent" alias="ParentType" />
+      <SimpleJoin name="Parent" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ParentTypeName" />
+      </SimpleJoin>
+      <SimpleColumn name="Name" alias="ItemTypeName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Group" />
+    <SimpleJoin joinType="LEFT" name="Group">
+      <SimpleColumn name="Parent" alias="ParentGroup" />
+      <SimpleJoin name="Parent" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ParentGroupName" />
+      </SimpleJoin>
+      <SimpleColumn name="Name" alias="ItemGroupName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="DefaultQuantity" />
+
+    <SimpleColumn name="Ordinal" />
+
+    <SimpleColumn name="Description" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="IsService" nulls="first" />
+    <OrderBy column="Ordinal" />
+    <OrderBy column="Name" />
+    <OrderBy column="Article" />
+  </Order>
+</View>

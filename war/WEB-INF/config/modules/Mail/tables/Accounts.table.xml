@@ -11,7 +11,7 @@
     <Boolean name="Main" label="=mailDefault" />
     <Boolean name="Private" label="=mailPrivate" />
     <Enum name="SyncMode" key="SyncMode" defValue="0" />
-    <DateTime name="LastConnect" />
+    <DateTime name="LastConnect" audit="false" />
     <Relation name="Address" relation="Emails" notNull="true" unique="true" label="=mailAddress" />
     <Relation name="Signature" relation="Signatures" label="=mailSignature" />
 

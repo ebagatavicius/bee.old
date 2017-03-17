@@ -7,6 +7,7 @@ import com.google.common.eventbus.Subscribe;
 
 import static com.butent.bee.shared.communication.ChatConstants.*;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_PHOTO;
 
 import com.butent.bee.server.data.DataEvent.ViewQueryEvent;
 import com.butent.bee.server.data.DataEventHandler;
@@ -158,10 +159,7 @@ public class ChatBean {
 
             if (!BeeUtils.isEmpty(users)) {
               if (users.size() == 1) {
-                Long photoFile = usr.getUserPhotoFile(users.get(0));
-                if (DataUtils.isId(photoFile)) {
-                  row.setProperty(PROP_USER_PHOTO, photoFile);
-                }
+                row.setProperty(COL_PHOTO, usr.getUserPhotoFile(users.get(0)));
               }
 
               List<String> userNames = new ArrayList<>();
@@ -442,7 +440,7 @@ public class ChatBean {
 
     SqlSelect query = new SqlSelect()
         .addFields(TBL_CHAT_FILES, COL_CHAT_FILE, COL_CHAT_FILE_CAPTION)
-        .addFields(TBL_FILES, COL_FILE_NAME, COL_FILE_SIZE, COL_FILE_TYPE)
+        .addFields(TBL_FILES, COL_FILE_HASH, COL_FILE_NAME, COL_FILE_SIZE, COL_FILE_TYPE)
         .addFrom(TBL_CHAT_FILES)
         .addFromInner(TBL_FILES,
             sys.joinTables(TBL_FILES, TBL_CHAT_FILES, COL_CHAT_FILE))
@@ -453,7 +451,7 @@ public class ChatBean {
 
     if (!DataUtils.isEmpty(data)) {
       for (SimpleRow row : data) {
-        FileInfo file = new FileInfo(row.getLong(COL_CHAT_FILE),
+        FileInfo file = new FileInfo(row.getLong(COL_CHAT_FILE), row.getValue(COL_FILE_HASH),
             row.getValue(COL_FILE_NAME), row.getLong(COL_FILE_SIZE), row.getValue(COL_FILE_TYPE));
 
         file.setCaption(row.getValue(COL_CHAT_FILE_CAPTION));

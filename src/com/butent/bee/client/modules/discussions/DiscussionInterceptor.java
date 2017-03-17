@@ -487,11 +487,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
     }
 
     if (discussOwnerPhoto != null) {
-      if (DataUtils.isId(row.getLong(form.getDataIndex(ALS_OWNER_PHOTO)))) {
-        discussOwnerPhoto.setUrl(PhotoRenderer.getUrl(form.getLongValue(ALS_OWNER_PHOTO)));
-      } else {
-        discussOwnerPhoto.setUrl(PhotoRenderer.DEFAULT_PHOTO_IMAGE);
-      }
+      discussOwnerPhoto.setUrl(PhotoRenderer.getPhotoUrl(form.getStringValue(ALS_OWNER_PHOTO)));
     }
   }
 
@@ -1522,10 +1518,8 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
 
   private static void renderPhoto(IsRow commentRow, List<BeeColumn> commentColumns,
       Flow container) {
-    Long photo =
-        commentRow.getLong(DataUtils.getColumnIndex(COL_PHOTO, commentColumns));
-    Image image = new Image(DataUtils.isId(photo) ? PhotoRenderer.getUrl(photo)
-            : PhotoRenderer.DEFAULT_PHOTO_IMAGE);
+    Image image = new Image(PhotoRenderer.getPhotoUrl(DataUtils.getString(commentColumns,
+        commentRow, COL_PHOTO)));
     image.addStyleName(STYLE_COMMENT + STYLE_PHOTO);
     container.add(image);
 
@@ -1589,7 +1583,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
     for (final FileInfo fileInfo : files) {
       FileUtils.uploadFile(fileInfo, result -> {
         List<String> values = Lists.newArrayList(BeeUtils.toString(discussionId),
-            BeeUtils.toString(commentId), BeeUtils.toString(result), fileInfo.getCaption());
+            BeeUtils.toString(commentId), BeeUtils.toString(result.getId()), fileInfo.getCaption());
 
         Queries.insert(VIEW_DISCUSSIONS_FILES, columns, values, null, new RowCallback() {
           @Override

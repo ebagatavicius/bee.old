@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.HasOneWidget;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.value.BooleanValue;
@@ -94,7 +95,7 @@ public final class SummaryChangeEvent extends GwtEvent<SummaryChangeEvent.Handle
             break;
 
           default:
-            messages.add(value.toString());
+            messages.add(value.render(Format.getDateRenderer(), Format.getDateTimeRenderer()));
         }
       }
     }

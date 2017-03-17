@@ -5,7 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_USER_LOCALE;
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -46,7 +46,6 @@ import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
-import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.ui.UserInterface;
@@ -154,14 +153,13 @@ public class SelfServiceScreen extends ScreenImpl {
                       public void onSuccess(BeeRowSet result) {
                         if (!DataUtils.isEmpty(result)) {
                           int r = result.getNumberOfRows() - 1;
-                          FileInfo fileInfo = new FileInfo(
-                              result.getLong(r, AdministrationConstants.COL_FILE),
-                              result.getString(r, AdministrationConstants.ALS_FILE_NAME),
-                              result.getLong(r, AdministrationConstants.ALS_FILE_SIZE),
-                              result.getString(r, AdministrationConstants.ALS_FILE_TYPE));
+                          FileInfo fileInfo = new FileInfo(result.getLong(r, COL_FILE),
+                              result.getString(r, COL_FILE_HASH),
+                              result.getString(r, ALS_FILE_NAME),
+                              result.getLong(r, ALS_FILE_SIZE),
+                              result.getString(r, ALS_FILE_TYPE));
 
-                          fileInfo.setCaption(result.getString(r,
-                              AdministrationConstants.COL_FILE_CAPTION));
+                          fileInfo.setCaption(result.getString(r, COL_FILE_CAPTION));
 
                           ReportUtils.preview(fileInfo);
                         }

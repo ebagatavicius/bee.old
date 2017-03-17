@@ -522,12 +522,10 @@ public class LoginServlet extends HttpServlet {
       path = Config.getLocalPath(fileName + ".pdf");
     }
     if (!BeeUtils.isEmpty(path)) {
-      Long id;
-
       try {
         File file = new File(path);
-        id = fs.storeFile(new FileInputStream(file), file.getName(), null);
-        path = BeeUtils.join("/", contextPath, AdministrationConstants.FILE_URL, id);
+        path = BeeUtils.join("/", contextPath, AdministrationConstants.FILE_URL,
+            fs.storeFile(new FileInputStream(file), file.getName(), null).getHash());
 
       } catch (IOException e) {
         logger.error(e);

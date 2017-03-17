@@ -170,14 +170,14 @@ public class DateTimeFilterSupplier extends AbstractFilterSupplier {
 
       } else if (start == null) {
         return BeeUtils.joinWords(Localized.dictionary().dateToShort().toLowerCase(),
-            end.toCompactString());
+            Format.renderDateTime(end));
 
       } else if (end == null) {
         return BeeUtils.joinWords(Localized.dictionary().dateFromShort().toLowerCase(),
-            start.toCompactString());
+            Format.renderDateTime(start));
 
       } else {
-        return BeeUtils.join(" - ", start.toCompactString(), end.toCompactString());
+        return BeeUtils.join(" - ", Format.renderDateTime(start), Format.renderDateTime(end));
       }
 
     } else if (getEmptiness() != null) {

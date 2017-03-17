@@ -133,8 +133,8 @@
 
     <Details open="true">
       <Summary text="=cargoInformation" style="&summary;" />
-      <ChildGrid name="CargoLoadingUnbound" relColumn="Cargo" source="Cargo" />
-      <ChildGrid name="CargoUnloadingUnbound" relColumn="Cargo" source="Cargo" />
+      <ChildGrid name="CargoLoadingUnbound" relColumn="Cargo" source="Cargo" style="min-height: 170px;"/>
+      <ChildGrid name="CargoUnloadingUnbound" relColumn="Cargo" source="Cargo" style="min-height: 170px;"/>
     </Details>
     &separator;
 
@@ -174,7 +174,7 @@
           </cell>
           <Label for="Value" name="ValueLabel" />
           <FlowPanel>
-            <InputMoney source="Value" style="&decimal;" />
+            <InputMoney source="Value" style="&decimal;" currencySource="ValueCurrency"/>
             <DataSelector source="ValueCurrency" newRowEnabled="false" editEnabled="false"
                           placeholder="=currencyShort" style="&unit;" filter="SelfService" />
           </FlowPanel>
@@ -290,7 +290,7 @@
       </dynStyle>
       <page>
         <text>=files</text>
-        <ChildGrid name="CargoFiles" relColumn="Cargo" source="Cargo" />
+        <ChildGrid name="CargoFiles" relColumn="Cargo" source="Cargo" disablable="false"/>
       </page>
       <page>
         <text>=mails</text>

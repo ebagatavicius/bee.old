@@ -59,6 +59,7 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -245,6 +246,12 @@ public final class Global {
         ? parameter.getBoolean(BeeKeeper.getUser().getUserId()) : parameter.getBoolean());
   }
 
+  public static JustDate getParameterDate(String prm) {
+    BeeParameter parameter = parameters.get(prm);
+    return Objects.isNull(parameter) ? null : (parameter.supportsUsers()
+        ? parameter.getDate(BeeKeeper.getUser().getUserId()) : parameter.getDate());
+  }
+
   public static Map<String, String> getParameterMap(String prm) {
     BeeParameter parameter = parameters.get(prm);
     return Objects.isNull(parameter) ? new HashMap<>() : (parameter.supportsUsers()
@@ -423,7 +430,8 @@ public final class Global {
 
     int r = 0;
     for (int i = 0; i < c; i++) {
-      String label = BeeUtils.notEmpty(data.getColumnLabel(i), data.getColumnId(i));
+      String label = BeeUtils.notEmpty(Localized.maybeTranslate(data.getColumnLabel(i)),
+          data.getColumnId(i));
       table.setHtml(r, i, label);
 
       TableCellElement cell = table.getCellFormatter().getElement(r, i);
@@ -447,7 +455,7 @@ public final class Global {
             Long x = row.getLong(i);
             if (x != null && maybeTime.contains(x)) {
               type = ValueType.DATE_TIME;
-              value = new DateTime(x).toCompactString();
+              value = Format.renderDateTime(x);
             }
           }
 

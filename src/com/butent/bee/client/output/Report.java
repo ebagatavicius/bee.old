@@ -54,8 +54,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-
-// import com.butent.bee.shared.modules.transport.TransportConstants.TripStatus;
+import java.util.stream.Stream;
 
 public enum Report implements HasWidgetSupplier {
   COMPANY_TYPES(ModuleAndSub.of(Module.CLASSIFIERS), "CompanyTypes", "CompanyRelationTypeReport") {
@@ -164,7 +163,7 @@ public enum Report implements HasWidgetSupplier {
 
     @Override
     public String getReportCaption() {
-      return Localized.dictionary().trReportTripProfit();
+      return Localized.dictionary().trReportProfitability();
     }
 
     @Override
@@ -174,50 +173,84 @@ public enum Report implements HasWidgetSupplier {
       for (ReportItem item : getItems()) {
         items.put(item.getExpression(), item);
       }
-      ReportInfo report = new ReportInfo(getReportCaption());
+      Collection<ReportInfo> reports = new ArrayList<>();
+      reports.add(getTripProfit(items));
+      reports.add(getOrderProfit(items));
+      reports.add(getCustomerProfitability(items));
 
-      for (String item : new String[] {
-          COL_TRIP, COL_TRIP_NO, COL_TRIP_DATE_FROM, COL_TRIP_DATE_TO, COL_TRAILER}) {
-        report.addRowItem(items.get(item));
-      }
-      report.setRowGrouping(items.get(COL_VEHICLE));
+      return reports;
+    }
 
+    private ReportInfo getCustomerProfitability(Map<String, ReportItem> items) {
+      ReportInfo report = new ReportInfo(Localized.dictionary().trReportCustomerProfit());
+
+      Stream.of(ALS_ORDER_DATE, COL_ORDER_NO, COL_TRIP_MANAGER, COL_TRIP_ROUTE)
+        .forEach(item -> report.addRowItem(items.get(item)));
+
+      report.setRowGrouping(items.get(COL_CUSTOMER));
       report.addColItem(items.get(COL_ROUTE_KILOMETERS));
-      report.addColItem(items.get("Planned" + COL_ROUTE_KILOMETERS));
-
-      ReportItem income = items.get("TripIncome");
-      report.addColItem(income);
-
-      ReportFormulaItem costs = new ReportFormulaItem(Localized.dictionary().expenses());
-      costs.setPrecision(2);
-
-      for (String item : new String[] {"FuelCosts", "DailyCosts", "RoadCosts", "OtherCosts"}) {
-        costs.plus(items.get(item));
-      }
-      report.addColItem(costs);
-
-      ReportFormulaItem plannedCosts = new ReportFormulaItem(
-          BeeUtils.joinWords(Localized.dictionary().expenses(),
-              BeeUtils.parenthesize(Localized.dictionary().plan())));
-      plannedCosts.setPrecision(2);
-
-      for (String item : new String[] {"FuelCosts", "DailyCosts", "RoadCosts", "OtherCosts"}) {
-        plannedCosts.plus(items.get("Planned" + item));
-      }
-      report.addColItem(plannedCosts);
-
-      ReportItem constantCosts = items.get("ConstantCosts");
-      report.addColItem(constantCosts);
-
-      report.addColItem(new ReportFormulaItem(Localized.dictionary().profit())
-          .plus(new ReportResultItem(income))
-          .minus(new ReportResultItem(costs))
-          .minus(new ReportResultItem(constantCosts)).setPrecision(2));
-
+      createProfit(report, items, false);
       report.getFilterItems().add(items.get(COL_TRIP_STATUS)
-          .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
+        .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
 
-      return Collections.singletonList(report);
+      return report;
+    }
+
+    private ReportInfo getOrderProfit(Map<String, ReportItem> items) {
+      ReportInfo report = new ReportInfo(Localized.dictionary().trReportOrderProfit());
+      Stream.of(ALS_ORDER_DATE, COL_TRIP_STATUS, COL_CUSTOMER, COL_TRIP_MANAGER, COL_TRIP_ROUTE)
+        .forEach(item -> report.addRowItem(items.get(item)));
+
+      report.setRowGrouping(items.get(COL_ORDER_NO));
+      Stream.of(COL_TRIP_NO, ALS_TRIP_MANAGER, COL_ROUTE_KILOMETERS)
+        .forEach(item -> report.addColItem(items.get(item)));
+
+      createProfit(report, items, false);
+      report.getFilterItems().add(items.get(COL_TRIP_STATUS)
+        .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
+
+      return report;
+    }
+
+    private ReportInfo getTripProfit(Map<String, ReportItem> items) {
+      ReportInfo report = new ReportInfo(Localized.dictionary().trReportTripProfit());
+      Stream.of(COL_TRIP_NO, COL_TRIP_DATE_FROM, COL_TRIP_DATE_TO, COL_CUSTOMER, COL_MAIN_DRIVER,
+        COL_TRAILER)
+        .forEach(item -> report.addRowItem(items.get(item)));
+
+      report.setRowGrouping(items.get(COL_VEHICLE));
+      report.addColItem(items.get(COL_ROUTE_KILOMETERS));
+      createProfit(report, items, true);
+      report.getFilterItems().add(items.get(COL_TRIP_STATUS)
+        .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
+
+      return report;
+    }
+
+    private void createProfit(ReportInfo report, Map<String, ReportItem> items, boolean expand) {
+      ReportItem tripIncome = items.get("TripIncome");
+      ReportFormulaItem profit = (ReportFormulaItem) new ReportFormulaItem(
+        Localized.dictionary().profit()).setPrecision(2);
+      ReportFormulaItem costs = (ReportFormulaItem) new ReportFormulaItem(
+        Localized.dictionary().expenses()).setPrecision(2);
+
+      report.addColItem(tripIncome);
+      profit.plus(new ReportResultItem(tripIncome));
+
+      if (!expand) {
+        report.addColItem(costs);
+        profit.minus(new ReportResultItem(costs));
+      }
+      Stream.of("FuelCosts", "DailyCosts", "RoadCosts", "OtherCosts", "ConstantCosts")
+        .forEach(item -> {
+          if (expand) {
+            report.addColItem(items.get(item));
+            profit.minus(new ReportResultItem(items.get(item)));
+          } else {
+            costs.plus(items.get(item));
+          }
+        });
+      report.addColItem(profit);
     }
   },
 

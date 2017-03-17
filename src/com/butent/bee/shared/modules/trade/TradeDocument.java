@@ -26,7 +26,7 @@ import java.util.Map;
 public class TradeDocument implements BeeSerializable {
 
   private enum Serial {
-    ID, VERSION, DATE, SERIES, NUMBER, NUMBER_1, NUMBER_2, OPERATION, PHASE, STATUS,
+    ID, VERSION, DATE, SERIES, NUMBER, NUMBER_1, NUMBER_2, OPERATION, PHASE, OWNER, STATUS,
     SUPPLIER, CUSTOMER, WAREHOUSE_FROM, WAREHOUSE_TO, CURRENCY, PAYER, TERM, MANAGER,
     DOCUMENT_DISCOUNT, PRICE_NAME, DOCUMENT_VAT_MODE, DOCUMENT_DISCOUNT_MODE,
     RECEIVED_DATE, NOTES, EXTRA_DIMENSIONS, TRADE_ACCOUNTS, ITEMS
@@ -51,6 +51,7 @@ public class TradeDocument implements BeeSerializable {
 
   private Long operation;
   private TradeDocumentPhase phase;
+  private Long owner;
   private Long status;
 
   private Long supplier;
@@ -135,6 +136,9 @@ public class TradeDocument implements BeeSerializable {
             break;
           case PHASE:
             setPhase(Codec.unpack(TradeDocumentPhase.class, value));
+            break;
+          case OWNER:
+            setOwner(BeeUtils.toLongOrNull(value));
             break;
           case STATUS:
             setStatus(BeeUtils.toLongOrNull(value));
@@ -234,6 +238,9 @@ public class TradeDocument implements BeeSerializable {
           break;
         case PHASE:
           arr[i++] = Codec.pack(getPhase());
+          break;
+        case OWNER:
+          arr[i++] = getOwner();
           break;
         case STATUS:
           arr[i++] = getStatus();
@@ -369,6 +376,14 @@ public class TradeDocument implements BeeSerializable {
 
   public void setPhase(TradeDocumentPhase phase) {
     this.phase = phase;
+  }
+
+  public Long getOwner() {
+    return owner;
+  }
+
+  public void setOwner(Long owner) {
+    this.owner = owner;
   }
 
   public Long getStatus() {
@@ -537,6 +552,9 @@ public class TradeDocument implements BeeSerializable {
     }
     if (getPhase() != null) {
       values.put(COL_TRADE_DOCUMENT_PHASE, IntegerValue.of(getPhase()));
+    }
+    if (getOwner() != null) {
+      values.put(COL_TRADE_DOCUMENT_OWNER, new LongValue(getOwner()));
     }
     if (getStatus() != null) {
       values.put(COL_TRADE_DOCUMENT_STATUS, new LongValue(getStatus()));

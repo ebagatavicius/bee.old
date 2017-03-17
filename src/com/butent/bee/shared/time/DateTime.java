@@ -504,40 +504,14 @@ public class DateTime extends AbstractDate implements Comparable<DateTime> {
     return true;
   }
 
-  public String toCompactString() {
-    String timeString = toCompactTimeString();
-    if (timeString.isEmpty()) {
-      return toDateString();
-    } else {
-      return toDateString() + TimeUtils.DATE_TIME_SEPARATOR + timeString;
-    }
-  }
-
-  public String toCompactTimeString() {
-    if (getMillis() != 0) {
-      return toTimeString();
-    }
-    if (getHour() == 0 && getMinute() == 0 && getSecond() == 0) {
-      return BeeConst.STRING_EMPTY;
-    }
-
-    StringBuilder sb = new StringBuilder();
-    sb.append(TimeUtils.padTwo(getHour()));
-    sb.append(TimeUtils.TIME_FIELD_SEPARATOR).append(TimeUtils.padTwo(getMinute()));
-
-    if (getSecond() != 0) {
-      sb.append(TimeUtils.TIME_FIELD_SEPARATOR).append(TimeUtils.padTwo(getSecond()));
-    }
-    return sb.toString();
-  }
-
   /**
    * Converts the {@code DateTime} to {@code String} with date and time.
    * @return String of date and time
    */
   @Override
   public String toString() {
-    return toDateString() + TimeUtils.DATE_TIME_SEPARATOR + toTimeString();
+    return dateToString(getYear(), getMonth(), getDom()) + TimeUtils.DATE_TIME_SEPARATOR
+        + toTimeString();
   }
 
   @Override
@@ -565,7 +539,7 @@ public class DateTime extends AbstractDate implements Comparable<DateTime> {
   }
 
   public String toUtcDateString() {
-    return TimeUtils.dateToString(getUtcYear(), getUtcMonth(), getUtcDom());
+    return dateToString(getUtcYear(), getUtcMonth(), getUtcDom());
   }
 
   /**

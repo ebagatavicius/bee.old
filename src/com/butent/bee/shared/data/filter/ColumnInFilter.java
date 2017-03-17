@@ -1,14 +1,18 @@
 package com.butent.bee.shared.data.filter;
 
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.HasOptions;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
-public class ColumnInFilter extends Filter {
+public class ColumnInFilter extends Filter implements HasOptions {
 
   private enum Serial {
-    COLUMN, IN_VIEW, IN_COLUMN, IN_FILTER
+    COLUMN, IN_VIEW, IN_COLUMN, IN_FILTER, OPTIONS
   }
+
+  public static final String ID_TAG = "_ID_";
+  public static final String OPTION_FROM = "_FROM_";
 
   private String column;
 
@@ -17,20 +21,26 @@ public class ColumnInFilter extends Filter {
 
   private Filter inFilter;
 
+  private String options;
+
   protected ColumnInFilter() {
     super();
   }
 
-  protected ColumnInFilter(String column, String inView, String inColumn) {
-    this(column, inView, inColumn, null);
+  protected ColumnInFilter(String column, String inView, String inColumn, Filter inFilter) {
+    this(column, inView, inColumn, inFilter, null);
   }
 
-  protected ColumnInFilter(String column, String inView, String inColumn, Filter inFilter) {
+  protected ColumnInFilter(String column, String inView, String inColumn, Filter inFilter,
+      String options) {
+
     super();
+
     this.column = column;
     this.inView = inView;
     this.inColumn = inColumn;
     this.inFilter = inFilter;
+    this.options = options;
   }
 
   @Override
@@ -58,6 +68,9 @@ public class ColumnInFilter extends Filter {
         case IN_FILTER:
           inFilter = Filter.restore(value);
           break;
+        case OPTIONS:
+          options = value;
+          break;
       }
     }
   }
@@ -79,8 +92,17 @@ public class ColumnInFilter extends Filter {
   }
 
   @Override
+  public String getOptions() {
+    return options;
+  }
+
+  @Override
   public boolean involvesColumn(String colName) {
     return BeeUtils.same(colName, column);
+  }
+
+  public boolean needsFrom() {
+    return BeeUtils.containsSame(getOptions(), OPTION_FROM);
   }
 
   @Override
@@ -103,13 +125,21 @@ public class ColumnInFilter extends Filter {
         case IN_FILTER:
           arr[i++] = inFilter;
           break;
+        case OPTIONS:
+          arr[i++] = options;
+          break;
       }
     }
     return super.serialize(arr);
   }
 
   @Override
+  public void setOptions(String options) {
+    this.options = options;
+  }
+
+  @Override
   public String toString() {
-    return BeeUtils.joinWords(column, "IN", inView, inColumn, inFilter);
+    return BeeUtils.joinWords(column, "IN", inView, inColumn, inFilter, options);
   }
 }

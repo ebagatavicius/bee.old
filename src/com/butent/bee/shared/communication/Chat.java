@@ -5,10 +5,10 @@ import static com.butent.bee.shared.communication.ChatConstants.*;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
-import com.butent.bee.shared.HasInfo;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
@@ -17,8 +17,9 @@ import com.butent.bee.shared.utils.PropertyUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
-public class Chat implements BeeSerializable, HasInfo, Comparable<Chat> {
+public class Chat implements BeeSerializable, Comparable<Chat> {
 
   private enum Serial {
     ID, NAME, USERS, CREATED, CREATOR, REGISTERED, LAST_ACCESS,
@@ -31,8 +32,8 @@ public class Chat implements BeeSerializable, HasInfo, Comparable<Chat> {
     return chat;
   }
 
-  private static String formatMillis(long millis) {
-    return (millis > 0) ? new DateTime(millis).toString() : null;
+  private static String formatMillis(Function<HasDateValue, String> renderer, long millis) {
+    return (renderer != null && millis > 0) ? renderer.apply(new DateTime(millis)) : null;
   }
 
   private long id;
@@ -190,19 +191,18 @@ public class Chat implements BeeSerializable, HasInfo, Comparable<Chat> {
     return id;
   }
 
-  @Override
-  public List<Property> getInfo() {
+  public List<Property> getInfo(Function<HasDateValue, String> dateTimeRenderer) {
     return PropertyUtils.createProperties("Id", getId(),
         "Name", getName(),
         "Users", getUsers(),
-        "Created", formatMillis(getCreated()),
+        "Created", formatMillis(dateTimeRenderer, getCreated()),
         "Creator", getCreator(),
-        "Registered", formatMillis(getRegistered()),
-        "Last Access", formatMillis(getLastAccess()),
+        "Registered", formatMillis(dateTimeRenderer, getRegistered()),
+        "Last Access", formatMillis(dateTimeRenderer, getLastAccess()),
         "Messages", getMessages().isEmpty() ? null : BeeUtils.bracket(getMessages().size()),
         "Message Count", getMessageCount(),
         "Unread Count", getUnreadCount(),
-        "Max Time", formatMillis(getMaxTime()));
+        "Max Time", formatMillis(dateTimeRenderer, getMaxTime()));
   }
 
   public long getLastAccess() {
@@ -408,11 +408,10 @@ public class Chat implements BeeSerializable, HasInfo, Comparable<Chat> {
         "messages", BeeUtils.size(getMessages()),
         "message count", getMessageCount(),
         "unread count", getUnreadCount(),
-        "max time", formatMillis(getMaxTime()));
+        "max time", getMaxTime());
   }
 
   private void setId(long id) {
     this.id = id;
   }
-
 }

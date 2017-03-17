@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="DepartmentEmployees" source="DepartmentEmployees" caption="=departmentEmployees" 
+  name="DepartmentEmployees" source="DepartmentEmployees" caption="=departmentEmployees"
   module="Administration"
   >
   <Columns>
@@ -9,17 +9,17 @@
     <SimpleJoin name="Department" joinType="LEFT">
       <SimpleColumn name="DepartmentName" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="CompanyPerson" />
     <SimpleJoin name="CompanyPerson" joinType="LEFT">
       <SimpleColumn name="Person" />
       <SimpleJoin name="Person" joinType="LEFT">
         <SimpleColumn name="FirstName" />
         <SimpleColumn name="LastName" />
-        <SimpleColumn name="PhotoFile"/>
-        <!-- @DEPRECATED { -->
-        <SimpleColumn name="Photo" />
-        <!-- } -->
+
+        <SimpleJoin name="PhotoFile" joinType="LEFT">
+          <SimpleColumn name="Hash" alias="PhotoFile" label="=photo" />
+        </SimpleJoin>
       </SimpleJoin>
       <SimpleColumn name="Position" alias="PrimaryPosition" />
       <SimpleJoin name="Position" joinType="LEFT">
@@ -46,4 +46,3 @@
     <OrderBy column="CompanyName" />
   </Order>
 </View>
- 

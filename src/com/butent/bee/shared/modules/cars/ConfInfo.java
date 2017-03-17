@@ -12,7 +12,7 @@ public class ConfInfo implements BeeSerializable {
   private String price;
   private String description;
   private Map<String, String> criteria = new LinkedHashMap<>();
-  private Long photo;
+  private String photo;
 
   protected ConfInfo() {
   }
@@ -23,7 +23,7 @@ public class ConfInfo implements BeeSerializable {
     this.price = dataInfo[0];
     this.description = dataInfo[1];
     setCriteria(Codec.deserializeLinkedHashMap(ArrayUtils.getQuietly(dataInfo, 2)));
-    this.photo = BeeUtils.toLongOrNull(dataInfo[3]);
+    this.photo = dataInfo[3];
   }
 
   public Map<String, String> getCriteria() {
@@ -34,7 +34,7 @@ public class ConfInfo implements BeeSerializable {
     return description;
   }
 
-  public Long getPhoto() {
+  public String getPhoto() {
     return photo;
   }
 
@@ -76,7 +76,7 @@ public class ConfInfo implements BeeSerializable {
     this.description = BeeUtils.isEmpty(description) ? null : description.replace("\n", "<br>");
   }
 
-  public ConfInfo setPhoto(Long newPhoto) {
+  public ConfInfo setPhoto(String newPhoto) {
     this.photo = newPhoto;
     return this;
   }

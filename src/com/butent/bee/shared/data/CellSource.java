@@ -368,7 +368,8 @@ public final class CellSource implements HasPrecision, HasScale, HasValueType, B
       return BeeUtils.toString(row.getId());
 
     } else if (sourceType == SourceType.VERSION) {
-      return new DateTime(row.getVersion()).toString();
+      return (dateTimeRenderer == null)
+          ? null : dateTimeRenderer.apply(new DateTime(row.getVersion()));
 
     } else if (isEmpty(row)) {
       return null;

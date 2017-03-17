@@ -84,7 +84,7 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
   private static final String STYLE_SEARCH_COMMAND = STYLE_SEARCH_PREFIX + "command";
   private static final String STYLE_SEARCH_SPINNER = STYLE_SEARCH_PREFIX + "spinner";
   public static final String STYLE_SEARCH_SPINNER_LOADING = STYLE_SEARCH_SPINNER + "-loading";
-  private static final String STYLE_SEARCH_REMAINDER = STYLE_SEARCH_PREFIX + "remainder";
+  public static final String STYLE_SEARCH_REMAINDER = STYLE_SEARCH_PREFIX + "remainder";
 
   private static final String STYLE_ITEM_PANEL = STYLE_PREFIX + "item-panel";
   private static final String STYLE_ITEM_TABLE = STYLE_PREFIX + "item-table";
@@ -244,6 +244,9 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
     });
   }
 
+  public void addAdditionalSearchWidget(Flow panel) {
+  }
+
   @Override
   public HandlerRegistration addSelectionHandler(SelectionHandler<BeeRowSet> handler) {
     return addHandler(handler, SelectionEvent.getType());
@@ -284,6 +287,8 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
     cb = new CheckBox(Localized.dictionary().withoutRemainder());
     cb.addStyleName(STYLE_SEARCH_REMAINDER);
     panel.add(cb);
+
+    addAdditionalSearchWidget(panel);
 
     final ListBox searchBy = new ListBox();
     searchBy.addStyleName(STYLE_SEARCH_BY);
@@ -350,8 +355,7 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
       ok = true;
 
     } else if (COL_ITEM.equals(by) && !DataUtils.isId(query)) {
-      BeeKeeper.getScreen().notifyWarning(
-          BeeUtils.joinWords(Localized.dictionary().invalidIdValue(), query));
+      BeeKeeper.getScreen().notifyWarning(Localized.dictionary().invalidIdValue(query));
       ok = false;
 
     } else {
@@ -882,4 +886,8 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
   public abstract Long getWarehouseFrom(IsRow row);
 
   public abstract boolean setIsOrder(IsRow row);
+
+  public void setIsOrder(Boolean isOrder) {
+    this.isOrder = isOrder;
+  }
 }

@@ -65,8 +65,8 @@ public final class TimeUtils {
   public static final RangeOptions CLOSED_REQUIRED = new RangeOptions(false, false, true);
   public static final RangeOptions CLOSED_NOT_REQUIRED = new RangeOptions(false, false, false);
 
-  public static final char DATE_FIELD_SEPARATOR = '-';
-  public static final char DATE_TIME_SEPARATOR = ' ';
+  static final char DATE_TIME_SEPARATOR = ' ';
+
   public static final char TIME_FIELD_SEPARATOR = ':';
   public static final char MILLIS_SEPARATOR = '.';
 
@@ -219,11 +219,6 @@ public final class TimeUtils {
    */
   public static int dateDiff(DateTime start, DateTime end) {
     return fieldDifference(start, end, FIELD_DATE);
-  }
-
-  public static String dateToString(int year, int month, int dom) {
-    return yearToString(year) + DATE_FIELD_SEPARATOR + monthToString(month)
-        + DATE_FIELD_SEPARATOR + dayOfMonthToString(dom);
   }
 
   public static int dayDiff(HasDateValue start, HasDateValue end) {

@@ -224,7 +224,7 @@ public enum SupportedLocale implements HasCaption {
   public abstract DateTimeFormatInfo getDateTimeFormatInfo();
 
   public boolean isActive() {
-    return ACTIVE_LOCALES.stream()
+    return ACTIVE_LOCALES.isEmpty() || ACTIVE_LOCALES.stream()
         .anyMatch(loc -> Objects.equals(this, USER_DEFAULT) || BeeUtils.same(loc, getLanguage()));
   }
 }

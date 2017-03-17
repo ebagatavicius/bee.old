@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Grid[
+    ]>
+<g:Grid
+    xmlns="http://www.butent.com/column"
+    xmlns:g="http://www.butent.com/grid"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+
+    name="ServiceSales" viewName="ServiceSales" flexGrow="1" renderMode="full"
+    filter="!(Completed) OR Completed != Quantity"
+    disabledActions="add" paging="false" initialRowSetSize="-1">
+
+  <xi:include href="../../Orders/grids/columns/SalesReservation.columns.xml" />
+</g:Grid>

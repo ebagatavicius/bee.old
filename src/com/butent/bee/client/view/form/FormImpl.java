@@ -66,6 +66,7 @@ import com.butent.bee.client.utils.Evaluator;
 import com.butent.bee.client.validation.CellValidateEvent.Handler;
 import com.butent.bee.client.validation.ValidationHelper;
 import com.butent.bee.client.validation.ValidationOrigin;
+import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.View;
 import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.add.AddEndEvent;
@@ -1209,6 +1210,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
         }
 
         refreshChildWidgets(rowValue);
+        showReadOnly(!rowEnabled);
       }
     }
 
@@ -1370,7 +1372,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
         Set<String> refreshed = new HashSet<>();
 
         if (event.isRowMode()) {
-          refreshed.addAll(refreshEditableWidgets());
+          refreshed.addAll(refreshEditableWidgets(isRowEnabled(rowValue)));
 
         } else {
           if (event.hasRelation() && source instanceof EditableWidget) {
@@ -1803,6 +1805,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     }
 
     getRootWidget().asWidget().setStyleName(STYLE_FORM_DISABLED, !enabled);
+    showReadOnly(!enabled);
   }
 
   @Override
@@ -2385,10 +2388,9 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     return refreshed;
   }
 
-  private Set<String> refreshEditableWidgets() {
+  private Set<String> refreshEditableWidgets(boolean rowEnabled) {
     Set<String> refreshed = new HashSet<>();
 
-    boolean rowEnabled = isRowEnabled(getActiveRow());
     boolean isNew = DataUtils.isNewRow(getActiveRow());
 
     for (EditableWidget editableWidget : getEditableWidgets()) {
@@ -2451,7 +2453,9 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       getFormInterceptor().beforeRefresh(this, getActiveRow());
     }
 
-    Set<String> refreshed = refreshEditableWidgets();
+    boolean rowEnabled = isRowEnabled(getActiveRow());
+
+    Set<String> refreshed = refreshEditableWidgets(rowEnabled);
     refreshDisplayWidgets(refreshed);
 
     if (refreshChildren) {
@@ -2471,6 +2475,10 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       if (showRowId()) {
         getViewPresenter().getHeader().showRowId(getActiveRow());
       }
+
+      boolean ro = !rowEnabled
+          && getActiveRow() != null && !DataUtils.isNewRow(getActiveRow());
+      showReadOnly(ro);
 
       if (getRowMessage() != null) {
         getViewPresenter().getHeader().showRowMessage(getRowMessage(), getActiveRow());
@@ -2586,6 +2594,17 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     StyleUtils.setZIndex(getNotification(), StyleUtils.getZIndex(getRootWidget().asWidget()) + 1);
 
     getNotification().show(level, messages);
+  }
+
+  private void showReadOnly(boolean ro) {
+    if (getFormInterceptor() != null && !getFormInterceptor().showReadOnly(ro)) {
+      return;
+    }
+
+    HeaderView headerView = (getViewPresenter() == null) ? null : getViewPresenter().getHeader();
+    if (headerView != null && !headerView.hasAction(Action.EDIT)) {
+      headerView.showReadOnly(ro);
+    }
   }
 
   private boolean showRowId() {

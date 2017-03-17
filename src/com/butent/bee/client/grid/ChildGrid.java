@@ -225,7 +225,7 @@ public class ChildGrid extends EmbeddedGrid implements Launchable {
     this.gridDescription = gridDescription;
   }
 
-  private void setPendingEnabled(Boolean pendingEnabled) {
+  public void setPendingEnabled(Boolean pendingEnabled) {
     this.pendingEnabled = pendingEnabled;
   }
 

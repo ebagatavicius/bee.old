@@ -28,7 +28,6 @@ import com.butent.bee.client.widget.Paragraph;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Locality;
 import com.butent.bee.shared.communication.TextMessage;
-import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.PropertiesData;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.event.ModificationEvent;
@@ -108,9 +107,7 @@ final class MessageDispatcher {
               table.setWidgetAndStyle(row, 0, image, CONVERSATION_MESSAGE_STYLE_PREFIX + "icon");
             } else {
               Image photo = Global.getUsers().getPhoto(message.getUserId());
-              if (photo != null) {
-                table.setWidgetAndStyle(row, 0, photo, CONVERSATION_MESSAGE_STYLE_PREFIX + "photo");
-              }
+              table.setWidgetAndStyle(row, 0, photo, CONVERSATION_MESSAGE_STYLE_PREFIX + "photo");
             }
 
             Flow content = new Flow();
@@ -192,8 +189,8 @@ final class MessageDispatcher {
 
         if (icon != null) {
           options.setIcon(icon.getImageResource().getSafeUri().asString());
-        } else if (userData != null && DataUtils.isId(userData.getPhotoFile())) {
-          options.setIcon(PhotoRenderer.getUrl(userData.getPhotoFile()));
+        } else if (userData != null) {
+          options.setIcon(PhotoRenderer.getPhotoUrl(userData.getPhotoFile()));
         }
 
         WebNotification.create(title, options, null);

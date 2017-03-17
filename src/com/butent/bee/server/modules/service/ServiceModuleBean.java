@@ -12,6 +12,12 @@ import static com.butent.bee.shared.html.builder.Factory.*;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
+import static com.butent.bee.shared.modules.orders.OrdersConstants.COL_ORDER_ITEM;
+import static com.butent.bee.shared.modules.orders.OrdersConstants.COL_RESERVED_REMAINDER;
+import static com.butent.bee.shared.modules.orders.OrdersConstants.COL_SALE_ITEM;
+import static com.butent.bee.shared.modules.orders.OrdersConstants.TBL_ORDER_ITEMS;
+import static com.butent.bee.shared.modules.orders.OrdersConstants.VIEW_ORDER_CHILD_INVOICES;
+import static com.butent.bee.shared.modules.projects.ProjectConstants.COL_INCOME_ITEM;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 import static com.butent.bee.shared.modules.service.ServiceConstants.COL_COMMENT;
 import static com.butent.bee.shared.modules.service.ServiceConstants.COL_EVENT_NOTE;
@@ -31,6 +37,7 @@ import com.butent.bee.server.modules.ParamHolderBean;
 import com.butent.bee.server.modules.administration.ExchangeUtils;
 import com.butent.bee.server.modules.administration.ExtensionIcons;
 import com.butent.bee.server.modules.mail.MailModuleBean;
+import com.butent.bee.server.modules.orders.OrdersModuleBean;
 import com.butent.bee.server.modules.trade.TradeModuleBean;
 import com.butent.bee.server.sql.HasConditions;
 import com.butent.bee.server.sql.IsCondition;
@@ -76,6 +83,7 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +91,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -93,6 +102,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 @Stateless
+@LocalBean
 public class ServiceModuleBean implements BeeModule {
 
   private static BeeLogger logger = LogUtils.getLogger(ServiceModuleBean.class);
@@ -107,6 +117,8 @@ public class ServiceModuleBean implements BeeModule {
   MailModuleBean mail;
   @EJB
   ParamHolderBean prm;
+  @EJB
+  OrdersModuleBean ord;
 
   @Override
   public List<SearchResult> doSearch(String query) {
@@ -147,6 +159,12 @@ public class ServiceModuleBean implements BeeModule {
     } else if (BeeUtils.same(svc, SVC_GET_MAINTENANCE_NEW_ROW_VALUES)) {
       response = getMaintenanceNewRowValues();
 
+    } else if (BeeUtils.same(svc, SVC_CREATE_RESERVATION_INVOICE_ITEMS)) {
+      response = createReservationInvoiceItems(reqInfo);
+
+    } else if (BeeUtils.same(svc, SVC_GET_ITEMS_INFO)) {
+        response = getItemsInfo(reqInfo);
+
     } else {
       String msg = BeeUtils.joinWords("service not recognized:", svc);
       logger.warning(msg);
@@ -165,15 +183,16 @@ public class ServiceModuleBean implements BeeModule {
             COL_TYPE_NAME),
         BeeParameter.createRelation(module, PRM_DEFAULT_WARRANTY_TYPE, TBL_WARRANTY_TYPES,
             COL_TYPE_NAME),
-        BeeParameter.createRelation(module, PRM_MAINTENANCE_SERVICE_GROUP, TBL_ITEM_CATEGORY_TREE,
-            COL_SERVICE_CATEGORY_NAME),
         BeeParameter.createNumber(module, PRM_URGENT_RATE),
         BeeParameter.createText(module, PRM_SMS_REQUEST_SERVICE_ADDRESS),
         BeeParameter.createText(module, PRM_SMS_REQUEST_SERVICE_USER_NAME),
         BeeParameter.createText(module, PRM_SMS_REQUEST_SERVICE_PASSWORD),
         BeeParameter.createText(module, PRM_SMS_REQUEST_SERVICE_FROM),
         BeeParameter.createText(module, PRM_EXTERNAL_MAINTENANCE_URL),
-        BeeParameter.createText(module, PRM_SMS_REQUEST_CONTACT_INFO_FROM, false, VIEW_DEPARTMENTS)
+        BeeParameter.createText(module, PRM_SMS_REQUEST_CONTACT_INFO_FROM, false, VIEW_DEPARTMENTS),
+        BeeParameter.createRelation(module, PRM_SERVICE_MANAGER_WAREHOUSE, true, VIEW_WAREHOUSES,
+            COL_WAREHOUSE_CODE),
+        BeeParameter.createRelation(module, PRM_ROLE, true, TBL_ROLES, COL_ROLE_NAME)
     );
 
     return params;
@@ -307,6 +326,69 @@ public class ServiceModuleBean implements BeeModule {
         }
       }
     });
+  }
+
+  public Map<Long, Double> getCompletedInvoices(BeeRowSet rowSet) {
+    Map<Long, Double> complInvoices = new HashMap<>();
+
+    int serviceMaintenanceIndex = rowSet.getColumnIndex(COL_SERVICE_MAINTENANCE);
+    Long serviceMaintenance = rowSet.getRow(0).getLong(serviceMaintenanceIndex);
+
+    SqlSelect select = new SqlSelect()
+        .addSum(TBL_SALE_ITEMS, COL_TRADE_ITEM_QUANTITY)
+        .addFields(TBL_ORDER_ITEMS, sys.getIdName(TBL_ORDER_ITEMS))
+        .addFrom(VIEW_ORDER_CHILD_INVOICES)
+        .addFromInner(TBL_ORDER_ITEMS,
+            sys.joinTables(TBL_ORDER_ITEMS, VIEW_ORDER_CHILD_INVOICES, COL_ORDER_ITEM))
+        .addFromInner(TBL_SALE_ITEMS,
+            sys.joinTables(TBL_SALE_ITEMS, VIEW_ORDER_CHILD_INVOICES, COL_SALE_ITEM))
+        .addFromLeft(TBL_SERVICE_ITEMS,
+            sys.joinTables(TBL_SERVICE_ITEMS, TBL_ORDER_ITEMS, COL_SERVICE_ITEM))
+        .addFromLeft(TBL_SERVICE_MAINTENANCE,
+            sys.joinTables(TBL_SERVICE_MAINTENANCE, TBL_SERVICE_ITEMS, COL_SERVICE_MAINTENANCE))
+        .setWhere(SqlUtils.and(sys.idEquals(TBL_SERVICE_MAINTENANCE, serviceMaintenance),
+            SqlUtils.joinUsing(TBL_ORDER_ITEMS, TBL_SALE_ITEMS, COL_ITEM)))
+        .addGroup(TBL_ORDER_ITEMS, sys.getIdName(TBL_ORDER_ITEMS));
+
+    SimpleRowSet rs = qs.getData(select);
+
+    if (rs.getNumberOfRows() > 0) {
+      for (SimpleRow row : rs) {
+        complInvoices.put(row.getLong(sys.getIdName(TBL_ORDER_ITEMS)), row
+            .getDouble(COL_TRADE_ITEM_QUANTITY));
+      }
+    }
+    return complInvoices;
+  }
+
+  public double getReservedRemaindersQuery(Long itemId, Long warehouseId) {
+    SqlSelect qry = new SqlSelect()
+        .addSum(TBL_ORDER_ITEMS, COL_RESERVED_REMAINDER)
+        .addFrom(TBL_ORDER_ITEMS)
+        .addFromLeft(TBL_SERVICE_ITEMS, sys.joinTables(TBL_SERVICE_ITEMS,
+            TBL_ORDER_ITEMS, COL_SERVICE_ITEM))
+        .addFromLeft(TBL_SERVICE_MAINTENANCE,
+            sys.joinTables(TBL_SERVICE_MAINTENANCE, TBL_SERVICE_ITEMS, COL_SERVICE_MAINTENANCE))
+        .addFromLeft(TBL_ITEMS, sys.joinTables(TBL_ITEMS, TBL_ORDER_ITEMS, COL_ITEM))
+
+        .setWhere(SqlUtils.and(
+            SqlUtils.equals(TBL_SERVICE_MAINTENANCE, COL_WAREHOUSE, warehouseId),
+            SqlUtils.equals(TBL_ORDER_ITEMS, COL_ITEM, itemId),
+            SqlUtils.isNull(TBL_ITEMS, COL_ITEM_IS_SERVICE),
+            SqlUtils.isNull(TBL_SERVICE_MAINTENANCE, COL_ENDING_DATE)))
+        .addGroup(TBL_ORDER_ITEMS, COL_ITEM);
+    return BeeUtils.unbox(qs.getDouble(qry));
+  }
+
+  public Long getWarehouseId(BeeRowSet rowSet) {
+    int serviceMaintenanceIndex = rowSet.getColumnIndex(COL_SERVICE_MAINTENANCE);
+    Long serviceMaintenance = rowSet.getRow(0).getLong(serviceMaintenanceIndex);
+    SqlSelect query = new SqlSelect()
+        .addFields(TBL_SERVICE_MAINTENANCE, COL_WAREHOUSE)
+        .addFrom(TBL_SERVICE_MAINTENANCE)
+        .setWhere(sys.idEquals(TBL_SERVICE_MAINTENANCE, serviceMaintenance));
+
+    return qs.getLong(query);
   }
 
   private ResponseObject copyDocumentCriteria(RequestInfo reqInfo) {
@@ -659,6 +741,16 @@ public class ServiceModuleBean implements BeeModule {
     return response;
   }
 
+  private ResponseObject createReservationInvoiceItems(RequestInfo reqInfo) {
+    return ord.createInvoiceItems(reqInfo, TBL_SERVICE_MAINTENANCE, COL_MAINTENANCE_DATE,
+        Arrays.asList(
+            Pair.of(TBL_SERVICE_ITEMS,
+                sys.joinTables(TBL_SERVICE_ITEMS, TBL_ORDER_ITEMS, COL_SERVICE_ITEM)),
+            Pair.of(TBL_SERVICE_MAINTENANCE,
+                sys.joinTables(TBL_SERVICE_MAINTENANCE, TBL_SERVICE_ITEMS,
+                    COL_SERVICE_MAINTENANCE))));
+  }
+
   private ResponseObject getCalendarData(RequestInfo reqInfo) {
     BeeRowSet settings = getSettings();
     if (DataUtils.isEmpty(settings)) {
@@ -946,6 +1038,45 @@ public class ServiceModuleBean implements BeeModule {
     return rs;
   }
 
+  private ResponseObject getItemsInfo(RequestInfo reqInfo) {
+    Long serviceId = BeeUtils.toLongOrNull(reqInfo.getParameter(COL_SERVICE_MAINTENANCE));
+    if (!DataUtils.isId(serviceId)) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(), COL_SERVICE_MAINTENANCE);
+    }
+
+    Long currency = prm.getRelation(PRM_CURRENCY);
+    if (!DataUtils.isId(currency)) {
+      return ResponseObject.parameterNotFound(reqInfo.getService(), COL_CURRENCY);
+    }
+
+    String priceAlias = COL_ITEM_PRICE;
+    SqlSelect query = new SqlSelect();
+    query.addFields(TBL_ORDER_ITEMS, sys.getIdName(TBL_ORDER_ITEMS), COL_TRADE_VAT_PLUS,
+        COL_TRADE_VAT, COL_TRADE_VAT_PERC, COL_INCOME_ITEM, COL_RESERVED_REMAINDER,
+        COL_TRADE_DISCOUNT, COL_TRADE_ITEM_QUANTITY)
+        .addFields(TBL_ITEMS, COL_ITEM_ARTICLE)
+        .addField(TBL_ITEMS, COL_ITEM_NAME, ALS_ITEM_NAME)
+        .addField(TBL_UNITS, COL_UNIT_NAME, ALS_UNIT_NAME)
+        .addFrom(TBL_ORDER_ITEMS)
+        .addFromLeft(TBL_ITEMS, sys.joinTables(TBL_ITEMS, TBL_ORDER_ITEMS, COL_ITEM))
+        .addFromLeft(TBL_UNITS, sys.joinTables(TBL_UNITS, TBL_ITEMS, COL_UNIT))
+        .addFromLeft(TBL_SERVICE_ITEMS,
+            sys.joinTables(TBL_SERVICE_ITEMS, TBL_ORDER_ITEMS, COL_SERVICE_ITEM))
+        .addFromLeft(TBL_SERVICE_MAINTENANCE,
+            sys.joinTables(TBL_SERVICE_MAINTENANCE, TBL_SERVICE_ITEMS, COL_SERVICE_MAINTENANCE))
+        .setWhere(sys.idEquals(TBL_SERVICE_MAINTENANCE, serviceId));
+    IsExpression priceExch =
+        ExchangeUtils.exchangeFieldTo(query, SqlUtils.field(TBL_ORDER_ITEMS, COL_TRADE_ITEM_PRICE),
+            SqlUtils.field(TBL_ORDER_ITEMS, COL_TRADE_CURRENCY),
+            SqlUtils.field(TBL_SERVICE_MAINTENANCE, COL_MAINTENANCE_DATE),
+            SqlUtils.constant(currency));
+
+    query.addExpr(priceExch, priceAlias)
+        .addOrder(TBL_ORDER_ITEMS, sys.getIdName(TBL_ORDER_ITEMS));
+
+    return ResponseObject.response(qs.getViewData(query, sys.getView(TBL_ORDER_ITEMS), false));
+  }
+
   private ResponseObject getMaintenanceNewRowValues() {
     Map<String, String> columnValues = new HashMap<>();
 
@@ -994,6 +1125,14 @@ public class ServiceModuleBean implements BeeModule {
           departmentRowSet.getRow(0).getValue(sys.getIdName(VIEW_DEPARTMENTS)));
       columnValues.put(ALS_DEPARTMENT_NAME,
           departmentRowSet.getRow(0).getValue(ALS_DEPARTMENT_NAME));
+    }
+
+    Pair<Long, String> warehouseInfo = prm.getRelationInfo(PRM_SERVICE_MANAGER_WAREHOUSE);
+    Long warehouseId = warehouseInfo.getA();
+
+    if (DataUtils.isId(warehouseId)) {
+      columnValues.put(COL_WAREHOUSE, BeeUtils.toString(warehouseId));
+      columnValues.put(ALS_WAREHOUSE_CODE, warehouseInfo.getB());
     }
 
     return ResponseObject.response(columnValues);

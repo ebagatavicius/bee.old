@@ -4,21 +4,22 @@
 
         name="Parameters" viewName="Parameters"
         disabledActions="add delete audit rights"
-    >
+>
   <g:columns>
-    <DataColumn name="Name" visible="true">
+    <DataColumn name="Name" minWidth="256" visible="true">
       <dynStyle>
         <ui:inline>font-weight:bold</ui:inline>
         <ui:expression>row.User</ui:expression>
       </dynStyle>
     </DataColumn>
-    <DataColumn name="Value" visible="true" verticalAlignment="middle" filterOptions="-">
+    <DataColumn name="Value" minWidth="128" visible="true" verticalAlignment="middle"
+                filterOptions="-">
       <dynStyle>
         <ui:inline>color:silver</ui:inline>
         <ui:expression>row.IsDefault</ui:expression>
       </dynStyle>
     </DataColumn>
-    <PropColumn type="string" name="Description" caption="=description">
+    <PropColumn type="string" name="Description" caption="=description" flexGrow="1">
       <style>
         <bodyStyle>
           <ui:inline>color:green;</ui:inline>

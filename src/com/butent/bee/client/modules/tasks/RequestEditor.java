@@ -33,6 +33,7 @@ import com.butent.bee.client.event.logical.MutationEvent;
 import com.butent.bee.client.event.logical.MutationEvent.Handler;
 import com.butent.bee.client.eventsboard.EventsBoard.EventFilesFilter;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Direction;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Split;
@@ -289,9 +290,9 @@ public class RequestEditor extends ProductSupportInterceptor {
 
       if (column.getType() == ValueType.DATE_TIME) {
         long oldMillis = BeeUtils.toLong(oldValue);
-        oldValue = new DateTime(oldMillis).toString();
+        oldValue = Format.renderDateTime(oldMillis);
         long newMillis = BeeUtils.toLong(newValue);
-        newValue = new DateTime(newMillis).toString();
+        newValue = Format.renderDateTime(newMillis);
       }
 
       oldDataMap.put(column.getId(), oldValue);

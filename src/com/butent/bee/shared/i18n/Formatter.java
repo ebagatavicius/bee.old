@@ -2,6 +2,7 @@ package com.butent.bee.shared.i18n;
 
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateValue;
 
 import java.util.function.Function;
@@ -37,6 +38,14 @@ public final class Formatter {
 
     } else {
       return render(PredefinedFormat.DATE_SHORT, dtfInfo, dateTime);
+    }
+  }
+
+  public static String renderDateTime(DateTimeFormatInfo dtfInfo, Long time) {
+    if (time == null) {
+      return BeeConst.STRING_EMPTY;
+    } else {
+      return renderDateTime(dtfInfo, new DateTime(time));
     }
   }
 

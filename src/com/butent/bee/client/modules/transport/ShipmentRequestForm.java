@@ -23,9 +23,11 @@ import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowEditor;
+import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.data.RowInsertCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dialog.InputCallback;
+import com.butent.bee.client.dialog.Modality;
 import com.butent.bee.client.grid.ChildGrid;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
@@ -125,6 +127,7 @@ class ShipmentRequestForm extends PrintFormInterceptor {
   private static final String STYLE_INPUT_MODE_TOGGLE = STYLE_PREFIX + "input-mode-toggle";
   private static final String STYLE_INPUT_MODE_ACTIVE = STYLE_PREFIX + "input-mode-active";
 
+  private FaLabel copyAction;
   private Flow container;
 
   @Override
@@ -234,6 +237,9 @@ class ShipmentRequestForm extends PrintFormInterceptor {
           header.addCommandItem(blockCommand);
         }
       }
+    }
+    if (!DataUtils.isNewRow(row)) {
+      header.addCommandItem(getCopyAction());
     }
   }
 
@@ -723,6 +729,33 @@ class ShipmentRequestForm extends PrintFormInterceptor {
             });
           });
         });
+  }
+
+  private IdentifiableWidget getCopyAction() {
+    if (copyAction == null) {
+      copyAction = new FaLabel(FontAwesome.COPY);
+      copyAction.setTitle(Localized.dictionary().actionCopy());
+
+      copyAction.addClickHandler(clickEvent -> {
+        final Long requestId = getActiveRowId();
+
+        if (DataUtils.isId(requestId)) {
+          DataInfo info = Data.getDataInfo(getViewName());
+          BeeRow newRow = RowFactory.createEmptyRow(info, true);
+
+          for (String col : info.getColumnNames(false)) {
+            int idx = info.getColumnIndex(col);
+            if (!BeeConst.isUndef(idx) && !BeeUtils.contains(Arrays.asList(COL_DATE, COL_STATUS,
+                COL_CUSTOMER, COL_NOTE, COL_VEHICLE, COL_DRIVER, COL_QUERY_HOST, COL_QUERY_AGENT,
+                COL_LOSS_REASON, COL_CARGO, COL_ASSESSMENT, COL_ORDER), col)) {
+              newRow.setValue(idx, getStringValue(col));
+            }
+          }
+          RowFactory.createRow(info, newRow, Modality.ENABLED);
+        }
+      });
+    }
+    return copyAction;
   }
 
   private static String getOrderNo(IsRow row) {

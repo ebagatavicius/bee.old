@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  
+
   name="Persons" viewName="Persons" caption="=persons"
   editForm="Person" flexGrow="1" favorite="FirstName LastName"
   >
 
   <g:columns>
-    <DataColumn name="PhotoFile" caption="-" readOnly="true" cellType="html" sortable="false"
+    <DataColumn name="Hash" caption="-" readOnly="true" cellType="html" sortable="false"
       width="30" horizontalAlignment="center" filterOptions="-" autoFit="false" exportable="false">
       <renderer type="photo" />
     </DataColumn>

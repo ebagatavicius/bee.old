@@ -51,7 +51,6 @@ import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
-import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RowChildren;
 import com.butent.bee.shared.data.SearchResult;
 import com.butent.bee.shared.data.SimpleRowSet;
@@ -64,10 +63,9 @@ import com.butent.bee.shared.data.value.LongValue;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.html.builder.Document;
-import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
-import com.butent.bee.shared.i18n.PredefinedFormat;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
@@ -639,45 +637,33 @@ public class CalendarModuleBean extends TimerBuilder implements BeeModule {
       }
     });
 
-    HeadlineProducer headlineProducer = new HeadlineProducer() {
-      @Override
-      public Headline produce(Feed feed, long userId, BeeRowSet rowSet, IsRow row, boolean isNew,
-          Dictionary constants) {
-
-        String caption = DataUtils.getString(rowSet, row, COL_SUMMARY);
-        if (BeeUtils.isEmpty(caption)) {
-          caption = BeeUtils.bracket(row.getId());
-        }
-
-        List<String> subtitles = new ArrayList<>();
-
-        DateTime start = DataUtils.getDateTime(rowSet, row, COL_START_DATE_TIME);
-        DateTime end = DataUtils.getDateTime(rowSet, row, COL_END_DATE_TIME);
-
-        if (start != null || end != null) {
-          DateTimeFormatInfo dateTimeFormatInfo = usr.getDateTimeFormatInfo(userId);
-
-          if (dateTimeFormatInfo != null) {
-            DateTimeFormat format =
-                DateTimeFormat.of(PredefinedFormat.DATE_TIME_SHORT, dateTimeFormatInfo);
-
-            String period = BeeUtils.joinWords(
-                (start == null) ? null : format.format(start),
-                TimeUtils.PERIOD_SEPARATOR,
-                (end == null) ? null : format.format(end));
-
-            subtitles.add(period);
-          }
-        }
-
-        AppointmentStatus status = EnumUtils.getEnumByIndex(AppointmentStatus.class,
-            DataUtils.getInteger(rowSet, row, COL_STATUS));
-        if (status != null) {
-          subtitles.add(status.getCaption(constants));
-        }
-
-        return Headline.create(row.getId(), caption, subtitles, isNew);
+    HeadlineProducer headlineProducer = (feed, userId, rowSet, row, isNew, constants, dtfInfo) -> {
+      String caption = DataUtils.getString(rowSet, row, COL_SUMMARY);
+      if (BeeUtils.isEmpty(caption)) {
+        caption = BeeUtils.bracket(row.getId());
       }
+
+      List<String> subtitles = new ArrayList<>();
+
+      DateTime start = DataUtils.getDateTime(rowSet, row, COL_START_DATE_TIME);
+      DateTime end = DataUtils.getDateTime(rowSet, row, COL_END_DATE_TIME);
+
+      if ((start != null || end != null) && dtfInfo != null) {
+        String period = BeeUtils.joinWords(
+            (start == null) ? null : Formatter.renderDateTime(dtfInfo, start),
+            TimeUtils.PERIOD_SEPARATOR,
+            (end == null) ? null : Formatter.renderDateTime(dtfInfo, end));
+
+        subtitles.add(period);
+      }
+
+      AppointmentStatus status = EnumUtils.getEnumByIndex(AppointmentStatus.class,
+          DataUtils.getInteger(rowSet, row, COL_STATUS));
+      if (status != null) {
+        subtitles.add(status.getCaption(constants));
+      }
+
+      return Headline.create(row.getId(), caption, subtitles, isNew);
     };
 
     news.registerHeadlineProducer(Feed.APPOINTMENTS_MY, headlineProducer);
@@ -1205,9 +1191,10 @@ public class CalendarModuleBean extends TimerBuilder implements BeeModule {
         : getCalendarTasks(calendarId, startTime, endTime);
     long taskDuration = System.currentTimeMillis() - millis - appDuration;
 
+    DateTimeFormatInfo dtfInfo = usr.getDateTimeFormatInfo();
     logger.info(reqInfo.getService(), calendarId,
-        (startTime == null) ? BeeConst.STRING_EMPTY : new DateTime(startTime).toCompactString(),
-        (endTime == null) ? BeeConst.STRING_EMPTY : new DateTime(endTime).toCompactString(),
+        (startTime == null) ? BeeConst.STRING_EMPTY : Formatter.renderDateTime(dtfInfo, startTime),
+        (endTime == null) ? BeeConst.STRING_EMPTY : Formatter.renderDateTime(dtfInfo, endTime),
         BeeConst.STRING_EQ, appointments.size(), BeeConst.STRING_PLUS, tasks.size(),
         BeeConst.STRING_LEFT_BRACKET, appDuration, BeeConst.STRING_PLUS, taskDuration,
         BeeConst.STRING_EQ, appDuration + taskDuration, BeeConst.STRING_RIGHT_BRACKET);
@@ -1779,13 +1766,17 @@ public class CalendarModuleBean extends TimerBuilder implements BeeModule {
           Long userId = BeeUtils.toLong(user);
           Map<String, String> linkData = new HashMap<>();
           linkData.put(VIEW_APPOINTMENTS, data.getValue(sys.getIdName(TBL_APPOINTMENTS)));
+
           if (DataUtils.isId(userId)) {
+            Dictionary dictionary = usr.getDictionary(userId);
+            DateTimeFormatInfo dtfInfo = usr.getDateTimeFormatInfo(userId);
+
             chat.putMessage(
-                BeeUtils.joinWords(usr.getDictionary(userId).event(),
+                BeeUtils.joinWords(dictionary.event(),
                     BeeConst.STRING_QUOT + data.getValue(COL_SUMMARY) + BeeConst.STRING_QUOT
                         + BeeConst.STRING_POINT,
-                    usr.getDictionary(userId).scheduledStartingTime() + BeeConst.STRING_COLON,
-                    data.getDateTime(COL_START_DATE_TIME).toCompactString()
+                    dictionary.scheduledStartingTime() + BeeConst.STRING_COLON,
+                    Formatter.renderDateTime(dtfInfo, data.getDateTime(COL_START_DATE_TIME))
                         + BeeConst.STRING_POINT),
                 userId,
                 linkData);

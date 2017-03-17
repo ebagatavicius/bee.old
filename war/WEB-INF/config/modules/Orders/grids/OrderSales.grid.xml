@@ -4,57 +4,11 @@
 <g:Grid
   xmlns="http://www.butent.com/column"
   xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="OrderSales" viewName="OrderSales" flexGrow="1" renderMode="full"
   filter="!(Completed) OR Completed != Quantity"
   disabledActions="add" paging="false" initialRowSetSize="-1">
-  <g:columns>
-    <SelectionColumn name="Select" width="20" />
-    <RelColumn name="Item" renderColumns="ItemName"
-      choiceColumns="Name Article" filter="!(IsService)" visible="true"
-      readOnly="true">
-      <footer text="=totalOf" horizontalAlignment="right" />
-    </RelColumn>
 
-    <DataColumn name="Article" />
-
-    <DataColumn name="CompletedQty" scale="3">
-      <editable>
-        <ui:expression>cell.value &gt; 0</ui:expression>
-      </editable>
-    </DataColumn>
-
-    <PropColumn name="FreeRemainder" type="double" label="=ordFreeRemainder"
-      visible="true">
-      <dynStyle>
-        <ui:inline>background-color: #ff5252</ui:inline>
-        <ui:expression>row.CompletedQty == 0</ui:expression>
-      </dynStyle>
-    </PropColumn>
-
-    <DataColumn name="UnitName" caption="=unitShort"
-      flexGrow="0" />
-
-    <CalcColumn name="Price1" type="double" label="=price"
-      format="#.#####">
-      <render>
-        <ui:expression>row.VatPlus ? row.VatPercent ? ((row.Price *
-          row.CompletedQty + row.Price * row.CompletedQty * row.Vat / 100) - (row.Price *
-          row.CompletedQty + row.Price * row.CompletedQty * row.Vat / 100) * row.Discount / 100)/row.CompletedQty :
-          (row.Price * row.CompletedQty + row.Vat) - (row.Price * row.CompletedQty + row.Vat) *
-          row.Discount / 100 /row.CompletedQty : row.Price - row.Price * row.Discount / 100
-        </ui:expression>
-      </render>
-      <footer
-        expression="(row.VatPlus ? row.VatPercent ? ((row.Price *
-          row.CompletedQty + row.Price * row.CompletedQty * row.Vat / 100) - (row.Price *
-          row.CompletedQty + row.Price * row.CompletedQty * row.Vat / 100) * row.Discount / 100)/row.CompletedQty :
-          (row.Price * row.CompletedQty + row.Vat) - (row.Price * row.CompletedQty + row.Vat) *
-          row.Discount / 100 /row.CompletedQty : row.Price - row.Price * row.Discount / 100) * row.CompletedQty"
-        format="#.##" />
-    </CalcColumn>
-
-    <RelColumn name="Currency" readOnly="true" />
-  </g:columns>
+  <xi:include href="columns/SalesReservation.columns.xml" />
 </g:Grid>

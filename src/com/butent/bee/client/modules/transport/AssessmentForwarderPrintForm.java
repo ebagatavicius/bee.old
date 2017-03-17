@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -50,7 +51,7 @@ public class AssessmentForwarderPrintForm extends AbstractFormInterceptor {
             String txt = places.getString(i, COL_PLACE_NOTE);
 
             if (date != null) {
-              txt = BeeUtils.joinWords(date.toCompactString(), txt);
+              txt = BeeUtils.joinWords(Format.renderDateTime(date), txt);
             }
             if (!BeeUtils.isEmpty(txt)) {
               Label lbl = new Label(BeeUtils.join(". ", ordinal, txt));

@@ -33,7 +33,9 @@ import com.butent.bee.shared.html.builder.elements.Input.Type;
 import com.butent.bee.shared.html.builder.elements.Select;
 import com.butent.bee.shared.html.builder.elements.Span;
 import com.butent.bee.shared.html.builder.elements.Tbody;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.io.Paths;
@@ -151,7 +153,10 @@ public class EcServlet extends LoginServlet {
 
       if (parameters.containsKey(COL_REGISTRATION_BRANCH)) {
         Map<String, String> dictionary = Localizations.getGlossary(language);
-        html = register(req, parameters, constants, dictionary);
+        DateTimeFormatInfo dtfInfo = SupportedLocale.parse(language).getDateTimeFormatInfo();
+
+        html = register(req, parameters, constants, dictionary, dtfInfo);
+
       } else {
         html = getRegistrationForm(req.getServletContext().getContextPath(), constants);
       }
@@ -268,7 +273,7 @@ public class EcServlet extends LoginServlet {
   }
 
   private String register(HttpServletRequest req, Map<String, String> parameters,
-      Dictionary constants, Map<String, String> dictionary) {
+      Dictionary constants, Map<String, String> dictionary, DateTimeFormatInfo dtfInfo) {
 
     Document doc = new Document();
 
@@ -312,7 +317,7 @@ public class EcServlet extends LoginServlet {
 
         switch (column.getId()) {
           case COL_REGISTRATION_DATE:
-            value = row.getDateTime(i).toCompactString();
+            value = Formatter.renderDateTime(dtfInfo, row.getDateTime(i));
             break;
 
           case COL_REGISTRATION_BRANCH:

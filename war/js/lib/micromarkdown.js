@@ -377,17 +377,6 @@ var micromarkdown = {
     return str;
   },
   mmdCSSclass: function (str, strict) {
-    'use strict';
-    var urlTemp;
-    if ((str.indexOf('/') !== -1) && (strict !== true)) {
-      urlTemp = str.split('/');
-      if (urlTemp[1].length === 0) {
-        urlTemp = urlTemp[2].split('.');
-      } else {
-        urlTemp = urlTemp[0].split('.');
-      }
-      return 'class="mmd_' + urlTemp[urlTemp.length - 2].replace(/[^\w\d]/g, '') + urlTemp[urlTemp.length - 1] + '" ';
-    }
     return '';
   }
 };

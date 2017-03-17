@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Columns xmlns="http://www.butent.com/view">
+  <SimpleColumn name="Unpacking" />
+
+  <SimpleColumn name="Item" />
+  <SimpleJoin joinType="INNER" name="Item">
+    <SimpleColumn name="Name" alias="ItemName" />
+    <SimpleColumn name="Article" />
+
+    <SimpleJoin joinType="INNER" name="Unit">
+      <SimpleColumn name="Name" alias="UnitName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Currency" alias="ItemCurrency" />
+    <SimpleJoin name="Currency" joinType="LEFT">
+      <SimpleColumn name="Name" alias="ItemCurrencyName" />
+    </SimpleJoin>
+    <SimpleColumn name="IsService" />
+  </SimpleJoin>
+  <SimpleColumn name="Quantity" />
+  <SimpleColumn name="CompletedQty" />
+  <SimpleColumn name="ResRemainder" />
+  <SimpleColumn name="Price" />
+  <SimpleColumn name="Discount" />
+
+  <SimpleColumn name="VatPlus" />
+  <SimpleColumn name="Vat" />
+  <SimpleColumn name="VatPercent" />
+
+  <ExternalJoin source="OrderChildInvoices" name="OrderItem" joinType="LEFT" >
+    <SimpleJoin name="SaleItem" joinType="LEFT" filter="SaleItem = Item" >
+      <HiddenColumn name="Item" alias="SaleItem" />
+      <AggregateColumn name="Quantity" alias="Completed" aggregate="SUM" />
+    </SimpleJoin>
+  </ExternalJoin>
+
+  <SimpleColumn name="Currency" />
+  <SimpleJoin name="Currency" joinType="LEFT">
+    <SimpleColumn name="Name" alias="CurrencyName" />
+  </SimpleJoin>
+</Columns>

@@ -1,7 +1,7 @@
 package com.butent.bee.shared.modules.cars;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_FILE_HASH;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_PHOTO;
 
 import com.butent.bee.client.data.Data;
 import com.butent.bee.shared.Assert;
@@ -25,7 +25,7 @@ public class Option implements BeeSerializable, Comparable<Option> {
   private Dimension dimension;
   private String code;
   private String description;
-  private Long photo;
+  private String photo;
 
   public Option(IsRow isRow) {
     this(isRow.getId(),
@@ -54,12 +54,12 @@ public class Option implements BeeSerializable, Comparable<Option> {
     if (simpleRow.hasColumn(COL_DESCRIPTION)) {
       setDescription(simpleRow.getValue(COL_DESCRIPTION));
     }
-    if (simpleRow.hasColumn(COL_PHOTO)) {
-      setPhoto(simpleRow.getLong(COL_PHOTO));
+    if (simpleRow.hasColumn(COL_FILE_HASH)) {
+      setPhoto(simpleRow.getValue(COL_FILE_HASH));
     }
   }
 
-  public Option(long id, String name, Dimension dimension) {
+  private Option(long id, String name, Dimension dimension) {
     this.id = id;
     this.name = Assert.notEmpty(name);
     this.dimension = Assert.notNull(dimension);
@@ -106,7 +106,7 @@ public class Option implements BeeSerializable, Comparable<Option> {
           this.description = value;
           break;
         case PHOTO:
-          this.photo = BeeUtils.toLongOrNull(value);
+          this.photo = value;
           break;
       }
     }
@@ -143,7 +143,7 @@ public class Option implements BeeSerializable, Comparable<Option> {
     return name;
   }
 
-  public Long getPhoto() {
+  public String getPhoto() {
     return photo;
   }
 
@@ -192,18 +192,18 @@ public class Option implements BeeSerializable, Comparable<Option> {
     return Codec.beeSerialize(arr);
   }
 
-  public Option setCode(String c) {
+  private Option setCode(String c) {
     this.code = c;
     return this;
   }
 
-  public Option setDescription(String descr) {
+  private Option setDescription(String descr) {
     this.description = descr;
     return this;
   }
 
-  public Option setPhoto(Long ph) {
-    this.photo = ph;
+  private Option setPhoto(String newPhoto) {
+    this.photo = newPhoto;
     return this;
   }
 

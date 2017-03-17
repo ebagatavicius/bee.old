@@ -20,7 +20,6 @@ import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.Presence;
-import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
@@ -31,7 +30,7 @@ public class SimpleUserPanel extends Horizontal implements IsUserPanel {
   protected static final String STYLE_LOGOUT = BeeConst.CSS_CLASS_PREFIX + "Logout";
   protected static final String STYLE_LOGOUT_CONTAINER = STYLE_LOGOUT + "Container";
   protected static final String STYLE_USER_PHOTO = BeeConst.CSS_CLASS_PREFIX + "UserPhoto";
-  protected static final String STYLE_USER_PHOTO_CONTAINER  = STYLE_USER_PHOTO + "Container";
+  protected static final String STYLE_USER_PHOTO_CONTAINER = STYLE_USER_PHOTO + "Container";
 
   protected static final String STYLE_USER_SIGNATURE = BeeConst.CSS_CLASS_PREFIX
       + "UserSignature";
@@ -190,16 +189,12 @@ public class SimpleUserPanel extends Horizontal implements IsUserPanel {
     if (!Settings.showUserPhoto()) {
       return;
     }
-      photoContainer = new Flow(STYLE_USER_PHOTO_CONTAINER);
-      add(photoContainer);
+    photoContainer = new Flow(STYLE_USER_PHOTO_CONTAINER);
+    add(photoContainer);
   }
 
   protected void createUserPhoto(UserData userData) {
-    Long photoFile = userData.getPhotoFile();
-
-    userPhotoImage = new Image(DataUtils.isId(photoFile) ? PhotoRenderer.getUrl(photoFile)
-        : PhotoRenderer.DEFAULT_PHOTO_IMAGE);
-
+    userPhotoImage = new Image(PhotoRenderer.getPhotoUrl(userData.getPhotoFile()));
     userPhotoImage.setAlt(userData.getLogin());
     userPhotoImage.addStyleName(STYLE_USER_PHOTO);
 

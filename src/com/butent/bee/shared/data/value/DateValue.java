@@ -3,10 +3,12 @@ package com.butent.bee.shared.data.value;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.math.BigDecimal;
+import java.util.function.Function;
 
 /**
  * The {@code DateTimeValue} class represents date values. It allows
@@ -135,6 +137,13 @@ public class DateValue extends Value {
   @Override
   public boolean isNull() {
     return this == NULL_VALUE || getDate() == null;
+  }
+
+  @Override
+  public String render(Function<HasDateValue, String> dateRenderer,
+      Function<HasDateValue, String> dateTimeRenderer) {
+
+    return isNull() ? super.render(dateRenderer, dateTimeRenderer) : dateRenderer.apply(getDate());
   }
 
   @Override

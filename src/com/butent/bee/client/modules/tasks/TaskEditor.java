@@ -393,14 +393,9 @@ class TaskEditor extends ProductSupportInterceptor {
 
     Flow colPhoto = new Flow();
     colPhoto.addStyleName(STYLE_EVENT_COL + STYLE_PHOTO);
-    String photoUrl;
 
-    Long photo = row.getLong(DataUtils.getColumnIndex(COL_PHOTO, columns));
-
-    photoUrl = DataUtils.isId(photo) ? PhotoRenderer.getUrl(photo)
-        : PhotoRenderer.DEFAULT_PHOTO_IMAGE;
-
-    Image image = new Image(photoUrl);
+    Image image = new Image(PhotoRenderer.getPhotoUrl(DataUtils.getString(columns, row,
+        COL_PHOTO)));
     image.addStyleName(STYLE_EVENT + STYLE_PHOTO);
 
     colPhoto.add(image);
@@ -507,7 +502,7 @@ class TaskEditor extends ProductSupportInterceptor {
 
       DateTime durDate = row.getDateTime(DataUtils.getColumnIndex(COL_DURATION_DATE, columns));
       if (durDate != null) {
-        row4.add(createEventCell(COL_DURATION_DATE, durDate.toCompactString()));
+        row4.add(createEventCell(COL_DURATION_DATE, Format.renderDateTime(durDate)));
       }
 
       body.add(row4);
@@ -581,7 +576,7 @@ class TaskEditor extends ProductSupportInterceptor {
 
     if (!extensions.isEmpty()) {
       for (int i = extensions.size() - 1; i >= 0; i--) {
-        Label label = new Label(extensions.get(i).toCompactString());
+        Label label = new Label(Format.renderDateTime(extensions.get(i)));
         label.addStyleName(STYLE_EXTENSION);
         panel.add(label);
       }
@@ -964,6 +959,11 @@ class TaskEditor extends ProductSupportInterceptor {
     });
     setPrmEndOfWorkDay(Global.getParameterTime(PRM_END_OF_WORK_DAY));
 
+    return false;
+  }
+
+  @Override
+  public boolean showReadOnly(boolean readOnly) {
     return false;
   }
 
@@ -1632,7 +1632,7 @@ class TaskEditor extends ProductSupportInterceptor {
       if (TimeUtils.isLess(newEnd, TimeUtils.nowMinutes())) {
         Global.showError("Time travel not supported",
             Collections.singletonList(Localized.dictionary().crmFinishDateMustBeGreaterThan()
-                + " " + now.toCompactString()));
+                + " " + Format.renderDateTime(now)));
         return;
       }
 
@@ -1972,7 +1972,7 @@ class TaskEditor extends ProductSupportInterceptor {
     for (final FileInfo fileInfo : files) {
       FileUtils.uploadFile(fileInfo, result -> {
         List<String> values = Lists.newArrayList(BeeUtils.toString(taskId),
-            BeeUtils.toString(teId), BeeUtils.toString(result), fileInfo.getCaption());
+            BeeUtils.toString(teId), BeeUtils.toString(result.getId()), result.getCaption());
 
         Queries.insert(VIEW_TASK_FILES, columns, values, null, new RowCallback() {
           @Override

@@ -8,8 +8,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.client.modules.cars.ConfPricelistForm.*;
 import static com.butent.bee.shared.html.builder.Factory.*;
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_FILE_HASH;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_PHOTO;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
@@ -72,13 +72,13 @@ public class SpecificationBuilder implements InputCallback {
   private static final class Branch {
     private final Long id;
     private final String name;
-    private final Long photo;
+    private final String photo;
     private final Boolean blocked;
     private final List<Branch> childs = new ArrayList<>();
     private Branch parent;
     private Configuration configuration;
 
-    private Branch(Long id, String name, Long photo, Boolean blocked) {
+    private Branch(Long id, String name, String photo, Boolean blocked) {
       this.id = id;
       this.name = name;
       this.photo = photo;
@@ -121,7 +121,7 @@ public class SpecificationBuilder implements InputCallback {
       return BeeUtils.joinWords(path);
     }
 
-    public Long getPhoto() {
+    public String getPhoto() {
       return photo;
     }
 
@@ -165,8 +165,8 @@ public class SpecificationBuilder implements InputCallback {
 
         for (int i = 0; i < result.getNumberOfRows(); i++) {
           hierarchy.put(result.getLong(i, COL_BRANCH), new Branch(result.getRow(i).getId(),
-              result.getString(i, COL_BRANCH_NAME),
-              result.getLong(i, COL_PHOTO), result.getBoolean(i, COL_BLOCKED)));
+              result.getString(i, COL_BRANCH_NAME), result.getString(i, COL_FILE_HASH),
+              result.getBoolean(i, COL_BLOCKED)));
         }
         fillTree(tree, hierarchy);
         setBranch(tree);
@@ -454,8 +454,8 @@ public class SpecificationBuilder implements InputCallback {
     return options;
   }
 
-  private static Widget getPhoto(Long photo) {
-    return DataUtils.isId(photo) ? new Image(FileUtils.getUrl(photo)) : null;
+  private static Image getPhoto(String photo) {
+    return BeeUtils.isEmpty(photo) ? null : new Image(FileUtils.getUrl(photo));
   }
 
   private Integer normPrice(Option option) {

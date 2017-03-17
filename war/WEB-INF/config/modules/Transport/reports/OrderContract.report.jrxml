@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
-<!-- 2016-12-06T12:37:29 -->
+<!-- 2017-03-07T14:29:54 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="OrderContract" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" isSummaryWithPageHeaderAndFooter="true" whenResourceMissingType="Error" uuid="b0daefcc-9db0-4ed1-b9d6-49143492176f">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<import value="com.butent.bee.server.Invocation"/>
+	<import value="com.butent.bee.server.modules.ParamHolderBean"/>
+	<import value="com.butent.bee.server.RsDataSource"/>
 	<import value="com.butent.bee.shared.data.BeeRowSet"/>
 	<import value="com.butent.bee.server.i18n.Localizations"/>
+	<import value="com.butent.bee.server.data.UserServiceBean"/>
 	<import value="java.util.Locale"/>
 	<import value="com.butent.bee.shared.time.DateTime"/>
 	<import value="com.butent.bee.shared.i18n.Dictionary"/>
 	<import value="com.butent.bee.shared.utils.BeeUtils"/>
+	<import value="com.butent.bee.shared.i18n.Formatter"/>
 	<import value="com.butent.bee.server.data.QueryServiceBean"/>
-	<import value="com.butent.bee.server.modules.ParamHolderBean"/>
-	<import value="com.butent.bee.server.RsDataSource"/>
 	<import value="com.ibm.icu.text.DateFormat"/>
 	<style name="Font" isDefault="true" isBlankWhenNull="true" fontName="DejaVu Sans"/>
 	<subDataset name="CargoLoading" whenResourceMissingType="Error" uuid="9f8814a6-b092-4537-b8fb-cac4ca1e4590">
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 		<parameter name="d" class="com.butent.bee.shared.i18n.Dictionary"/>
 		<parameter name="qs" class="com.butent.bee.server.data.QueryServiceBean"/>
+		<parameter name="usr" class="com.butent.bee.server.data.UserServiceBean"/>
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
@@ -60,6 +63,7 @@
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 		<parameter name="d" class="com.butent.bee.shared.i18n.Dictionary"/>
 		<parameter name="qs" class="com.butent.bee.server.data.QueryServiceBean"/>
+		<parameter name="usr" class="com.butent.bee.server.data.UserServiceBean"/>
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
@@ -116,6 +120,9 @@
 	<parameter name="PayerName" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="PayerTypeName" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="PayerCreditDays" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="usr" class="com.butent.bee.server.data.UserServiceBean">
+		<defaultValueExpression><![CDATA[Invocation.locateRemoteBean(UserServiceBean.class)]]></defaultValueExpression>
+	</parameter>
 	<field name="Description" class="java.lang.String"/>
 	<field name="Weight" class="java.lang.Number"/>
 	<field name="WeightUnitName" class="java.lang.String"/>
@@ -689,12 +696,15 @@
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 				</reportElement>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
-					<datasetRun subDataset="CargoLoading" uuid="4cc497de-385a-4060-9042-b120881fc074">
+					<datasetRun subDataset="CargoLoading" uuid="52bc22b9-b453-4351-8cab-8bc904846ec4">
 						<datasetParameter name="d">
 							<datasetParameterExpression><![CDATA[$V{d}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="qs">
 							<datasetParameterExpression><![CDATA[$V{qs}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="usr">
+							<datasetParameterExpression><![CDATA[$P{usr}]]></datasetParameterExpression>
 						</datasetParameter>
 						<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($F{CargoLoading}))]]></dataSourceExpression>
 					</datasetRun>
@@ -724,7 +734,7 @@
 							<textElement>
 								<font size="7"/>
 							</textElement>
-							<textFieldExpression><![CDATA[$P{d}.dateTime() + ": " + new DateTime($F{Date}).toCompactString()]]></textFieldExpression>
+							<textFieldExpression><![CDATA[$P{d}.dateTime() + ": " + Formatter.renderDateTime($P{usr}.getDateTimeFormatInfo(), new DateTime($F{Date}))]]></textFieldExpression>
 						</textField>
 						<textField isStretchWithOverflow="true">
 							<reportElement positionType="Float" x="0" y="28" width="195" height="9" isRemoveLineWhenBlank="true" uuid="7e15ab37-2bab-4f44-8323-f4ecee0ae52a">
@@ -760,12 +770,15 @@
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 				</reportElement>
 				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
-					<datasetRun subDataset="CargoUnloading" uuid="5ca48dc4-6615-49b7-9bc9-47cdb273a580">
+					<datasetRun subDataset="CargoUnloading" uuid="d3318b21-5a3c-4202-92bb-37636cc2ad06">
 						<datasetParameter name="d">
 							<datasetParameterExpression><![CDATA[$V{d}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="qs">
 							<datasetParameterExpression><![CDATA[$V{qs}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="usr">
+							<datasetParameterExpression><![CDATA[$P{usr}]]></datasetParameterExpression>
 						</datasetParameter>
 						<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($F{CargoUnloading}))]]></dataSourceExpression>
 					</datasetRun>
@@ -795,7 +808,7 @@
 							<textElement>
 								<font size="7"/>
 							</textElement>
-							<textFieldExpression><![CDATA[$P{d}.dateTime() + ": " + new DateTime($F{Date}).toCompactString()]]></textFieldExpression>
+							<textFieldExpression><![CDATA[$P{d}.dateTime() + ": " + Formatter.renderDateTime($P{usr}.getDateTimeFormatInfo(), new DateTime($F{Date}))]]></textFieldExpression>
 						</textField>
 						<textField isStretchWithOverflow="true">
 							<reportElement positionType="Float" x="0" y="28" width="195" height="9" isRemoveLineWhenBlank="true" uuid="57921bf0-7272-4bf6-8cd8-d5547538e6e8">

@@ -63,8 +63,8 @@ public final class FileUtils {
 
   private static final long MIN_FILE_SIZE_FOR_PROGRESS = 100000;
 
-  public static void commitFile(FileInfo fileInfo, Callback<Long> callback) {
-    uploadFile(fileInfo, true, callback);
+  public static void commitFile(FileInfo fileInfo, Callback<FileInfo> callback) {
+    upload(fileInfo, true, callback);
   }
 
   public static void commitFiles(Collection<? extends FileInfo> files, final String viewName,
@@ -86,7 +86,7 @@ public final class FileUtils {
         BeeRow row = DataUtils.createEmptyRow(columns.size());
 
         Data.setValue(viewName, row, parentColumn, parentId);
-        Data.setValue(viewName, row, fileColumn, result);
+        Data.setValue(viewName, row, fileColumn, result.getId());
 
         if (!BeeUtils.isEmpty(captionColumn)) {
           String caption = BeeUtils.notEmpty(fileInfo.getCaption(), fileInfo.getName());
@@ -131,7 +131,7 @@ public final class FileUtils {
     String name = BeeUtils.notEmpty(fileInfo.getCaption(), fileInfo.getName());
 
     simple.setWidget(new Link(BeeUtils.notEmpty(ArrayUtils.joinWords(caption), name),
-        getUrl(fileInfo.getId(), name)));
+        getUrl(fileInfo.getHash(), name)));
 
     DndHelper.makeSource(simple, NameUtils.getClassName(FileInfo.class), fileInfo, null);
 
@@ -150,31 +150,15 @@ public final class FileUtils {
     return result;
   }
 
-  public static String getUrl() {
-    return GWT.getHostPageBaseURL() + AdministrationConstants.FILE_URL;
+  public static String getUrl(String hash) {
+    return getUrl() + "/" + URL.encodePathSegment(Assert.notEmpty(hash));
   }
 
-  public static String getUrl(Long fileId) {
-    Assert.state(DataUtils.isId(fileId));
-    return getUrl() + "/" + BeeUtils.toString(fileId);
+  public static String getUrl(String hash, String fileName) {
+    return getUrl(hash) + "/" + URL.encodePathSegment(Assert.notEmpty(fileName));
   }
 
-  public static String getUrl(Long fileId, String fileName) {
-    return getUrl(fileId) + "/" + URL.encodePathSegment(Assert.notEmpty(fileName));
-  }
-
-  public static String getUrl(String... path) {
-    StringBuilder url = new StringBuilder(getUrl());
-
-    if (!ArrayUtils.isEmpty(path)) {
-      for (String part : path) {
-        url.append("/").append(URL.encodePathSegment(part));
-      }
-    }
-    return url.toString();
-  }
-
-  public static String getUrl(String fileName, Map<Long, String> files) {
+  public static String getUrl(String fileName, Map<String, String> files) {
     return CommUtils.getPath(getUrl("zip", fileName),
         Collections.singletonMap(Service.VAR_FILES, Codec.beeSerialize(Assert.notEmpty(files))),
         true);
@@ -238,8 +222,8 @@ public final class FileUtils {
     return Math.round(sz * 10d / c) / 10d + prfx;
   }
 
-  public static void uploadFile(FileInfo fileInfo, Callback<Long> callback) {
-    uploadFile(fileInfo, false, callback);
+  public static void uploadFile(FileInfo fileInfo, Callback<FileInfo> callback) {
+    upload(fileInfo, false, callback);
   }
 
   public static <T extends FileInfo> List<T> validateFileSize(Collection<T> input,
@@ -284,6 +268,10 @@ public final class FileUtils {
     }
   }
 
+  private static String getUrl() {
+    return GWT.getHostPageBaseURL() + AdministrationConstants.FILE_URL;
+  }
+
   private static String maybeCreateProgress(String caption, long size) {
     if (size < MIN_FILE_SIZE_FOR_PROGRESS) {
       return null;
@@ -293,57 +281,11 @@ public final class FileUtils {
     }
   }
 
-  private static void upload(NewFileInfo fileInfo, boolean commit, Callback<String> callback) {
+  private static void upload(FileInfo fileInfo, boolean commit, Callback<FileInfo> callback) {
     Assert.noNulls(fileInfo, callback);
 
-    String fileName = BeeUtils.notEmpty(fileInfo.getCaption(), fileInfo.getName());
-    String progressId = maybeCreateProgress(fileName, fileInfo.getSize());
-
-    XMLHttpRequest xhr = RpcUtils.createXhr();
-    xhr.open(RequestBuilder.POST.toString(), getUrl(fileName), true);
-
-    if (commit) {
-      xhr.setRequestHeader(AdministrationConstants.FILE_COMMIT, "true");
-    }
-    RpcUtils.addSessionId(xhr);
-
-    xhr.setOnload(evt -> {
-      if (progressId != null) {
-        BeeKeeper.getScreen().removeProgress(progressId);
-      }
-      String msg = BeeUtils.joinWords("upload", fileName, "response status:");
-
-      if (xhr.getStatus() == Response.SC_OK) {
-        String response = xhr.getResponseText();
-
-        if (JsonUtils.isJson(response)) {
-          JSONObject json = JsonUtils.parseObject(response);
-          JSONObject status = (JSONObject) json.get("Status");
-
-          if (BeeUtils.toBoolean(JsonUtils.toString(status.get("Success")))) {
-            callback.onSuccess(JsonUtils.toString(json.get("Result")));
-            return;
-          }
-          msg = BeeUtils.joinWords(msg, status.toString());
-        } else {
-          msg = BeeUtils.joinWords("Not a json response:", response);
-        }
-      } else {
-        msg = BeeUtils.joinWords(msg, BeeUtils.bracket(xhr.getStatus()), xhr.getStatusText());
-      }
-      logger.severe(msg);
-      callback.onFailure(msg);
-    });
-    addProgressListener(xhr, progressId);
-    xhr.send(fileInfo.getNewFile());
-  }
-
-  private FileUtils() {
-  }
-
-  private static void uploadFile(FileInfo fileInfo, boolean commit, Callback<Long> callback) {
     if (DataUtils.isId(fileInfo.getId())) {
-      callback.onSuccess(fileInfo.getId());
+      callback.onSuccess(fileInfo);
 
     } else if (!(fileInfo instanceof NewFileInfo)) {
       callback.onFailure("File is not an instance of " + NameUtils.getClassName(NewFileInfo.class));
@@ -355,30 +297,56 @@ public final class FileUtils {
 
       long start = System.currentTimeMillis();
 
-      upload((NewFileInfo) fileInfo, commit, new Callback<String>() {
-        @Override
-        public void onSuccess(String response) {
-          if (BeeUtils.isLong(response)) {
-            long fileId = BeeUtils.toLong(response);
+      String progressId = maybeCreateProgress(fileName, fileInfo.getSize());
 
-            logger.info(TimeUtils.elapsedSeconds(start), "uploaded", fileName);
-            logger.info("type:", fileType, "size:", fileSize, "id:", fileId);
-            logger.addSeparator();
+      XMLHttpRequest xhr = RpcUtils.createXhr();
+      xhr.open(RequestBuilder.POST.toString(), getUrl(fileName), true);
 
-            callback.onSuccess(fileId);
+      if (commit) {
+        xhr.setRequestHeader(AdministrationConstants.FILE_COMMIT, "true");
+      }
+      RpcUtils.addSessionId(xhr);
 
+      xhr.setOnload(evt -> {
+        if (progressId != null) {
+          BeeKeeper.getScreen().removeProgress(progressId);
+        }
+        String msg = BeeUtils.joinWords("upload", fileName, "response status:");
+
+        if (xhr.getStatus() == Response.SC_OK) {
+          String response = xhr.getResponseText();
+
+          if (JsonUtils.isJson(response)) {
+            JSONObject json = JsonUtils.parseObject(response);
+            JSONObject status = (JSONObject) json.get("Status");
+
+            if (BeeUtils.toBoolean(JsonUtils.toString(status.get("Success")))) {
+              fileInfo.setId(BeeUtils.toLong(JsonUtils.toString(json.get("Result"))));
+              fileInfo.setHash(JsonUtils.toString(json.get("Hash")));
+
+              logger.info(TimeUtils.elapsedSeconds(start), "uploaded", fileName);
+              logger.info("type:", fileType, "size:", fileSize, "id:", fileInfo.getId(),
+                  "hash:", fileInfo.getHash());
+              logger.addSeparator();
+
+              callback.onSuccess(fileInfo);
+              return;
+            }
+            msg = BeeUtils.joinWords(msg, status.toString());
           } else {
-            String msg = BeeUtils.joinWords("upload", fileName, "response:", response);
-            logger.warning(msg);
-            callback.onFailure(msg);
+            msg = BeeUtils.joinWords("Not a json response:", response);
           }
+        } else {
+          msg = BeeUtils.joinWords(msg, BeeUtils.bracket(xhr.getStatus()), xhr.getStatusText());
         }
-
-        @Override
-        public void onFailure(String... reason) {
-          callback.onFailure(reason);
-        }
+        logger.severe(msg);
+        callback.onFailure(msg);
       });
+      addProgressListener(xhr, progressId);
+      xhr.send(((NewFileInfo) fileInfo).getNewFile());
     }
+  }
+
+  private FileUtils() {
   }
 }

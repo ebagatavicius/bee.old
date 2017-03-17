@@ -6,6 +6,8 @@ import com.google.gwt.event.dom.client.DragEndHandler;
 import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.DragStartHandler;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_FILE_HASH;
+
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
@@ -129,7 +131,7 @@ public class FileGridInterceptor extends AbstractGridInterceptor {
       CellSource cellSource) {
 
     if (BeeUtils.same(columnName, fileColumn) && !BeeUtils.isEmpty(captionColumn)) {
-      return new FileLinkRenderer(DataUtils.getColumnIndex(columnName, dataColumns),
+      return new FileLinkRenderer(DataUtils.getColumnIndex(COL_FILE_HASH, dataColumns),
           DataUtils.getColumnIndex(captionColumn, dataColumns),
           DataUtils.getColumnIndex(nameColumn, dataColumns));
 

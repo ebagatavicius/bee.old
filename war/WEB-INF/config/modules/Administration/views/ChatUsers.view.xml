@@ -13,11 +13,14 @@
 
       <SimpleJoin name="CompanyPerson" joinType="LEFT">
         <SimpleColumn name="Person" />
-      
+
         <SimpleJoin name="Person" joinType="LEFT">
           <SimpleColumn name="FirstName" />
           <SimpleColumn name="LastName" />
-          <SimpleColumn name="Photo" />
+
+          <SimpleJoin name="PhotoFile" joinType="LEFT">
+            <SimpleColumn name="Hash" alias="PhotoFile" label="=photo" />
+          </SimpleJoin>
         </SimpleJoin>
         <SimpleJoin name="Position" joinType="LEFT">
           <SimpleColumn name="Name" alias="PositionName" />
@@ -36,4 +39,3 @@
     <OrderBy column="Registered" />
   </Order>
 </View>
- 

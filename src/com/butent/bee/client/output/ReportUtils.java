@@ -97,7 +97,7 @@ public final class ReportUtils {
   }
 
   public static void preview(FileInfo repInfo, ReportCallback callback) {
-    String url = FileUtils.getUrl(repInfo.getId(), BeeUtils.notEmpty(repInfo.getCaption(),
+    String url = FileUtils.getUrl(repInfo.getHash(), BeeUtils.notEmpty(repInfo.getCaption(),
         repInfo.getName()));
 
     Frame frame = new Frame(url);

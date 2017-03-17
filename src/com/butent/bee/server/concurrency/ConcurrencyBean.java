@@ -1,8 +1,6 @@
 package com.butent.bee.server.concurrency;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 
 import com.butent.bee.server.Config;
@@ -23,6 +21,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 import com.butent.bee.shared.websocket.messages.LogMessage;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -127,8 +126,8 @@ public class ConcurrencyBean {
 
   private static final Map<String, Pair<String, Long>> runningTasks = new ConcurrentHashMap<>();
 
-  private Multimap<String, Class<? extends HasTimerService>> calendarRegistry;
-  private Multimap<String, Class<? extends HasTimerService>> intervalRegistry;
+  private final Map<String, Class<? extends HasTimerService>> calendarReg = new HashMap<>();
+  private final Map<String, Class<? extends HasTimerService>> intervalReg = new HashMap<>();
 
   private final Map<String, ReentrantLock> locks = new ConcurrentHashMap<>();
 
@@ -157,29 +156,7 @@ public class ConcurrencyBean {
   }
 
   public <T extends HasTimerService> void createCalendarTimer(Class<T> handler, String parameter) {
-    if (calendarRegistry == null) {
-      calendarRegistry = HashMultimap.create();
-
-      prm.registerParameterEventHandler(new ParameterEventHandler() {
-        @Subscribe
-        public void createTimers(ParameterEvent event) {
-          String param = event.getParameter();
-
-          if (calendarRegistry.containsKey(param)) {
-            ConcurrencyBean concurrency = Invocation.locateRemoteBean(ConcurrencyBean.class);
-
-            if (concurrency != null) {
-              for (Class<? extends HasTimerService> clazz : calendarRegistry.get(param)) {
-                concurrency.createCalendarTimer(clazz, param);
-              }
-            }
-          }
-        }
-      });
-    }
-    if (!calendarRegistry.containsEntry(parameter, handler)) {
-      calendarRegistry.put(parameter, handler);
-    }
+    calendarReg.put(parameter, handler);
     TimerService timerService = removeTimer(handler, parameter);
     String hours = prm.getText(parameter);
 
@@ -200,29 +177,7 @@ public class ConcurrencyBean {
   }
 
   public <T extends HasTimerService> void createIntervalTimer(Class<T> handler, String parameter) {
-    if (intervalRegistry == null) {
-      intervalRegistry = HashMultimap.create();
-
-      prm.registerParameterEventHandler(new ParameterEventHandler() {
-        @Subscribe
-        public void createTimers(ParameterEvent event) {
-          String param = event.getParameter();
-
-          if (intervalRegistry.containsKey(param)) {
-            ConcurrencyBean concurrency = Invocation.locateRemoteBean(ConcurrencyBean.class);
-
-            if (concurrency != null) {
-              for (Class<? extends HasTimerService> clazz : intervalRegistry.get(param)) {
-                concurrency.createIntervalTimer(clazz, param);
-              }
-            }
-          }
-        }
-      });
-    }
-    if (!intervalRegistry.containsEntry(parameter, handler)) {
-      intervalRegistry.put(parameter, handler);
-    }
+    intervalReg.put(parameter, handler);
     TimerService timerService = removeTimer(handler, parameter);
     Integer minutes = prm.getInteger(parameter);
 
@@ -240,6 +195,24 @@ public class ConcurrencyBean {
         logger.error(ex);
       }
     }
+  }
+
+  public void init() {
+    prm.registerParameterEventHandler(new ParameterEventHandler() {
+      @Subscribe
+      public void createTimers(ParameterEvent event) {
+        String param = event.getParameter();
+
+        if (calendarReg.containsKey(param)) {
+          Invocation.locateRemoteBean(ConcurrencyBean.class)
+              .createCalendarTimer(calendarReg.get(param), param);
+        }
+        if (intervalReg.containsKey(param)) {
+          Invocation.locateRemoteBean(ConcurrencyBean.class)
+              .createIntervalTimer(intervalReg.get(param), param);
+        }
+      }
+    });
   }
 
   public static boolean isParameterTimer(Timer timer, Object parameter) {

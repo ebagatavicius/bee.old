@@ -256,8 +256,8 @@
 .bee-grid-TradeExpenditures.bee-GridContainer-no-data .bee-trade-cost-calculation {
   visibility: hidden;
 }
-.bee-Form-disabled .bee-trade-price-calculation,
-.bee-Form-disabled .bee-trade-cost-calculation,
-.bee-Form-disabled .bee-trade-fin-post {
+.bee-form-TradeDocument .bee-disabled .bee-trade-price-calculation,
+.bee-form-TradeDocument .bee-disabled .bee-trade-cost-calculation,
+.bee-form-TradeDocument .bee-disabled .bee-trade-fin-post {
   visibility: hidden;
 }

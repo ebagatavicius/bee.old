@@ -13,6 +13,8 @@ import java.util.Date;
 
 public abstract class AbstractDate implements HasDateValue {
 
+  private static final char DATE_FIELD_SEPARATOR = '-';
+
   public static AbstractDate fromJava(Date date, ValueType type) {
     if (date == null) {
       return null;
@@ -45,6 +47,12 @@ public abstract class AbstractDate implements HasDateValue {
         Assert.untouchable();
         return null;
     }
+  }
+
+  protected static String dateToString(int year, int month, int dom) {
+    return TimeUtils.yearToString(year) + DATE_FIELD_SEPARATOR
+        + TimeUtils.monthToString(month) + DATE_FIELD_SEPARATOR
+        + TimeUtils.dayOfMonthToString(dom);
   }
 
   private static void assertType(ValueType type) {
@@ -121,8 +129,4 @@ public abstract class AbstractDate implements HasDateValue {
   }
 
   public abstract ValueType getType();
-
-  protected String toDateString() {
-    return TimeUtils.dateToString(getYear(), getMonth(), getDom());
-  }
 }

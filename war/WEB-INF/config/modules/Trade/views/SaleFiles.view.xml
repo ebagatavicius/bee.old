@@ -8,6 +8,7 @@
 
     <SimpleColumn name="File" />
     <SimpleJoin name="File" joinType="LEFT">
+      <SimpleColumn name="Hash" />
       <SimpleColumn alias="FileName" name="Name" />
       <SimpleColumn alias="FileSize" name="Size" />
       <SimpleColumn alias="FileType" name="Type" />

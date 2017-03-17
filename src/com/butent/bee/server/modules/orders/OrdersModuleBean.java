@@ -8,6 +8,8 @@ import static com.butent.bee.shared.modules.administration.AdministrationConstan
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.orders.OrdersConstants.*;
 import static com.butent.bee.shared.modules.projects.ProjectConstants.*;
+import static com.butent.bee.shared.modules.service.ServiceConstants.TBL_SERVICE_ITEMS;
+import static com.butent.bee.shared.modules.service.ServiceConstants.VIEW_SERVICE_SALES;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.trade.acts.TradeActConstants.*;
 
@@ -25,6 +27,7 @@ import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.modules.BeeModule;
 import com.butent.bee.server.modules.ParamHolderBean;
 import com.butent.bee.server.modules.administration.ExchangeUtils;
+import com.butent.bee.server.modules.service.ServiceModuleBean;
 import com.butent.bee.server.modules.trade.TradeModuleBean;
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.IsExpression;
@@ -34,6 +37,7 @@ import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
@@ -62,6 +66,7 @@ import com.butent.webservice.ButentWS;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -95,6 +100,8 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
   TradeModuleBean trd;
   @EJB
   DataEditorBean deb;
+  @EJB
+  ServiceModuleBean srv;
 
   @Resource
   TimerService timerService;
@@ -214,7 +221,9 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
       @Subscribe
       @AllowConcurrentEvents
       public void setFreeRemainder(ViewQueryEvent event) {
-        if ((event.isAfter(VIEW_ORDER_ITEMS) || event.isAfter(VIEW_ORDER_SALES)) && event.hasData()
+        if ((event.isAfter(VIEW_ORDER_ITEMS) || event.isAfter(VIEW_ORDER_SALES)
+            || event.isAfter(TBL_SERVICE_ITEMS)
+            || event.isAfter(VIEW_SERVICE_SALES)) && event.hasData()
             && event.getColumnCount() >= sys.getView(event.getTargetName()).getColumnCount()) {
 
           BeeRowSet rowSet = event.getRowset();
@@ -222,11 +231,26 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
           if (BeeUtils.isPositive(rowSet.getNumberOfRows())) {
             List<Long> itemIds = DataUtils.getDistinct(rowSet, COL_ITEM);
             int itemIndex = rowSet.getColumnIndex(COL_ITEM);
-            int ordIndex = rowSet.getColumnIndex(COL_ORDER);
-            Long order = rowSet.getRow(0).getLong(ordIndex);
 
-            Map<Long, Double> freeRemainders = getFreeRemainders(itemIds, order, null);
-            Map<Long, Double> compInvoices = getCompletedInvoices(order);
+            Long order = null;
+            if (rowSet.containsColumn(COL_ORDER)) {
+              int ordIndex = rowSet.getColumnIndex(COL_ORDER);
+              order = rowSet.getRow(0).getLong(ordIndex);
+            }
+
+            Long whId = null;
+            if (event.isAfter(TBL_SERVICE_ITEMS) || event.isAfter(VIEW_SERVICE_SALES)) {
+              whId = srv.getWarehouseId(rowSet);
+            }
+
+            Map<Long, Double> freeRemainders = getFreeRemainders(itemIds, order, whId);
+
+            Map<Long, Double> compInvoices;
+            if (DataUtils.isId(order)) {
+              compInvoices = getCompletedInvoices(order);
+            } else {
+              compInvoices = srv.getCompletedInvoices(rowSet);
+            }
 
             Totalizer totalizer = new Totalizer(rowSet.getColumns());
 
@@ -298,14 +322,20 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
     Long warehouse = reqInfo.getParameterLong(COL_WAREHOUSE);
     boolean remChecked = reqInfo.hasParameter(COL_WAREHOUSE_REMAINDER);
 
+    boolean filterServices = reqInfo.hasParameter(COL_ITEM_IS_SERVICE);
+
     CompoundFilter filter = Filter.and();
-    filter.add(Filter.isNull(COL_ITEM_IS_SERVICE));
+    if (filterServices) {
+      filter.add(Filter.notNull(COL_ITEM_IS_SERVICE));
+    } else {
+      filter.add(Filter.isNull(COL_ITEM_IS_SERVICE));
+    }
 
     if (!BeeUtils.isEmpty(where)) {
       filter.add(Filter.restore(where));
     }
 
-    if (warehouse != null && !remChecked) {
+    if (warehouse != null && !remChecked && !filterServices) {
       filter.add(Filter.in(sys.getIdName(TBL_ITEMS), VIEW_ITEM_REMAINDERS, COL_ITEM, Filter.and(
           Filter.equals(COL_WAREHOUSE, warehouse), Filter.notNull(COL_WAREHOUSE_REMAINDER))));
     }
@@ -396,7 +426,13 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
     return ResponseObject.response(items);
   }
 
-  private ResponseObject createInvoiceItems(RequestInfo reqInfo) {
+  public ResponseObject createInvoiceItems(RequestInfo reqInfo) {
+    return createInvoiceItems(reqInfo, TBL_ORDERS, COL_DATES_START_DATE, Collections.singletonList(
+            Pair.of(TBL_ORDERS, sys.joinTables(TBL_ORDERS, TBL_ORDER_ITEMS, COL_ORDER))));
+  }
+
+  public ResponseObject createInvoiceItems(RequestInfo reqInfo, String parentTable,
+      String startDateColumn, List<Pair<String, IsCondition>> additionalJoins) {
     Long saleId = BeeUtils.toLongOrNull(reqInfo.getParameter(COL_SALE));
     Long currency = BeeUtils.toLongOrNull(reqInfo.getParameter(COL_CURRENCY));
     Map<String, String> map =
@@ -420,27 +456,30 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
     IsCondition where = sys.idInList(TBL_ORDER_ITEMS, idsQty.keySet());
 
     SqlSelect query = new SqlSelect();
-    query.addFields(TBL_ORDER_ITEMS, sys.getIdName(TBL_ORDER_ITEMS), COL_ORDER, COL_TRADE_VAT_PLUS,
+    query.addFields(TBL_ORDER_ITEMS, sys.getIdName(TBL_ORDER_ITEMS), COL_TRADE_VAT_PLUS,
         COL_TRADE_VAT, COL_TRADE_VAT_PERC, COL_INCOME_ITEM, COL_RESERVED_REMAINDER,
         COL_TRADE_DISCOUNT, COL_TRADE_ITEM_QUANTITY)
         .addFields(TBL_ITEMS, COL_ITEM_ARTICLE)
         .addFrom(TBL_ORDER_ITEMS)
         .addFromLeft(TBL_ITEMS, sys.joinTables(TBL_ITEMS, TBL_ORDER_ITEMS, COL_ITEM))
-        .addFromLeft(TBL_ORDERS, sys.joinTables(TBL_ORDERS, TBL_ORDER_ITEMS, COL_ORDER))
         .setWhere(where);
+
+    additionalJoins.forEach(tableAndJoin ->
+        query.addFromLeft(tableAndJoin.getA(), tableAndJoin.getB())
+    );
 
     IsExpression vatExch =
         ExchangeUtils.exchangeFieldTo(query, SqlUtils.field(TBL_ORDER_ITEMS, COL_TRADE_VAT),
-            SqlUtils.field(TBL_ORDER_ITEMS, COL_TRADE_CURRENCY), SqlUtils.field(TBL_ORDERS,
-                COL_DATES_START_DATE), SqlUtils.constant(currency));
+            SqlUtils.field(TBL_ORDER_ITEMS, COL_TRADE_CURRENCY), SqlUtils.field(parentTable,
+                startDateColumn), SqlUtils.constant(currency));
 
     String vatAlias = "Vat_" + SqlUtils.uniqueName();
 
     String priceAlias = "Price_" + SqlUtils.uniqueName();
     IsExpression priceExch =
         ExchangeUtils.exchangeFieldTo(query, SqlUtils.field(TBL_ORDER_ITEMS, COL_TRADE_ITEM_PRICE),
-            SqlUtils.field(TBL_ORDER_ITEMS, COL_TRADE_CURRENCY), SqlUtils.field(TBL_ORDERS,
-                COL_DATES_START_DATE), SqlUtils.constant(currency));
+            SqlUtils.field(TBL_ORDER_ITEMS, COL_TRADE_CURRENCY), SqlUtils.field(parentTable,
+                startDateColumn), SqlUtils.constant(currency));
 
     query.addExpr(priceExch, priceAlias)
         .addExpr(vatExch, vatAlias)
@@ -1178,6 +1217,8 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
       if (totRes == null) {
         totRes = BeeConst.DOUBLE_ZERO;
       }
+
+      totRes += srv.getReservedRemaindersQuery(itemId, warehouseId);
 
       SqlSelect invoiceQry = new SqlSelect()
           .addSum(TBL_SALE_ITEMS, COL_TRADE_ITEM_QUANTITY)

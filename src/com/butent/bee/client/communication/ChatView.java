@@ -85,19 +85,12 @@ public class ChatView extends Flow implements Presenter, View,
       Flow body = new Flow(STYLE_MESSAGE_BODY);
 
       if (addPhoto) {
-        Image photo;
-        if (DataUtils.isId(message.getUserId())) {
-          photo = Global.getUsers().getPhoto(message.getUserId());
+        Image photo = Global.getUsers().getPhoto(message.getUserId());
 
-          if (photo == null) {
-            photo = new Image(DEFAULT_PHOTO_IMAGE);
+        if (DataUtils.isId(message.getUserId())) {
             CustomDiv signature = new CustomDiv(STYLE_MESSAGE_SIGNATURE);
             signature.setText(Global.getUsers().getSignature(message.getUserId()));
             add(signature);
-          }
-
-        } else {
-          photo = new Image(DEFAULT_PHOTO_IMAGE);
         }
         photo.addStyleName(STYLE_MESSAGE_PHOTO);
         body.add(photo);
@@ -194,8 +187,6 @@ public class ChatView extends Flow implements Presenter, View,
 
   private static final int TIMER_PERIOD = 5_000;
   private static final long FAST_INTERVAL = 30_000;
-
-  private static final String DEFAULT_PHOTO_IMAGE = "images/defaultUser.png";
 
   private static final EnumSet<UiOption> uiOptions = EnumSet.of(UiOption.VIEW);
 
@@ -541,8 +532,8 @@ public class ChatView extends Flow implements Presenter, View,
       List<FileInfo> files = new ArrayList<>();
 
       for (FileInfo fileInfo : input) {
-        FileUtils.commitFile(fileInfo, id -> {
-          files.add(new FileInfo(id, fileInfo.getName(), fileInfo.getSize(), fileInfo.getType()));
+        FileUtils.commitFile(fileInfo, info -> {
+          files.add(FileInfo.restore(info.serialize()));
           latch.decrement();
 
           if (latch.isOpen()) {

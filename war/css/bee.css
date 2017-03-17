@@ -510,6 +510,9 @@
   -webkit-flex: 1;
   -ms-flex: 1;
 }
+.bee-Header-read-only {
+  color: tomato;
+}
 
 .bee-Header-commandPanel {
   margin-left: auto;
@@ -666,7 +669,6 @@
 
 .bee-CellGridBody {
   overflow: hidden;
-  text-overflow: ellipsis;
   color: #414142;
 }
 
@@ -2031,6 +2033,9 @@
 }
 .bee-Form .bee-CheckBox.bee-disabled {
   background-color: inherit;
+}
+.bee-Form .bee-disabled .bee-GridView {
+  background-color: #f3f3f3;
 }
 
 .bee-FilterSupplier-dialog {

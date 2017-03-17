@@ -4,6 +4,9 @@ import com.butent.bee.server.utils.XmlUtils;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
+import com.butent.bee.shared.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.PredefinedFormat;
+import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.JustDate;
@@ -115,7 +118,7 @@ public class ExchangeRatesWS extends Service {
     }
 
     String tp = BeeUtils.notEmpty(type, DEFAULT_TYPE);
-    String dt = (date == null) ? null : date.toString();
+    String dt = format(date);
 
     String svc = "getFxRates";
 
@@ -177,8 +180,8 @@ public class ExchangeRatesWS extends Service {
     }
 
     String tp = BeeUtils.notEmpty(type, DEFAULT_TYPE);
-    String low = (dateLow == null) ? null : dateLow.toString();
-    String high = (dateHigh == null) ? null : dateHigh.toString();
+    String low = format(dateLow);
+    String high = format(dateHigh);
 
     String svc = "getFxRatesForCurrency";
 
@@ -274,6 +277,15 @@ public class ExchangeRatesWS extends Service {
     logger.info(svc, "rows:", data.getNumberOfRows());
 
     return ResponseObject.response(data);
+  }
+
+  private static String format(JustDate date) {
+    if (date == null) {
+      return null;
+    } else {
+      return DateTimeFormat.of(PredefinedFormat.DATE_SHORT,
+          SupportedLocale.LT.getDateTimeFormatInfo()).format(date);
+    }
   }
 
   private static List<Element> getLeaves(Node root) {

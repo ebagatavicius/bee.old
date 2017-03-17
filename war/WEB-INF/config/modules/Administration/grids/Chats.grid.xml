@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
-  xmlns:w="http://www.butent.com/widget"
+        xmlns:w="http://www.butent.com/widget"
 
-  name="Chats" viewName="Chats" caption="=chats"
-  order="Created desc" editForm="Chat"
-  >
-  
-   <g:east size="700" splitterSize="2" >
-    <w:FlowPanel name="chatFlowWidget" >
+        name="Chats" viewName="Chats" caption="=chats"
+        order="Created desc" editForm="Chat"
+>
+
+  <g:east size="700" splitterSize="2">
+    <w:FlowPanel name="chatFlowWidget">
     </w:FlowPanel>
   </g:east>
-  
+
   <g:body height="40" />
 
   <g:columns>
     <IdColumn name="Id" visible="false" />
 
-    <PropColumn name="UserPhoto" type="string" caption="-" cellType="html"
-      width="40" horizontalAlignment="center" autoFit="false" exportable="false">
+    <PropColumn name="PhotoFile" type="string" caption="-" label="=photo" cellType="html"
+                width="40" horizontalAlignment="center" autoFit="false" exportable="false">
       <renderer type="photo" />
     </PropColumn>
     <PropColumn name="UserNames" type="string" caption="=chatUsers"
-      verticalAlignment="top" flexGrow="1" />
+                verticalAlignment="top" flexGrow="1" />
 
     <DataColumn name="ChatName" visible="true" />
 
     <DataColumn name="Created" format="DATE_TIME_SHORT" />
     <RelColumn name="Creator" renderColumns="CreatorFirstName CreatorLastName"
-      sortBy="CreatorLastName CreatorFirstName" />
+               sortBy="CreatorLastName CreatorFirstName" />
   </g:columns>
 </g:Grid>

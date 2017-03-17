@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="ServiceItems"
+       idName="ServiceItemsID"
+>
+  <Fields>
+    <Relation name="ServiceObject" notNull="true" relation="ServiceObjects" cascade="DELETE"
+              label="=svcObject" />
+
+    <Relation name="ServiceMaintenance" relation="ServiceMaintenance" cascade="DELETE"
+              label="=svcMaintenance" />
+
+    <Relation name="Repairer" relation="CompanyPersons" label="=svcMaster"/>
+  </Fields>
+</Table>

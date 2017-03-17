@@ -81,8 +81,8 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
       editableColumn.addCellValidationHandler(event -> {
         CellValidation cv = event.getCellValidation();
         IsRow row = cv.getRow();
-        int qtyIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_TRADE_ITEM_QUANTITY);
-        int resRemainderIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_RESERVED_REMAINDER);
+        int qtyIdx = Data.getColumnIndex(getViewName(), COL_TRADE_ITEM_QUANTITY);
+        int resRemainderIdx = Data.getColumnIndex(getViewName(), COL_RESERVED_REMAINDER);
         Double qty = row.getDouble(qtyIdx);
         Double free = Double.valueOf(row.getProperty(PRP_FREE_REMAINDER));
         Double compInvc = Double.valueOf(row.getProperty(PRP_COMPLETED_INVOICES));
@@ -90,6 +90,8 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
             (row.getDouble(resRemainderIdx) == null) ? 0 : row.getDouble(resRemainderIdx);
         Double newValue = BeeUtils.toDouble(cv.getNewValue());
         Double complQty = null;
+
+        free += addFreeQuantity(qty, row);
 
         if (BeeUtils.isPositive(newValue)) {
           if (qty - compInvc <= free + resRemainder) {
@@ -117,10 +119,10 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
   @Override
   public void beforeRender(GridView gridView, RenderingEvent event) {
 
-    int qtyIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_TRADE_ITEM_QUANTITY);
-    int resRemainderIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_RESERVED_REMAINDER);
-    int comQtyIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_COMPLETED_QTY);
-    int itemIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_ITEM);
+    int qtyIdx = Data.getColumnIndex(getViewName(), COL_TRADE_ITEM_QUANTITY);
+    int resRemainderIdx = Data.getColumnIndex(getViewName(), COL_RESERVED_REMAINDER);
+    int comQtyIdx = Data.getColumnIndex(getViewName(), COL_COMPLETED_QTY);
+    int itemIdx = Data.getColumnIndex(getViewName(), COL_ITEM);
 
     Map<Long, Double> freeMap = new HashMap<>();
 
@@ -141,14 +143,15 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
         row.setValue(comQtyIdx, free + resRemainder);
         freeMap.put(row.getLong(itemIdx), BeeConst.DOUBLE_ZERO);
       }
+      additionalQtyCalculation(row, comQtyIdx, qty, freeMap, itemIdx);
     }
   }
 
   @Override
   public void onClick(ClickEvent clickEvent) {
     final Set<Long> ids = new HashSet<>();
-    int comQtyIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_COMPLETED_QTY);
-    BeeRowSet rowSet = new BeeRowSet(VIEW_ORDER_SALES, Data.getColumns(VIEW_ORDER_SALES));
+    int comQtyIdx = Data.getColumnIndex(getViewName(), COL_COMPLETED_QTY);
+    BeeRowSet rowSet = new BeeRowSet(getViewName(), Data.getColumns(getViewName()));
 
     for (RowInfo row : getGridView().getSelectedRows(GridView.SelectedRows.ALL)) {
       ids.add(row.getId());
@@ -164,7 +167,7 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
       if (ids.contains(row.getId())) {
         Double comQty = row.getDouble(comQtyIdx);
 
-        if (BeeUtils.isPositive(comQty)) {
+        if (BeeUtils.isPositive(comQty) || validItemForInvoice(row)) {
           rowSet.addRow((BeeRow) row);
 
         } else {
@@ -182,8 +185,27 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
     return new OrderInvoiceBuilder();
   }
 
-  private static ParameterList getRequestArgs() {
+  public ParameterList getRequestArgs() {
     return OrdersKeeper.createSvcArgs(OrdersConstants.SVC_CREATE_INVOICE_ITEMS);
+  }
+
+  public boolean validItemForInvoice(IsRow row) {
+    return false;
+  }
+
+  private Double addFreeQuantity(Double qty, IsRow row) {
+    if (validItemForInvoice(row)) {
+      return qty;
+    }
+    return Double.valueOf(0);
+  }
+
+  private void additionalQtyCalculation(IsRow row, int comQtyIdx, Double qty,
+      Map<Long, Double> freeMap, int itemIdx) {
+    if (validItemForInvoice(row)) {
+      row.setValue(comQtyIdx, qty);
+      freeMap.put(row.getLong(itemIdx), qty);
+    }
   }
 
   private void createInvoice(final BeeRowSet data) {
@@ -193,24 +215,30 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
 
     if (data != null) {
       newRow.setValue(targetInfo.getColumnIndex(TradeConstants.COL_TRADE_CUSTOMER), data.getRow(0)
-          .getLong(Data.getColumnIndex(VIEW_ORDER_SALES, COL_COMPANY)));
+          .getLong(Data.getColumnIndex(getViewName(), COL_COMPANY)));
       newRow.setValue(targetInfo.getColumnIndex(ALS_CUSTOMER_NAME), data.getRow(0)
-          .getString(Data.getColumnIndex(VIEW_ORDER_SALES, ALS_COMPANY_NAME)));
+          .getString(Data.getColumnIndex(getViewName(), ALS_COMPANY_NAME)));
 
       newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_WAREHOUSE_FROM), data.getRow(0)
-          .getLong(Data.getColumnIndex(VIEW_ORDER_SALES, COL_WAREHOUSE)));
+          .getLong(Data.getColumnIndex(getViewName(), COL_WAREHOUSE)));
       newRow.setValue(targetInfo.getColumnIndex("WarehouseFromCode"), data.getRow(0)
-          .getString(Data.getColumnIndex(VIEW_ORDER_SALES, ALS_WAREHOUSE_CODE)));
+          .getString(Data.getColumnIndex(getViewName(), ALS_WAREHOUSE_CODE)));
 
-      newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_OPERATION), data.getRow(0)
-          .getLong(Data.getColumnIndex(VIEW_ORDER_SALES, COL_ORDER_TRADE_OPERATION)));
-      newRow.setValue(targetInfo.getColumnIndex(COL_OPERATION_NAME), data.getRow(0)
-          .getString(Data.getColumnIndex(VIEW_ORDER_SALES, COL_TRADE_OPERATION_NAME)));
-      newRow.setValue(targetInfo.getColumnIndex(COL_OPERATION_CASH_REGISTER_NO), data.getRow(0)
-          .getString(Data.getColumnIndex(VIEW_ORDER_SALES, COL_OPERATION_CASH_REGISTER_NO)));
+      if (Data.containsColumn(getViewName(), COL_ORDER_TRADE_OPERATION)) {
+        newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_OPERATION), data.getRow(0)
+            .getLong(Data.getColumnIndex(getViewName(), COL_ORDER_TRADE_OPERATION)));
+      }
+      if (Data.containsColumn(getViewName(), COL_TRADE_OPERATION_NAME)) {
+        newRow.setValue(targetInfo.getColumnIndex(COL_OPERATION_NAME), data.getRow(0)
+            .getString(Data.getColumnIndex(getViewName(), COL_TRADE_OPERATION_NAME)));
+      }
+      if (Data.containsColumn(getViewName(), COL_OPERATION_CASH_REGISTER_NO)) {
+        newRow.setValue(targetInfo.getColumnIndex(COL_OPERATION_CASH_REGISTER_NO), data.getRow(0)
+            .getString(Data.getColumnIndex(getViewName(), COL_OPERATION_CASH_REGISTER_NO)));
+      }
 
       Integer creditDays =
-          data.getRow(0).getInteger(Data.getColumnIndex(VIEW_ORDER_SALES, COL_COMPANY_CREDIT_DAYS));
+          data.getRow(0).getInteger(Data.getColumnIndex(getViewName(), COL_COMPANY_CREDIT_DAYS));
 
       if (creditDays != null) {
         newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_TERM), new JustDate(TimeUtils.today()
@@ -218,7 +246,7 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
       }
 
       String notes =
-          data.getRow(0).getString(Data.getColumnIndex(VIEW_ORDER_SALES, COL_TRADE_NOTES));
+          data.getRow(0).getString(Data.getColumnIndex(getViewName(), COL_TRADE_NOTES));
 
       if (!BeeUtils.isEmpty(notes)) {
         newRow.setValue(targetInfo.getColumnIndex(COL_TRADE_NOTES), notes);
@@ -250,7 +278,7 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
 
     if (!itemAbsent) {
       for (BeeRow row : data) {
-        idsQty.put(row.getId(), row.getDouble(Data.getColumnIndex(VIEW_ORDER_SALES,
+        idsQty.put(row.getId(), row.getDouble(Data.getColumnIndex(getViewName(),
             COL_COMPLETED_QTY)));
         if (!DataUtils.isId(row.getLong(item))) {
           itemAbsent = true;
@@ -312,12 +340,12 @@ public class OrderInvoiceBuilder extends AbstractGridInterceptor implements Clic
 
   private void getItemsAmount(ClickEvent event) {
     final Set<Long> ids = new HashSet<>();
-    int comQtyIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_COMPLETED_QTY);
-    int priceIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_ITEM_PRICE);
-    int discountIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_TRADE_DISCOUNT);
-    int vatPlusIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_TRADE_VAT_PLUS);
-    int vatIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_TRADE_VAT);
-    int vatPrcIdx = Data.getColumnIndex(VIEW_ORDER_SALES, COL_TRADE_VAT_PERC);
+    int comQtyIdx = Data.getColumnIndex(getViewName(), COL_COMPLETED_QTY);
+    int priceIdx = Data.getColumnIndex(getViewName(), COL_ITEM_PRICE);
+    int discountIdx = Data.getColumnIndex(getViewName(), COL_TRADE_DISCOUNT);
+    int vatPlusIdx = Data.getColumnIndex(getViewName(), COL_TRADE_VAT_PLUS);
+    int vatIdx = Data.getColumnIndex(getViewName(), COL_TRADE_VAT);
+    int vatPrcIdx = Data.getColumnIndex(getViewName(), COL_TRADE_VAT_PERC);
 
     double totalAmount = 0;
 

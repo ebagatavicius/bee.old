@@ -21,7 +21,10 @@
         <SimpleJoin name="Person" joinType="LEFT">
           <SimpleColumn alias="OwnerFirstName" name="FirstName" />
           <SimpleColumn alias="OwnerLastName" name="LastName" />
-          <SimpleColumn alias="OwnerPhoto" name="PhotoFile" /> 
+
+          <SimpleJoin name="PhotoFile" joinType="LEFT">
+            <SimpleColumn name="Hash" alias="OwnerPhoto" label="=photo" />
+          </SimpleJoin>
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
@@ -45,7 +48,7 @@
     </ExternalJoin>
 
     <ExternalJoin name="Discussion" source="DiscussionsUsers" joinType="LEFT" filter="DiscussionUser = {u}">
-      <HiddenColumn name="User" alias="DiscussionUser"></HiddenColumn>
+      <HiddenColumn name="User" alias="DiscussionUser" />
       <SimpleColumn name="Star"/>
       <SimpleColumn name="LastAccess"/>
     </ExternalJoin>
@@ -56,4 +59,3 @@
     <OrderBy column="Created" descending="true" />
   </Order>
 </View>
- 

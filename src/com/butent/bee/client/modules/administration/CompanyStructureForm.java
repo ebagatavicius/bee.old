@@ -209,8 +209,6 @@ class CompanyStructureForm extends AbstractFormInterceptor implements HandlesAll
   private static final String DATA_TYPE_BOSS = "OrgChartBoss";
   private static final String DATA_TYPE_EMPLOYEE = "OrgChartEmployee";
 
-  private static final String DEFAULT_PHOTO_IMAGE = "images/defaultUser.png";
-
   private static final Set<String> DND_TYPES = ImmutableSet.of(DATA_TYPE_DEPARTMENT,
       DATA_TYPE_BOSS, DATA_TYPE_EMPLOYEE);
 
@@ -1430,17 +1428,9 @@ class CompanyStructureForm extends AbstractFormInterceptor implements HandlesAll
 
     String companyName = DataUtils.getString(employees, employee, ALS_COMPANY_NAME);
 
-    Long photo = DataUtils.getLong(employees, employee, COL_PHOTO);
+    String photo = DataUtils.getString(employees, employee, COL_PHOTO);
     Flow photoContainer = new Flow();
-    String photoUrl;
-
-    if (!DataUtils.isId(photo)) {
-      photoUrl = DEFAULT_PHOTO_IMAGE;
-    } else {
-      photoUrl = PhotoRenderer.getUrl(photo);
-    }
-
-    String styleName;
+    String photoUrl = PhotoRenderer.getPhotoUrl(photo);
 
     Image image = new Image(photoUrl);
     image.setTitle(BeeUtils.buildLines(fullName, positionName, companyName));
@@ -1456,7 +1446,7 @@ class CompanyStructureForm extends AbstractFormInterceptor implements HandlesAll
     });
 
     photoContainer.add(image);
-    styleName = STYLE_PHOTO_CONTAINER;
+    String styleName = STYLE_PHOTO_CONTAINER;
 
     table.setWidgetAndStyle(row, 0, photoContainer, styleName);
 
@@ -1481,13 +1471,13 @@ class CompanyStructureForm extends AbstractFormInterceptor implements HandlesAll
     }
 
     if (boss) {
-      if (DataUtils.isId(photo)) {
+      if (!BeeUtils.isEmpty(photo)) {
         DndHelper.makeSource(photoContainer, DATA_TYPE_BOSS, emplId, null);
       }
       DndHelper.makeSource(label, DATA_TYPE_BOSS, emplId, STYLE_BOSS_DRAG);
 
     } else {
-      if (DataUtils.isId(photo)) {
+      if (!BeeUtils.isEmpty(photo)) {
         DndHelper.makeSource(photoContainer, DATA_TYPE_EMPLOYEE, emplId, null);
       }
       DndHelper.makeSource(label, DATA_TYPE_EMPLOYEE, emplId, STYLE_EMPLOYEE_DRAG);

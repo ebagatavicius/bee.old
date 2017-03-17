@@ -1,6 +1,7 @@
 package com.butent.bee.client.modules.service;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.orders.OrdersConstants.PRP_COMPLETED_INVOICES;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 import static com.butent.bee.shared.modules.service.ServiceConstants.ALS_COMPANY_TYPE_NAME;
 
@@ -9,19 +10,25 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
+import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
+import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public final class ServiceUtils {
 
@@ -54,6 +61,38 @@ public final class ServiceUtils {
       }
     }
     clearContactValue(maintenanceRow);
+  }
+
+  public static void checkCanChangeState(Boolean isFinalState,
+      Consumer<Boolean> changeStateConsumer, FormView formView) {
+    if (!BeeUtils.unbox(isFinalState)) {
+      changeStateConsumer.accept(true);
+
+    } else {
+      Filter filter = Filter.equals(COL_SERVICE_MAINTENANCE, formView.getActiveRowId());
+      Queries.getRowSet(TBL_SERVICE_ITEMS, null, filter, new Queries.RowSetCallback() {
+
+        @Override
+        public void onSuccess(BeeRowSet result) {
+          int qtyIdx =
+              Data.getColumnIndex(TBL_SERVICE_ITEMS, TradeConstants.COL_TRADE_ITEM_QUANTITY);
+          boolean canChangeState = true;
+
+          if (result != null) {
+            for (IsRow row : result) {
+              Double completed = row.getPropertyDouble(PRP_COMPLETED_INVOICES);
+              Double qty = row.getDouble(qtyIdx);
+
+              if (BeeUtils.unbox(completed) <= 0 || !Objects.equals(completed, qty)) {
+                canChangeState = false;
+                break;
+              }
+            }
+          }
+          changeStateConsumer.accept(canChangeState);
+        }
+      });
+    }
   }
 
   public static void clearContactValue(IsRow maintenanceRow) {

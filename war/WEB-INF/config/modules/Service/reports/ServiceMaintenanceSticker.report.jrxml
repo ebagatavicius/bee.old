@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
-<!-- 2017-02-13T11:53:53 -->
+<!-- 2017-02-20T11:19:39 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ServiceMaintenanceSticker" pageWidth="283" pageHeight="167" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="243" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Error" uuid="ffae7aa2-027b-45ee-896c-aa9d9dcfc6c0">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<property name="com.jaspersoft.studio.unit." value="mm"/>
@@ -25,17 +25,17 @@
 	<parameter name="DepartmentPhone" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="ExternalMaintenanceUrl" class="java.lang.String" isForPrompting="false"/>
 	<parameter name="CreatorCompanyName" class="java.lang.String" isForPrompting="false"/>
-	<detail>
-		<band height="125" splitType="Stretch">
+	<summary>
+		<band height="125">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="50" y="0" width="190" height="10" isRemoveLineWhenBlank="true" uuid="002f5044-c133-471a-b2a2-40d35047347f"/>
+				<reportElement positionType="Float" x="50" y="0" width="190" height="10" isRemoveLineWhenBlank="true" uuid="5b82cd84-2ad2-4f62-b17d-523002a9e87a"/>
 				<textElement>
 					<font fontName="DejaVu Sans" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{CreatorCompanyName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="0" y="10" width="120" height="30" isRemoveLineWhenBlank="true" uuid="b6eda3b9-8e93-45dc-b597-a9beec96e242">
+				<reportElement positionType="Float" x="0" y="10" width="120" height="30" isRemoveLineWhenBlank="true" uuid="8dfc1de9-5992-4230-8608-73c85f448bb8">
 					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
 				</reportElement>
 				<textElement verticalAlignment="Top">
@@ -43,8 +43,25 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{ID}]]></textFieldExpression>
 			</textField>
+			<componentElement>
+				<reportElement x="120" y="10" width="120" height="30" isRemoveLineWhenBlank="true" uuid="e9449de7-0bec-4c84-af43-fe152c5bfac1">
+					<property name="com.jaspersoft.studio.unit.barWidth" value="mm"/>
+				</reportElement>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false" barHeight="29">
+					<jr:codeExpression><![CDATA[$P{ID}]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="40" y="40" width="200" height="12" isRemoveLineWhenBlank="true" uuid="5eef9c10-d563-4305-b39f-05d2943ee63a">
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{ArticleNo}]]></textFieldExpression>
+			</textField>
 			<textField>
-				<reportElement positionType="Float" x="0" y="40" width="40" height="12" uuid="7ec9c966-4e9c-42da-8c0b-0a11cc2c5c9b">
+				<reportElement positionType="Float" x="0" y="40" width="40" height="12" uuid="25434f3e-0a59-4333-af19-17a9da82680e">
 					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
 				</reportElement>
 				<textElement>
@@ -53,7 +70,7 @@
 				<textFieldExpression><![CDATA["PN :"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement positionType="Float" x="0" y="52" width="40" height="14" uuid="3bc98287-eafc-4f38-8c7d-c32b5e71367a">
+				<reportElement positionType="Float" x="0" y="52" width="40" height="14" uuid="cea453cb-8d5c-4290-94c3-3abb1c32660f">
 					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -62,7 +79,16 @@
 				<textFieldExpression><![CDATA["SN :"]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="0" y="66" width="240" height="14" isRemoveLineWhenBlank="true" uuid="11a53688-8abf-4987-aa8a-11330ab23da1">
+				<reportElement positionType="Float" x="40" y="52" width="200" height="14" isRemoveLineWhenBlank="true" uuid="ae0d4a3b-6bda-4afb-a065-7ca39251b44c">
+					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{SerialNo}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="66" width="240" height="14" isRemoveLineWhenBlank="true" uuid="73a3140c-aafe-40ca-91a9-08890aa23f8a">
 					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -71,7 +97,7 @@
 				<textFieldExpression><![CDATA[BeeUtils.joinWords($P{ManufacturerName}, $P{Model})]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="0" y="80" width="240" height="32" isRemoveLineWhenBlank="true" uuid="4602ff71-1246-4370-8c0c-d578655494f5">
+				<reportElement positionType="Float" x="0" y="80" width="240" height="32" isRemoveLineWhenBlank="true" uuid="353766f5-7910-4841-a676-5195e9fc65a2">
 					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -80,7 +106,7 @@
 				<textFieldExpression><![CDATA[BeeUtils.joinWords($P{CompanyName}, $P{ContactFirstName}, $P{ContactLastName}, $P{ContactPhone})]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="0" y="113" width="120" height="12" isRemoveLineWhenBlank="true" uuid="eff8c10c-895a-451d-b9dd-439d5b7b5fe3">
+				<reportElement positionType="Float" x="0" y="113" width="120" height="12" isRemoveLineWhenBlank="true" uuid="35d5121f-3c45-4cb9-ae27-554a98a1e328">
 					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
 				</reportElement>
 				<textElement>
@@ -89,7 +115,7 @@
 				<textFieldExpression><![CDATA[$P{ExternalMaintenanceUrl}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="120" y="113" width="120" height="12" isRemoveLineWhenBlank="true" uuid="53b9aaf8-fbc1-47fb-aaf9-13dee3aa9939">
+				<reportElement positionType="Float" x="120" y="113" width="120" height="12" isRemoveLineWhenBlank="true" uuid="91a57ff6-6a3a-4094-869e-2d6f82fa9108">
 					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
 				</reportElement>
 				<textElement>
@@ -97,32 +123,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{DepartmentPhone}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="40" y="40" width="200" height="12" isRemoveLineWhenBlank="true" uuid="e1319344-399e-42a3-9395-e1f30c3a48b8">
-					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
-				</reportElement>
-				<textElement>
-					<font fontName="DejaVu Sans" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{ArticleNo}]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="40" y="52" width="200" height="14" isRemoveLineWhenBlank="true" uuid="f72a489d-d90c-4cd0-b649-78601edb86db">
-					<property name="com.jaspersoft.studio.unit.height" value="mm"/>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font fontName="DejaVu Sans" size="9"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{SerialNo}]]></textFieldExpression>
-			</textField>
-			<componentElement>
-				<reportElement x="120" y="10" width="120" height="30" isRemoveLineWhenBlank="true" uuid="b223a6ef-8c49-465c-8bba-07c8eb7642f6">
-					<property name="com.jaspersoft.studio.unit.barWidth" value="mm"/>
-				</reportElement>
-				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false" barHeight="29">
-					<jr:codeExpression><![CDATA[$P{ID}]]></jr:codeExpression>
-				</jr:barbecue>
-			</componentElement>
 		</band>
-	</detail>
+	</summary>
 </jasperReport>

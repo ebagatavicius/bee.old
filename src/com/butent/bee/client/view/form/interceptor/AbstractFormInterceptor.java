@@ -304,4 +304,9 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   public void setFormView(FormView formView) {
     this.formView = formView;
   }
+
+  @Override
+  public boolean showReadOnly(boolean readOnly) {
+    return true;
+  }
 }

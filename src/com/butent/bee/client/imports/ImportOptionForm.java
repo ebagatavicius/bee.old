@@ -38,6 +38,7 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.imports.ImportType;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.modules.cars.CarsConstants;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -129,7 +130,7 @@ public class ImportOptionForm extends AbstractFormInterceptor implements ClickHa
       action.running();
       NewFileInfo fileInfo = BeeUtils.peek(FileUtils.getNewFileInfos(file.getFiles()));
 
-      FileUtils.uploadFile(fileInfo, new Callback<Long>() {
+      FileUtils.uploadFile(fileInfo, new Callback<FileInfo>() {
         @Override
         public void onFailure(String... reason) {
           action.idle();
@@ -137,8 +138,8 @@ public class ImportOptionForm extends AbstractFormInterceptor implements ClickHa
         }
 
         @Override
-        public void onSuccess(Long result) {
-          args.addDataItem(VAR_IMPORT_FILE, result);
+        public void onSuccess(FileInfo result) {
+          args.addDataItem(VAR_IMPORT_FILE, result.getId());
           ImportCallback.makeRequest(args, action, fileInfo.getName());
         }
       });

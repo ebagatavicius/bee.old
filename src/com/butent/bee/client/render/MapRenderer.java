@@ -2,6 +2,7 @@ package com.butent.bee.client.render;
 
 import com.google.common.base.Splitter;
 
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.HasItems;
 import com.butent.bee.shared.data.CellSource;
@@ -83,6 +84,7 @@ public class MapRenderer extends AbstractCellRenderer implements HasItems {
     for (Map.Entry<String, String> entry : map.entrySet()) {
       String key = Value.parseValue(getValueType(), entry.getKey(),
           false, DateOrdering.DEFAULT).toString();
+
       if (!BeeUtils.isEmpty(key)) {
         result.add(BeeUtils.joinWords(key, separator, entry.getValue()));
       }
@@ -103,12 +105,17 @@ public class MapRenderer extends AbstractCellRenderer implements HasItems {
   @Override
   public String render(IsRow row) {
     String key = getString(row);
+
     if (key == null) {
       return null;
+
     } else if (map.containsKey(key)) {
       return map.get(key);
+
     } else {
-      return getValue(row).toString();
+      Value value = getValue(row);
+      return (value == null)
+          ? null : value.render(Format.getDateRenderer(), Format.getDateTimeRenderer());
     }
   }
 

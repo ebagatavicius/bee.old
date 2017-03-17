@@ -82,7 +82,7 @@ public class FileInfo implements HasInfo, HasCaption, BeeSerializable, AutoClose
     return result;
   }
 
-  private Long fileId;
+  private Long id;
 
   private String name;
   private Long size;
@@ -102,8 +102,9 @@ public class FileInfo implements HasInfo, HasCaption, BeeSerializable, AutoClose
   private String hash;
   private boolean temporary;
 
-  public FileInfo(Long fileId, String name, Long size, String type) {
-    setFileId(fileId);
+  public FileInfo(Long id, String hash, String name, Long size, String type) {
+    setId(id);
+    setHash(hash);
     setName(name);
     setSize(size);
     setType(type);
@@ -127,7 +128,7 @@ public class FileInfo implements HasInfo, HasCaption, BeeSerializable, AutoClose
 
       switch (member) {
         case ID:
-          setFileId(BeeUtils.toLongOrNull(value));
+          setId(BeeUtils.toLongOrNull(value));
           break;
 
         case NAME:
@@ -193,11 +194,11 @@ public class FileInfo implements HasInfo, HasCaption, BeeSerializable, AutoClose
       return false;
     }
     FileInfo other = (FileInfo) obj;
-    if (fileId == null) {
-      if (other.fileId != null) {
+    if (id == null) {
+      if (other.id != null) {
         return false;
       }
-    } else if (fileId.equals(other.fileId)) {
+    } else if (id.equals(other.id)) {
       return true;
     }
     if (name == null) {
@@ -249,17 +250,18 @@ public class FileInfo implements HasInfo, HasCaption, BeeSerializable, AutoClose
     return hash;
   }
 
-  public Long getId() {
-    return fileId;
-  }
-
   public String getIcon() {
     return icon;
+  }
+
+  public Long getId() {
+    return id;
   }
 
   @Override
   public List<Property> getInfo() {
     return PropertyUtils.createProperties("Id", getId(),
+        "Hash", getHash(),
         "Name", getName(),
         "Size", getSize(),
         "Type", getType(),
@@ -295,7 +297,7 @@ public class FileInfo implements HasInfo, HasCaption, BeeSerializable, AutoClose
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((fileId == null) ? 0 : fileId.hashCode());
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((size == null) ? 0 : size.hashCode());
     result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -382,10 +384,6 @@ public class FileInfo implements HasInfo, HasCaption, BeeSerializable, AutoClose
     this.fileDate = fileDate;
   }
 
-  public void setFileId(Long fileId) {
-    this.fileId = fileId;
-  }
-
   public void setFileVersion(String fileVersion) {
     this.fileVersion = fileVersion;
   }
@@ -396,6 +394,10 @@ public class FileInfo implements HasInfo, HasCaption, BeeSerializable, AutoClose
 
   public void setIcon(String icon) {
     this.icon = icon;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public void setPath(String path) {

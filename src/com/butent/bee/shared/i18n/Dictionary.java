@@ -3256,7 +3256,11 @@ public interface Dictionary {
 
   default String invalidDateFormat() {return g("invalidDateFormat");}
 
-  default String invalidIdValue() {return g("invalidIdValue");}
+  default String invalidIdValue(Object p0) {
+    Map<String, Object> _m = new HashMap<>();
+    _m.put("{0}", p0);
+    return Localized.format(g("invalidIdValue"), _m);
+  }
 
   default String invalidImageFileType(Object p0, Object p1) {
     Map<String, Object> _m = new HashMap<>();
@@ -3315,6 +3319,8 @@ public interface Dictionary {
   default String itemName3() {return g("itemName3");}
 
   default String itemOrService() {return g("itemOrService");}
+
+  default String itemSelection() {return g("itemSelection");}
 
   default String itemType() {return g("itemType");}
 
@@ -3701,6 +3707,8 @@ public interface Dictionary {
   default String manager() {return g("manager");}
 
   default String managers() {return g("managers");}
+
+  default String manufacturer() {return g("manufacturer");}
 
   default String manufacturers() {return g("manufacturers");}
 
@@ -4649,8 +4657,6 @@ public interface Dictionary {
 
   default String prmImportERPStocksTime() {return g("prmImportERPStocksTime");}
 
-  default String prmMaintenanceServiceGroup() {return g("prmMaintenanceServiceGroup");}
-
   default String prmManagerDiscount() {return g("prmManagerDiscount");}
 
   default String prmManagerWarehouse() {return g("prmManagerWarehouse");}
@@ -4663,6 +4669,8 @@ public interface Dictionary {
 
   default String prmProjectHourUnit() {return g("prmProjectHourUnit");}
 
+  default String prmRole() {return g("prmRole");}
+
   default String prmSQLMessagesGENERIC() {return g("prmSQLMessagesGENERIC");}
 
   default String prmSQLMessagesMSSQL() {return g("prmSQLMessagesMSSQL");}
@@ -4674,6 +4682,8 @@ public interface Dictionary {
   default String prmSendNewslettersCount() {return g("prmSendNewslettersCount");}
 
   default String prmSendNewslettersInterval() {return g("prmSendNewslettersInterval");}
+
+  default String prmServiceManagerWarehouse() {return g("prmServiceManagerWarehouse");}
 
   default String prmServiceTradeOperation() {return g("prmServiceTradeOperation");}
 
@@ -4734,6 +4744,8 @@ public interface Dictionary {
   default String questionLogout() {return g("questionLogout");}
 
   default String rating() {return g("rating");}
+
+  default String readOnly() {return g("readOnly");}
 
   default String reason() {return g("reason");}
 
@@ -5110,6 +5122,8 @@ public interface Dictionary {
 
   default String suppliers() {return g("suppliers");}
 
+  default String svcBasicAmount() {return g("svcBasicAmount");}
+
   default String svcCalendar() {return g("svcCalendar");}
 
   default String svcCalendarPixelsPerCompany() {return g("svcCalendarPixelsPerCompany");}
@@ -5121,6 +5135,12 @@ public interface Dictionary {
   default String svcComment() {return g("svcComment");}
 
   default String svcComments() {return g("svcComments");}
+
+  default String svcConfirmationDate() {return g("svcConfirmationDate");}
+
+  default String svcConfirmedPayroll() {return g("svcConfirmedPayroll");}
+
+  default String svcConfirmedUser() {return g("svcConfirmedUser");}
 
   default String svcContractor() {return g("svcContractor");}
 
@@ -5141,6 +5161,8 @@ public interface Dictionary {
   default String svcDefectSupplier() {return g("svcDefectSupplier");}
 
   default String svcDefects() {return g("svcDefects");}
+
+  default String svcDetailedMaintenanceTicket() {return g("svcDetailedMaintenanceTicket");}
 
   default String svcDevice() {return g("svcDevice");}
 
@@ -5210,6 +5232,8 @@ public interface Dictionary {
 
   default String svcNewServiceType() {return g("svcNewServiceType");}
 
+  default String svcNewTariff() {return g("svcNewTariff");}
+
   default String svcNewWarrantyType() {return g("svcNewWarrantyType");}
 
   default String svcNotifyCustomer() {return g("svcNotifyCustomer");}
@@ -5247,6 +5271,10 @@ public interface Dictionary {
   default String svcStateProcess() {return g("svcStateProcess");}
 
   default String svcStickers() {return g("svcStickers");}
+
+  default String svcTariff() {return g("svcTariff");}
+
+  default String svcTariffs() {return g("svcTariffs");}
 
   default String svcTerm() {return g("svcTerm");}
 
@@ -5990,7 +6018,13 @@ public interface Dictionary {
 
   default String trRepairsHistory() {return g("trRepairsHistory");}
 
+  default String trReportCustomerProfit() {return g("trReportCustomerProfit");}
+
   default String trReportFuelUsage() {return g("trReportFuelUsage");}
+
+  default String trReportOrderProfit() {return g("trReportOrderProfit");}
+
+  default String trReportProfitability() {return g("trReportProfitability");}
 
   default String trReportTripProfit() {return g("trReportTripProfit");}
 

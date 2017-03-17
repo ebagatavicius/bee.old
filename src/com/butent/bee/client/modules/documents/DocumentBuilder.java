@@ -111,7 +111,7 @@ final class DocumentBuilder extends AbstractFormInterceptor {
         BeeRow row = DataUtils.createEmptyRow(columns.size());
 
         Data.setValue(viewName, row, COL_DOCUMENT, docId);
-        Data.setValue(viewName, row, AdministrationConstants.COL_FILE, result);
+        Data.setValue(viewName, row, AdministrationConstants.COL_FILE, result.getId());
 
         Data.setValue(viewName, row, COL_FILE_DATE,
             fileInfo.getFileDate() == null ? new DateTime() : fileInfo.getFileDate());

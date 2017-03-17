@@ -410,8 +410,8 @@ public class CarOrderForm extends SpecificationForm implements HasStages {
             specification.getCriteria().forEach((key, val) ->
                 critRs.addRow(0, 0, Arrays.asList(key, val)));
 
-            specification.getPhotos().forEach((key, val) ->
-                defaultParameters.put(COL_PHOTO + key, BeeUtils.toString(val)));
+            specification.getPhotos()
+                .forEach((key, val) -> defaultParameters.put(COL_PHOTO + key, val));
 
             defaultParameters.put(CarsConstants.COL_BRANCH_NAME, specification.getBranchName());
             defaultParameters.put(COL_CRITERIA, critRs.serialize());

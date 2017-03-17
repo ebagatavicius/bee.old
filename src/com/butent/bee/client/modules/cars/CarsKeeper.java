@@ -35,7 +35,7 @@ public final class CarsKeeper {
     FormFactory.registerFormInterceptor(TBL_CONF_PRICELIST, new ConfPricelistForm());
     FormFactory.registerFormInterceptor(FORM_CONF_OPTION, new ConfOptionForm());
     FormFactory.registerFormInterceptor(FORM_CAR_ORDER, new CarOrderForm());
-    FormFactory.registerFormInterceptor(FORM_CAR, new SpecificationForm());
+    FormFactory.registerFormInterceptor(FORM_CAR, new CarForm());
     FormFactory.registerFormInterceptor(FORM_TEMPLATE, new SpecificationForm());
 
     FormFactory.registerFormInterceptor(FORM_CAR_SERVICE_ORDER, new CarServiceOrderForm());

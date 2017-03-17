@@ -7,6 +7,9 @@ import com.butent.bee.server.rest.annotations.Trusted;
 import com.butent.bee.server.utils.XmlUtils;
 import com.butent.bee.shared.communication.ResponseMessage;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.i18n.DateTimeFormat;
+import com.butent.bee.shared.i18n.PredefinedFormat;
+import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.logging.LogLevel;
 import com.butent.bee.shared.modules.payroll.PayrollConstants.WorkScheduleKind;
 import com.butent.bee.shared.modules.payroll.WorkScheduleSummary;
@@ -207,7 +210,9 @@ public class PayrollWorker {
     parent.appendChild(item);
 
     XmlUtils.appendElementWithText(document, item, TAG_TAB_NUMBER, BeeUtils.toString(tabNumber));
-    XmlUtils.appendElementWithText(document, item, TAG_DATE, date.toString());
+    XmlUtils.appendElementWithText(document, item, TAG_DATE,
+        DateTimeFormat.of(PredefinedFormat.DATE_SHORT,
+            SupportedLocale.LT.getDateTimeFormatInfo()).format(date));
 
     if (!BeeUtils.isEmpty(duration)) {
       XmlUtils.appendElementWithText(document, item, TAG_HOURS, duration);

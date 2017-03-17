@@ -69,7 +69,9 @@ import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.data.view.RowInfo;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -864,7 +866,7 @@ public class TransportModuleBean implements BeeModule {
     });
 
     HeadlineProducer assessmentsHeadlineProducer =
-        (feed, userId, rowSet, row, isNew, constants) -> {
+        (feed, userId, rowSet, row, isNew, constants, dtfInfo) -> {
           String caption = "";
           String pid = DataUtils.getString(rowSet, row, COL_ASSESSMENT);
 
@@ -1396,6 +1398,8 @@ public class TransportModuleBean implements BeeModule {
     Map<String, Multimap<String, String>> map = new HashMap<>();
     Map<String, Double> amounts = new HashMap<>();
 
+    DateTimeFormatInfo dateTimeFormatInfo = usr.getDateTimeFormatInfo();
+
     for (SimpleRow row : rs) {
       String key = "";
 
@@ -1440,7 +1444,7 @@ public class TransportModuleBean implements BeeModule {
           DateTime time = TimeUtils.toDateTimeOrNull(places.get(cargo, fld));
 
           if (time != null) {
-            valueMap.put(fld, time.getDate().toString());
+            valueMap.put(fld, Formatter.renderDate(dateTimeFormatInfo, time));
           }
         }
 

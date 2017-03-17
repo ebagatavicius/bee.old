@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View
+    xmlns="http://www.butent.com/view"
+    name="ServiceItems" source="OrderItems"
+    module="Service" caption="=feedGoods">
+  <Columns>
+    <IdColumn name="ID"/>
+
+    <SimpleColumn name="ServiceItem" />
+    <SimpleJoin joinType="LEFT" name="ServiceItem">
+      <SimpleColumn name="ServiceObject" />
+      <SimpleColumn name="ServiceMaintenance" />
+
+      <SimpleColumn name="Repairer" editable="true" />
+      <SimpleJoin name="Repairer" joinType="LEFT">
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn alias="RepairerFirstName" name="FirstName" />
+          <SimpleColumn alias="RepairerLastName" name="LastName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Item" />
+    <SimpleJoin joinType="LEFT" name="Item">
+      <SimpleColumn name="Name" alias="ItemName" />
+      <SimpleColumn name="Article" />
+
+      <SimpleJoin joinType="LEFT" name="Unit">
+        <SimpleColumn name="Name" alias="UnitName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Price" alias="ItemPrice" />
+      <SimpleColumn name="Currency" alias="ItemCurrency" />
+      <SimpleJoin name="Currency" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ItemCurrencyName" />
+      </SimpleJoin>
+
+      <SimpleColumn name="Cost" alias="ItemCost" />
+      <SimpleColumn name="CostCurrency" alias="ItemCostCurrency" />
+
+      <SimpleColumn name="Price1" alias="ItemPrice1" />
+      <SimpleColumn name="Currency1" alias="ItemCurrency1" />
+      <SimpleColumn name="Price2" alias="ItemPrice2" />
+      <SimpleColumn name="Currency2" alias="ItemCurrency2" />
+      <SimpleColumn name="Price3" alias="ItemPrice3" />
+      <SimpleColumn name="Currency3" alias="ItemCurrency3" />
+      <SimpleColumn name="Price4" alias="ItemPrice4" />
+      <SimpleColumn name="Currency4" alias="ItemCurrency4" />
+      <SimpleColumn name="Price5" alias="ItemPrice5" />
+      <SimpleColumn name="Currency5" alias="ItemCurrency5" />
+      <SimpleColumn name="Price6" alias="ItemPrice6" />
+      <SimpleColumn name="Currency6" alias="ItemCurrency6" />
+      <SimpleColumn name="Price7" alias="ItemPrice7" />
+      <SimpleColumn name="Currency7" alias="ItemCurrency7" />
+      <SimpleColumn name="Price8" alias="ItemPrice8" />
+      <SimpleColumn name="Currency8" alias="ItemCurrency8" />
+      <SimpleColumn name="Price9" alias="ItemPrice9" />
+      <SimpleColumn name="Currency9" alias="ItemCurrency9" />
+      <SimpleColumn name="Price10" alias="ItemPrice10" />
+      <SimpleColumn name="Currency10" alias="ItemCurrency10" />
+
+      <SimpleColumn name="PackageUnits" />
+      <SimpleColumn name="Attribute" />
+      <SimpleColumn name="IsService" />
+    </SimpleJoin>
+
+    <SimpleColumn name="ResRemainder" />
+
+    <SimpleColumn name="Quantity" />
+    <SimpleColumn name="CompletedQty" />
+    <SimpleColumn name="Price" />
+    <SimpleColumn name="VatPlus" />
+    <SimpleColumn name="Vat" />
+    <SimpleColumn name="VatPercent" />
+
+    <SimpleColumn name="Currency" />
+    <SimpleJoin name="Currency" joinType="LEFT">
+      <SimpleColumn name="Name" alias="CurrencyName" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Unpacking" />
+
+    <SimpleColumn name="Supplier" />
+    <SimpleJoin joinType="LEFT" name="Supplier">
+      <SimpleColumn name="Name" alias="SupplierName" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="SupplierTypeName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="SupplierTerm" />
+    <SimpleColumn name="Discount" />
+    <SimpleColumn name="InvisibleDiscount" />
+    <SimpleColumn name="Note" />
+  </Columns>
+</View>

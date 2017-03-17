@@ -62,6 +62,7 @@ public final class OnlineUsers extends Flow {
 
   /**
    * Create a widget where shows online (in session) users.
+   *
    * @return Html div element where on click shows online users.
    */
   public static Flow createWidget(String style) {
@@ -80,12 +81,9 @@ public final class OnlineUsers extends Flow {
     return key;
   }
 
-  private static Image renderUserPhoto(Long fileId) {
-    Image photo = new Image(DataUtils.isId(fileId) ? PhotoRenderer.getUrl(fileId)
-        : PhotoRenderer.DEFAULT_PHOTO_IMAGE);
-
+  private static Image renderUserPhoto(String photoFile) {
+    Image photo = new Image(PhotoRenderer.getPhotoUrl(photoFile));
     photo.addStyleName(STYLE_POPUP_USERS_PHOTO);
-
     return photo;
   }
 
@@ -118,7 +116,7 @@ public final class OnlineUsers extends Flow {
     return userSignFlow;
   }
 
-  private int addRow(HtmlTable table, int rowId, UserData userData, Widget ... widgets) {
+  private int addRow(HtmlTable table, int rowId, UserData userData, Widget... widgets) {
     int colId = 0;
 
     for (Widget widget : widgets) {

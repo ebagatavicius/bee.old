@@ -522,9 +522,8 @@ class CreateDiscussionInterceptor extends AbstractFormInterceptor {
     for (FileInfo file : uploadList) {
 
       FileUtils.uploadFile(file, result -> {
-
         List<String> values =
-            Lists.newArrayList(BeeUtils.toString(discussionId), BeeUtils.toString(result),
+            Lists.newArrayList(BeeUtils.toString(discussionId), BeeUtils.toString(result.getId()),
                 file.getCaption());
         Queries.insert(VIEW_DISCUSSIONS_FILES, columns, values, null, new RowCallback() {
 

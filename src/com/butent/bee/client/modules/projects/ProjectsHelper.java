@@ -51,7 +51,7 @@ public final class ProjectsHelper {
   /**
    * Checks current online user of system is owner related row of Projects table. Returns true if
    * {@code BeeKeeper.getUser().getUserId} are equals with Projects.Owner field relation.
-   * 
+   *
    * @param form View of Form ({@code FormView}) has indexes (
    *        {@code form.getDataIndex(String source)}}) of data source related with Projects.Owner
    *        field. Name of data source index can be {@code ProjectConstants.COL_PROJECT_OWNER} if
@@ -60,11 +60,9 @@ public final class ProjectsHelper {
    *        tables where has relations to Projects table.
    * @param row Set of data where related with Project.Owner field.
    * @return true if current system user equals with Project.Owner field.
-   * @throws BeeRuntimeException throws if form and row parameters is null or form data index of
-   *         Projects.Owner is undefined {@code BeeConst.isUndef(form.getDataIndex(source) == true}
    */
   public static boolean isProjectOwner(FormView form, IsRow row) {
-    int idxOwner = BeeConst.UNDEF;
+    int idxOwner;
 
     Assert.notNull(form, "FormView containing project data must be not null");
     Assert.notNull(row, "IsRow containing project data must be not null");
@@ -87,7 +85,7 @@ public final class ProjectsHelper {
    * Checks current online user of system is one of rows contains with ProjectUsers.User field
    * filtered by ProjectUser.Project field. Returns true if {@code BeeKeeper.getUser().getUserId()}
    * are match with one Projects.Owner field.
-   * 
+   *
    * @param form View of Form ({@code FormView}) has indexes (
    *        {@code form.getDataIndex(String source)}}) of data source related with filtered
    *        ProjectUsers.User field by ProjectUsers.Project filed. Name of data source index can be
@@ -95,7 +93,6 @@ public final class ProjectsHelper {
    * @param row Set of data where related with filtered ProjectUsers.User by ProjectUsers.Project
    *        field.
    * @return true if current system user match Project.Owner field.
-   * @throws BeeRuntimeException throws if form and row parameters is null
    */
   public static boolean isProjectUser(FormView form, IsRow row) {
     Assert.notNull(form, "FormView containing project data must be not null");
@@ -291,7 +288,7 @@ public final class ProjectsHelper {
       JustDate date = TimeUtils.toDateOrNull(value);
 
       result = date == null ? result : Format.renderDate(date);
-    } else if (col != null ? !BeeUtils.isEmpty(col.getEnumKey()) : false) {
+    } else if (col != null && !BeeUtils.isEmpty(col.getEnumKey())) {
       return EnumUtils.getCaption(col.getEnumKey(), BeeUtils.toInt(value));
     }
 
@@ -318,26 +315,23 @@ public final class ProjectsHelper {
                 COL_CAPTION));
 
     for (final FileInfo fileInfo : files) {
-      FileUtils.uploadFile(fileInfo, new Callback<Long>() {
-        @Override
-        public void onSuccess(Long result) {
-          List<String> values = Lists.newArrayList(BeeUtils.toString(projectId),
-              BeeUtils.toString(eventId), BeeUtils.toString(result), fileInfo.getCaption());
+      FileUtils.uploadFile(fileInfo, result -> {
+        List<String> values = Lists.newArrayList(BeeUtils.toString(projectId),
+            BeeUtils.toString(eventId), BeeUtils.toString(result.getId()), fileInfo.getCaption());
 
-          Queries.insert(eventFilesViewName, columns, values, null, new RowCallback() {
+        Queries.insert(eventFilesViewName, columns, values, null, new RowCallback() {
 
-            @Override
-            public void onSuccess(BeeRow row) {
-              counter.set(counter.get() + 1);
-              if (counter.get() == files.size()) {
-                if (allUploadCallback != null) {
-                  allUploadCallback.onSuccess(Boolean.TRUE);
-                  RowInsertEvent.fire(BeeKeeper.getBus(), eventFilesViewName, row, null);
-                }
+          @Override
+          public void onSuccess(BeeRow row) {
+            counter.set(counter.get() + 1);
+            if (counter.get() == files.size()) {
+              if (allUploadCallback != null) {
+                allUploadCallback.onSuccess(Boolean.TRUE);
+                RowInsertEvent.fire(BeeKeeper.getBus(), eventFilesViewName, row, null);
               }
             }
-          });
-        }
+          }
+        });
       });
     }
   }

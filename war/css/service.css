@@ -264,3 +264,8 @@
   min-height: 640px;
   min-width: 300px;
 }
+
+.bee-reserved-repairs-id-cell:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}

@@ -712,7 +712,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
 
   private static String buildLog(String caption, String value, String oldLog) {
     return BeeUtils.join("\n\n",
-        TimeUtils.nowMinutes().toCompactString() + " " + caption + "\n" + value, oldLog);
+        Format.renderDateTime(TimeUtils.nowMinutes()) + " " + caption + "\n" + value, oldLog);
   }
 
   private void createLetter() {
@@ -856,7 +856,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
 
                 for (Entry<String, DateTime> entry : dates.entrySet()) {
                   log = buildLog(BeeUtils.joinWords(entry.getKey(),
-                      entry.getValue() != null ? entry.getValue().toCompactString()
+                      entry.getValue() != null ? Format.renderDateTime(entry.getValue())
                           : loc.filterNullLabel()), value, log);
                 }
                 form.getActiveRow().setValue(logIdx, log);

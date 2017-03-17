@@ -24,8 +24,17 @@
 
       <SimpleColumn name="Description" />
       <SimpleColumn name="Weight" />
+      <SimpleJoin joinType="LEFT" name="WeightUnit">
+        <SimpleColumn name="Name" alias="WeightUnit" />
+      </SimpleJoin>
       <SimpleColumn name="Volume" />
+      <SimpleJoin joinType="LEFT" name="VolumeUnit">
+        <SimpleColumn name="Name" alias="VolumeUnit" />
+      </SimpleJoin>
       <SimpleColumn name="Quantity" />
+      <SimpleJoin joinType="LEFT" name="QuantityUnit">
+        <SimpleColumn name="Name" alias="QuantityUnit" />
+      </SimpleJoin>
       <SimpleColumn name="Number" />
 
       <SimpleColumn name="Cmr" />

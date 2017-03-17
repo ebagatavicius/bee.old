@@ -13,7 +13,6 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ContentType;
 import com.butent.bee.shared.css.values.BorderStyle;
-import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.export.XCell;
@@ -23,6 +22,7 @@ import com.butent.bee.shared.export.XRow;
 import com.butent.bee.shared.export.XSheet;
 import com.butent.bee.shared.export.XStyle;
 import com.butent.bee.shared.export.XWorkbook;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.io.FileNameUtils;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
@@ -625,7 +626,7 @@ public class ExportServlet extends LoginServlet {
 
     logger.info(">", svc, id, reqInfo.getContentLen());
 
-    String result = null;
+    String result;
 
     switch (svc) {
       case Service.EXPORT_WORKBOOK:
@@ -650,11 +651,11 @@ public class ExportServlet extends LoginServlet {
         maybePopRows(id, input);
         Workbook workbook = createWorkbook(input);
 
-        Long fileId = storeWorkbook(workbook, fileName);
+        FileInfo fileInfo = storeWorkbook(workbook, fileName);
         closeWorkbook(workbook);
 
-        if (DataUtils.isId(fileId)) {
-          result = BeeUtils.toString(fileId);
+        if (Objects.nonNull(fileInfo)) {
+          result = fileInfo.serialize();
         } else {
           String message = BeeUtils.joinWords(svc, fileName, "store workbook failed");
           HttpUtils.sendError(resp, HttpServletResponse.SC_EXPECTATION_FAILED, message);
@@ -703,9 +704,9 @@ public class ExportServlet extends LoginServlet {
     }
   }
 
-  private Long storeWorkbook(Workbook workbook, String fileName) {
+  private FileInfo storeWorkbook(Workbook workbook, String fileName) {
     long start = System.currentTimeMillis();
-    Long fileId = null;
+    FileInfo fileInfo = null;
 
     try {
       File tmp = File.createTempFile("bee_", null);
@@ -718,7 +719,7 @@ public class ExportServlet extends LoginServlet {
       FileInputStream fis = new FileInputStream(tmp);
       String name = FileNameUtils.defaultExtension(fileName, XWorkbook.FILE_EXTENSION);
 
-      fileId = fs.storeFile(fis, name, null);
+      fileInfo = fs.storeFile(fis, name, null);
       tmp.delete();
 
       logger.info("store workbook", name, "in", TimeUtils.elapsedMillis(start), "ms");
@@ -727,6 +728,6 @@ public class ExportServlet extends LoginServlet {
       logger.error(ex);
     }
 
-    return fileId;
+    return fileInfo;
   }
 }

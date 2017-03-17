@@ -122,6 +122,12 @@
         <SimpleColumn name="Phone" alias="DepartmentPhone"/>
       </SimpleJoin>
     </SimpleJoin>
+
+    <SimpleColumn name="Warehouse" />
+    <SimpleJoin name="Warehouse" joinType="LEFT">
+      <SimpleColumn name="Code" alias="WarehouseCode" />
+      <SimpleColumn name="Name" alias="WarehouseName" />
+    </SimpleJoin>
     </Columns>
   <Order>
     <OrderBy column="Date" descending="true" />

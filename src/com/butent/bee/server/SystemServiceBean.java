@@ -25,6 +25,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.io.FileNameUtils;
 import com.butent.bee.shared.io.Paths;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -128,13 +129,9 @@ public class SystemServiceBean {
           Codec.deserializeLinkedHashMap(reqInfo.getParameter(VAR_REPORT_PARAMETERS)), dataSets);
 
     } else if (BeeUtils.same(svc, CREATE_PDF)) {
-      Long fileId = fs.createPdf(reqInfo.getParameter(VAR_REPORT_DATA));
-
-      try {
-        response = ResponseObject.response(fs.getFile(fileId));
-      } catch (IOException e) {
-        response = ResponseObject.error(e);
-      }
+      FileInfo pdf = fs.createPdf(reqInfo.getParameter(VAR_REPORT_DATA));
+      response = Objects.isNull(pdf) ? ResponseObject.error("Error creating PDF")
+          : ResponseObject.response(pdf);
     } else {
       String msg = BeeUtils.joinWords(svc, "system service not recognized");
       logger.warning(msg);
@@ -312,11 +309,11 @@ public class SystemServiceBean {
         if (BeeUtils.startsWith(ref, Paths.IMAGE_DIR + "/")) {
           return new File(Config.IMAGE_DIR, BeeUtils.removePrefix(ref, Paths.IMAGE_DIR + "/"));
         }
-        Long fileId = BeeUtils.peek(HtmlUtils.getFileReferences("src=\"" + ref + "\"").keySet());
+        String hash = BeeUtils.peek(HtmlUtils.getFileReferences("src=\"" + ref + "\"").keySet());
 
-        if (DataUtils.isId(fileId)) {
+        if (!BeeUtils.isEmpty(hash)) {
           try {
-            return fs.getFile(fileId).getFile();
+            return fs.getFile(fs.getId(hash)).getFile();
           } catch (IOException e) {
             logger.error(e);
           }
@@ -340,9 +337,9 @@ public class SystemServiceBean {
       }
       start = LogUtils.profile(logger, "Report EXPORT", start);
 
-      Long fileId = fs.storeFile(new FileInputStream(tmp), tmp.getName(), null);
+      response = ResponseObject.response(fs.storeFile(new FileInputStream(tmp), tmp.getName(),
+          null));
       tmp.delete();
-      response = ResponseObject.response(fs.getFile(fileId));
 
       LogUtils.profile(logger, "Report STORE", start);
 

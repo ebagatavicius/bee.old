@@ -23,6 +23,8 @@ public final class RestResponse {
   private String error;
   private Long lastSync;
 
+  private String hash;
+
   private RestResponse() {
   }
 
@@ -44,6 +46,11 @@ public final class RestResponse {
 
   public static RestResponse ok(Object result) {
     return new RestResponse().setResult(result);
+  }
+
+  @XmlAttribute(name = "Hash")
+  public String getHash() {
+    return hash;
   }
 
   @XmlAttribute(name = "Result")
@@ -75,6 +82,10 @@ public final class RestResponse {
   public RestResponse setError(String errorMessage) {
     this.error = errorMessage;
     return this;
+  }
+
+  public void setHash(String hash) {
+    this.hash = hash;
   }
 
   public RestResponse setLastSync(Long last) {

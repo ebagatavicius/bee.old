@@ -544,37 +544,32 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
       }
     });
 
-    HeadlineProducer headlineProducer = new HeadlineProducer() {
-      @Override
-      public Headline produce(Feed feed, long userId, BeeRowSet rowSet, IsRow row, boolean isNew,
-          Dictionary constants) {
-
-        String caption = DataUtils.getString(rowSet, row, COL_SUMMARY);
-        if (BeeUtils.isEmpty(caption)) {
-          caption = BeeUtils.bracket(row.getId());
-        }
-
-        List<String> subtitles = new ArrayList<>();
-
-        DateTime finish = DataUtils.getDateTime(rowSet, row, COL_FINISH_TIME);
-        if (finish != null) {
-          subtitles.add(finish.toCompactString());
-        }
-
-        TaskStatus status = EnumUtils.getEnumByIndex(TaskStatus.class,
-            DataUtils.getInteger(rowSet, row, COL_STATUS));
-        if (status != null) {
-          subtitles.add(status.getCaption(constants));
-        }
-
-        if (feed != Feed.TASKS_ASSIGNED) {
-          subtitles.add(BeeUtils.joinWords(
-              DataUtils.getString(rowSet, row, ALS_EXECUTOR_FIRST_NAME),
-              DataUtils.getString(rowSet, row, ALS_EXECUTOR_LAST_NAME)));
-        }
-
-        return Headline.create(row.getId(), caption, subtitles, isNew);
+    HeadlineProducer headlineProducer = (feed, userId, rowSet, row, isNew, constants, dtfInfo) -> {
+      String caption = DataUtils.getString(rowSet, row, COL_SUMMARY);
+      if (BeeUtils.isEmpty(caption)) {
+        caption = BeeUtils.bracket(row.getId());
       }
+
+      List<String> subtitles = new ArrayList<>();
+
+      DateTime finish = DataUtils.getDateTime(rowSet, row, COL_FINISH_TIME);
+      if (finish != null) {
+        subtitles.add(Formatter.renderDateTime(dtfInfo, finish));
+      }
+
+      TaskStatus status = EnumUtils.getEnumByIndex(TaskStatus.class,
+          DataUtils.getInteger(rowSet, row, COL_STATUS));
+      if (status != null) {
+        subtitles.add(status.getCaption(constants));
+      }
+
+      if (feed != Feed.TASKS_ASSIGNED) {
+        subtitles.add(BeeUtils.joinWords(
+            DataUtils.getString(rowSet, row, ALS_EXECUTOR_FIRST_NAME),
+            DataUtils.getString(rowSet, row, ALS_EXECUTOR_LAST_NAME)));
+      }
+
+      return Headline.create(row.getId(), caption, subtitles, isNew);
     };
 
     news.registerHeadlineProducer(Feed.TASKS_ALL, headlineProducer);
@@ -1917,8 +1912,7 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
     SimpleRowSet data =
         qs.getData(new SqlSelect()
             .addFields(TBL_REQUEST_FILES, COL_FILE, COL_CAPTION)
-            .addFields(TBL_FILES, COL_FILE_NAME,
-                COL_FILE_SIZE, COL_FILE_TYPE)
+            .addFields(TBL_FILES, COL_FILE_HASH, COL_FILE_NAME, COL_FILE_SIZE, COL_FILE_TYPE)
             .addFrom(TBL_REQUEST_FILES)
             .addFromInner(TBL_FILES,
                 sys.joinTables(TBL_FILES, TBL_REQUEST_FILES, COL_FILE))
@@ -1928,6 +1922,7 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
 
     for (SimpleRow file : data) {
       FileInfo sf = new FileInfo(file.getLong(COL_FILE),
+          file.getValue(COL_FILE_HASH),
           file.getValue(COL_FILE_NAME),
           file.getLong(COL_FILE_SIZE),
           file.getValue(COL_FILE_TYPE));
@@ -2152,6 +2147,7 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
 
     for (BeeRow row : rowSet.getRows()) {
       FileInfo sf = new FileInfo(DataUtils.getLong(rowSet, row, COL_FILE),
+          DataUtils.getString(rowSet, row, COL_FILE_HASH),
           DataUtils.getString(rowSet, row, ALS_FILE_NAME),
           DataUtils.getLong(rowSet, row, ALS_FILE_SIZE),
           DataUtils.getString(rowSet, row, ALS_FILE_TYPE));

@@ -120,7 +120,7 @@ public final class Money implements HandlesAllDataEvents {
         Pair<Long, Double> rate = values.get(i);
 
         info.add(new ExtendedProperty(BeeUtils.joinWords("rate", currency, BeeUtils.bracket(i)),
-            new DateTime(rate.getA()).toCompactString(), BeeUtils.toString(rate.getB(), 10)));
+            Format.renderDateTime(rate.getA()), BeeUtils.toString(rate.getB(), 10)));
       }
     }
 
@@ -231,13 +231,13 @@ public final class Money implements HandlesAllDataEvents {
 
     int currencyIndex = rowSet.getColumnIndex(COL_CURRENCY_RATE_CURRENCY);
     int dateIndex = rowSet.getColumnIndex(COL_CURRENCY_RATE_DATE);
-    int qantityIndex = rowSet.getColumnIndex(COL_CURRENCY_RATE_QUANTITY);
+    int quantityIndex = rowSet.getColumnIndex(COL_CURRENCY_RATE_QUANTITY);
     int rateIndex = rowSet.getColumnIndex(COL_CURRENCY_RATE);
 
     for (BeeRow row : rowSet) {
       Long currency = row.getLong(currencyIndex);
       Long time = row.getLong(dateIndex);
-      Integer quantity = row.getInteger(qantityIndex);
+      Integer quantity = row.getInteger(quantityIndex);
       Double rate = row.getDouble(rateIndex);
 
       if (DataUtils.isId(currency) && time != null && BeeUtils.isPositive(rate)) {

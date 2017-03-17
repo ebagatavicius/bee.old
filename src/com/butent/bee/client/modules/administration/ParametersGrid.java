@@ -104,7 +104,6 @@ public final class ParametersGrid extends AbstractGridInterceptor {
 
         case DATE:
           JustDate date = prm.supportsUsers() ? prm.getDate(userId) : prm.getDate();
-
           if (date != null) {
             value = Format.renderDate(date);
           }
@@ -112,7 +111,6 @@ public final class ParametersGrid extends AbstractGridInterceptor {
 
         case DATETIME:
           DateTime dateTime = prm.supportsUsers() ? prm.getDateTime(userId) : prm.getDateTime();
-
           if (dateTime != null) {
             value = Format.renderDateTime(dateTime);
           }
@@ -294,7 +292,7 @@ public final class ParametersGrid extends AbstractGridInterceptor {
                 selector.render(selector.getRelatedRow());
                 selection = selector.getRenderedValue();
               }
-              set(prm, editor.getValue(), selection);
+              set(prm, editor.getNormalizedValue(), selection);
             }
           };
           editor.addEditChangeHandler(new EditChangeHandler() {

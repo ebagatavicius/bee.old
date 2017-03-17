@@ -17,6 +17,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.data.ClientDefaults;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
@@ -47,11 +48,14 @@ import com.butent.bee.shared.modules.trade.TradeDiscountMode;
 import com.butent.bee.shared.modules.trade.TradeDocumentPhase;
 import com.butent.bee.shared.modules.trade.TradeVatMode;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.JustDate;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public final class TradeUtils {
 
@@ -494,9 +498,65 @@ public final class TradeUtils {
     }
   }
 
+  static void getDocumentVatPercent(IsRow row, final Consumer<Double> consumer) {
+    if (getDocumentVatMode(row) == null) {
+      consumer.accept(null);
+
+    } else {
+      Long operation = getDocumentRelation(row, COL_TRADE_OPERATION);
+      if (operation == null) {
+        consumer.accept(null);
+
+      } else {
+        Queries.getValue(VIEW_TRADE_OPERATIONS, operation, COL_OPERATION_VAT_PERCENT,
+            new RpcCallback<String>() {
+              @Override
+              public void onSuccess(String result) {
+                Double vatPercent = BeeUtils.toDoubleOrNull(result);
+
+                if (vatPercent == null) {
+                  Number p = Global.getParameterNumber(PRM_VAT_PERCENT);
+                  if (p != null) {
+                    vatPercent = p.doubleValue();
+                  }
+                }
+
+                consumer.accept(vatPercent);
+              }
+            });
+      }
+    }
+  }
+
   static boolean isDocumentEditable(IsRow row) {
-    TradeDocumentPhase phase = getDocumentPhase(row);
-    return phase != null && phase.isEditable(BeeKeeper.getUser().isAdministrator());
+    if (row == null) {
+      return false;
+
+    } else if (!DataUtils.isNewRow(row)) {
+      TradeDocumentPhase phase = getDocumentPhase(row);
+      if (phase != null && !phase.isEditable(BeeKeeper.getUser().isAdministrator())) {
+        return false;
+      }
+
+      if (isDocumentProtected(row)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  static boolean isDocumentProtected(IsRow row) {
+    JustDate minDate = Global.getParameterDate(PRM_PROTECT_TRADE_DOCUMENTS_BEFORE);
+
+    if (minDate != null) {
+      DateTime date = getDocumentDate(row);
+      if (date != null && TimeUtils.isLess(date, minDate)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   static double roundPrice(Double price) {

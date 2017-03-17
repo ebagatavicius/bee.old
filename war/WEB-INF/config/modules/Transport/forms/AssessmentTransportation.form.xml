@@ -11,9 +11,9 @@
 
   name="AssessmentTransportation" viewName="AssessmentTransportations" caption="=carrier"
   >
-  <f:properties reports="PrintTransportation" />
+  <f:properties jasperReports="AssessmentTransportation" />
 
-  <FlowPanel style="padding: 10px 2px 2px 10px;">
+  <FlowPanel class="flexBox-vertical" style="padding: 10px 2px 2px 10px;">
     <css id="&form;">
       .&form; table {border-collapse:collapse;}
       .&form; tr:first-child {text-align:center; font-weight:bold;}
@@ -51,14 +51,12 @@
       <InputArea source="Notes" style="width:400px;" />
     </FlowPanel>
     <hr/>
-    <Details style="&section;" open="true">
-      <Summary text="=totalOf"  style="&summary;" />
-      <FlowPanel name="Totals" class="&form;" />
-    </Details>
-    <hr/>
-    <Details style="&section;" open="true">
-      <Summary text="=cargos" style="&summary;" />
-      <FlowPanel name="Cargo" class="&form;" />
-    </Details>
+
+    <TabbedPages class="flexible" >
+    <page>
+      <text>=cargos</text>
+      <ChildGrid name="TransportationCargo" relColumn="Trip" />
+    </page>
+    </TabbedPages>
   </FlowPanel>
 </f:Form>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="MaintenancePayroll"
+  idName="MaintenancePayrollID"
+  >
+  <Fields>
+    <Relation name="ServiceMaintenance" notNull="true" relation="ServiceMaintenance"
+              cascade="DELETE" label="=svcRepair" />
+    <Relation name="Repairer" notNull="true" relation="CompanyPersons" cascade="DELETE" label="=svcMaster"/>
+    <Date name="Date" defExpr="CURRENT_DATE" label="=date" />
+    <DateTime name="PayrollDate" label="=ecInvoiceTerm" />
+    <Numeric name="BasicAmount" label="=svcBasicAmount" precision="10" scale="2" />
+    <Numeric name="Tariff" label="=svcTariff" precision="10" scale="2" />
+    <Numeric name="Salary" label="=salary" precision="10" scale="2" />
+    <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
+    <Boolean name="Confirmed" label="=svcConfirmedPayroll" />
+    <Relation name="ConfirmedUser" relation="Users" cascade="DELETE" label="=svcConfirmedUser" />
+    <DateTime name="ConfirmationDate" label="=svcConfirmationDate" />
+    <Text name="Notes" label="=notes" />
+  </Fields>
+</Table>

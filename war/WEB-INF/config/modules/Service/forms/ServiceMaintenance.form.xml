@@ -15,7 +15,7 @@
   name="ServiceMaintenance" viewName="ServiceMaintenance" caption="=svcMaintenance" showRowId="true"
   width="80" widthUnit="vw" height="80" heightUnit="vh"
 >
-  <f:properties jasperReports="ServiceMaintenanceTicket:=svcMaintenanceTicket, ServiceMaintenanceSticker:=svcStickers" />
+  <f:properties jasperReports="ServiceMaintenance:=svcDetailedMaintenanceTicket, ServiceMaintenanceTicket:=svcMaintenanceTicket, ServiceMaintenanceSticker:=svcStickers" />
 
   <SplitPanel splitterSize="4" name="Split" class="bee-svc-split-panel">
     <south size="300">
@@ -28,16 +28,12 @@
             <FlowPanel name="MaintenanceComments" class="flex-horizontal"/>
           </page>
           <page>
-            <text>=svcMaintenanceItemsServices</text>
-            <ChildGrid name="Maintenance" relColumn="ServiceMaintenance" />
+            <text>=goods</text>
+            <ChildGrid name="ServiceItems" relColumn="ServiceMaintenance" />
           </page>
           <page>
-            <text>=svcInvoices</text>
-            <GridPanel name="ObjectInvoices" parent="{form}" child="true" />
-          </page>
-          <page>
-            <text>=svcDefects</text>
-            <ChildGrid name="ObjectDefects" relColumn="ServiceMaintenance" />
+            <text>=trInvoices</text>
+            <ChildGrid name="OrderChildInvoices" relColumn="ServiceMaintenance"/>
           </page>
           <page module="Tasks">
             <text>=crmTasks</text>
@@ -46,6 +42,10 @@
           <page>
             <text>=svcDates</text>
             <ChildGrid name="ServiceDates" relColumn="ServiceMaintenance" />
+          </page>
+          <page>
+            <text>=payroll</text>
+            <ChildGrid name="MaintenancePayroll" relColumn="ServiceMaintenance" />
           </page>
         </TabbedPages>
       </FlowPanel>
@@ -222,6 +222,13 @@
 
         <FlowPanel class="flexBox-horizontal">
           <FlowPanel class="bee-svc-maintenance-panel" style="margin-bottom: 1em;">
+            <FlowPanel class="&mrcl;" style="&mrst;" for="Warehouse">
+              <FlowPanel style="&mfld; width: 21em;" >
+                <Label for="Warehouse" style="&flbl;"/>
+                <DataSelector source="Warehouse" style="&finp;" visible="true" />
+              </FlowPanel>
+            </FlowPanel>
+
             <FlowPanel class="&mrcl;" style="&mrst;" for="Department">
               <FlowPanel style="&mfld; width: 21em;" >
                 <Label for="Department" class="bee-required" style="&flbl;"/>

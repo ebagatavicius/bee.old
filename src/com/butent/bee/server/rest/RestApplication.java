@@ -23,6 +23,7 @@ public class RestApplication extends Application {
     classes.add(TaskEventsWorker.class);
     classes.add(PayrollWorker.class);
     classes.add(ShipmentRequestsWorker.class);
+    classes.add(ServiceCommentWorker.class);
 
     return classes;
   }

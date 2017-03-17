@@ -27,6 +27,7 @@
 
       <SimpleColumn name="File" />
       <SimpleJoin name="File" joinType="LEFT">
+        <SimpleColumn name="Hash" />
         <HiddenColumn name="Name" />
       </SimpleJoin>
 

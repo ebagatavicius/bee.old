@@ -5,6 +5,40 @@
 >
   <Columns>
     <SimpleColumn name="Assessment" />
+    <SimpleJoin name="Assessment" joinType="LEFT">
+      <SimpleJoin name="Order" joinType="LEFT">
+        <SimpleColumn name="OrderNo" />
+
+        <SimpleJoin name="Manager" joinType="INNER">
+          <SimpleJoin name="CompanyPerson" joinType="LEFT">
+            <SimpleJoin name="Position" joinType="LEFT">
+              <SimpleColumn name="Name" alias="Position" />
+            </SimpleJoin>
+
+            <SimpleJoin name="Person" joinType="LEFT">
+              <SimpleColumn name="FirstName" />
+              <SimpleColumn name="LastName" />
+            </SimpleJoin>
+          </SimpleJoin>
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleJoin name="Cargo" joinType="LEFT">
+        <SimpleColumn name="Description" />
+        <SimpleColumn name="Weight" />
+        <SimpleJoin joinType="LEFT" name="WeightUnit">
+          <SimpleColumn name="Name" alias="WeightUnit" />
+        </SimpleJoin>
+        <SimpleColumn name="Volume" />
+        <SimpleJoin joinType="LEFT" name="VolumeUnit">
+          <SimpleColumn name="Name" alias="VolumeUnit" />
+        </SimpleJoin>
+        <SimpleColumn name="Quantity" />
+        <SimpleJoin joinType="LEFT" name="QuantityUnit">
+          <SimpleColumn name="Name" alias="QuantityUnit" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
 
     <SimpleColumn name="CargoTrip" />
     <SimpleJoin name="CargoTrip" joinType="INNER">

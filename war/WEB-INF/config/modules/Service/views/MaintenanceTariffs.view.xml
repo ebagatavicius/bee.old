@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="MaintenanceTariffs" source="MaintenanceTariffs" module="Service"
+  caption="=svcTariffs"
+  >
+  <Columns>
+    <SimpleColumn name="Repairer" editable="true" />
+    <SimpleJoin name="Repairer" joinType="LEFT">
+      <SimpleJoin name="Person" joinType="LEFT">
+        <SimpleColumn alias="RepairerFirstName" name="FirstName" />
+        <SimpleColumn alias="RepairerLastName" name="LastName" />
+      </SimpleJoin>
+    </SimpleJoin>
+    <SimpleColumn name="Tariff" />
+    <SimpleColumn name="DateFrom" />
+    <SimpleColumn name="DateTo" />
+  </Columns>
+</View>

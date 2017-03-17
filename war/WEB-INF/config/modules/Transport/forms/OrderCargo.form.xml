@@ -135,7 +135,7 @@
               </FlowPanel>
               <Label for="Value" />
               <FlowPanel>
-                <InputMoney source="Value" style="&decimal;" />
+                <InputMoney source="Value" style="&decimal;" currencySource="ValueCurrency"/>
                 <DataSelector source="ValueCurrency" editEnabled="false" style="&unit;" />
               </FlowPanel>
               <text />

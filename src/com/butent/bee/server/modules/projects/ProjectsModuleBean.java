@@ -46,7 +46,9 @@ import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.view.Order;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Formatter;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -238,7 +240,6 @@ public class ProjectsModuleBean extends TimerBuilder implements BeeModule {
         }
       }
 
-
       @Subscribe
       @AllowConcurrentEvents
       public void fillProjectsTimeData(ViewQueryEvent event) {
@@ -407,7 +408,7 @@ public class ProjectsModuleBean extends TimerBuilder implements BeeModule {
 
             IsExpression isExpression =
                 SqlUtils.minus(SqlUtils.divide(SqlUtils.multiply(SqlUtils.constant(100.0), SqlUtils
-                    .minus(nowExpression, SqlUtils.field(TBL_PROJECTS, COL_DATES_START_DATE))),
+                        .minus(nowExpression, SqlUtils.field(TBL_PROJECTS, COL_DATES_START_DATE))),
                     SqlUtils
                         .minus(SqlUtils.field(TBL_PROJECTS, COL_DATES_END_DATE), SqlUtils.field(
                             TBL_PROJECTS, COL_DATES_START_DATE))), SqlUtils.constant(100.0));
@@ -453,7 +454,7 @@ public class ProjectsModuleBean extends TimerBuilder implements BeeModule {
           .addFrom(VIEW_PROJECT_DATES)
           .setWhere(SqlUtils.and(wh,
               SqlUtils.more(VIEW_PROJECT_DATES, COL_DATES_START_DATE,
-                                                    Value.getValue(System.currentTimeMillis())))));
+                  Value.getValue(System.currentTimeMillis())))));
 
       for (SimpleRowSet.SimpleRow row : data) {
         Long timerId = row.getLong(sys.getIdName(VIEW_PROJECT_DATES));
@@ -467,7 +468,6 @@ public class ProjectsModuleBean extends TimerBuilder implements BeeModule {
           Timer timer = timerService.createSingleActionTimer(timerTime.getJava(),
               new TimerConfig(TIMER_REMIND_PROJECT_DATES + timerId, false));
 
-
           if (timer != null) {
             timersList.add(timer);
           }
@@ -478,7 +478,7 @@ public class ProjectsModuleBean extends TimerBuilder implements BeeModule {
   }
 
   @Override
-  protected  Pair<IsCondition, List<String>> getConditionAndTimerIdForUpdate(String timerIdentifier,
+  protected Pair<IsCondition, List<String>> getConditionAndTimerIdForUpdate(String timerIdentifier,
       String viewName, Long relationId) {
     if (BeeUtils.same(timerIdentifier, TIMER_REMIND_PROJECT_DATES)) {
       IsCondition wh;
@@ -1220,11 +1220,13 @@ public class ProjectsModuleBean extends TimerBuilder implements BeeModule {
           .addFromInner(VIEW_PROJECTS,
               sys.joinTables(VIEW_PROJECTS, VIEW_PROJECT_DATES, COL_PROJECT))
           .setWhere(SqlUtils.equals(
-                            VIEW_PROJECT_DATES, sys.getIdName(VIEW_PROJECT_DATES), projectDateId)));
+              VIEW_PROJECT_DATES, sys.getIdName(VIEW_PROJECT_DATES), projectDateId)));
 
       for (SimpleRow row : data) {
         Long userId = row.getLong(COL_OWNER);
         Dictionary dic = usr.getDictionary(userId);
+        DateTimeFormatInfo dtfInfo = usr.getDateTimeFormatInfo(userId);
+
         Map<String, String> linkData = Maps.newHashMap();
         linkData.put(VIEW_PROJECTS, row.getValue(sys.getIdName(VIEW_PROJECTS)));
 
@@ -1234,9 +1236,10 @@ public class ProjectsModuleBean extends TimerBuilder implements BeeModule {
                   BeeConst.STRING_QUOT + row.getValue(COL_PROJECT_NAME) + BeeConst.STRING_QUOT
                       + BeeConst.STRING_POINT,
                   dic.prjDates() + BeeConst.STRING_COLON,
-                  row.getDateTime(COL_DATES_START_DATE).toCompactString() + BeeConst.STRING_POINT,
+                  Formatter.renderDateTime(dtfInfo, row.getDateTime(COL_DATES_START_DATE))
+                      + BeeConst.STRING_POINT,
                   BeeUtils.isEmpty(row.getValue(COL_DATES_NOTE))
-                      ? "" :  BeeUtils.joinWords(dic.note() + BeeConst.STRING_COLON,
+                      ? "" : BeeUtils.joinWords(dic.note() + BeeConst.STRING_COLON,
                       row.getValue(COL_DATES_NOTE) + BeeConst.STRING_POINT)),
               userId,
               linkData);

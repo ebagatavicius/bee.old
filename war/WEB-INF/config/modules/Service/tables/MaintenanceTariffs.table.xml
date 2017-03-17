@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="MaintenanceTariffs"
+  idName="MaintenanceTariffsID"
+  >
+  <Fields>
+    <Relation name="Repairer" notNull="true" relation="CompanyPersons" label="=svcMaster"/>
+    <Numeric name="Tariff" notNull="true" label="=svcTariff" precision="10" scale="2" />
+    <Date name="DateFrom" label="=dateFrom" />
+    <Date name="DateTo" label="=dateTo" />
+  </Fields>
+</Table>

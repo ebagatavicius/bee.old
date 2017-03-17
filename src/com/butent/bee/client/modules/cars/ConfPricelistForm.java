@@ -444,7 +444,7 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
   }
 
   private static void inputInfo(String title, String price, boolean priceRequired,
-      String description, Map<String, String> criteria, Long photoFile,
+      String description, Map<String, String> criteria, String photoFile,
       Consumer<ConfInfo> infoConsumer, Consumer<DialogBox> destroyer, Element target,
       Widget... widgets) {
 
@@ -503,7 +503,8 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
     photoCap.setStyleName(StyleUtils.NAME_LINK);
     table.setWidget(3, 0, photoCap);
 
-    Image img = new Image(DataUtils.isId(photoFile) ? FileUtils.getUrl(photoFile) : "");
+    Image img = new Image(BeeUtils.isEmpty(photoFile) ? "" : FileUtils.getUrl(photoFile));
+
     StyleUtils.updateStyle(img, "max-width:20em; max-height:150px; object-fit:contain;");
     table.setWidget(3, 1, img);
 
@@ -511,7 +512,7 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
       img.setVisible(fileInfo != null);
 
       if (img.isVisible()) {
-        FileUtils.commitFile(fileInfo, fileId -> img.setUrl(FileUtils.getUrl(fileId)));
+        FileUtils.commitFile(fileInfo, info -> img.setUrl(FileUtils.getUrl(info.getHash())));
       } else {
         img.setUrl("");
       }
@@ -540,7 +541,7 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
         infoConsumer.accept(ConfInfo.of(BeeUtils.isNonNegativeInt(inputPrice.getValue())
             || Objects.equals(inputPrice.getValue(), Configuration.DEFAULT_PRICE)
             ? inputPrice.getValue() : null, newDescription.get()).setCriteria(newCriteria)
-            .setPhoto(BeeUtils.toLongOrNull(url.substring(url.lastIndexOf("/") + 1))));
+            .setPhoto(url.substring(url.lastIndexOf("/") + 1)));
       }
     }, null, target, destroyer != null ? EnumSet.of(Action.DELETE) : null);
   }
@@ -1133,7 +1134,7 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
       String price = configuration.getRelationPrice(option, bundle);
       String description = configuration.getRelationDescription(option, bundle);
       Map<String, String> criteria = configuration.getRelationCriteria(option, bundle);
-      Long photo = configuration.getRelationPhoto(option, bundle);
+      String photo = configuration.getRelationPhoto(option, bundle);
 
       BiConsumer<String, ConfInfo> consumer = (svc, info) -> {
         ParameterList args = CarsKeeper.createSvcArgs(svc);

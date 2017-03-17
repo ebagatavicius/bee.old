@@ -137,8 +137,7 @@ public final class TasksKeeper {
           if (TimeUtils.isLess(newEnd, TimeUtils.nowMinutes())) {
             Global.showError("Time travel not supported",
                 Lists.newArrayList(Localized.dictionary().crmFinishDateMustBeGreaterThan()
-                    + " "
-                    + now.toCompactString()));
+                    + " " + Format.renderDateTime(now)));
             return;
           }
 

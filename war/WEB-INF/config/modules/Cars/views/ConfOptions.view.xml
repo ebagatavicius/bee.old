@@ -19,8 +19,12 @@
     <SimpleColumn name="Code" />
     <SimpleColumn name="Code2" />
     <SimpleColumn name="Description" />
-    <SimpleColumn name="PhotoFile" />
     <SimpleColumn name="PhotoCode" />
+
+    <SimpleColumn name="PhotoFile" />
+    <SimpleJoin name="PhotoFile" joinType="LEFT">
+      <SimpleColumn name="Hash" />
+    </SimpleJoin>
 
     <SimpleColumn name="Item" />
     <SimpleJoin joinType="LEFT" name="Item">

@@ -15,10 +15,10 @@
         <SimpleJoin name="Person" joinType="LEFT">
           <SimpleColumn alias="PublisherFirstName" name="FirstName" />
           <SimpleColumn alias="PublisherLastName" name="LastName" />
-          <SimpleColumn name="PhotoFile"/>
-          <!-- @DEPRECATED { -->
-          <SimpleColumn name="Photo" />
-          <!-- } -->
+
+          <SimpleJoin name="PhotoFile" joinType="LEFT">
+            <SimpleColumn name="Hash" alias="PhotoFile" label="=photo" />
+          </SimpleJoin>
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
@@ -37,4 +37,3 @@
     <SimpleColumn name="FinishTime" />
   </Columns>
 </View>
- 

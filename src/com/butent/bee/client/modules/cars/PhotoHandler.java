@@ -1,5 +1,6 @@
 package com.butent.bee.client.modules.cars;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_FILE_HASH;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_PHOTO;
 
 import com.butent.bee.client.ui.FormFactory;
@@ -37,7 +38,7 @@ public class PhotoHandler extends AbstractFormInterceptor {
       Long fileId = DataUtils.getLong(form.getDataColumns(), row, COL_PHOTO);
 
       if (DataUtils.isId(fileId)) {
-        url = FileUtils.getUrl(fileId);
+        url = FileUtils.getUrl(DataUtils.getString(form.getDataColumns(), row, COL_FILE_HASH));
       } else {
         url = "images/copyright.png";
       }
@@ -53,17 +54,20 @@ public class PhotoHandler extends AbstractFormInterceptor {
 
   private void onSetPhoto(NewFileInfo fileInfo) {
     Long id = getActiveRowId();
-    int idx = getFormView().getDataIndex(COL_PHOTO);
+    int idx = getDataIndex(COL_PHOTO);
+    int hIdx = getDataIndex(COL_FILE_HASH);
 
     if (fileInfo != null) {
-      FileUtils.uploadFile(fileInfo, fileId -> {
+      FileUtils.uploadFile(fileInfo, info -> {
         if (Objects.equals(id, getActiveRowId())) {
-          getActiveRow().setValue(idx, fileId);
+          getActiveRow().setValue(idx, info.getId());
+          getActiveRow().setValue(hIdx, info.getHash());
           getFormView().refresh();
         }
       });
     } else {
       getActiveRow().clearCell(idx);
+      getActiveRow().clearCell(hIdx);
       getFormView().refresh();
     }
   }

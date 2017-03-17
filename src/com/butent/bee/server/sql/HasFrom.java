@@ -120,7 +120,7 @@ public abstract class HasFrom<T> extends SqlQuery<T> {
     return BeeUtils.isEmpty(fromList);
   }
 
-  protected void setFrom(List<IsFrom> from) {
+  public void setFrom(List<IsFrom> from) {
     this.fromList = from;
   }
 

@@ -142,6 +142,10 @@
         <ChildGrid name="CarRecalls" relColumn="Vehicle" />
       </page>
       <page>
+        <text>=serviceOrders</text>
+        <ChildGrid name="CarServiceOrders" relColumn="Car" />
+      </page>
+      <page>
         <text>=specification</text>
         <xi:include href="widgets/Specification.widget.xml" />
       </page>

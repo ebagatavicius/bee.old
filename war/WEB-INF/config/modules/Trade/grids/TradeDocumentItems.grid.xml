@@ -60,7 +60,7 @@
 
     <CalcColumn name="PriceWithVat" type="decimal" caption="=priceWithVat" scale="2"
                 visible="false" />
-    <CalcColumn name="Total" type="decimal" caption="=total" scale="2">
+    <CalcColumn name="Total" type="decimal" caption="=total" scale="2" minWidth="60">
       <style>
         <bodyStyle>
           <ui:font>bold</ui:font>

@@ -26,6 +26,7 @@ import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
+import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.mail.MailConstants;
@@ -323,7 +324,7 @@ public class MailStorageBean {
 
         if (!account.isStoredRemotedly(account.findFolder(folderId))) {
           updMap.put(COL_RAW_CONTENT, fs.storeFile(new FileInputStream(tmp),
-              "mail@" + envelope.getUniqueId(), MediaType.TEXT_PLAIN));
+              "mail@" + envelope.getUniqueId(), MediaType.TEXT_PLAIN).getId());
         }
         updateMessage(messageId.getA(), updMap);
         p.set("update");
@@ -538,7 +539,8 @@ public class MailStorageBean {
                 String[] arr = Codec.beeDeserializeCollection(entry);
 
                 for (int j = 2; j < arr.length; j++) {
-                  mergedHtml = mergedHtml.replace("cid:" + arr[j], "file/" + arr[0]);
+                  mergedHtml = mergedHtml.replace("cid:" + arr[j],
+                      BeeUtils.join("/", FILE_URL, arr[0]));
                 }
                 if (!Objects.equals(mergedHtml, before)) {
                   orphans.remove(entry);
@@ -585,8 +587,9 @@ public class MailStorageBean {
           || !part.isMimeType("text/*")) {
 
         List<String> fileInfo = new ArrayList<>();
-        fileInfo.add(BeeUtils.toString(fs.commitFile(fs.storeFile(part.getInputStream(), fileName,
-            contentType))));
+        FileInfo info = fs.storeFile(part.getInputStream(), fileName, contentType);
+        fs.commitFile(info.getId());
+        fileInfo.add(info.getHash());
         fileInfo.add(fileName);
 
         String[] ids = part.getHeader("Content-ID");
@@ -599,13 +602,13 @@ public class MailStorageBean {
         parsedPart.put(COL_FILE, Codec.beeSerialize(fileInfo));
 
       } else if (part.isMimeType("text/calendar")) {
-        Long fileId = fs.commitFile(fs.storeFile(part.getInputStream(), fileName, contentType));
+        FileInfo info = fs.storeFile(part.getInputStream(), fileName, contentType);
+        fs.commitFile(info.getId());
 
         StringBuilder sb = new StringBuilder("<table>");
 
         try {
-          Calendar calendar = new CalendarBuilder()
-              .build(new FileInputStream(fs.getFile(fileId).getFile()));
+          Calendar calendar = new CalendarBuilder().build(new FileInputStream(info.getFile()));
           fileName = calendar.getMethod().getValue() + ".ics";
 
           for (CalendarComponent component : calendar.getComponents()) {
@@ -628,7 +631,7 @@ public class MailStorageBean {
           logger.warning("(MessageID=", messageId, ") Error parsing calendar:", e);
         }
         List<String> fileInfo = new ArrayList<>();
-        fileInfo.add(BeeUtils.toString(fileId));
+        fileInfo.add(info.getHash());
         fileInfo.add(fileName);
 
         parsedPart.put(COL_FILE, Codec.beeSerialize(fileInfo));

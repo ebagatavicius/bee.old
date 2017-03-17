@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Table xmlns="http://www.butent.com/table"
-  
+
   name="Persons"
   idName="PersonID"
   >
@@ -11,8 +11,5 @@
     <Relation name="Contact" unique="true" relation="Contacts" editable="true" label="=contacts" />
     <Relation name="PhotoFile" relation="Files" label="=photo"/>
     <Text name="Notes" label="=notes" />
-    <!-- @DEPRECATED { -->
-    <String name="Photo" precision="100" label="=photo" />
-    <!-- } -->
   </Fields>
 </Table>

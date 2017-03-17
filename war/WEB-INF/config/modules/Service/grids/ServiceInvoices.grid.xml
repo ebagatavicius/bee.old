@@ -3,7 +3,7 @@
   xmlns:ui="http://www.butent.com/ui"
   xmlns:xi="http://www.w3.org/2001/XInclude"
 
-  name="ServiceInvoices" viewName="ServiceInvoices" filter="Kind 1"
+  name="ServiceInvoices" viewName="ServiceInvoices" filter="Kind 1 OR ServiceMaintenance"
   editShowId="true" flexGrow="1"
   disabledActions="add"
   caption="=svcInvoices"

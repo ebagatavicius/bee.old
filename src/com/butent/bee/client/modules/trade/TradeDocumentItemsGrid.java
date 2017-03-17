@@ -1,7 +1,6 @@
 package com.butent.bee.client.modules.trade;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.PRM_COMPANY;
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.PRM_VAT_PERCENT;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
@@ -12,16 +11,19 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.dialog.Icon;
+import com.butent.bee.client.event.logical.RenderingEvent;
 import com.butent.bee.client.i18n.Money;
 import com.butent.bee.client.modules.classifiers.ClassifierKeeper;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.view.ViewHelper;
+import com.butent.bee.client.view.grid.CellGrid;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.Latch;
@@ -44,6 +46,7 @@ import com.butent.bee.shared.data.value.BooleanValue;
 import com.butent.bee.shared.data.value.DecimalValue;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.view.Order;
+import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ItemPrice;
 import com.butent.bee.shared.modules.trade.OperationType;
@@ -229,6 +232,10 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
       button.addStyleName(STYLE_PRICE_CALCULATION_COMMAND);
 
       presenter.getHeader().addCommandItem(button);
+
+      FaLabel test = new FaLabel(FontAwesome.PLUS_SQUARE_O);
+      test.addClickHandler(event -> testPicker());
+      presenter.getHeader().addCommandItem(test);
     }
 
     super.afterCreatePresenter(presenter);
@@ -331,11 +338,14 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
                         COL_TRADE_WAREHOUSE_FROM);
 
                     if (DataUtils.isId(warehouse)) {
-                      getStock(itemIds, warehouse,
-                          stock -> addItems(documentRow, itemRows, true, stock));
+                      getStock(itemIds, warehouse, stock ->
+                          TradeUtils.getDocumentVatPercent(documentRow, defVatPercent ->
+                              addItems(documentRow, itemRows, true, stock, defVatPercent)));
                     }
+
                   } else {
-                    addItems(documentRow, itemRows, false, null);
+                    TradeUtils.getDocumentVatPercent(documentRow, defVatPercent ->
+                        addItems(documentRow, itemRows, false, null, defVatPercent));
                   }
                 }
               }
@@ -344,6 +354,32 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
     }, null, presenter.getHeader().getElement());
 
     return false;
+  }
+
+  @Override
+  public void beforeRender(GridView gridView, RenderingEvent event) {
+    IsRow parentRow = ViewHelper.getFormRow(gridView);
+
+    if (parentRow != null) {
+      boolean changed = false;
+      CellGrid grid = getGridView().getGrid();
+
+      boolean visible = TradeUtils.getDocumentDiscountMode(parentRow) != null;
+
+      changed |= grid.setColumnVisible(COL_TRADE_DOCUMENT_ITEM_DISCOUNT, visible);
+      changed |= grid.setColumnVisible(COL_TRADE_DOCUMENT_ITEM_DISCOUNT_IS_PERCENT, visible);
+
+      visible = TradeUtils.getDocumentVatMode(parentRow) != null;
+
+      changed |= grid.setColumnVisible(COL_TRADE_DOCUMENT_ITEM_VAT, visible);
+      changed |= grid.setColumnVisible(COL_TRADE_DOCUMENT_ITEM_VAT_IS_PERCENT, visible);
+
+      if (changed) {
+        event.setDataChanged();
+      }
+    }
+
+    super.beforeRender(gridView, event);
   }
 
   @Override
@@ -579,7 +615,7 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
   }
 
   private void addItems(IsRow documentRow, List<? extends IsRow> itemRows,
-      boolean stockRequired, Map<Long, Pair<Long, Double>> stock) {
+      boolean stockRequired, Map<Long, Pair<Long, Double>> stock, Double defVatPercent) {
 
     DateTime date = Data.getDateTime(VIEW_TRADE_DOCUMENTS, documentRow, COL_TRADE_DATE);
     Long currency = Data.getLong(VIEW_TRADE_DOCUMENTS, documentRow, COL_TRADE_CURRENCY);
@@ -629,9 +665,7 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
 
       Double vat;
       if (vatMode != null && BeeUtils.isTrue(row.getBoolean(vatIndex))) {
-        Number number = Global.getParameterNumber(PRM_VAT_PERCENT);
-        vat = BeeUtils.nvl(row.getDouble(vatPercentIndex),
-            Objects.isNull(number) ? null : number.doubleValue());
+        vat = BeeUtils.nvl(row.getDouble(vatPercentIndex), defVatPercent);
       } else {
         vat = null;
       }
@@ -920,5 +954,15 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
       getGridView().notifyInfo(
           Localized.dictionary().recalculateTradeItemPriceNotification(counter.get()));
     }
+  }
+
+  private void testPicker() {
+    IsRow parentRow = getParentRow(getGridView());
+    if (!DataUtils.hasId(parentRow)) {
+      return;
+    }
+
+    TradeItemPicker picker = new TradeItemPicker(parentRow);
+    Global.showModalWidget(picker);
   }
 }

@@ -22,5 +22,6 @@
     <Relation name="Company" relation="Companies" label="=company" />
     <Relation name="Contact" relation="CompanyPersons" label="=personContact" />
     <Relation name="Department" relation="Departments" label="=department" />
+    <Relation name="Warehouse" relation="Warehouses" label="=warehouse" />
   </Fields>
 </Table>

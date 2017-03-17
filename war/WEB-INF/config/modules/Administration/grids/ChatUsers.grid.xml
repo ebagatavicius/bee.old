@@ -4,13 +4,13 @@
   name="ChatUsers" viewName="ChatUsers" readOnly="true"
   >
   <g:body height="32" />
-  
+
   <g:columns>
-    <DataColumn name="Photo" caption="-" cellType="html" sortable="false"
+    <DataColumn name="PhotoFile" caption="-" cellType="html" sortable="false"
       width="40" horizontalAlignment="center" filterOptions="-" autoFit="false" exportable="false">
       <renderer type="photo" />
     </DataColumn>
- 
+
     <RelColumn name="User" minWidth="200" renderColumns="FirstName LastName"
       sortBy="LastName FirstName" editSource="CompanyPerson" editPopup="true" visible="true" />
 

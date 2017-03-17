@@ -2765,7 +2765,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
     if (form != null) {
       if (editable) {
-        editable = isRowEditable(rowValue, BeeKeeper.getScreen());
+        editable = isRowEditable(rowValue, null);
       }
       if (editable) {
         editable = form.isRowEditable(rowValue, false);

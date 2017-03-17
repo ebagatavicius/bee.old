@@ -1041,8 +1041,9 @@ class TaskBuilder extends ProductSupportInterceptor {
       @Override
       public void onSuccess(Integer result) {
         files.forEach(file ->
-          FileUtils.uploadFile(file, fileId ->
+          FileUtils.uploadFile(file, info ->
             tasks.forEach(task -> {
+              Long fileId = info.getId();
               List<String> values = Lists.newArrayList(BeeUtils.toString(task),
                 BeeUtils.toString(fileId), file.getCaption());
 

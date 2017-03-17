@@ -244,6 +244,11 @@ public class ServiceObjectForm extends MaintenanceExpanderForm implements ClickH
   }
 
   @Override
+  public void afterRefresh(FormView form, IsRow row) {
+    ServiceHelper.setGridEnabled(form, TBL_SERVICE_ITEMS, false);
+  }
+
+  @Override
   public void afterUpdateRow(IsRow result) {
     save(result);
 

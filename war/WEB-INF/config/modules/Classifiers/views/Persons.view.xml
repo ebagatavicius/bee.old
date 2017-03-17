@@ -40,10 +40,10 @@
     </SimpleJoin>
 
     <SimpleColumn name="PhotoFile" />
+    <SimpleJoin name="PhotoFile" joinType="LEFT">
+      <SimpleColumn name="Hash" label="=photo" />
+    </SimpleJoin>
     <SimpleColumn name="Notes" />
-    <!-- @DEPRECATED -->
-    <SimpleColumn name="Photo" />
-    <!-- } -->
   </Columns>
   <Order>
     <OrderBy column="LastName" />

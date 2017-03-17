@@ -267,10 +267,10 @@ public final class NewMailMessage extends AbstractFormInterceptor
 
   @Override
   public void onSelection(SelectionEvent<FileInfo> event) {
-    final FileInfo file = event.getSelectedItem();
+    FileInfo file = event.getSelectedItem();
 
     if (attachmentsWidget.contains(file)) {
-      FileUtils.uploadFile(file, new Callback<Long>() {
+      FileUtils.uploadFile(file, new Callback<FileInfo>() {
         @Override
         public void onFailure(String... reason) {
           attachmentsWidget.removeFile(file);
@@ -278,8 +278,7 @@ public final class NewMailMessage extends AbstractFormInterceptor
         }
 
         @Override
-        public void onSuccess(Long id) {
-          file.setFileId(id);
+        public void onSuccess(FileInfo info) {
           attachmentsWidget.refreshFile(file);
         }
       });

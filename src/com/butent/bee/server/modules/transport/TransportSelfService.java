@@ -174,7 +174,8 @@ public class TransportSelfService extends LoginServlet {
         if (BeeUtils.startsWith(part.getName(), COL_FILE) && BeeUtils.isPositive(part.getSize())) {
           String caption = part.getSubmittedFileName();
           JsonObjectBuilder obj = Json.createObjectBuilder();
-          obj.add(COL_FILE, fs.storeFile(part.getInputStream(), caption, part.getContentType()));
+          obj.add(COL_FILE, fs.storeFile(part.getInputStream(), caption, part.getContentType())
+              .getId());
           obj.add(COL_FILE_CAPTION, BeeUtils.nvl(caption, part.getName()));
           files.add(obj);
         }

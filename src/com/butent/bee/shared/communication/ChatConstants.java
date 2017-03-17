@@ -28,7 +28,6 @@ public final class ChatConstants {
   public static final String COL_CHAT_FILE = "File";
   public static final String COL_CHAT_FILE_CAPTION = "Caption";
 
-  public static final String PROP_USER_PHOTO = "UserPhoto";
   public static final String PROP_USER_NAMES = "UserNames";
   public static final String PROP_OTHER_USERS = "OtherUsers";
   public static final String PROP_FILE_NAMES = "FileNames";

@@ -120,10 +120,7 @@ public class FileStorageBean {
     cb.synchronizedCall(TBL_FILES, () -> {
       QueryServiceBean queryBean = Invocation.locateRemoteBean(QueryServiceBean.class);
 
-      id.set(queryBean.getLong(new SqlSelect()
-          .addFields(TBL_FILES, sys.getIdName(TBL_FILES))
-          .addFrom(TBL_FILES)
-          .setWhere(SqlUtils.equals(TBL_FILES, COL_FILE_HASH, storedFile.getHash()))));
+      id.set(queryBean.getId(TBL_FILES, COL_FILE_HASH, storedFile.getHash()));
 
       if (id.isNull()) {
         id.set(queryBean.insertData(new SqlInsert(TBL_FILES)
@@ -199,7 +196,7 @@ public class FileStorageBean {
     return id.get();
   }
 
-  public Long createPdf(String content, String... styleSheets) {
+  public FileInfo createPdf(String content, String... styleSheets) {
     StringBuilder sb = new StringBuilder();
 
     for (String name : new String[] {PRM_PRINT_HEADER, PRM_PRINT_FOOTER}) {
@@ -220,13 +217,13 @@ public class FileStorageBean {
     }
     String parsed = HtmlUtils.cleanXml(sb.append(content).toString());
 
-    Map<Long, String> files = HtmlUtils.getFileReferences(parsed);
-    Long file = null;
+    Map<String, String> files = HtmlUtils.getFileReferences(parsed);
+    FileInfo file = null;
 
     try {
-      for (Long fileId : files.keySet()) {
-        FileInfo fileInfo = getFile(fileId);
-        parsed = parsed.replace(files.get(fileId), fileInfo.getFile().toURI().toString());
+      for (String hash : files.keySet()) {
+        FileInfo fileInfo = getFile(getId(hash));
+        parsed = parsed.replace(files.get(hash), fileInfo.getFile().toURI().toString());
       }
       parsed = parsed.replace("src=\"" + Paths.IMAGE_DIR, "src=\"" + Config.IMAGE_DIR.toURI());
 
@@ -312,11 +309,10 @@ public class FileStorageBean {
         .addOrder(TBL_FILES, versionName));
 
     for (SimpleRow row : data) {
-      FileInfo sf = new FileInfo(row.getLong(idName),
+      FileInfo sf = new FileInfo(row.getLong(idName), row.getValue(COL_FILE_HASH),
           row.getValue(COL_FILE_NAME), row.getLong(COL_FILE_SIZE), row.getValue(COL_FILE_TYPE));
 
       sf.setPath(row.getValue(COL_FILE_REPO));
-      sf.setHash(row.getValue(COL_FILE_HASH));
       sf.setFileDate(DateTime.restore(row.getValue(versionName)));
       sf.setIcon(ExtensionIcons.getIcon(sf.getName()));
       files.add(sf);
@@ -324,7 +320,24 @@ public class FileStorageBean {
     return files;
   }
 
-  public Long storeFile(InputStream is, String fileName, String mimeType) throws IOException {
+  public Long getId(String hash) throws IOException {
+    Long id;
+    FileInfo fileInfo = cache.asMap().values().stream()
+        .filter(info -> Objects.equals(info.getHash(), hash))
+        .findAny().orElse(null);
+
+    if (Objects.nonNull(fileInfo)) {
+      id = fileInfo.getId();
+    } else {
+      id = qs.getId(TBL_FILES, COL_FILE_HASH, hash);
+    }
+    if (!DataUtils.isId(id)) {
+      throw new FileNotFoundException("File not found: hash=" + hash);
+    }
+    return id;
+  }
+
+  public FileInfo storeFile(InputStream is, String fileName, String mimeType) throws IOException {
     MessageDigest md;
 
     try {
@@ -344,7 +357,10 @@ public class FileStorageBean {
         .addFrom(TBL_FILES)
         .setWhere(SqlUtils.equals(TBL_FILES, COL_FILE_HASH, hash)));
 
+    FileInfo fileInfo;
+
     if (DataUtils.isId(id)) {
+      fileInfo = BeeUtils.peek(getFileInfos(Collections.singletonList(id)));
       tmp.delete();
     } else {
       byte[] buffer = new byte[16];
@@ -358,14 +374,13 @@ public class FileStorageBean {
           URLConnection.guessContentTypeFromName(name));
 
       id = idGenerator.incrementAndGet();
-      FileInfo fileInfo = new FileInfo(id, name, size, type);
+      fileInfo = new FileInfo(id, hash, name, size, type);
       fileInfo.setPath(tmp.getAbsolutePath());
-      fileInfo.setHash(hash);
       fileInfo.setTemporary(true);
 
       cache.put(id, fileInfo);
     }
-    return id;
+    return fileInfo;
   }
 
   private static File getRepositoryDir() {

@@ -546,7 +546,7 @@ public final class GridFactory {
       column = createColumn(source);
 
       String id = table.getColumnId(i);
-      String label = table.getColumnLabel(i);
+      String label = Localized.maybeTranslate(table.getColumnLabel(i));
 
       ColumnInfo columnInfo = new ColumnInfo(id, label, source, column,
           new ColumnHeader(id, label, label));

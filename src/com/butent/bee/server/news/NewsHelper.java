@@ -8,6 +8,7 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -180,10 +181,10 @@ public final class NewsHelper {
   }
 
   static Headline getHeadline(Feed feed, long userId, BeeRowSet rowSet, IsRow row, boolean isNew,
-      Dictionary constants) {
+      Dictionary constants, DateTimeFormatInfo dtfInfo) {
 
     return registeredHeadlineProducers.get(feed).produce(feed, userId, rowSet, row, isNew,
-        constants);
+        constants, dtfInfo);
   }
 
   static List<Headline> getHeadlines(Feed feed, long userId, DateTime startDate) {

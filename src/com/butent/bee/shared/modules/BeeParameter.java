@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.Pair;
-import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -50,7 +49,7 @@ public final class BeeParameter implements BeeSerializable {
   public static BeeParameter createDate(String module, String name, boolean userMode,
       JustDate defValue) {
     return new BeeParameter(module, name, ParameterType.DATE, userMode,
-        defValue != null ? defValue.toString() : null);
+        defValue != null ? defValue.serialize() : null);
   }
 
   public static BeeParameter createDateTime(String module, String name) {
@@ -60,7 +59,7 @@ public final class BeeParameter implements BeeSerializable {
   public static BeeParameter createDateTime(String module, String name, boolean userMode,
       DateTime defValue) {
     return new BeeParameter(module, name, ParameterType.DATETIME, userMode,
-        defValue != null ? defValue.toCompactString() : null);
+        defValue != null ? defValue.serialize() : null);
   }
 
   public static BeeParameter createMap(String module, String name) {
@@ -407,11 +406,11 @@ public final class BeeParameter implements BeeSerializable {
         break;
 
       case DATE:
-        val = TimeUtils.parseDate(expr, DateOrdering.DEFAULT);
+        val = TimeUtils.toDateOrNull(expr);
         break;
 
       case DATETIME:
-        val = TimeUtils.parseDateTime(expr, DateOrdering.DEFAULT);
+        val = TimeUtils.toDateTimeOrNull(expr);
         break;
 
       case COLLECTION:

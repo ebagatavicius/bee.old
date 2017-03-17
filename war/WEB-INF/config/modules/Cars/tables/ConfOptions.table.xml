@@ -10,7 +10,7 @@
     <String name="Code" precision="20" label="=code" />
     <String name="Code2" precision="20" label="=code+2" />
     <Text name="Description" label="=description" />
-    <Relation name="PhotoFile" relation="Files" editable="true" label="=photo" />
+    <Relation name="PhotoFile" relation="Files" label="=photo" />
     <String name="PhotoCode" precision="10" label="=code+ (+=photo+)" />
     <Relation name="Bundle" relation="ConfBundles" label="=bundle" editable="true" />
     <Relation name="Item" relation="Items" label="=item" />

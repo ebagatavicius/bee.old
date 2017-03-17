@@ -210,7 +210,7 @@
 
             <FlowPanel style="&mfld; &dtw;">
               <Label for="Date" style="&flbl;" />
-              <InputDateTime source="Date" style="&finp;" visible="true" />
+              <InputDateTime name="Date" source="Date" style="&finp;" visible="true" />
             </FlowPanel>
 
             <FlowPanel style="&mfld; width: 5em;">
@@ -245,7 +245,7 @@
 
             <FlowPanel style="&mfld; &mwn;">
               <Label for="ReceivedDate" style="&flbl;" />
-              <InputDateTime source="ReceivedDate" style="&dtw;" />
+              <InputDateTime name="ReceivedDate" source="ReceivedDate" style="&dtw;" />
             </FlowPanel>
           </FlowPanel>
 

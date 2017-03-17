@@ -348,7 +348,6 @@ public class DocumentForm extends DocumentDataForm {
 
                 case DATE:
                   JustDate date = Data.getDate(viewName, row, column.getId());
-
                   if (date != null) {
                     val = Format.renderDate(date);
                   }
@@ -356,9 +355,8 @@ public class DocumentForm extends DocumentDataForm {
 
                 case DATE_TIME:
                   DateTime time = Data.getDateTime(viewName, row, column.getId());
-
                   if (time != null) {
-                    val = time.toCompactString();
+                    val = Format.renderDateTime(time);
                   }
                   break;
 

@@ -11,7 +11,7 @@ public class NewFileInfo extends FileInfo {
   private final File file;
 
   public NewFileInfo(File file) {
-    super(null, file.getName(), BeeUtils.toLong(file.getSize()), file.getType());
+    super(null, null, file.getName(), BeeUtils.toLong(file.getSize()), file.getType());
     setCaption(file.getName());
     this.file = file;
 

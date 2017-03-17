@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="TransportationCargo" viewName="TripCargo" readOnly="true"
+>
+  <g:columns>
+    <DataColumn name="Description" />
+    <DataColumn name="Weight" />
+    <DataColumn name="WeightUnit" />
+    <DataColumn name="Quantity" />
+    <DataColumn name="QuantityUnit" />
+    <DataColumn name="Volume" />
+    <DataColumn name="VolumeUnit" />
+  </g:columns>
+
+  <xi:include href="columns/Places.columns.xml" />
+</g:Grid>

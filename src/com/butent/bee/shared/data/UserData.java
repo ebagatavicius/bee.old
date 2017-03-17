@@ -55,7 +55,7 @@ public class UserData implements BeeSerializable, HasInfo {
 
   private String firstName;
   private String lastName;
-  private Long photoFile;
+  private String photoFile;
 
   private String companyName;
 
@@ -129,7 +129,7 @@ public class UserData implements BeeSerializable, HasInfo {
           break;
 
         case PHOTO_FILE_NAME:
-          setPhotoFile(BeeUtils.toLongOrNull(value));
+          setPhotoFile(value);
           break;
 
         case COMPANY_NAME:
@@ -256,7 +256,7 @@ public class UserData implements BeeSerializable, HasInfo {
     return person;
   }
 
-  public Long getPhotoFile() {
+  public String getPhotoFile() {
     return photoFile;
   }
 
@@ -286,10 +286,6 @@ public class UserData implements BeeSerializable, HasInfo {
   public boolean hasDataRight(String viewName, RightsState state) {
     return isAnyModuleVisible(RightsUtils.getViewModules(viewName))
         && hasRight(RightsObjectType.DATA, viewName, state);
-  }
-
-  public boolean hasPhoto() {
-    return DataUtils.isId(getPhotoFile());
   }
 
   public boolean isAnyModuleVisible(String input) {
@@ -445,7 +441,7 @@ public class UserData implements BeeSerializable, HasInfo {
     this.person = person;
   }
 
-  public void setPhotoFile(Long photoFile) {
+  public void setPhotoFile(String photoFile) {
     this.photoFile = photoFile;
   }
 

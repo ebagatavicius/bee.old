@@ -25,14 +25,15 @@ public final class ServiceConstants {
 
   public static final String PRM_DEFAULT_MAINTENANCE_TYPE = "DefaultMaintenanceType";
   public static final String PRM_DEFAULT_WARRANTY_TYPE = "DefaultWarrantyType";
-  public static final String PRM_MAINTENANCE_SERVICE_GROUP = "MaintenanceServiceGroup";
   public static final String PRM_URGENT_RATE = "UrgentRate";
+  public static final String PRM_SERVICE_MANAGER_WAREHOUSE = "ServiceManagerWarehouse";
   public static final String PRM_SMS_REQUEST_SERVICE_ADDRESS = "SmsRequestServiceAddress";
   public static final String PRM_SMS_REQUEST_SERVICE_USER_NAME = "SmsRequestServiceUserName";
   public static final String PRM_SMS_REQUEST_SERVICE_PASSWORD = "SmsRequestServicePassword";
   public static final String PRM_SMS_REQUEST_SERVICE_FROM = "SmsRequestServiceFrom";
   public static final String PRM_EXTERNAL_MAINTENANCE_URL = "ExternalMaintenanceUrl";
   public static final String PRM_SMS_REQUEST_CONTACT_INFO_FROM = "SmsRequestContactInfoFrom";
+  public static final String PRM_ROLE = "Role";
 
   public static final String SVC_CREATE_INVOICE_ITEMS = "CreateInvoiceItems";
   public static final String SVC_CREATE_DEFECT_ITEMS = "CreateDefectItems";
@@ -42,13 +43,17 @@ public final class ServiceConstants {
           = "update_service_maintenance_object";
   public static final String SVC_INFORM_CUSTOMER = "inform_customer";
   public static final String SVC_GET_MAINTENANCE_NEW_ROW_VALUES = "getMaintenanceNewRowValues";
+  public static final String SVC_CREATE_RESERVATION_INVOICE_ITEMS = "CreateReservationInvoiceItems";
+  public static final String SVC_GET_ITEMS_INFO = "getItemsInfo";
 
+  public static final String TBL_EQUIPMENT = "Equipment";
   public static final String TBL_SERVICE_TREE = "ServiceTree";
   public static final String TBL_SERVICE_OBJECTS = "ServiceObjects";
   public static final String TBL_MAINTENANCE = "Maintenance";
   public static final String TBL_MAINTENANCE_COMMENTS = "MaintenanceComments";
   public static final String TBL_MAINTENANCE_TYPES = "MaintenanceTypes";
   public static final String TBL_SERVICE_DATES = "ServiceDates";
+  public static final String TBL_SERVICE_ITEMS = "ServiceItems";
   public static final String TBL_SERVICE_SETTINGS = "ServiceSettings";
   public static final String TBL_SERVICE_DEFECT_ITEMS = "ServiceDefectItems";
   public static final String TBL_SERVICE_CRITERIA_GROUPS = "ServiceCritGroups";
@@ -77,6 +82,7 @@ public final class ServiceConstants {
   public static final String VIEW_SERVICE_DEFECTS = "ServiceDefects";
   public static final String VIEW_SERVICE_DEFECT_ITEMS = "ServiceDefectItems";
 
+  public static final String VIEW_SERVICE_SALES = "ServiceSales";
   public static final String VIEW_SERVICE_SETTINGS = "ServiceSettings";
 
   public static final String COL_ADDRESS_REQUIRED = "AddressRequired";
@@ -88,6 +94,7 @@ public final class ServiceConstants {
   public static final String COL_ENDING_DATE = "EndingDate";
   public static final String COL_EVENT_NOTE = "EventNote";
   public static final String COL_EQUIPMENT = "Equipment";
+  public static final String COL_EQUIPMENT_NAME = "Name";
   public static final String COL_INITIAL = "Initial";
   public static final String COL_FINITE = "Finite";
   public static final String COL_TYPE = "Type";
@@ -120,12 +127,14 @@ public final class ServiceConstants {
   public static final String COL_MAINTENANCE_ITEM = "Item";
   public static final String COL_MAINTENANCE_INVOICE = "Invoice";
   public static final String COL_MAINTENANCE_DEFECT = "Defect";
+  public static final String COL_MAINTENANCE_DESCRIPTION = "Description";
   public static final String COL_MAINTENANCE_NOTES = "Notes";
   public static final String COL_MAINTENANCE_TYPE = "MaintenanceType";
   public static final String COL_MODEL = "Model";
   public static final String COL_PUBLISH_TIME = "PublishTime";
   public static final String COL_SERIAL_NO = "SerialNo";
   public static final String COL_SERVICE_MAINTENANCE = "ServiceMaintenance";
+  public static final String COL_SERVICE_ITEM = "ServiceItem";
   public static final String COL_SERVICE_DATE_FROM = "DateFrom";
   public static final String COL_SERVICE_DATE_UNTIL = "DateUntil";
   public static final String COL_SERVICE_DATE_COLOR = "Color";

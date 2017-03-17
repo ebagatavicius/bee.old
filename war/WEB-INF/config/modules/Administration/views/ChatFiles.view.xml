@@ -9,15 +9,15 @@
 
     <SimpleColumn name="File" />
     <SimpleJoin name="File" joinType="LEFT">
+      <SimpleColumn name="Hash" />
       <SimpleColumn name="Name" alias="FileName" />
       <SimpleColumn name="Size" alias="FileSize" />
       <SimpleColumn name="Type" alias="FileType" />
     </SimpleJoin>
-    
+
     <SimpleColumn name="Caption" />
   </Columns>
   <Order>
     <OrderBy column="File" />
   </Order>
 </View>
- 

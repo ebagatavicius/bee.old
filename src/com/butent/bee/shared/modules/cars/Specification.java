@@ -32,7 +32,7 @@ public class Specification implements BeeSerializable {
   private String description;
   private Map<String, String> criteria = new LinkedHashMap<>();
   private Long id;
-  private final Map<String, Long> photos = new TreeMap<>();
+  private final Map<String, String> photos = new TreeMap<>();
 
   public void addOption(Option option, Integer optionPrice) {
     options.put(option, optionPrice);
@@ -86,8 +86,7 @@ public class Specification implements BeeSerializable {
 
         case PHOTOS:
           photos.clear();
-          Codec.deserializeHashMap(value).forEach((key, val) ->
-              photos.put(key, BeeUtils.toLongOrNull(val)));
+          photos.putAll(Codec.deserializeHashMap(value));
           break;
       }
     }
@@ -129,7 +128,7 @@ public class Specification implements BeeSerializable {
     return options.keySet();
   }
 
-  public Map<String, Long> getPhotos() {
+  public Map<String, String> getPhotos() {
     return photos;
   }
 

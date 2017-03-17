@@ -660,6 +660,10 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     setText(row, column, Integer.toString(value), cellStyles);
   }
 
+  public void setValue(int row, int column, long value, String... cellStyles) {
+    setText(row, column, Long.toString(value), cellStyles);
+  }
+
   public void setWidget(int row, int column, Widget widget) {
     prepareCell(row, column);
     if (widget != null) {

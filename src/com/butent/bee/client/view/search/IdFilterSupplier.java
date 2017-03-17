@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
 
 import com.butent.bee.client.Global;
 import com.butent.bee.client.event.logical.OpenEvent;
@@ -36,12 +34,9 @@ public class IdFilterSupplier extends AbstractFilterSupplier {
       AutocompleteProvider.enableAutocomplete(editor, viewName.trim() + "-id-filter");
     }
 
-    editor.addKeyDownHandler(new KeyDownHandler() {
-      @Override
-      public void onKeyDown(KeyDownEvent event) {
-        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-          IdFilterSupplier.this.onSave();
-        }
+    editor.addKeyDownHandler(event -> {
+      if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+        IdFilterSupplier.this.onSave();
       }
     });
   }
@@ -108,7 +103,7 @@ public class IdFilterSupplier extends AbstractFilterSupplier {
     } else {
       Long id = BeeUtils.toLongOrNull(value);
       if (id == null) {
-        Global.showError(Lists.newArrayList(Localized.dictionary().invalidIdValue(), value));
+        Global.showError(Localized.dictionary().invalidIdValue(value));
       } else {
         update(!id.equals(getOldValue()));
       }

@@ -3,6 +3,7 @@ package com.butent.bee.client.render;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
 
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasItems;
@@ -152,7 +153,7 @@ public class RangeRenderer extends AbstractCellRenderer implements HasItems {
         return entry.getValue();
       }
     }
-    return v.toString();
+    return v.render(Format.getDateRenderer(), Format.getDateTimeRenderer());
   }
 
   @Override

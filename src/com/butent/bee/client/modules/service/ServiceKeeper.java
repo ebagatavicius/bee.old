@@ -62,6 +62,7 @@ public final class ServiceKeeper {
     GridFactory.registerGridInterceptor(GRID_OBJECT_INVOICES, new ObjectInvoicesGrid());
     GridFactory.registerGridInterceptor(GRID_OBJECT_DEFECTS, new ObjectDefectsGrid());
     GridFactory.registerGridInterceptor(GRID_SERVICE_INVOICES, new InvoicesGrid());
+    GridFactory.registerGridInterceptor(VIEW_SERVICE_SALES, new ServiceInvoiceBuilder());
 
     for (ServiceMaintenanceType st : ServiceMaintenanceType.values()) {
       GridFactory.registerGridSupplier(st.getSupplierKey(), GRID_SERVICE_MAINTENANCE,

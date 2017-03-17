@@ -313,7 +313,7 @@ public class JustDate extends AbstractDate implements Comparable<JustDate> {
    */
   @Override
   public String toString() {
-    return toDateString();
+    return dateToString(getYear(), getMonth(), getDom());
   }
 
   @Override
