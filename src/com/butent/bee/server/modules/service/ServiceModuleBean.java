@@ -26,6 +26,7 @@ import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.server.data.BeeView;
+import com.butent.bee.server.data.DataEvent;
 import com.butent.bee.server.data.DataEvent.ViewQueryEvent;
 import com.butent.bee.server.data.DataEventHandler;
 import com.butent.bee.server.data.QueryServiceBean;
@@ -47,18 +48,22 @@ import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
+import com.butent.bee.server.websocket.Endpoint;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.css.values.FontWeight;
+import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SearchResult;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
+import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.value.DateValue;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.html.Tags;
 import com.butent.bee.shared.html.builder.Document;
@@ -73,6 +78,8 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.mail.MailConstants;
+import com.butent.bee.shared.modules.service.ServiceUtils;
+import com.butent.bee.shared.modules.trade.Totalizer;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
@@ -81,6 +88,7 @@ import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.Property;
+import com.butent.bee.shared.websocket.messages.ModificationMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,7 +171,15 @@ public class ServiceModuleBean implements BeeModule {
       response = createReservationInvoiceItems(reqInfo);
 
     } else if (BeeUtils.same(svc, SVC_GET_ITEMS_INFO)) {
-        response = getItemsInfo(reqInfo);
+      response = getItemsInfo(reqInfo);
+
+    } else if (BeeUtils.same(svc, SVC_GET_REPAIRER_TARIFF)) {
+      Long repairerId = BeeUtils.toLongOrNull(reqInfo.getParameter(COL_REPAIRER));
+      if (!DataUtils.isId(repairerId)) {
+        response = ResponseObject.parameterNotFound(reqInfo.getService(), COL_REPAIRER);
+      } else {
+        response = ResponseObject.response(getRepairerTariff(repairerId));
+      }
 
     } else {
       String msg = BeeUtils.joinWords("service not recognized:", svc);
@@ -323,6 +339,43 @@ public class ServiceModuleBean implements BeeModule {
               }
             }
           }
+        }
+      }
+
+      @Subscribe
+      @AllowConcurrentEvents
+      public void createMaintenancePayroll(DataEvent.ViewModifyEvent event) {
+        if (event.isAfter(TBL_SERVICE_ITEMS) && event instanceof DataEvent.ViewInsertEvent) {
+          DataEvent.ViewInsertEvent ev = (DataEvent.ViewInsertEvent) event;
+          BeeRow serviceItemRow = ev.getRow();
+          List<BeeColumn> columns = ev.getColumns();
+          Long repairerId = serviceItemRow.getLong(DataUtils.getColumnIndex(COL_REPAIRER, columns));
+          Double tariff = getRepairerTariff(repairerId);
+
+          int quantity = BeeUtils.unbox(serviceItemRow
+              .getInteger(DataUtils.getColumnIndex(COL_TRADE_ITEM_QUANTITY, columns)));
+          double cost = BeeUtils.unbox(qs.getDouble(TBL_ITEMS, COL_ITEM_COST,
+              sys.idEquals(TBL_ITEMS, serviceItemRow
+                  .getLong(DataUtils.getColumnIndex(COL_ITEM, columns)))));
+
+          Totalizer totalizer = new Totalizer(columns);
+          double total = BeeUtils.unbox(totalizer.getTotal(serviceItemRow));
+          double vat = BeeUtils.unbox(totalizer.getVat(serviceItemRow));
+
+          double basicAmount = ServiceUtils.calculateBasicAmount(total - vat, cost, quantity);
+
+          SqlInsert payrollInsertQuery = new SqlInsert(TBL_MAINTENANCE_PAYROLL)
+              .addConstant(COL_SERVICE_MAINTENANCE, serviceItemRow
+                  .getValue(DataUtils.getColumnIndex(COL_SERVICE_MAINTENANCE, columns)))
+              .addConstant(COL_REPAIRER, repairerId)
+              .addConstant(COL_CURRENCY, prm.getRelation(PRM_CURRENCY))
+              .addConstant(COL_MAINTENANCE_DATE, TimeUtils.today())
+              .addConstant(COL_PAYROLL_TARIFF, tariff)
+              .addConstant(COL_PAYROLL_BASIC_AMOUNT, basicAmount)
+              .addConstant(COL_PAYROLL_SALARY, ServiceUtils.calculateSalary(tariff, basicAmount));
+          qs.insertData(payrollInsertQuery);
+          DataChangeEvent.fireRefresh((fireEvent, locality) -> Endpoint.sendToUser(
+              usr.getCurrentUserId(), new ModificationMessage(fireEvent)), TBL_MAINTENANCE_PAYROLL);
         }
       }
     });
@@ -1136,6 +1189,22 @@ public class ServiceModuleBean implements BeeModule {
     }
 
     return ResponseObject.response(columnValues);
+  }
+
+  private Double getRepairerTariff(Long repairerId) {
+    DateValue today = new DateValue(TimeUtils.today());
+
+    SqlSelect tariffQuery = new SqlSelect()
+        .addFields(TBL_MAINTENANCE_TARIFFS, COL_PAYROLL_TARIFF)
+        .addFrom(TBL_MAINTENANCE_TARIFFS)
+        .setWhere(SqlUtils.and(SqlUtils.equals(TBL_MAINTENANCE_TARIFFS, COL_REPAIRER, repairerId),
+            SqlUtils.or(SqlUtils.isNull(TBL_MAINTENANCE_TARIFFS, COL_DATE_FROM),
+                SqlUtils.lessEqual(TBL_MAINTENANCE_TARIFFS, COL_DATE_FROM, today)),
+            SqlUtils.or(SqlUtils.isNull(TBL_MAINTENANCE_TARIFFS, COL_DATE_TO),
+                SqlUtils.moreEqual(TBL_MAINTENANCE_TARIFFS, COL_DATE_TO, today))))
+        .addOrderDesc(TBL_MAINTENANCE_TARIFFS, sys.getIdName(TBL_MAINTENANCE_TARIFFS));
+
+    return qs.getDouble(tariffQuery);
   }
 
   private BeeRowSet getSettings() {

@@ -2,10 +2,13 @@
 <View xmlns="http://www.butent.com/view"
 
   name="MaintenancePayroll" source="MaintenancePayroll" module="Service"
-  caption="=payroll"
+  caption="=payroll" newRowForm="MaintenancePayroll"
   >
   <Columns>
     <SimpleColumn name="ServiceMaintenance" />
+    <SimpleJoin name="ServiceMaintenance" joinType="LEFT">
+      <SimpleColumn name="EndingDate" />
+    </SimpleJoin>
     <SimpleColumn name="Repairer" editable="true" />
     <SimpleJoin name="Repairer" joinType="LEFT">
       <SimpleJoin name="Person" joinType="LEFT">

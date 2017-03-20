@@ -153,7 +153,23 @@
       </page>
       <page>
         <text>=notes</text>
-        <InputArea source="Notes" class="occupy-1" summarize="true" />
+        <FlowPanel class="flexBox-vertical">
+          <HorizontalPanel style="width:100%;">
+            <Label text="=symptoms" data="CarSymptoms" />
+            <cell style="width:100%;">
+              <ChildSelector property="CarServiceSymptoms" name="CarServiceSymptoms"
+                             viewName="CarSymptoms"
+                             childTable="CarServiceSymptoms" targetRelColumn="ServiceOrder"
+                             sourceRelColumn="Symptom" renderColumns="SymptomName Code"
+                             style="width: 100%;" summarize="true" />
+            </cell>
+          </HorizontalPanel>
+
+          <Label for="Notes" />
+          <FlowPanel style="position:relative;" class="flexible">
+            <InputArea source="Notes" class="occupy-1" summarize="true" />
+          </FlowPanel>
+        </FlowPanel>
       </page>
     </TabbedPages>
   </FlowPanel>

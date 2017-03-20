@@ -119,6 +119,16 @@ public final class DomUtils {
     }
   }
 
+  public static void clearHtml(Element elem) {
+    Assert.notNull(elem);
+    elem.setInnerHTML(null);
+  }
+
+  public static void clearText(Element elem) {
+    Assert.notNull(elem);
+    elem.setInnerText(null);
+  }
+
   public static int countDescendants(Element parent) {
     return getChildren(parent).getLength();
   }

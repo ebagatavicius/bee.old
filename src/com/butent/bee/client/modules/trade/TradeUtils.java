@@ -446,6 +446,14 @@ public final class TradeUtils {
     }
   }
 
+  static Double getDocumentDiscount(IsRow row) {
+    if (row == null) {
+      return null;
+    } else {
+      return Data.getDouble(VIEW_TRADE_DOCUMENTS, row, COL_TRADE_DOCUMENT_DISCOUNT);
+    }
+  }
+
   static TradeDiscountMode getDocumentDiscountMode(IsRow row) {
     if (row == null) {
       return null;
@@ -486,6 +494,14 @@ public final class TradeUtils {
       return null;
     } else {
       return Data.getLong(VIEW_TRADE_DOCUMENTS, row, colName);
+    }
+  }
+
+  static String getDocumentString(IsRow row, String colName) {
+    if (row == null) {
+      return null;
+    } else {
+      return Data.getString(VIEW_TRADE_DOCUMENTS, row, colName);
     }
   }
 
@@ -561,6 +577,14 @@ public final class TradeUtils {
 
   static double roundPrice(Double price) {
     return Localized.normalizeMoney(price);
+  }
+
+  static Boolean vatIsPercent(Double vat) {
+    if (BeeUtils.isDouble(vat)) {
+      return true;
+    } else {
+      return null;
+    }
   }
 
   private static Multimap<String, Element> getNamedElements(Element element) {

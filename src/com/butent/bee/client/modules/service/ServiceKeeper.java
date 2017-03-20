@@ -63,6 +63,7 @@ public final class ServiceKeeper {
     GridFactory.registerGridInterceptor(GRID_OBJECT_DEFECTS, new ObjectDefectsGrid());
     GridFactory.registerGridInterceptor(GRID_SERVICE_INVOICES, new InvoicesGrid());
     GridFactory.registerGridInterceptor(VIEW_SERVICE_SALES, new ServiceInvoiceBuilder());
+    GridFactory.registerGridInterceptor(TBL_MAINTENANCE_PAYROLL, new MaintenancePayrollGrid());
 
     for (ServiceMaintenanceType st : ServiceMaintenanceType.values()) {
       GridFactory.registerGridSupplier(st.getSupplierKey(), GRID_SERVICE_MAINTENANCE,
@@ -84,6 +85,7 @@ public final class ServiceKeeper {
     FormFactory.registerFormInterceptor("ServiceInvoice", new ServiceInvoiceForm());
     FormFactory.registerFormInterceptor("ServiceDefect", new ServiceDefectForm());
     FormFactory.registerFormInterceptor("ServiceMaintenance", new ServiceMaintenanceForm());
+    FormFactory.registerFormInterceptor(TBL_MAINTENANCE_PAYROLL, new MaintenancePayrollForm());
 
     SelectorEvent.register(new SelectorHandler());
 

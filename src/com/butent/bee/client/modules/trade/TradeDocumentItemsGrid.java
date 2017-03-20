@@ -10,6 +10,9 @@ import com.butent.bee.client.composite.MultiSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
+import com.butent.bee.client.dialog.DecisionCallback;
+import com.butent.bee.client.dialog.DialogBox;
+import com.butent.bee.client.dialog.DialogConstants;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.event.logical.RenderingEvent;
 import com.butent.bee.client.i18n.Money;
@@ -48,6 +51,8 @@ import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.logging.BeeLogger;
+import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.classifiers.ItemPrice;
 import com.butent.bee.shared.modules.trade.OperationType;
 import com.butent.bee.shared.modules.trade.TradeDiscountMode;
@@ -55,6 +60,7 @@ import com.butent.bee.shared.modules.trade.TradeDocumentPhase;
 import com.butent.bee.shared.modules.trade.TradeDocumentSums;
 import com.butent.bee.shared.modules.trade.TradeVatMode;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -197,6 +203,8 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
       }
     }
   }
+
+  private static BeeLogger logger = LogUtils.getLogger(TradeDocumentItemsGrid.class);
 
   private static final String STYLE_ITEM_SELECTOR =
       TradeKeeper.STYLE_PREFIX + "document-new-item-selector";
@@ -670,7 +678,7 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
         vat = null;
       }
 
-      Boolean vatIsPercent = BeeUtils.isDouble(vat) ? true : null;
+      Boolean vatIsPercent = TradeUtils.vatIsPercent(vat);
 
       Long parent = null;
 
@@ -958,11 +966,64 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
 
   private void testPicker() {
     IsRow parentRow = getParentRow(getGridView());
-    if (!DataUtils.hasId(parentRow)) {
-      return;
-    }
 
-    TradeItemPicker picker = new TradeItemPicker(parentRow);
-    Global.showModalWidget(picker);
+    if (DataUtils.hasId(parentRow)) {
+      TradeUtils.getDocumentVatPercent(parentRow, vatPercent -> openPicker(parentRow, vatPercent));
+    }
+  }
+
+  private void addItems(TradeDocumentSums tds) {
+    logger.debug(tds.getItemIds());
+  }
+
+  private void openPicker(IsRow parentRow, Double defaultVatPercent) {
+    final TradeItemPicker picker = new TradeItemPicker(parentRow, defaultVatPercent);
+
+    final DialogBox dialog = DialogBox.withoutCloseBox(Localized.dictionary().itemSelection(),
+        TradeItemPicker.STYLE_DIALOG);
+
+    final FaLabel save = new FaLabel(FontAwesome.SAVE);
+    save.addStyleName(TradeItemPicker.STYLE_SAVE);
+
+    save.addClickHandler(event -> {
+      if (picker.hasSelection()) {
+        addItems(picker.getTds());
+      }
+      dialog.close();
+    });
+
+    dialog.addAction(Action.SAVE, save);
+
+    FaLabel close = new FaLabel(FontAwesome.CLOSE);
+    close.addStyleName(TradeItemPicker.STYLE_CLOSE);
+
+    close.addClickHandler(event -> {
+      if (picker.hasSelection()) {
+        Global.decide(Localized.dictionary().itemSelection(),
+            Collections.singletonList(Localized.dictionary().saveSelectedItems()),
+            new DecisionCallback() {
+              @Override
+              public void onConfirm() {
+                addItems(picker.getTds());
+                dialog.close();
+              }
+
+              @Override
+              public void onDeny() {
+                dialog.close();
+              }
+            }, DialogConstants.DECISION_YES);
+
+      } else {
+        dialog.close();
+      }
+    });
+
+    dialog.addAction(Action.CLOSE, close);
+
+    dialog.setWidget(picker);
+    dialog.center();
+
+    dialog.setOnSave(event -> save.click());
   }
 }

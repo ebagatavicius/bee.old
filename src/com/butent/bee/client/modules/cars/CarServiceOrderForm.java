@@ -17,6 +17,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.composite.ChildSelector;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
@@ -163,6 +164,18 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
       carWarning = widget.asWidget();
       ((HasClickHandlers) carWarning).addClickHandler(clickEvent ->
           Global.showInfo(Localized.dictionary().recalls(), carMessages));
+    }
+    if (Objects.equals(name, TBL_SERVICE_SYMPTOMS) && widget instanceof ChildSelector) {
+      ((ChildSelector) widget).addSelectorHandler(event -> {
+        if (event.isOpened()) {
+          Filter filter = Filter.isNull(COL_MODEL);
+
+          if (DataUtils.isId(getLongValue(COL_MODEL))) {
+            filter = Filter.or(filter, Filter.equals(COL_MODEL, getLongValue(COL_MODEL)));
+          }
+          event.getSelector().setAdditionalFilter(filter);
+        }
+      });
     }
     if (Objects.equals(name, TBL_STAGES) && widget instanceof HasWidgets) {
       stageContainer = (HasWidgets) widget;

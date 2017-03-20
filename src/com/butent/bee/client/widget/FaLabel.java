@@ -38,6 +38,12 @@ public class FaLabel extends Label implements EnablableWidget, Animatable {
     }
   }
 
+  public void click() {
+    if (isEnabled()) {
+      EventUtils.click(this);
+    }
+  }
+
   @Override
   public void enableAnimation() {
     StyleUtils.animateHover(this);

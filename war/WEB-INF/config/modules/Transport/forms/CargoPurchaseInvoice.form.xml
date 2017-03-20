@@ -7,7 +7,7 @@
         caption="=trPurchaseInvoice" showRowId="true"
         width="840" height="600"
     >
-  <f:properties reports="PrintCargoCreditInvoice" />
+  <f:properties jasperReports="CargoCreditInvoice" />
 
   <FlowPanel class="flexBox-vertical">
     <br />

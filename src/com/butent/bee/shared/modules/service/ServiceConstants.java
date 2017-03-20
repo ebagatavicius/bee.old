@@ -45,12 +45,15 @@ public final class ServiceConstants {
   public static final String SVC_GET_MAINTENANCE_NEW_ROW_VALUES = "getMaintenanceNewRowValues";
   public static final String SVC_CREATE_RESERVATION_INVOICE_ITEMS = "CreateReservationInvoiceItems";
   public static final String SVC_GET_ITEMS_INFO = "getItemsInfo";
+  public static final String SVC_GET_REPAIRER_TARIFF = "getRepairerTariff";
 
   public static final String TBL_EQUIPMENT = "Equipment";
   public static final String TBL_SERVICE_TREE = "ServiceTree";
   public static final String TBL_SERVICE_OBJECTS = "ServiceObjects";
   public static final String TBL_MAINTENANCE = "Maintenance";
   public static final String TBL_MAINTENANCE_COMMENTS = "MaintenanceComments";
+  public static final String TBL_MAINTENANCE_PAYROLL = "MaintenancePayroll";
+  public static final String TBL_MAINTENANCE_TARIFFS = "MaintenanceTariffs";
   public static final String TBL_MAINTENANCE_TYPES = "MaintenanceTypes";
   public static final String TBL_SERVICE_DATES = "ServiceDates";
   public static final String TBL_SERVICE_ITEMS = "ServiceItems";
@@ -109,6 +112,13 @@ public final class ServiceConstants {
   public static final String COL_SERVICE_ADDRESS = "Address";
   public static final String COL_SERVICE_CUSTOMER = "Customer";
   public static final String COL_SERVICE_CONTRACTOR = "Contractor";
+
+  public static final String COL_PAYROLL_BASIC_AMOUNT = "BasicAmount";
+  public static final String COL_PAYROLL_CONFIRMED = "Confirmed";
+  public static final String COL_PAYROLL_CONFIRMED_USER = "ConfirmedUser";
+  public static final String COL_PAYROLL_CONFIRMATION_DATE = "ConfirmationDate";
+  public static final String COL_PAYROLL_SALARY = "Salary";
+  public static final String COL_PAYROLL_TARIFF = "Tariff";
 
   public static final String COL_SERVICE_CRITERIA_GROUP = "Group";
   public static final String COL_SERVICE_CRITERIA_GROUP_NAME = "Name";

@@ -4,23 +4,30 @@
     ]>
 <g:Grid xmlns="http://www.butent.com/column"
         xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
 
   name="MaintenancePayroll" viewName="MaintenancePayroll"
-  caption="=payroll" newRowCaption="=payroll"
+  caption="=payroll" newRowCaption="=svcNewSalary"
   flexGrow="1" flexShrink="1"
-  >
+>
   <g:columns>
     <RelColumn name="ServiceMaintenance" renderColumns="ServiceMaintenance" choiceColumns="ID" visible="true" filterSupplier="value"/>
     <RelColumn name="Repairer" renderColumns="RepairerFirstName RepairerLastName" visible="true" />
     <DataColumn name="Date" visible="true" />
     <DataColumn name="PayrollDate" visible="true" required="true"/>
-    <DataColumn name="BasicAmount" scale="&numberscale;" visible="true"/>
+    <DataColumn name="BasicAmount" scale="&numberscale;" visible="true" readOnly="true"/>
     <DataColumn name="Tariff" scale="&numberscale;" visible="true"/>
     <DataColumn name="Salary" scale="&numberscale;" visible="true"/>
     <RelColumn name="Currency" visible="true"/>
-    <DataColumn name="Confirmed" visible="true"/>
-    <RelColumn name="ConfirmedUser" renderColumns="ConfirmedUserFirstName ConfirmedUserLastName" visible="true"/>
-    <DataColumn name="ConfirmationDate" format="DATE_TIME_SHORT" visible="true"/>
+    <DataColumn name="Confirmed" visible="true" >
+      <editable>
+        <ui:function>
+          return (row.EndingDate) ? true : false;
+        </ui:function>
+      </editable>
+    </DataColumn>
+    <RelColumn name="ConfirmedUser" renderColumns="ConfirmedUserFirstName ConfirmedUserLastName" visible="true" readOnly="true"/>
+    <DataColumn name="ConfirmationDate" format="DATE_TIME_SHORT" visible="true" readOnly="true"/>
     <DataColumn name="Notes" visible="true"  />
   </g:columns>
 </g:Grid>

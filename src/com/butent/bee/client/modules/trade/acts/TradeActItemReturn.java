@@ -250,7 +250,7 @@ final class TradeActItemReturn {
 
         } else {
           Global.decide(TradeActKind.RETURN.getCaption(),
-              Collections.singletonList(Localized.dictionary().taSaveSelectedItems()),
+              Collections.singletonList(Localized.dictionary().saveSelectedItems()),
               new DecisionCallback() {
                 @Override
                 public void onConfirm() {

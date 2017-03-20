@@ -321,18 +321,18 @@ public class FileStorageBean {
   }
 
   public Long getId(String hash) throws IOException {
-    Long id;
-    FileInfo fileInfo = cache.asMap().values().stream()
-        .filter(info -> Objects.equals(info.getHash(), hash))
-        .findAny().orElse(null);
+    Long id = qs.getId(TBL_FILES, COL_FILE_HASH, hash);
 
-    if (Objects.nonNull(fileInfo)) {
-      id = fileInfo.getId();
-    } else {
-      id = qs.getId(TBL_FILES, COL_FILE_HASH, hash);
-    }
     if (!DataUtils.isId(id)) {
-      throw new FileNotFoundException("File not found: hash=" + hash);
+      FileInfo fileInfo = cache.asMap().values().stream()
+          .filter(info -> Objects.equals(info.getHash(), hash))
+          .findAny().orElse(null);
+
+      if (Objects.nonNull(fileInfo)) {
+        id = fileInfo.getId();
+      } else {
+        throw new FileNotFoundException("File not found: hash=" + hash);
+      }
     }
     return id;
   }

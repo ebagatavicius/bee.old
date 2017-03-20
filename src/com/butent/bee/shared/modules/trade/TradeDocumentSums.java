@@ -3,6 +3,7 @@ package com.butent.bee.shared.modules.trade;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -553,6 +554,11 @@ public class TradeDocumentSums {
     return total;
   }
 
+  public double getPrice(Long id) {
+    Item item = getItem(id);
+    return (item == null) ? BeeConst.DOUBLE_ZERO : item.price;
+  }
+
   public double getPriceWithoutVat(Long id) {
     Item item = getItem(id);
 
@@ -573,6 +579,33 @@ public class TradeDocumentSums {
     }
   }
 
+  public double getQuantity(Long id) {
+    Item item = getItem(id);
+    return (item == null) ? BeeConst.DOUBLE_ZERO : item.quantity;
+  }
+
+  public Pair<Double, Boolean> getDiscountInfo(Long id) {
+    Item item = getItem(id);
+    return (item == null) ? null : Pair.of(item.discount, item.discountIsPercent);
+  }
+
+  public Pair<Double, Boolean> getVatInfo(Long id) {
+    Item item = getItem(id);
+    return (item == null) ? null : Pair.of(item.vat, item.vatIsPercent);
+  }
+
+  public Collection<Long> getItemIds() {
+    return items.keySet();
+  }
+
+  public boolean hasItems() {
+    return !items.isEmpty();
+  }
+
+  public boolean hasPayments() {
+    return !payments.isEmpty();
+  }
+
   public void setAmountScale(int amountScale) {
     this.amountScale = amountScale;
   }
@@ -591,6 +624,14 @@ public class TradeDocumentSums {
 
   public void setDocumentScale(int documentScale) {
     this.documentScale = documentScale;
+  }
+
+  public double sumQuantity() {
+    if (items.isEmpty()) {
+      return BeeConst.DOUBLE_ZERO;
+    } else {
+      return items.values().stream().mapToDouble(item -> item.quantity).sum();
+    }
   }
 
   public boolean updateDocumentId(Long id) {

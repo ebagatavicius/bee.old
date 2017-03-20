@@ -80,6 +80,17 @@
                          required="true" />
         </cell>
       </row>
+
+      <row>
+        <Label text="=symptoms" data="CarSymptoms" />
+        <cell colSpan="3">
+          <ChildSelector property="CarServiceSymptoms" name="CarServiceSymptoms"
+                         viewName="CarSymptoms"
+                         childTable="CarServiceSymptoms" targetRelColumn="ServiceEvent"
+                         sourceRelColumn="Symptom" renderColumns="SymptomName Code"
+                         style="width: 100%;" summarize="true" />
+        </cell>
+      </row>
     </Table>
 
     <TabbedPages class="flexible">

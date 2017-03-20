@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="CarServiceSymptoms"
+       idName="ServiceSymptomID"
+>
+  <Fields>
+    <Relation name="Symptom" notNull="true" relation="CarSymptoms" cascade="DELETE"
+              label="=symptoms" />
+    <Relation name="ServiceOrder" relation="CarServiceOrders" cascade="DELETE"
+              label="=serviceOrder" />
+    <Relation name="ServiceEvent" relation="CarServiceEvents" cascade="DELETE"
+              label="=calAppointment" />
+  </Fields>
+
+  <Constraints>
+    <Unique fields="Symptom ServiceOrder ServiceEvent" />
+  </Constraints>
+</Table>

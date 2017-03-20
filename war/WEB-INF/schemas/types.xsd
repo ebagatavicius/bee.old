@@ -302,8 +302,10 @@
       <xs:enumeration value="CarServiceItems" />
       <xs:enumeration value="CarServiceJobs" />
       <xs:enumeration value="CarServiceOrders" />
+      <xs:enumeration value="CarServiceSymptoms" />
       <xs:enumeration value="CarStatus" />
       <xs:enumeration value="CarWarranties" />
+      <xs:enumeration value="CarSymptoms" />
       <xs:enumeration value="CategoryTree" />
       <xs:enumeration value="ChartOfAccounts" />
       <xs:enumeration value="ChatFiles" />

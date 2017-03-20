@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarServiceSymptoms" source="CarServiceSymptoms" caption="=symptoms+ (+=serviceOrders+)"
+>
+  <Columns>
+    <SimpleColumn name="Symptom" />
+    <SimpleColumn name="ServiceOrder" />
+    <SimpleColumn name="ServiceEvent" />
+  </Columns>
+</View>

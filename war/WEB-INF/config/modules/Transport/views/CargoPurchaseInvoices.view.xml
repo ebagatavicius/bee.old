@@ -48,6 +48,14 @@
       </SimpleJoin>
     </SimpleJoin>
 
+    <SimpleColumn name="Customer" />
+    <SimpleJoin joinType="LEFT" name="Customer">
+      <SimpleColumn name="Name" alias="CustomerName" label="=trdCustomer" />
+      <SimpleJoin joinType="LEFT" name="CompanyType">
+        <SimpleColumn name="Name" alias="CustomerTypeName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
     <SimpleColumn name="WarehouseTo" />
     <SimpleJoin name="WarehouseTo" joinType="LEFT">
       <SimpleColumn name="Code" alias="WarehouseToCode" />

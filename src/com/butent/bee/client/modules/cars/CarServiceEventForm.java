@@ -10,11 +10,12 @@ import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.COL_TRADE_CUSTOMER;
-import static com.butent.bee.shared.modules.transport.TransportConstants.COL_OWNER;
+import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.composite.ChildSelector;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
@@ -42,6 +43,7 @@ import com.butent.bee.shared.State;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.data.BeeRow;
+import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.RowChildren;
@@ -76,6 +78,18 @@ public class CarServiceEventForm extends AbstractFormInterceptor implements Clic
 
     if (Objects.equals(name, COL_SERVICE_ORDER) && widget instanceof HasClickHandlers) {
       ((HasClickHandlers) widget).addClickHandler(this);
+    }
+    if (Objects.equals(name, TBL_SERVICE_SYMPTOMS) && widget instanceof ChildSelector) {
+      ((ChildSelector) widget).addSelectorHandler(event -> {
+        if (event.isOpened()) {
+          Filter filter = Filter.isNull(COL_MODEL);
+
+          if (DataUtils.isId(getLongValue(COL_MODEL))) {
+            filter = Filter.or(filter, Filter.equals(COL_MODEL, getLongValue(COL_MODEL)));
+          }
+          event.getSelector().setAdditionalFilter(filter);
+        }
+      });
     }
     super.afterCreateWidget(name, widget, callback);
   }
@@ -114,6 +128,8 @@ public class CarServiceEventForm extends AbstractFormInterceptor implements Clic
 
     orderRow.setValue(orderInfo.getColumnIndex(COL_NOTES),
         eventRow.getString(eventInfo.getColumnIndex(CalendarConstants.COL_DESCRIPTION)));
+
+    orderRow.setProperty(TBL_SERVICE_SYMPTOMS, eventRow.getProperty(TBL_SERVICE_SYMPTOMS));
 
     ImmutableMap.of(COL_COMPANY, COL_TRADE_CUSTOMER, COL_COMPANY_PERSON,
         COL_TRADE_CUSTOMER + COL_PERSON, COL_CAR, COL_CAR).forEach((s, t) ->

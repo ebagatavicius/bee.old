@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form[
+    <!ENTITY numberscale "2">
+    ]>
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
+
+  name="MaintenancePayroll" viewName="MaintenancePayroll" caption="=svcNewSalary"
+        width="400" height="400" heightUnit="px">
+
+  <FlowPanel style="margin:5px; overflow:scroll;">
+    <Table kind="controls" cellStyle="vertical-align: top">
+      <col index="0" kind="label" />
+      <row>
+        <Label for="ServiceMaintenance" name="ServiceMaintenanceLabel" />
+        <DataSelector source="ServiceMaintenance" renderColumns="ServiceMaintenance" choiceColumns="ID" filter="EndingDate"/>
+      </row>
+      <row>
+        <Label for="Repairer" />
+        <DataSelector name="Repairer" source="Repairer" renderColumns="RepairerFirstName RepairerLastName" />
+      </row>
+      <row>
+        <Label for="PayrollDate" class="bee-required"/>
+        <InputDateTime source="PayrollDate" required="true"/>
+      </row>
+      <row>
+        <Label for="Tariff" />
+        <InputDecimal source="Tariff" currencySource="Currency" scale="&numberscale;" summarize="true" />
+      </row>
+      <row>
+        <Label for="Currency" />
+        <DataSelector source="Currency" for="Tariff" newRowEnabled="false" />
+      </row>
+      <row>
+        <Label for="Date" />
+        <InputDate source="Date" />
+      </row>
+    </Table>
+  </FlowPanel>
+</f:Form>

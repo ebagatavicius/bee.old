@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarSymptoms" source="CarSymptoms" caption="=symptoms"
+>
+  <Columns>
+    <SimpleColumn name="SymptomName" />
+    <SimpleColumn name="Code" />
+
+    <SimpleColumn name="Model" />
+    <SimpleJoin name="Model" joinType="LEFT">
+      <SimpleJoin name="Parent" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ParentModelName" />
+      </SimpleJoin>
+      <SimpleColumn name="Name" alias="ModelName" />
+    </SimpleJoin>
+  </Columns>
+  <Order>
+    <OrderBy column="SymptomName" />
+    <OrderBy column="Code" />
+  </Order>
+</View>

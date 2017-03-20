@@ -577,7 +577,7 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
 
       } else {
         Global.decide(Localized.dictionary().goods(),
-            Lists.newArrayList(Localized.dictionary().taSaveSelectedItems()),
+            Lists.newArrayList(Localized.dictionary().saveSelectedItems()),
             new DecisionCallback() {
               @Override
               public void onConfirm() {
