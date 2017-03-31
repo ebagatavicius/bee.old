@@ -21,7 +21,8 @@
         <cell colSpan="3">
           <InputText source="Name" style="width: 425px;" visible="true" />
         </cell>
-        <DataSelector source="CompanyType" style="width: 80px;" required="true" />
+        <DataSelector source="CompanyType" style="width: 80px;" required="true"
+                      choiceColumns="Name" renderColumns="TypeName"/>
         <Label style="&lbl;" for="CompanyPriority" />
         <DataSelector source="CompanyPriority" style="width: 180px" />
         <FlowPanel name="qrFlowPanel" style="margin-left: 10px" />
@@ -286,6 +287,11 @@
       <page data="Orders">
         <text>=offers</text>
         <ChildGrid name="CompanyOrders" relColumn="Company" />
+      </page>
+
+      <page data="Cars" module="Cars" >
+        <text>=cars</text>
+        <ChildGrid name="CompanyCars" relColumn="Owner" />
       </page>
 
       <page for="Notes">

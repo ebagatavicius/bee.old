@@ -27,7 +27,7 @@ public class TradeDocument implements BeeSerializable {
 
   private enum Serial {
     ID, VERSION, DATE, SERIES, NUMBER, NUMBER_1, NUMBER_2, OPERATION, PHASE, OWNER, STATUS,
-    SUPPLIER, CUSTOMER, WAREHOUSE_FROM, WAREHOUSE_TO, CURRENCY, PAYER, TERM, MANAGER,
+    SUPPLIER, CUSTOMER, WAREHOUSE_FROM, WAREHOUSE_TO, CURRENCY, PAYER, TERM, MANAGER, VEHICLE,
     DOCUMENT_DISCOUNT, PRICE_NAME, DOCUMENT_VAT_MODE, DOCUMENT_DISCOUNT_MODE,
     RECEIVED_DATE, NOTES, EXTRA_DIMENSIONS, TRADE_ACCOUNTS, ITEMS
   }
@@ -66,6 +66,7 @@ public class TradeDocument implements BeeSerializable {
   private DateTime term;
 
   private Long manager;
+  private Long vehicle;
 
   private Double documentDiscount;
   private ItemPrice priceName;
@@ -166,6 +167,9 @@ public class TradeDocument implements BeeSerializable {
             break;
           case MANAGER:
             setManager(BeeUtils.toLongOrNull(value));
+            break;
+          case VEHICLE:
+            setVehicle(BeeUtils.toLongOrNull(value));
             break;
           case DOCUMENT_DISCOUNT:
             setDocumentDiscount(BeeUtils.toDoubleOrNull(value));
@@ -268,6 +272,9 @@ public class TradeDocument implements BeeSerializable {
           break;
         case MANAGER:
           arr[i++] = getManager();
+          break;
+        case VEHICLE:
+          arr[i++] = getVehicle();
           break;
         case DOCUMENT_DISCOUNT:
           arr[i++] = getDocumentDiscount();
@@ -458,6 +465,14 @@ public class TradeDocument implements BeeSerializable {
     this.manager = manager;
   }
 
+  public Long getVehicle() {
+    return vehicle;
+  }
+
+  public void setVehicle(Long vehicle) {
+    this.vehicle = vehicle;
+  }
+
   public Double getDocumentDiscount() {
     return documentDiscount;
   }
@@ -587,6 +602,9 @@ public class TradeDocument implements BeeSerializable {
 
     if (getManager() != null) {
       values.put(COL_TRADE_MANAGER, new LongValue(getManager()));
+    }
+    if (getVehicle() != null) {
+      values.put(COL_TRADE_VEHICLE, new LongValue(getVehicle()));
     }
 
     if (BeeUtils.nonZero(getDocumentDiscount())) {

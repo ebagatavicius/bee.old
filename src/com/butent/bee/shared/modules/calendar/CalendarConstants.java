@@ -348,7 +348,7 @@ public final class CalendarConstants {
   public static final String COL_VEHICLE = "Vehicle";
   public static final String COL_VEHICLE_OWNER = "VehicleOwner";
   public static final String COL_VEHICLE_NUMBER = "VehicleNumber";
-  public static final String COL_VEHICLE_PARENT_MODEL = "VehicleParentModel";
+  public static final String COL_VEHICLE_BRAND = "VehicleBrand";
   public static final String COL_VEHICLE_MODEL = "VehicleModel";
 
   public static final String COL_SUMMARY = "Summary";

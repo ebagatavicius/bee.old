@@ -475,6 +475,13 @@ public class OrderItemsGrid extends AbstractGridInterceptor implements Selection
     return status == OrdersStatus.APPROVED.ordinal();
   }
 
+  protected double calculateItemPrice(Pair<Double, Double> pair, BeeRow row, int unpackingIdx,
+      int qtyIndex) {
+    return BeeUtils.unbox(pair.getA())
+        + BeeUtils.unbox(row.getDouble(unpackingIdx))
+        / BeeUtils.unbox(row.getDouble(qtyIndex));
+  }
+
   private void getUnpckSuppliers(Long itemId, Long supplierId, final Double quantity,
       String resRemainder) {
     Queries.getRowSet(VIEW_ITEM_SUPPLIERS,
@@ -744,10 +751,7 @@ public class OrderItemsGrid extends AbstractGridInterceptor implements Selection
               Pair<Double, Double> pair = input.get(row.getLong(itemIndex));
 
               if (pair != null) {
-                double price =
-                    BeeUtils.unbox(pair.getA())
-                        + BeeUtils.unbox(row.getDouble(unpackingIdx))
-                        / BeeUtils.unbox(row.getDouble(qtyIndex));
+                double price = calculateItemPrice(pair, row, unpackingIdx, qtyIndex);
                 Double percent = pair.getB();
                 if (BeeUtils.isPositive(price)) {
                   row.setValue(priceIndex,

@@ -12,6 +12,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 public class RowTransformEvent extends Event<RowTransformEvent.Handler> implements DataEvent,
     HasViewName {
 
+  @FunctionalInterface
   public interface Handler {
     void onRowTransform(RowTransformEvent event);
   }

@@ -206,7 +206,9 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
   private PendingRequest pendingRequest;
 
   private final List<HandlerRegistration> handlerRegistry = new ArrayList<>();
+
   private final Set<Consumer<Integer>> rowCountChangeHandlers = new HashSet<>();
+  private final Set<Consumer<Long>> rowDeleteHandlers = new HashSet<>();
   private final Set<Consumer<BeeRowSet>> dataReceivedHandlers = new HashSet<>();
 
   private boolean dataInitialized;
@@ -257,6 +259,12 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
   public void addRowCountChangeHandler(Consumer<Integer> handler) {
     if (handler != null) {
       rowCountChangeHandlers.add(handler);
+    }
+  }
+
+  public void addRowDeleteHandler(Consumer<Long> handler) {
+    if (handler != null) {
+      rowDeleteHandlers.add(handler);
     }
   }
 
@@ -349,6 +357,13 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
         onRowCountChange(getViewData().getNumberOfRows());
       }
     }
+
+    if (event != null && event.hasView(getViewName()) && !rowDeleteHandlers.isEmpty()) {
+      event.getRows().forEach(rowInfo -> {
+        long id = rowInfo.getId();
+        rowDeleteHandlers.forEach(handler -> handler.accept(id));
+      });
+    }
   }
 
   @Override
@@ -356,6 +371,11 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
     if (isEventRelevant(event) && getViewData().removeRowById(event.getRowId())) {
       resetState();
       onRowCountChange(getViewData().getNumberOfRows());
+    }
+
+    if (event != null && event.hasView(getViewName())) {
+      long id = event.getRowId();
+      rowDeleteHandlers.forEach(handler -> handler.accept(id));
     }
   }
 
@@ -382,6 +402,7 @@ public class SelectionOracle implements HandlesAllDataEvents, HasViewName {
     EventUtils.clearRegistry(handlerRegistry);
 
     rowCountChangeHandlers.clear();
+    rowDeleteHandlers.clear();
     dataReceivedHandlers.clear();
   }
 

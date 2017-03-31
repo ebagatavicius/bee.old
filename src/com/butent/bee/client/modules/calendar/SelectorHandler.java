@@ -81,12 +81,12 @@ class SelectorHandler implements SelectorEvent.Handler {
     List<String> options = new ArrayList<>();
 
     int numberIndex = rowSet.getColumnIndex(TransportConstants.COL_NUMBER);
-    int parentModelIndex = rowSet.getColumnIndex(TransportConstants.COL_PARENT_MODEL_NAME);
+    int brandIndex = rowSet.getColumnIndex(COL_VEHICLE_BRAND_NAME);
     int modelIndex = rowSet.getColumnIndex(TransportConstants.COL_MODEL_NAME);
 
     for (IsRow row : rowSet.getRows()) {
       options.add(BeeUtils.joinWords(row.getString(numberIndex),
-          row.getString(parentModelIndex), row.getString(modelIndex)));
+          row.getString(brandIndex), row.getString(modelIndex)));
     }
     options.add(Localized.dictionary().actionNew1());
 

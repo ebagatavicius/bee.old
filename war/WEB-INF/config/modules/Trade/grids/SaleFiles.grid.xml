@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="SaleFiles" viewName="SaleFiles" autoFit="true"
     >
-  <g:columns>
-    <DataColumn name="File" caption="=actionOpen" readOnly="true" cellType="html"
-                sortable="false" minWidth="150" visible="true" exportable="false" />
-
-    <DataColumn name="Caption" required="true" updateMode="row" minWidth="150" />
-
-    <DataColumn name="FileSize" readOnly="true" horizontalAlignment="right" width="80">
-      <renderer type="fileSize" />
-    </DataColumn>
-
-    <DataColumn name="FileName" readOnly="true" visible="false" />
-    <DataColumn name="FileType" readOnly="true" visible="false" />
-  </g:columns>
+  <xi:include href="../../Administration/grids/columns/Files.columns.xml" />
 </g:Grid>

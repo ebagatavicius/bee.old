@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
-  xmlns:xpr="http://www.butent.com/expression"
 
-  name="VehicleModels" source="VehicleModels" caption="=vehicleModels"
-  newRowCaption="=trNewVehicleModel" newRowColumns="Name Parent"
-  >
+      name="VehicleModels" source="VehicleModels" caption="=vehicleModels"
+      newRowCaption="=trNewVehicleModel"
+>
   <Columns>
-    <SimpleColumn name="Name" />
-    <SimpleColumn name="Parent" />
-    <SimpleJoin joinType="LEFT" name="Parent">
-      <SimpleColumn name="Name" alias="ParentName" />
+    <SimpleColumn name="Brand" />
+    <SimpleJoin name="Brand" joinType="INNER">
+      <SimpleColumn name="BrandName" />
     </SimpleJoin>
+
+    <SimpleColumn name="Name" />
   </Columns>
+
   <Order>
-    <OrderBy column="ParentName" />
+    <OrderBy column="BrandName" />
     <OrderBy column="Name" />
   </Order>
 </View>
- 

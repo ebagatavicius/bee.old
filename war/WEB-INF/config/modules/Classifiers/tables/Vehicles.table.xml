@@ -45,5 +45,7 @@
 
     <Relation name="Object" relation="ConfObjects" unique="true" label="=specification"
               editable="true" />
+
+    <Relation name="Item" relation="Items" unique="true" label="=trAccountingItem" />
   </Fields>
 </Table>

@@ -3,21 +3,20 @@ package com.butent.bee.client.view.navigation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.resources.client.ImageResource;
 
 import com.butent.bee.client.Global;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Rulers;
 import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.event.logical.ScopeChangeEvent;
-import com.butent.bee.client.layout.Horizontal;
+import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.Command;
 import com.butent.bee.client.widget.Image;
 import com.butent.bee.client.widget.Label;
-import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.ui.NavigationOrigin;
 import com.butent.bee.shared.utils.BeeUtils;
 
@@ -56,8 +55,6 @@ public class SimplePager extends AbstractPager {
         case LAST:
           setPageStart(getRowCount() - getPageSize());
           break;
-        default:
-          Assert.untouchable();
       }
     }
   }
@@ -71,7 +68,9 @@ public class SimplePager extends AbstractPager {
 
   private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "SimplePager-";
   private static final String STYLE_CONTAINER = STYLE_PREFIX + "container";
-  private static final String STYLE_DISABLED_BUTTON = STYLE_PREFIX + "disabledButton";
+
+  private static final String STYLE_COMMAND = STYLE_PREFIX + "command";
+  private static final String STYLE_DISABLED_COMMAND = STYLE_PREFIX + "command-disabled";
   private static final String STYLE_INFO = STYLE_PREFIX + "info";
 
   private static final NumberFormat NUMBER_FORMAT = NumberFormat.getFormat("#,###");
@@ -86,7 +85,7 @@ public class SimplePager extends AbstractPager {
   private final Image widgetRewind;
   private final Image widgetPrev;
   private final Image widgetNext;
-  private final Image widgetForw;
+  private final Image widgetForward;
   private final Image widgetLast;
 
   private final Label widgetInfo;
@@ -107,28 +106,21 @@ public class SimplePager extends AbstractPager {
     this.maxRowCount = maxRowCount;
     this.showPageSize = showPageSize;
 
-    this.widgetFirst = new Image(Global.getImages().first(), new GoCommand(Navigation.FIRST),
-        STYLE_DISABLED_BUTTON);
-    this.widgetPrev = new Image(Global.getImages().previous(), new GoCommand(Navigation.PREV),
-        STYLE_DISABLED_BUTTON);
-    this.widgetNext = new Image(Global.getImages().next(), new GoCommand(Navigation.NEXT),
-        STYLE_DISABLED_BUTTON);
-    this.widgetLast = new Image(Global.getImages().last(), new GoCommand(Navigation.LAST),
-        STYLE_DISABLED_BUTTON);
+    this.widgetFirst = createCommand(Global.getImages().first(), Navigation.FIRST);
+    this.widgetPrev = createCommand(Global.getImages().previous(), Navigation.PREV);
+    this.widgetNext = createCommand(Global.getImages().next(), Navigation.NEXT);
+    this.widgetLast = createCommand(Global.getImages().last(), Navigation.LAST);
 
     if (showFastNavigation) {
-      this.widgetRewind = new Image(Global.getImages().rewind(), new GoCommand(Navigation.REWIND),
-          STYLE_DISABLED_BUTTON);
-      this.widgetForw = new Image(Global.getImages().forward(), new GoCommand(Navigation.FORWARD),
-          STYLE_DISABLED_BUTTON);
+      this.widgetRewind = createCommand(Global.getImages().rewind(), Navigation.REWIND);
+      this.widgetForward = createCommand(Global.getImages().forward(), Navigation.FORWARD);
     } else {
       this.widgetRewind = null;
-      this.widgetForw = null;
+      this.widgetForward = null;
     }
 
-    Horizontal container = new Horizontal();
+    Flow container = new Flow(STYLE_CONTAINER);
     initWidget(container);
-    addStyleName(STYLE_CONTAINER);
 
     container.add(widgetFirst);
     if (widgetRewind != null) {
@@ -145,11 +137,10 @@ public class SimplePager extends AbstractPager {
     }
 
     container.add(widgetInfo);
-    container.setCellHorizontalAlignment(widgetInfo, TextAlign.CENTER);
 
     container.add(widgetNext);
-    if (widgetForw != null) {
-      container.add(widgetForw);
+    if (widgetForward != null) {
+      container.add(widgetForward);
     }
     container.add(widgetLast);
   }
@@ -157,6 +148,42 @@ public class SimplePager extends AbstractPager {
   @Override
   public HandlerRegistration addReadyHandler(ReadyEvent.Handler handler) {
     return addHandler(handler, ReadyEvent.getType());
+  }
+
+  public boolean goFirst() {
+    if (widgetFirst.isEnabled()) {
+      widgetFirst.getCommand().execute();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean goPrevious() {
+    if (widgetPrev.isEnabled()) {
+      widgetPrev.getCommand().execute();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean goNext() {
+    if (widgetNext.isEnabled()) {
+      widgetNext.getCommand().execute();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public boolean goLast() {
+    if (widgetLast.isEnabled()) {
+      widgetLast.getCommand().execute();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
@@ -195,7 +222,7 @@ public class SimplePager extends AbstractPager {
     widgetNext.setEnabled(start + length < rowCount);
     widgetLast.setEnabled(start + length < rowCount);
 
-    if (widgetRewind != null && widgetForw != null) {
+    if (widgetRewind != null && widgetForward != null) {
       if (start > 0) {
         widgetRewind.setEnabled(true);
         widgetRewind.setTitle(format(getRewindPosition(start, length, rowCount) + 1));
@@ -205,11 +232,11 @@ public class SimplePager extends AbstractPager {
       }
 
       if (start + length < rowCount) {
-        widgetForw.setEnabled(true);
-        widgetForw.setTitle(format(getForwardPosition(start, length, rowCount) + 1));
+        widgetForward.setEnabled(true);
+        widgetForward.setTitle(format(getForwardPosition(start, length, rowCount) + 1));
       } else {
-        widgetForw.setEnabled(false);
-        UiHelper.clearTitle(widgetForw);
+        widgetForward.setEnabled(false);
+        UiHelper.clearTitle(widgetForward);
       }
     }
   }
@@ -223,6 +250,13 @@ public class SimplePager extends AbstractPager {
   protected void onLoad() {
     super.onLoad();
     ReadyEvent.fire(this);
+  }
+
+  private Image createCommand(ImageResource resource, Navigation navigation) {
+    Image command = new Image(resource, new GoCommand(navigation), STYLE_DISABLED_COMMAND);
+    command.addStyleName(STYLE_COMMAND);
+
+    return command;
   }
 
   private String createText(int start, int end, int rowCount) {

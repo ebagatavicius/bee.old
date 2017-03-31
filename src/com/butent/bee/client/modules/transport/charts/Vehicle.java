@@ -3,6 +3,7 @@ package com.butent.bee.client.modules.transport.charts;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_VEHICLE_BRAND_NAME;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -30,8 +31,8 @@ class Vehicle extends Filterable implements HasDateRange, HasItemName {
 
   private static final int numberIndex = Data.getColumnIndex(VIEW_VEHICLES, COL_NUMBER);
 
-  private static final int parentModelNameIndex =
-      Data.getColumnIndex(VIEW_VEHICLES, COL_PARENT_MODEL_NAME);
+  private static final int brandNameIndex = Data.getColumnIndex(VIEW_VEHICLES,
+      COL_VEHICLE_BRAND_NAME);
   private static final int modelNameIndex = Data.getColumnIndex(VIEW_VEHICLES, COL_MODEL_NAME);
   private static final String modelLabel = Data.getColumnLabel(VIEW_VEHICLES, COL_MODEL);
 
@@ -71,7 +72,7 @@ class Vehicle extends Filterable implements HasDateRange, HasItemName {
 
     this.id = row.getId();
     this.number = row.getString(numberIndex);
-    this.model = BeeUtils.joinWords(row.getString(parentModelNameIndex),
+    this.model = BeeUtils.joinWords(row.getString(brandNameIndex),
         row.getString(modelNameIndex));
     this.type = BeeUtils.trim(row.getString(typeNameIndex));
 

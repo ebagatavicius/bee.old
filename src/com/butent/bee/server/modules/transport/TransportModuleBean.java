@@ -32,7 +32,6 @@ import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.modules.BeeModule;
 import com.butent.bee.server.modules.ParamHolderBean;
 import com.butent.bee.server.modules.administration.ExchangeUtils;
-import com.butent.bee.server.modules.administration.ExtensionIcons;
 import com.butent.bee.server.modules.mail.MailModuleBean;
 import com.butent.bee.server.modules.trade.TradeModuleBean;
 import com.butent.bee.server.news.ExtendedUsageQueryProvider;
@@ -53,6 +52,7 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
+import com.butent.bee.shared.Triplet;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
@@ -214,7 +214,7 @@ public class TransportModuleBean implements BeeModule {
     List<SearchResult> result = new ArrayList<>();
 
     List<SearchResult> vehiclesResult = qs.getSearchResults(VIEW_VEHICLES,
-        Filter.anyContains(Sets.newHashSet(COL_NUMBER, COL_PARENT_MODEL_NAME, COL_MODEL_NAME,
+        Filter.anyContains(Sets.newHashSet(COL_NUMBER, COL_VEHICLE_BRAND_NAME, COL_MODEL_NAME,
             COL_OWNER_NAME), query));
 
     List<SearchResult> orderCargoResult = qs.getSearchResults(VIEW_ORDER_CARGO,
@@ -506,23 +506,26 @@ public class TransportModuleBean implements BeeModule {
             default:
               return;
           }
-          SimpleRowSet rs = qs.getData(rep.getCargoIncomeQuery(new SqlSelect()
+          SimpleRowSet rs = qs.getData(rep.getCargoAmountsQuery(new SqlSelect()
                   .addField(TBL_ORDER_CARGO, sys.getIdName(TBL_ORDER_CARGO), COL_CARGO)
                   .addFrom(TBL_ORDER_CARGO)
-                  .setWhere(sys.idInList(TBL_ORDER_CARGO, cargoIds)),
-              prm.getRelation(PRM_CURRENCY), BeeUtils.unbox(prm.getBoolean(PRM_EXCLUDE_VAT))));
+                  .setWhere(sys.idInList(TBL_ORDER_CARGO, cargoIds)), TBL_CARGO_INCOMES,
+              prm.getRelation(PRM_CURRENCY), BeeUtils.unbox(prm.getBoolean(PRM_EXCLUDE_VAT)),
+              true));
 
           for (BeeRow row : rowSet.getRows()) {
             SimpleRow r = rs.getRowByKey(COL_CARGO, BeeUtils.toString(valueSupplier.apply(row)));
 
-            row.setProperty(VAR_INCOME, BeeUtils.toString(BeeUtils.unbox(r.getDouble("CargoIncome"))
-                + BeeUtils.unbox(r.getDouble("ServicesIncome"))));
+            row.setProperty(VAR_INCOME,
+                BeeUtils.toString(BeeUtils.unbox(r.getDouble(COL_TRANSPORTATION))
+                    + BeeUtils.unbox(r.getDouble(COL_SERVICE))));
             row.setProperty(COL_TRANSPORTATION + VAR_INCOME,
-                BeeUtils.toString(BeeUtils.unbox(r.getDouble("CargoIncome"))));
-            row.setProperty(COL_TRADE_VAT, BeeUtils.toString(BeeUtils.unbox(r.getDouble("CargoVat"))
-                + BeeUtils.unbox(r.getDouble("ServicesVat"))));
+                BeeUtils.toString(BeeUtils.unbox(r.getDouble(COL_TRANSPORTATION))));
+            row.setProperty(COL_TRADE_VAT,
+                BeeUtils.toString(BeeUtils.unbox(r.getDouble(COL_TRANSPORTATION + COL_TRADE_VAT))
+                    + BeeUtils.unbox(r.getDouble(COL_SERVICE + COL_TRADE_VAT))));
             row.setProperty(COL_TRANSPORTATION + COL_TRADE_VAT,
-                BeeUtils.toString(BeeUtils.unbox(r.getDouble("CargoVat"))));
+                BeeUtils.toString(BeeUtils.unbox(r.getDouble(COL_TRANSPORTATION + COL_TRADE_VAT))));
           }
         }
       }
@@ -617,7 +620,7 @@ public class TransportModuleBean implements BeeModule {
               trips.addUnion(subQuery);
             }
           }
-          Table<Long, Long, Pair<String, String>> amounts = HashBasedTable.create();
+          Table<Long, Long, Triplet<String, String, String>> amounts = HashBasedTable.create();
 
           String crs = rep.getTripIncomes(trips, prm.getRelation(PRM_CURRENCY),
               BeeUtils.unbox(prm.getBoolean(PRM_EXCLUDE_VAT)));
@@ -626,9 +629,10 @@ public class TransportModuleBean implements BeeModule {
 
           for (SimpleRow row : rs) {
             amounts.put(row.getLong(COL_TRIP), row.getLong(COL_CARGO),
-                Pair.of(BeeUtils.round(BeeUtils.nvl(row.getValue("TripIncome"), "0"), 2) + " ("
-                    + BeeUtils.removeTrailingZeros(BeeUtils.round(row.getValue(COL_TRIP_PERCENT),
-                    2)) + "%)", null));
+                Triplet.of(BeeUtils.round(BeeUtils.nvl(row.getValue(COL_TRANSPORTATION), "0"), 2)
+                        + " (" + BeeUtils.removeTrailingZeros(
+                    BeeUtils.round(row.getValue(COL_TRIP_PERCENT), 2)) + "%)",
+                    BeeUtils.round(row.getValue(COL_SERVICE), 2), null));
           }
           crs = rep.getCargoTripPercents(COL_TRIP, trips);
           rs = qs.getData(new SqlSelect().addAllFields(crs).addFrom(crs));
@@ -636,25 +640,19 @@ public class TransportModuleBean implements BeeModule {
 
           for (SimpleRow row : rs) {
             if (!amounts.contains(row.getLong(COL_TRIP), row.getLong(COL_CARGO))) {
-              amounts.put(row.getLong(COL_TRIP), row.getLong(COL_CARGO), Pair.empty());
+              amounts.put(row.getLong(COL_TRIP), row.getLong(COL_CARGO), Triplet.empty());
             }
             amounts.get(row.getLong(COL_TRIP), row.getLong(COL_CARGO))
-                .setB(BeeUtils.removeTrailingZeros(BeeUtils.round(row.getValue(COL_CARGO_PERCENT),
+                .setC(BeeUtils.removeTrailingZeros(BeeUtils.round(row.getValue(COL_CARGO_PERCENT),
                     2)) + "%");
           }
           for (BeeRow row : rowset.getRows()) {
-            Pair<String, String> p = amounts.get(row.getLong(tripIndex), row.getLong(cargoIndex));
-            row.setProperty(VAR_INCOME, p.getA());
-            row.setProperty(VAR_EXPENSE, p.getB());
+            Triplet<String, String, String> t = amounts.get(row.getLong(tripIndex),
+                row.getLong(cargoIndex));
+            row.setProperty(VAR_INCOME, t.getA());
+            row.setProperty(COL_CARGO + VAR_INCOME, t.getB());
+            row.setProperty(VAR_EXPENSE, t.getC());
           }
-        }
-      }
-
-      @Subscribe
-      @AllowConcurrentEvents
-      public void getFileIcons(ViewQueryEvent event) {
-        if (event.isAfter(VIEW_CARGO_FILES)) {
-          ExtensionIcons.setIcons(event.getRowset(), ALS_FILE_NAME, PROP_ICON);
         }
       }
 
@@ -1655,8 +1653,8 @@ public class TransportModuleBean implements BeeModule {
       cb.asynchronousCall(new ConcurrencyBean.AsynchronousRunnable() {
         @Override
         public void run() {
-          mail.sendMail(accountId, email, null, text.replace("{LOGIN}", login)
-              .replace("{PASSWORD}", password));
+          mail.sendMail(accountId, email, Localized.dictionary().registration(),
+              text.replace("{LOGIN}", login).replace("{PASSWORD}", password));
         }
       });
     }
@@ -3311,10 +3309,10 @@ public class TransportModuleBean implements BeeModule {
       case COL_TRIP_PERCENT:
         keyName = COL_CARGO;
         totalSupplier = value -> BeeUtils.unbox(qs.getDouble(new SqlSelect()
-            .addFields("als", "CargoIncome")
-            .addFrom(rep.getCargoIncomeQuery(new SqlSelect().addConstant(value, keyName),
-                prm.getRelation(PRM_CURRENCY), BeeUtils.unbox(prm.getBoolean(PRM_EXCLUDE_VAT))),
-                "als")));
+            .addFields("als", COL_TRANSPORTATION)
+            .addFrom(rep.getCargoAmountsQuery(new SqlSelect().addConstant(value, keyName),
+                TBL_CARGO_INCOMES, prm.getRelation(PRM_CURRENCY),
+                BeeUtils.unbox(prm.getBoolean(PRM_EXCLUDE_VAT)), false), "als")));
         break;
       case COL_CARGO_PERCENT:
         keyName = COL_TRIP;

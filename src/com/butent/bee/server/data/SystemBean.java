@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 
 import com.butent.bee.server.Config;
 import com.butent.bee.server.DataSourceBean;
@@ -393,6 +394,7 @@ public class SystemBean {
     return SqlUtils.inList(tblName, getIdName(tblName), ids);
   }
 
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   @Lock(LockType.WRITE)
   public void init() {
     auditOff = BeeUtils.toBoolean(Config.getProperty(Service.PROPERTY_AUDIT_OFF));
@@ -436,6 +438,7 @@ public class SystemBean {
     }
     initDbTables();
     initDbTriggers();
+    updateVehicleModels();
   }
 
   @Lock(LockType.WRITE)
@@ -1104,10 +1107,10 @@ public class SystemBean {
   private void initDbTables() {
     String[] dbTables = qs.dbTables(dbName, dbSchema, null).getColumn(SqlConstants.TBL_NAME);
     Set<String> names = new HashSet<>();
+
     for (String name : dbTables) {
       names.add(BeeUtils.normalize(name));
     }
-
     for (BeeTable table : getTables()) {
       String tblName = table.getName();
       table.setActive(names.contains(BeeUtils.normalize(tblName)));
@@ -1543,5 +1546,68 @@ public class SystemBean {
     createTriggers(table.getTriggers());
 
     table.setActive(true);
+  }
+
+  private void updateVehicleModels() {
+    if (!getTable(TBL_VEHICLE_BRANDS).isActive() && getTable(TBL_VEHICLE_MODELS).isActive()
+        && Objects.nonNull(qs.dbFields(dbName, dbSchema, TBL_VEHICLE_MODELS)
+        .getRowByKey(SqlConstants.FLD_NAME, "Parent"))) {
+
+      rebuildTable(TBL_VEHICLE_BRANDS);
+
+      Set<Long> used = new HashSet<>();
+      String brandId = getIdName(TBL_VEHICLE_BRANDS);
+      String modelId = getIdName(TBL_VEHICLE_MODELS);
+
+      qs.insertData(new SqlInsert(TBL_VEHICLE_BRANDS)
+          .addFields(brandId, COL_VEHICLE_BRAND_NAME)
+          .setDataSource(new SqlSelect()
+              .addFields(TBL_VEHICLE_MODELS, modelId, COL_VEHICLE_MODEL_NAME)
+              .addFrom(TBL_VEHICLE_MODELS)
+              .setWhere(SqlUtils.in(TBL_VEHICLE_MODELS, modelId,
+                  new SqlSelect().setDistinctMode(true)
+                      .addFields(TBL_VEHICLE_MODELS, "Parent")
+                      .addFrom(TBL_VEHICLE_MODELS)
+                      .setWhere(SqlUtils.notNull(TBL_VEHICLE_MODELS, "Parent"))))));
+
+      for (SimpleRow fk : qs.dbForeignKeys(getDbName(), getDbSchema(), null, TBL_VEHICLE_MODELS)) {
+        String tbl = fk.getValue(SqlConstants.TBL_NAME);
+        String name = fk.getValue(SqlConstants.KEY_NAME);
+
+        makeStructureChanges(SqlUtils.dropForeignKey(tbl, name));
+
+        if (!Objects.equals(tbl, TBL_VEHICLE_MODELS) && isTable(tbl)) {
+          getTable(tbl).getForeignKeys().stream().filter(key -> name.equals(key.getName()))
+              .findAny().ifPresent(key -> used.addAll(Arrays.asList(qs.getLongColumn(new SqlSelect()
+              .setDistinctMode(true)
+              .addFields(tbl, key.getFields())
+              .addFrom(tbl)))));
+        }
+      }
+      used.remove(null);
+      String tmp = SqlUtils.uniqueName();
+
+      qs.updateData(new SqlCreate(tmp, false)
+          .setDataSource(new SqlSelect()
+              .addAllFields(TBL_VEHICLE_MODELS)
+              .addField(TBL_VEHICLE_MODELS, "Parent", COL_VEHICLE_BRAND)
+              .addFrom(TBL_VEHICLE_MODELS)
+              .setWhere(SqlUtils.or(SqlUtils.notNull(TBL_VEHICLE_MODELS, "Parent"),
+                  idInList(TBL_VEHICLE_MODELS, used)))));
+
+      if (qs.sqlExists(tmp, SqlUtils.isNull(tmp, COL_VEHICLE_BRAND))) {
+        long id = qs.insertData(new SqlInsert(TBL_VEHICLE_BRANDS)
+            .addConstant(brandId, BeeUtils.unbox(qs.getLong(new SqlSelect()
+                .addMax(TBL_VEHICLE_BRANDS, brandId).addFrom(TBL_VEHICLE_BRANDS))) + 1)
+            .addConstant(COL_VEHICLE_BRAND_NAME, "???"));
+
+        qs.updateData(new SqlUpdate(tmp)
+            .addConstant(COL_VEHICLE_BRAND, id)
+            .setWhere(SqlUtils.isNull(tmp, COL_VEHICLE_BRAND)));
+      }
+      makeStructureChanges(SqlUtils.dropTable(TBL_VEHICLE_MODELS));
+      makeStructureChanges(SqlUtils.renameTable(tmp, TBL_VEHICLE_MODELS));
+      rebuildTable(TBL_VEHICLE_MODELS);
+    }
   }
 }

@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="Trade" label="=trade" order="90" module="Trade"
+       name="Trade" label="=trade" order="90" module="Trade"
 >
-  <Item name="TradeDocuments" label="=trdDocuments" service="trade_documents" order="1" />
+  <Item name="TradeDocuments" label="=trdDocuments" service="trade_documents" />
 
-  <Item name="TradeStock" label="=trdStock" service="grid" parameters="TradeStock" separator="true"
-    order="10" />
+  <Item name="TradeStock" label="=trdStock" service="grid" parameters="TradeStock"
+        separator="true" />
   <Item name="RebuildTradeStock" label="=rebuildTradeStockCaption" service="rebuild_trade_stock"
-        separator="true" order="15" module="Administration" />
-
-  <Item name="TradeActNames" label="=tradeActNames" service="grid"
-    parameters="TradeActNames" separator="true" order="40" module="Trade.Acts" />
-  <Item name="TradeActTemplates" label="=tradeActTemplates" service="grid"
-    parameters="TradeActTemplates" module="Trade.Acts" />
-
-  <Item name="TradeActInvoiceBuilder" label="=taInvoiceBuilder" service="form"
-    parameters="TradeActInvoiceBuilder" separator="true" module="Trade.Acts" />
+        separator="true" module="Administration" />
 
   <Item name="Sales" label="=trdInvoices" service="grid" parameters="Sales" separator="true" />
 
   <Item name="TradeParameters" label="=trdParameters" service="parameters" parameters="Trade"
-    separator="true" order="100" module="Administration" />
+        separator="true" order="100" module="Administration" />
 </Entry>

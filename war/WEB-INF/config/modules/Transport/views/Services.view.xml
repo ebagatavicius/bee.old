@@ -3,6 +3,7 @@
 
   name="Services"
   source="Services"
+  caption="=trServices"
   newRowCaption="=trNewService"
   >
   <Columns>

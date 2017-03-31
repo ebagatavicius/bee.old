@@ -4,6 +4,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -22,6 +23,7 @@ import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.server.Invocation;
+import com.butent.bee.server.data.BeeView;
 import com.butent.bee.server.data.DataEvent;
 import com.butent.bee.server.data.DataEventHandler;
 import com.butent.bee.server.data.QueryServiceBean;
@@ -49,9 +51,11 @@ import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.Defaults;
+import com.butent.bee.shared.data.SearchResult;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SqlConstants;
 import com.butent.bee.shared.data.event.MultiDeleteEvent;
+import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
@@ -108,6 +112,20 @@ public class CarsModuleBean implements BeeModule {
   FileStorageBean fs;
   @EJB
   TradeModuleBean trd;
+
+  @Override
+  public List<SearchResult> doSearch(String query) {
+    List<SearchResult> result = new ArrayList<>();
+
+    if (!usr.isDataVisible(VIEW_CARS)) {
+      return result;
+    }
+
+    result.addAll(qs.getSearchResults(VIEW_CARS, Filter.anyContains(Sets.newHashSet(COL_BODY_NUMBER,
+        COL_NUMBER), query)));
+
+    return result;
+  }
 
   @Override
   public ResponseObject doService(String service, RequestInfo reqInfo) {
@@ -358,6 +376,54 @@ public class CarsModuleBean implements BeeModule {
 
   @Override
   public void init() {
+    BeeView.registerConditionProvider(FILTER_CAR_DOCUMENTS, (view, args) -> {
+      IsCondition clause;
+      Long car = BeeUtils.toLongOrNull(BeeUtils.getQuietly(args, 0));
+
+      if (DataUtils.isId(car)) {
+        SqlSelect query = new SqlSelect().setUnionAllMode(false)
+            .addFields(TBL_TRADE_DOCUMENTS, sys.getIdName(TBL_TRADE_DOCUMENTS))
+            .addFrom(TBL_TRADE_DOCUMENTS)
+            .setWhere(SqlUtils.equals(TBL_TRADE_DOCUMENTS, COL_TRADE_VEHICLE, car))
+            .addUnion(new SqlSelect().setDistinctMode(true)
+                .addFields(TBL_TRADE_DOCUMENT_ITEMS, COL_TRADE_DOCUMENT)
+                .addFrom(TBL_TRADE_DOCUMENT_ITEMS)
+                .setWhere(SqlUtils.equals(TBL_TRADE_DOCUMENT_ITEMS, COL_TRADE_ITEM_VEHICLE, car)));
+
+        clause = SqlUtils.in(view.getSourceAlias(), view.getSourceIdName(), query);
+      } else {
+        clause = SqlUtils.sqlFalse();
+      }
+      return clause;
+    });
+
+    BeeView.registerConditionProvider(FILTER_CAR_SERVICE_DOCUMENTS, (view, args) -> {
+      IsCondition clause;
+      Long serviceId = BeeUtils.toLongOrNull(BeeUtils.getQuietly(args, 0));
+
+      if (DataUtils.isId(serviceId)) {
+        SqlSelect query = new SqlSelect().setUnionAllMode(false)
+            .addFields(TBL_SERVICE_INVOICES, COL_TRADE_DOCUMENT)
+            .addFrom(TBL_SERVICE_INVOICES)
+            .addFromInner(TBL_SERVICE_ORDER_ITEMS,
+                SqlUtils.and(sys.joinTables(TBL_SERVICE_ORDER_ITEMS, TBL_SERVICE_INVOICES,
+                    COL_SERVICE_ITEM), SqlUtils.equals(TBL_SERVICE_ORDER_ITEMS, COL_SERVICE_ORDER,
+                    serviceId)))
+            .addUnion(new SqlSelect().setDistinctMode(true)
+                .addFields(TBL_SERVICE_INVOICES, COL_TRADE_DOCUMENT)
+                .addFrom(TBL_SERVICE_INVOICES)
+                .addFromInner(TBL_SERVICE_ORDER_JOBS,
+                    SqlUtils.and(sys.joinTables(TBL_SERVICE_ORDER_JOBS, TBL_SERVICE_INVOICES,
+                        COL_SERVICE_JOB), SqlUtils.equals(TBL_SERVICE_ORDER_JOBS, COL_SERVICE_ORDER,
+                        serviceId))));
+
+        clause = SqlUtils.in(view.getSourceAlias(), view.getSourceIdName(), query);
+      } else {
+        clause = SqlUtils.sqlFalse();
+      }
+      return clause;
+    });
+
     TradeModuleBean.registerStockReservationsProvider(ModuleAndSub.of(getModule(),
         SubModule.SERVICE), new StockReservationsProvider() {
 

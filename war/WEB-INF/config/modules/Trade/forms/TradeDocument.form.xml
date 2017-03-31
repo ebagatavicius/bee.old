@@ -74,9 +74,6 @@
               <row>
                 <Label for="PriceName" />
                 <ListBox source="PriceName" summarize="true" />
-
-                <Label for="DocumentDiscount" />
-                <InputDecimal source="DocumentDiscount" summarize="true" />
               </row>
 
               <row>
@@ -297,6 +294,18 @@
                              targetRelColumn="TradeDocument" sourceRelColumn="TradeTag"
                              renderColumns="TagName"
                              newRowEnabled="false" style="&finp;" />
+            </FlowPanel>
+          </FlowPanel>
+
+          <FlowPanel class="&mrcl;" style="&mrst;">
+            <FlowPanel class="flexible" style="&mfld;">
+              <Label for="Vehicle" style="&flbl;" />
+              <DataSelector source="Vehicle" style="&finp; &fmax;" newRowEnabled="false"
+                            choiceColumns="BrandName ModelName Number BodyNumber"
+                            renderColumns="VehicleBrandName VehicleModelName VehicleNumber VehicleBodyNumber" />
+            </FlowPanel>
+
+            <FlowPanel style="&mfld; &mwn;">
             </FlowPanel>
           </FlowPanel>
         </FlowPanel>

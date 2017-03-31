@@ -2,6 +2,7 @@
 <View xmlns="http://www.butent.com/view"
 
       name="CarSymptoms" source="CarSymptoms" caption="=symptoms"
+      newRowColumns="SymptomName Code Model"
 >
   <Columns>
     <SimpleColumn name="SymptomName" />
@@ -9,8 +10,8 @@
 
     <SimpleColumn name="Model" />
     <SimpleJoin name="Model" joinType="LEFT">
-      <SimpleJoin name="Parent" joinType="LEFT">
-        <SimpleColumn name="Name" alias="ParentModelName" />
+      <SimpleJoin name="Brand" joinType="LEFT">
+        <SimpleColumn name="BrandName" />
       </SimpleJoin>
       <SimpleColumn name="Name" alias="ModelName" />
     </SimpleJoin>

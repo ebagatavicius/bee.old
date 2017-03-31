@@ -1,34 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="DocumentFiles" viewName="DocumentFiles" caption="=files"
   flexGrow="1"
   >
-  <g:columns>
-    <DataColumn name="Id" caption="ID" format="#" />
-    <DataColumn name="File" caption="=documentFileOpen" readOnly="true" cellType="html"
-      sortable="false" minWidth="100" visible="true" exportable="false" />
+  <xi:include href="../../Administration/grids/columns/Files.columns.xml" />
 
+  <g:columns>
     <DataColumn name="FileDate" required="true" width="128" visible="true" />
     <DataColumn name="FileVersion" />
-    <DataColumn name="Caption" required="true" updateMode="row" />
     <DataColumn name="Description" />
 
-    <DataColumn name="FileSize" readOnly="true" horizontalAlignment="right" width="60">
-      <renderer type="fileSize" />
-    </DataColumn>    
-
-    <PropColumn name="Icon" caption="-" type="string" cellType="html" horizontalAlignment="center"
-      width="20" label="=fileIcon" >
-      <renderer type="fileIcon" />
-    </PropColumn>
-
     <RelColumn name="Owner" renderColumns="OwnerFirstName OwnerLastName" />
-    
-    <DataColumn name="Comment" />
 
-    <DataColumn name="FileName" readOnly="true" visible="false" />
-    <DataColumn name="FileType" readOnly="true" visible="false" />
+    <DataColumn name="Comment" />
   </g:columns>
 </g:Grid>

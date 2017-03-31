@@ -65,8 +65,8 @@ public class Appointment extends CalendarItem {
       COL_VEHICLE_MODEL);
   private static final int VEHICLE_NUMBER_INDEX = Data.getColumnIndex(VIEW_APPOINTMENTS,
       COL_VEHICLE_NUMBER);
-  private static final int VEHICLE_PARENT_MODEL_INDEX = Data.getColumnIndex(VIEW_APPOINTMENTS,
-      COL_VEHICLE_PARENT_MODEL);
+  private static final int VEHICLE_BRAND_INDEX = Data.getColumnIndex(VIEW_APPOINTMENTS,
+      COL_VEHICLE_BRAND);
 
   private static final int VISIBILITY_INDEX = Data.getColumnIndex(VIEW_APPOINTMENTS,
       COL_VISIBILITY);
@@ -95,21 +95,21 @@ public class Appointment extends CalendarItem {
   static {
     SIMPLE_HEADER_TEMPLATE = wrap(COL_SUMMARY);
     SIMPLE_BODY_TEMPLATE = BeeUtils.buildLines(wrap(COL_APPOINTMENT_LOCATION),
-        wrap(ALS_COMPANY_NAME), BeeUtils.joinWords(wrap(COL_VEHICLE_PARENT_MODEL),
+        wrap(ALS_COMPANY_NAME), BeeUtils.joinWords(wrap(COL_VEHICLE_BRAND),
             wrap(COL_VEHICLE_MODEL)),
         wrap(COL_VEHICLE_NUMBER), wrap(KEY_PROPERTIES), wrap(KEY_RESOURCES),
         wrap(KEY_OWNERS), wrap(COL_DESCRIPTION));
 
     PARTIAL_HEADER_TEMPLATE = wrap(COL_SUMMARY);
     PARTIAL_BODY_TEMPLATE = BeeUtils.buildLines(wrap(KEY_PERIOD), wrap(COL_APPOINTMENT_LOCATION),
-        wrap(ALS_COMPANY_NAME), BeeUtils.joinWords(wrap(COL_VEHICLE_PARENT_MODEL),
+        wrap(ALS_COMPANY_NAME), BeeUtils.joinWords(wrap(COL_VEHICLE_BRAND),
             wrap(COL_VEHICLE_MODEL)),
         wrap(COL_VEHICLE_NUMBER), wrap(KEY_PROPERTIES), wrap(KEY_RESOURCES),
         wrap(KEY_OWNERS), wrap(COL_DESCRIPTION));
 
     MULTI_HEADER_TEMPLATE = BeeUtils.joinWords(wrap(KEY_PERIOD), wrap(COL_SUMMARY));
     MULTI_BODY_TEMPLATE = BeeUtils.joinWords(wrap(COL_APPOINTMENT_LOCATION),
-        wrap(ALS_COMPANY_NAME), wrap(COL_VEHICLE_PARENT_MODEL), wrap(COL_VEHICLE_MODEL),
+        wrap(ALS_COMPANY_NAME), wrap(COL_VEHICLE_BRAND), wrap(COL_VEHICLE_MODEL),
         wrap(COL_VEHICLE_NUMBER), wrap(KEY_PROPERTIES), wrap(KEY_RESOURCES), wrap(KEY_OWNERS));
 
     COMPACT_TEMPLATE = BeeUtils.joinWords(wrap(COL_SUMMARY), wrap(KEY_PERIOD));
@@ -122,7 +122,7 @@ public class Appointment extends CalendarItem {
 
     STRING_TEMPLATE = BeeUtils.buildLines(wrap(KEY_PERIOD), wrap(COL_STATUS),
         wrap(COL_SUMMARY), wrap(COL_APPOINTMENT_LOCATION), wrap(ALS_COMPANY_NAME),
-        BeeUtils.joinWords(wrap(COL_VEHICLE_PARENT_MODEL), wrap(COL_VEHICLE_MODEL),
+        BeeUtils.joinWords(wrap(COL_VEHICLE_BRAND), wrap(COL_VEHICLE_MODEL),
             wrap(COL_VEHICLE_NUMBER)),
         wrap(KEY_PROPERTIES), wrap(KEY_RESOURCES), wrap(KEY_OWNERS), wrap(COL_DESCRIPTION),
         wrap(KEY_REMINDERS));
@@ -384,8 +384,8 @@ public class Appointment extends CalendarItem {
     return row.getString(VEHICLE_NUMBER_INDEX);
   }
 
-  public String getVehicleParentModel() {
-    return row.getString(VEHICLE_PARENT_MODEL_INDEX);
+  public String getVehicleBrand() {
+    return row.getString(VEHICLE_BRAND_INDEX);
   }
 
   public boolean handlesCopyAction(DateTime newStart, DateTime newEnd) {

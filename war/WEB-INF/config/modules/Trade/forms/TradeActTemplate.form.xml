@@ -4,7 +4,7 @@
 ]>
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
-  
+
   name="TradeActTemplate" viewName="TradeActTemplates"
   caption="=tradeActTemplate"
   width="800" height="600"
@@ -14,7 +14,7 @@
     <Table kind="controls">
       <col index="0" kind="label" />
       <col index="2" kind="label" />
-      
+
       <row>
         <Label for="Template" visible="true" />
         <InputText source="Template" visible="true" style="&inpw;" />
@@ -58,18 +58,18 @@
           choiceColumns="FirstName LastName CompanyName" options="Company" />
 
         <Label for="Manager" />
-        <DataSelector source="Manager" editSource="ManagerPerson" 
+        <DataSelector source="Manager" editSource="ManagerPerson"
           renderColumns="ManagerFirstName ManagerLastName" newRowEnabled="false" style="&inpw;" />
       </row>
 
       <row>
         <Label for="Vehicle" />
-        <DataSelector source="Vehicle" 
-          renderColumns="VehicleParentModel VehicleModel VehicleNumber" newRowEnabled="false"
+        <DataSelector source="Vehicle"
+          renderColumns="VehicleBrand VehicleModel VehicleNumber" newRowEnabled="false"
           style="&inpw;" />
-        
+
         <Label for="Driver" />
-        <DataSelector source="Driver" renderColumns="DriverFirstName DriverLastName" 
+        <DataSelector source="Driver" renderColumns="DriverFirstName DriverLastName"
           newRowEnabled="false" style="&inpw;" />
       </row>
 

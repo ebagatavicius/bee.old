@@ -14,5 +14,7 @@
     <Relation name="Currency" relation="Currencies" label="=currency" />
 
     <Relation name="Item" relation="Items" label="=trAccountingItem" />
+
+    <Relation name="JobGroup" relation="CarJobGroups" label="=group" />
   </Fields>
 </Table>

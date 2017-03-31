@@ -121,6 +121,7 @@ public final class TradeConstants {
   public static final String COL_TRADE_CUSTOMER = "Customer";
   public static final String COL_TRADE_PAYER = "Payer";
   public static final String COL_TRADE_MANAGER = "Manager";
+  public static final String COL_TRADE_VEHICLE = "Vehicle";
   public static final String COL_TRADE_TERM = "Term";
   public static final String COL_TRADE_NOTES = "Notes";
   public static final String COL_TRADE_EXPORTED = "Exported";
@@ -158,6 +159,7 @@ public final class TradeConstants {
   public static final String COL_TRADE_ITEM_WAREHOUSE_FROM = "ItemWarehouseFrom";
   public static final String COL_TRADE_ITEM_WAREHOUSE_TO = "ItemWarehouseTo";
   public static final String COL_TRADE_ITEM_EMPLOYEE = "Employee";
+  public static final String COL_TRADE_ITEM_VEHICLE = "ItemVehicle";
 
   public static final String COL_SERIES = "Series";
   public static final String COL_SERIES_NAME = "SeriesName";
@@ -282,6 +284,7 @@ public final class TradeConstants {
   public static final String PROP_STOCK = "Stock";
   public static final String PROP_RESERVED = "Reserved";
   public static final String PROP_WAREHOUSES = "Warehouses";
+  public static final String PROP_COST = "Cost";
 
   public static final String VAR_TOTAL = "Total";
   public static final String VAR_DEBT = "Debt";
@@ -331,6 +334,10 @@ public final class TradeConstants {
 
   public static String keyReservedWarehouse(String warehouseCode) {
     return PROP_RESERVED + BeeUtils.trim(warehouseCode);
+  }
+
+  public static String keyCostWarehouse(String warehouseCode) {
+    return PROP_COST + BeeUtils.trim(warehouseCode);
   }
 
   private TradeConstants() {

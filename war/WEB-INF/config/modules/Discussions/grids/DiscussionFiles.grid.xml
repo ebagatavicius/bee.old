@@ -1,27 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="DiscussionFiles" viewName="DiscussionsFiles" caption="=files"
   flexGrow="1" disabledActions="add delete audit export"
   >
-  <g:columns>
-    <DataColumn name="Id" caption="ID" format="#" />
-    <DataColumn name="File" caption="=actionOpen" readOnly="true" cellType="html"
-      sortable="false" minWidth="100" visible="true" exportable="false" />      
-    <DataColumn name="Caption" required="true" readOnly="true" />
-  
-
-    <DataColumn name="FileSize" readOnly="true" horizontalAlignment="right" width="60">
-      <renderer type="fileSize" />
-    </DataColumn>    
-
-    <PropColumn name="Icon" caption="-" type="string" cellType="html" horizontalAlignment="center"
-      width="20" label="=fileIcon" >
-      <renderer type="fileIcon" />
-    </PropColumn>
-
-    <DataColumn name="FileName" readOnly="true" visible="false" />
-    <DataColumn name="FileType" readOnly="true" visible="false" />
-  </g:columns>
+  <xi:include href="../../Administration/grids/columns/Files.columns.xml" />
 </g:Grid>

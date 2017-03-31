@@ -11,7 +11,7 @@
   flexGrow="1" flexShrink="1"
 >
   <g:columns>
-    <RelColumn name="ServiceMaintenance" renderColumns="ServiceMaintenance" choiceColumns="ID" visible="true" filterSupplier="value"/>
+    <RelColumn name="ServiceMaintenance" renderColumns="ServiceMaintenance" choiceColumns="ID" visible="true" filterSupplier="value" filter="EndingDate"/>
     <RelColumn name="Repairer" renderColumns="RepairerFirstName RepairerLastName" visible="true" />
     <DataColumn name="Date" visible="true" />
     <DataColumn name="PayrollDate" visible="true" required="true"/>

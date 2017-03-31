@@ -33,7 +33,7 @@
     <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName"
       visible="false" />
 
-    <RelColumn name="Vehicle" renderColumns="VehicleParentModel VehicleModel VehicleNumber"
+    <RelColumn name="Vehicle" renderColumns="VehicleBrand VehicleModel VehicleNumber"
       visible="false" />
     <RelColumn name="Driver" renderColumns="DriverFirstName DriverLastName"
       visible="false" />

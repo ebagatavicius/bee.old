@@ -11,7 +11,7 @@ import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.ParentRowCreator;
 import com.butent.bee.client.data.Queries;
-import com.butent.bee.client.data.RowUpdateCallback;
+import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.richtext.RichTextEditor;
 import com.butent.bee.client.style.StyleUtils;
@@ -30,6 +30,7 @@ import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.cars.Specification;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -106,13 +107,13 @@ public class SpecificationForm extends PrintFormInterceptor implements Consumer<
       }
       rs.getRow(0).preliminaryUpdate(idx, updates.get(col));
     }
-    Queries.updateRow(rs, new RowUpdateCallback(rs.getViewName()) {
+    Queries.updateRow(rs, new RowCallback() {
       @Override
       public void onSuccess(BeeRow updatedRow) {
         if (Objects.nonNull(consumer)) {
           consumer.accept(updatedRow);
         }
-        super.onSuccess(updatedRow);
+        RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, updatedRow, true);
       }
     });
   }

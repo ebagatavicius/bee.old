@@ -538,9 +538,9 @@ public class MailStorageBean {
                 String before = mergedHtml;
                 String[] arr = Codec.beeDeserializeCollection(entry);
 
-                for (int j = 2; j < arr.length; j++) {
+                for (int j = 3; j < arr.length; j++) {
                   mergedHtml = mergedHtml.replace("cid:" + arr[j],
-                      BeeUtils.join("/", FILE_URL, arr[0]));
+                      BeeUtils.join("/", FILE_URL, arr[2]));
                 }
                 if (!Objects.equals(mergedHtml, before)) {
                   orphans.remove(entry);
@@ -588,9 +588,9 @@ public class MailStorageBean {
 
         List<String> fileInfo = new ArrayList<>();
         FileInfo info = fs.storeFile(part.getInputStream(), fileName, contentType);
-        fs.commitFile(info.getId());
-        fileInfo.add(info.getHash());
+        fileInfo.add(BeeUtils.toStringOrNull(fs.commitFile(info.getId())));
         fileInfo.add(fileName);
+        fileInfo.add(info.getHash());
 
         String[] ids = part.getHeader("Content-ID");
 
@@ -603,8 +603,6 @@ public class MailStorageBean {
 
       } else if (part.isMimeType("text/calendar")) {
         FileInfo info = fs.storeFile(part.getInputStream(), fileName, contentType);
-        fs.commitFile(info.getId());
-
         StringBuilder sb = new StringBuilder("<table>");
 
         try {
@@ -631,8 +629,9 @@ public class MailStorageBean {
           logger.warning("(MessageID=", messageId, ") Error parsing calendar:", e);
         }
         List<String> fileInfo = new ArrayList<>();
-        fileInfo.add(info.getHash());
+        fileInfo.add(BeeUtils.toStringOrNull(fs.commitFile(info.getId())));
         fileInfo.add(fileName);
+        fileInfo.add(info.getHash());
 
         parsedPart.put(COL_FILE, Codec.beeSerialize(fileInfo));
       } else {

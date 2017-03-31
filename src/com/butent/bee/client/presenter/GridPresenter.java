@@ -396,7 +396,7 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
       return parentLabels;
     }
 
-    if (getGridView().isChild()) {
+    if (getGridView().hasChildUi()) {
       FormView form = ViewHelper.getForm(getMainView().asWidget());
 
       if (form != null && !BeeUtils.isEmpty(form.getViewName()) && form.getActiveRow() != null) {

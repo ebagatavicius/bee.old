@@ -54,9 +54,10 @@ public class MailAccount {
     long lastActivity = System.currentTimeMillis();
 
     private MailStore(int maxSessions) {
-      running = new ArrayBlockingQueue<>(BeeUtils.positive(maxSessions, 15), true);
+      int size = BeeUtils.positive(maxSessions, 15);
+      running = new ArrayBlockingQueue<>(size, true);
 
-      for (int i = 0; i < running.remainingCapacity(); i++) {
+      for (int i = 0; i < size; i++) {
         running.add(new Object());
       }
     }

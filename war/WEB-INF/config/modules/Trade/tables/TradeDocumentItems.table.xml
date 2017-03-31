@@ -24,6 +24,7 @@
     <Relation name="ItemWarehouseTo" relation="Warehouses" label="=trdItemWarehouseTo" />
 
     <Relation name="Employee" relation="Employees" label="=employee" />
+    <Relation name="ItemVehicle" relation="Vehicles" label="=trdItemVehicle" />
 
     <Relation name="ExtraDimensions" unique="true" relation="ExtraDimensions" editable="true"
               label="=dimensions" />

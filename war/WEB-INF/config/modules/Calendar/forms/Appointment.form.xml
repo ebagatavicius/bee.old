@@ -10,7 +10,7 @@
 
   <FlowPanel class="flexBox-vertical">
     <Table kind="controls" style="margin-top: 1ex; margin-bottom: 2ex;">
-       
+
       <col index="0" kind="label" />
       <col index="2" kind="label" />
       <col index="4" kind="label" />
@@ -25,14 +25,14 @@
 
       <row>
         <Label for="Company" />
-        <DataSelector source="Company" choiceColumns="Name TypeName" 
+        <DataSelector source="Company" choiceColumns="Name TypeName"
             renderColumns="CompanyName CompanyTypeName" style="&inp;" />
         <Label for="CompanyPerson" />
         <DataSelector source="CompanyPerson"
           renderColumns="PersonFirstName PersonLastName"
           choiceColumns="FirstName LastName CompanyName" options="Company" style="&inp;" />
       </row>
- 
+
       <row>
         <Label for="StartDateTime" visible="true" />
         <InputDateTime source="StartDateTime" visible="true" style="&inp;" />
@@ -60,7 +60,7 @@
         <Label for="Location" />
         <InputText source="Location" style="&inp;" />
       </row>
-        
+
       <row>
         <Label for="Creator" />
         <DataSelector source="Creator" editSource="CreatorCompanyPerson"
@@ -69,7 +69,7 @@
         <DataSelector source="Project" choiceColumns="Name" style="&inp;" />
       </row>
     </Table>
-    
+
     <TabbedPages class="flexible">
       <page>
         <text>=calAttendees</text>
@@ -86,7 +86,7 @@
         <SimplePanel>
           <InputArea source="Description" class="occupy-1" summarize="true" />
         </SimplePanel>
-      </page>  
+      </page>
 
       <page>
         <text>=calParameters</text>
@@ -105,7 +105,7 @@
           <row>
             <DataSelector source="VehicleNumber" caption="=vehicleNumber" summarize="true" />
             <TextLabel source="Vehicle" caption="=vehicleModel" inline="true"
-              renderColumns="VehicleParentModel VehicleModel" />
+              renderColumns="VehicleBrand VehicleModel" />
             <TextLabel source="VehicleType" caption="=vehicleType" inline="true" />
           </row>
 
@@ -146,7 +146,7 @@
           <row>
             <cell colSpan="3">
               <TextLabel source="VehicleNotes" caption="=vehicleNotes" style="white-space: pre-wrap;" />
-            </cell>  
+            </cell>
           </row>
         </Table>
       </page>
@@ -170,4 +170,4 @@
       }
     </ui:function>
   </f:rowValidation>
-</f:Form>  
+</f:Form>

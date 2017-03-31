@@ -15,9 +15,9 @@
 	  <Label text="=vehicleNumber" class="bee-required" horizontalAlignment="right" style="&lbl1;"/>
 	  <InputText source="Number"  upperCase="true" d:size="70" d:unit="px" d:align="right" d:rootStyle="&MARGIN;" />
 	  <Label text="=vehicleModel" class="bee-required" horizontalAlignment="right" style="&lbl1; "/>
-	  <DataSelector source="Model" class="flexible" newRowForm="NewVehicleModel"
-		renderColumns="ParentModelName ModelName" decorator="flex-left" d:size="50" d:rootStyle="&MARGIN;"
-		filter="parent" style="&inp1;"/>
+	  <DataSelector source="Model" class="flexible"
+		renderColumns="BrandName ModelName" decorator="flex-left" d:size="50" d:rootStyle="&MARGIN;"
+		style="&inp1;"/>
 	  <Label text="=vehicleType" class="bee-required" horizontalAlignment="right" style="&lbl2;"/>
 	  <DataSelector source="Type" renderColumns="TypeName" class="flexible" decorator="flex-left" d:size="40" d:rootStyle="&MARGIN;" />
 	  <Label module="Transport" for="Group" text="=groups" horizontalAlignment="right" style="&lbl2;"/>

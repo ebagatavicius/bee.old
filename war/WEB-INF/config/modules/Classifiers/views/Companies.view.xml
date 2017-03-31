@@ -13,6 +13,7 @@
     <SimpleColumn name="CompanyType" />
     <SimpleJoin joinType="LEFT" name="CompanyType">
       <SimpleColumn alias="TypeName" name="Name" />
+      <SimpleColumn name="TypePerson" />
     </SimpleJoin>
 
     <SimpleColumn name="CompanyGroup" />

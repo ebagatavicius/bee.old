@@ -21,6 +21,7 @@ import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.InputBoolean;
 import com.butent.bee.client.widget.InputDateTime;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
@@ -35,6 +36,7 @@ public class MaintenanceCommentForm extends AbstractFormInterceptor {
   private IsRow stateProcessRow;
   private UnboundSelector widgetTypeSelector;
   private InputDateTime warrantyValidToDate;
+  private InputBoolean urgentCheckbox;
 
   MaintenanceCommentForm(IsRow serviceMaintenance) {
     this.serviceMaintenance = serviceMaintenance;
@@ -54,6 +56,9 @@ public class MaintenanceCommentForm extends AbstractFormInterceptor {
 
     } else if (BeeUtils.same(name, COL_WARRANTY) && widget instanceof InputDateTime) {
       warrantyValidToDate = (InputDateTime) widget;
+
+    } else if (BeeUtils.same(name, COL_MAINTENANCE_URGENT) && widget instanceof InputBoolean) {
+      urgentCheckbox = (InputBoolean) widget;
     }
     super.afterCreateWidget(name, widget, callback);
   }
@@ -62,23 +67,18 @@ public class MaintenanceCommentForm extends AbstractFormInterceptor {
   public void afterInsertRow(IsRow result, boolean forced) {
     super.afterInsertRow(result, forced);
 
-    FormView form = getFormView();
-
-    if (form != null) {
-      Widget warrantyWidget = form.getWidgetByName(COL_WARRANTY, false);
-
-      if (warrantyWidget instanceof InputDateTime) {
-        String warrantyDateTimeValue = ((InputDateTime) warrantyWidget).getNormalizedValue();
-
-        if (!BeeUtils.isEmpty(warrantyDateTimeValue)) {
-          result.setProperty(COL_WARRANTY_VALID_TO, warrantyDateTimeValue);
-        }
-      }
-
-      if (widgetTypeSelector != null && !BeeUtils.isEmpty(widgetTypeSelector.getValue())) {
-        result.setProperty(COL_WARRANTY_TYPE, widgetTypeSelector.getValue());
-      }
+    if (warrantyValidToDate != null && !warrantyValidToDate.isEmpty()) {
+      result.setProperty(COL_WARRANTY_VALID_TO, warrantyValidToDate.getNormalizedValue());
     }
+
+    if (urgentCheckbox != null && urgentCheckbox.isChecked()) {
+      result.setProperty(COL_MAINTENANCE_URGENT, BeeConst.STRING_TRUE);
+    }
+
+    if (widgetTypeSelector != null && !BeeUtils.isEmpty(widgetTypeSelector.getValue())) {
+      result.setProperty(COL_WARRANTY_TYPE, widgetTypeSelector.getValue());
+    }
+
     ServiceUtils.informClient((BeeRow) result);
   }
 
@@ -113,6 +113,11 @@ public class MaintenanceCommentForm extends AbstractFormInterceptor {
       boolean isSendEmail = BeeUtils.toBoolean(row.getString(getDataIndex(COL_SEND_EMAIL)));
       boolean isSendSms = BeeUtils.toBoolean(row.getString(getDataIndex(COL_SEND_SMS)));
       ((InputBoolean) customerSentWidget).setEnabled(!(isSendEmail && isSendSms));
+    }
+
+    if (serviceMaintenance != null) {
+      urgentCheckbox.setVisible(!BeeUtils.isEmpty(serviceMaintenance
+          .getString(Data.getColumnIndex(TBL_SERVICE_MAINTENANCE, COL_ENDING_DATE))));
     }
   }
 

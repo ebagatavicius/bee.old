@@ -57,6 +57,8 @@
       </render>
     </DataColumn>
 
+    <PropColumn name="CargoIncome" type="decimal" scale="2" caption="=trCargoIncomes" />
+
     <DataColumn name="CargoPercent" horizontalAlignment="right">
       <dynStyle>
         <ui:inline>color:silver;</ui:inline>

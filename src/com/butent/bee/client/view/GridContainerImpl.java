@@ -516,7 +516,7 @@ public class GridContainerImpl extends Split implements GridContainerView,
       if (!event.isPopup()) {
         showChildren(event.isClosing());
 
-        if (!getGridView().isChild()) {
+        if (!getGridView().hasChildUi()) {
           BeeKeeper.getScreen().onWidgetChange(this);
         }
       }

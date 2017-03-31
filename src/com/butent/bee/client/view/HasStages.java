@@ -31,7 +31,7 @@ public interface HasStages {
     if (Objects.isNull(stages)) {
       StageUtils.initStages(getFormView().getViewName(), newStages -> {
         setStages(newStages);
-        getFormView().refresh();
+        refreshStages();
       });
       return;
     }

@@ -324,10 +324,7 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
       @Subscribe
       @AllowConcurrentEvents
       public void setRowProperties(ViewQueryEvent event) {
-        if (event.isAfter(VIEW_RT_FILES)) {
-          ExtensionIcons.setIcons(event.getRowset(), ALS_FILE_NAME, PROP_ICON);
-
-        } else if (event.isAfter(VIEW_TASKS, VIEW_RELATED_TASKS) && event.hasData()) {
+        if (event.isAfter(VIEW_TASKS, VIEW_RELATED_TASKS) && event.hasData()) {
           BeeRowSet rowSet = event.getRowset();
           Set<Long> taskIds = new HashSet<>();
           Long id;

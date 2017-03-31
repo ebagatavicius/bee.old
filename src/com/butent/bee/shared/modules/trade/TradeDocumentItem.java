@@ -24,7 +24,7 @@ public class TradeDocumentItem implements BeeSerializable {
   private enum Serial {
     ID, VERSION, TRADE_DOCUMENT, ITEM, ARTICLE, QUANTITY, PRICE,
     DISCOUNT, DISCOUNT_IS_PERCENT, VAT, VAT_IS_PERCENT,
-    ITEM_WAREHOUSE_FROM, ITEM_WAREHOUSE_TO, EMPLOYEE, NOTE, PARENT,
+    ITEM_WAREHOUSE_FROM, ITEM_WAREHOUSE_TO, EMPLOYEE, ITEM_VEHICLE, NOTE, PARENT,
     EXTRA_DIMENSIONS, TRADE_ACCOUNTS
   }
 
@@ -55,6 +55,7 @@ public class TradeDocumentItem implements BeeSerializable {
   private Long itemWarehouseTo;
 
   private Long employee;
+  private Long itemVehicle;
 
   private String note;
 
@@ -127,6 +128,9 @@ public class TradeDocumentItem implements BeeSerializable {
           case EMPLOYEE:
             setEmployee(BeeUtils.toLongOrNull(value));
             break;
+          case ITEM_VEHICLE:
+            setItemVehicle(BeeUtils.toLongOrNull(value));
+            break;
           case NOTE:
             setNote(value);
             break;
@@ -194,6 +198,9 @@ public class TradeDocumentItem implements BeeSerializable {
           break;
         case EMPLOYEE:
           arr[i++] = getEmployee();
+          break;
+        case ITEM_VEHICLE:
+          arr[i++] = getItemVehicle();
           break;
         case NOTE:
           arr[i++] = getNote();
@@ -325,6 +332,14 @@ public class TradeDocumentItem implements BeeSerializable {
     this.employee = employee;
   }
 
+  public Long getItemVehicle() {
+    return itemVehicle;
+  }
+
+  public void setItemVehicle(Long itemVehicle) {
+    this.itemVehicle = itemVehicle;
+  }
+
   public String getNote() {
     return note;
   }
@@ -406,6 +421,9 @@ public class TradeDocumentItem implements BeeSerializable {
 
     if (getEmployee() != null) {
       values.put(COL_TRADE_ITEM_EMPLOYEE, new LongValue(getEmployee()));
+    }
+    if (getItemVehicle() != null) {
+      values.put(COL_TRADE_ITEM_VEHICLE, new LongValue(getItemVehicle()));
     }
 
     if (!BeeUtils.isEmpty(getNote())) {

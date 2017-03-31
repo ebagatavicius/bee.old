@@ -64,6 +64,15 @@
             </FlowPanel>
 
             <FlowPanel class="&mrcl;" style="&mrst;">
+              <FlowPanel style="&mfld; width: 21em;" for="Company">
+                <Label text="=client" class="bee-svc-panel-title" style="&flbl;"/>
+                <DataSelector source="Company" searchableColumns="Name TypeName Phone Email Address CompanyName"
+                              choiceColumns="Name TypeName"
+                              renderColumns="CompanyName CompanyTypeName" style="&finp;"/>
+              </FlowPanel>
+            </FlowPanel>
+
+            <FlowPanel class="&mrcl;" style="&mrst;">
               <FlowPanel style="&mfld; width: 21em;" for="ServiceObject">
                 <Label text="=svcDevice" class="bee-required bee-svc-panel-title" style="&flbl;"/>
                 <DataSelector name="ServiceObject" source="ServiceObject" updateMode="row"
@@ -91,7 +100,7 @@
             <FlowPanel class="&mrcl;" style="&mrst;" for="Contact">
               <FlowPanel style="&mfld; width: 21em;" >
                 <Label for="Contact" class="bee-svc-panel-title" style="&flbl;"/>
-                  <DataSelector name="Contact" source="Contact"
+                  <DataSelector name="Contact" source="Contact" options="Company"
                                 choiceColumns="FirstName LastName Phone Email Address CompanyName"
                                 renderColumns="ContactFirstName ContactLastName" style="&finp;"/>
               </FlowPanel>
@@ -143,13 +152,6 @@
                 <row>
                   <Label text="=phone" class="bee-required" />
                   <TextLabel name="Phone" source="ContactPhone"/>
-                </row>
-                <row>
-                  <Label text="=client" />
-                  <TextLabel name="Company" source="Company">
-                    <renderToken source="CompanyName"/>
-                    <renderToken source="CompanyTypeName"/>
-                  </TextLabel>
                 </row>
                 <row>
                   <Label text="=email" />

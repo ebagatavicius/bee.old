@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="VehicleModels"
-  idName="ModelID"
-  >
+       name="VehicleModels"
+       idName="ModelID"
+>
   <Fields>
-    <String name="Name" precision="30" notNull="true" unique="true" label="=vehicleModel" />
-    <Relation name="Parent" relation="VehicleModels" label="=trVehicleMake" />
+    <Relation name="Brand" relation="VehicleBrands" notNull="true" label="=vehicleBrand" />
+    <String name="Name" precision="30" notNull="true" label="=vehicleModel" />
   </Fields>
+
+  <Constraints>
+    <Unique fields="Brand Name" />
+  </Constraints>
 </Table>

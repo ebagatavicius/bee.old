@@ -18,8 +18,7 @@
       </row>
       <row>
         <Label for="Model" />
-        <DataSelector source="Model" viewName="VehicleModels" newRowEnabled="false"
-                      renderColumns="ParentModelName ModelName" />
+        <DataSelector source="Model" viewName="VehicleModels" newRowEnabled="false" />
 
         <Label for="Customer" />
         <DataSelector source="Customer" renderColumns="CustomerName CustomerTypeName"

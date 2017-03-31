@@ -13,7 +13,7 @@
       <SimpleJoin joinType="LEFT" name="Item">
         <SimpleColumn name="Name" alias="ItemName" />
       </SimpleJoin>
-    
+
       <SimpleColumn name="Article" />
     </SimpleJoin>
 
@@ -25,31 +25,31 @@
 
       <SimpleColumn name="TradeAct" />
       <SimpleJoin joinType="LEFT" name="TradeAct">
-  
+
         <SimpleColumn name="Name" />
         <SimpleJoin joinType="LEFT" name="Name">
           <SimpleColumn name="ActName" />
         </SimpleJoin>
-  
+
         <SimpleColumn name="Date" />
         <SimpleColumn name="Until" />
-  
+
         <SimpleColumn name="Series" />
         <SimpleJoin joinType="LEFT" name="Series">
           <SimpleColumn name="SeriesName" />
         </SimpleJoin>
-  
+
         <SimpleColumn name="Number" />
-  
+
         <SimpleColumn name="Kind" />
-  
+
         <SimpleColumn name="Operation" />
         <SimpleJoin joinType="LEFT" name="Operation">
           <SimpleColumn name="OperationName" />
           <SimpleColumn name="Background" alias="OperationBackground" />
           <SimpleColumn name="Foreground" alias="OperationForeground" />
         </SimpleJoin>
-  
+
         <SimpleColumn name="Status" />
         <SimpleJoin joinType="LEFT" name="Status">
           <SimpleColumn name="StatusName" />
@@ -57,12 +57,12 @@
           <SimpleColumn name="Background" alias="StatusBackground" />
           <SimpleColumn name="Foreground" alias="StatusForeground" />
         </SimpleJoin>
-  
+
         <SimpleColumn name="Company" />
         <SimpleJoin joinType="LEFT" name="Company">
           <SimpleColumn name="Name" alias="CompanyName" />
         </SimpleJoin>
-  
+
         <SimpleColumn name="Contact" />
         <SimpleJoin name="Contact" joinType="LEFT">
           <SimpleColumn alias="ContactPerson" name="Person" />
@@ -80,7 +80,7 @@
           <SimpleColumn name="ObjectName" />
           <SimpleColumn name="ObjectAddress" />
         </SimpleJoin>
-  
+
         <SimpleColumn name="Manager" />
         <SimpleJoin name="Manager" joinType="LEFT">
           <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />
@@ -91,13 +91,13 @@
             </SimpleJoin>
           </SimpleJoin>
         </SimpleJoin>
-  
+
         <SimpleColumn name="Currency" />
         <SimpleJoin joinType="LEFT" name="Currency">
           <SimpleColumn name="Name" alias="CurrencyName" />
           <SimpleColumn name="MinorName" alias="CurrencyMinorName" />
         </SimpleJoin>
-  
+
         <SimpleColumn name="Vehicle" />
         <SimpleJoin name="Vehicle" joinType="LEFT">
           <SimpleColumn name="Number" alias="VehicleNumber" />
@@ -105,13 +105,13 @@
             <SimpleColumn name="Name" alias="VehicleType" />
           </SimpleJoin>
           <SimpleJoin name="Model" joinType="LEFT">
-            <SimpleJoin name="Parent" joinType="LEFT">
-              <SimpleColumn name="Name" alias="VehicleParentModel" />
+            <SimpleJoin name="Brand" joinType="LEFT">
+              <SimpleColumn name="BrandName" alias="VehicleBrand" />
             </SimpleJoin>
             <SimpleColumn name="Name" alias="VehicleModel" />
           </SimpleJoin>
         </SimpleJoin>
-  
+
         <SimpleColumn name="Driver" />
         <SimpleJoin name="Driver" joinType="LEFT">
           <SimpleColumn name="CompanyPerson" alias="DriverPerson" />
@@ -122,14 +122,14 @@
             </SimpleJoin>
           </SimpleJoin>
         </SimpleJoin>
-  
+
         <SimpleColumn name="Notes" />
-  
+
         <SimpleColumn name="Parent" />
       </SimpleJoin>
     </SimpleJoin>
   </Columns>
-  
+
   <Order>
     <OrderBy column="DateFrom" />
     <OrderBy column="DateTo" />

@@ -7,5 +7,6 @@
   <Fields>
     <String name="Name" precision="100" notNull="true" unique="true" label="=companyStatusName" />
     <Text name="Description" label="=description" />
+    <Boolean name="TypePerson" label="=ecClientTypePerson"/>
   </Fields>
 </Table>

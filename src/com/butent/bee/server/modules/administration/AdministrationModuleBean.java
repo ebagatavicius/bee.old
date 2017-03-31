@@ -18,6 +18,7 @@ import com.butent.bee.server.concurrency.ConcurrencyBean.HasTimerService;
 import com.butent.bee.server.data.BeeTable;
 import com.butent.bee.server.data.BeeView;
 import com.butent.bee.server.data.DataEditorBean;
+import com.butent.bee.server.data.DataEvent;
 import com.butent.bee.server.data.DataEvent.TableModifyEvent;
 import com.butent.bee.server.data.DataEvent.ViewQueryEvent;
 import com.butent.bee.server.data.DataEventHandler;
@@ -419,6 +420,14 @@ public class AdministrationModuleBean implements BeeModule, HasTimerService {
         if (event.isAfter(TBL_USERS, TBL_ROLES, TBL_USER_ROLES)) {
           usr.initUsers();
           Endpoint.updateUserData(usr.getAllUserData());
+        }
+      }
+
+      @Subscribe
+      @AllowConcurrentEvents
+      public void getFileIcons(DataEvent.ViewQueryEvent event) {
+        if (event.isAfter() && BeeUtils.isSuffix(event.getTargetName(), TBL_FILES)) {
+          ExtensionIcons.setIcons(event.getRowset(), ALS_FILE_NAME, PROP_ICON);
         }
       }
     });

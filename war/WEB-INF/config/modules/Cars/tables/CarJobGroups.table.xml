@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="CarJobGroups"
+       idName="JobGroupID"
+>
+  <Fields>
+    <String name="Name" precision="30" unique="true" notNull="true" label="=name" />
+  </Fields>
+</Table>

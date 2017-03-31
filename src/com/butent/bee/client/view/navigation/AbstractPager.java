@@ -5,7 +5,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.butent.bee.client.data.HasDataTable;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -22,7 +21,7 @@ import java.util.Objects;
 
 public abstract class AbstractPager extends Composite implements PagerView {
 
-  private HasDataTable display;
+  private HasPaging display;
 
   private HandlerRegistration changeHandler;
 
@@ -33,7 +32,7 @@ public abstract class AbstractPager extends Composite implements PagerView {
     return null;
   }
 
-  public HasDataTable getDisplay() {
+  public HasPaging getDisplay() {
     return display;
   }
 
@@ -85,7 +84,7 @@ public abstract class AbstractPager extends Composite implements PagerView {
   }
 
   @Override
-  public void setDisplay(HasDataTable display) {
+  public void setDisplay(HasPaging display) {
     if (changeHandler != null) {
       changeHandler.removeHandler();
       changeHandler = null;
@@ -113,7 +112,7 @@ public abstract class AbstractPager extends Composite implements PagerView {
   }
 
   @Override
-  public void start(HasDataTable displ) {
+  public void start(HasPaging displ) {
     if (!Objects.equals(displ, getDisplay())) {
       setDisplay(displ);
     }

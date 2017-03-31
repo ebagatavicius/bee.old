@@ -8,12 +8,11 @@ import com.butent.bee.client.event.logical.HasActiveRowChangeHandlers;
 import com.butent.bee.client.event.logical.HasSelectionCountChangeHandlers;
 import com.butent.bee.client.event.logical.HasSortHandlers;
 import com.butent.bee.client.event.logical.RowCountChangeEvent;
-import com.butent.bee.client.event.logical.ScopeChangeEvent;
 import com.butent.bee.client.view.edit.HasEditState;
+import com.butent.bee.client.view.navigation.HasPaging;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.HandlesDeleteEvents;
 import com.butent.bee.shared.data.event.HandlesUpdateEvents;
-import com.butent.bee.shared.ui.NavigationOrigin;
 
 import java.util.List;
 
@@ -22,21 +21,14 @@ import java.util.List;
  */
 
 public interface HasDataTable extends HasSortHandlers, HandlesDeleteEvents, HandlesUpdateEvents,
-    HasSelectionCountChangeHandlers, HasEditState, HasActiveRowChangeHandlers, HasDataRows {
+    HasSelectionCountChangeHandlers, HasEditState, HasActiveRowChangeHandlers, HasDataRows,
+    HasPaging {
 
   HandlerRegistration addDataReceivedHandler(DataReceivedEvent.Handler handler);
 
   HandlerRegistration addDataRequestHandler(DataRequestEvent.Handler handler);
 
   HandlerRegistration addRowCountChangeHandler(RowCountChangeEvent.Handler handler);
-
-  HandlerRegistration addScopeChangeHandler(ScopeChangeEvent.Handler handler);
-
-  int getPageSize();
-
-  int getPageStart();
-
-  int getRowCount();
 
   void preserveActiveRow(List<? extends IsRow> rows);
 
@@ -45,13 +37,6 @@ public interface HasDataTable extends HasSortHandlers, HandlesDeleteEvents, Hand
   boolean removeRowById(long rowId);
 
   void reset();
-
-  void setPageSize(int pageSize, boolean fireScopeChange);
-
-  void setPageStart(int pageStart, boolean fireScopeChange, boolean fireDataRequest,
-      NavigationOrigin origin);
-
-  void setRowCount(int count, boolean fireScopeChange);
 
   void setRowData(List<? extends IsRow> rows, boolean refresh);
 }

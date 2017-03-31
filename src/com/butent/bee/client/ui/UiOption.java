@@ -47,6 +47,10 @@ public enum UiOption {
     return hasType(options, Type.SETTINGS);
   }
 
+  public static boolean isChild(Collection<UiOption> options) {
+    return options != null && options.contains(CHILD);
+  }
+
   public static boolean isChildOrEmbedded(Collection<UiOption> options) {
     return options != null && (options.contains(CHILD) || options.contains(EMBEDDED));
   }

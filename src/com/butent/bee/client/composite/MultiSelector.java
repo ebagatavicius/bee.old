@@ -340,6 +340,10 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
     return label;
   }
 
+  public String getOldValue() {
+    return oldValue;
+  }
+
   @Override
   public AbstractCellRenderer getRenderer() {
     return renderer;
@@ -438,6 +442,10 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
   public void setIds(String idList) {
     updateValues(idList);
     renderChoices(parseChoices(idList));
+  }
+
+  public void setOldValue(String oldValue) {
+    this.oldValue = oldValue;
   }
 
   @Override
@@ -647,8 +655,15 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
     initWidget(container);
   }
 
-  public String getOldValue() {
-    return oldValue;
+  @Override
+  protected void onRowDelete(long id) {
+    if (selectsIds()) {
+      List<Long> ids = getIds();
+
+      if (ids.remove(id)) {
+        setIds(ids);
+      }
+    }
   }
 
   private boolean addChoice(ChoiceWidget choiceWidget) {
@@ -961,10 +976,6 @@ public class MultiSelector extends DataSelector implements HandlesRendering, Han
         getOracle().setExclusions(exclusions);
       }
     }
-  }
-
-  public void setOldValue(String oldValue) {
-    this.oldValue = oldValue;
   }
 
   private void updateChoice(IsRow row) {

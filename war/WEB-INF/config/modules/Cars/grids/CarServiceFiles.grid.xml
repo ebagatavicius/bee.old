@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="CarServiceFiles" viewName="CarServiceFiles" autoFit="true"
+>
+  <xi:include href="../../Administration/grids/columns/Files.columns.xml" />
+</g:Grid>

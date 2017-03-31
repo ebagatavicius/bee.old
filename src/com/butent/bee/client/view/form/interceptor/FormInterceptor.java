@@ -36,6 +36,9 @@ public interface FormInterceptor extends WidgetInterceptor, HasGridView, Handles
 
   void afterCreatePresenter(Presenter presenter);
 
+  default void afterDeleteRow(long rowId) {
+  }
+
   void afterInsertRow(IsRow result, boolean forced);
 
   void afterRefresh(FormView form, IsRow row);

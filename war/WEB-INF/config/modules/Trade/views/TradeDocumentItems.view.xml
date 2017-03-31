@@ -73,6 +73,20 @@
       <SimpleColumn name="TabNumber" alias="EmployeeTabNumber" />
     </SimpleJoin>
 
+    <SimpleColumn name="ItemVehicle" />
+    <SimpleJoin name="ItemVehicle" joinType="LEFT">
+      <SimpleColumn name="Number" alias="ItemVehicleNumber" />
+      <SimpleColumn name="BodyNumber" alias="ItemVehicleBodyNumber" />
+
+      <SimpleColumn name="Model" alias="ItemVehicleModel" />
+      <SimpleJoin name="Model" joinType="LEFT">
+        <SimpleJoin name="Brand" joinType="LEFT">
+          <SimpleColumn name="BrandName" alias="ItemVehicleBrandName" />
+        </SimpleJoin>
+        <SimpleColumn name="Name" alias="ItemVehicleModelName" />
+      </SimpleJoin>
+    </SimpleJoin>
+
     <xi:include href="../../Administration/views/viewcolumns/ExtraDimensions.viewcolumns.xml" />
     <SimpleJoin name="TradeAccounts" joinType="LEFT">
       <xi:include href="../../Classifiers/views/viewcolumns/TradeAccounts.viewcolumns.xml" />

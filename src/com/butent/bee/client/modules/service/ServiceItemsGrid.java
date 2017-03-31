@@ -10,8 +10,11 @@ import com.butent.bee.client.event.logical.ParentRowEvent;
 import com.butent.bee.client.modules.classifiers.ItemsPicker;
 import com.butent.bee.client.modules.orders.OrderItemsGrid;
 import com.butent.bee.client.modules.transport.InvoiceCreator;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Pair;
+import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
@@ -74,5 +77,20 @@ public class ServiceItemsGrid extends OrderItemsGrid {
     String endingDate = parentRow.getString(Data.getColumnIndex(getParentViewName(),
         COL_ENDING_DATE));
     return BeeUtils.isEmpty(endingDate);
+  }
+
+  @Override
+  protected double calculateItemPrice(Pair<Double, Double> pair, BeeRow row, int unpackingIdx,
+      int qtyIndex) {
+    double price = super.calculateItemPrice(pair, row, unpackingIdx, qtyIndex);
+
+    if (picker.isCheckedFilterService()) {
+      IsRow parentRow = ViewHelper.getFormRow(getGridView());
+
+      if (parentRow != null) {
+        price = ServiceUtils.calculateServicePrice(price, parentRow);
+      }
+    }
+    return price;
   }
 }

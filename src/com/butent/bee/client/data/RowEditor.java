@@ -3,6 +3,8 @@ package com.butent.bee.client.data;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Global;
+import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dialog.ModalForm;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.event.logical.RowActionEvent;
@@ -23,15 +25,19 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.event.RowDeleteEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.HandlesActions;
+import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -263,9 +269,17 @@ public final class RowEditor {
     if (formDescription != null) {
       Set<Action> actions = formDescription.getEnabledActions();
       if (!BeeUtils.isEmpty(actions)) {
-        disabledActions.addAll(enabledActions);
-        disabledActions.removeAll(actions);
-        enabledActions.retainAll(actions);
+        for (Action action : actions) {
+          if (action == Action.BOOKMARK) {
+            enabledActions.add(action);
+
+          } else if (action == Action.DELETE) {
+            if (oldRow.isRemovable() && formView.isRowEnabled(oldRow)
+                && BeeKeeper.getUser().canDeleteData(dataInfo.getViewName())) {
+              enabledActions.add(action);
+            }
+          }
+        }
       }
 
       actions = formDescription.getDisabledActions();
@@ -275,7 +289,7 @@ public final class RowEditor {
       }
     }
 
-    if (!formView.isRowEditable(oldRow, false)) {
+    if (!formView.isRowEnabled(oldRow)) {
       enabledActions.remove(Action.SAVE);
       disabledActions.add(Action.SAVE);
     }
@@ -361,6 +375,10 @@ public final class RowEditor {
             formView.bookmark();
             break;
 
+          case DELETE:
+            delete(formView);
+            break;
+
           default:
             logger.warning(NameUtils.getName(this), action, "not implemented");
         }
@@ -405,6 +423,28 @@ public final class RowEditor {
         opener.getPresenterCallback().onCreate(presenter);
       }
       formView.editRow(oldRow, focusCommand);
+    }
+  }
+
+  private static void delete(final FormView formView) {
+    final IsRow row = formView.getActiveRow();
+
+    if (formView.isRowEnabled(row)) {
+      Global.confirmDelete(formView.getCaption(), Icon.WARNING,
+          Collections.singletonList(Localized.dictionary().deleteRecordQuestion()), () ->
+              Queries.deleteRow(formView.getViewName(), row.getId(), row.getVersion(),
+                  new Queries.IntCallback() {
+                    @Override
+                    public void onFailure(String... reason) {
+                      formView.notifySevere(ArrayUtils.addFirst(
+                          Localized.dictionary().deleteRowError(), reason));
+                    }
+
+                    @Override
+                    public void onSuccess(Integer result) {
+                      RowDeleteEvent.fire(BeeKeeper.getBus(), formView.getViewName(), row.getId());
+                    }
+                  }));
     }
   }
 

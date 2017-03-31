@@ -1,8 +1,6 @@
 package com.butent.bee.client.grid;
 
 import com.butent.bee.client.presenter.GridPresenter;
-import com.butent.bee.client.presenter.Presenter;
-import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.BeeConst;
@@ -45,16 +43,13 @@ public class GridPanel extends EmbeddedGrid {
       UiOption uiOption = child ? UiOption.CHILD : UiOption.EMBEDDED;
 
       GridFactory.createGrid(getGridName(), GridFactory.getSupplierKey(getGridName(), gic), gic,
-          EnumSet.of(uiOption), getGridOptions(), new PresenterCallback() {
-            @Override
-            public void onCreate(Presenter gp) {
-              if (gp instanceof GridPresenter) {
-                setPresenter((GridPresenter) gp);
-                setWidget(gp.getMainView());
-                gp.setEventSource(getId());
+          EnumSet.of(uiOption), getGridOptions(), gp -> {
+            if (gp instanceof GridPresenter) {
+              setPresenter((GridPresenter) gp);
+              setWidget(gp.getMainView());
+              gp.setEventSource(getId());
 
-                afterCreateGrid(getGridView());
-              }
+              afterCreateGrid(getGridView());
             }
           });
     }

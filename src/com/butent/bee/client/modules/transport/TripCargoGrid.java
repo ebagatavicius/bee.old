@@ -181,8 +181,8 @@ public class TripCargoGrid extends PercentEditor {
     super.onDataReceived(rows);
     Order order = getGridView().getGrid().getSortOrder();
 
-    if (!BeeConst.isUndef(order.getIndex(ALS_LOADING_DATE))
-        || !BeeConst.isUndef(order.getIndex(ALS_UNLOADING_DATE))) {
+    if (rows != null && (!BeeConst.isUndef(order.getIndex(ALS_LOADING_DATE))
+        || !BeeConst.isUndef(order.getIndex(ALS_UNLOADING_DATE)))) {
       Collections.sort(rows, (row1, row2) -> {
         int result = BeeConst.COMPARE_EQUAL;
 

@@ -45,6 +45,8 @@
 
     <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName"
                sortBy="ManagerLastName ManagerFirstName" />
+    <RelColumn name="Vehicle" caption="=trdVehicleShort"
+               renderColumns="VehicleBrandName VehicleModelName VehicleNumber VehicleBodyNumber" />
 
     <DataColumn name="DocumentDiscount" visible="false" />
     <DataColumn name="PriceName" visible="false" />
@@ -73,6 +75,9 @@
 
     <RelColumn name="Employee" renderColumns="EmployeeFirstName EmployeeLastName"
                sortBy="EmployeeLastName EmployeeFirstName" visible="false" />
+    <RelColumn name="ItemVehicle" caption="=trdItemVehicleShort"
+               renderColumns="ItemVehicleBrandName ItemVehicleModelName ItemVehicleNumber ItemVehicleBodyNumber"
+               visible="false" />
   </g:columns>
 
   <xi:include href="../../Administration/grids/columns/HiddenDimensions.columns.xml" />

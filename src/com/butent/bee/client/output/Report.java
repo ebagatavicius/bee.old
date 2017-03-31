@@ -2,9 +2,10 @@ package com.butent.bee.client.output;
 
 import com.google.gwt.user.client.ui.Widget;
 
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_RS_REPORT;
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_USER;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.ALS_COMPANY_NAME;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_NOTES;
+import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
@@ -37,8 +38,9 @@ import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.modules.projects.ProjectPriority;
 import com.butent.bee.shared.modules.projects.ProjectStatus;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
-import com.butent.bee.shared.modules.tasks.TaskConstants.TaskStatus;
+import com.butent.bee.shared.modules.tasks.TaskConstants.*;
 import com.butent.bee.shared.modules.transport.TransportConstants;
+import com.butent.bee.shared.report.DateTimeFunction;
 import com.butent.bee.shared.report.ReportInfo;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
@@ -143,11 +145,13 @@ public enum Report implements HasWidgetSupplier {
 
           new ReportNumericItem(COL_ROUTE_KILOMETERS, loc.kilometers()),
           new ReportNumericItem("TripIncome", loc.incomes()).setPrecision(2),
+          new ReportNumericItem("CargoIncome", loc.trCargoIncomes()).setPrecision(2),
           new ReportNumericItem("FuelCosts", loc.trFuelCosts()).setPrecision(2),
           new ReportNumericItem("DailyCosts", loc.trDailyCosts()).setPrecision(2),
           new ReportNumericItem("RoadCosts", loc.trRoadCosts()).setPrecision(2),
           new ReportNumericItem("OtherCosts", loc.trOtherCosts()).setPrecision(2),
           new ReportNumericItem("ConstantCosts", loc.trConstantCosts()).setPrecision(2),
+          new ReportNumericItem("CargoCosts", loc.trCargoCosts()).setPrecision(2),
 
           new ReportNumericItem("Planned" + COL_ROUTE_KILOMETERS,
               BeeUtils.joinWords(loc.kilometers(), plan)),
@@ -185,13 +189,13 @@ public enum Report implements HasWidgetSupplier {
       ReportInfo report = new ReportInfo(Localized.dictionary().trReportCustomerProfit());
 
       Stream.of(ALS_ORDER_DATE, COL_ORDER_NO, COL_TRIP_MANAGER, COL_TRIP_ROUTE)
-        .forEach(item -> report.addRowItem(items.get(item)));
+          .forEach(item -> report.addRowItem(items.get(item)));
 
       report.setRowGrouping(items.get(COL_CUSTOMER));
       report.addColItem(items.get(COL_ROUTE_KILOMETERS));
       createProfit(report, items, false);
       report.getFilterItems().add(items.get(COL_TRIP_STATUS)
-        .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
+          .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
 
       return report;
     }
@@ -199,15 +203,15 @@ public enum Report implements HasWidgetSupplier {
     private ReportInfo getOrderProfit(Map<String, ReportItem> items) {
       ReportInfo report = new ReportInfo(Localized.dictionary().trReportOrderProfit());
       Stream.of(ALS_ORDER_DATE, COL_TRIP_STATUS, COL_CUSTOMER, COL_TRIP_MANAGER, COL_TRIP_ROUTE)
-        .forEach(item -> report.addRowItem(items.get(item)));
+          .forEach(item -> report.addRowItem(items.get(item)));
 
       report.setRowGrouping(items.get(COL_ORDER_NO));
       Stream.of(COL_TRIP_NO, ALS_TRIP_MANAGER, COL_ROUTE_KILOMETERS)
-        .forEach(item -> report.addColItem(items.get(item)));
+          .forEach(item -> report.addColItem(items.get(item)));
 
       createProfit(report, items, false);
       report.getFilterItems().add(items.get(COL_TRIP_STATUS)
-        .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
+          .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
 
       return report;
     }
@@ -215,41 +219,49 @@ public enum Report implements HasWidgetSupplier {
     private ReportInfo getTripProfit(Map<String, ReportItem> items) {
       ReportInfo report = new ReportInfo(Localized.dictionary().trReportTripProfit());
       Stream.of(COL_TRIP_NO, COL_TRIP_DATE_FROM, COL_TRIP_DATE_TO, COL_CUSTOMER, COL_MAIN_DRIVER,
-        COL_TRAILER)
-        .forEach(item -> report.addRowItem(items.get(item)));
+          COL_TRAILER)
+          .forEach(item -> report.addRowItem(items.get(item)));
 
       report.setRowGrouping(items.get(COL_VEHICLE));
       report.addColItem(items.get(COL_ROUTE_KILOMETERS));
       createProfit(report, items, true);
       report.getFilterItems().add(items.get(COL_TRIP_STATUS)
-        .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
+          .setFilter(BeeUtils.toString(TripStatus.COMPLETED.ordinal())));
 
       return report;
     }
 
     private void createProfit(ReportInfo report, Map<String, ReportItem> items, boolean expand) {
-      ReportItem tripIncome = items.get("TripIncome");
-      ReportFormulaItem profit = (ReportFormulaItem) new ReportFormulaItem(
-        Localized.dictionary().profit()).setPrecision(2);
+      ReportFormulaItem incomes = (ReportFormulaItem) new ReportFormulaItem(
+          Localized.dictionary().incomes()).setPrecision(2);
       ReportFormulaItem costs = (ReportFormulaItem) new ReportFormulaItem(
-        Localized.dictionary().expenses()).setPrecision(2);
+          Localized.dictionary().expenses()).setPrecision(2);
+      ReportFormulaItem profit = (ReportFormulaItem) new ReportFormulaItem(
+          Localized.dictionary().profit()).setPrecision(2);
 
-      report.addColItem(tripIncome);
-      profit.plus(new ReportResultItem(tripIncome));
-
+      Stream.of("TripIncome", "CargoIncome")
+          .forEach(item -> {
+            if (expand) {
+              report.addColItem(items.get(item));
+              profit.plus(new ReportResultItem(items.get(item)));
+            } else {
+              incomes.plus(items.get(item));
+            }
+          });
+      Stream.of("FuelCosts", "DailyCosts", "RoadCosts", "OtherCosts", "ConstantCosts", "CargoCosts")
+          .forEach(item -> {
+            if (expand) {
+              report.addColItem(items.get(item));
+              profit.minus(new ReportResultItem(items.get(item)));
+            } else {
+              costs.plus(items.get(item));
+            }
+          });
       if (!expand) {
+        report.addColItem(incomes);
         report.addColItem(costs);
-        profit.minus(new ReportResultItem(costs));
+        profit.plus(new ReportResultItem(incomes)).minus(new ReportResultItem(costs));
       }
-      Stream.of("FuelCosts", "DailyCosts", "RoadCosts", "OtherCosts", "ConstantCosts")
-        .forEach(item -> {
-          if (expand) {
-            report.addColItem(items.get(item));
-            profit.minus(new ReportResultItem(items.get(item)));
-          } else {
-            costs.plus(items.get(item));
-          }
-        });
       report.addColItem(profit);
     }
   },
@@ -447,7 +459,7 @@ public enum Report implements HasWidgetSupplier {
                   Data.getColumnLabel(TBL_EVENT_DURATIONS,
                       COL_DURATION), loc.unitHourShort()))
 
-          );
+      );
     }
 
     @Override
@@ -486,6 +498,62 @@ public enum Report implements HasWidgetSupplier {
       return Collections.singletonList(report);
     }
 
+  },
+
+  SERVICE_PAYROLL_REPORT(ModuleAndSub.of(Module.SERVICE), SVC_SERVICE_PAYROLL_REPORT) {
+    @Override
+    public List<ReportItem> getItems() {
+      return Arrays.asList(
+          new ReportTextItem(COL_SERVICE_MAINTENANCE,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_SERVICE_MAINTENANCE)),
+          new ReportTextItem(COL_REPAIRER,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_REPAIRER)),
+          new ReportDateItem(COL_DATE,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_DATE)),
+          new ReportDateTimeItem(COL_PAYROLL_DATE,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_PAYROLL_DATE)),
+          new ReportNumericItem(COL_PAYROLL_BASIC_AMOUNT,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_PAYROLL_BASIC_AMOUNT))
+              .setPrecision(2),
+          new ReportNumericItem(COL_PAYROLL_TARIFF,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_PAYROLL_TARIFF)).setPrecision(2),
+          new ReportNumericItem(COL_PAYROLL_SALARY,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_PAYROLL_SALARY)).setPrecision(2),
+          new ReportTextItem(ALS_CURRENCY_NAME,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_CURRENCY)),
+          new ReportBooleanItem(COL_PAYROLL_CONFIRMED,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_PAYROLL_CONFIRMED)),
+          new ReportDateTimeItem(COL_PAYROLL_CONFIRMATION_DATE,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_PAYROLL_CONFIRMATION_DATE))
+              .setFormat(DateTimeFunction.DATE),
+          new ReportTextItem(COL_PAYROLL_CONFIRMED + COL_USER,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_PAYROLL_CONFIRMED + COL_USER)),
+          new ReportTextItem(COL_NOTES,
+              Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_NOTES))
+          );
+    }
+
+    @Override
+    public String getReportCaption() {
+      return Localized.dictionary().svcPayrollReport();
+    }
+
+    @Override
+    public Collection<ReportInfo> getReports() {
+      Map<String, ReportItem> items = new HashMap<>();
+
+      for (ReportItem item : getItems()) {
+        items.put(item.getExpression(), item);
+      }
+      ReportInfo report = new ReportInfo(getReportCaption());
+      report.addRowItem(items.get(COL_SERVICE_MAINTENANCE));
+
+      Stream.of(COL_REPAIRER, COL_DATE, COL_PAYROLL_DATE, COL_PAYROLL_BASIC_AMOUNT,
+          COL_PAYROLL_TARIFF, COL_PAYROLL_SALARY, ALS_CURRENCY_NAME, COL_PAYROLL_CONFIRMED,
+          COL_PAYROLL_CONFIRMATION_DATE, COL_PAYROLL_CONFIRMED + COL_USER, COL_NOTES)
+          .forEach(item -> report.addColItem(items.get(item)));
+      return Collections.singletonList(report);
+    }
   };
 
   private static BeeLogger logger = LogUtils.getLogger(Report.class);

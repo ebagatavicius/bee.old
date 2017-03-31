@@ -19,6 +19,10 @@
         <Label for="Description" horizontalAlignment="right" style="&lbl1;" />
         <InputArea source="Description" style="width: 155px;" />
       </row>
+      <row>
+        <Label />
+        <CheckBox source="TypePerson" />
+      </row>
     </Table>
   </FlowPanel>
 </f:Form>

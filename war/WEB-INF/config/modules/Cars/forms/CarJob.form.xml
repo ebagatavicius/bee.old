@@ -28,6 +28,9 @@
       <row>
         <Label for="Item" />
         <DataSelector source="Item" newRowEnabled="false" editEnabled="false" filter="IsService" />
+
+        <Label for="JobGroup" />
+        <DataSelector source="JobGroup" />
       </row>
     </Table>
     <br />

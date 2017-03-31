@@ -3,6 +3,7 @@
 
   name="ShippingTerms"
   source="ShippingTerms"
+  caption="=trShippingTerms"
   newRowCaption="=trNewShippingTerm" 
   >
   <Columns>

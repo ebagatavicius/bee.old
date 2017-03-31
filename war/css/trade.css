@@ -246,11 +246,6 @@
   color: #00e;
 }
 
-.bee-trade-document-new-item-selector td:nth-child(3),
-.bee-trade-document-new-item-selector td:nth-child(5) {
-  text-align: right;
-}
-
 .bee-grid-TradeDocumentItems.bee-GridContainer-no-data .bee-trade-price-calculation,
 .bee-grid-TradeDocumentItems.bee-GridContainer-no-data .bee-trade-cost-calculation,
 .bee-grid-TradeExpenditures.bee-GridContainer-no-data .bee-trade-cost-calculation {
@@ -260,6 +255,13 @@
 .bee-form-TradeDocument .bee-disabled .bee-trade-cost-calculation,
 .bee-form-TradeDocument .bee-disabled .bee-trade-fin-post {
   visibility: hidden;
+}
+
+.bee-trade-item-picker-new-item,
+.bee-trade-item-picker-new-service {
+  padding: 3px 8px;
+  margin-right: 1em;
+  color: #414142;
 }
 
 .bee-trade-item-picker-search-panel {
@@ -306,10 +308,15 @@
   padding: 3px 5px;
   border: 1px solid #ddd;
   text-align: center;
-  font-weight: bold;
+  font-weight: bolder;
 }
 .bee-trade-item-picker-item-price-label {
   max-width: 80px;
+}
+.bee-trade-item-picker-qty-label,
+.bee-trade-item-picker-qty-footer,
+.bee-trade-item-picker-total-footer {
+  cursor: pointer;
 }
 
 .bee-trade-item-picker-item:nth-child(odd) {
@@ -331,7 +338,7 @@
 }
 .bee-trade-item-picker-footer td {
   padding: 3px 5px;
-  font-weight: bold;
+  font-weight: bolder;
 }
 
 .bee-trade-item-picker-id-cell,
@@ -355,6 +362,11 @@
   white-space: nowrap;
 }
 
+.bee-trade-item-picker-id-cell:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .bee-trade-item-picker-type-cell,
 .bee-trade-item-picker-group-cell {
   white-space: pre-line;
@@ -364,11 +376,21 @@
 .bee-trade-item-picker-main-warehouse-cell {
   background-color: azure;
 }
-.bee-trade-item-picker-main-warehouse-cell:hover {
+.bee-trade-item-picker-main-warehouse-label:hover,
+.bee-trade-item-picker-main-warehouse-cell[data-avail]:hover {
   cursor: pointer;
   background-color: white;
   outline: green solid 1px;
   outline-offset: -1px;
+}
+
+.bee-trade-item-picker-reserved {
+  margin-left: 5px;
+  color: crimson;
+}
+.bee-trade-item-picker-available {
+  margin-left: 8px;
+  font-weight: bolder;
 }
 
 .bee-trade-item-picker-qty-cell {
@@ -376,5 +398,18 @@
 }
 .bee-trade-item-picker-qty-cell .bee-trade-item-picker-qty-input {
   width: 60px;
-  font-weight: bold;
+  font-weight: bolder;
+  font-size: larger;
+}
+
+.bee-trade-item-picker-service .bee-trade-item-picker-name-cell,
+.bee-trade-item-picker-service .bee-trade-item-picker-qty-input {
+  color: darkblue;
+}
+
+.bee-trade-item-picker-empty .bee-trade-item-picker-pager {
+  visibility: hidden;
+}
+.bee-trade-item-picker-pager .bee-SimplePager-info {
+  font-style: italic;
 }

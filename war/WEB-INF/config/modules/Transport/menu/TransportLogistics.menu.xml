@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="TransportLogistics" label="=trLogistics" parent="Transport" order="2" separator="true" 
+name="TransportLogistics" label="=trExpedition" parent="Transport" order="2" separator="true"
 module="Transport.Logistics"
 >
   <Item name="AssessmentRequests" label="=trAssessmentRequests" service="assessments_grid" parameters="AssessmentRequests" />

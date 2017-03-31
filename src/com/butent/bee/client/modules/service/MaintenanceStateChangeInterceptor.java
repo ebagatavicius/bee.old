@@ -138,6 +138,8 @@ abstract class MaintenanceStateChangeInterceptor extends MaintenanceExpanderForm
               maintenanceValues.put(COL_WARRANTY_VALID_TO,
                   result.getProperty(COL_WARRANTY_VALID_TO));
               maintenanceValues.put(COL_WARRANTY_TYPE, result.getProperty(COL_WARRANTY_TYPE));
+              maintenanceValues.put(COL_MAINTENANCE_URGENT,
+                  result.getProperty(COL_MAINTENANCE_URGENT));
               success.onSuccess(Pair.of(true, maintenanceValues));
             }
           }
@@ -175,8 +177,7 @@ abstract class MaintenanceStateChangeInterceptor extends MaintenanceExpanderForm
               COL_SERVICE_OBJECT)),
           BeeUtils.toString(BeeKeeper.getUser().getUserData().getCompanyPerson()),
           BeeUtils.toString(itemId), DEFAULT_QUANTITY,
-          commentRow.getString(Data.getColumnIndex(TBL_MAINTENANCE_COMMENTS,
-              ClassifierConstants.COL_ITEM_PRICE)),
+          BeeUtils.toString(ServiceUtils.calculateServicePrice(commentRow, serviceMaintenanceRow)),
           BeeUtils.isEmpty(currency) ? BeeUtils.toString(ClientDefaults.getCurrency()) : currency);
 
       Queries.getRowSet(ClassifierConstants.TBL_ITEMS,

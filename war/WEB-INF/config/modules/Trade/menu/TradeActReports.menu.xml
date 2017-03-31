@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-name="TradeActReports" label="=taReports" parent="Trade" order="80" module="Trade.Acts"
-separator="true" 
+       name="TradeActReports" label="=taReports" parent="TradeActs" order="100" module="Trade.Acts"
+       separator="true"
 >
   <Item name="TradeActItemsByCompanyReport" label="=taReportItemsByCompany" service="report"
-    parameters="TradeActItemsByCompany" />
+        parameters="TradeActItemsByCompany" />
   <Item name="TradeActStockReport" label="=taReportStock" service="report"
-    parameters="TradeActStock" />
+        parameters="TradeActStock" />
   <Item name="TradeActServicesReport" label="=taReportServices" service="report"
-    parameters="TradeActServices" />
+        parameters="TradeActServices" />
   <Item name="TradeActTransferReport" label="=taReportTransfer" service="report"
-    parameters="TradeActTransfer" />
+        parameters="TradeActTransfer" />
 </Entry>

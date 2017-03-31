@@ -132,6 +132,7 @@ public class CarServiceJobsGrid extends ParentRowRefreshGrid implements Selector
         options.put(COL_DISCOUNT_COMPANY, parentForm.getStringValue(COL_CUSTOMER));
         options.put(Service.VAR_TIME, BeeUtils.toString(mainDate.getTime()));
         options.put(COL_DISCOUNT_CURRENCY, BeeUtils.toStringOrNull(mainCurrency));
+        options.put(COL_DISCOUNT_WAREHOUSE, parentForm.getStringValue(COL_WAREHOUSE));
         options.put(COL_MODEL, parentForm.getStringValue(COL_MODEL));
         options.put(COL_PRODUCTION_DATE, parentForm.getStringValue(COL_PRODUCTION_DATE));
         options.put(COL_JOB, BeeUtils.toString(event.getValue()));
@@ -263,6 +264,7 @@ public class CarServiceJobsGrid extends ParentRowRefreshGrid implements Selector
                     options.put(COL_DISCOUNT_COMPANY, parentForm.getStringValue(COL_CUSTOMER));
                     options.put(Service.VAR_TIME, parentForm.getStringValue(COL_DATE));
                     options.put(COL_DISCOUNT_CURRENCY, parentForm.getStringValue(COL_CURRENCY));
+                    options.put(COL_DISCOUNT_WAREHOUSE, parentForm.getStringValue(COL_WAREHOUSE));
                     options.put(COL_MODEL, parentForm.getStringValue(COL_MODEL));
                     options.put(COL_PRODUCTION_DATE,
                         parentForm.getStringValue(COL_PRODUCTION_DATE));

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
+        xmlns:ui="http://www.butent.com/ui"
 
-  name="CargoIncomes" viewName="CargoIncomes"
-  flexGrow="1"
-  newRowCaption="=trNewService"
-  >
+        name="CargoIncomes" viewName="CargoIncomes"
+        flexGrow="1"
+        newRowCaption="=trNewService"
+>
   <g:columns>
     <DataColumn name="Date" caption="=date" />
 
@@ -13,17 +13,24 @@
     <DataColumn name="Amount" format="0.00" />
     <RelColumn name="Currency" caption="=currencyShort" flexGrow="0" />
     <DataColumn name="VatPlus" width="20" sortable="false" horizontalAlignment="center" caption="+">
-      <render><ui:expression>row.VatPlus ? '+' : ''</ui:expression></render>
+      <render>
+        <ui:expression>row.VatPlus ? '+' : ''</ui:expression>
+      </render>
     </DataColumn>
     <DataColumn name="Vat">
       <editor type="number" percentageTag="VatPercent" />
-        </DataColumn>
-    <DataColumn name="VatPercent" width="20" sortable="false" horizontalAlignment="center" caption="%">
-      <render><ui:expression>row.VatPercent ? '%' : ''</ui:expression></render>
+    </DataColumn>
+    <DataColumn name="VatPercent" width="20" sortable="false" horizontalAlignment="center"
+                caption="%">
+      <render>
+        <ui:expression>row.VatPercent ? '%' : ''</ui:expression>
+      </render>
     </DataColumn>
     <CalcColumn name="Total" type="decimal" caption="=totalOf" format="0.00">
       <style>
-        <bodyStyle><ui:font>bold</ui:font></bodyStyle>
+        <bodyStyle>
+          <ui:font>bold</ui:font>
+        </bodyStyle>
       </style>
       <renderer type="total" />
     </CalcColumn>
@@ -38,6 +45,8 @@
     <RelColumn name="Purchase" caption="=trCreditIdShort" readOnly="true"
                renderColumns="Purchase PurchasePrefix PurchaseNo" editEnabled="true"
                editForm="CargoPurchaseInvoice" editViewName="CargoPurchaseInvoices" />
+
+    <RelColumn name="CargoTrip" visible="false" caching="none" />
   </g:columns>
 
   <g:rowEditable>

@@ -818,6 +818,7 @@ public class DataSelector extends Composite implements Editor, HasVisibleLines, 
         choiceColumns, dataInfo.getColumns(), cellSource);
 
     oracle.addRowCountChangeHandler(parameter -> setAlive(parameter > 0));
+    oracle.addRowDeleteHandler(this::onRowDelete);
 
     oracle.addDataReceivedHandler(rowSet -> {
       if (!DataUtils.isEmpty(rowSet)) {
@@ -1470,6 +1471,12 @@ public class DataSelector extends Composite implements Editor, HasVisibleLines, 
 
   protected boolean isStrict() {
     return strict;
+  }
+
+  protected void onRowDelete(long id) {
+    if (!hasValueSource() && Objects.equals(getEditorValueAsId(), id)) {
+      clearValue();
+    }
   }
 
   @Override

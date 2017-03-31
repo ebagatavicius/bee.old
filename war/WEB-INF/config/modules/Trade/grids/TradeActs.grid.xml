@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  
+
   name="TradeActs" viewName="TradeActs" caption="=tradeActs"
   >
   <g:columns>
@@ -27,7 +27,7 @@
     <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
     <RelColumn name="Currency" renderColumns="CurrencyName" />
 
-    <RelColumn name="Vehicle" renderColumns="VehicleParentModel VehicleModel VehicleNumber" />
+    <RelColumn name="Vehicle" renderColumns="VehicleBrand VehicleModel VehicleNumber" />
     <RelColumn name="Driver" renderColumns="DriverFirstName DriverLastName" />
 
     <DataColumn name="Notes" />

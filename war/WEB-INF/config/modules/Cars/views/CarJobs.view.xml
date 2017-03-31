@@ -21,6 +21,11 @@
       <SimpleColumn name="Article" />
     </SimpleJoin>
 
+    <SimpleColumn name="JobGroup" />
+    <SimpleJoin joinType="LEFT" name="JobGroup">
+      <SimpleColumn name="Name" alias="JobGroupName" />
+    </SimpleJoin>
+
     <ExternalJoin name="Job" joinType="LEFT" source="CarJobModels">
       <HiddenColumn name="Model" />
       <AggregateColumn name="Duration" alias="ModelDuration" aggregate="MAX" />

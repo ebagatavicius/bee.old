@@ -1792,10 +1792,22 @@
 }
 
 .bee-SimplePager-container {
-  border-spacing: 1px;
+  display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  align-items: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
 }
-.bee-SimplePager-disabledButton {
+.bee-SimplePager-command {
+  margin-right: 1px;
+}
+.bee-SimplePager-command-disabled {
   visibility: hidden;
+}
+.bee-SimplePager-info {
+  text-align: center;
+  margin-right: 1px;
 }
 
 .bee-FooterContainer {
@@ -1811,7 +1823,7 @@
   -ms-flex-pack: justify;
 }
 
-.bee-SimplePager {
+.bee-FooterContainer .bee-SimplePager {
   margin-left: 5px;
   margin-right: 1em;
 }

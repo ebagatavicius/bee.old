@@ -209,6 +209,16 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
   public List<SearchResult> doSearch(String query) {
     List<SearchResult> result = new ArrayList<>();
 
+    Filter documentFilter;
+    if (DataUtils.isId(query)) {
+      documentFilter = Filter.or(Filter.compareId(BeeUtils.toLong(query)),
+          Filter.equals(COL_TRADE_NUMBER, query));
+    } else {
+      documentFilter = Filter.equals(COL_TRADE_NUMBER, query);
+    }
+
+    result.addAll(qs.getSearchResults(VIEW_TRADE_DOCUMENTS, documentFilter));
+
     Set<String> columns = Sets.newHashSet(COL_TRADE_NUMBER, COL_TRADE_INVOICE_NO,
         ALS_CUSTOMER_NAME);
     result.addAll(qs.getSearchResults(VIEW_SALES, Filter.anyContains(columns, query)));
@@ -426,7 +436,7 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
     Collection<BeeParameter> params = new ArrayList<>();
     params.add(BeeParameter.createDate(module, PRM_PROTECT_TRADE_DOCUMENTS_BEFORE, true, null));
 
-    params.addAll(act.getDefaultParameters(module));
+    params.addAll(act.getDefaultParameters());
 
     return params;
   }
@@ -1057,16 +1067,27 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
 
               warehouses.forEach((warehouseId, warehouseCode) -> {
                 Multimap<Long, ItemQuantities> reservations = getReservations(warehouseId, items);
+                Map<Long, Double> averageCost = getAverageCost(warehouseId, items);
 
-                if (!reservations.isEmpty()) {
+                if (!reservations.isEmpty() || !averageCost.isEmpty()) {
+                  int costScale = sys.getFieldScale(TBL_TRADE_ITEM_COST, COL_TRADE_ITEM_COST);
+
                   for (BeeRow row : rowSet) {
-                    if (reservations.containsKey(row.getId())) {
-                      double reserved = reservations.get(row.getId()).stream()
+                    long id = row.getId();
+
+                    if (reservations.containsKey(id)) {
+                      double reserved = reservations.get(id).stream()
                           .mapToDouble(ItemQuantities::getReserved).sum();
 
                       if (reserved > 0) {
                         row.setProperty(keyReservedWarehouse(warehouseCode), reserved);
                       }
+                    }
+
+                    Double cost = averageCost.get(id);
+                    if (BeeUtils.isDouble(cost)) {
+                      row.setProperty(keyCostWarehouse(warehouseCode),
+                          BeeUtils.toString(cost, costScale));
                     }
                   }
                 }
@@ -3680,5 +3701,76 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
     }
 
     return info;
+  }
+
+  private Map<Long, Double> getAverageCost(Long warehouse, Collection<Long> items) {
+    Map<Long, Double> result = new HashMap<>();
+
+    String colAmount = SqlUtils.uniqueName(COL_TRADE_ITEM_COST);
+
+    SqlSelect query = new SqlSelect()
+        .addFields(TBL_TRADE_DOCUMENT_ITEMS, COL_ITEM)
+        .addFields(TBL_TRADE_ITEM_COST, COL_TRADE_ITEM_COST_CURRENCY)
+        .addSum(TBL_TRADE_STOCK, COL_STOCK_QUANTITY)
+        .addSum(SqlUtils.multiply(
+            SqlUtils.field(TBL_TRADE_STOCK, COL_STOCK_QUANTITY),
+            SqlUtils.field(TBL_TRADE_ITEM_COST, COL_TRADE_ITEM_COST)), colAmount)
+        .addFrom(TBL_TRADE_STOCK)
+        .addFromInner(TBL_TRADE_DOCUMENT_ITEMS, sys.joinTables(TBL_TRADE_DOCUMENT_ITEMS,
+            TBL_TRADE_STOCK, COL_PRIMARY_DOCUMENT_ITEM))
+        .addFromInner(TBL_TRADE_ITEM_COST, sys.joinTables(TBL_TRADE_DOCUMENT_ITEMS,
+            TBL_TRADE_ITEM_COST, COL_TRADE_DOCUMENT_ITEM))
+        .addGroup(TBL_TRADE_DOCUMENT_ITEMS, COL_ITEM)
+        .addGroup(TBL_TRADE_ITEM_COST, COL_TRADE_ITEM_COST_CURRENCY)
+        .addOrder(TBL_TRADE_DOCUMENT_ITEMS, COL_ITEM);
+
+    HasConditions where = SqlUtils.and(SqlUtils.nonZero(TBL_TRADE_STOCK, COL_STOCK_QUANTITY),
+        SqlUtils.notNull(TBL_TRADE_ITEM_COST, COL_TRADE_ITEM_COST, COL_TRADE_ITEM_COST_CURRENCY));
+
+    if (DataUtils.isId(warehouse)) {
+      where.add(SqlUtils.equals(TBL_TRADE_STOCK, COL_STOCK_WAREHOUSE, warehouse));
+    }
+
+    if (!BeeUtils.isEmpty(items)) {
+      where.add(SqlUtils.inList(TBL_TRADE_DOCUMENT_ITEMS, COL_ITEM, items));
+    }
+
+    SimpleRowSet data = qs.getData(query.setWhere(where));
+
+    if (!DataUtils.isEmpty(data)) {
+      Long currencyTo = prm.getRelation(PRM_CURRENCY);
+      DateTime date = TimeUtils.nowMinutes();
+
+      Long lastItem = null;
+      double totalQuantity = BeeConst.DOUBLE_ZERO;
+      double totalAmount = BeeConst.DOUBLE_ZERO;
+
+      for (SimpleRow row : data) {
+        Long item = row.getLong(COL_ITEM);
+
+        Double quantity = row.getDouble(COL_STOCK_QUANTITY);
+        Double amount = adm.maybeExchange(row.getLong(COL_TRADE_ITEM_COST_CURRENCY), currencyTo,
+            row.getDouble(colAmount), date);
+
+        if (!Objects.equals(lastItem, item)) {
+          if (lastItem != null && BeeUtils.nonZero(totalQuantity)) {
+            result.put(lastItem, totalAmount / totalQuantity);
+          }
+
+          lastItem = item;
+          totalQuantity = BeeConst.DOUBLE_ZERO;
+          totalAmount = BeeConst.DOUBLE_ZERO;
+        }
+
+        totalQuantity += BeeUtils.unbox(quantity);
+        totalAmount += BeeUtils.unbox(amount);
+      }
+
+      if (lastItem != null && BeeUtils.nonZero(totalQuantity)) {
+        result.put(lastItem, totalAmount / totalQuantity);
+      }
+    }
+
+    return result;
   }
 }

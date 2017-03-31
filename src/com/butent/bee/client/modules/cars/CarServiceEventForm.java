@@ -47,6 +47,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.RowChildren;
+import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.font.FontAwesome;
@@ -63,6 +64,11 @@ import java.util.function.BiConsumer;
 
 public class CarServiceEventForm extends AbstractFormInterceptor implements ClickHandler,
     SelectorEvent.Handler {
+
+  @Override
+  public void afterDeleteRow(long rowId) {
+    Data.onViewChange(TBL_SERVICE_JOB_PROGRESS, DataChangeEvent.RESET_REFRESH);
+  }
 
   @Override
   public void afterCreateEditableWidget(EditableWidget editableWidget, IdentifiableWidget widget) {

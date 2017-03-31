@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+        name="VehicleModels" viewName="VehicleModels" caption="=vehicleModels"
+>
+  <g:columns>
+    <RelColumn name="Brand" />
+    <DataColumn name="Name" />
+  </g:columns>
+</g:Grid>

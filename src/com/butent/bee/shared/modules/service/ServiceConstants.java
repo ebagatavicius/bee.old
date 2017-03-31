@@ -47,6 +47,8 @@ public final class ServiceConstants {
   public static final String SVC_GET_ITEMS_INFO = "getItemsInfo";
   public static final String SVC_GET_REPAIRER_TARIFF = "getRepairerTariff";
 
+  public static final String SVC_SERVICE_PAYROLL_REPORT = "ServicePayrollReport";
+
   public static final String TBL_EQUIPMENT = "Equipment";
   public static final String TBL_SERVICE_TREE = "ServiceTree";
   public static final String TBL_SERVICE_OBJECTS = "ServiceObjects";
@@ -117,6 +119,7 @@ public final class ServiceConstants {
   public static final String COL_PAYROLL_CONFIRMED = "Confirmed";
   public static final String COL_PAYROLL_CONFIRMED_USER = "ConfirmedUser";
   public static final String COL_PAYROLL_CONFIRMATION_DATE = "ConfirmationDate";
+  public static final String COL_PAYROLL_DATE = "PayrollDate";
   public static final String COL_PAYROLL_SALARY = "Salary";
   public static final String COL_PAYROLL_TARIFF = "Tariff";
 
@@ -140,6 +143,7 @@ public final class ServiceConstants {
   public static final String COL_MAINTENANCE_DESCRIPTION = "Description";
   public static final String COL_MAINTENANCE_NOTES = "Notes";
   public static final String COL_MAINTENANCE_TYPE = "MaintenanceType";
+  public static final String COL_MAINTENANCE_URGENT = "Urgent";
   public static final String COL_MODEL = "Model";
   public static final String COL_PUBLISH_TIME = "PublishTime";
   public static final String COL_SERIAL_NO = "SerialNo";

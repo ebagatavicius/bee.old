@@ -66,7 +66,6 @@ import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
-import com.butent.bee.client.view.grid.interceptor.ParentRowRefreshGrid;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.InlineLabel;
@@ -462,7 +461,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
     if (widget instanceof ChildGrid) {
       switch (name) {
         case TBL_CARGO_INCOMES:
-          ((ChildGrid) widget).setGridInterceptor(new ParentRowRefreshGrid());
+          ((ChildGrid) widget).setGridInterceptor(new CargoIncomesGrid());
           break;
 
         case TBL_CARGO_EXPENSES:

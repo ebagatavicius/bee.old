@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="VehicleBrands" source="VehicleBrands" caption="=vehicleBrands"
+>
+  <Columns>
+    <SimpleColumn name="BrandName" label="=vehicleBrand" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="BrandName" />
+  </Order>
+</View>

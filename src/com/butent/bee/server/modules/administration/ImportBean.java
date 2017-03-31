@@ -54,11 +54,13 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.imports.ImportProperty;
 import com.butent.bee.shared.imports.ImportType;
 import com.butent.bee.shared.io.FileInfo;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.cars.Bundle;
 import com.butent.bee.shared.modules.cars.CarsConstants;
 import com.butent.bee.shared.modules.cars.ConfInfo;
 import com.butent.bee.shared.modules.cars.Configuration;
 import com.butent.bee.shared.modules.cars.Option;
+import com.butent.bee.shared.modules.transport.TransportConstants;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -295,7 +297,8 @@ public class ImportBean {
 
     Stream.of(
       TBL_BANKS, VIEW_CARS, TBL_CITIES, VIEW_COLORS, TBL_COMPANIES, TBL_COMPANY_PERSONS,
-      TBL_DRIVERS, TBL_PERSONS
+      TBL_DRIVERS, TBL_EXPEDITION_TYPES, TBL_ITEMS, TBL_PERSONS, TBL_RIGHTS, TBL_SERVICES,
+      TBL_SHIPPING_TERMS
     ).forEach(viewName -> {
       final DataInfo viewInfo = sys.getDataInfo(viewName);
 
@@ -304,7 +307,7 @@ public class ImportBean {
       }
       SqlInsert optionInsertQuery = createImportOptionsInsertionQuery(viewName);
       long optionId = qs.insertData(optionInsertQuery.addConstant(COL_IMPORT_DESCRIPTION,
-        Localized.maybeTranslate(viewInfo.getCaption(), glossary)));
+        BeeUtils.notEmpty(Localized.maybeTranslate(viewInfo.getCaption(), glossary), viewName)));
       long subOptionId;
       long subOptionIdL2;
 
@@ -535,6 +538,60 @@ public class ImportBean {
             .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionIdL2, COL_COMPANY_CODE, "=F")
           );
           break;
+        case TBL_EXPEDITION_TYPES:
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, VAR_IMPORT_START_ROW, "5")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_EXPEDITION_TYPE_NAME, "=A")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_SELF_SERVICE, "=B")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_EXPEDITION_LOGISTICS, "=C")
+          );
+          break;
+        case TBL_ITEMS:
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, VAR_IMPORT_START_ROW, "5")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_ITEM_NAME, "=C")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_ITEM_ARTICLE, "=D")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_ITEM_BARCODE, "=E")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_ITEM_PRICE, "=G")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_ITEM_VAT, "=I")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_ITEM_VAT_PERCENT, "=J")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_ITEM_IS_SERVICE, "=K")
+          );
+          //Items->Type
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_ITEM_CATEGORY_TREE));
+          insertSubOption(optionId, subOptionId, COL_ITEM_TYPE);
+
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_CATEGORY_NAME, "=A")
+          );
+          //Items->Group
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_ITEM_CATEGORY_TREE));
+          insertSubOption(optionId, subOptionId, COL_ITEM_GROUP);
+
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_CATEGORY_NAME, "=B")
+          );
+          //Items->Unit
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_UNITS));
+          insertSubOption(optionId, subOptionId, COL_UNIT);
+
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_UNIT_NAME, "=F")
+          );
+          //Items->Currency
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_CURRENCIES));
+          insertSubOption(optionId, subOptionId, COL_CURRENCY, true);
+
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_CURRENCY_NAME, "=H")
+          );
+          break;
         case TBL_PERSONS:
           qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
               .addFields(tblImportPropertiesHeader)
@@ -555,6 +612,58 @@ public class ImportBean {
           //Persons->Cities
           insertCityAndCountryOptions(optionId, "=K", "=J");
           insertCountryOptions(optionId, "=J");
+          break;
+        case TBL_RIGHTS:
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, VAR_IMPORT_START_ROW, "7")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_STATE, "=C")
+          );
+          //Rights->Object
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_OBJECTS));
+          insertSubOption(optionId, subOptionId, AdministrationConstants.COL_OBJECT, true);
+
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_OBJECT_TYPE, "=A")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_OBJECT_NAME, "=B")
+          );
+          //Rights->Role
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_ROLES));
+          insertSubOption(optionId, subOptionId, COL_ROLE);
+
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_ROLE_NAME, "=D")
+          );
+          break;
+        case TBL_SERVICES:
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, VAR_IMPORT_START_ROW, "5")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_SERVICE_NAME, "=A")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_TRANSPORTATION, "=B")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_ITEM_VAT_PERCENT, "=C")
+          );
+          //Services->Item
+          subOptionId = qs.insertData(createImportOptionsInsertionQuery(TBL_ITEMS));
+          insertSubOption(optionId, subOptionId, COL_ITEM, true);
+
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_ITEM_NAME, "=D")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), subOptionId, COL_ITEM_ARTICLE, "=E")
+          );
+          break;
+        case TBL_SHIPPING_TERMS:
+          qs.insertData(new SqlInsert(TBL_IMPORT_PROPERTIES)
+            .addFields(tblImportPropertiesHeader)
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, VAR_IMPORT_START_ROW, "5")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_SHIPPING_TERM_NAME, "=A")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId,
+              TransportConstants.COL_DESCRIPTION, "=B")
+            .addValues(ig.getId(TBL_IMPORT_PROPERTIES), optionId, COL_SELF_SERVICE, "=C")
+          );
           break;
         default:
           break;

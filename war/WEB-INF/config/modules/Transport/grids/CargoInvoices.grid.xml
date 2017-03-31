@@ -22,8 +22,17 @@
     <DataColumn name="CurrencyName" />
     <DataColumn name="Term" />
 
-    <DataColumn name="PaymentTime" />
-    <DataColumn name="Paid" />
+    <DataColumn name="PaymentTime" editInPlace="true" />
+    <DataColumn name="Paid" editInPlace="true" >
+      <validation>
+        <ui:function>
+          if (cell.newValue > row.Amount) {
+          return $wnd.Bee_maybeTranslate("=maxValue") + " " + row.Amount;
+          }
+          return null;
+        </ui:function>
+      </validation>
+    </DataColumn>
     <DataColumn name="Debt" format="0.00" />
 
     <DataColumn name="Vehicle" />

@@ -11,6 +11,18 @@ import java.util.Objects;
  * Contains methods for processing arrays.
  */
 public final class ArrayUtils {
+
+  public static String[] addFirst(String s, String[] arr) {
+    int len = length(arr);
+    String[] result = new String[len + 1];
+
+    result[0] = s;
+    for (int i = 0; i < len; i++) {
+      result[i + 1] = arr[i];
+    }
+    return result;
+  }
+
   /**
    * Searches the specified collection for a value.
    * 

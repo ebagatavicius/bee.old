@@ -12,7 +12,7 @@
     <Text name="Note" label="=note" />
     <Boolean name="Confirmed" label="=calAppointmentStatusConfirmed" />
 
-    <Relation name="ServiceEvent" relation="CarServiceEvents" unique="true" cascade="DELETE"
+    <Relation name="ServiceEvent" relation="CarServiceEvents" unique="true" cascade="SET_NULL"
               label="=calAppointment" />
   </Fields>
 </Table>

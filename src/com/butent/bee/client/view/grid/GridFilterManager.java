@@ -146,7 +146,7 @@ public class GridFilterManager {
 
     this.gridKey = gridView.getGridKey();
     this.grid = gridView.getGrid();
-    this.isChild = gridView.isChild();
+    this.isChild = gridView.hasChildUi();
 
     this.filterConsumer = filterConsumer;
   }

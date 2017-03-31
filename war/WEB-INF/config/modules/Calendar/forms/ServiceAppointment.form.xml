@@ -10,9 +10,9 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
   xmlns:d="http://www.butent.com/decorator"
-  
+
   name="ServiceAppointment" viewName="Appointments" caption="=calAppointment"
-  disabledActions="add delete" enabledActions="save" 
+  disabledActions="add delete" enabledActions="save"
   options="Company, Vehicle, ServiceType, RepairType, Resources">
 
   <FlowPanel style="&relative; min-width: 760px;">
@@ -43,11 +43,11 @@
     <FlowPanel style="&relative; height: 90px;">
       <DataSelector source="VehicleNumber" required="true" caption="=vehicleNumber"
         style="width: 100px;" upperCase="true"
-        choiceColumns="Number ParentModelName ModelName OwnerName" d:size="80" d:unit="px"
+        choiceColumns="Number BrandName ModelName OwnerName" d:size="80" d:unit="px"
         d:rootStyle="&absolute; left: 0; top: 0;" />
 
       <TextLabel caption="=vehicleModel" inline="true" style="&display; width: 160px;"
-        renderColumns="VehicleParentModel VehicleModel" d:size="80" d:unit="px"
+        renderColumns="VehicleBrand VehicleModel" d:size="80" d:unit="px"
         d:rootStyle="&absolute; left: 0; top: 30px;" />
       <TextLabel source="VehicleType" caption="=vehicleType" inline="true"
         style="&display; width: 160px;" d:size="80" d:unit="px"
@@ -66,7 +66,7 @@
       <IntegerLabel source="VehiclePower" caption="=vehiclePower" inline="true"
         style="&display; width: 60px;" d:size="120" d:unit="px"
         d:rootStyle="&absolute; left: 560px; top: 0;" />
-      <IntegerLabel source="VehicleEngineVolume" caption="=vehicleEngineVolume" inline="true" 
+      <IntegerLabel source="VehicleEngineVolume" caption="=vehicleEngineVolume" inline="true"
         style="&display; width: 60px;" d:size="120" d:unit="px"
         d:rootStyle="&absolute; left: 560px; top: 30px;" />
       <TextLabel source="VehicleFuel" caption="=trFuelTypes" inline="true"
@@ -95,7 +95,7 @@
 
       <InputText source="Summary" caption="=summary" style="width: 300px;"
         d:size="80" d:unit="px" d:rootStyle="&absolute; left: 360px; top: 0;" />
-      <InputArea source="Description" placeholder="=calRepairDescription" visibleLines="5" 
+      <InputArea source="Description" placeholder="=calRepairDescription" visibleLines="5"
         style="&absolute; left: 360px; top: 30px; width: 382px;" />
 
       <InputDate name="StartDate" required="true" caption="=scheduledStartingTime"
@@ -143,4 +143,4 @@
     <OrderedList name="BuildInfo" style="display: inline-block; color: green;" />
 
   </FlowPanel>
-</f:Form>  
+</f:Form>

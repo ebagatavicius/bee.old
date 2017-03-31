@@ -32,6 +32,7 @@
       <row>
         <Label name="TermLabel" for="Term" />
         <InputDateTime source="Term" />
+        <CheckBox name="Urgent" summarize="true" text="=svcUrgent" />
       </row>
       <row>
         <Label name="ItemLabel" for="Item" />

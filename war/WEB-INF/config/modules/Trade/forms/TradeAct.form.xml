@@ -7,7 +7,7 @@
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
-  
+
   name="TradeAct" viewName="TradeActs"
   caption="=tradeAct" showRowId="true"
   width="800" height="600"
@@ -64,11 +64,11 @@
 
       <row>
         <Label for="Company" visible="true" />
-        <DataSelector source="Company" style="&inpw;" visible="true" choiceColumns="Name TypeName" 
+        <DataSelector source="Company" style="&inpw;" visible="true" choiceColumns="Name TypeName"
           renderColumns="CompanyName TypeName"/>
 
         <Label for="Object" />
-        <DataSelector source="Object" renderColumns="ObjectName" 
+        <DataSelector source="Object" renderColumns="ObjectName"
           choiceColumns="CompanyName ObjectName ObjectAddress" newRowEnabled="false"
           style="&inpw;" />
       </row>
@@ -80,16 +80,16 @@
           choiceColumns="FirstName LastName CompanyName" options="Company" />
 
         <Label for="Manager" />
-        <DataSelector source="Manager" editSource="ManagerPerson" 
+        <DataSelector source="Manager" editSource="ManagerPerson"
           renderColumns="ManagerFirstName ManagerLastName" newRowEnabled="false" style="&inpw;" />
       </row>
 
       <row>
         <Label for="Vehicle" />
-        <DataSelector source="Vehicle" 
-          renderColumns="VehicleParentModel VehicleModel VehicleNumber" newRowEnabled="false"
+        <DataSelector source="Vehicle"
+          renderColumns="VehicleBrand VehicleModel VehicleNumber" newRowEnabled="false"
           style="&inpw;" />
-        
+
         <Label for="Driver" />
         <DataSelector source="Driver" renderColumns="DriverFirstName DriverLastName"
           newRowEnabled="false" style="&inpw;" />

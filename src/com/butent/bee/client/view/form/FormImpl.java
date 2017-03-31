@@ -260,7 +260,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       if (isEventRelevant(event)) {
         for (RowInfo rowInfo : event.getRows()) {
           if (isRowRelevant(rowInfo.getId())) {
-            cancelForm();
+            afterDelete(rowInfo.getId());
             break;
           }
         }
@@ -270,7 +270,7 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     @Override
     public void onRowDelete(RowDeleteEvent event) {
       if (isEventRelevant(event) && isRowRelevant(event.getRowId())) {
-        cancelForm();
+        afterDelete(event.getRowId());
       }
     }
 
@@ -282,6 +282,14 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
     public void onRowUpdate(RowUpdateEvent event) {
       if (isEventRelevant(event) && isRowRelevant(event.getRowId())) {
         FormImpl.this.onRowUpdate(event);
+      }
+    }
+
+    private void afterDelete(long rowId) {
+      cancelForm();
+
+      if (getFormInterceptor() != null) {
+        getFormInterceptor().afterDeleteRow(rowId);
       }
     }
 

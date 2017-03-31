@@ -84,6 +84,9 @@
 
     <RelColumn name="Employee" renderColumns="EmployeeFirstName EmployeeLastName"
                sortBy="EmployeeLastName EmployeeFirstName" newRowEnabled="false" visible="false" />
+    <RelColumn name="ItemVehicle" caption="=trdItemVehicleShort"
+               renderColumns="ItemVehicleBrandName ItemVehicleModelName ItemVehicleNumber ItemVehicleBodyNumber"
+               newRowEnabled="false" visible="false" />
   </g:columns>
 
   <xi:include href="../../Administration/grids/columns/HiddenDimensions.columns.xml" />

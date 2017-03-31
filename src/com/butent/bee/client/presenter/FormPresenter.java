@@ -83,7 +83,7 @@ public class FormPresenter extends AbstractPresenter implements ReadyForInsertEv
       Queries.deleteRow(getViewName(), rowId, version, new Queries.IntCallback() {
         @Override
         public void onFailure(String... reason) {
-          showFailure("Delete Record", reason);
+          showFailure(Localized.dictionary().deleteRowError(), reason);
         }
 
         @Override

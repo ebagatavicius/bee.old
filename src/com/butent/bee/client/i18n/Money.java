@@ -62,6 +62,14 @@ public final class Money implements HandlesAllDataEvents {
     }
   }
 
+  public static Double maybeExchange(Long from, Long to, Double v, DateTime dt) {
+    if (canExchange(from, to) && BeeUtils.nonZero(v)) {
+      return exchange(from, to, v, dt);
+    } else {
+      return v;
+    }
+  }
+
   public static int exchange(long from, long to, DateTime dt,
       String viewName, Collection<? extends IsRow> rows, String colName) {
 

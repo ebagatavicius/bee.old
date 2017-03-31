@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
-       name="TradeActNew" label="=tradeActNew" parent="Trade" order="20" separator="true"
+       name="TradeActNew" label="=tradeActNew" parent="TradeActs" order="10"
        module="Trade.Acts">
-  
+
   <Item name="TradeActNewSale" label="=taKindSale" service="trade_act_new" parameters="sale" />
-  <Item name="TradeActNewTender" label="=taKindTender" service="trade_act_new" parameters="tender" />
-  <Item name="TradeActNewPurchase" label="=taKindPurchase" service="trade_act_new" parameters="purchase" />
-  <Item name="TradeActNewWriteOff" label="=taKindWriteOff" service="trade_act_new" parameters="write_off" />
-  <Item name="TradeActNewReserve" label="=taKindReserve" service="trade_act_new" parameters="reserve" />
+  <Item name="TradeActNewTender" label="=taKindTender" service="trade_act_new"
+        parameters="tender" />
+  <Item name="TradeActNewPurchase" label="=taKindPurchase" service="trade_act_new"
+        parameters="purchase" />
+  <Item name="TradeActNewWriteOff" label="=taKindWriteOff" service="trade_act_new"
+        parameters="write_off" />
+  <Item name="TradeActNewReserve" label="=taKindReserve" service="trade_act_new"
+        parameters="reserve" />
 </Entry>

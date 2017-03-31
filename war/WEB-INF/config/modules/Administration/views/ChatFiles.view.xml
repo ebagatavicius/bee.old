@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="ChatFiles" source="ChatFiles" module="*"
   caption="=chatFiles"
@@ -7,17 +8,6 @@
   <Columns>
     <SimpleColumn name="ChatMessage" />
 
-    <SimpleColumn name="File" />
-    <SimpleJoin name="File" joinType="LEFT">
-      <SimpleColumn name="Hash" />
-      <SimpleColumn name="Name" alias="FileName" />
-      <SimpleColumn name="Size" alias="FileSize" />
-      <SimpleColumn name="Type" alias="FileType" />
-    </SimpleJoin>
-
-    <SimpleColumn name="Caption" />
+    <xi:include href="../../Administration/views/viewcolumns/Files.viewcolumns.xml" />
   </Columns>
-  <Order>
-    <OrderBy column="File" />
-  </Order>
 </View>

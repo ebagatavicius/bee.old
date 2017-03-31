@@ -49,13 +49,19 @@
     <SimpleJoin name="Manager" joinType="LEFT">
       <SimpleColumn name="CompanyPerson" alias="ManagerPerson" />
       <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <ExternalJoin name="CompanyPerson" joinType="LEFT" source="Employees">
+          <IdColumn name="Employee" />
+        </ExternalJoin>
+
         <SimpleJoin name="Position" joinType="LEFT">
           <SimpleColumn name="Name" alias="ManagerPosition" />
         </SimpleJoin>
+
         <SimpleJoin name="Person" joinType="LEFT">
           <SimpleColumn name="FirstName" alias="ManagerFirstName" />
           <SimpleColumn name="LastName" alias="ManagerLastName" />
         </SimpleJoin>
+
         <SimpleJoin joinType="LEFT" name="Contact">
           <SimpleColumn name="Phone" alias="ManagerPhone" />
           <SimpleColumn name="Mobile" alias="ManagerMobile" />
@@ -69,8 +75,8 @@
     <SimpleColumn name="Car" />
     <SimpleJoin name="Car" joinType="LEFT">
       <SimpleJoin name="Model" joinType="LEFT">
-        <SimpleJoin name="Parent" joinType="LEFT">
-          <SimpleColumn name="Name" alias="ParentModelName" />
+        <SimpleJoin name="Brand" joinType="LEFT">
+          <SimpleColumn name="BrandName" />
         </SimpleJoin>
         <SimpleColumn name="Name" alias="ModelName" />
       </SimpleJoin>

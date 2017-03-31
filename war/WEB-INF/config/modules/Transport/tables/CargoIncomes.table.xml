@@ -21,5 +21,6 @@
 
     <Relation name="Sale" relation="Sales" cascade="SET_NULL" label="=trdInvoiceId" />
     <Relation name="Purchase" relation="Purchases" cascade="SET_NULL" label="=trdPurchaseId" />
+    <Relation name="CargoTrip" relation="CargoTrips" cascade="SET_NULL" label="=trip" />
   </Fields>
 </Table>

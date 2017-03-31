@@ -1,34 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui"
-  xmlns:w="http://www.butent.com/widget"
+        xmlns:w="http://www.butent.com/widget"
 
-  name="Vehicles" viewName="Vehicles" caption="=vehicles"
-  flexGrow="1" minColumnWidth="60"
-  >
+        name="Vehicles" viewName="Vehicles" caption="=vehicles"
+        flexGrow="1" minColumnWidth="60"
+>
   <g:west size="160" splitterSize="2">
-    <w:DataTree name="VehicleModels" caption="=vehicleModelsShort" viewName="VehicleModels"
-      parentColumn="Parent">
-      <w:calc>
-        <ui:expression>row.Name</ui:expression>
-      </w:calc>
-      <w:form name="=vehicleModelsEdit">
-        <w:FlowPanel>
-          <w:Label text="=vehicleModel" class="bee-required" />
-          <w:InputText source="Name" style="width: 20em" />
-        </w:FlowPanel>
-      </w:form>
-    </w:DataTree>
+    <w:Tree caption="=vehicleModelsShort" />
   </g:west>
 
   <g:columns>
-    <RelColumn name="Type" caption="=vehicleType" renderColumns="TypeName" />
-    <RelColumn name="Model" renderColumns="ParentModelName ModelName" caption="=vehicleModel" />
-    <DataColumn name="Number" caption="=vehicleNumber" />
-    <RelColumn name="Owner" caption="=vehicleOwnerName" />
+    <RelColumn name="Type" renderColumns="TypeName" />
+    <DataColumn name="BrandName" />
+    <DataColumn name="ModelName" />
+    <DataColumn name="Number" />
+    <RelColumn name="Owner" />
     <DataColumn name="ProductionDate" caption="=vehicleProductionDateShort" width="80" />
-    <RelColumn name="Fuel" caption="=vehicleFuel" />
-    <DataColumn name="Power" caption="=vehiclePower" />
-    <DataColumn name="EngineVolume" caption="=vehicleEngineVolume" />
+    <RelColumn name="Fuel" />
+    <DataColumn name="Power" />
+    <DataColumn name="EngineVolume" />
   </g:columns>
 </g:Grid>

@@ -45,6 +45,7 @@
     <ExternalJoin joinType="LEFT" targetName="PrimaryDocumentItem" source="TradeItemCost"
                   name="TradeDocumentItem">
       <SimpleColumn name="Cost" />
+      <SimpleColumn name="Currency" />
       <SimpleJoin joinType="LEFT" name="Currency">
         <SimpleColumn name="Name" alias="CurrencyName" />
       </SimpleJoin>

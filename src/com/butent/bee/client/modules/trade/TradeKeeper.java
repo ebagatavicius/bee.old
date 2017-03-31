@@ -11,10 +11,12 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.trade.acts.TradeActKeeper;
 import com.butent.bee.client.presenter.PresenterCallback;
 import com.butent.bee.client.style.ColorStyleProvider;
@@ -39,6 +41,7 @@ import com.butent.bee.shared.data.event.RowDeleteEvent;
 import com.butent.bee.shared.data.event.RowInsertEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.menu.MenuItem;
 import com.butent.bee.shared.menu.MenuService;
@@ -51,6 +54,7 @@ import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
+import com.butent.bee.shared.utils.StringList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -216,6 +220,19 @@ public final class TradeKeeper implements HandlesAllDataEvents {
     BeeKeeper.getBus().registerDataHandler(INSTANCE, false);
 
     MenuService.REBUILD_TRADE_STOCK.setHandler(p -> rebuildStock());
+
+    BeeKeeper.getBus().registerRowTransformHandler(event -> {
+      if (event.hasView(VIEW_TRADE_DOCUMENTS)) {
+        DataInfo dataInfo = Data.getDataInfo(VIEW_TRADE_DOCUMENTS);
+
+        event.setResult(DataUtils.join(dataInfo, event.getRow(),
+            StringList.of(dataInfo.getIdColumn(), COL_TRADE_DATE, COL_SERIES, COL_TRADE_NUMBER,
+                COL_OPERATION_NAME, COL_TRADE_DOCUMENT_PHASE, COL_STATUS_NAME,
+                ALS_SUPPLIER_NAME, ALS_CUSTOMER_NAME,
+                ALS_WAREHOUSE_FROM_CODE, ALS_WAREHOUSE_TO_CODE),
+            BeeConst.STRING_SPACE, Format.getDateRenderer(), Format.getDateTimeRenderer()));
+      }
+    });
 
     if (ModuleAndSub.of(Module.TRADE, SubModule.ACTS).isEnabled()) {
       TradeActKeeper.register();

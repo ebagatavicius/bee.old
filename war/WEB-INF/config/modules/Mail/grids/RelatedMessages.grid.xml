@@ -20,7 +20,7 @@
       </render>
     </CalcColumn>
     <DataColumn name="Subject" />
-    <DataColumn name="AttachmentCount" label="&#xf0c6;" width="20" sortable="false">
+    <DataColumn name="AttachmentCount" caption="&#xf0c6;" width="20" sortable="false" label="=mailAttachments">
       <style>
         <headerStyle><ui:class>bee-fa-label</ui:class></headerStyle>
       </style>

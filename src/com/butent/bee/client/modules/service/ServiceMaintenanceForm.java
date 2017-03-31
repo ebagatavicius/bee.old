@@ -1,6 +1,7 @@
 package com.butent.bee.client.modules.service;
 
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -24,8 +25,10 @@ import com.butent.bee.client.widget.InputText;
 import com.butent.bee.shared.Latch;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.*;
+import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.value.NumberValue;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.orders.OrdersConstants;
 import com.butent.bee.shared.ui.HasCheckedness;
@@ -71,7 +74,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
-    implements SelectorEvent.Handler, RowUpdateEvent.Handler {
+    implements SelectorEvent.Handler, RowUpdateEvent.Handler, DataChangeEvent.Handler {
 
   private static final BeeLogger logger = LogUtils.getLogger(ServiceMaintenanceForm.class);
 
@@ -377,32 +380,76 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
   }
 
   @Override
-  public void onDataSelector(SelectorEvent event) {
-    if (event.isNewRow()
-        && BeeUtils.inList(event.getRelatedViewName(), VIEW_COMPANY_PERSONS, TBL_SERVICE_OBJECTS)) {
+  public void onDataChange(DataChangeEvent event) {
+    if (event.hasView(VIEW_COMPANY_PERSONS)
+        && BeeUtils.isTrue(getActiveRow().getBoolean(getDataIndex(COL_COMPANY_TYPE_PERSON)))) {
+      Long companyId = getActiveRow().getLong(getDataIndex(COL_COMPANY));
+      Queries.getRow(VIEW_COMPANY_PERSONS, Filter.equals(COL_COMPANY, companyId), null,
+          new RowCallback() {
+            @Override
+            public void onSuccess(BeeRow companyPersonRow) {
+              if (companyPersonRow != null && DataUtils.isId(companyPersonRow.getId())) {
+                DataInfo targetDataInfo = Data.getDataInfo(getViewName());
+                DataInfo sourceDataInfo = Data.getDataInfo(VIEW_COMPANY_PERSONS);
 
+                getActiveRow().setValue(targetDataInfo.getColumnIndex(COL_CONTACT),
+                    companyPersonRow.getId());
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_PHONE, getActiveRow(),
+                    sourceDataInfo, COL_PHONE, companyPersonRow);
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_FIRST_NAME,
+                    getActiveRow(), sourceDataInfo, COL_FIRST_NAME, companyPersonRow);
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_LAST_NAME,
+                    getActiveRow(), sourceDataInfo, COL_LAST_NAME, companyPersonRow);
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_EMAIL, getActiveRow(),
+                    sourceDataInfo, COL_EMAIL, companyPersonRow);
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_ADDRESS, getActiveRow(),
+                    sourceDataInfo, COL_ADDRESS, companyPersonRow);
+
+                getFormView().refreshBySource(COL_CONTACT);
+                getFormView().refreshBySource(ALS_CONTACT_PHONE);
+                getFormView().refreshBySource(ALS_CONTACT_EMAIL);
+                getFormView().refreshBySource(ALS_CONTACT_ADDRESS);
+              }
+            }
+          });
+    }
+  }
+
+  @Override
+  public void onDataSelector(SelectorEvent event) {
+    if (event.isNewRow() && event.hasRelatedView(VIEW_COMPANY_PERSONS)
+        && BeeUtils.isTrue(getActiveRow().getBoolean(getDataIndex(COL_ADDRESS_REQUIRED)))) {
+      final String defValue = event.getDefValue();
       event.setDefValue(null);
 
-      if (BeeUtils.same(event.getRelatedViewName(), VIEW_COMPANY_PERSONS)
-          && BeeUtils.isTrue(getActiveRow().getBoolean(getDataIndex(COL_ADDRESS_REQUIRED)))) {
-        event.setOnOpenNewRow(formView -> {
-          Widget widget = formView.getWidgetBySource(COL_ADDRESS);
+      event.setOnOpenNewRow(formView -> {
+        Widget widget = formView.getWidgetBySource(COL_ADDRESS);
 
-          if (widget instanceof InputText) {
-            formView.getWidgetByName(COL_ADDRESS).addStyleName(StyleUtils.NAME_REQUIRED);
+        if (widget instanceof InputText) {
+          formView.getWidgetByName(COL_ADDRESS).addStyleName(StyleUtils.NAME_REQUIRED);
 
-            formView.addCellValidationHandler(COL_ADDRESS, validationEvent -> {
+          formView.addCellValidationHandler(COL_ADDRESS, validationEvent -> {
 
-              if (BeeUtils.isEmpty(validationEvent.getNewValue())) {
-                formView.notifySevere(Localized.dictionary()
-                    .fieldRequired(Localized.dictionary().address()));
-                return false;
-              }
-              return true;
-            });
-          }
-        });
-      }
+            if (BeeUtils.isEmpty(validationEvent.getNewValue())) {
+              formView.notifySevere(Localized.dictionary()
+                  .fieldRequired(Localized.dictionary().address()));
+              return false;
+            }
+            return true;
+          });
+        }
+        Widget personWidget = formView.getWidgetBySource(COL_PERSON);
+
+        if (personWidget instanceof DataSelector) {
+          final DataSelector personSelector = (DataSelector) personWidget;
+
+          Scheduler.get().scheduleDeferred(() -> {
+            personSelector.setFocus(true);
+            personSelector.setDisplayValue(defValue);
+            personSelector.startEdit(null, DataSelector.ASK_ORACLE, null, null);
+          });
+        }
+      });
     } else if (event.isChanged()) {
       switch (event.getRelatedViewName()) {
         case VIEW_MAINTENANCE_TYPES:
@@ -443,6 +490,7 @@ public class ServiceMaintenanceForm extends MaintenanceStateChangeInterceptor
   public void onLoad(FormView form) {
     super.onLoad(form);
     registry.add(BeeKeeper.getBus().registerRowUpdateHandler(this, false));
+    registry.add(BeeKeeper.getBus().registerDataChangeHandler(this, false));
   }
 
   @Override

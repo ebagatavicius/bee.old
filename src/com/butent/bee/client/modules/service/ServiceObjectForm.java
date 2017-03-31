@@ -58,6 +58,7 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RelationUtils;
+import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.CompoundFilter;
 import com.butent.bee.shared.data.filter.Filter;
@@ -82,7 +83,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ServiceObjectForm extends MaintenanceExpanderForm implements ClickHandler,
-    RowActionEvent.Handler, SelectorEvent.Handler, RowUpdateEvent.Handler {
+    RowActionEvent.Handler, SelectorEvent.Handler, RowUpdateEvent.Handler, DataChangeEvent.Handler {
 
   private final class AutocompleteFilter implements AutocompleteEvent.Handler {
 
@@ -326,6 +327,39 @@ public class ServiceObjectForm extends MaintenanceExpanderForm implements ClickH
   }
 
   @Override
+  public void onDataChange(DataChangeEvent event) {
+    if (event.hasView(VIEW_COMPANY_PERSONS)
+        && BeeUtils.isTrue(getActiveRow().getBoolean(getDataIndex(COL_COMPANY_TYPE_PERSON)))) {
+      Long companyId = getActiveRow().getLong(getDataIndex(COL_SERVICE_CUSTOMER));
+      Queries.getRow(VIEW_COMPANY_PERSONS, Filter.equals(COL_COMPANY, companyId), null,
+          new RowCallback() {
+            @Override
+            public void onSuccess(BeeRow companyPersonRow) {
+              if (companyPersonRow != null && DataUtils.isId(companyPersonRow.getId())) {
+                DataInfo targetDataInfo = Data.getDataInfo(getViewName());
+                DataInfo sourceDataInfo = Data.getDataInfo(VIEW_COMPANY_PERSONS);
+
+                getActiveRow().setValue(targetDataInfo.getColumnIndex(ALS_CONTACT_PERSON),
+                    companyPersonRow.getId());
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_PHONE, getActiveRow(),
+                    sourceDataInfo, COL_PHONE, companyPersonRow);
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_FIRST_NAME,
+                    getActiveRow(), sourceDataInfo, COL_FIRST_NAME, companyPersonRow);
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_LAST_NAME,
+                    getActiveRow(), sourceDataInfo, COL_LAST_NAME, companyPersonRow);
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_EMAIL, getActiveRow(),
+                    sourceDataInfo, COL_EMAIL, companyPersonRow);
+                RelationUtils.maybeUpdateColumn(targetDataInfo, ALS_CONTACT_ADDRESS, getActiveRow(),
+                    sourceDataInfo, COL_ADDRESS, companyPersonRow);
+
+                getFormView().refreshBySource(ALS_CONTACT_PERSON);
+              }
+            }
+          });
+    }
+  }
+
+  @Override
   public void onDataSelector(SelectorEvent event) {
     if (event.isChanged()
         && BeeUtils.same(event.getRelatedViewName(), VIEW_COMPANIES)) {
@@ -344,6 +378,7 @@ public class ServiceObjectForm extends MaintenanceExpanderForm implements ClickH
     EventUtils.clearRegistry(registry);
     registry.add(BeeKeeper.getBus().registerRowActionHandler(this));
     registry.add(BeeKeeper.getBus().registerRowUpdateHandler(this, false));
+    registry.add(BeeKeeper.getBus().registerDataChangeHandler(this, false));
   }
 
   @Override

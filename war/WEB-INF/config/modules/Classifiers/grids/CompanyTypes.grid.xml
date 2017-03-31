@@ -8,5 +8,6 @@
   <g:columns>
     <DataColumn name="Name" minWidth="100" maxWidth="200" visible="true" />
     <DataColumn name="Description" flexGrow="3" />
+    <DataColumn name="TypePerson" />
   </g:columns>
 </g:Grid>

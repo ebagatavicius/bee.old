@@ -12,7 +12,7 @@
     <IdColumn name="Id" visible="false" />
     <DataColumn name="Name" visible="true" />
 
-    <RelColumn name="CompanyType" />
+    <RelColumn name="CompanyType" renderColumns="TypeName"/>
     <RelColumn name="CompanyGroup" filterSupplier="value" />
     <RelColumn name="CompanyPriority" />
     <DataColumn name="Code" />

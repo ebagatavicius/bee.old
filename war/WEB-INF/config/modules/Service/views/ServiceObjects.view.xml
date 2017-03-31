@@ -21,6 +21,7 @@
       <SimpleColumn name="CreditDays" />
       <SimpleJoin joinType="LEFT" name="CompanyType">
         <SimpleColumn name="Name" alias="CustomerTypeName" />
+        <SimpleColumn name="TypePerson" />
       </SimpleJoin>
     </SimpleJoin>
 

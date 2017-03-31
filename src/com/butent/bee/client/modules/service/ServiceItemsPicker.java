@@ -45,6 +45,10 @@ public class ServiceItemsPicker extends ReservationItemsPicker {
     return row.getLong(warehouseIdx);
   }
 
+  public boolean isCheckedFilterService() {
+    return filterServices.isChecked();
+  }
+
   @Override
   public boolean setIsOrder(IsRow row) {
     return true;

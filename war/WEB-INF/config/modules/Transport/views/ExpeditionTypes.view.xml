@@ -3,6 +3,7 @@
 
   name="ExpeditionTypes"
   source="ExpeditionTypes"
+  caption="=trExpeditionTypes"
   newRowCaption="=trNewExpeditionTypes"
   >
   <Columns>

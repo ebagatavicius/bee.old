@@ -289,6 +289,8 @@
       <xs:enumeration value="CargoTrips" />
       <xs:enumeration value="CargoTypes" />
       <xs:enumeration value="CargoUnloading" />
+      <xs:enumeration value="CarFiles" />
+      <xs:enumeration value="CarJobGroups" />
       <xs:enumeration value="CarJobModels" />
       <xs:enumeration value="CarJobProgress" />
       <xs:enumeration value="CarJobs" />
@@ -298,7 +300,7 @@
       <xs:enumeration value="CarRecalls" />
       <xs:enumeration value="Cars" />
       <xs:enumeration value="CarServiceEvents" />
-      <xs:enumeration value="CarServiceInvoices" />
+      <xs:enumeration value="CarServiceFiles" />
       <xs:enumeration value="CarServiceItems" />
       <xs:enumeration value="CarServiceJobs" />
       <xs:enumeration value="CarServiceOrders" />
@@ -674,6 +676,7 @@
       <xs:enumeration value="Users" />
       <xs:enumeration value="UserSettings" />
       <xs:enumeration value="UserVehicles" />
+      <xs:enumeration value="VehicleBrands" />
       <xs:enumeration value="VehicleModels" />
       <xs:enumeration value="VehiclePartUsage" />
       <xs:enumeration value="Vehicles" />

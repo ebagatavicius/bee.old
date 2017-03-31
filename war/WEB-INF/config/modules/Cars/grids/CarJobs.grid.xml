@@ -6,5 +6,6 @@
   <g:columns>
     <DataColumn name="JobName" />
     <DataColumn name="Code" />
+    <RelColumn name="JobGroup" />
   </g:columns>
 </g:Grid>

@@ -8,6 +8,7 @@
   <Columns>
     <SimpleColumn name="Name" />
     <SimpleColumn name="Description" />
+    <SimpleColumn name="TypePerson" />
   </Columns>
   <Order>
     <OrderBy column="Name" />

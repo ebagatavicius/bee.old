@@ -20,7 +20,6 @@ import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
-import com.butent.bee.client.view.grid.interceptor.ParentRowRefreshGrid;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
@@ -73,7 +72,7 @@ class OrderCargoForm extends AbstractFormInterceptor {
     if (widget instanceof ChildGrid) {
       switch (name) {
         case TBL_CARGO_INCOMES:
-          ((ChildGrid) widget).setGridInterceptor(new ParentRowRefreshGrid() {
+          ((ChildGrid) widget).setGridInterceptor(new CargoIncomesGrid() {
             @Override
             public boolean previewModify(Set<Long> rowIds) {
               if (super.previewModify(rowIds)) {

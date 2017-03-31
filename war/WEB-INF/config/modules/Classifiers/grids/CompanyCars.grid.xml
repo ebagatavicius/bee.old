@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column"
+        xmlns:g="http://www.butent.com/grid"
+
+        name="CompanyCars" viewName="Cars" caption="=cars" flexGrow="1"
+>
+  <g:columns>
+    <RelColumn name="Type" />
+    <RelColumn name="Model" />
+    <DataColumn name="Number" caption="=vehicleNumber" />
+    <RelColumn name="Owner" caption="=vehicleOwnerName" />
+    <DataColumn name="ProductionDate" caption="=vehicleProductionDateShort" width="80" />
+    <RelColumn name="Fuel" caption="=vehicleFuel" />
+    <DataColumn name="Power" caption="=vehiclePower" />
+    <DataColumn name="EngineVolume" caption="=vehicleEngineVolume" />
+    <DataColumn name="ManufacturerNumber" />
+    <DataColumn name="ModelNumber" />
+    <RelColumn name="Status" />
+    <DataColumn name="ResponsiblePerson" />
+    <DataColumn name="Phone" />
+    <RelColumn name="CarWarranty" />
+
+    <DataColumn name="EngineNumber" visible="false" />
+    <DataColumn name="CylinderNumber" visible="false" />
+    <DataColumn name="Horsepower" visible="false" />
+    <DataColumn name="DoorsNumber" visible="false" />
+    <DataColumn name="GearsNumber" visible="false" />
+    <RelColumn name="CarGearbox" visible="false" />
+    <RelColumn name="CarPlaceCode" visible="false" />
+    <RelColumn name="CarEmissionStandard" visible="false" />
+  </g:columns>
+</g:Grid>

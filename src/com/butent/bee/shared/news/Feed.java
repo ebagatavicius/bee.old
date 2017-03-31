@@ -284,8 +284,7 @@ public enum Feed implements HasLocalizedCaption {
   VEHICLES(ModuleAndSub.of(Module.TRANSPORT), TransportConstants.TBL_VEHICLES,
       TransportConstants.VIEW_VEHICLES,
       Lists.newArrayList(TransportConstants.COL_VEHICLE_NUMBER, TransportConstants.COL_TYPE_NAME),
-      Lists.newArrayList(TransportConstants.COL_PARENT_MODEL_NAME,
-          TransportConstants.COL_MODEL_NAME)) {
+      Lists.newArrayList(COL_VEHICLE_BRAND_NAME, TransportConstants.COL_MODEL_NAME)) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.feedTrVehicles();

@@ -88,8 +88,8 @@
         <SimpleColumn name="Name" alias="VehicleType" />
       </SimpleJoin>
       <SimpleJoin name="Model" joinType="LEFT">
-        <SimpleJoin name="Parent" joinType="LEFT">
-          <SimpleColumn name="Name" alias="VehicleParentModel" />
+        <SimpleJoin name="Brand" joinType="LEFT">
+          <SimpleColumn name="BrandName" alias="VehicleBrand" />
         </SimpleJoin>
         <SimpleColumn name="Name" alias="VehicleModel" />
       </SimpleJoin>
@@ -110,11 +110,10 @@
 
     <SimpleColumn name="Parent" />
   </Columns>
-  
+
   <Order>
     <OrderBy column="SeriesName" />
     <OrderBy column="Number" />
     <OrderBy column="Date" />
   </Order>
 </View>
- 

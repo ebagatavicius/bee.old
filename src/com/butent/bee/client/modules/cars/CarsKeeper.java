@@ -10,10 +10,12 @@ import com.butent.bee.client.modules.administration.StageUtils;
 import com.butent.bee.client.modules.calendar.CalendarKeeper;
 import com.butent.bee.client.modules.classifiers.VehiclesGrid;
 import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.view.grid.interceptor.FileGridInterceptor;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.menu.MenuService;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.rights.Module;
 
 public final class CarsKeeper {
@@ -43,6 +45,13 @@ public final class CarsKeeper {
 
     GridFactory.registerGridInterceptor(VIEW_CARS, new VehiclesGrid());
     GridFactory.registerGridInterceptor(TBL_CAR_BUNDLE_JOBS, new CarBundleJobsGrid());
+
+    GridFactory.registerGridInterceptor(VIEW_CAR_FILES, new FileGridInterceptor(COL_CAR,
+        AdministrationConstants.COL_FILE, AdministrationConstants.COL_FILE_CAPTION,
+        AdministrationConstants.ALS_FILE_NAME));
+    GridFactory.registerGridInterceptor(VIEW_CAR_SERVICE_FILES,
+        new FileGridInterceptor(COL_SERVICE_ORDER, AdministrationConstants.COL_FILE,
+            AdministrationConstants.COL_FILE_CAPTION, AdministrationConstants.ALS_FILE_NAME));
 
     Dictionary loc = Localized.dictionary();
     StageUtils.registerStageAction(TBL_CAR_ORDERS, STAGE_ACTION_READONLY, loc.rowIsReadOnly());

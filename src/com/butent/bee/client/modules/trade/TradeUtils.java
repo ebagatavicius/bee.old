@@ -11,6 +11,7 @@ import com.google.gwt.xml.client.XMLParser;
 import com.google.gwt.xml.client.impl.DOMParseException;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -34,6 +35,8 @@ import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.InputNumber;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.Pair;
+import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.DataUtils;
@@ -54,7 +57,9 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public final class TradeUtils {
@@ -573,6 +578,88 @@ public final class TradeUtils {
     }
 
     return false;
+  }
+
+  static boolean documentPriceIsParentCost(IsRow row) {
+    return documentPriceIsParentCost(getDocumentOperationType(row), getDocumentItemPrice(row));
+  }
+
+  static boolean documentPriceIsParentCost(OperationType operationType, ItemPrice itemPrice) {
+    return operationType != null && operationType.consumesStock()
+        && (itemPrice == ItemPrice.COST
+        || itemPrice == null && operationType.getDefaultPrice() == ItemPrice.COST);
+  }
+
+  static Long getCompanyForPriceCalculation(IsRow row, OperationType operationType) {
+    Long company = getDocumentRelation(row, COL_TRADE_PAYER);
+
+    if (company == null && operationType != null) {
+      String colName = operationType.consumesStock() ? COL_TRADE_CUSTOMER : COL_TRADE_SUPPLIER;
+      company = getDocumentRelation(row, colName);
+
+      if (company == null) {
+        colName = operationType.consumesStock() ? COL_TRADE_SUPPLIER : COL_TRADE_CUSTOMER;
+        company = getDocumentRelation(row, colName);
+
+        if (company == null) {
+          company = Global.getParameterRelation(PRM_COMPANY);
+        }
+      }
+    }
+
+    return company;
+  }
+
+  static Long getWarehouseForPriceCalculation(IsRow row, OperationType operationType) {
+    if (row == null || operationType == null) {
+      return null;
+    } else {
+      return getDocumentRelation(row,
+          operationType.consumesStock() ? COL_TRADE_WAREHOUSE_FROM : COL_TRADE_WAREHOUSE_TO);
+    }
+  }
+
+  static Map<String, String> getDocumentPriceCalculationOptions(IsRow row,
+      DateTime date, Long currency, OperationType operationType, Long company, Long warehouse) {
+
+    Map<String, String> options = new HashMap<>();
+    if (date == null || currency == null || operationType == null || company == null) {
+      return options;
+    }
+
+    Long operation = getDocumentRelation(row, COL_TRADE_OPERATION);
+    if (operation == null) {
+      return options;
+    }
+
+    options.put(COL_DISCOUNT_COMPANY, BeeUtils.toStringOrNull(company));
+
+    options.put(COL_DISCOUNT_OPERATION, BeeUtils.toStringOrNull(operation));
+    if (operationType.requireOperationForPriceCalculation()) {
+      options.put(Service.VAR_REQUIRED, COL_DISCOUNT_OPERATION);
+    }
+
+    if (warehouse != null) {
+      options.put(COL_DISCOUNT_WAREHOUSE, BeeUtils.toStringOrNull(warehouse));
+    }
+
+    options.put(Service.VAR_TIME, BeeUtils.toString(date.getTime()));
+    options.put(COL_DISCOUNT_CURRENCY, BeeUtils.toStringOrNull(currency));
+
+    ItemPrice itemPrice = getDocumentItemPrice(row);
+    if (itemPrice != null) {
+      options.put(COL_DISCOUNT_PRICE_NAME, BeeUtils.toString(itemPrice.ordinal()));
+    }
+
+    return options;
+  }
+
+  public static Pair<Double, Boolean> normalizeDiscountOrVatInfo(Pair<Double, Boolean> info) {
+    if (info != null && BeeUtils.nonZero(info.getA())) {
+      return info;
+    } else {
+      return Pair.empty();
+    }
   }
 
   static double roundPrice(Double price) {

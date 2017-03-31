@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="ServiceFiles" source="ServiceFiles" module="Service"
   caption="=svcObjectFiles"
@@ -7,17 +8,6 @@
   <Columns>
     <SimpleColumn name="ServiceObject" />
 
-    <SimpleColumn name="File" />
-    <SimpleJoin name="File" joinType="LEFT">
-      <SimpleColumn name="Hash" />
-      <SimpleColumn alias="FileName" name="Name" />
-      <SimpleColumn alias="FileSize" name="Size" />
-      <SimpleColumn alias="FileType" name="Type" />
-    </SimpleJoin>
-
-    <SimpleColumn name="Caption" />
+    <xi:include href="../../Administration/views/viewcolumns/Files.viewcolumns.xml" />
   </Columns>
-  <Order>
-    <OrderBy column="File" />
-  </Order>
 </View>

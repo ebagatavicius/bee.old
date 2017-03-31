@@ -63,6 +63,14 @@ public final class ServiceUtils {
     clearContactValue(maintenanceRow);
   }
 
+  public static double calculateServicePrice(double price, IsRow serviceMaintenanceRow) {
+    return calculateServicePrice(price, null, serviceMaintenanceRow);
+  }
+
+  public static double calculateServicePrice(BeeRow commentRow, IsRow serviceMaintenanceRow) {
+    return calculateServicePrice(0, commentRow, serviceMaintenanceRow);
+  }
+
   public static void checkCanChangeState(Boolean isFinalState,
       Consumer<Boolean> changeStateConsumer, FormView formView) {
     if (!BeeUtils.unbox(isFinalState)) {
@@ -183,5 +191,26 @@ public final class ServiceUtils {
         }
       });
     }
+  }
+
+  private static double calculateServicePrice(double price, BeeRow commentRow,
+      IsRow serviceMaintenanceRow) {
+    Number urgentRate = Global.getParameterNumber(PRM_URGENT_RATE);
+    int urgentIndex = Data.getColumnIndex(TBL_SERVICE_MAINTENANCE, COL_MAINTENANCE_URGENT);
+    boolean isUrgentMaintenance = BeeUtils.unbox(serviceMaintenanceRow.getBoolean(urgentIndex));
+    double calculatedPrice = price;
+
+    if (commentRow != null) {
+      calculatedPrice = BeeUtils.unbox(commentRow.getDouble(
+          Data.getColumnIndex(TBL_MAINTENANCE_COMMENTS, COL_ITEM_PRICE)));
+      isUrgentMaintenance = isUrgentMaintenance
+          || BeeUtils.toBoolean(commentRow.getProperty(COL_MAINTENANCE_URGENT));
+    }
+
+    if (urgentRate != null && isUrgentMaintenance) {
+      return calculatedPrice * urgentRate.doubleValue();
+    }
+
+    return calculatedPrice;
   }
 }

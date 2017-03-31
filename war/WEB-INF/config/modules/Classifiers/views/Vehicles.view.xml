@@ -5,7 +5,7 @@
       editForm="Vehicle" newRowForm="Vehicle" newRowCaption="=trNewVehicle"
       rowCaption="Number"
     >
-  <Relation renderColumns="Number" choiceColumns="Number ParentModelName ModelName" />
+  <Relation renderColumns="Number" choiceColumns="Number BodyNumber BrandName ModelName" />
   <Columns>
     <SimpleColumn name="Type" />
     <SimpleJoin name="Type" joinType="LEFT">
@@ -16,8 +16,8 @@
 
     <SimpleColumn name="Model" />
     <SimpleJoin name="Model" joinType="LEFT">
-      <SimpleJoin name="Parent" joinType="LEFT">
-        <SimpleColumn name="Name" alias="ParentModelName" />
+      <SimpleJoin name="Brand" joinType="LEFT">
+        <SimpleColumn name="BrandName" />
       </SimpleJoin>
       <SimpleColumn name="Name" alias="ModelName" />
     </SimpleJoin>
@@ -54,6 +54,7 @@
   </Columns>
   <Order>
     <OrderBy column="TypeName" />
+    <OrderBy column="BrandName" />
     <OrderBy column="ModelName" />
     <OrderBy column="Number" />
   </Order>

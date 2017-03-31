@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+       name="VehicleBrands"
+       idName="BrandID"
+>
+  <Fields>
+    <String name="BrandName" precision="30" notNull="true" unique="true" label="=vehicleBrand" />
+  </Fields>
+</Table>

@@ -55,7 +55,7 @@ public interface GridView extends DataView,
 
   int estimatePageSize(int containerWidth, int containerHeight);
 
-  void formCancel();
+  void formCancel(boolean focus);
 
   void formConfirm(Consumer<IsRow> consumer);
 
@@ -86,6 +86,8 @@ public interface GridView extends DataView,
   String getRelColumn();
 
   Collection<RowInfo> getSelectedRows(SelectedRows mode);
+
+  boolean hasChildUi();
 
   void initData(int rowCount, BeeRowSet rowSet);
 

@@ -17,7 +17,7 @@
     <DataColumn name="CompanyPhone" visible="false" />
 
     <DataColumn name="VehicleNumber" visible="false" />
-    <DataColumn name="VehicleModel" renderColumns="VehicleParentModel VehicleModel"
+    <DataColumn name="VehicleModel" renderColumns="VehicleBrand VehicleModel"
       visible="false" />
 
     <DataColumn name="StartDateTime" visible="true" />

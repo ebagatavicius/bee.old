@@ -25,7 +25,6 @@ import com.butent.bee.server.data.SystemBean;
 import com.butent.bee.server.data.UserServiceBean;
 import com.butent.bee.server.http.RequestInfo;
 import com.butent.bee.server.modules.BeeModule;
-import com.butent.bee.server.modules.administration.ExtensionIcons;
 import com.butent.bee.server.modules.classifiers.TimerBuilder;
 import com.butent.bee.server.modules.mail.MailModuleBean;
 import com.butent.bee.server.news.NewsBean;
@@ -332,11 +331,7 @@ public class DocumentsModuleBean extends TimerBuilder implements BeeModule {
       @Subscribe
       @AllowConcurrentEvents
       public void setRowProperties(ViewQueryEvent event) {
-        if (event.isAfter(VIEW_DOCUMENT_FILES)) {
-          ExtensionIcons.setIcons(event.getRowset(), AdministrationConstants.ALS_FILE_NAME,
-              AdministrationConstants.PROP_ICON);
-
-        } else if (event.isAfter(VIEW_DOCUMENT_TEMPLATES)) {
+        if (event.isAfter(VIEW_DOCUMENT_TEMPLATES)) {
           Map<Long, IsRow> indexedRows = new HashMap<>();
           BeeRowSet rowSet = event.getRowset();
           int idx = rowSet.getColumnIndex(COL_DOCUMENT_DATA);
