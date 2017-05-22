@@ -3,7 +3,7 @@
 
   name="Locations" source="Locations"
   editForm="Location" newRowForm="Location"
-  caption="=objects" newRowCaption="=newObject"
+  caption="=objectLocations" newRowCaption="=newObjectLocation"
   >
   <Columns>
     <SimpleColumn name="LocationName" />

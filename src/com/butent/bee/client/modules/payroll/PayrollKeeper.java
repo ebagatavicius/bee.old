@@ -14,7 +14,7 @@ import com.butent.bee.shared.rights.Module;
 
 public final class PayrollKeeper {
 
-  static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "payroll-";
+  public static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "payroll-";
 
   public static ParameterList createArgs(String method) {
     return BeeKeeper.getRpc().createParameters(Module.PAYROLL, method);

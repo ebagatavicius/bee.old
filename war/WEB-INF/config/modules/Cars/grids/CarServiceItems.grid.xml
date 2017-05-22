@@ -3,6 +3,7 @@
         xmlns:ui="http://www.butent.com/ui"
 
         name="CarServiceItems" viewName="CarServiceItems" autoFlex="true"
+        filter="!(Job)" caption="=productsServices"
 >
   <g:columns>
     <RelColumn name="Item" renderColumns="ItemName" flexGrow="2" visible="true" readOnly="true">

@@ -13,6 +13,7 @@ import com.butent.bee.shared.utils.NameUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -244,6 +245,11 @@ public class ResponseObject implements BeeSerializable {
   @SuppressWarnings("unchecked")
   public Collection<String> getResponseAsStringCollection() {
     return (Collection<String>) getResponse();
+  }
+
+  @SuppressWarnings("unchecked")
+  public Map<String, String> getResponseAsStringMap() {
+    return (Map<String, String>) getResponse();
   }
 
   public int getSize() {

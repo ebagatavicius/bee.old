@@ -380,7 +380,14 @@ public class DataSelector extends Composite implements Editor, HasVisibleLines, 
 
         case KeyCodes.KEY_TAB:
           consume();
-          exit(true, State.CLOSED, keyCode, hasModifiers);
+
+          if (!isStrict() && !getSelector().isShowing() && !isWaiting()
+              && !BeeUtils.equalsTrim(getValue(), getDisplayValue())) {
+
+            setSelection(null, parse(getDisplayValue()), true);
+          } else {
+            exit(true, State.CLOSED, keyCode, hasModifiers);
+          }
           break;
 
         default:
@@ -1374,9 +1381,6 @@ public class DataSelector extends Composite implements Editor, HasVisibleLines, 
     return Collections.emptyList();
   }
 
-  /**
-   * @param ch
-   */
   protected boolean consumeCharacter(char ch) {
     return false;
   }

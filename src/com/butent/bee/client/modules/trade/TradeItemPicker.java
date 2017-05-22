@@ -152,6 +152,7 @@ public class TradeItemPicker extends Flow implements HasPaging {
 
   private static final String KEY_AVAILABLE = "avail";
   private static final String KEY_PRICE = "price";
+  private static final String KEY_WAREHOUSE = "warehouse";
 
   private static final int itemPriceScale = Data.getColumnScale(VIEW_ITEMS, COL_ITEM_PRICE);
   private static final int costScale = Data.getColumnScale(VIEW_TRADE_ITEM_COST,
@@ -1014,6 +1015,17 @@ public class TradeItemPicker extends Flow implements HasPaging {
       reserveWidget.setTitle(Localized.dictionary().trdQuantityReserved());
       reserveWidget.addStyleName(STYLE_RESERVED);
 
+      reserveWidget.addClickHandler(event -> {
+        Element target = EventUtils.getEventTargetElement(event);
+        event.stopPropagation();
+
+        Long warehouse = DomUtils.getDataPropertyLong(DomUtils.getParentCell(target, true),
+            KEY_WAREHOUSE);
+        Long item = getRowId(target);
+
+        TradeUtils.showReservations(warehouse, item, null, target);
+      });
+
       reserveWidget.setValue(reserved);
       panel.add(reserveWidget);
 
@@ -1140,6 +1152,9 @@ public class TradeItemPicker extends Flow implements HasPaging {
         if (BeeUtils.isPositive(stock)) {
           Double reserved = item.getPropertyDouble(keyReservedWarehouse(entry.getKey()));
           table.setWidget(r, c, renderStock(stock, reserved), STYLE_STOCK + STYLE_CELL_SUFFIX);
+
+          DomUtils.setDataProperty(table.getCellFormatter().getElement(r, c),
+              KEY_WAREHOUSE, entry.getValue());
 
           if (Objects.equals(entry.getValue(), getWarehouse())) {
             table.getCellFormatter().addStyleName(r, c, STYLE_MAIN_WAREHOUSE + STYLE_CELL_SUFFIX);

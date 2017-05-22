@@ -12,6 +12,8 @@
 
     <Numeric name="Price" precision="18" scale="8" label="=price" />
     <Relation name="Currency" relation="Currencies" label="=currency" />
+
+    <Text name="Note" label="=note" />
   </Fields>
   <Constraints>
     <Unique fields="Job Model" />

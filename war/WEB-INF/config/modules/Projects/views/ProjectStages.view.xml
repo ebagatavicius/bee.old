@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
   xmlns:x="http://www.butent.com/expression"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="ProjectStages" source="ProjectStages" caption="=prjStages"
   editForm="ProjectStage" newRowForm="ProjectStage"
   newRowCaption="=prjNewStage"
   >
   <Columns>
+    <xi:include href="viewcolumns/ProjectStageInfo.viewcolumns.xml" />
+
     <SimpleColumn name="Project" />
     <SimpleJoin name="Project" joinType="LEFT">
       <SimpleColumn name="Name" alias="ProjectName" />
-      <SimpleColumn alias="ProjectOwner" name="Owner"/>
       <SimpleColumn alias="ProjectStatus" name="Status"/>
       <SimpleColumn name="ProjectTemplate" />
       <SimpleColumn name="Owner" />
@@ -38,11 +40,8 @@
       </ExternalJoin>
     </SimpleJoin>
 
-    <SimpleColumn name="Name" />
     <SimpleColumn name="StartDate" />
     <SimpleColumn name="EndDate" />
-    <SimpleColumn name="ExpectedDuration" />
-    <SimpleColumn name="Description" />
 
     <SimpleColumn name="ExpectedTasksDuration" label="=prjExpectedTaskDuration">
        <x:number>0</x:number>
@@ -61,12 +60,6 @@
       {...}.fillProjectsTimeData(ViewQueryEvent event)
       -->
     </SimpleColumn>
-
-    <SimpleColumn name="Expenses" />
-    <SimpleColumn name="Currency" />
-    <SimpleJoin name="Currency" joinType="LEFT">
-      <SimpleColumn name="Name" alias="CurrencyName" />
-    </SimpleJoin>
 
     <SimpleColumn name="ActualExpenses" label="=prjActualExpenses">
        <x:number>0</x:number>

@@ -4,6 +4,7 @@
 
         name="TradeDocuments" viewName="TradeDocuments"
         caption="=trdDocuments" editShowId="true"
+        order="Date desc"
 >
   <g:columns>
     <IdColumn name="Id" />
@@ -34,6 +35,16 @@
 
     <RelColumn name="Currency" renderColumns="CurrencyName" carry="true" />
 
+    <PropColumn name="TdAmount" type="decimal" label="=amount" scale="2" visible="false" />
+    <PropColumn name="TdDiscount" type="decimal" label="=discount" scale="2" visible="false" />
+    <PropColumn name="TdWithoutVat" type="decimal" label="=amountWithoutVat" scale="2"
+                visible="false" />
+    <PropColumn name="TdVat" type="decimal" label="=vat" scale="2" visible="false" />
+  </g:columns>
+
+  <xi:include href="columns/TradeDocumentTotals.columns.xml" />
+
+  <g:columns>
     <RelColumn name="Payer" renderColumns="PayerName" visible="false" />
     <DataColumn name="Term" visible="false" />
 

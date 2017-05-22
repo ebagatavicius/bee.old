@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui" xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="TradeReceivables" viewName="TradeDocuments"
+        disabledActions="add delete filter rights"
+>
+  <g:columns>
+    <IdColumn name="Id" />
+
+    <DataColumn name="Date" visible="true" />
+
+    <DataColumn name="Series" />
+    <DataColumn name="Number" />
+
+    <DataColumn name="Number1" visible="false" />
+    <DataColumn name="Number2" visible="false" />
+
+    <RelColumn name="Operation" renderColumns="OperationName" />
+
+    <DataColumn name="Phase" />
+    <RelColumn name="Owner" renderColumns="OwnerFirstName OwnerLastName"
+               sortBy="OwnerLastName OwnerFirstName" visible="false" />
+
+    <RelColumn name="Status" renderColumns="StatusName" />
+
+    <RelColumn name="Supplier" renderColumns="SupplierName" visible="false" />
+    <RelColumn name="Customer" renderColumns="CustomerName" />
+    <RelColumn name="Payer" renderColumns="PayerName" />
+
+    <RelColumn name="WarehouseFrom" caption="=trdWarehouseFromShort"
+               renderColumns="WarehouseFromCode" />
+    <RelColumn name="WarehouseTo" caption="=trdWarehouseToShort" renderColumns="WarehouseToCode"
+               visible="false" />
+
+    <RelColumn name="Currency" renderColumns="CurrencyName" />
+  </g:columns>
+
+  <xi:include href="columns/TradeDocumentTotals.columns.xml" />
+
+  <g:columns>
+    <DataColumn name="Term" />
+
+    <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName"
+               sortBy="ManagerLastName ManagerFirstName" visible="false" />
+    <RelColumn name="Vehicle" caption="=trdVehicleShort"
+               renderColumns="VehicleBrandName VehicleModelName VehicleNumber VehicleBodyNumber"
+               visible="false" />
+
+    <DataColumn name="DocumentDiscount" visible="false" />
+    <DataColumn name="PriceName" visible="false" />
+
+    <DataColumn name="DocumentVatMode" visible="false" />
+    <DataColumn name="DocumentDiscountMode" visible="false" />
+
+    <DataColumn name="ReceivedDate" visible="false" />
+  </g:columns>
+
+  <xi:include href="../../Administration/grids/columns/HiddenDimensions.columns.xml" />
+  <xi:include href="../../Classifiers/grids/columns/HiddenTradeAccounts.columns.xml" />
+
+  <g:columns>
+    <DataColumn name="Notes" visible="false" />
+  </g:columns>
+
+  <g:rowMessage>
+    <ui:expression>[row.Series, row.Number].join(' ')</ui:expression>
+  </g:rowMessage>
+</g:Grid>

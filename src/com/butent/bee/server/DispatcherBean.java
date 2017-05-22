@@ -109,7 +109,8 @@ public class DispatcherBean {
     data.put(Service.PROPERTY_MODULES, Module.getEnabledModulesAsString());
     data.put(Service.PROPERTY_VIEW_MODULES, RightsUtils.getViewModulesAsString());
 
-    data.put(Service.PROPERTY_ACTIVE_LOCALES, SupportedLocale.ACTIVE_LOCALES);
+    data.put(Service.PROPERTY_DEFAULT_LOCALE, SupportedLocale.getUserDefault().getLanguage());
+    data.put(Service.PROPERTY_ACTIVE_LOCALES, SupportedLocale.getActiveLocales());
 
     data.put(PRM_CURRENCY, prm.getRelationInfo(PRM_CURRENCY));
 

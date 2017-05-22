@@ -7,6 +7,7 @@ import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.ListBox;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
 
@@ -21,7 +22,8 @@ public class TextConstantForm extends AbstractFormInterceptor {
         TextConstant constant = EnumUtils.getEnumByIndex(TextConstant.class,
             list.getSelectedIndex());
 
-        getFormView().updateCell(COL_TEXT_CONTENT, constant.getDefaultContent());
+        getFormView().updateCell(COL_TEXT_CONTENT, constant.getDefaultContent(
+            Localized.dictionary()));
         getFormView().refreshBySource(COL_TEXT_CONTENT);
       });
     }

@@ -102,7 +102,6 @@ import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -400,7 +399,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
                       public void onSuccess(Integer result) {
                         if (reset) {
                           DataChangeEvent.fireLocal(BeeKeeper.getBus(), viewName,
-                              DataChangeEvent.CANCEL_RESET_REFRESH);
+                              DataChangeEvent.CANCEL_RESET_REFRESH, null);
                         } else {
                           DataChangeEvent.fireLocalRefresh(BeeKeeper.getBus(),
                               VIEW_CHILD_ASSESSMENTS);
@@ -409,7 +408,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
                     });
               } else if (reset) {
                 DataChangeEvent.fireLocal(BeeKeeper.getBus(), viewName,
-                    DataChangeEvent.CANCEL_RESET_REFRESH);
+                    DataChangeEvent.CANCEL_RESET_REFRESH, null);
               }
             }
           });
@@ -469,8 +468,7 @@ public class AssessmentForm extends PrintFormInterceptor implements SelectorEven
             @Override
             public boolean previewModify(Set<Long> rowIds) {
               if (super.previewModify(rowIds)) {
-                Data.onTableChange(TBL_ASSESSMENT_FORWARDERS,
-                    EnumSet.of(DataChangeEvent.Effect.REFRESH));
+                Data.refreshLocal(TBL_ASSESSMENT_FORWARDERS);
                 return true;
               }
               return false;

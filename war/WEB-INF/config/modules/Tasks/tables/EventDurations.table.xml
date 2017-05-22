@@ -6,7 +6,7 @@
   >
   <Fields>
     <Relation name="DurationType" notNull="true" relation="DurationTypes" label="=crmDurationType" />
-    <DateTime name="DurationDate" notNull="true" label="=date" />
+    <DateTime name="DurationDate" notNull="true" label="=crmDurationDate" />
     <String name="Duration" precision="20" notNull="true" label="=crmSpentTime" />
   </Fields>
 </Table>

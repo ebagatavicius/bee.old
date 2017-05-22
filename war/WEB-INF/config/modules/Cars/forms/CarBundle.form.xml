@@ -32,12 +32,12 @@
     <br />
     <TabbedPages class="flexible">
       <page>
-        <text>=serviceJobs</text>
-        <ChildGrid name="CarBundleJobs" relColumn="Bundle" />
-      </page>
-      <page>
         <text>=productsServices</text>
         <ChildGrid name="CarBundleItems" relColumn="Bundle" />
+      </page>
+      <page>
+        <text>=serviceJobs</text>
+        <ChildGrid name="CarBundleJobs" relColumn="Bundle" />
       </page>
       <page>
         <text>=notes</text>

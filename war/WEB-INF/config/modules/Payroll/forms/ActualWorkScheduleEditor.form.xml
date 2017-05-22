@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<f:Form xmlns="http://www.butent.com/widget"
+  xmlns:f="http://www.butent.com/form"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  
+  name="ActualWorkScheduleEditor" viewName="WorkSchedule"
+  height="480" width="800"
+  >
+  <FlowPanel class="flexBox-vertical">
+    <HorizontalPanel style="margin-top: 2ex; margin-bottom: 2ex;" verticalAlignment="top"
+                     cellStyle="padding-left: 2em;">
+
+      <FlowPanel name="Calendar" />
+      <xi:include href="widgets/WorkScheduleTCInput.widget.xml" />
+    </HorizontalPanel>
+    <GridPanel name="WorkScheduleDay" class="flexible" />
+  </FlowPanel>
+</f:Form>  

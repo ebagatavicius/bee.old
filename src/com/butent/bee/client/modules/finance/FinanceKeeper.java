@@ -14,9 +14,11 @@ import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.finance.analysis.AnalysisColumnsGrid;
+import com.butent.bee.client.modules.finance.analysis.AnalysisHeadersGrid;
 import com.butent.bee.client.modules.finance.analysis.AnalysisResultsGrid;
 import com.butent.bee.client.modules.finance.analysis.AnalysisRowsGrid;
 import com.butent.bee.client.modules.finance.analysis.BudgetEntriesGrid;
+import com.butent.bee.client.modules.finance.analysis.BudgetHeadersGrid;
 import com.butent.bee.client.modules.finance.analysis.FinancialIndicatorsGrid;
 import com.butent.bee.client.modules.finance.analysis.SimpleAnalysisForm;
 import com.butent.bee.client.modules.finance.analysis.SimpleBudgetForm;
@@ -24,12 +26,14 @@ import com.butent.bee.client.style.ConditionalStyle;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.grid.interceptor.UniqueChildInterceptor;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.finance.Dimensions;
+import com.butent.bee.shared.modules.finance.PrepaymentKind;
 import com.butent.bee.shared.modules.finance.analysis.IndicatorKind;
 import com.butent.bee.shared.rights.Module;
 
@@ -39,6 +43,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class FinanceKeeper {
+
+  public static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "fin-";
 
   public static ParameterList createArgs(String method) {
     return BeeKeeper.getRpc().createParameters(Module.FINANCE, method);
@@ -50,8 +56,10 @@ public final class FinanceKeeper {
     MenuService.FINANCE_POSTING_PRECEDENCE.setHandler(parameters ->
         openConfiguration(FORM_FINANCE_POSTING_PRECEDENCE));
 
-    List<String> gridNames = ImmutableList.of(GRID_FINANCIAL_RECORDS,
-        GRID_TRADE_DOCUMENT_FINANCIAL_RECORDS);
+    List<String> gridNames = ImmutableList.of(
+        GRID_FINANCIAL_RECORDS, GRID_TRADE_DOCUMENT_FINANCIAL_RECORDS,
+        GRID_PREPAYMENT_SUPPLIERS, GRID_PREPAYMENT_CUSTOMERS,
+        GRID_OUTSTANDING_PREPAYMENT_GIVEN, GRID_OUTSTANDING_PREPAYMENT_RECEIVED);
     String viewName = VIEW_FINANCIAL_RECORDS;
 
     ConditionalStyle.registerGridColumnColorProvider(gridNames,
@@ -95,6 +103,16 @@ public final class FinanceKeeper {
     GridFactory.registerGridInterceptor(GRID_FINANCIAL_RECORDS, new FinancialRecordsGrid());
     GridFactory.registerGridInterceptor(GRID_TRADE_DOCUMENT_FINANCIAL_RECORDS,
         new TradeDocumentFinancialRecordsGrid());
+
+    GridFactory.registerGridInterceptor(GRID_PREPAYMENT_SUPPLIERS,
+        new PrepaymentGrid(PrepaymentKind.SUPPLIERS));
+    GridFactory.registerGridInterceptor(GRID_PREPAYMENT_CUSTOMERS,
+        new PrepaymentGrid(PrepaymentKind.CUSTOMERS));
+
+    GridFactory.registerGridInterceptor(GRID_OUTSTANDING_PREPAYMENT_GIVEN,
+        new OutstandingPrepaymentGrid(PrepaymentKind.SUPPLIERS));
+    GridFactory.registerGridInterceptor(GRID_OUTSTANDING_PREPAYMENT_RECEIVED,
+        new OutstandingPrepaymentGrid(PrepaymentKind.CUSTOMERS));
 
     GridFactory.registerGridInterceptor(ClassifierConstants.GRID_CHART_OF_ACCOUNTS,
         new ChartOfAccountsGrid());
@@ -142,8 +160,10 @@ public final class FinanceKeeper {
             Collections.singletonList(COL_ACCOUNT_CODE),
             Arrays.asList(COL_ACCOUNT_CODE, COL_ACCOUNT_NAME)));
 
+    GridFactory.registerGridInterceptor(GRID_BUDGET_HEADERS, new BudgetHeadersGrid());
     GridFactory.registerGridInterceptor(GRID_BUDGET_ENTRIES, new BudgetEntriesGrid());
 
+    GridFactory.registerGridInterceptor(GRID_ANALYSIS_HEADERS, new AnalysisHeadersGrid());
     GridFactory.registerGridInterceptor(GRID_ANALYSIS_COLUMNS, new AnalysisColumnsGrid());
     GridFactory.registerGridInterceptor(GRID_ANALYSIS_ROWS, new AnalysisRowsGrid());
     GridFactory.registerGridInterceptor(GRID_ANALYSIS_RESULTS, new AnalysisResultsGrid());

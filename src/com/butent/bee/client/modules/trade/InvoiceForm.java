@@ -19,7 +19,6 @@ import com.butent.bee.client.view.edit.EditEndEvent;
 import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
-import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.data.DataUtils;
@@ -38,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class InvoiceForm extends PrintFormInterceptor implements SelectorEvent.Handler {
+public class InvoiceForm extends InvoiceERPForm implements SelectorEvent.Handler {
 
   Holder<Long> mainItem;
 
@@ -83,6 +82,10 @@ public class InvoiceForm extends PrintFormInterceptor implements SelectorEvent.H
           });
       return;
     }
+  }
+
+  @Override
+  public void getERPStocks(Long id) {
   }
 
   @Override

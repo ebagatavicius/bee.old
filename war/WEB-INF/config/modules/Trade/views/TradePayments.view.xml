@@ -24,6 +24,8 @@
 
     <SimpleColumn name="PaymentSeries" />
     <SimpleColumn name="PaymentNumber" />
+
+    <SimpleColumn name="PrepaymentParent" />
   </Columns>
 
   <Order>

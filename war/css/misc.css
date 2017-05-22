@@ -245,6 +245,9 @@
 .bee-rep-drill-off:before {
   color: silver;
 }
+.bee-rep-drill-on:before {
+  color: red;
+}
 .bee-rep-sort, .bee-rep-sort-asc, .bee-rep-sort-desc {
   cursor: pointer;
   font-family: FontAwesome;
@@ -256,11 +259,11 @@
 }
 .bee-rep-sort-asc:before {
   content: "\f0de";
-  color: black;
+  color: red;
 }
 .bee-rep-sort-desc:before {
   content: "\f0dd";
-  color: black;
+  color: red;
 }
 .bee-rep-cgroup {
   text-align: center;
@@ -399,6 +402,8 @@
 .bee-rep-report-global td:first-child div:before {
   font-family: FontAwesome;
   content: "\f0ac";
+  margin-right: 5px;
+  color: blue;
 }
 
 .bee-EventsBoard-content {
@@ -750,4 +755,21 @@
 
 .bee-reminder-dialog-not-visible {
   display: none;
+}
+
+.bee-Rights-object-selector {
+  width: 100%;
+}
+
+.bee-Rights-object-selector:hover {
+  cursor: pointer;
+  font-weight: bolder;
+}
+
+.bee-Rights-object-selector-cell{
+}
+
+.bee-GridMenu-addicted .bee-GridMenu-label {
+  width: 250px;
+  text-align: center;
 }

@@ -10,5 +10,6 @@
     <Numeric name="ExpectedDuration" precision="10" label="=crmTaskExpectedDuration" />
     <Numeric name="Expenses" precision="15" scale="5" label="=prjExpenses" />
     <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
+    <Text name="Description" label="=description" />
   </Fields>
 </Table>

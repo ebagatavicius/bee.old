@@ -25,15 +25,18 @@ public class ModalView extends Popup {
 
   private final String storageKey;
 
-  public ModalView(Presenter presenter, String styleName, HasDimensions dimensions) {
+  public ModalView(Presenter presenter, String styleName, HasDimensions dimensions,
+      boolean storeSize) {
+
     super(OutsideClick.IGNORE, styleName);
 
     presenter.getMainView().addStyleName(styleName + "-content");
     setWidget(presenter.getMainView());
 
-    String key = presenter.getViewKey();
     int width = BeeConst.UNDEF;
     int height = BeeConst.UNDEF;
+
+    String key = storeSize ? presenter.getViewKey() : null;
 
     if (BeeUtils.isEmpty(key)) {
       this.storageKey = null;

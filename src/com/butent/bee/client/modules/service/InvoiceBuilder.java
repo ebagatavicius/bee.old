@@ -2,6 +2,7 @@ package com.butent.bee.client.modules.service;
 
 import com.google.gwt.event.shared.HasHandlers;
 
+import static com.butent.bee.shared.modules.orders.OrdersConstants.VIEW_ORDER_CHILD_INVOICES;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -214,9 +215,9 @@ final class InvoiceBuilder {
 
                     if (!response.hasErrors()) {
                       DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_MAINTENANCE);
-                      DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_SERVICE_INVOICES);
+                      DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_ORDER_CHILD_INVOICES);
 
-                      RowEditor.open(VIEW_SERVICE_INVOICES, invId, Opener.MODAL);
+                      RowEditor.open(VIEW_ORDER_CHILD_INVOICES, invId, Opener.MODAL);
                     }
                   }
                 });

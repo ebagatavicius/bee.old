@@ -56,7 +56,18 @@ public abstract class DataEvent {
     }
   }
 
-  public static class ViewInsertEvent extends ViewModifyEvent {
+  public interface InsertOrUpdate {
+    default void addValue(BeeColumn column, Value value) {
+      getColumns().add(column);
+      getRow().addValue(value);
+    }
+
+    List<BeeColumn> getColumns();
+
+    BeeRow getRow();
+  }
+
+  public static class ViewInsertEvent extends ViewModifyEvent implements InsertOrUpdate {
     private final List<BeeColumn> columns;
     private final BeeRow row;
 
@@ -69,15 +80,12 @@ public abstract class DataEvent {
       this.row = row;
     }
 
-    public void addValue(BeeColumn column, Value value) {
-      columns.add(column);
-      row.addValue(value);
-    }
-
+    @Override
     public List<BeeColumn> getColumns() {
       return columns;
     }
 
+    @Override
     public BeeRow getRow() {
       return row;
     }
@@ -126,7 +134,7 @@ public abstract class DataEvent {
     }
   }
 
-  public static class ViewUpdateEvent extends ViewModifyEvent {
+  public static class ViewUpdateEvent extends ViewModifyEvent implements InsertOrUpdate {
     private final List<BeeColumn> columns;
     private final BeeRow row;
 
@@ -139,10 +147,12 @@ public abstract class DataEvent {
       this.row = row;
     }
 
+    @Override
     public List<BeeColumn> getColumns() {
       return columns;
     }
 
+    @Override
     public BeeRow getRow() {
       return row;
     }

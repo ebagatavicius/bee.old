@@ -20,7 +20,7 @@
       <FlowPanel class="&mrcl;" style="&mrst;" for="ContactPerson">
         <FlowPanel style="&mfld;width: 20em;">
           <Label text="=contact" style="&flbl;" />
-          <DataSelector source="ContactPerson" options="Customer"
+          <DataSelector name="ContactPerson" source="ContactPerson" options="Customer"
                         choiceColumns="FirstName LastName Phone Email Address CompanyName"
                         renderColumns="ContactFirstName ContactLastName"
                         style="&finp;"/>
@@ -77,9 +77,9 @@
           <InputText source="Model" style="&finp;" />
         </FlowPanel>
 
-        <FlowPanel style="&mfld; width: 20em;" for="Manufacturer">
-          <Label for="Manufacturer" style="&flbl;" />
-          <DataSelector source="Manufacturer" viewName="Companies" renderColumns="ManufacturerName"
+        <FlowPanel style="&mfld; width: 20em;" for="ServiceManufacturer">
+          <Label for="ServiceManufacturer" style="&flbl;" />
+          <DataSelector source="ServiceManufacturer" renderColumns="ManufacturerName" choiceColumns="ManufacturerName" filter="Visible"
                         style="&finp;"/>
         </FlowPanel>
 

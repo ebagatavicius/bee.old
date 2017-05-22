@@ -39,7 +39,6 @@
       <xs:enumeration value="update_exchange_rates" />
       <xs:enumeration value="calendar_reports" />
       <xs:enumeration value="task_list" />
-      <xs:enumeration value="task_reports" />
       <xs:enumeration value="discuss_list" />
       <xs:enumeration value="documents" />
       <xs:enumeration value="open_mail" />

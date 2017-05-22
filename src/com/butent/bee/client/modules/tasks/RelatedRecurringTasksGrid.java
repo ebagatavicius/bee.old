@@ -2,7 +2,7 @@ package com.butent.bee.client.modules.tasks;
 
 import com.google.common.collect.Lists;
 
-import static com.butent.bee.client.modules.mail.Relations.*;
+import static com.butent.bee.client.composite.Relations.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -20,7 +20,9 @@ import com.butent.bee.client.dialog.Modality;
 import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.view.edit.EditStartEvent;
+import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -82,14 +84,16 @@ class RelatedRecurringTasksGrid extends AbstractGridInterceptor {
 
         BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
         RowActionEvent.fireCreateRow(VIEW_RECURRING_TASKS, row, presenter.getMainView().getId());
+        FormView parentForm = ViewHelper.getForm(presenter.getMainView());
 
-        String relViewName = presenter.getGridView().getViewName();
+        if (parentForm != null) {
+          String relViewName = parentForm.getViewName();
 
-        if (!BeeUtils.isEmpty(relViewName) && BeeUtils.isEmpty(row.getProperty(PFX_RELATED
-          + relViewName))) {
-          row.setProperty(PFX_RELATED + relViewName, DataUtils.buildIdList(relId));
+          if (!BeeUtils.isEmpty(relViewName) && BeeUtils.isEmpty(row.getProperty(PFX_RELATED
+              + relViewName))) {
+            row.setProperty(PFX_RELATED + relViewName, DataUtils.buildIdList(relId));
+          }
         }
-
         RowFactory.createRow(dataInfo, row, Modality.ENABLED, new RowCallback() {
           @Override
           public void onSuccess(BeeRow result) {

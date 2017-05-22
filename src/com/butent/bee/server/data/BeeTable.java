@@ -9,8 +9,6 @@ import com.butent.bee.server.sql.HasConditions;
 import com.butent.bee.server.sql.HasFrom;
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.IsExpression;
-import com.butent.bee.server.sql.IsFrom;
-import com.butent.bee.server.sql.SqlBuilder;
 import com.butent.bee.server.sql.SqlBuilderFactory;
 import com.butent.bee.server.sql.SqlCreate;
 import com.butent.bee.server.sql.SqlInsert;
@@ -55,7 +53,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * Implements database table management - contains parameters for table and it's fields, keys,
@@ -523,38 +523,14 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
     @Override
     public String joinExtField(HasFrom<?> query, String tblAlias, BeeField field) {
       Assert.state(hasField(field) && field.isExtended());
-      String extAlias = null;
 
-      String tblName = getName();
-      String alias = BeeUtils.notEmpty(tblAlias, tblName);
       String extTable = field.getStorageTable();
 
-      for (IsFrom from : query.getFrom()) {
-        Object src = from.getSource();
+      String defExtAlias = BeeUtils.isEmpty(tblAlias) || Objects.equals(getName(), tblAlias)
+          ? extTable : BeeUtils.join(BeeConst.STRING_UNDER, extTable, tblAlias);
 
-        if (src instanceof String && BeeUtils.same((String) src, extTable)) {
-          String tmpAlias = BeeUtils.notEmpty(from.getAlias(), extTable);
-          SqlBuilder builder = SqlBuilderFactory.getBuilder();
-
-          if (from.getSqlString(builder)
-              .endsWith(SqlUtils.join(alias, getIdName(), tmpAlias, extIdName)
-                  .getSqlString(builder))) {
-
-            extAlias = tmpAlias;
-            break;
-          }
-        }
-      }
-      if (BeeUtils.isEmpty(extAlias)) {
-        if (BeeUtils.isEmpty(tblAlias)) {
-          extAlias = extTable;
-        } else {
-          extAlias = SqlUtils.uniqueName();
-        }
-        query.addFromLeft(extTable, extAlias,
-            SqlUtils.join(alias, getIdName(), extAlias, extIdName));
-      }
-      return extAlias;
+      return joinTable(BeeUtils.notEmpty(tblAlias, getName()), getIdName(), extTable, extIdName,
+          defExtAlias, query, null);
     }
 
     @Override
@@ -694,40 +670,17 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
     @Override
     public String joinState(HasFrom<?> query, String tblAlias, RightsState state) {
       Assert.state(hasState(state));
-      String stateAlias = null;
 
       if (isStateActive(state)) {
-        String tblName = getName();
-        String alias = BeeUtils.notEmpty(tblAlias, tblName);
         String stateTable = getStateTable(state);
 
-        for (IsFrom from : query.getFrom()) {
-          Object src = from.getSource();
+        String defStateAlias = BeeUtils.isEmpty(tblAlias) || Objects.equals(getName(), tblAlias)
+            ? stateTable : BeeUtils.join(BeeConst.STRING_UNDER, stateTable, tblAlias);
 
-          if (src instanceof String && BeeUtils.same((String) src, stateTable)) {
-            String tmpAlias = BeeUtils.notEmpty(from.getAlias(), stateTable);
-            SqlBuilder builder = SqlBuilderFactory.getBuilder();
-
-            if (from.getSqlString(builder)
-                .endsWith(SqlUtils.join(alias, getIdName(), tmpAlias, stateIdName)
-                    .getSqlString(builder))) {
-
-              stateAlias = tmpAlias;
-              break;
-            }
-          }
-        }
-        if (BeeUtils.isEmpty(stateAlias)) {
-          if (BeeUtils.same(alias, tblName)) {
-            stateAlias = stateTable;
-          } else {
-            stateAlias = SqlUtils.uniqueName();
-          }
-          query.addFromLeft(stateTable, stateAlias,
-              SqlUtils.join(alias, getIdName(), stateAlias, stateIdName));
-        }
+        return joinTable(BeeUtils.notEmpty(tblAlias, getName()), getIdName(), stateTable,
+            stateIdName, defStateAlias, query, null);
       }
-      return stateAlias;
+      return null;
     }
 
     @Override
@@ -808,15 +761,7 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
           String fld = getStateField(state, bit);
 
           if (stateFields.containsEntry(state, fld)) {
-            long pos = bit % bitCount;
-            int mask;
-
-            if (bitMasks.containsKey(fld)) {
-              mask = bitMasks.get(fld);
-            } else {
-              mask = 0;
-            }
-            bitMasks.put(fld, mask | (1 << pos));
+            bitMasks.put(fld, bitMasks.getOrDefault(fld, 0) | (1 << (bit % bitCount)));
           } else {
             bitMasks.put(fld, null);
           }
@@ -896,42 +841,15 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
         String locale) {
       Assert.state(hasField(field) && field.isTranslatable());
       Assert.notEmpty(locale);
-      String tranAlias = null;
 
-      String tblName = getName();
-      String alias = BeeUtils.notEmpty(tblAlias, tblName);
       String tranTable = getTranslationTable(field);
 
-      for (IsFrom from : query.getFrom()) {
-        Object src = from.getSource();
+      String defTranAlias = BeeUtils.isEmpty(tblAlias) || Objects.equals(getName(), tblAlias)
+          ? BeeUtils.join(BeeConst.STRING_UNDER, tranTable, locale) : null;
 
-        if (src instanceof String && BeeUtils.same((String) src, tranTable)) {
-          String tmpAlias = BeeUtils.notEmpty(from.getAlias(), tranTable);
-          SqlBuilder builder = SqlBuilderFactory.getBuilder();
-
-          if (from.getSqlString(builder)
-              .endsWith(SqlUtils.and(
-                  SqlUtils.join(alias, getIdName(), tmpAlias, translationIdName),
-                  SqlUtils.equals(tmpAlias, translationLocaleName, locale))
-                  .getSqlString(builder))) {
-
-            tranAlias = tmpAlias;
-            break;
-          }
-        }
-      }
-      if (BeeUtils.isEmpty(tranAlias)) {
-        if (BeeUtils.isEmpty(tblAlias)) {
-          tranAlias = tranTable;
-        } else {
-          tranAlias = SqlUtils.uniqueName();
-        }
-        query.addFromLeft(tranTable, tranAlias,
-            SqlUtils.and(
-                SqlUtils.join(alias, getIdName(), tranAlias, translationIdName),
-                SqlUtils.equals(tranAlias, translationLocaleName, locale)));
-      }
-      return tranAlias;
+      return joinTable(BeeUtils.notEmpty(tblAlias, getName()), getIdName(), tranTable,
+          translationIdName, defTranAlias, query,
+          als -> SqlUtils.equals(als, translationLocaleName, locale));
     }
 
     @Override
@@ -1316,6 +1234,27 @@ public class BeeTable implements BeeObject, HasExtFields, HasStates, HasTranslat
   @Override
   public String joinState(HasFrom<?> query, String tblAlias, RightsState state) {
     return stateSource.joinState(query, tblAlias, state);
+  }
+
+  public static String joinTable(String srcAlias, String srcField, String dstName,
+      String dstField, String defDstAlias, HasFrom<?> query, Function<String, IsCondition> and) {
+
+    return query.getFrom().stream()
+        .filter(from -> from.getSource() instanceof String)
+        .filter(from -> dstName.equals(from.getSource()))
+        .filter(from -> from.getSqlString(SqlBuilderFactory.getBuilder())
+            .endsWith(SqlUtils.and(SqlUtils.join(srcAlias, srcField,
+                BeeUtils.notEmpty(from.getAlias(), dstName), dstField),
+                Objects.isNull(and) ? null : and.apply(BeeUtils.notEmpty(from.getAlias(), dstName)))
+                .getSqlString(SqlBuilderFactory.getBuilder())))
+        .map(from -> BeeUtils.notEmpty(from.getAlias(), dstName)).findAny()
+        .orElseGet(() -> {
+          String als = BeeUtils.notEmpty(defDstAlias, SqlUtils.uniqueName());
+          query.addFromLeft(dstName, als,
+              SqlUtils.and(SqlUtils.join(srcAlias, srcField, als, dstField),
+                  Objects.isNull(and) ? null : and.apply(als)));
+          return als;
+        });
   }
 
   @Override

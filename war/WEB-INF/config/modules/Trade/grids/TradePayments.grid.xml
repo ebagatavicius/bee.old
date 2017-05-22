@@ -5,21 +5,23 @@
         caption="=trdPayments" newRowCaption="=newPayment"
 >
   <g:columns>
+    <IdColumn name="Id" visible="false" />
     <DataColumn name="PaymentDate" visible="true" />
 
     <DataColumn name="PaymentAmount" minWidth="80" visible="true">
       <footer aggregate="sum" />
     </DataColumn>
 
-    <RelColumn name="PaymentType" renderColumns="PaymentName" newRowEnabled="false" />
     <RelColumn name="PaymentAccount" renderColumns="AccountCode"
                choiceColumns="AccountCode AccountName" newRowEnabled="false" />
+    <RelColumn name="PaymentType" renderColumns="PaymentName" filter="PaymentTypeAccount"
+               newRowEnabled="false" />
 
     <DataColumn name="PaymentSeries">
       <editor type="string" upperCase="true" />
     </DataColumn>
     <DataColumn name="PaymentNumber" minWidth="80" />
 
-    <IdColumn name="Id" visible="false" />
+    <DataColumn name="PrepaymentParent" caption="=prepaymentParentShort" visible="false" />
   </g:columns>
 </g:Grid>

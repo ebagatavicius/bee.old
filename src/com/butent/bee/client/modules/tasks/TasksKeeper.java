@@ -3,11 +3,13 @@ package com.butent.bee.client.modules.tasks;
 import com.google.common.collect.Lists;
 
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
+
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.NewsAggregator.HeadlineAccessor;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.composite.Relations;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.Queries.IntCallback;
@@ -16,8 +18,6 @@ import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.i18n.Format;
-import com.butent.bee.client.modules.mail.Relations;
-import com.butent.bee.client.modules.tasks.TasksReportsInterceptor.ReportType;
 import com.butent.bee.client.style.ColorStyleProvider;
 import com.butent.bee.client.style.ConditionalStyle;
 import com.butent.bee.client.ui.FormFactory;
@@ -59,10 +59,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class TasksKeeper {
-
-  private static final String COMPANY_TIMES_REPORT = "companytimes";
-  private static final String TYPE_HOURS_REPORT = "typehours";
-  private static final String USERS_HOURS_REPORT = "usershours";
 
   private static class RowTransformHandler implements RowTransformEvent.Handler {
 
@@ -109,7 +105,6 @@ public final class TasksKeeper {
         final TaskDialog dialog = new TaskDialog(Localized.dictionary().crmTaskTermChange());
         final String endId = dialog.addDateTime(Localized.dictionary().crmFinishDate(), true,
             finish);
-
 
         final String cid = dialog.addComment(false);
 
@@ -221,25 +216,6 @@ public final class TasksKeeper {
       }
     });
 
-    MenuService.TASK_REPORTS.setHandler(parameters -> {
-      if (BeeUtils.startsSame(parameters, COMPANY_TIMES_REPORT)) {
-        FormFactory.openForm(FORM_TASKS_REPORT,
-            new TasksReportsInterceptor(ReportType.COMPANY_TIMES));
-      } else if (BeeUtils.startsSame(parameters, TYPE_HOURS_REPORT)) {
-        FormFactory.openForm(FORM_TASKS_REPORT,
-            new TasksReportsInterceptor(ReportType.TYPE_HOURS));
-      } else if (BeeUtils.startsSame(parameters, USERS_HOURS_REPORT)) {
-        FormFactory.openForm(FORM_TASKS_REPORT,
-            new TasksReportsInterceptor(ReportType.USERS_HOURS));
-      } else {
-        Global.showError("Service type '" + parameters + "' not found");
-      }
-    });
-
-    for (ReportType reportType : ReportType.values()) {
-      reportType.register();
-    }
-
     SelectorEvent.register(new TaskSelectorHandler());
 
     BeeKeeper.getBus().registerRowTransformHandler(new RowTransformHandler());
@@ -262,9 +238,8 @@ public final class TasksKeeper {
         TaskStatus status = EnumUtils.getEnumByIndex(TaskStatus.class, row.getInteger(
             Data.getColumnIndex(VIEW_TASKS, COL_STATUS)));
 
-
         if (BeeUtils.unbox(row.getBoolean(privateTaskIdx))
-            && row.getProperty(COL_PRIVATE_TASK) != COL_PRIVATE_TASK) {
+            && !BeeUtils.same(row.getProperty(COL_PRIVATE_TASK), COL_PRIVATE_TASK)) {
 
           event.consume();
 
@@ -293,8 +268,7 @@ public final class TasksKeeper {
                 row.setProperty(COL_PRIVATE_TASK, COL_PRIVATE_TASK);
 
                 String formName = status == TaskStatus.NOT_SCHEDULED
-                  ? FORM_NEW_TASK
-                  : event.getOptions();
+                    ? FORM_NEW_TASK : event.getOptions();
                 RowEditor.openForm(formName, VIEW_TASKS, row, event.getOpener(), null);
               }
             }
@@ -402,21 +376,21 @@ public final class TasksKeeper {
     }
 
     if (relations != null && !BeeUtils.isEmpty(relations.getChildrenForUpdate())) {
-      fireViewDataRefresh(VIEW_RELATED_TASKS, false);
+      DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_RELATED_TASKS);
       relations.requery(taskRow, taskRow.getId());
     }
 
     for (BeeColumn column : columns) {
       String colName = column.getId();
       switch (colName) {
-        case ProjectConstants.COL_PROJECT :
+        case ProjectConstants.COL_PROJECT:
           Long projectId = Data.getLong(VIEW_TASKS, taskRow, colName);
           if (DataUtils.isId(projectId)) {
             // Update project time properties
             fireRowUpdateRefresh(ProjectConstants.VIEW_PROJECTS, projectId);
           }
           break;
-        case ProjectConstants.COL_PROJECT_STAGE :
+        case ProjectConstants.COL_PROJECT_STAGE:
           Long stageId = Data.getLong(VIEW_TASKS, taskRow, colName);
           if (DataUtils.isId(stageId)) {
             // Update project stage time properties
@@ -432,24 +406,12 @@ public final class TasksKeeper {
       return;
     }
 
-     Queries.getRow(viewName, id, new RowCallback() {
-       @Override
-       public void onSuccess(BeeRow result) {
-         RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, result);
-       }
-     });
-  }
-
-  static void fireViewDataRefresh(String viewName, boolean local) {
-    if (BeeUtils.isEmpty(viewName)) {
-      return;
-    }
-
-    if (local) {
-      DataChangeEvent.fireLocalRefresh(BeeKeeper.getBus(), viewName);
-    } else {
-      DataChangeEvent.fireRefresh(BeeKeeper.getBus(), viewName);
-    }
+    Queries.getRow(viewName, id, new RowCallback() {
+      @Override
+      public void onSuccess(BeeRow result) {
+        RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, result);
+      }
+    });
   }
 
   private TasksKeeper() {

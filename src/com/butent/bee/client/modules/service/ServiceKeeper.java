@@ -13,6 +13,7 @@ import com.butent.bee.client.event.logical.RowActionEvent;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.i18n.Format;
+import com.butent.bee.client.modules.orders.OrdersInvoicesGrid;
 import com.butent.bee.client.modules.trade.InvoicesGrid;
 import com.butent.bee.client.timeboard.TimeBoard;
 import com.butent.bee.client.ui.FormFactory;
@@ -64,6 +65,8 @@ public final class ServiceKeeper {
     GridFactory.registerGridInterceptor(GRID_SERVICE_INVOICES, new InvoicesGrid());
     GridFactory.registerGridInterceptor(VIEW_SERVICE_SALES, new ServiceInvoiceBuilder());
     GridFactory.registerGridInterceptor(TBL_MAINTENANCE_PAYROLL, new MaintenancePayrollGrid());
+    GridFactory.registerGridInterceptor(GRID_SERVICE_MAINTENANCE_INVOICES,
+        new OrdersInvoicesGrid());
 
     for (ServiceMaintenanceType st : ServiceMaintenanceType.values()) {
       GridFactory.registerGridSupplier(st.getSupplierKey(), GRID_SERVICE_MAINTENANCE,

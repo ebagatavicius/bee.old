@@ -8,18 +8,12 @@
     <br />
     <FlowPanel class="flexBox-horizontal">
       <FlowPanel class="flexible" style="overflow:hidden;">
-        <HorizontalPanel>
-          <Label text="=currency" />
-          <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
-                           newRowEnabled="false" editPopup="true" style="width:80px;" />
-
-          <CheckBox name="Vat" text="=trdAmountWoVat" />
-        </HorizontalPanel>
-
         <Disclosure open="false" style="overflow:auto;">
           <Label text="=layout" />
           <FlowPanel name="LayoutContainer" />
         </Disclosure>
+
+        <FlowPanel name="ParamsContainer" class="flexBox-horizontal-center" style="margin:10px;" />
 
         <Disclosure open="true">
           <Label text="=filters" />
@@ -32,7 +26,7 @@
 
       <FieldSet>
         <Legend text="=reports" />
-        <FlowPanel name="ReportContainer" style="max-height:300px; overflow:auto;" />
+        <FlowPanel name="ReportContainer" style="max-width:300px; max-height:300px; overflow:auto;" />
       </FieldSet>
     </FlowPanel>
 

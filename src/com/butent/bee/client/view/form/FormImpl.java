@@ -1162,10 +1162,13 @@ public class FormImpl extends Absolute implements FormView, PreviewHandler, Tabu
       return;
     }
 
-    event.applyTo(rowValue);
     if (getOldRow() != null && getOldRow().getId() == rowId) {
       event.applyTo(getOldRow());
     }
+    if (!event.applyTo(rowValue)) {
+      return;
+    }
+
     String source = event.getSourceName();
 
     boolean wasRowEnabled = isRowEnabled(rowValue);

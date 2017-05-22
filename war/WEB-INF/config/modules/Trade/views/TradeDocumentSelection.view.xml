@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="TradeDocumentSelection" source="TradeDocuments"
+      caption="=trdDocumentSelection" filter="Number"
+>
+  <Columns>
+    <SimpleColumn name="Date" />
+
+    <SimpleColumn name="Series" />
+    <SimpleColumn name="Number" />
+
+    <SimpleColumn name="Operation" />
+    <SimpleJoin name="Operation" joinType="LEFT">
+      <SimpleColumn name="OperationName" />
+      <SimpleColumn name="OperationType" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Phase" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="Date" />
+  </Order>
+</View>

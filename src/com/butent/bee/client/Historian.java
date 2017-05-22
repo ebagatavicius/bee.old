@@ -1,6 +1,7 @@
 package com.butent.bee.client;
 
 import com.butent.bee.client.dialog.Popup;
+import com.butent.bee.client.output.Printer;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasInfo;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -13,8 +14,6 @@ import com.butent.bee.shared.utils.PropertyUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import elemental.events.Event;
-import elemental.events.EventListener;
 import elemental.html.History;
 import elemental.js.JsBrowser;
 
@@ -189,19 +188,9 @@ public final class Historian implements HasInfo {
   }
 
   private void init() {
-    getHistory().replaceState(BrowserHistoryState.FIRST.getCaption(), null);
+    reset();
 
-    getHistory().pushState(BrowserHistoryState.REST.getCaption(), null);
-    getHistory().pushState(BrowserHistoryState.LAST.getCaption(), null);
-
-    getHistory().back();
-
-    JsBrowser.getWindow().setOnpopstate(new EventListener() {
-      @Override
-      public void handleEvent(Event evt) {
-        Historian.this.onPop();
-      }
-    });
+    JsBrowser.getWindow().setOnpopstate(evt -> Historian.this.onPop());
 
     logger.info("history initialized");
   }
@@ -232,6 +221,12 @@ public final class Historian implements HasInfo {
     if (state == null || BrowserHistoryState.REST.equals(state)) {
       return;
     }
+
+    if (Printer.isPrinting()) {
+      reset();
+      return;
+    }
+
     state.reset();
 
     if (maybeClosePopup()) {
@@ -285,6 +280,13 @@ public final class Historian implements HasInfo {
     } else {
       return false;
     }
+  }
+
+  private static void reset() {
+    getHistory().replaceState(BrowserHistoryState.FIRST.getCaption(), null);
+    getHistory().pushState(BrowserHistoryState.REST.getCaption(), null);
+    getHistory().pushState(BrowserHistoryState.LAST.getCaption(), null);
+    getHistory().back();
   }
 
   private void setPosition(int position) {

@@ -4,7 +4,7 @@
 name="Payroll" label="=payroll" order="120" module="Payroll"
 >
   <Item name="PayrollEmployees" label="=employees" service="grid" parameters="Employees" />
-  <Item name="PayrollLocations" label="=objects" service="grid" parameters="Locations"
+  <Item name="PayrollLocations" label="=objectLocations" service="grid" parameters="Locations"
     separator="true" />
 
   <Item name="WorkSchedule" label="=workSchedule" service="form" parameters="WorkSchedule"
@@ -14,4 +14,9 @@ name="Payroll" label="=payroll" order="120" module="Payroll"
   <Item name="TimeCardCodes" label="=timeCardCodes" service="grid" parameters="TimeCardCodes"
     separator="true" />
   <Item name="TimeRanges" label="=timeRanges" service="grid" parameters="TimeRanges" />
+  <Item name="TimeSheetPayroll" label="=payrollFundReport" service="report"
+        parameters="PayrollFundReport" separator="true" />
+
+  <Item name="Parameters" label="=parameters" service="parameters" parameters="Payroll"
+        separator="true" />
 </Entry>

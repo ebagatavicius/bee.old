@@ -40,13 +40,12 @@ public final class CarsConstants {
   public static final String TBL_CAR_DISCOUNTS = "CarDiscounts";
 
   public static final String TBL_CAR_BUNDLES = "CarBundles";
-  public static final String TBL_CAR_BUNDLE_JOBS = "CarBundleJobs";
   public static final String TBL_CAR_BUNDLE_ITEMS = "CarBundleItems";
   public static final String TBL_CAR_RECALLS = "CarRecalls";
+  public static final String TBL_CAR_JOBS = "CarJobs";
 
   public static final String TBL_SERVICE_ORDERS = "CarServiceOrders";
   public static final String TBL_SERVICE_ORDER_ITEMS = "CarServiceItems";
-  public static final String TBL_SERVICE_ORDER_JOBS = "CarServiceJobs";
   public static final String TBL_SERVICE_JOB_PROGRESS = "CarJobProgress";
   public static final String TBL_SERVICE_EVENTS = "CarServiceEvents";
   public static final String TBL_SERVICE_INVOICES = "CarServiceInvoices";
@@ -90,7 +89,6 @@ public final class CarsConstants {
   public static final String COL_VALID_UNTIL = "ValidUntil";
   public static final String COL_BODY_NUMBER = "BodyNumber";
   public static final String COL_SERVICE_ITEM = "ServiceItem";
-  public static final String COL_SERVICE_JOB = "ServiceJob";
 
   public static final String COL_RESERVE = "Reserve";
 
@@ -100,7 +98,6 @@ public final class CarsConstants {
   public static final String COL_PRODUCED_TO = "ProducedTo";
 
   public static final String ALS_COMPLETED = "Completed";
-  public static final String COL_JOB_NAME = "JobName";
 
   public static final String FORM_CONF_OPTION = "ConfOption";
   public static final String FORM_CAR_ORDER = "CarOrder";
@@ -108,6 +105,9 @@ public final class CarsConstants {
   public static final String FORM_TEMPLATE = "ConfTemplate";
   public static final String FORM_CAR_SERVICE_ORDER = "CarServiceOrder";
   public static final String FORM_CAR_SERVICE_EVENT = "CarServiceEvent";
+
+  public static final String GRID_CAR_BUNDLE_JOBS = "CarBundleJobs";
+  public static final String GRID_SERVICE_ORDER_JOBS = "CarServiceJobs";
 
   public static final String FILTER_CAR_DOCUMENTS = "filter_car_trade_documents";
   public static final String FILTER_CAR_SERVICE_DOCUMENTS = "filter_car_service_trade_documents";

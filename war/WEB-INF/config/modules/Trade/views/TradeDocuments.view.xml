@@ -133,6 +133,6 @@
   </Columns>
 
   <Order>
-    <OrderBy column="Date" descending="true" />
+    <OrderBy column="Date" />
   </Order>
 </View>

@@ -9,7 +9,6 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
-import com.butent.bee.client.dialog.Modality;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
@@ -18,10 +17,13 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.RowInfoList;
+import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -48,7 +50,8 @@ public final class TransportUtils {
             order.setValue(idx, copyOrderRow.getString(idx));
           }
         }
-        RowFactory.createRow(orderInfo, order, Modality.ENABLED, new RowCallback() {
+
+        Queries.insert(VIEW_ORDERS, Data.getColumns(VIEW_ORDERS), order, new RowCallback() {
           @Override
           public void onSuccess(BeeRow newOrder) {
             getCargos(cargoFilter, cargos -> {
@@ -68,7 +71,8 @@ public final class TransportUtils {
                   public void onSuccess(RowInfoList newIds) {
                     Assert.isTrue(cargos.getNumberOfRows() == newIds.size());
 
-                    String[] gridList = new String[] {TBL_CARGO_LOADING, TBL_CARGO_UNLOADING};
+                    String[] gridList = new String[] {TBL_CARGO_LOADING, TBL_CARGO_UNLOADING,
+                        TBL_CARGO_INCOMES, TBL_CARGO_EXPENSES};
 
                     Runnable onCloneChildren = new Runnable() {
                       int copiedGrids;
@@ -81,7 +85,7 @@ public final class TransportUtils {
                       }
                     };
 
-                    for (String view : gridList) {
+                    for (String view : new String[]{TBL_CARGO_LOADING, TBL_CARGO_UNLOADING}) {
                       BeeRowSet newPlaces = Data.createRowSet(view);
                       int cargoIdx = newPlaces.getColumnIndex(COL_CARGO);
 
@@ -92,18 +96,36 @@ public final class TransportUtils {
                           clonned.setValue(cargoIdx, newIds.get(i).getId());
                         }
                       }
-                      if (!newPlaces.isEmpty()) {
-                        newPlaces = DataUtils.createRowSetForInsert(newPlaces);
-                        Queries.insertRows(newPlaces, new RpcCallback<RowInfoList>() {
+                      insertRows(newPlaces, onCloneChildren);
+                    }
+
+                    Filter filter = Filter.any(COL_CARGO, cargos.getRowIds());
+                    Map<String, Filter> filters = new HashMap<>();
+                    filters.put(TBL_CARGO_INCOMES, filter);
+                    filters.put(TBL_CARGO_EXPENSES, filter);
+
+                    Queries.getData(Arrays.asList(TBL_CARGO_INCOMES, TBL_CARGO_EXPENSES), filters,
+                        new Queries.DataCallback() {
                           @Override
-                          public void onSuccess(RowInfoList result) {
-                            onCloneChildren.run();
+                          public void onSuccess(Collection<BeeRowSet> result) {
+                            for (BeeRowSet rSet : result) {
+                              BeeRowSet newRowSet = Data.createRowSet(rSet.getViewName());
+                              int cargoIdx = rSet.getColumnIndex(COL_CARGO);
+
+                              for (int i = 0; i < cargos.getNumberOfRows(); i++) {
+                                Long cargoId = cargos.getRow(i).getId();
+
+                                for (BeeRow row : DataUtils.filterRows(rSet, COL_CARGO, cargoId)) {
+                                  BeeRow clonned = newRowSet.addEmptyRow();
+                                  clonned.setValues(row.getValues());
+                                  clonned.setValue(cargoIdx, newIds.get(i).getId());
+                                }
+                              }
+
+                              insertRows(newRowSet, onCloneChildren);
+                            }
                           }
                         });
-                      } else {
-                        onCloneChildren.run();
-                      }
-                    }
                   }
                 });
               }
@@ -164,6 +186,38 @@ public final class TransportUtils {
         });
       }
     });
+  }
+
+  static void insertRows(final BeeRowSet newRowSet, final Runnable onCloneChildren) {
+    if (!newRowSet.isEmpty()) {
+      final String viewName = newRowSet.getViewName();
+
+      if (BeeUtils.inList(viewName, VIEW_CARGO_INCOMES, TBL_CARGO_EXPENSES)) {
+        newRowSet.removeColumn(newRowSet.getColumnIndex(TradeConstants.COL_PURCHASE));
+        newRowSet.removeColumn(newRowSet.getColumnIndex(COL_CARGO_TRIP));
+      }
+
+      switch (viewName) {
+        case VIEW_CARGO_INCOMES:
+          newRowSet.removeColumn(newRowSet.getColumnIndex(TradeConstants.COL_SALE));
+          break;
+
+        case TBL_CARGO_EXPENSES:
+          newRowSet.removeColumn(newRowSet.getColumnIndex(COL_CARGO_INCOME));
+          break;
+      }
+
+      final BeeRowSet rowSet = DataUtils.createRowSetForInsert(newRowSet);
+
+      Queries.insertRows(rowSet, new RpcCallback<RowInfoList>() {
+        @Override
+        public void onSuccess(RowInfoList result) {
+          onCloneChildren.run();
+        }
+      });
+    } else {
+      onCloneChildren.run();
+    }
   }
 
   private TransportUtils() {

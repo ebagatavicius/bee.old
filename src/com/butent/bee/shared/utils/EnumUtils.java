@@ -79,7 +79,9 @@ public final class EnumUtils {
   }
 
   public static String getCaption(Enum<?> e) {
-    if (e instanceof HasCaption) {
+    if (e instanceof HasLocalizedCaption) {
+      return ((HasLocalizedCaption) e).getCaption(Localized.dictionary());
+    } else if (e instanceof HasCaption) {
       return ((HasCaption) e).getCaption();
     } else {
       return proper(e);

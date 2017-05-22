@@ -84,11 +84,8 @@ public class CacheManager implements HandlesAllDataEvents {
     @Override
     public void onCellUpdate(CellUpdateEvent event) {
       BeeRow row = dataRows.get(event.getRowId());
-      if (row != null) {
-        event.applyTo(row);
-        if (event.hasColumn()) {
-          checkColumnUpdate(event.getSourceName());
-        }
+      if (row != null && event.applyTo(row) && event.hasColumn()) {
+        checkColumnUpdate(event.getSourceName());
       }
     }
 
@@ -109,7 +106,7 @@ public class CacheManager implements HandlesAllDataEvents {
     }
 
     private void checkColumnUpdate(String columnId) {
-      for (Iterator<CachedQuery> it = queries.iterator(); it.hasNext();) {
+      for (Iterator<CachedQuery> it = queries.iterator(); it.hasNext(); ) {
         CachedQuery query = it.next();
         if (query.containsColumn(columnId)) {
           logger.info("Cache", getViewName(), "update column", columnId);
@@ -152,7 +149,7 @@ public class CacheManager implements HandlesAllDataEvents {
 
       boolean ok = dataRows.deleteKey(id);
       if (ok) {
-        for (Iterator<CachedQuery> it = queries.iterator(); it.hasNext();) {
+        for (Iterator<CachedQuery> it = queries.iterator(); it.hasNext(); ) {
           CachedQuery query = it.next();
           query.deleteValue(id);
           if (query.isEmpty()) {
@@ -420,7 +417,7 @@ public class CacheManager implements HandlesAllDataEvents {
     Assert.notEmpty(viewName);
     Entry entry = get(viewName);
 
-    return (entry == null) ? false : entry.invalidateQuery(filter, order);
+    return entry != null && entry.invalidateQuery(filter, order);
   }
 
   @Override

@@ -18,5 +18,6 @@
     <Relation name="ConfirmedUser" relation="Users" cascade="DELETE" label="=svcConfirmedUser" />
     <DateTime name="ConfirmationDate" label="=svcConfirmationDate" />
     <Text name="Notes" label="=notes" />
+    <Relation name="ServiceItem" relation="ServiceItems" label="=productService" />
   </Fields>
 </Table>

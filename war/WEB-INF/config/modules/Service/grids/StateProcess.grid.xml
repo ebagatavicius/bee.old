@@ -19,5 +19,6 @@
     <DataColumn name="Term" visible="true" />
     <DataColumn name="Warranty" visible="true" />
     <DataColumn name="DaysActive" visible="true" />
+    <DataColumn name="ProhibitEdit" visible="true" />
   </g:columns>
 </g:Grid>

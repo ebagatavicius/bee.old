@@ -43,12 +43,7 @@ public class ClassifierSelector implements SelectorEvent.Handler {
     event.getSelector().setAdditionalFilter(filter, filter != null);
   }
 
-  private static Long getOptionsValue(SelectorEvent event) {
-    String columnName = event.getSelector().getOptions();
-    if (BeeUtils.isEmpty(columnName)) {
-      return null;
-    }
-
+  private static Long getOptionsValue(String columnName, SelectorEvent event) {
     DataView dataView = ViewHelper.getDataView(event.getSelector());
     if (dataView == null) {
       return null;
@@ -135,20 +130,24 @@ public class ClassifierSelector implements SelectorEvent.Handler {
   }
 
   private static void onNewCompanyPerson(SelectorEvent event) {
-    Long company = getOptionsValue(event);
+    String columnName = event.getSelector().getOptions();
 
-    if (DataUtils.isId(company)) {
-      DataInfo targetInfo = Data.getDataInfo(event.getRelatedViewName());
-      IsRow targetRow = event.getNewRow();
+    if (!BeeUtils.isEmpty(columnName)) {
+      Long company = getOptionsValue(columnName, event);
 
-      DataView sourceView = ViewHelper.getDataView(event.getSelector());
+      if (DataUtils.isId(company)) {
+        DataInfo targetInfo = Data.getDataInfo(event.getRelatedViewName());
+        IsRow targetRow = event.getNewRow();
 
-      if (targetInfo != null && targetRow != null && sourceView != null) {
-        DataInfo sourceInfo = Data.getDataInfo(sourceView.getViewName());
-        IsRow sourceRow = sourceView.getActiveRow();
+        DataView sourceView = ViewHelper.getDataView(event.getSelector());
 
-        Data.setValue(event.getRelatedViewName(), targetRow, COL_COMPANY, company);
-        RelationUtils.updateRow(targetInfo, COL_COMPANY, targetRow, sourceInfo, sourceRow, false);
+        if (targetInfo != null && targetRow != null && sourceView != null) {
+          DataInfo sourceInfo = Data.getDataInfo(sourceView.getViewName());
+          IsRow sourceRow = sourceView.getActiveRow();
+
+          Data.setValue(event.getRelatedViewName(), targetRow, COL_COMPANY, company);
+          RelationUtils.updateRow(targetInfo, COL_COMPANY, targetRow, sourceInfo, sourceRow, false);
+        }
       }
     }
 
@@ -199,16 +198,20 @@ public class ClassifierSelector implements SelectorEvent.Handler {
   }
 
   private static void onOpenCompanyPersons(SelectorEvent event) {
-    Long company = getOptionsValue(event);
+    String columnName = event.getSelector().getOptions();
 
-    Filter filter;
-    if (company == null) {
-      filter = null;
-    } else {
-      filter = Filter.equals(COL_COMPANY, company);
+    if (!BeeUtils.isEmpty(columnName)) {
+      Long company = getOptionsValue(columnName, event);
+
+      Filter filter;
+      if (company == null) {
+        filter = null;
+      } else {
+        filter = Filter.equals(COL_COMPANY, company);
+      }
+
+      event.getSelector().setAdditionalFilter(filter, filter != null);
     }
-
-    event.getSelector().setAdditionalFilter(filter, filter != null);
   }
 
   private static void onOpenPersons(SelectorEvent event) {

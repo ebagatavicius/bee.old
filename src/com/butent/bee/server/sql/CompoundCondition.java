@@ -92,4 +92,14 @@ final class CompoundCondition implements HasConditions {
   public boolean isEmpty() {
     return subConditions.isEmpty();
   }
+
+  @Override
+  public IsCondition peek() {
+    return isEmpty() ? null : subConditions.get(0);
+  }
+
+  @Override
+  public int size() {
+    return subConditions.size();
+  }
 }

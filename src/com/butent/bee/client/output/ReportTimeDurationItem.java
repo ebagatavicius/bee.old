@@ -1,14 +1,20 @@
 package com.butent.bee.client.output;
 
+import com.google.gwt.user.client.ui.Widget;
+
+import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.SimpleRowSet;
+import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.report.ReportFunction;
+import com.butent.bee.shared.report.ResultCalculator;
+import com.butent.bee.shared.report.ResultValue;
 import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.utils.BeeUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.TreeSet;
+import java.util.Objects;
 
-public class ReportTimeDurationItem extends ReportNumericItem  {
+public class ReportTimeDurationItem extends ReportNumericItem {
 
   public ReportTimeDurationItem(String expression, String caption) {
     super(expression, caption);
@@ -16,44 +22,52 @@ public class ReportTimeDurationItem extends ReportNumericItem  {
 
   @SuppressWarnings("unchecked")
   @Override
-  public Object calculate(Object total, ReportValue value, ReportFunction function) {
-    Long val = TimeUtils.parseTime(value.getValue());
+  public Object calculate(Object total, ResultValue value, ReportFunction function) {
+    Long val = BeeUtils.toLongOrNull(value.getValue());
 
-    if (val != null && val > 0) {
+    if (BeeUtils.isPositive(val)) {
       switch (function) {
-        case COUNT:
-          if (total == null) {
-            return 1;
-          }
-          return (int) total + 1;
-        case LIST:
-          if (total == null) {
-            return new TreeSet<>(Collections.singleton(value));
-          }
-          ((Collection<ReportValue>) total).add(value);
-          break;
         case MAX:
-          if (total == null) {
-            return TimeUtils.renderTime(val, false);
-          } else {
-            Long totalDuration = getTotalParseTimeValue(total);
-            return TimeUtils.renderTime(
-                val.compareTo(totalDuration) >= 0 ? val : totalDuration, false);
-          }
         case MIN:
-          if (total == null) {
-            return TimeUtils.renderTime(val, false);
-          } else {
-            Long totalDuration = getTotalParseTimeValue(total);
-            return TimeUtils.renderTime(
-                val.compareTo(totalDuration) <= 0 ? val : totalDuration, false);
-          }
         case SUM:
+          ResultCalculator<Long> calculator;
+
           if (total == null) {
-            return TimeUtils.renderTime(val, false);
+            calculator = new ResultCalculator<Long>() {
+              @Override
+              public ResultCalculator calculate(ReportFunction fnc, Long val) {
+                Long res = getResult();
+
+                switch (fnc) {
+                  case MAX:
+                    if (Objects.isNull(res) || res < val) {
+                      setResult(val);
+                    }
+                    break;
+                  case MIN:
+                    if (Objects.isNull(res) || res > val) {
+                      setResult(val);
+                    }
+                    break;
+                  case SUM:
+                    setResult(Objects.isNull(res) ? val : res + val);
+                    break;
+                  default:
+                    Assert.unsupported();
+                    break;
+                }
+                return this;
+              }
+
+              @Override
+              public String getString() {
+                return TimeUtils.renderTime(getResult(), false);
+              }
+            };
           } else {
-            return TimeUtils.renderTime(val + getTotalParseTimeValue(total), false);
+            calculator = (ResultCalculator<Long>) total;
           }
+          return calculator.calculate(function, val);
         default:
           return super.calculate(total, value, function);
       }
@@ -61,22 +75,23 @@ public class ReportTimeDurationItem extends ReportNumericItem  {
     return total;
   }
 
-  private static Long getTotalParseTimeValue(Object total) {
-    if (total instanceof String) {
-      return TimeUtils.parseTime((String) total);
+  @Override
+  public ResultValue evaluate(SimpleRowSet.SimpleRow row, Dictionary dictionary) {
+    ResultValue value;
+    String time = row.getValue(getExpression());
+    Long val = TimeUtils.parseTime(time);
+
+    if (BeeUtils.isPositive(val)) {
+      value = ResultValue.of(BeeUtils.padLeft(BeeUtils.toString(val), 15, BeeConst.CHAR_SPACE))
+          .setDisplay(time);
     } else {
-      return (Long) total;
+      value = ResultValue.empty();
     }
+    return value;
   }
 
   @Override
-  public ReportValue evaluate(SimpleRowSet.SimpleRow row) {
-    return ReportValue.of(row.getValue(getExpression()));
+  public Widget getOptionsWidget() {
+    return null;
   }
-
-  @Override
-  public String getStyle() {
-    return STYLE_TEXT;
-  }
-
 }

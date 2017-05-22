@@ -11,6 +11,7 @@ public final class Service {
   public static final String PROPERTY_AUDIT_OFF = "DisableAuditing";
   public static final String PROPERTY_MODULES = "Modules";
   public static final String PROPERTY_VIEW_MODULES = "ViewModules";
+  public static final String PROPERTY_DEFAULT_LOCALE = "DefaultLocale";
   public static final String PROPERTY_ACTIVE_LOCALES = "ActiveLocales";
   public static final String PROPERTY_IDLE_TIMEOUT = "IdleSessionTimeoutInMinutes";
 

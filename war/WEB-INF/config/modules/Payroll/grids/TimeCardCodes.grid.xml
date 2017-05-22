@@ -9,6 +9,8 @@
     </DataColumn>
     <DataColumn name="TcName" flexGrow="1" />
 
+    <DataColumn name="TcDurationType" />
+
     <DataColumn name="WsPlanned" />
     <DataColumn name="WsActual" />
 

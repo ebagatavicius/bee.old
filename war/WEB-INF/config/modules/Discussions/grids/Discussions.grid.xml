@@ -55,10 +55,10 @@
     </CalcColumn>
 
     <DataColumn name="LastCommentPublishTime"  caption="=discussLastComment"
-                label="=discussLastComment" visible="false" />
+                label="=discussLastComment" visible="false" format="DATE_SHORT_TIME_MEDIUM"/>
 
     <PropColumn name="LastCommentData" type="string" cellType="html"
-                caption="=discussLastComment" label="=discussLastComment" width="180"
+                caption="=discussLastCommentator" label="=discussLastCommentator" width="180"
                 sortBy="LastCommentPublishTime">
     </PropColumn>
 

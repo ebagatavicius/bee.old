@@ -4,6 +4,9 @@ import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.layout.SummaryProxy;
+import com.butent.bee.client.layout.TabbedPages;
+import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -12,6 +15,7 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.modules.payroll.PayrollConstants.WorkScheduleKind;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
+import com.butent.bee.shared.rights.RegulatedWidget;
 
 class LocationForm extends AbstractFormInterceptor {
 
@@ -40,18 +44,36 @@ class LocationForm extends AbstractFormInterceptor {
     }
   }
 
+  private TabbedPages tabbedPages;
+
   LocationForm() {
   }
 
   @Override
+  public void afterCreateWidget(String name, IdentifiableWidget widget,
+                                FormFactory.WidgetDescriptionCallback callback) {
+    if (widget instanceof TabbedPages) {
+      tabbedPages = (TabbedPages) widget;
+    }
+  }
+
+  @Override
   public void afterRefresh(FormView form, IsRow row) {
+    boolean enabledWSch = BeeKeeper.getUser().isWidgetVisible(RegulatedWidget.WORK_SCHEDULE);
+    boolean enableTSh =  BeeKeeper.getUser().isWidgetVisible(RegulatedWidget.TIME_SHEET);
+
     if (BeeKeeper.getUser().isModuleVisible(ModuleAndSub.of(Module.PAYROLL))) {
-      refreshSchedule(form, row, "WorkSchedule", WorkScheduleKind.PLANNED);
-      refreshSchedule(form, row, "TimeSheet", WorkScheduleKind.ACTUAL);
+      if (enabledWSch) {
+        refreshSchedule(form, row, "WorkSchedule", WorkScheduleKind.PLANNED);
+      }
+
+      if (enableTSh) {
+        refreshSchedule(form, row, "TimeSheet", WorkScheduleKind.ACTUAL);
+      }
 
       refreshSchedule(form, row, "Earnings", null);
     }
-
+    PayrollHelper.disableWidgetTab(tabbedPages);
     super.afterRefresh(form, row);
   }
 

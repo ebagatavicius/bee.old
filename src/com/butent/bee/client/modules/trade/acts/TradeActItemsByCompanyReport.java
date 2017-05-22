@@ -3,8 +3,6 @@ package com.butent.bee.client.modules.trade.acts;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
@@ -22,7 +20,7 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Report;
-import com.butent.bee.client.output.ReportParameters;
+import com.butent.bee.shared.report.ReportParameters;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasIndexedWidgets;
 import com.butent.bee.client.ui.Opener;
@@ -116,7 +114,7 @@ public class TradeActItemsByCompanyReport extends ReportInterceptor {
 
       loadMulti(parameters, FILTER_NAMES, form);
 
-      loadGroupBy(parameters, GROUP_NAMES, form);
+      loadGroupByIndex(parameters, GROUP_NAMES, form);
     }
 
     super.onLoad(form);
@@ -129,7 +127,7 @@ public class TradeActItemsByCompanyReport extends ReportInterceptor {
 
     storeEditorValues(FILTER_NAMES);
 
-    storeGroupBy(GROUP_NAMES);
+    storeGroupByIndex(GROUP_NAMES);
   }
 
   @Override
@@ -169,7 +167,7 @@ public class TradeActItemsByCompanyReport extends ReportInterceptor {
 
     if (DataUtils.isId(currency)) {
       params.addDataItem(COL_TA_CURRENCY, currency);
-      currencyName = getFilterLabel(NAME_CURRENCY);
+      currencyName = getSelectorLabel(NAME_CURRENCY);
     } else {
       currencyName = ClientDefaults.getCurrencyName();
     }
@@ -186,7 +184,7 @@ public class TradeActItemsByCompanyReport extends ReportInterceptor {
           logger.warning(name, "has no label");
         }
 
-        headers.add(BeeUtils.joinWords(label, getFilterLabel(name)));
+        headers.add(BeeUtils.joinWords(label, getSelectorLabel(name)));
       }
     }
 
@@ -226,10 +224,10 @@ public class TradeActItemsByCompanyReport extends ReportInterceptor {
   protected String getBookmarkLabel() {
     List<String> labels = StringList.of(getReportCaption(),
         Format.renderPeriod(getDateTime(NAME_START_DATE), getDateTime(NAME_END_DATE)),
-        getFilterLabel(NAME_CURRENCY));
+        getSelectorLabel(NAME_CURRENCY));
 
     for (String name : FILTER_NAMES) {
-      labels.add(getFilterLabel(name));
+      labels.add(getSelectorLabel(name));
     }
 
     for (String groupName : GROUP_NAMES) {
@@ -252,7 +250,7 @@ public class TradeActItemsByCompanyReport extends ReportInterceptor {
     addEditorValues(parameters, NAME_CURRENCY);
 
     addEditorValues(parameters, FILTER_NAMES);
-    addGroupBy(parameters, GROUP_NAMES);
+    addGroupByIndex(parameters, GROUP_NAMES);
 
     return parameters;
   }
@@ -432,19 +430,16 @@ public class TradeActItemsByCompanyReport extends ReportInterceptor {
       final List<String> actClasses = Arrays.asList(getColumnStyle(COL_TRADE_ACT),
           getColumnStyle(COL_TRADE_ACT_NAME), getColumnStyle(COL_TA_NUMBER));
 
-      table.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          Element target = EventUtils.getEventTargetElement(event);
-          TableCellElement cell = DomUtils.getParentCell(target, true);
+      table.addClickHandler(event -> {
+        Element target = EventUtils.getEventTargetElement(event);
+        TableCellElement cell = DomUtils.getParentCell(target, true);
 
-          if (StyleUtils.hasAnyClass(cell, actClasses)) {
-            TableRowElement row = DomUtils.getParentRow(cell, false);
-            long actId = DomUtils.getDataIndexLong(row);
+        if (StyleUtils.hasAnyClass(cell, actClasses)) {
+          TableRowElement row = DomUtils.getParentRow(cell, false);
+          long actId = DomUtils.getDataIndexLong(row);
 
-            if (DataUtils.isId(actId)) {
-              RowEditor.open(VIEW_TRADE_ACTS, actId, Opener.MODAL);
-            }
+          if (DataUtils.isId(actId)) {
+            RowEditor.open(VIEW_TRADE_ACTS, actId, Opener.MODAL);
           }
         }
       });

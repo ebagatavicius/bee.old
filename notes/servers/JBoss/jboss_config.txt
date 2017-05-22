@@ -55,4 +55,10 @@ data-source add \
 /subsystem=transactions:write-attribute(name=default-timeout,value=1800)
 /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=max-post-size,value=104857600)
 
+# RESPONSE GZIP COMPRESSION
+/subsystem=undertow/configuration=filter/response-header=Vary-header:add(header-name=Vary,header-value=Accept-Encoding)
+/subsystem=undertow/configuration=filter/gzip=gzipFilter:add()
+/subsystem=undertow/server=default-server/host=default-host/filter-ref=Vary-header:add()
+/subsystem=undertow/server=default-server/host=default-host/filter-ref=gzipFilter:add(predicate="exists('%{o,Content-Type}') and regex(pattern='(?:text/plain|text/css|text/html|text/xml|application/javascript|application/json)(;.*)?', value=%{o,Content-Type}, full-match=true)")
+
 reload

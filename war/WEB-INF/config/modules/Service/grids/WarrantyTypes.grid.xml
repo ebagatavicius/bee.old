@@ -7,5 +7,6 @@
   >
   <g:columns>
     <DataColumn name="Name" caption="=type" visible="true" />
+    <DataColumn name="Duration" visible="true" />
   </g:columns>
 </g:Grid>

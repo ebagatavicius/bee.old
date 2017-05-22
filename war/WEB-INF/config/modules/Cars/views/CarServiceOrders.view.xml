@@ -83,6 +83,7 @@
         <SimpleColumn name="Name" alias="ModelName" />
       </SimpleJoin>
 
+      <SimpleColumn name="BodyNumber" />
       <SimpleColumn name="Number" alias="CarNumber" />
       <SimpleColumn name="ProductionDate" />
     </SimpleJoin>

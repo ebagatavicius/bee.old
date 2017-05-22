@@ -13,7 +13,7 @@ import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.GridFactory.GridOptions;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Report;
-import com.butent.bee.client.output.ReportParameters;
+import com.butent.bee.shared.report.ReportParameters;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.PresenterCallback;
@@ -297,7 +297,7 @@ public class CompanyUsageReport extends ReportInterceptor {
         args.add(name);
         args.add(value);
 
-        String label = getFilterLabel(name);
+        String label = getSelectorLabel(name);
         if (!BeeUtils.isEmpty(label)) {
           labels.add(label);
         }
@@ -340,7 +340,7 @@ public class CompanyUsageReport extends ReportInterceptor {
     List<String> selectorLabels = new ArrayList<>();
 
     for (String name : SELECTOR_NAMES) {
-      String label = getFilterLabel(name);
+      String label = getSelectorLabel(name);
       if (!BeeUtils.isEmpty(label)) {
         selectorLabels.add(label);
       }

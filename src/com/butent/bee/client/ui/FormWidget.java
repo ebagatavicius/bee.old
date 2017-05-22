@@ -66,7 +66,7 @@ import com.butent.bee.client.layout.Stack;
 import com.butent.bee.client.layout.SummaryProxy;
 import com.butent.bee.client.layout.TabbedPages;
 import com.butent.bee.client.layout.Vertical;
-import com.butent.bee.client.modules.mail.Relations;
+import com.butent.bee.client.composite.Relations;
 import com.butent.bee.client.presenter.TreePresenter;
 import com.butent.bee.client.richtext.RichTextEditor;
 import com.butent.bee.client.style.ColorStyleProvider;
@@ -2426,9 +2426,14 @@ public enum FormWidget {
       }
 
     } else if (BeeUtils.same(childTag, HasItems.TAG_ITEM) && parent instanceof HasItems) {
-      String item = XmlUtils.getText(child);
-      if (!BeeUtils.isEmpty(item)) {
-        ((HasItems) parent).addItem(Localized.maybeTranslate(item));
+      String text = Localized.maybeTranslate(XmlUtils.getText(child));
+      if (!BeeUtils.isEmpty(text)) {
+        if (parent instanceof ListBox && child.hasAttribute(UiConstants.ATTR_VALUE)) {
+          String value = child.getAttribute(UiConstants.ATTR_VALUE);
+          ((ListBox) parent).addItem(text, value);
+        } else {
+          ((HasItems) parent).addItem(text);
+        }
       }
 
     } else if (this == HEADER_CONTENT_FOOTER) {

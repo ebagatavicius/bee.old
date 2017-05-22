@@ -11,4 +11,8 @@ public interface HasConditions extends IsCondition {
   void clear();
 
   boolean isEmpty();
+
+  IsCondition peek();
+
+  int size();
 }

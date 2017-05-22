@@ -55,7 +55,7 @@ enum ScheduleParent {
 
     @Override
     String getPartitionTitle() {
-      return Localized.dictionary().objects();
+      return Localized.dictionary().objectLocations();
     }
 
     @Override

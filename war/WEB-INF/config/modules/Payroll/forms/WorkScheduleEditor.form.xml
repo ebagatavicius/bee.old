@@ -2,6 +2,7 @@
 <f:Form xmlns="http://www.butent.com/widget"
   xmlns:f="http://www.butent.com/form"
   xmlns:ui="http://www.butent.com/ui"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
   
   name="WorkScheduleEditor" viewName="WorkSchedule"
   height="480" width="800"
@@ -11,65 +12,44 @@
       cellStyle="padding-left: 2em;">
 
       <FlowPanel name="Calendar" />
+      <FlowPanel class="flexBox-Vertical">
+        <Table kind="custom" style="border-bottom: 1px solid blue;"
+               cellStyle="padding-top: 6px; padding-bottom: 6px;">
+          <col index="0" kind="label" />
+          <col index="2" kind="label" />
 
-      <Table kind="custom" cellStyle="padding-top: 12px;">
-        <col index="0" kind="label" />
-        <col index="2" kind="label" />
+          <row>
+            <Label for="TimeRangeCode" />
+            <cell colSpan="3">
+              <DataSelector source="TimeRangeCode"
+                renderColumns="TrCode TrName TrTimeFrom TrTimeUntil"
+                choiceColumns="TrCode TrName TimeFrom TimeUntil" searchableColumns="TrCode"
+                style="width: 100%" newRowEnabled="false" updateMode="row" visible="true">
+                <editable>
+                  <ui:expression>!(row.TimeCardCode || row.TimeFrom || row.TimeUntil || row.Duration)</ui:expression>
+                </editable>
+              </DataSelector>
+            </cell>
+          </row>
 
-        <row>
-          <Label for="TimeRangeCode" />
-          <cell colSpan="3">
-            <DataSelector source="TimeRangeCode"
-              renderColumns="TrCode TrName TrTimeFrom TrTimeUntil"
-              choiceColumns="TrCode TrName TimeFrom TimeUntil" searchableColumns="TrCode"
-              style="width: 100%" newRowEnabled="false" updateMode="row" visible="true">
+          <row>
+            <Label for="TimeFrom" />
+            <InputTimeOfDay source="TimeFrom" updateMode="row" style="width: 60px;">
               <editable>
-                <ui:expression>!(row.TimeCardCode || row.TimeFrom || row.TimeUntil || row.Duration)</ui:expression>
+                <ui:expression>!(row.TimeRangeCode || row.TimeCardCode)</ui:expression>
               </editable>
-            </DataSelector>
-          </cell>
-        </row>
+            </InputTimeOfDay>
 
-        <row>
-          <Label for="TimeCardCode" />
-          <cell colSpan="3">
-            <DataSelector source="TimeCardCode" renderColumns="TcCode TcName"
-              style="width: 100%;" newRowEnabled="false" updateMode="row">
+            <Label for="TimeUntil" />
+            <InputTimeOfDay source="TimeUntil" updateMode="row" style="width: 60px;">
               <editable>
-                <ui:expression>!(row.TimeRangeCode || row.TimeFrom || row.TimeUntil || row.Duration)</ui:expression>
+                <ui:expression>!(row.TimeRangeCode || row.TimeCardCode)</ui:expression>
               </editable>
-            </DataSelector>
-          </cell>
-        </row>
-
-        <row>
-          <Label for="TimeFrom" />
-          <InputTimeOfDay source="TimeFrom" updateMode="row" style="width: 60px;">
-            <editable>
-              <ui:expression>!(row.TimeRangeCode || row.TimeCardCode)</ui:expression>
-            </editable>
-          </InputTimeOfDay>
-
-          <Label for="TimeUntil" />
-          <InputTimeOfDay source="TimeUntil" updateMode="row" style="width: 60px;">
-            <editable>
-              <ui:expression>!(row.TimeRangeCode || row.TimeCardCode)</ui:expression>
-            </editable>
-          </InputTimeOfDay>
-        </row>
-
-        <row>
-          <Label for="Duration" />
-          <InputTimeOfDay source="Duration" updateMode="row" style="width: 60px;">
-            <editable>
-              <ui:expression>!(row.TimeRangeCode || row.TimeCardCode)</ui:expression>
-            </editable>
-          </InputTimeOfDay>
-
-          <Label for="Note" />
-          <InputText source="Note" style="width: 200px;" />
-        </row>
-       </Table>
+            </InputTimeOfDay>
+          </row>
+         </Table>
+        <xi:include href="widgets/WorkScheduleTCInput.widget.xml" />
+      </FlowPanel>
     </HorizontalPanel>
 
     <GridPanel name="WorkScheduleDay" class="flexible" />

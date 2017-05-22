@@ -10,7 +10,7 @@
     <InputText source="Phone" summarize="true" />
     <Label for="EmailId" style="&lbl;" />
     <cell colSpan="2" for="EmailId" >
-      <DataSelector source="EmailId" style="&inp;" maxLength="50" editEnabled="true"
+      <DataSelector source="EmailId" style="&inp;" maxLength="255" editEnabled="true"
         summarize="true" />
     </cell>
   </row>

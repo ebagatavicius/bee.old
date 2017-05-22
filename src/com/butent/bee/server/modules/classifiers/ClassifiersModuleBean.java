@@ -2,6 +2,7 @@ package com.butent.bee.server.modules.classifiers;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -21,17 +22,16 @@ import static com.butent.bee.shared.html.builder.Factory.*;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
-import static com.butent.bee.shared.modules.orders.OrdersConstants.COL_ORDER;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.ALS_COMPANY_TYPE_NAME;
+import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
 import static com.butent.bee.shared.modules.orders.OrdersConstants.*;
-import static com.butent.bee.shared.modules.projects.ProjectConstants.COL_DATES_START_DATE;
-import static com.butent.bee.shared.modules.service.ServiceConstants.COL_ENDING_DATE;
-import static com.butent.bee.shared.modules.service.ServiceConstants.COL_REPAIRER;
-import static com.butent.bee.shared.modules.service.ServiceConstants.COL_SERVICE_ITEM;
-import static com.butent.bee.shared.modules.service.ServiceConstants.COL_SERVICE_MAINTENANCE;
-import static com.butent.bee.shared.modules.service.ServiceConstants.TBL_SERVICE_ITEMS;
-import static com.butent.bee.shared.modules.service.ServiceConstants.TBL_SERVICE_MAINTENANCE;
+import static com.butent.bee.shared.modules.orders.OrdersConstants.COL_ORDER;
 import static com.butent.bee.shared.modules.orders.OrdersConstants.TBL_ORDERS;
+import static com.butent.bee.shared.modules.projects.ProjectConstants.COL_DATES_START_DATE;
+import static com.butent.bee.shared.modules.service.ServiceConstants.*;
+import static com.butent.bee.shared.modules.service.ServiceConstants.COL_SERVICE_ITEM;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
+import static com.butent.bee.shared.modules.transport.TransportConstants.COL_MODEL;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.server.data.BeeTable;
@@ -251,10 +251,7 @@ public class ClassifiersModuleBean implements BeeModule {
     } else if (BeeUtils.same(svc, SVC_GENERATE_QR_CODE)) {
       try {
         response = generateQrCode(reqInfo);
-      } catch (WriterException e) {
-        response = ResponseObject.error(e);
-        e.printStackTrace();
-      } catch (IOException e) {
+      } catch (WriterException | IOException e) {
         response = ResponseObject.error(e);
         e.printStackTrace();
       }
@@ -281,7 +278,9 @@ public class ClassifiersModuleBean implements BeeModule {
 
   @Override
   public Collection<BeeParameter> getDefaultParameters() {
-    return null;
+    return Collections.singletonList(BeeParameter.createMap(getModule().getName(),
+        PRM_RECORD_DEPENDENCY, false, ImmutableMap.of(TBL_DOCUMENTS, COL_DOCUMENT_CATEGORY,
+            VIEW_RELATED_DOCUMENTS, COL_DOCUMENT)));
   }
 
   @Override
@@ -1860,7 +1859,7 @@ public class ClassifiersModuleBean implements BeeModule {
             SqlUtils.in(TBL_ORDER_ITEMS, COL_SERVICE_ITEM,
                 TBL_SERVICE_ITEMS, sys.getIdName(TBL_SERVICE_ITEMS),
                 SqlUtils.equals(TBL_SERVICE_ITEMS, COL_SERVICE_MAINTENANCE, object.getB()))
-            ));
+        ));
       }
 
       SimpleRowSet orderItems = qs.getData(slcOrderItems);
@@ -2029,30 +2028,24 @@ public class ClassifiersModuleBean implements BeeModule {
   private IsCondition getCarDiscountCondition(RequestInfo reqInfo) {
     Long model = reqInfo.getParameterLong(COL_MODEL);
     JustDate prodDate = TimeUtils.toDateOrNull(reqInfo.getParameterInt(COL_PRODUCTION_DATE));
-    Long job = reqInfo.getParameterLong(COL_JOB);
 
-    if (!BeeUtils.anyNotNull(model, prodDate, job)) {
+    if (!BeeUtils.anyNotNull(model, prodDate)) {
       return null;
     }
     if (BeeUtils.isPositive(reqInfo.getParameterInt(Service.VAR_EXPLAIN))) {
       explain(SVC_GET_PRICE_AND_DISCOUNT, TBL_CAR_DISCOUNTS,
-          BeeUtils.joinOptions(COL_MODEL, model, COL_PRODUCTION_DATE, prodDate, COL_JOB, job));
+          BeeUtils.joinOptions(COL_MODEL, model, COL_PRODUCTION_DATE, prodDate));
     }
     HasConditions carDiscountWhere = SqlUtils.and();
 
-    Map<String, Long> crit = new HashMap<>();
-    crit.put(COL_MODEL, model);
-    crit.put(COL_JOB, job);
+    IsCondition clause = SqlUtils.isNull(TBL_CAR_DISCOUNTS, COL_MODEL);
 
-    crit.forEach((fld, id) -> {
-      IsCondition clause = SqlUtils.isNull(TBL_CAR_DISCOUNTS, fld);
+    if (DataUtils.isId(model)) {
+      clause = SqlUtils.or(clause, SqlUtils.equals(TBL_CAR_DISCOUNTS, COL_MODEL, model));
+    }
+    carDiscountWhere.add(clause);
 
-      if (DataUtils.isId(id)) {
-        clause = SqlUtils.or(clause, SqlUtils.equals(TBL_CAR_DISCOUNTS, fld, id));
-      }
-      carDiscountWhere.add(clause);
-    });
-    IsCondition clause = SqlUtils.isNull(TBL_CAR_DISCOUNTS, COL_PRODUCED_FROM);
+    clause = SqlUtils.isNull(TBL_CAR_DISCOUNTS, COL_PRODUCED_FROM);
 
     if (Objects.nonNull(prodDate)) {
       clause = SqlUtils.or(clause,

@@ -89,6 +89,10 @@ public final class AnalysisUtils {
     }
   }
 
+  public static int getRatioScale(double value, int maxEntryScale) {
+    return (maxEntryScale == 0 && value < BeeConst.DOUBLE_ONE_HUNDRED) ? 1 : maxEntryScale;
+  }
+
   public static Integer getScale(Integer... input) {
     if (input == null) {
       return null;

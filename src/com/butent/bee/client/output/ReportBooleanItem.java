@@ -5,6 +5,7 @@ import com.butent.bee.shared.Service;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.report.ResultValue;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -38,16 +39,16 @@ public class ReportBooleanItem extends ReportItem {
   }
 
   @Override
-  public ReportValue evaluate(SimpleRow row) {
+  public ResultValue evaluate(SimpleRow row, Dictionary dictionary) {
     String display;
     boolean on = BeeUtils.unbox(row.getBoolean(getExpression()));
 
     if (on) {
-      display = Localized.dictionary().yes();
+      display = dictionary.yes();
     } else {
-      display = Localized.dictionary().no();
+      display = dictionary.no();
     }
-    return ReportValue.of(Boolean.toString(on)).setDisplay(display);
+    return ResultValue.of(Boolean.toString(on)).setDisplay(display);
   }
 
   @Override

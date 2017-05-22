@@ -59,6 +59,9 @@ import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogLevel;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.modules.ec.EcConstants;
+import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.news.Feed;
 import com.butent.bee.shared.rights.RightsObjectType;
 import com.butent.bee.shared.rights.RightsState;
@@ -1079,6 +1082,30 @@ public class UiServiceBean {
               break;
             }
           }
+        }
+      });
+      response.addInfo("OK");
+
+    } else if (BeeUtils.same(cmd, "ServiceObjectManufacturers")) {
+      // TODO: remove
+      Set<String> oldManufacturerNames = qs.getDistinctValues(ClassifierConstants.TBL_COMPANIES,
+          ClassifierConstants.COL_COMPANY_NAME, SqlUtils.in(ClassifierConstants.TBL_COMPANIES,
+              sys.getIdName(ClassifierConstants.TBL_COMPANIES),
+              ServiceConstants.VIEW_SERVICE_OBJECTS, EcConstants.COL_TCD_MANUFACTURER));
+
+      oldManufacturerNames.forEach(manufacturerName -> {
+        long newManufacturerId = qs.insertData(new SqlInsert(EcConstants.TBL_TCD_MANUFACTURERS)
+            .addConstant(EcConstants.COL_TCD_MANUFACTURER_NAME, manufacturerName)
+            .addConstant(EcConstants.COL_TCD_TYPE_VISIBLE, true));
+
+        if (DataUtils.isId(newManufacturerId)) {
+          qs.updateData(new SqlUpdate(ServiceConstants.TBL_SERVICE_OBJECTS)
+              .addConstant(ServiceConstants.COL_MANUFACTURER, newManufacturerId)
+              .setWhere(SqlUtils.in(ServiceConstants.TBL_SERVICE_OBJECTS,
+                  EcConstants.COL_TCD_MANUFACTURER, ClassifierConstants.TBL_COMPANIES,
+                  sys.getIdName(ClassifierConstants.TBL_COMPANIES),
+                  SqlUtils.equals(ClassifierConstants.TBL_COMPANIES,
+                      ClassifierConstants.COL_COMPANY_NAME, manufacturerName))));
         }
       });
       response.addInfo("OK");

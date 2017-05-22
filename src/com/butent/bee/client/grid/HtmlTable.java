@@ -394,6 +394,15 @@ public class HtmlTable extends Panel implements IdentifiableWidget, IsHtmlTable,
     return cells;
   }
 
+  public int getColumnCount() {
+    int cc = 0;
+
+    for (int row = 0; row < getRowCount(); row++) {
+      cc = Math.max(cc, getCellCount(row));
+    }
+    return cc;
+  }
+
   public ColumnFormatter getColumnFormatter() {
     return columnFormatter;
   }

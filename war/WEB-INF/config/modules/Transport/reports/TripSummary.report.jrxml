@@ -1,0 +1,1436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-05-11T16:30:42 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TripSummary" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="3ad2372d-bb52-4e1f-9dfe-aaf5bdceb74c">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<import value="com.butent.bee.server.Invocation"/>
+	<import value="com.butent.bee.server.i18n.Localizations"/>
+	<import value="com.butent.bee.shared.data.BeeRowSet"/>
+	<import value="com.butent.bee.server.data.UserServiceBean"/>
+	<import value="com.butent.bee.shared.time.DateTime"/>
+	<import value="com.butent.bee.shared.data.BeeRow"/>
+	<import value="com.butent.bee.shared.i18n.Dictionary"/>
+	<import value="com.butent.bee.shared.utils.BeeUtils"/>
+	<import value="com.butent.bee.shared.i18n.Formatter"/>
+	<import value="com.butent.bee.server.RsDataSource"/>
+	<import value="com.butent.bee.shared.time.JustDate"/>
+	<style name="Cell" markup="" fontName="DejaVu Sans">
+		<box leftPadding="2" rightPadding="2"/>
+		<paragraph lineSpacingSize="1.0" leftIndent="3" spacingBefore="0" spacingAfter="0"/>
+	</style>
+	<style name="Table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_CH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="OtherCosts" uuid="1558a229-ce2d-4d41-8549-343d9f73ca4a">
+		<parameter name="Currency" class="java.lang.String"/>
+		<parameter name="OtherTotal" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="Item" class="java.lang.String"/>
+		<field name="Amount" class="java.lang.String"/>
+		<variable name="d" class="com.butent.bee.shared.i18n.Dictionary">
+			<variableExpression><![CDATA[$V{d}]]></variableExpression>
+			<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="DriverCosts" uuid="7914ee9a-f9d1-4798-b4a6-239d6538ef74">
+		<parameter name="Currency" class="java.lang.String"/>
+		<parameter name="OtherTotal" class="java.lang.String"/>
+		<parameter name="DriverCostsDataSet" class="com.butent.bee.server.RsDataSource"/>
+		<parameter name="DriverCostsTotal" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="Number" class="java.lang.String"/>
+		<field name="Date" class="java.lang.String"/>
+		<field name="Item" class="java.lang.String"/>
+		<field name="Driver" class="java.lang.String"/>
+		<field name="Quantity" class="java.lang.String"/>
+		<field name="Unit" class="java.lang.String"/>
+		<field name="Price" class="java.lang.String"/>
+		<field name="Amount" class="java.lang.String"/>
+		<variable name="d" class="com.butent.bee.shared.i18n.Dictionary">
+			<variableExpression><![CDATA[$V{d}]]></variableExpression>
+			<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="DriverAdvances" uuid="3fe2c4c0-94ad-4e07-8436-fbf42a52e09a">
+		<parameter name="Currency" class="java.lang.String"/>
+		<parameter name="DriverAdvancesDataSet" class="com.butent.bee.server.RsDataSource"/>
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="Item" class="java.lang.String"/>
+		<field name="Date" class="java.lang.String"/>
+		<field name="Amount" class="java.lang.String"/>
+		<field name="Remainder" class="java.lang.String"/>
+		<field name="Driver" class="java.lang.String"/>
+		<variable name="d" class="com.butent.bee.shared.i18n.Dictionary">
+			<variableExpression><![CDATA[$V{d}]]></variableExpression>
+			<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
+		</variable>
+		<group name="Group1">
+			<groupExpression><![CDATA[$F{Driver}]]></groupExpression>
+		</group>
+	</subDataset>
+	<parameter name="TripNo" class="java.lang.String"/>
+	<parameter name="Date" class="java.lang.String"/>
+	<parameter name="usr" class="com.butent.bee.server.data.UserServiceBean">
+		<defaultValueExpression><![CDATA[Invocation.locateRemoteBean(UserServiceBean.class)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VehicleNumber" class="java.lang.String"/>
+	<parameter name="TrailerNumber" class="java.lang.String"/>
+	<parameter name="Route" class="java.lang.String"/>
+	<parameter name="PlannedEndDate" class="java.lang.String"/>
+	<parameter name="DriverName" class="java.lang.String"/>
+	<parameter name="User" class="java.lang.String"/>
+	<parameter name="TripDrivers2" class="java.lang.String"/>
+	<parameter name="TripDrivers" class="java.lang.String"/>
+	<parameter name="OtherCosts" class="java.lang.String"/>
+	<parameter name="DateFrom" class="java.lang.String"/>
+	<parameter name="DateTo" class="java.lang.String"/>
+	<parameter name="SpeedometerBefore" class="java.lang.String"/>
+	<parameter name="SpeedometerAfter" class="java.lang.String"/>
+	<parameter name="FuelAfter" class="java.lang.String"/>
+	<parameter name="FuelBefore" class="java.lang.String"/>
+	<parameter name="Fuel" class="java.lang.String"/>
+	<parameter name="TripFuelConsumptions" class="java.lang.String"/>
+	<parameter name="TripFuelCosts" class="java.lang.String"/>
+	<parameter name="OtherTotal" class="java.lang.String"/>
+	<parameter name="Currency" class="java.lang.String"/>
+	<parameter name="CostsTotal" class="java.lang.String"/>
+	<parameter name="DriverCostsTotal" class="java.lang.String"/>
+	<parameter name="DriverCostsDataSet" class="com.butent.bee.server.RsDataSource">
+		<defaultValueExpression><![CDATA[new RsDataSource(BeeRowSet.restore($P{DriverCosts}))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DriverCosts" class="java.lang.String"/>
+	<parameter name="DriverAdvances" class="java.lang.String"/>
+	<parameter name="DriverAdvancesDataSet" class="com.butent.bee.server.RsDataSource">
+		<defaultValueExpression><![CDATA[new RsDataSource(BeeRowSet.restore($P{DriverAdvances}))]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<variable name="docNo" class="java.lang.String">
+		<variableExpression><![CDATA[$V{docNo}]]></variableExpression>
+		<initialValueExpression><![CDATA[BeeUtils.joinWords($V{d}.numeroSign(), $P{TripNo})]]></initialValueExpression>
+	</variable>
+	<variable name="d" class="com.butent.bee.shared.i18n.Dictionary">
+		<variableExpression><![CDATA[$V{d}]]></variableExpression>
+		<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="604" splitType="Stretch">
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement positionType="Float" x="80" y="0" width="400" height="12" uuid="22179593-2343-43a7-ab52-ec7e2f424aa7">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center" markup="none">
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{tripOrder} + "\n" + $P{TripNo}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement positionType="Float" x="0" y="26" width="480" height="16" uuid="4b518846-48ff-488e-887e-de21428e18db">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Cell" positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="180" height="16" uuid="b4bb20eb-8346-44bf-aadd-518a5e0e4b42">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{firstDriver}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement key="" style="Cell" positionType="Float" x="180" y="0" width="300" height="16" uuid="cfe49dd2-7ebc-4822-8aeb-3e9e068d5e28">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10"/>
+						<paragraph spacingBefore="0"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{DriverName}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="42" width="480" height="16" uuid="83763558-b474-4d4d-8958-a7f1a5a72c82">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Cell" positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="180" height="16" uuid="89c83dc3-98b7-4ba1-96db-781d382fcb25">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{secondDriver}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement key="" style="Cell" positionType="Float" x="180" y="0" width="300" height="16" uuid="66ef5b8b-cc29-453a-bef1-80ac0767b530">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10"/>
+						<paragraph spacingBefore="0"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.isEmpty($P{TripDrivers}) ? "" : $P{TripDrivers}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="58" width="480" height="16" uuid="e5f7e675-3a11-4f9c-8188-d9db2fa561a2">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Cell" positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="180" height="16" uuid="080f757c-005a-4240-9092-ea886513bb65">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{d}.route()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement key="" style="Cell" positionType="Float" x="180" y="0" width="300" height="16" uuid="a581a541-6655-403a-8c23-531cfa168bde">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10"/>
+						<paragraph spacingBefore="0"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{Route}, "")]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="74" width="480" height="16" uuid="72d7222f-90a1-4a33-b137-65c3619c1a45">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Cell" positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="180" height="16" uuid="fe5a5cc6-503e-47fb-8f8e-ebf346168551">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{d}.trTruck()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement key="" style="Cell" positionType="Float" x="180" y="0" width="300" height="16" uuid="399d5df4-5efd-4fad-a4cc-be7e9c4d6570">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10"/>
+						<paragraph spacingBefore="0"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{VehicleNumber}, "")]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="90" width="480" height="16" uuid="2fef17d5-74fe-451d-8845-c3b13d3319e0">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Cell" positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="180" height="16" uuid="9d502186-e92d-4b52-af5e-438387aff42b">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{d}.trailer()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement key="" style="Cell" positionType="Float" x="180" y="0" width="300" height="16" uuid="7ec56fe8-2de3-450d-9bb2-9ed457a051be">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10"/>
+						<paragraph spacingBefore="0"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{TrailerNumber}, "")]]></textFieldExpression>
+				</textField>
+			</frame>
+			<textField>
+				<reportElement positionType="Float" x="0" y="120" width="555" height="12" uuid="e4a93939-26ae-4e86-8384-665e7204bc8b">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{sheetInfo}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement positionType="Float" x="0" y="132" width="388" height="16" uuid="107e3744-e125-4ade-92d2-06ace0c4dd0c">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="90" height="16" uuid="25e0e3f9-9873-4484-94d1-3ad60340b8f9">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<textElement>
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="90" y="0" width="64" height="16" uuid="134ef9bc-b78d-457a-af86-6ab431bc8704">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{d}.transportDeparture()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="154" y="0" width="64" height="16" uuid="f9301cc0-c283-4f02-a0c7-4eb208c84c22">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{d}.transportArrival()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="218" y="0" width="170" height="16" uuid="8113305e-079f-4d7c-8946-7b58e663a081">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{d}.printDocumentTotal()]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="148" width="388" height="16" uuid="6ffa396b-66fe-41de-bdae-892dfb06f68f">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="90" height="16" uuid="b778f261-bd30-4cb6-a98b-c56ceef8bf4e">
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{d}.date()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="90" y="0" width="64" height="16" uuid="62cf4f23-f99a-4a6a-bf5f-18bd08c7c4f1">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.isEmpty($P{DateFrom}) ? "" : new JustDate(BeeUtils.toInt($P{DateFrom}))]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="154" y="0" width="64" height="16" uuid="2f6aa00a-1662-4f22-a21a-79493fd657a4">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.isEmpty($P{DateTo}) ? "" : new JustDate(BeeUtils.toInt($P{DateTo}))]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="218" y="0" width="170" height="16" uuid="bcfe7835-7330-44fa-868d-941b84e02434">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($P{DateFrom} != null && $P{DateTo} != null) ? BeeUtils.removeTrailingZeros(BeeUtils.toString((BeeUtils.toInt($P{DateTo}) - BeeUtils.toInt($P{DateFrom})) + 1.0)) : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="164" width="388" height="16" uuid="b0244ebc-751b-45ad-8714-c7e0fb774355">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="90" height="16" uuid="df77fc3e-2b6d-4a26-9397-188ab4a4d3a4"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{d}.transportSpeedometer()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="90" y="0" width="64" height="16" uuid="79486175-7ded-4e30-b5cf-57ccb32b4c7e">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{SpeedometerBefore}, "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="154" y="0" width="64" height="16" uuid="9c5e1e4e-a8f5-4f49-baf6-b98de353de9b">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{SpeedometerAfter}, "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="218" y="0" width="170" height="16" uuid="54190947-ad3f-411e-887e-f15f98121307">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($P{SpeedometerBefore} != null && $P{SpeedometerAfter} != null) ? (BeeUtils.toDouble($P{SpeedometerAfter}) -  BeeUtils.toDouble($P{SpeedometerBefore})) < 0.0 ? Math.pow(10, BeeUtils.toString(Math.floor(BeeUtils.toDouble($P{SpeedometerBefore}))).length()) + BeeUtils.toDouble($P{SpeedometerAfter}) - BeeUtils.toDouble($P{SpeedometerBefore}) :  BeeUtils.removeTrailingZeros(BeeUtils.toString(BeeUtils.toDouble($P{SpeedometerAfter}) -  BeeUtils.toDouble($P{SpeedometerBefore}))) : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="180" width="388" height="16" uuid="bec78bfd-ba37-49c4-a8e9-b1dfeaabc1cc">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="90" height="16" uuid="a71f3d5b-1383-42ba-8ce5-a05f2e2b1d88"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{d}.transportFuelBalanceInTank()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="90" y="0" width="64" height="16" uuid="832ec61a-b996-4606-ab39-072df54efc66">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{FuelBefore}, "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="154" y="0" width="64" height="16" uuid="09ccc949-edac-4d73-b3a4-d5ba177fffdc">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{FuelAfter}, "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" stretchType="ContainerBottom" x="218" y="0" width="170" height="16" uuid="6e15b5f9-4976-4c7f-b168-f583adf5e19e">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<box>
+						<leftPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="DejaVu Sans"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.joinWords($R{fuelConsumed}, $P{Fuel}) + "\n" + BeeUtils.joinWords($R{fuelTotal}, $P{TripFuelCosts}) + "\n" + BeeUtils.joinWords($R{fuelConsuption}, $P{TripFuelConsumptions})]]></textFieldExpression>
+				</textField>
+			</frame>
+			<componentElement>
+				<reportElement positionType="Float" x="0" y="292" width="200" height="48" isRemoveLineWhenBlank="true" uuid="b5e2e42c-0a67-4682-8703-f45a312b589a">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="OtherCosts" uuid="d57753bb-ad2c-47c8-a50b-01d7732de751">
+						<datasetParameter name="Currency">
+							<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="OtherTotal">
+							<datasetParameterExpression><![CDATA[$P{OtherTotal}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($P{OtherCosts}))]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="140" uuid="cba6cac7-8502-4b00-923b-43de559e3a35">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<jr:tableFooter style="Table_TH" height="16" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="0" y="0" width="140" height="16" uuid="af9d2b20-382b-4f26-8bf1-edc6618702b3"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.totalOf(), BeeUtils.parenthesize($P{Currency}))]]></textFieldExpression>
+							</textField>
+						</jr:tableFooter>
+						<jr:columnHeader style="Table_CH" height="16">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="0" y="0" width="140" height="16" uuid="f9419de2-7b18-4be0-9c45-da07629f960a"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$R{costContent}]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="16">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="0" y="0" width="140" height="16" uuid="2a5be9a2-7ada-41c8-b383-7bdd4f68aa84"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($F{Item}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="60" uuid="5a8c5368-c7bb-49dc-b6f5-26219fd22249">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:tableFooter style="Table_TH" height="16" rowSpan="1">
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="0" y="0" width="60" height="16" uuid="3f4f44c5-66a9-43a4-8817-7e88145c0ff1"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($P{OtherTotal}, "")]]></textFieldExpression>
+							</textField>
+						</jr:tableFooter>
+						<jr:columnHeader style="Table_CH" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="0" y="0" width="60" height="16" uuid="625eb4f6-acb8-463e-bbb3-f67dc5a5f33c"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$R{sum}]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table_TD" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement positionType="Float" x="0" y="0" width="60" height="16" uuid="7ec7985d-b0b4-45e5-ba40-d8f6a0e75326"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($F{Amount}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<textField>
+				<reportElement positionType="Float" x="0" y="280" width="555" height="12" uuid="34fa3206-0bcb-4e9b-b243-52e5b742bacb">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{otherCosts}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="347" width="555" height="12" uuid="ff9a2e56-0438-401f-82ae-6e10d7a65623">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{freightCost}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement positionType="Float" x="0" y="360" width="480" height="16" uuid="ea1f8321-c0d3-49de-a7c3-1bd495399a29">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Cell" positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="380" height="16" uuid="059f7784-7495-4646-9e26-583198efab6f">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{toBeReinbursed}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement key="" style="Cell" positionType="Float" x="380" y="0" width="100" height="16" uuid="6d139fde-8ab9-4ffe-a36a-540ef9fbeed4">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10"/>
+						<paragraph spacingBefore="0"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{DriverCostsTotal}, "")]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="0" y="392" width="480" height="16" uuid="1cf240fb-1635-4ab6-bb05-b4184689b270">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Cell" positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="380" height="16" uuid="a0a372e3-f03a-410f-9cb0-6f9a22516ee8">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{sumFreightCosts}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement key="" style="Cell" positionType="Float" x="380" y="0" width="100" height="16" uuid="31e38088-d567-4583-9d18-94b98abebb80">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10" isBold="true"/>
+						<paragraph spacingBefore="0"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{CostsTotal}, "")]]></textFieldExpression>
+				</textField>
+			</frame>
+			<textField>
+				<reportElement positionType="Float" x="0" y="500" width="555" height="12" uuid="aab2d71d-67c9-4e29-953e-2b39d998e7f8">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{additionalInfo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="512" width="555" height="14" uuid="7b9b3ed4-4a05-425e-93e7-18d13a688f9c">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="540" width="555" height="14" uuid="754485a1-8ae2-479e-ad0e-ee45dad214bb">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="526" width="555" height="14" uuid="811bdcb4-1c31-42e2-b402-c0a6e45f1207">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="560" width="555" height="12" uuid="c25c7528-5046-4261-8444-b64c0921e050">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{printedBy}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="580" width="277" height="12" uuid="ba1deb71-b5dc-40b8-917d-63b37a19999c">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{User}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="380" y="580" width="175" height="12" uuid="ee557dfc-aca0-4754-9762-c813ba2af219">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="592" width="277" height="12" uuid="ad018597-be64-4050-95c8-a102d39701fa">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{d}.date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd">
+				<reportElement positionType="Float" x="380" y="592" width="175" height="12" uuid="b0dfb499-16d1-41b2-9e2e-332882543a3e">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="210" width="555" height="12" uuid="ea6e4e14-6ddc-485a-883f-f5053c8dad6d">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{reinbursedCosts}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement positionType="Float" x="0" y="376" width="480" height="16" uuid="71dd3941-d8c1-46e5-b960-a671aa14ebea">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement style="Cell" positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="380" height="16" uuid="b348947f-d9b8-4813-be87-b5ad9714d353">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$R{otherTripCosts}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="">
+					<reportElement key="" style="Cell" positionType="Float" x="380" y="0" width="100" height="16" uuid="aeaa588a-757a-4664-964c-23b6fe62753c">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement verticalAlignment="Middle" markup="none">
+						<font fontName="DejaVu Sans" size="10"/>
+						<paragraph spacingBefore="0"/>
+					</textElement>
+					<textFieldExpression><![CDATA[BeeUtils.nvl($P{OtherTotal}, "")]]></textFieldExpression>
+				</textField>
+			</frame>
+			<componentElement>
+				<reportElement positionType="Float" x="0" y="222" width="505" height="48" uuid="87ba8969-9846-4ca5-bc17-d480a1ccd8f0">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="DriverCosts" uuid="839bf30b-6545-47b6-83e9-cba02b2f2a35">
+						<datasetParameter name="DriverCostsDataSet">
+							<datasetParameterExpression><![CDATA[$P{DriverCostsDataSet}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="DriverCostsTotal">
+							<datasetParameterExpression><![CDATA[$P{DriverCostsTotal}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="Currency">
+							<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[$P{DriverCostsDataSet}]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="50" uuid="82754821-2fe2-4134-a9ed-054baff08c65">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<jr:tableFooter style="Table 1_TH" height="16" rowSpan="1"/>
+						<jr:columnHeader style="Table 1_CH" height="16">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement stretchType="ContainerBottom" x="0" y="0" width="50" height="16" uuid="004172a8-63fa-47b9-89d9-986b7148a6ed"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$R{docNo}]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="16">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" x="0" y="0" width="50" height="16" uuid="5da9dc7b-6316-4c44-97ea-1fe1428c28f0"/>
+								<textElement verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($F{Number}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="60" uuid="dfbce842-ed7d-4870-868e-e586c762ade6">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<jr:tableFooter style="Table 1_TH" height="16" rowSpan="1"/>
+						<jr:columnHeader style="Table 1_CH" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement stretchType="ContainerBottom" x="0" y="0" width="60" height="16" uuid="0ad8bc3b-2cb4-40e6-994b-80db176d74d5"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{d}.date()]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement x="0" y="0" width="60" height="16" uuid="25428970-5848-44cb-bb4e-95c9248adf71"/>
+								<textElement verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($F{Date}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="256495d6-f43e-4165-9fcc-ba1566f9c15b">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<jr:tableFooter style="Table 1_TH" height="16" rowSpan="1">
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" stretchType="ContainerBottom" x="0" y="0" width="90" height="16" uuid="9c700608-067a-4638-9466-85b6b4fe172e"/>
+								<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.joinWords($V{d}.totalOf(), BeeUtils.parenthesize($P{Currency}))]]></textFieldExpression>
+							</textField>
+						</jr:tableFooter>
+						<jr:columnHeader style="Table 1_CH" height="16">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement stretchType="ContainerBottom" x="0" y="0" width="90" height="16" uuid="c7d7fa74-82be-4afc-adbe-ba0d3983a75f"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$R{costContent}]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" x="0" y="0" width="90" height="16" uuid="42752218-8ae6-476b-937d-e949183a9c36"/>
+								<textElement verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$P{DriverCostsDataSet}.getRowValue().hasPropertyValue("Total") ? $V{d}.total() : BeeUtils.nvl($F{Item}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="110" uuid="81affa52-565b-4f7b-871c-7c253d768761">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<jr:tableFooter style="Table 1_TH" height="16" rowSpan="1">
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</jr:tableFooter>
+						<jr:columnHeader style="Table 1_CH" height="16">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement stretchType="ContainerBottom" x="0" y="0" width="110" height="16" uuid="c682836e-4145-433b-ab40-7ac83e69468f"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{d}.trdDriver()]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" x="0" y="0" width="110" height="16" uuid="72922833-4636-43cc-8092-9577bce0a377"/>
+								<textElement verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($F{Driver}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="45" uuid="2e02c105-6247-4855-8adf-2960a2198c9f">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<jr:tableFooter style="Table 1_TH" height="16" rowSpan="1"/>
+						<jr:columnHeader style="Table 1_CH" height="16">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement stretchType="ContainerBottom" x="0" y="0" width="45" height="16" uuid="e426f670-2959-4a31-8673-cfd15c6d6b87"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{d}.trdQuantity()]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" x="0" y="0" width="45" height="16" uuid="ea974f37-895a-4d99-b566-e7d8a6e18b4e"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($F{Quantity}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="45" uuid="5ee1efbc-7c86-431b-8410-b15918c5256e">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<jr:tableFooter style="Table 1_TH" height="16" rowSpan="1"/>
+						<jr:columnHeader style="Table 1_CH" height="16">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement stretchType="ContainerBottom" x="0" y="0" width="45" height="16" uuid="6ce57ac5-2cb4-4bdd-8e0d-a16dbd73a72a"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{d}.unit()]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" x="0" y="0" width="45" height="16" uuid="ae5620ca-3c32-4cdb-a694-7ee5f4af0c09"/>
+								<textElement verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($F{Unit}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="50" uuid="b786f2cf-7856-4dad-858a-421369b6278d">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<jr:tableFooter style="Table 1_TH" height="16" rowSpan="1"/>
+						<jr:columnHeader style="Table 1_CH" height="16">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" stretchType="ContainerBottom" x="0" y="0" width="50" height="16" uuid="406147f9-d658-4693-8972-160e7adbc8ce"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{d}.price()]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" x="0" y="0" width="50" height="16" uuid="9a2d4dbc-cfc9-47c0-9758-b3e5805888fc"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($F{Price}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="55" uuid="3390bda7-576c-45ab-a559-93cbc80db510">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<jr:tableFooter style="Table 1_TH" height="16" rowSpan="1">
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" x="0" y="0" width="55" height="16" uuid="5666636f-f2d1-4159-b676-2f50ad054fc5"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($P{DriverCostsTotal}, "")]]></textFieldExpression>
+							</textField>
+						</jr:tableFooter>
+						<jr:columnHeader style="Table 1_CH" height="16">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" stretchType="ContainerBottom" x="0" y="0" width="55" height="16" uuid="b767f1c9-9db4-4f24-8408-74737e798bb0"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$R{sum}]]></textFieldExpression>
+							</textField>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 1_TD" height="16">
+							<textField isStretchWithOverflow="true">
+								<reportElement style="Cell" x="0" y="0" width="55" height="16" uuid="60ccf8cc-92db-46c7-964a-0939599b4abc"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+									<font fontName="DejaVu Sans"/>
+								</textElement>
+								<textFieldExpression><![CDATA[BeeUtils.nvl($F{Amount}, "")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<textField>
+				<reportElement positionType="Float" x="0" y="420" width="555" height="12" uuid="cc6a7b35-613d-4120-b3bd-93eb1f79ae44">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{billingSummary}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement positionType="Float" x="0" y="440" width="310" height="48" uuid="af5bf6e7-9e62-4651-ad5f-eb003802f8ea">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="DriverAdvances" uuid="a7df7f0a-cb92-460f-b15a-031f3d98febe">
+						<datasetParameter name="DriverAdvancesDataSet">
+							<datasetParameterExpression><![CDATA[$P{DriverAdvancesDataSet}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="Currency">
+							<datasetParameterExpression><![CDATA[$P{Currency}]]></datasetParameterExpression>
+						</datasetParameter>
+						<dataSourceExpression><![CDATA[$P{DriverAdvancesDataSet}]]></dataSourceExpression>
+					</datasetRun>
+					<jr:columnGroup width="310" uuid="37a50106-99fb-4004-9f66-204ce417f212">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Columns [4]"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<jr:groupHeader groupName="Group1">
+							<jr:cell style="Table 1_CH" height="16" rowSpan="1">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								<textField isStretchWithOverflow="true">
+									<reportElement x="0" y="0" width="310" height="16" uuid="83415ba0-56ac-4c40-a1ac-8682bc4bbc6f"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$F{Driver}]]></textFieldExpression>
+								</textField>
+							</jr:cell>
+						</jr:groupHeader>
+						<jr:column width="100" uuid="1f54a8d8-cb3d-4009-8b37-8d8534ef7abb">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<jr:groupHeader groupName="Group1">
+								<jr:cell style="Table 1_CH" height="0" rowSpan="1">
+									<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								</jr:cell>
+							</jr:groupHeader>
+							<jr:columnHeader style="Table 1_CH" height="16" rowSpan="1">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								<textField isStretchWithOverflow="true">
+									<reportElement stretchType="ContainerBottom" x="0" y="0" width="100" height="16" uuid="0c460876-b52a-4d6d-834c-a31e0f0d822a"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$R{costContent}]]></textFieldExpression>
+								</textField>
+							</jr:columnHeader>
+							<jr:detailCell style="Table 1_TD" height="16">
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								<textField isStretchWithOverflow="true">
+									<reportElement style="Cell" x="0" y="0" width="100" height="16" uuid="3f197448-6ded-4dce-8e0e-ba5bec28c498"/>
+									<textElement verticalAlignment="Middle" markup="html">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$P{DriverAdvancesDataSet}.getRowValue().hasPropertyValue("Total") ? "<b>" + BeeUtils.joinWords($V{d}.totalOf(), BeeUtils.parenthesize($P{Currency})) + "</b>" : ($P{DriverAdvancesDataSet}.getRowValue().hasPropertyValue("Advance") ? $V{d}.advance() : ($P{DriverAdvancesDataSet}.getRowValue().hasPropertyValue("DailyCostsItem") ? $V{d}.trDailyCosts() : ($P{DriverAdvancesDataSet}.getRowValue().hasPropertyValue("OtherCosts") ? $V{d}.trOtherCosts() : "")))]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="70" uuid="a6326970-ec19-44b0-8e1a-488ec9450ff0">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+							<jr:groupHeader groupName="Group1">
+								<jr:cell style="Table 1_CH" height="0" rowSpan="1"/>
+							</jr:groupHeader>
+							<jr:columnHeader style="Table 1_CH" height="16" rowSpan="1">
+								<textField isStretchWithOverflow="true">
+									<reportElement stretchType="ContainerBottom" x="0" y="0" width="70" height="16" uuid="694b8f41-f4ff-4a46-8191-764c031459d4"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$V{d}.date()]]></textFieldExpression>
+								</textField>
+							</jr:columnHeader>
+							<jr:detailCell style="Table 1_TD" height="16">
+								<textField isStretchWithOverflow="true">
+									<reportElement x="0" y="0" width="70" height="16" uuid="d07300fc-7b32-4dfc-96fa-96dd37096202"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[BeeUtils.nvl($F{Date}, "")]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="60" uuid="2e8116bb-7136-45e9-97d3-e07d7c610f97">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							<jr:groupHeader groupName="Group1">
+								<jr:cell style="Table 1_CH" height="0" rowSpan="1"/>
+							</jr:groupHeader>
+							<jr:columnHeader style="Table 1_CH" height="16" rowSpan="1">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+								<textField isStretchWithOverflow="true">
+									<reportElement style="Cell" stretchType="ContainerBottom" x="0" y="0" width="60" height="16" uuid="a143e636-1459-4548-93e0-0f468a25d6c4"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$R{sum}]]></textFieldExpression>
+								</textField>
+							</jr:columnHeader>
+							<jr:detailCell style="Table 1_TD" height="16">
+								<textField isStretchWithOverflow="true">
+									<reportElement style="Cell" x="0" y="0" width="60" height="16" uuid="c224d57b-8326-4e24-ad36-2bb3f27a8001"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[BeeUtils.nvl($F{Amount}, "")]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="80" uuid="577d7526-5e6f-4a08-a6f9-edd54c161e61">
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<jr:groupHeader groupName="Group1">
+								<jr:cell style="Table 1_CH" height="0" rowSpan="1"/>
+							</jr:groupHeader>
+							<jr:columnHeader style="Table 1_CH" height="16" rowSpan="1">
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+								<textField isStretchWithOverflow="true">
+									<reportElement style="Cell" stretchType="ContainerBottom" x="0" y="0" width="80" height="16" uuid="b71a1652-40f4-4415-98a6-54b0f093d04d"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$R{remainder}]]></textFieldExpression>
+								</textField>
+							</jr:columnHeader>
+							<jr:detailCell style="Table 1_TD" height="16">
+								<textField isStretchWithOverflow="true">
+									<reportElement style="Cell" x="0" y="0" width="80" height="16" uuid="ef051016-46f8-47a9-bdc9-e782d05e8715"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle" markup="html">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$P{DriverAdvancesDataSet}.getRowValue().hasPropertyValue("Total") ? "<b>" + BeeUtils.nvl($F{Remainder}, "") + "</b>" : BeeUtils.nvl($F{Remainder}, "")]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:columnGroup>
+				</jr:table>
+			</componentElement>
+		</band>
+	</title>
+	<pageFooter>
+		<band height="10" splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>

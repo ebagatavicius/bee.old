@@ -16,24 +16,19 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
 final class FieldRightsHandler extends MultiStateForm {
 
-  private static final Comparator<RightsObject> fieldComparator = new Comparator<RightsObject>() {
-    @Override
-    public int compare(RightsObject o1, RightsObject o2) {
-      return ComparisonChain.start()
-          .compare(o1.getModuleAndSub(), o2.getModuleAndSub(), Ordering.natural().nullsLast())
-          .compare(o1.getParent(), o2.getParent(), Ordering.natural().nullsFirst())
-          .compare(o1.getCaption(), o2.getCaption(), Collator.CASE_INSENSITIVE_NULLS_FIRST)
-          .compare(o1.getName(), o2.getName())
-          .result();
-    }
-  };
+  private static final Comparator<RightsObject> fieldComparator = (o1, o2)
+    -> ComparisonChain.start()
+      .compare(o1.getModuleAndSub(), o2.getModuleAndSub(), Ordering.natural().nullsLast())
+      .compare(o1.getParent(), o2.getParent(), Ordering.natural().nullsFirst())
+      .compare(o1.getCaption(), o2.getCaption(), Collator.CASE_INSENSITIVE_NULLS_FIRST)
+      .compare(o1.getName(), o2.getName())
+      .result();
 
   @Override
   public FormInterceptor getInstance() {
@@ -62,7 +57,7 @@ final class FieldRightsHandler extends MultiStateForm {
     Collection<DataInfo> views = Data.getDataInfoProvider().getViews();
     for (DataInfo view : views) {
       String module = view.getModule();
-      ModuleAndSub ms = getFirstVisibleModule(module);
+      ModuleAndSub ms = RightsHelper.getFirstVisibleModule(module);
 
       if (ms != null || Module.NEVER_MIND.equals(module)) {
         String viewName = view.getViewName();
@@ -79,8 +74,7 @@ final class FieldRightsHandler extends MultiStateForm {
         }
       }
     }
-
-    Collections.sort(result, fieldComparator);
+    result.sort(fieldComparator);
     consumer.accept(result);
   }
 }

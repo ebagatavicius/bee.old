@@ -280,7 +280,7 @@ class ArticleCarsGridInterceptor extends AbstractGridInterceptor implements
               response.notify(BeeKeeper.getScreen());
 
               if (response.hasResponse()) {
-                DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getViewName());
+                DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getViewName(), result);
               }
             }
           });

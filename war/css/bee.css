@@ -3227,6 +3227,10 @@
   background-color: red;
 }
 
+.bee-Header-commandPanel .bee-Button.bee-report-generate {
+  margin-right: 1em;
+}
+
 .bee-info-table {
   border-collapse: collapse;
 }
@@ -3793,7 +3797,7 @@ textarea,
 }
 
 .bee-NotificationBar {
-  width: 500px;
+  width: 520px;
   height: 100%;
   outline: 9999px solid rgba(0,0,0,0.7);
   background-color: #f2f2f2;
@@ -4125,4 +4129,8 @@ textarea,
 .bee-ExportController-submitting .bee-ExportController-cancel,
 .bee-ExportController-completed .bee-ExportController-cancel {
   display: none;
+}
+
+.bee-CheckBox {
+  white-space: nowrap;
 }

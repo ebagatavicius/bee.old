@@ -2,17 +2,25 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
         xmlns:ui="http://www.butent.com/ui"
 
-        name="CarServiceJobs" viewName="CarServiceJobs" autoFlex="true"
+        name="CarServiceJobs" viewName="CarServiceItems" autoFlex="true"
+        filter="Job" caption="=serviceJobs"
 >
   <g:columns>
-    <RelColumn name="Job" renderColumns="JobName" flexGrow="2" visible="true" readOnly="true"
-               caching="none" />
-    <DataColumn name="Code" flexGrow="1" />
+    <RelColumn name="Item" viewName="CarJobs" valueSource="Item" visible="true" readOnly="true"
+               editEnabled="false" choiceColumns="ItemName Article" renderColumns="ItemName"
+               flexGrow="2" caching="none" />
+
+    <DataColumn name="Article" flexGrow="1" />
 
     <DataColumn name="Duration">
       <editor type="time" stepValue="5" />
     </DataColumn>
-    <DataColumn name="Quantity" scale="0" visible="true" />
+    <DataColumn name="Quantity" scale="0" visible="true">
+      <carry>
+        <ui:expression>1</ui:expression>
+      </carry>
+    </DataColumn>
+    <DataColumn name="UnitName" label="=unitShort" />
 
     <DataColumn name="Completed" scale="0" label="=ordCompleted">
       <style>

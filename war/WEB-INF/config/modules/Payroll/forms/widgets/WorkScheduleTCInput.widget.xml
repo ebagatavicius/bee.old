@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table  xmlns="http://www.butent.com/widget"
+        xmlns:ui="http://www.butent.com/ui"
+        kind="custom" cellStyle="padding-top: 6px; padding-bottom: 6px;">
+  <col index="0" kind="label" />
+  <col index="2" kind="label" />
+
+  <row>
+    <Label for="TimeCardCode" />
+    <cell colSpan="3">
+      <DataSelector source="TimeCardCode" renderColumns="TcCode TcName"
+                    style="width: 100%;" newRowEnabled="false" updateMode="row"
+      >
+        <editable>
+          <ui:expression>!(row.TimeRangeCode || row.TimeFrom || row.TimeUntil)</ui:expression>
+        </editable>
+      </DataSelector>
+    </cell>
+  </row>
+  <row>
+    <Label for="Duration" >
+      <dynStyle>
+        <ui:class>bee-required</ui:class>
+        <ui:expression>row.Kind == 1
+          ? row.TcDurationType == 1 || !row.TimeCardCode
+          : false
+        </ui:expression>
+      </dynStyle>
+    </Label>
+    <InputTimeOfDay source="Duration" updateMode="row" style="width: 60px;">
+      <editable>
+        <ui:function>
+          if (row.Kind == 1) {
+            return row.TcDurationType == 1 || !row.TimeCardCode;
+          } else {
+            return !(row.TimeRangeCode || row.TimeCardCode);
+          }
+        </ui:function>
+      </editable>
+      <validation>
+        <ui:function>
+          if (row.Kind == 1) {
+            if (row.TimeCardCode &amp;&amp; row.TcDurationType != 1
+                  || cell.newValue || cell.oldValue) {
+              return null;
+            } else {
+              return $wnd.Bee_maybeTranslate("=valueRequired");
+            }
+          } else {
+          return null;
+          }
+        </ui:function>
+      </validation>
+    </InputTimeOfDay>
+  </row>
+  <row>
+    <Label for="Note" />
+    <cell colSpan="3">
+      <InputText source="Note" style="width: 100%;" />
+    </cell>
+  </row>
+
+</Table>

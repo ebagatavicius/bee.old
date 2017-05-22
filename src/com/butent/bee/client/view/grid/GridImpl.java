@@ -1214,6 +1214,11 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
   }
 
   @Override
+  public DataInfo getDataInfo() {
+    return dataInfo;
+  }
+
+  @Override
   public List<String> getDynamicColumnGroups() {
     return dynamicColumnGroups;
   }
@@ -1500,7 +1505,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
   @Override
   public void onDataReceived(DataReceivedEvent event) {
     if (getGridInterceptor() != null && event != null) {
-      getGridInterceptor().onDataReceived(event.getRows());
+      getGridInterceptor().onDataReceived(event);
     }
   }
 
@@ -1683,7 +1688,14 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
   @Override
   public boolean previewDataChange(DataChangeEvent event) {
-    return getGridInterceptor() == null || getGridInterceptor().previewDataChange(event);
+    if (event != null && DataUtils.isId(event.getParentId())
+        && isChild() && !Objects.equals(event.getParentId(), getRelId())) {
+
+      return false;
+
+    } else {
+      return getGridInterceptor() == null || getGridInterceptor().previewDataChange(event);
+    }
   }
 
   @Override
@@ -1725,6 +1737,12 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
       return false;
     }
 
+    if (getViewPresenter() == null
+        || BeeUtils.anyNotNull(getViewPresenter().getDataProvider().getImmutableFilter(),
+        getViewPresenter().getDataProvider().getUserFilter())) {
+      return false;
+    }
+
     if (isChild()) {
       if (!DataUtils.isId(getRelId())) {
         return false;
@@ -1738,9 +1756,6 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
       if (!Objects.equals(getRelId(), event.getRow().getLong(index))) {
         return false;
       }
-
-    } else if (getViewPresenter() == null || getViewPresenter().hasFilter()) {
-      return false;
     }
 
     getGrid().insertRow(event.getRow(), false);
@@ -2231,10 +2246,6 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
   private String getActiveFormContainerId() {
     return activeFormContainerId;
-  }
-
-  private DataInfo getDataInfo() {
-    return dataInfo;
   }
 
   private EditableColumn getEditableColumn(String columnId, boolean warn) {
@@ -2965,7 +2976,8 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
       }
     }
 
-    if (getGridInterceptor() != null && !getGridInterceptor().onStartNewRow(this, oldRow, newRow)) {
+    if (getGridInterceptor() != null
+        && !getGridInterceptor().onStartNewRow(this, oldRow, newRow, isCopy)) {
       return;
     }
 

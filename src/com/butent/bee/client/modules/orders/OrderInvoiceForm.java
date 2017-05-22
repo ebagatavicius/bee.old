@@ -5,25 +5,28 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.butent.bee.shared.modules.orders.OrdersConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.COL_CUSTOMER;
+import static com.butent.bee.shared.modules.transport.TransportConstants.COL_PAYER;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.modules.mail.NewMailMessage;
+import com.butent.bee.client.modules.trade.InvoiceERPForm;
 import com.butent.bee.client.output.ReportUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
-import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.Service;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -42,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class OrderInvoiceForm extends PrintFormInterceptor {
+public class OrderInvoiceForm extends InvoiceERPForm {
 
   private Button confirmAction;
   private DataSelector series;
@@ -99,6 +102,14 @@ public class OrderInvoiceForm extends PrintFormInterceptor {
   }
 
   @Override
+  public void getERPStocks(final Long id) {
+    ParameterList params = OrdersKeeper.createSvcArgs(SVC_GET_ERP_STOCKS);
+    params.addDataItem(Service.VAR_DATA, DataUtils.buildIdList(id));
+
+    BeeKeeper.getRpc().makeRequest(params);
+  }
+
+  @Override
   protected void getReportData(Consumer<BeeRowSet[]> dataConsumer) {
     Queries.getRowSet(VIEW_SALE_ITEMS, null, Filter.equals(COL_SALE, getActiveRowId()),
         new Queries.RowSetCallback() {
@@ -130,6 +141,7 @@ public class OrderInvoiceForm extends PrintFormInterceptor {
   protected void getReportParameters(Consumer<Map<String, String>> parametersConsumer) {
     Map<String, Long> companies = new HashMap<>();
     companies.put(COL_CUSTOMER, getLongValue(COL_CUSTOMER));
+    companies.put(COL_PAYER, getLongValue(COL_PAYER));
     companies.put(TradeConstants.COL_TRADE_SUPPLIER, BeeKeeper.getUser().getCompany());
 
     super.getReportParameters(defaultParameters ->

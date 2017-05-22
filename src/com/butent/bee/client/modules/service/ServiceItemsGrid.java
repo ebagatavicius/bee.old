@@ -18,6 +18,7 @@ import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Map;
@@ -29,7 +30,7 @@ public class ServiceItemsGrid extends OrderItemsGrid {
   @Override
   public ItemsPicker ensurePicker() {
     if (picker == null) {
-      picker = new ServiceItemsPicker();
+      picker = new ServiceItemsPicker(Module.SERVICE);
       picker.addSelectionHandler(this);
     }
     return picker;

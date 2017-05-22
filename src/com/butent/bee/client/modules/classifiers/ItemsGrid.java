@@ -2,6 +2,7 @@ package com.butent.bee.client.modules.classifiers;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.TableCellElement;
+import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.orders.OrdersConstants.*;
@@ -16,15 +17,21 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.event.logical.ActiveRowChangeEvent;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.orders.OrderForm;
 import com.butent.bee.client.modules.service.ServiceMaintenanceForm;
+import com.butent.bee.client.modules.trade.TradeKeeper;
+import com.butent.bee.client.modules.trade.TradeUtils;
+import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.TreeGridInterceptor;
+import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -37,6 +44,8 @@ import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
+import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -45,6 +54,7 @@ import com.butent.bee.shared.utils.Codec;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 class ItemsGrid extends TreeGridInterceptor {
 
@@ -75,8 +85,24 @@ class ItemsGrid extends TreeGridInterceptor {
 
   private final boolean services;
 
+  private Button stockCommand;
+
   ItemsGrid(boolean services) {
     this.services = services;
+  }
+
+  @Override
+  public void afterCreatePresenter(GridPresenter presenter) {
+    if (!showServices() && BeeKeeper.getUser().isModuleVisible(ModuleAndSub.of(Module.TRADE))
+        && BeeKeeper.getUser().isDataVisible(TradeConstants.VIEW_TRADE_STOCK)) {
+
+      stockCommand = new Button(Localized.dictionary().trdItemStock(), event -> showStock());
+      StyleUtils.hideDisplay(stockCommand);
+
+      presenter.getHeader().addCommandItem(stockCommand);
+    }
+
+    super.afterCreatePresenter(presenter);
   }
 
   @Override
@@ -192,6 +218,15 @@ class ItemsGrid extends TreeGridInterceptor {
 
   }
 
+  @Override
+  public void onActiveRowChange(ActiveRowChangeEvent event) {
+    if (stockCommand != null) {
+      StyleUtils.setVisible(stockCommand, DataUtils.hasId(event.getRowValue()));
+    }
+
+    super.onActiveRowChange(event);
+  }
+
   public boolean showServices() {
     return services;
   }
@@ -280,5 +315,27 @@ class ItemsGrid extends TreeGridInterceptor {
     });
 
     return table;
+  }
+
+  private void showStock() {
+    final long id = getActiveRowId();
+
+    if (DataUtils.isId(id)) {
+      TradeKeeper.getItemStockByWarehouse(id, list -> {
+        if (BeeUtils.isEmpty(list)) {
+          getGridView().notifyInfo(Localized.dictionary().noData());
+
+        } else if (Objects.equals(getActiveRowId(), id)) {
+          String caption = BeeUtils.joinWords(id,
+              getStringValue(COL_ITEM_NAME), getStringValue(COL_ITEM_ARTICLE));
+
+          Widget widget = TradeUtils.renderItemStockByWarehouse(id, list);
+
+          if (widget != null) {
+            Global.showModalWidget(caption, widget, stockCommand.getElement());
+          }
+        }
+      });
+    }
   }
 }

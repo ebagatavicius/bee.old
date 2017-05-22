@@ -1,8 +1,12 @@
 package com.butent.bee.client.modules.classifiers;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.composite.MultiSelector;
+import com.butent.bee.client.modules.trade.TradeKeeper;
+import com.butent.bee.client.modules.trade.TradeUtils;
 import com.butent.bee.client.presenter.GridFormPresenter;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
@@ -12,16 +16,20 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.rights.Module;
+import com.butent.bee.shared.rights.ModuleAndSub;
+import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 class ItemForm extends AbstractFormInterceptor {
 
   @Override
   public void afterRefresh(FormView form, IsRow row) {
     int index = form.getDataIndex(ClassifierConstants.COL_ITEM_IS_SERVICE);
-    boolean isService = (row == null) ? false : !row.isNull(index);
+    boolean isService = row != null && !row.isNull(index);
 
     String caption;
 
@@ -52,6 +60,28 @@ class ItemForm extends AbstractFormInterceptor {
       form.getViewPresenter().getHeader().setCaption(caption);
     }
 
+    if (!isService && DataUtils.hasId(row)
+        && BeeKeeper.getUser().isModuleVisible(ModuleAndSub.of(Module.TRADE))) {
+
+      HasWidgets panel = getStockByWarehousePanel();
+
+      if (panel != null) {
+        panel.clear();
+        long id = row.getId();
+
+        TradeKeeper.getItemStockByWarehouse(id, list -> {
+          if (!BeeUtils.isEmpty(list) && Objects.equals(getActiveRowId(), id)) {
+            Widget widget = TradeUtils.renderItemStockByWarehouse(id, list);
+
+            if (widget != null) {
+              panel.clear();
+              panel.add(widget);
+            }
+          }
+        });
+      }
+    }
+
     super.afterRefresh(form, row);
   }
 
@@ -78,5 +108,15 @@ class ItemForm extends AbstractFormInterceptor {
       }
     }
     return null;
+  }
+
+  private HasWidgets getStockByWarehousePanel() {
+    Widget panel = getWidgetByName("StockByWarehouse");
+
+    if (panel instanceof HasWidgets) {
+      return (HasWidgets) panel;
+    } else {
+      return null;
+    }
   }
 }

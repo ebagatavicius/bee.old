@@ -2,7 +2,6 @@ package com.butent.bee.shared.websocket.messages;
 
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.event.ModificationEvent;
-import com.butent.bee.shared.utils.BeeUtils;
 
 public class ModificationMessage extends Message {
 
@@ -19,10 +18,10 @@ public class ModificationMessage extends Message {
 
   @Override
   public String brief() {
-    if (getEvent() == null || getEvent().getKind() == null) {
+    if (getEvent() == null) {
       return BeeConst.NULL;
     } else {
-      return BeeUtils.joinWords(getEvent().getKind().getBrief(), getEvent().getViewNames());
+      return getEvent().brief();
     }
   }
 

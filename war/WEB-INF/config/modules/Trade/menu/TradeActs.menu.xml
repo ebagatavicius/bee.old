@@ -4,7 +4,7 @@
        module="Trade.Acts">
 
   <Item name="TradeActsSale" label="=taKindSale" service="trade_act_list" parameters="sale"
-        separator="true" order="20" />
+        separator="true" />
   <Item name="TradeActsTender" label="=taKindTender" service="trade_act_list" parameters="tender" />
   <Item name="TradeActsPurchase" label="=taKindPurchase" service="trade_act_list"
         parameters="purchase" />
@@ -18,11 +18,14 @@
 
   <Item name="TradeActNames" label="=tradeActNames" service="grid"
         parameters="TradeActNames" separator="true" />
+
   <Item name="TradeActTemplates" label="=tradeActTemplates" service="grid"
-        parameters="TradeActTemplates" />
+        parameters="TradeActTemplates" separator="true" />
+  <Item name="TradeNotes" label="=trdNoteTemplates" service="grid" parameters="TradeNotes" />
 
   <Item name="TradeActInvoiceBuilder" label="=taInvoiceBuilder" service="form"
         parameters="TradeActInvoiceBuilder" separator="true" />
+  <Item name="Sales" label="=trdInvoices" service="grid" parameters="Sales" />
 
   <Item name="TradeActParameters" label="=parameters" service="parameters" parameters="Trade.Acts"
         separator="true" order="300" module="Administration" />

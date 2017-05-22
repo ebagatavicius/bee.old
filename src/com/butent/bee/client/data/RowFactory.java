@@ -43,6 +43,7 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.discussions.DiscussionsConstants;
 import com.butent.bee.shared.modules.documents.DocumentConstants;
+import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
@@ -269,6 +270,9 @@ public final class RowFactory {
           RowFactory.createRow(DiscussionsConstants.FORM_NEW_ANNOUNCEMENT,
               Localized.dictionary().announcementNew(), dataInfo, row, DEFAULT_MODALITY, null);
         });
+
+    addMenuItem(panel, Module.SERVICE, ServiceConstants.TBL_SERVICE_MAINTENANCE,
+        Localized.dictionary().svcNewMaintenance());
 
     if (!panel.isEmpty()) {
       Popup popup = new Popup(OutsideClick.CLOSE, STYLE_MENU_POPUP);

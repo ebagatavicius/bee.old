@@ -19,6 +19,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +47,8 @@ final class AnalysisScripting {
   private static final Pattern currentValuePattern = getDetectionPattern(VAR_CURRENT_VALUE);
 
   private static final int ROOT_LEVEL = 0;
+
+  private static final double MIN_VALUE = 1e-5;
 
   static Multimap<Integer, Long> buildSecondaryCalculationSequence(Collection<BeeRow> input,
       int indicatorIndex, int abbreviationIndex, int scriptIndex, Consumer<String> errorHandler) {
@@ -239,6 +242,22 @@ final class AnalysisScripting {
     }
   }
 
+  private static Set<AnalysisSplitType> getColumnSplitTypes(Collection<AnalysisValue> values) {
+    Set<AnalysisSplitType> types = EnumSet.noneOf(AnalysisSplitType.class);
+    if (values != null) {
+      values.forEach(value -> types.addAll(value.getColumnSplitTypes()));
+    }
+    return types;
+  }
+
+  private static Set<AnalysisSplitType> getRowSplitTypes(Collection<AnalysisValue> values) {
+    Set<AnalysisSplitType> types = EnumSet.noneOf(AnalysisSplitType.class);
+    if (values != null) {
+      values.forEach(value -> types.addAll(value.getRowSplitTypes()));
+    }
+    return types;
+  }
+
   private static AnalysisValue calculateValue(ScriptEngine engine, String script,
       long columnId, String columnAbbreviation, long rowId, String rowAbbreviation,
       Map<AnalysisSplitType, AnalysisSplitValue> columnSplit,
@@ -252,16 +271,43 @@ final class AnalysisScripting {
     variables.forEach(key -> {
       actualValues.put(key, BeeConst.DOUBLE_ZERO);
       budgetValues.put(key, BeeConst.DOUBLE_ZERO);
-    });
 
-    input.forEach((key, value) -> {
-      if (value.containsColumnSplit(columnSplit) && value.containsRowSplit(rowSplit)) {
-        if (needsActual && value.hasActualValue()) {
-          actualValues.merge(key, value.getActualNumber(), Double::sum);
+      if (input.containsKey(key)) {
+        Collection<AnalysisValue> values = input.get(key);
+
+        Map<AnalysisSplitType, AnalysisSplitValue> vcSplit = new HashMap<>();
+        Map<AnalysisSplitType, AnalysisSplitValue> vrSplit = new HashMap<>();
+
+        if (!BeeUtils.isEmpty(columnSplit)) {
+          Set<AnalysisSplitType> csTypes = getColumnSplitTypes(values);
+
+          columnSplit.forEach((k, v) -> {
+            if (csTypes.contains(k)) {
+              vcSplit.put(k, v);
+            }
+          });
         }
-        if (needsBudget && value.hasBudgetValue()) {
-          budgetValues.merge(key, value.getBudgetNumber(), Double::sum);
+
+        if (!BeeUtils.isEmpty(rowSplit)) {
+          Set<AnalysisSplitType> rsTypes = getRowSplitTypes(values);
+
+          rowSplit.forEach((k, v) -> {
+            if (rsTypes.contains(k)) {
+              vrSplit.put(k, v);
+            }
+          });
         }
+
+        values.forEach(value -> {
+          if (value.containsColumnSplit(vcSplit) && value.containsRowSplit(vrSplit)) {
+            if (needsActual && value.hasActualValue()) {
+              actualValues.merge(key, value.getActualNumber(), Double::sum);
+            }
+            if (needsBudget && value.hasBudgetValue()) {
+              budgetValues.merge(key, value.getBudgetNumber(), Double::sum);
+            }
+          }
+        });
       }
     });
 
@@ -287,7 +333,7 @@ final class AnalysisScripting {
       budgetValue = null;
     }
 
-    if (BeeUtils.nonZero(actualValue) || BeeUtils.nonZero(budgetValue)) {
+    if (isValue(actualValue) || isValue(budgetValue)) {
       return AnalysisValue.of(columnId, rowId, columnSplit, rowSplit, actualValue, budgetValue);
     } else {
       return null;
@@ -371,7 +417,7 @@ final class AnalysisScripting {
 
     Double actualValue = ScriptUtils.evalToDouble(engine, bindings, script, errorCollector);
 
-    if (BeeUtils.nonZero(actualValue)) {
+    if (isValue(actualValue)) {
       return AnalysisValue.of(columnId, rowId, columnSplit, rowSplit, actualValue, null);
     } else {
       return null;
@@ -597,6 +643,10 @@ final class AnalysisScripting {
     }
 
     return result;
+  }
+
+  private static boolean isValue(Double value) {
+    return BeeUtils.isDouble(value) && Math.abs(value) >= MIN_VALUE;
   }
 
   private AnalysisScripting() {

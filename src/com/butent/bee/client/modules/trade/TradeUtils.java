@@ -26,18 +26,28 @@ import com.butent.bee.client.data.RowUpdateCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Selectors;
+import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.administration.AdministrationKeeper;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.utils.XmlUtils;
 import com.butent.bee.client.view.DataView;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.ViewHelper;
 import com.butent.bee.client.widget.Button;
+import com.butent.bee.client.widget.DoubleLabel;
 import com.butent.bee.client.widget.InputNumber;
+import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.Assert;
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
+import com.butent.bee.shared.Triplet;
 import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.css.values.FontStyle;
+import com.butent.bee.shared.css.values.FontWeight;
+import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
@@ -49,10 +59,13 @@ import com.butent.bee.shared.modules.trade.OperationType;
 import com.butent.bee.shared.modules.trade.Totalizer;
 import com.butent.bee.shared.modules.trade.TradeDiscountMode;
 import com.butent.bee.shared.modules.trade.TradeDocumentPhase;
+import com.butent.bee.shared.modules.trade.TradeReportGroup;
 import com.butent.bee.shared.modules.trade.TradeVatMode;
+import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.time.YearMonth;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -73,6 +86,18 @@ public final class TradeUtils {
   private static final String STYLE_COST_CALCULATION_COMMAND =
       TradeKeeper.STYLE_PREFIX + "cost-calculation";
 
+  private static final String STYLE_ITEM_STOCK_PREFIX = TradeKeeper.STYLE_PREFIX + "item-stock-";
+  private static final String STYLE_ITEM_STOCK_TABLE = STYLE_ITEM_STOCK_PREFIX + "table";
+  private static final String STYLE_ITEM_STOCK_HEADER = STYLE_ITEM_STOCK_PREFIX + "header";
+  private static final String STYLE_ITEM_STOCK_BODY = STYLE_ITEM_STOCK_PREFIX + "body";
+  private static final String STYLE_ITEM_STOCK_FOOTER = STYLE_ITEM_STOCK_PREFIX + "footer";
+  private static final String STYLE_ITEM_STOCK_WAREHOUSE = STYLE_ITEM_STOCK_PREFIX + "warehouse";
+  private static final String STYLE_ITEM_STOCK_QUANTITY = STYLE_ITEM_STOCK_PREFIX + "quantity";
+  private static final String STYLE_ITEM_STOCK_RESERVED = STYLE_ITEM_STOCK_PREFIX + "reserved";
+  private static final String STYLE_ITEM_STOCK_AVAILABLE = STYLE_ITEM_STOCK_PREFIX + "available";
+
+  private static final String KEY_WAREHOUSE = "warehouse";
+
   private static final String COL_NAME = "Name";
   private static final String COL_ORDINAL = "Ordinal";
   private static final String COL_TOTAL = "Total";
@@ -80,6 +105,10 @@ public final class TradeUtils {
   private static final String COL_RATE_VAT = COL_CURRENCY_RATE + COL_TRADE_VAT;
   private static final String COL_RATE_TOTAL = COL_CURRENCY_RATE + COL_TOTAL;
   private static final String COL_RATE_CURRENCY = COL_CURRENCY_RATE + COL_CURRENCY;
+
+  private static NumberFormat quantityFormat;
+  private static NumberFormat costFormat;
+  private static NumberFormat amountFormat;
 
   public static void amountEntry(IsRow row, String viewName) {
     Totalizer totalizer = new Totalizer(Data.getColumns(viewName));
@@ -126,6 +155,44 @@ public final class TradeUtils {
       Queries.update(viewName, row.getId(), row.getVersion(), columns, oldValues, newValues,
           null, new RowUpdateCallback(viewName));
     });
+  }
+
+  public static String formatAmount(Double amount) {
+    return BeeUtils.nonZero(amount) ? getAmountFormat().format(amount) : BeeConst.STRING_EMPTY;
+  }
+
+  public static String formatCost(Double cost) {
+    return BeeUtils.nonZero(cost) ? getCostFormat().format(cost) : BeeConst.STRING_EMPTY;
+  }
+
+  public static String formatQuantity(Double qty) {
+    return BeeUtils.nonZero(qty) ? getQuantityFormat().format(qty) : BeeConst.STRING_EMPTY;
+  }
+
+  public static String formatGroupLabel(TradeReportGroup group, String label) {
+    if (BeeUtils.isEmpty(label)) {
+      return BeeConst.STRING_EMPTY;
+
+    } else if (group == TradeReportGroup.MONTH_RECEIVED && BeeUtils.isDigit(label)) {
+      int value = BeeUtils.toInt(label);
+
+      if (TimeUtils.isMonth(value)) {
+        return Format.renderMonthFullStandalone(value);
+
+      } else {
+        int year = value / 100;
+        int month = value % 100;
+
+        if (TimeUtils.isYear(year) && TimeUtils.isMonth(month)) {
+          return Format.renderYearMonth(YearMonth.of(year, month));
+        } else {
+          return label;
+        }
+      }
+
+    } else {
+      return label;
+    }
   }
 
   public static void getDocumentItems(String viewName, long tradeId, String currencyName,
@@ -380,6 +447,146 @@ public final class TradeUtils {
         total.getElement().setInnerText(response.getResponseAsString());
       }
     });
+  }
+
+  public static Pair<Double, Boolean> normalizeDiscountOrVatInfo(Pair<Double, Boolean> info) {
+    if (info != null && BeeUtils.nonZero(info.getA())) {
+      return info;
+    } else {
+      return Pair.empty();
+    }
+  }
+
+  public static Widget renderItemStockByWarehouse(long item,
+      List<Triplet<String, Double, Double>> data) {
+
+    if (BeeUtils.isEmpty(data)) {
+      return null;
+    }
+
+    boolean hasReservations = data.stream().anyMatch(e -> BeeUtils.nonZero(e.getC()));
+
+    HtmlTable table = new HtmlTable(STYLE_ITEM_STOCK_TABLE);
+
+    int r = 0;
+    int c = 0;
+
+    table.setText(r, c, Localized.dictionary().warehouse());
+    c++;
+
+    table.setText(r, c, Localized.dictionary().trdQuantityStock());
+    table.setColumnCellClasses(c, StyleUtils.className(TextAlign.RIGHT));
+    c++;
+
+    if (hasReservations) {
+      table.setText(r, c, Localized.dictionary().trdQuantityReserved());
+      table.setColumnCellClasses(c, StyleUtils.className(TextAlign.RIGHT));
+      c++;
+
+      table.setText(r, c, Localized.dictionary().trdQuantityAvailable());
+      table.setColumnCellClasses(c, StyleUtils.className(TextAlign.RIGHT));
+    }
+
+    table.getRowFormatter().addStyleName(r, STYLE_ITEM_STOCK_HEADER);
+    r++;
+
+    double totalStock = BeeConst.DOUBLE_ZERO;
+    double totalReserved = BeeConst.DOUBLE_ZERO;
+    double totalAvailable = BeeConst.DOUBLE_ZERO;
+
+    for (Triplet<String, Double, Double> triplet : data) {
+      c = 0;
+      table.setText(r, c, triplet.getA(), STYLE_ITEM_STOCK_WAREHOUSE);
+      c++;
+
+      Double stock = triplet.getB();
+      if (BeeUtils.isDouble(stock)) {
+        table.setText(r, c, BeeUtils.toString(stock), STYLE_ITEM_STOCK_QUANTITY);
+        totalStock += stock;
+      }
+      c++;
+
+      if (hasReservations) {
+        Double reserved = triplet.getC();
+
+        if (BeeUtils.isDouble(reserved)) {
+          DoubleLabel label = new DoubleLabel(false);
+          label.setValue(reserved);
+
+          label.addClickHandler(event -> {
+            Element target = EventUtils.getEventTargetElement(event);
+            String code = DomUtils.getDataProperty(DomUtils.getParentRow(target, true),
+                KEY_WAREHOUSE);
+
+            TradeKeeper.getWarehouseId(code, id -> showReservations(id, item, null, target));
+          });
+
+          table.setWidgetAndStyle(r, c, label, STYLE_ITEM_STOCK_RESERVED);
+          totalReserved += reserved;
+        }
+        c++;
+
+        double available = Math.max(BeeUtils.unbox(stock) - BeeUtils.unbox(reserved),
+            BeeConst.DOUBLE_ZERO);
+        table.setText(r, c, BeeUtils.toString(available), STYLE_ITEM_STOCK_AVAILABLE);
+        totalAvailable += available;
+      }
+
+      table.getRowFormatter().addStyleName(r, STYLE_ITEM_STOCK_BODY);
+      DomUtils.setDataProperty(table.getRow(r), KEY_WAREHOUSE, triplet.getA());
+
+      r++;
+    }
+
+    if (data.size() > 1) {
+      c = 0;
+      table.setText(r, c, Localized.dictionary().total(), STYLE_ITEM_STOCK_WAREHOUSE);
+      c++;
+
+      table.setText(r, c, BeeUtils.toString(totalStock), STYLE_ITEM_STOCK_QUANTITY);
+      c++;
+
+      if (hasReservations) {
+        table.setText(r, c, BeeUtils.toString(totalReserved), STYLE_ITEM_STOCK_RESERVED);
+        c++;
+
+        table.setText(r, c, BeeUtils.toString(totalAvailable), STYLE_ITEM_STOCK_AVAILABLE);
+      }
+
+      table.getRowFormatter().addStyleName(r, STYLE_ITEM_STOCK_FOOTER);
+    }
+
+    return table;
+  }
+
+  public static Widget renderReservations(Map<ModuleAndSub, Map<String, Double>> info) {
+    if (BeeUtils.isEmpty(info)) {
+      return null;
+    }
+
+    HtmlTable table = new HtmlTable(StyleUtils.NAME_INFO_TABLE);
+
+    table.getRowFormatter().addStyleName(0, StyleUtils.className(FontWeight.BOLD));
+    table.getRowFormatter().addStyleName(0, StyleUtils.className(TextAlign.CENTER));
+    table.setText(0, 0, Localized.dictionary().reservation());
+    table.setText(0, 1, Localized.dictionary().quantity());
+    table.setColumnCellClasses(1, StyleUtils.className(TextAlign.RIGHT));
+
+    info.keySet().forEach(mod -> {
+      int r = table.getRowCount();
+      table.getCellFormatter().setColSpan(r, 0, 2);
+      table.getRowFormatter().addStyleName(r, StyleUtils.className(FontStyle.ITALIC));
+      table.setText(r, 0, BeeUtils.joinWords(mod.getModule().getCaption(), mod.hasSubModule()
+          ? BeeUtils.parenthesize(mod.getSubModule().getCaption()) : null));
+
+      info.get(mod).forEach((text, qty) -> {
+        int r2 = table.getRowCount();
+        table.setText(r2, 0, text);
+        table.setText(r2, 1, BeeUtils.toString(qty));
+      });
+    });
+
+    return table;
   }
 
   static void configureCostCalculation(final DataView dataView) {
@@ -654,16 +861,22 @@ public final class TradeUtils {
     return options;
   }
 
-  public static Pair<Double, Boolean> normalizeDiscountOrVatInfo(Pair<Double, Boolean> info) {
-    if (info != null && BeeUtils.nonZero(info.getA())) {
-      return info;
-    } else {
-      return Pair.empty();
-    }
-  }
-
   static double roundPrice(Double price) {
     return Localized.normalizeMoney(price);
+  }
+
+  static void showReservations(Long warehouse, Long item, String caption, Element target) {
+    if (DataUtils.isId(warehouse) && DataUtils.isId(item)) {
+      TradeKeeper.getReservationsInfo(warehouse, item, null, info -> {
+        Widget widget = renderReservations(info);
+        if (widget == null) {
+          widget = new Label(Localized.dictionary().noData());
+        }
+
+        String cap = BeeUtils.notEmpty(caption, Localized.dictionary().orders());
+        Global.showModalWidget(cap, widget, target);
+      });
+    }
   }
 
   static Boolean vatIsPercent(Double vat) {
@@ -720,6 +933,30 @@ public final class TradeUtils {
       return false;
     }
   }
+
+  private static NumberFormat getQuantityFormat() {
+    if (quantityFormat == null) {
+      Integer scale = Data.getColumnScale(VIEW_TRADE_DOCUMENT_ITEMS, COL_TRADE_ITEM_QUANTITY);
+      quantityFormat = Format.getDecimalFormat(0, BeeUtils.unbox(scale));
+    }
+    return quantityFormat;
+  }
+
+  private static NumberFormat getCostFormat() {
+    if (costFormat == null) {
+      Integer scale = Data.getColumnScale(VIEW_TRADE_ITEM_COST, COL_TRADE_ITEM_COST);
+      costFormat = Format.getDecimalFormat(2, BeeUtils.unbox(scale));
+    }
+    return costFormat;
+  }
+
+  private static NumberFormat getAmountFormat() {
+    if (amountFormat == null) {
+      amountFormat = Format.getDefaultMoneyFormat();
+    }
+    return amountFormat;
+  }
+
 
   private TradeUtils() {
   }

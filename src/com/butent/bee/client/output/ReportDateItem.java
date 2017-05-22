@@ -3,7 +3,6 @@ package com.butent.bee.client.output;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.Global;
-import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.widget.Button;
@@ -17,8 +16,10 @@ import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.filter.Operator;
+import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.report.DateTimeFunction;
+import com.butent.bee.shared.report.ResultValue;
 import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -90,14 +91,14 @@ public class ReportDateItem extends ReportItem {
   }
 
   @Override
-  public ReportValue evaluate(SimpleRow row) {
-    ReportValue value;
+  public ResultValue evaluate(SimpleRow row, Dictionary dictionary) {
+    ResultValue value;
     JustDate date = row.getDate(getExpression());
 
     if (date != null) {
       value = evaluate(date);
     } else {
-      value = ReportValue.empty();
+      value = ResultValue.empty();
     }
     return value;
   }
@@ -222,38 +223,22 @@ public class ReportDateItem extends ReportItem {
         return new InputSpinner();
       case DAY:
         for (int i = 1; i <= 31; i++) {
-          editor.addItem(BeeUtils.toString(i), BeeUtils.toString(i));
+          editor.addItem(BeeUtils.toString(i));
         }
         break;
       case DAY_OF_WEEK:
         for (int i = 1; i <= 7; i++) {
-          editor.addItem(Format.renderDayOfWeek(i), BeeUtils.toString(i));
+          editor.addItem(BeeUtils.toString(i));
         }
         break;
       case MONTH:
         for (int i = 1; i <= 12; i++) {
-          editor.addItem(Format.renderMonthFullStandalone(i), BeeUtils.toString(i));
+          editor.addItem(BeeUtils.toString(i));
         }
         break;
       case QUARTER:
         for (int i = 1; i <= 4; i++) {
-          String display = null;
-
-          switch (i) {
-            case 1:
-              display = "I";
-              break;
-            case 2:
-              display = "II";
-              break;
-            case 3:
-              display = "III";
-              break;
-            case 4:
-              display = "IV";
-              break;
-          }
-          editor.addItem(display, BeeUtils.toString(i));
+          editor.addItem(BeeUtils.toString(i));
         }
         break;
 
@@ -264,54 +249,34 @@ public class ReportDateItem extends ReportItem {
     return editor;
   }
 
-  protected ReportValue evaluate(HasDateValue date) {
+  protected ResultValue evaluate(HasDateValue date) {
     String value = null;
     String display = null;
     int val = BeeUtils.toInt(getValue(date));
 
     switch (getFormat()) {
       case DATE:
-        value = BeeUtils.padLeft(BeeUtils.toString(val), 10, BeeConst.CHAR_ZERO);
+        value = BeeUtils.padLeft(BeeUtils.toString(val), 10, BeeConst.CHAR_SPACE);
         display = date.toString();
         break;
       case DAY:
+      case MONTH:
         value = TimeUtils.padTwo(val);
         display = BeeUtils.toString(val);
         break;
       case DAY_OF_WEEK:
-        value = BeeUtils.toString(val);
-        display = Format.renderDayOfWeek(val);
-        break;
-      case MONTH:
-        value = TimeUtils.padTwo(val);
-        display = Format.renderMonthFullStandalone(val);
-        break;
       case QUARTER:
-        switch (val) {
-          case 1:
-            display = "I";
-            break;
-          case 2:
-            display = "II";
-            break;
-          case 3:
-            display = "III";
-            break;
-          case 4:
-            display = "IV";
-            break;
-        }
         value = BeeUtils.toString(val);
         break;
       case YEAR:
-        value = BeeUtils.toString(val);
-        display = value;
+        value = BeeUtils.padLeft(BeeUtils.toString(val), 5, BeeConst.CHAR_SPACE);
+        display = BeeUtils.toString(val);
         break;
       default:
         Assert.unsupported();
         break;
     }
-    return ReportValue.of(value).setDisplay(display);
+    return ResultValue.of(value).setDisplay(display);
   }
 
   protected EnumSet<DateTimeFunction> getSupportedFunctions() {
@@ -377,12 +342,11 @@ public class ReportDateItem extends ReportItem {
   private void renderFilter(Flow container) {
     container.clear();
 
-    container.add(new Button(getFormat().getCaption(), event -> {
-      Global.inputWidget(getOptionsCaption(), getOptionsWidget(), () -> {
-        saveOptions();
-        renderFilter(container);
-      });
-    }));
+    container.add(new Button(getFormat().getCaption(), event ->
+        Global.inputWidget(getOptionsCaption(), getOptionsWidget(), () -> {
+          saveOptions();
+          renderFilter(container);
+        })));
     if (getFilterOperator() == null) {
       filterOperator = Operator.EQ;
     }

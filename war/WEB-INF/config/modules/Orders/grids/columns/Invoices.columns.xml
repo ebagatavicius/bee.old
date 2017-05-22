@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+           xmlns:ui="http://www.butent.com/ui">
+  <SelectionColumn name="Select" width="20" />
+  <IdColumn name="Sale" caption="=trdInvoiceId" />
+  <DataColumn name="Date" />
+  <RelColumn name="SaleSeries" />
+  <DataColumn name="InvoiceNo" searchBy="InvoicePrefix InvoiceNo">
+    <render>
+      <ui:function>
+        if (!row.InvoicePrefix) {
+        return row.InvoiceNo;
+        } else if(!row.InvoiceNo) {
+        return row.InvoicePrefix;
+        } else {
+        return row.InvoicePrefix + " " + row.InvoiceNo;
+        }
+      </ui:function>
+    </render>
+  </DataColumn>
+  <DataColumn name="CheckNo" />
+  <DataColumn name="OperationName" />
+  <DataColumn name="CustomerName" />
+  <DataColumn name="PayerName" />
+  <RelColumn name="Manager" renderColumns= "ManagerFirstName ManagerLastName" />
+  <DataColumn name="Amount" />
+  <DataColumn name="CurrencyName" />
+  <DataColumn name="Term" />
+
+  <DataColumn name="PaymentTime" />
+  <DataColumn name="Paid" />
+
+  <DataColumn name="Debt" caption="=trdDebt" format="0.00" />
+  <DataColumn name="Exported" />
+</g:columns>

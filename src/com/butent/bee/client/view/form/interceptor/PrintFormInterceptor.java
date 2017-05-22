@@ -147,12 +147,16 @@ public abstract class PrintFormInterceptor extends AbstractFormInterceptor {
         params.put(column.getId(), value);
       }
     }
-    if (Objects.nonNull(getActiveRow()) && !BeeUtils.isEmpty(getActiveRow().getProperties())) {
-      getActiveRow().getProperties().forEach((key, value) -> {
-        if (!BeeUtils.isEmpty(value)) {
-          params.put(key, value);
-        }
-      });
+    if (Objects.nonNull(getActiveRow())) {
+      params.put("ID", BeeUtils.toString(getActiveRowId()));
+
+      if (!BeeUtils.isEmpty(getActiveRow().getProperties())) {
+        getActiveRow().getProperties().forEach((key, value) -> {
+          if (!BeeUtils.isEmpty(value)) {
+            params.put(key, value);
+          }
+        });
+      }
     }
     parametersConsumer.accept(params);
   }
@@ -196,9 +200,13 @@ public abstract class PrintFormInterceptor extends AbstractFormInterceptor {
             .forEach(locale -> locales.put(locale.getLanguage(),
                 BeeUtils.notEmpty(locale.getCaption(), locale.getLanguage())));
 
-        Global.choice(Localized.dictionary().chooseLanguage(), null,
-            new ArrayList<>(locales.values()), idx ->
-                print(Localized.setLanguage(report, new ArrayList<>(locales.keySet()).get(idx))));
+        if (locales.size() > 1) {
+          Global.choice(Localized.dictionary().chooseLanguage(), null,
+              new ArrayList<>(locales.values()), idx ->
+                  print(Localized.setLanguage(report, new ArrayList<>(locales.keySet()).get(idx))));
+        } else {
+          print(report);
+        }
       } else {
         print(report);
       }

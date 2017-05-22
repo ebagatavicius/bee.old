@@ -363,6 +363,10 @@ public final class InputBoxes {
       Label label = new Label(prompt.trim());
       label.addStyleName(STYLE_INPUT_PROMPT);
 
+      if (callback.isRequired()) {
+        label.addStyleName(StyleUtils.NAME_REQUIRED);
+      }
+
       UiHelper.add(panel, label, initializer, DialogConstants.WIDGET_PROMPT);
     }
 

@@ -20,6 +20,15 @@
   </row>
 
   <row>
+    <Label for="Location" visible="true" style="&lbl;" />
+    <cell colSpan="3">
+      <DataSelector source="Location" style="width: 100%;"
+                    choiceColumns="LocationName LocationCompanyName LocationCompanyTypeName"
+                    renderColumns="LocationName LocationCompanyName LocationCompanyTypeName" />
+    </cell>
+  </row>
+
+  <row>
     <Label for="DocumentDate" style="&lbl;" />
     <InputDateTime source="DocumentDate" />
     <Label for="Expires" style="&lbl;" />

@@ -36,7 +36,8 @@
         <Label text="=name" class="bee-required"/>
         <FlowPanel>
           <DataSelector source="CompanyType" style="width: 75px; margin-right: 8px;"
-                        required="true" choiceColumns="Name" renderColumns="TypeName"/>
+                        required="true" choiceColumns="Name" renderColumns="TypeName"
+                        placeholder="=companyStatus" />
           <InputText source="Name" visible="true" required="true"
                      style="width: calc(100% - 83px);" />
         </FlowPanel>

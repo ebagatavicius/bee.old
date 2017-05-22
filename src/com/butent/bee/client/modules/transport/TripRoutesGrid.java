@@ -201,7 +201,7 @@ public class TripRoutesGrid extends AbstractGridInterceptor {
   }
 
   @Override
-  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
+  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow, boolean copy) {
     for (Pair<String, String> pair : Arrays.asList(
         Pair.of(COL_ROUTE_DEPARTURE_COUNTRY, COL_ROUTE_ARRIVAL_COUNTRY),
         Pair.of(COL_ROUTE_DEPARTURE_CITY, COL_ROUTE_ARRIVAL_CITY))) {
@@ -216,7 +216,7 @@ public class TripRoutesGrid extends AbstractGridInterceptor {
             oldRow.getString(getDataIndex(pair.getB() + "Name")));
       }
     }
-    return super.onStartNewRow(gridView, oldRow, newRow);
+    return super.onStartNewRow(gridView, oldRow, newRow, copy);
   }
 
   private void setCargoSelectorFilter(DataSelector selector) {

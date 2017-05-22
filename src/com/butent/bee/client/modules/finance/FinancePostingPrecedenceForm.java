@@ -85,7 +85,7 @@ class FinancePostingPrecedenceForm extends AbstractFormInterceptor {
     abstract List<Entry> parse(String value);
   }
 
-  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "fin-posting-precedence-";
+  private static final String STYLE_PREFIX = FinanceKeeper.STYLE_PREFIX + "posting-precedence-";
 
   private static final String STYLE_TABLE = STYLE_PREFIX + "table";
   private static final String STYLE_LABEL = STYLE_PREFIX + "label";

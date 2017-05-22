@@ -30,6 +30,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.value.TextValue;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.report.ReportParameters;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;

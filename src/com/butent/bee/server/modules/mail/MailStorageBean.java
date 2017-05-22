@@ -123,7 +123,17 @@ public class MailStorageBean {
   }
 
   public MailFolder createFolder(MailAccount account, MailFolder parent, String name) {
-    MailFolder folder = createFolder(account.getAccountId(), Assert.notNull(parent), name);
+    Long id = qs.getId(TBL_FOLDERS, COL_ACCOUNT, account.getAccountId(),
+        COL_FOLDER_PARENT, parent.getId(), COL_FOLDER_NAME, Assert.notEmpty(name));
+
+    if (!DataUtils.isId(id)) {
+      id = qs.insertData(new SqlInsert(TBL_FOLDERS)
+          .addConstant(COL_ACCOUNT, account.getAccountId())
+          .addConstant(COL_FOLDER_PARENT, parent.getId())
+          .addConstant(COL_FOLDER_NAME, name));
+    }
+    MailFolder folder = new MailFolder(id, name, null);
+    parent.addSubFolder(folder);
 
     if (!account.isStoredRemotedly(parent)) {
       disconnectFolder(folder);
@@ -445,18 +455,6 @@ public class MailStorageBean {
         updateFolder(folder, uidValidity, null);
       }
     }
-  }
-
-  private MailFolder createFolder(Long accountId, MailFolder parent, String name) {
-    long id = qs.insertData(new SqlInsert(TBL_FOLDERS)
-        .addConstant(COL_ACCOUNT, accountId)
-        .addConstant(COL_FOLDER_PARENT, parent.getId())
-        .addConstant(COL_FOLDER_NAME, Assert.notEmpty(name)));
-
-    MailFolder folder = new MailFolder(id, name, null);
-    parent.addSubFolder(folder);
-
-    return folder;
   }
 
   private static String getStringContent(Object enigma) throws IOException {

@@ -7,8 +7,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.dom.client.TableRowElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
@@ -25,7 +23,7 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Report;
-import com.butent.bee.client.output.ReportParameters;
+import com.butent.bee.shared.report.ReportParameters;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasIndexedWidgets;
 import com.butent.bee.client.ui.Opener;
@@ -115,7 +113,7 @@ public class TradeActStockReport extends ReportInterceptor {
     String h2;
 
     if (start == null || end == null) {
-      h1 = Localized.dictionary().trdRemainders();
+      h1 = Localized.dictionary().taRemainders();
       h2 = Format.renderDateLong(BeeUtils.nvl(start, end));
 
     } else {
@@ -239,7 +237,7 @@ public class TradeActStockReport extends ReportInterceptor {
 
       loadMulti(parameters, FILTER_NAMES, form);
 
-      loadGroupBy(parameters, GROUP_NAMES, form);
+      loadGroupByIndex(parameters, GROUP_NAMES, form);
     }
 
     super.onLoad(form);
@@ -252,7 +250,7 @@ public class TradeActStockReport extends ReportInterceptor {
 
     storeEditorValues(FILTER_NAMES);
 
-    storeGroupBy(GROUP_NAMES);
+    storeGroupByIndex(GROUP_NAMES);
   }
 
   @Override
@@ -313,7 +311,7 @@ public class TradeActStockReport extends ReportInterceptor {
           logger.warning(name, "has no label");
         }
 
-        headers.add(BeeUtils.joinWords(label, getFilterLabel(name)));
+        headers.add(BeeUtils.joinWords(label, getSelectorLabel(name)));
 
         Set<Long> values = DataUtils.parseIdSet(ids);
 
@@ -371,7 +369,7 @@ public class TradeActStockReport extends ReportInterceptor {
 
       String fileName;
       if (start == null || end == null) {
-        fileName = Localized.dictionary().trdRemainders();
+        fileName = Localized.dictionary().taRemainders();
       } else {
         fileName = Localized.dictionary().trdMovementOfGoods();
       }
@@ -392,7 +390,7 @@ public class TradeActStockReport extends ReportInterceptor {
     labels.addAll(captions);
 
     for (String name : FILTER_NAMES) {
-      labels.add(getFilterLabel(name));
+      labels.add(getSelectorLabel(name));
     }
 
     for (String groupName : GROUP_NAMES) {
@@ -415,7 +413,7 @@ public class TradeActStockReport extends ReportInterceptor {
     addBooleanValues(parameters, COL_TRADE_ITEM_QUANTITY, COL_ITEM_WEIGHT);
 
     addEditorValues(parameters, FILTER_NAMES);
-    addGroupBy(parameters, GROUP_NAMES);
+    addGroupByIndex(parameters, GROUP_NAMES);
 
     return parameters;
   }
@@ -724,27 +722,24 @@ public class TradeActStockReport extends ReportInterceptor {
 
       final String period = Format.renderPeriod(start, end);
 
-      table.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          Element target = EventUtils.getEventTargetElement(event);
+      table.addClickHandler(event -> {
+        Element target = EventUtils.getEventTargetElement(event);
 
-          TableCellElement cell = DomUtils.getParentCell(target, true);
-          TableRowElement row = DomUtils.getParentRow(cell, false);
+        TableCellElement cell = DomUtils.getParentCell(target, true);
+        TableRowElement row = DomUtils.getParentRow(cell, false);
 
-          if (StyleUtils.hasClassName(cell, STYLE_MOVEMENT)
-              && StyleUtils.hasAnyClass(row, movementRowClasses)) {
+        if (StyleUtils.hasClassName(cell, STYLE_MOVEMENT)
+            && StyleUtils.hasAnyClass(row, movementRowClasses)) {
 
-            String colName = DomUtils.getDataProperty(cell, KEY_COL_NAME);
-            if (BeeUtils.allNotEmpty(colName, cell.getInnerText())) {
-              showMovement(period, row, colName);
-            }
+          String colName = DomUtils.getDataProperty(cell, KEY_COL_NAME);
+          if (BeeUtils.allNotEmpty(colName, cell.getInnerText())) {
+            showMovement(period, row, colName);
+          }
 
-          } else if (StyleUtils.hasAnyClass(cell, itemClasses)) {
-            long id = DomUtils.getDataIndexLong(row);
-            if (DataUtils.isId(id)) {
-              RowEditor.open(VIEW_ITEMS, id, Opener.MODAL);
-            }
+        } else if (StyleUtils.hasAnyClass(cell, itemClasses)) {
+          long id = DomUtils.getDataIndexLong(row);
+          if (DataUtils.isId(id)) {
+            RowEditor.open(VIEW_ITEMS, id, Opener.MODAL);
           }
         }
       });

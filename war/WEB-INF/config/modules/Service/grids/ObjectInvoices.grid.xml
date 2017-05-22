@@ -3,14 +3,14 @@
   xmlns:ui="http://www.butent.com/ui"
   xmlns:xi="http://www.w3.org/2001/XInclude"
 
-  name="ObjectInvoices" viewName="ServiceInvoices"
+  name="ObjectInvoices" viewName="OrderChildInvoices"
   editPopup="true" flexGrow="1"
   >
+  <xi:include href="../../Orders/grids/columns/Invoices.columns.xml" />
   <g:columns>
-    <SelectionColumn name="Select" width="20" />
+    <RelColumn name="ServiceMaintenance" viewName="ServiceMaintenance" renderColumns="ServiceMaintenance" filterSupplier="value"
+               editPopup="true" label="=svcRepair" />
   </g:columns>
-
-  <xi:include href="columns/ServiceInvoice.columns.xml" />
 
   <g:rowStyle>
     <ui:inline>="color: red"</ui:inline>

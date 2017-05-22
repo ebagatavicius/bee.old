@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="TcdManufacturers" source="TcdManufacturers" module="Ec.Classifiers"
+  name="TcdManufacturers" source="TcdManufacturers" module="Ec.Classifiers Service"
   caption="=tcdManufacturers" newRowCaption="=tcdManufacturerNew"
   >
   <Columns>

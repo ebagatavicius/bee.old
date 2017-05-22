@@ -17,7 +17,7 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Report;
-import com.butent.bee.client.output.ReportParameters;
+import com.butent.bee.shared.report.ReportParameters;
 import com.butent.bee.client.ui.HasIndexedWidgets;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -204,7 +204,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
       } else {
         label = Localized.dictionary().department();
       }
-      headers.add(BeeUtils.joinWords(label, getFilterLabel(NAME_DEPARTMENTS)));
+      headers.add(BeeUtils.joinWords(label, getSelectorLabel(NAME_DEPARTMENTS)));
     }
 
     String managers = getEditorValue(NAME_MANAGERS);
@@ -216,7 +216,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
       } else {
         label = Localized.dictionary().manager();
       }
-      headers.add(BeeUtils.joinWords(label, getFilterLabel(NAME_MANAGERS)));
+      headers.add(BeeUtils.joinWords(label, getSelectorLabel(NAME_MANAGERS)));
     }
 
     List<String> groupBy = new ArrayList<>();
@@ -281,7 +281,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
   protected String getBookmarkLabel() {
     List<String> labels = Lists.newArrayList(getReportCaption(),
         Format.renderPeriod(getDateTime(NAME_START_DATE), getDateTime(NAME_END_DATE)),
-        getFilterLabel(NAME_DEPARTMENTS), getFilterLabel(NAME_MANAGERS));
+        getSelectorLabel(NAME_DEPARTMENTS), getSelectorLabel(NAME_MANAGERS));
 
     for (String groupName : NAME_GROUP_BY) {
       if (BeeUtils.isPositive(getSelectedIndex(groupName))) {
@@ -836,7 +836,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
       if (!BeeUtils.isEmpty(managers)) {
         filter.add(Filter.any(ClassifierConstants.COL_COMPANY_PERSON,
             DataUtils.parseIdSet(managers)));
-        captions.add(getFilterLabel(NAME_MANAGERS));
+        captions.add(getSelectorLabel(NAME_MANAGERS));
       }
     }
 
@@ -852,7 +852,7 @@ public class AssessmentQuantityReport extends ReportInterceptor {
       if (!BeeUtils.isEmpty(departments)) {
         filter.add(Filter.any(AdministrationConstants.COL_DEPARTMENT,
             DataUtils.parseIdSet(departments)));
-        captions.add(getFilterLabel(NAME_DEPARTMENTS));
+        captions.add(getSelectorLabel(NAME_DEPARTMENTS));
       }
     }
 

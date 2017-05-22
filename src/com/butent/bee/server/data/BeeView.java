@@ -105,6 +105,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BeeView implements BeeObject, HasExtendedInfo {
 
+  @FunctionalInterface
   public interface ConditionProvider {
     IsCondition getCondition(BeeView view, List<String> args);
   }
@@ -1146,7 +1147,7 @@ public class BeeView implements BeeObject, HasExtendedInfo {
 
           if (field.isTranslatable() && BeeUtils.allEmpty(parent, col.locale)) {
             for (SupportedLocale locale : SupportedLocale.values()) {
-              if (locale.isActive() && !Objects.equals(locale, SupportedLocale.USER_DEFAULT)) {
+              if (locale.isActive() && !locale.isUserDefault()) {
                 String lang = locale.getLanguage();
                 addColumn(alias, field, Localized.column(colName, lang), lang, aggregate, hidden,
                     parent, null, Localized.maybeTranslate(BeeUtils.notEmpty(col.label,

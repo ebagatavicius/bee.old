@@ -256,6 +256,10 @@
 .bee-form-TradeDocument .bee-disabled .bee-trade-fin-post {
   visibility: hidden;
 }
+.bee-trade-show-item-stock[disabled],
+.bee-trade-show-related-documents[disabled] {
+  visibility: hidden;
+}
 
 .bee-trade-item-picker-new-item,
 .bee-trade-item-picker-new-service {
@@ -387,6 +391,7 @@
 .bee-trade-item-picker-reserved {
   margin-left: 5px;
   color: crimson;
+  cursor: pointer;
 }
 .bee-trade-item-picker-available {
   margin-left: 8px;
@@ -412,4 +417,127 @@
 }
 .bee-trade-item-picker-pager .bee-SimplePager-info {
   font-style: italic;
+}
+
+.bee-trade-item-stock-table {
+  border-collapse: collapse;
+}
+.bee-trade-item-stock-table td {
+  padding: 2px 5px;
+  border: 1px solid #ddd;
+}
+.bee-trade-item-stock-header {
+  text-align: center;
+  font-weight: bolder;
+}
+.bee-trade-item-stock-body .bee-trade-item-stock-reserved {
+  cursor: pointer;
+}
+.bee-trade-item-stock-available {
+  font-weight: bolder;
+}
+.bee-trade-item-stock-footer {
+  text-align: center;
+  font-weight: bolder;
+  font-size: larger;
+  background-color: whitesmoke;
+}
+.bee-trade-item-stock-footer .bee-trade-item-stock-warehouse {
+  text-align: right;
+  font-size: inherit;
+}
+
+.bee-trade-report-stock-table,
+.bee-trade-report-movement-of-goods-table {
+  border-collapse: collapse;
+}
+
+.bee-trade-report-stock-header,
+.bee-trade-report-movement-of-goods-header {
+  background-color: #4caf50;
+  color: white;
+}
+.bee-trade-report-stock-body:nth-child(odd),
+.bee-trade-report-movement-of-goods-body:nth-child(odd) {
+  background-color: #f5f5f5;
+}
+.bee-trade-report-stock-body:nth-child(even),
+.bee-trade-report-movement-of-goods-body:nth-child(even) {
+  background-color: white;
+}
+.bee-trade-report-stock-footer,
+.bee-trade-report-movement-of-goods-footer {
+  background-color: #ebebeb;
+}
+
+.bee-trade-report-stock-body:hover,
+.bee-trade-report-stock-footer:hover,
+.bee-trade-report-movement-of-goods-body:hover,
+.bee-trade-report-movement-of-goods-footer:hover {
+  background-color: blanchedalmond;
+}
+
+.bee-trade-report-stock-table td,
+.bee-trade-report-movement-of-goods-table td {
+  padding: 3px 5px;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+.bee-trade-report-stock-table .bee-trade-report-stock-qty-row td,
+.bee-trade-report-movement-of-goods-table .bee-trade-report-movement-of-goods-qty-row td {
+  border-bottom-color: transparent;
+}
+
+.bee-trade-report-stock-header,
+.bee-trade-report-stock-row-total,
+.bee-trade-report-stock-footer,
+.bee-trade-report-movement-of-goods-header,
+.bee-trade-report-movement-of-goods-row-total,
+.bee-trade-report-movement-of-goods-footer {
+  font-weight: bolder;
+}
+.bee-trade-report-stock-header .bee-trade-report-stock-column-empty-label,
+.bee-trade-report-movement-of-goods-header .bee-trade-report-movement-of-goods-column-empty-label {
+  font-weight: normal;
+}
+.bee-trade-report-stock-table .bee-trade-report-stock-header td,
+.bee-trade-report-movement-of-goods-table .bee-trade-report-movement-of-goods-header td {
+  white-space: pre;
+}
+
+.bee-trade-report-stock-amount-row,
+.bee-trade-report-movement-of-goods-amount-row {
+  font-style: italic;
+}
+
+.bee-trade-report-stock-footer .bee-trade-report-stock-row-total,
+.bee-trade-report-movement-of-goods-footer .bee-trade-report-movement-of-goods-row-total {
+  font-size: larger;
+}
+
+.bee-trade-report-stock-header td,
+.bee-trade-report-movement-of-goods-header td {
+  text-align: center;
+}
+
+.bee-trade-report-stock-price,
+.bee-trade-report-stock-qty,
+.bee-trade-report-stock-amount,
+.bee-trade-report-movement-of-goods-price,
+.bee-trade-report-movement-of-goods-qty,
+.bee-trade-report-movement-of-goods-amount {
+  text-align: right;
+}
+
+.bee-trade-report-stock-editable,
+.bee-trade-report-movement-of-goods-editable {
+  cursor: pointer;
+}
+.bee-trade-report-stock-editable:hover,
+.bee-trade-report-movement-of-goods-editable:hover {
+  color: #00e;
+}
+
+.bee-trade-debts-phase-toggle {
+  padding-right: 1vw;
 }

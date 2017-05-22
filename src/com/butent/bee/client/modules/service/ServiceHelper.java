@@ -5,22 +5,29 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.PRM_COMPANY;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_COMPANY;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.Global;
+import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.grid.ChildGrid;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
+import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.SimpleCheckBox;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
+import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.orders.OrdersConstants;
@@ -165,6 +172,14 @@ final class ServiceHelper {
       ((ChildGrid) itemsChildGrid).setPendingEnabled(canEdit);
       ((ChildGrid) itemsChildGrid).setEnabled(canEdit);
       itemsChildGrid.setStyleName(OrdersConstants.STYLE_ITEM_PRICE_PICKER_DISABLED, !canEdit);
+    }
+  }
+
+  public static void setRepairerFilter(IdentifiableWidget widget) {
+    Long company = Global.getParameterRelation(PRM_COMPANY);
+
+    if (DataUtils.isId(company)) {
+      ((DataSelector) widget).setAdditionalFilter(Filter.equals(COL_COMPANY, company));
     }
   }
 

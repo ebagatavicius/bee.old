@@ -169,8 +169,8 @@
                     newRowEnabled="false" editPopup="true"/>
           <Relation viewName="Discussions" renderColumns="Subject"
                     newRowEnabled="false" editPopup="true"/>
-          <Relation viewName="ServiceObjects" renderColumns="Address"
-                    newRowEnabled="false" editPopup="true" choiceColumns="Address CustomerName"/>
+          <Relation viewName="ServiceObjects" renderColumns="Model CategoryName ArticleNo"
+                    newRowEnabled="false" editPopup="true" choiceColumns="Model CategoryName ArticleNo"/>
           <Relation viewName="Tasks"
                     renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
                     newRowEnabled="false" editPopup="true"

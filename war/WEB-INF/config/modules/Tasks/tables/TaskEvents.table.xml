@@ -6,7 +6,7 @@
   >
   <Fields>
     <Relation name="Task" notNull="true" relation="Tasks" cascade="DELETE" label="=crmTask" />
-    <Relation name="Publisher" notNull="true" relation="Users" label="=crmTaskExecutor" />
+    <Relation name="Publisher" notNull="true" relation="Users" label="=crmTaskPublisher" />
     <DateTime name="PublishTime" notNull="true" label="=crmTaskPublishTime" />
     <Text name="Comment" label="=crmTaskComment" />
     <Enum name="Event" key="TaskEvent" precision="2" notNull="true" label="=crmTaskEvent" />

@@ -232,7 +232,8 @@ public class ServiceObjectForm extends MaintenanceExpanderForm implements ClickH
           }
         });
       }
-    } else if (widget instanceof DataSelector && BeeUtils.same(name, COL_SERVICE_CUSTOMER)) {
+    } else if (widget instanceof DataSelector
+        && BeeUtils.in(name, COL_SERVICE_CUSTOMER, ALS_CONTACT_PERSON)) {
       ((DataSelector) widget).addSelectorHandler(this);
     }
   }
@@ -370,6 +371,23 @@ public class ServiceObjectForm extends MaintenanceExpanderForm implements ClickH
       getActiveRow().clearCell(Data.getColumnIndex(getViewName(), ALS_CONTACT_ADDRESS));
       getActiveRow().clearCell(Data.getColumnIndex(getViewName(), ALS_CONTACT_EMAIL));
       getFormView().refreshBySource(ALS_CONTACT_PERSON);
+
+    } else if (event.isChanged()
+        && BeeUtils.same(event.getRelatedViewName(), VIEW_COMPANY_PERSONS)) {
+      Long objectCustomerId = getActiveRow().getLong(getDataIndex(COL_SERVICE_CUSTOMER));
+
+      if (event.getRelatedRow() != null && !DataUtils.isId(objectCustomerId)) {
+        Long company = event.getRelatedRow().getLong(Data
+            .getColumnIndex(event.getRelatedViewName(), COL_COMPANY));
+
+        if (DataUtils.isId(company)) {
+          getActiveRow().setValue(getDataIndex(COL_SERVICE_CUSTOMER), company);
+          RelationUtils.updateRow(Data.getDataInfo(getViewName()), COL_SERVICE_CUSTOMER,
+              getActiveRow(), Data.getDataInfo(event.getRelatedViewName()),
+              event.getRelatedRow(), false);
+          getFormView().refreshBySource(COL_SERVICE_CUSTOMER);
+        }
+      }
     }
   }
 

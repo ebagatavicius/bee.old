@@ -83,8 +83,8 @@
         <SimpleJoin name="OrderItem" joinType="LEFT">
           <HiddenColumn name="ServiceItem" />
           <SimpleJoin name="ServiceItem" joinType="LEFT">
-            <SimpleColumn name="ServiceMaintenance" />
-            <SimpleColumn name="ServiceObject"/>
+            <AggregateColumn name="ServiceMaintenance" aggregate="COUNT"/>
+            <AggregateColumn name="ServiceObject" aggregate="COUNT"/>
           </SimpleJoin>
         </SimpleJoin>
       </ExternalJoin>

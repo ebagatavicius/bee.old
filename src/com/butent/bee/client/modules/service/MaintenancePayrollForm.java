@@ -44,6 +44,7 @@ public class MaintenancePayrollForm extends AbstractFormInterceptor
       FormFactory.WidgetDescriptionCallback callback) {
     if (BeeUtils.same(name, COL_REPAIRER) && widget instanceof DataSelector) {
       ((DataSelector) widget).addSelectorHandler(this);
+      ServiceHelper.setRepairerFilter(widget);
     }
     super.afterCreateWidget(name, widget, callback);
   }

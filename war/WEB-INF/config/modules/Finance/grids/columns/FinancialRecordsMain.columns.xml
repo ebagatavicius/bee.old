@@ -50,6 +50,4 @@
   </DataColumn>
 
   <RelColumn name="Currency" newRowEnabled="false" visible="true" />
-
-  <DataColumn name="Quantity" scale="0" />
 </g:columns>

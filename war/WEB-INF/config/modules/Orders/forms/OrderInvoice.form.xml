@@ -24,6 +24,19 @@
 
         <Label for="CheckNo" />
         <InputText source="CheckNo" />
+
+        <Label for="ServiceMaintenance" data="ServiceMaintenance" text="=svcRepair" >
+          <dynStyle>
+            <ui:inline>display:none;</ui:inline>
+            <ui:expression>!row.ServiceMaintenance</ui:expression>
+          </dynStyle>
+        </Label>
+        <InputText source="ServiceMaintenance" contentEditable="false" >
+          <dynStyle>
+            <ui:inline>display:none;</ui:inline>
+            <ui:expression>!row.ServiceMaintenance</ui:expression>
+          </dynStyle>
+        </InputText>
       </row>
 
       <row>

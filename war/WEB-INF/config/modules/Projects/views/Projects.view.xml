@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
   xmlns:x="http://www.butent.com/expression"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="Projects" source="Projects" caption="=projects"
   editForm="Project" newRowForm="Project" newRowCaption="=prjNewProject"
@@ -8,35 +9,14 @@
   <Relation renderColumns="Name" />
   <Columns>
     <IdColumn name="ID"/>
-    <SimpleColumn name="Priority" />
+    <xi:include href="viewcolumns/ProjectInfo.viewcolumns.xml" />
+
     <SimpleColumn name="Status" />
-    <SimpleColumn name="Name" />
-    
-    <SimpleColumn name="Type" />
-    <SimpleJoin name="Type" joinType="LEFT">
-      <SimpleColumn name="Name" alias="TypeName" />
-    </SimpleJoin>
-    
-    <SimpleColumn name="Company" />
-    <SimpleJoin name="Company" joinType="LEFT">
-      <SimpleColumn alias="CompanyName" name="Name" />
-      <SimpleJoin joinType="LEFT" name="CompanyType">
-        <SimpleColumn name="Name" alias="CompanyTypeName" />
-      </SimpleJoin>
-    </SimpleJoin>
-    
-    <SimpleColumn name="Contact" />
-    <SimpleJoin name="Contact" joinType="LEFT">
-      <SimpleColumn alias="ContactPerson" name="Person" />
-      <SimpleJoin name="Person" joinType="LEFT">
-        <SimpleColumn alias="ContactFirstName" name="FirstName" />
-        <SimpleColumn alias="ContactLastName" name="LastName" />
-      </SimpleJoin>
-      <SimpleJoin name="Company" joinType="LEFT">
-        <SimpleColumn alias="ContactCompanyName" name="Name" />
-      </SimpleJoin>
-    </SimpleJoin>
-    
+    <SimpleColumn name="StartDate" />
+    <SimpleColumn name="EndDate" />
+    <SimpleColumn name="ApprovedDate" />
+    <SimpleColumn name="Progress" />
+
     <SimpleColumn name="Owner" />
     <SimpleJoin name="Owner" joinType="LEFT">
       <SimpleColumn name="CompanyPerson" alias="OwnerPerson" />
@@ -47,30 +27,7 @@
         </SimpleJoin>
       </SimpleJoin>
     </SimpleJoin>
-    
-    <SimpleColumn name="Category" />
-    <SimpleJoin joinType="LEFT" name="Category">
-      <SimpleColumn name="Name" alias="CategoryName" />
-    </SimpleJoin>
-    
-    <SimpleColumn name="StartDate" />
-    <SimpleColumn name="EndDate" />
-    <SimpleColumn name="ApprovedDate" />
-    <SimpleColumn name="ExpectedDuration" />
-    <SimpleColumn name="TimeUnit" />
-    <SimpleJoin name="TimeUnit" joinType="LEFT">
-      <SimpleColumn name="Name" alias="UnitName" />
-      <SimpleColumn name="Factor" />
-      <SimpleColumn name="BaseUnit" />
-    </SimpleJoin>
-    <SimpleColumn name="Progress" />
-    <SimpleColumn name="Price" />
-    <SimpleColumn name="ContractPrice" />
-    <SimpleColumn name="Currency" />
-    <SimpleJoin joinType="LEFT" name="Currency">
-      <SimpleColumn name="Name" alias="CurrencyName" />
-    </SimpleJoin>
-    <SimpleColumn name="Description" />
+
     <SimpleColumn name="Overdue">
       <x:number>0</x:number>
     </SimpleColumn>
@@ -101,8 +58,7 @@
       {...}.fillProjectsTimeData(ViewQueryEvent event)
       -->
     </SimpleColumn> 
-    
-    <SimpleColumn name="Expenses" alias="OtherExpenses" label="=prjOtherExpenses" />
+
     <SimpleColumn name="Contract" />
     <SimpleJoin name="Contract" joinType="LEFT">
       <SimpleColumn name="Name" alias="ContractName"/>

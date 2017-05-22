@@ -6,6 +6,7 @@
   >
   <Columns>
     <SimpleColumn name="Name" />
+    <SimpleColumn name="Duration" />
   </Columns>
   <Order>
     <OrderBy column="Name" />

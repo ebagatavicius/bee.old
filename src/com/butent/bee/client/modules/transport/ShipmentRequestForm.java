@@ -71,7 +71,6 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.cache.CachingPolicy;
-import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.filter.CompoundFilter;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
@@ -90,7 +89,6 @@ import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.ui.UserInterface;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
-import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -222,7 +220,8 @@ class ShipmentRequestForm extends PrintFormInterceptor {
 
     Integer status = row.getInteger(form.getDataIndex(COL_QUERY_STATUS));
 
-    if (!isSelfService() && !ShipmentRequestStatus.LOST.is(status)) {
+    if (!isSelfService() && !ShipmentRequestStatus.LOST.is(status)
+        && !ShipmentRequestStatus.COMPLETED.is(status)) {
       header.addCommandItem(mailCommand);
 
       if (!ShipmentRequestStatus.CONFIRMED.is(status)) {
@@ -288,7 +287,8 @@ class ShipmentRequestForm extends PrintFormInterceptor {
 
       form.setEnabled(!ShipmentRequestStatus.LOST.is(status)
           && !ShipmentRequestStatus.CONFIRMED.is(status)
-          && (!isSelfService() || ShipmentRequestStatus.NEW.is(status)));
+          && (!isSelfService() || ShipmentRequestStatus.NEW.is(status))
+          && !ShipmentRequestStatus.COMPLETED.is(status));
     }
     styleRequiredField(NAME_VALUE_LABEL,
         row.getString(getDataIndex(COL_QUERY_FREIGHT_INSURANCE)) != null);
@@ -415,31 +415,21 @@ class ShipmentRequestForm extends PrintFormInterceptor {
       callback = new ReportUtils.ReportCallback() {
         @Override
         public void accept(FileInfo fileInfo) {
-          Queries.getRowSet(VIEW_TEXT_CONSTANTS, null,
-              Filter.equals(COL_TEXT_CONSTANT, TextConstant.CONTRACT_MAIL_CONTENT),
-              new Queries.RowSetCallback() {
-                @Override
-                public void onSuccess(BeeRowSet result) {
-                  String text;
-                  String localizedContent = Localized.column(COL_TEXT_CONTENT,
-                      EnumUtils.getEnumByIndex(SupportedLocale.class,
-                          getIntegerValue(COL_USER_LOCALE)).getLanguage());
+          ParameterList args = TransportHandler.createArgs(SVC_GET_TEXT_CONSTANT);
+          args.addDataItem(COL_TEXT_CONSTANT, TextConstant.CONTRACT_MAIL_CONTENT.ordinal());
+          args.addDataItem(COL_USER_LOCALE, getIntegerValue(COL_USER_LOCALE));
 
-                  if (DataUtils.isEmpty(result)) {
-                    text = TextConstant.CONTRACT_MAIL_CONTENT.getDefaultContent();
-                  } else if (BeeConst.isUndef(DataUtils.getColumnIndex(localizedContent,
-                      result.getColumns()))) {
-                    text = result.getString(0, COL_TEXT_CONTENT);
-                  } else {
-                    text = BeeUtils.notEmpty(result.getString(0, localizedContent),
-                        result.getString(0, COL_TEXT_CONTENT));
-                  }
-                  sendMail(ShipmentRequestStatus.CONTRACT_SENT, null, BeeUtils.isEmpty(text)
-                          ? null : text.replace("{CONTRACT_PATH}",
-                      "rest/transport/confirm/" + getActiveRowId()),
-                      Collections.singleton(fileInfo));
-                }
-              });
+          BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
+            @Override
+            public void onResponse(ResponseObject response) {
+              String text = (String) response.getResponse();
+              String path = "rest/transport/confirm/" + getActiveRowId();
+
+              sendMail(ShipmentRequestStatus.CONTRACT_SENT, null, BeeUtils.isEmpty(text)
+                  ? null : text.replace("[CONTRACT_PATH]", path)
+                  .replace("{CONTRACT_PATH}", path), Collections.singleton(fileInfo));
+            }
+          });
         }
 
         @Override
@@ -1141,7 +1131,7 @@ class ShipmentRequestForm extends PrintFormInterceptor {
               new RowInsertCallback(info.getViewName()) {
                 @Override
                 public void onSuccess(BeeRow result) {
-                  Data.onTableChange(info.getTableName(), DataChangeEvent.RESET_REFRESH);
+                  Data.refreshLocal(info.getTableName());
                   super.onSuccess(result);
                 }
               });

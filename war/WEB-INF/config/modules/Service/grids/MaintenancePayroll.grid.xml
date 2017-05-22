@@ -11,7 +11,8 @@
   flexGrow="1" flexShrink="1"
 >
   <g:columns>
-    <RelColumn name="ServiceMaintenance" renderColumns="ServiceMaintenance" choiceColumns="ID" visible="true" filterSupplier="value" filter="EndingDate"/>
+    <RelColumn name="ServiceMaintenance" renderColumns="ServiceMaintenance" choiceColumns="ID" visible="true" filterSupplier="value" filter="EndingDate"
+               editPopup="true" />
     <RelColumn name="Repairer" renderColumns="RepairerFirstName RepairerLastName" visible="true" />
     <DataColumn name="Date" visible="true" />
     <DataColumn name="PayrollDate" visible="true" required="true"/>
@@ -29,5 +30,6 @@
     <RelColumn name="ConfirmedUser" renderColumns="ConfirmedUserFirstName ConfirmedUserLastName" visible="true" readOnly="true"/>
     <DataColumn name="ConfirmationDate" format="DATE_TIME_SHORT" visible="true" readOnly="true"/>
     <DataColumn name="Notes" visible="true"  />
+    <DataColumn name="ItemName" readOnly="true" visible="true" label="=productService"/>
   </g:columns>
 </g:Grid>

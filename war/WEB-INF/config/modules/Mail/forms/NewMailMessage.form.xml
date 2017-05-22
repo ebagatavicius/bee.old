@@ -14,17 +14,17 @@
         <row>
           <Label text="=mailTo" />
           <MultiSelector name="To" viewName="UserEmails" choiceColumns="Label Email"
-                         valueSource="Email" maxLength="50" style="width:100%" />
+                         valueSource="Email" maxLength="255" style="width:100%" />
         </row>
         <row>
           <Label text="=mailCc" />
           <MultiSelector name="Cc" viewName="UserEmails" choiceColumns="Label Email"
-                         valueSource="Email" maxLength="50" style="width:100%" />
+                         valueSource="Email" maxLength="255" style="width:100%" />
         </row>
         <row>
           <Label text="=mailBcc" />
           <MultiSelector name="Bcc" viewName="UserEmails" choiceColumns="Label Email"
-                         valueSource="Email" maxLength="50" style="width:100%" />
+                         valueSource="Email" maxLength="255" style="width:100%" />
         </row>
       </Table>
 

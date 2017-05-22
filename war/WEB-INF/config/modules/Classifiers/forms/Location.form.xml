@@ -7,7 +7,7 @@
   xmlns:f="http://www.butent.com/form"
   xmlns:xi="http://www.w3.org/2001/XInclude"
 
-  name="Location" viewName="Locations" caption="=object"
+  name="Location" viewName="Locations" caption="=objectLocation"
   width="70" widthUnit="%" height="80" heightUnit="%" favorite="LocationName"
   >
   <FlowPanel class="flexBox-vertical">
@@ -70,6 +70,11 @@
       <page module="Payroll">
         <text>=payrollEarnings</text>
         <SummaryProxy name="Earnings" summarize="true" />
+      </page>
+
+      <page module="Documents">
+        <text>=documents</text>
+        <ChildGrid name="AllDocuments" relColumn="Location" summarize="true" />
       </page>
 
       <page>

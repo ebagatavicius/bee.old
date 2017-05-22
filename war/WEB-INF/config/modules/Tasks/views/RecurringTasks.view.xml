@@ -51,6 +51,13 @@
 
     <SimpleColumn name="CopyByMail" />
     <SimpleColumn name="PrivateTask" />
+
+    <SimpleColumn name="Product" />
+    <SimpleJoin name="Product" joinType="LEFT">
+      <SimpleColumn name="Name" alias="ProductName"/>
+      <SimpleColumn name="Background" alias="ProductBackground"/>
+      <SimpleColumn name="Foreground" alias="ProductForeground"/>
+    </SimpleJoin>
   </Columns>
 </View>
  

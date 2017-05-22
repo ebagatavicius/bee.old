@@ -14,8 +14,17 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.rights.Module;
 
 public abstract class ReservationItemsPicker extends ItemsPicker {
+
+  public ReservationItemsPicker() {
+    super();
+  }
+
+  public ReservationItemsPicker(Module module) {
+    super(module);
+  }
 
   @Override
   public void getItems(Filter filter, final RowSetCallback callback) {

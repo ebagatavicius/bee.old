@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+  
+  name="ServiceManufacturers" viewName="TcdManufacturers" caption="=manufacturers"
+  >
+  <g:columns>
+    <DataColumn name="ManufacturerName" minWidth="200" />
+    <DataColumn name="Visible" />
+  </g:columns>
+</g:Grid>

@@ -13,8 +13,6 @@ import com.butent.bee.client.dialog.DecisionCallback;
 import com.butent.bee.client.dialog.DialogConstants;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Selectors;
-import com.butent.bee.client.event.EventUtils;
-import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory;
@@ -49,7 +47,6 @@ public abstract class RightsForm extends AbstractFormInterceptor {
   protected static final String STYLE_SUFFIX_CELL = "-cell";
 
   private static final String STYLE_PANEL = STYLE_PREFIX + "panel";
-  private static final String STYLE_TABLE = STYLE_PREFIX + "table";
 
   private static final String STYLE_OBJECT_LABEL = STYLE_PREFIX + "object-label";
   private static final String STYLE_OBJECT_LABEL_CELL = STYLE_OBJECT_LABEL + STYLE_SUFFIX_CELL;
@@ -63,8 +60,6 @@ public abstract class RightsForm extends AbstractFormInterceptor {
   private static final String STYLE_VALUE_DISABLED = STYLE_PREFIX + "value-disabled";
 
   private static final String STYLE_FILTER_NOT_MATCHED = STYLE_PREFIX + "filter-not-matched";
-
-  private static final String STYLE_HOVER = STYLE_PREFIX + "hover";
 
   private static final String STYLE_OBJECT_LEVEL_PREFIX = STYLE_PREFIX + "object-level-";
   private static final String STYLE_OBJECT_HAS_CHILDREN = STYLE_PREFIX + "object-has-children";
@@ -112,22 +107,6 @@ public abstract class RightsForm extends AbstractFormInterceptor {
       elem.removeClassName(STYLE_VALUE_DISABLED);
     } else {
       elem.addClassName(STYLE_VALUE_DISABLED);
-    }
-  }
-
-  protected static ModuleAndSub getFirstVisibleModule(String input) {
-    if (BeeUtils.isEmpty(input)) {
-      return null;
-
-    } else {
-      List<ModuleAndSub> list = ModuleAndSub.parseList(input);
-
-      for (ModuleAndSub ms : list) {
-        if (BeeKeeper.getUser().isModuleVisible(ms)) {
-          return ms;
-        }
-      }
-      return null;
     }
   }
 
@@ -183,9 +162,7 @@ public abstract class RightsForm extends AbstractFormInterceptor {
 
   private final List<RightsObject> objects = new ArrayList<>();
 
-  private HtmlTable table;
-
-  private int hoverColumn = BeeConst.UNDEF;
+  private RightsTable table;
 
   @Override
   public boolean beforeAction(Action action, final Presenter presenter) {
@@ -221,7 +198,7 @@ public abstract class RightsForm extends AbstractFormInterceptor {
   }
 
   protected void addObjectToggle(int row, RightsObject object) {
-    table.setWidget(row, getValueStartCol() - 1, createObjectToggle(object.getName()),
+    table.setWidget(row, table.getValueStartCol() - 1, createObjectToggle(object.getName()),
         STYLE_OBJECT_TOGGLE_CELL);
   }
 
@@ -255,46 +232,22 @@ public abstract class RightsForm extends AbstractFormInterceptor {
     }
 
     if (table == null) {
-      this.table = new HtmlTable(STYLE_TABLE);
-
-      table.addMouseMoveHandler(event -> {
-        Element target = EventUtils.getTargetElement(event.getNativeEvent().getEventTarget());
-
-        for (Element el = target; el != null; el = el.getParentElement()) {
-          if (TableCellElement.is(el)) {
-            int col = ((TableCellElement) el.cast()).getCellIndex();
-
-            if (getHoverColumn() != col) {
-              onColumnHover(col);
-            }
-
-          } else if (table.getId().equals(el.getId())) {
-            break;
-          }
+      this.table = new RightsTable() {
+        @Override
+        public int getValueStartCol() {
+          return RightsForm.this.getValueStartCol();
         }
-      });
-
-      table.addMouseOutHandler(event -> onColumnHover(BeeConst.UNDEF));
-
+      };
     } else if (!table.isEmpty()) {
       table.clear();
     }
 
     populateTable();
-
     panel.add(table);
   }
 
   protected List<RightsObject> filterByModule(ModuleAndSub moduleAndSub) {
-    List<RightsObject> result = new ArrayList<>();
-
-    for (RightsObject object : objects) {
-      if (!object.hasParent() && Objects.equals(object.getModuleAndSub(), moduleAndSub)) {
-        result.add(object);
-      }
-    }
-
-    return result;
+    return RightsHelper.filterByModule(objects, moduleAndSub);
   }
 
   protected List<RightsObject> filterByParent(String parent) {
@@ -405,7 +358,7 @@ public abstract class RightsForm extends AbstractFormInterceptor {
 
   protected abstract String getPanelStyleName();
 
-  protected HtmlTable getTable() {
+  protected RightsTable getTable() {
     return table;
   }
 
@@ -586,10 +539,6 @@ public abstract class RightsForm extends AbstractFormInterceptor {
     return toggle;
   }
 
-  private int getHoverColumn() {
-    return hoverColumn;
-  }
-
   private Widget getObjectLabel(String objectName) {
     for (Widget widget : table) {
       if (DomUtils.dataEquals(widget.getElement(), DATA_KEY_TYPE, DATA_TYPE_OBJECT_LABEL)
@@ -600,24 +549,6 @@ public abstract class RightsForm extends AbstractFormInterceptor {
 
     logger.severe("object", objectName, "label not found");
     return null;
-  }
-
-  private void onColumnHover(int col) {
-    if (getHoverColumn() >= getValueStartCol()) {
-      List<TableCellElement> cells = table.getColumnCells(getHoverColumn());
-      for (TableCellElement cell : cells) {
-        cell.removeClassName(STYLE_HOVER);
-      }
-    }
-
-    setHoverColumn(col);
-
-    if (col >= getValueStartCol()) {
-      List<TableCellElement> cells = table.getColumnCells(col);
-      for (TableCellElement cell : cells) {
-        cell.addClassName(STYLE_HOVER);
-      }
-    }
   }
 
   private void setChildrenVisibility(String parent, boolean visible) {
@@ -645,9 +576,5 @@ public abstract class RightsForm extends AbstractFormInterceptor {
         }
       }
     }
-  }
-
-  private void setHoverColumn(int hoverColumn) {
-    this.hoverColumn = hoverColumn;
   }
 }

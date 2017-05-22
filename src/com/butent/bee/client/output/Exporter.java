@@ -2,6 +2,8 @@ package com.butent.bee.client.output;
 
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Timer;
@@ -20,9 +22,12 @@ import com.butent.bee.client.dialog.StringCallback;
 import com.butent.bee.client.grid.CellContext;
 import com.butent.bee.client.grid.ColumnFooter;
 import com.butent.bee.client.grid.ColumnHeader;
+import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.layout.Vertical;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.utils.Duration;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.view.grid.CellGrid;
@@ -54,6 +59,7 @@ import com.butent.bee.shared.export.XRow;
 import com.butent.bee.shared.export.XSheet;
 import com.butent.bee.shared.export.XStyle;
 import com.butent.bee.shared.export.XWorkbook;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.io.FileNameUtils;
@@ -61,14 +67,19 @@ import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
+import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import elemental.xml.XMLHttpRequest;
@@ -251,14 +262,19 @@ public final class Exporter {
 
   private static final int MAX_NUMBER_OF_ROWS_FOR_AUTOSIZE = 5_000;
 
-  public static void addCaption(XSheet sheet, String caption, int rowIndex, int columnCount) {
+  public static void addCaption(XSheet sheet, String caption, TextAlign textAlign,
+      int rowIndex, int columnCount) {
+
     Assert.notNull(sheet);
     Assert.notEmpty(caption);
 
     XFont font = XFont.bold();
     font.setFactor(CAPTION_HEIGHT_FACTOR);
 
-    XStyle style = XStyle.center();
+    XStyle style = new XStyle();
+    if (textAlign != null) {
+      style.setTextAlign(textAlign);
+    }
     style.setFontRef(sheet.registerFont(font));
 
     XCell cell = new XCell(0, caption, sheet.registerStyle(style));
@@ -427,7 +443,7 @@ public final class Exporter {
       }
       rowIndex++;
 
-      addCaption(sheet, caption, rowIndex++, columnCount);
+      addCaption(sheet, caption, TextAlign.CENTER, rowIndex++, columnCount);
     }
 
     Filter filter = presenter.getDataProvider().getUserFilter();
@@ -502,7 +518,7 @@ public final class Exporter {
       }
 
       if (proceed && grid.hasFooters()) {
-        row = createFooterRow(rowIndex++);
+        row = createFooterRow(rowIndex);
 
         style = XStyle.background(Colors.LIGHTGRAY);
         style.setFontRef(sheet.registerFont(XFont.bold()));
@@ -628,6 +644,134 @@ public final class Exporter {
       };
 
       runner.scheduleRepeating(60);
+    }
+  }
+
+  public static void export(String caption, List<String> headers, HtmlTable table,
+      Map<String, ValueType> types, Map<String, XStyle> styles,
+      Map<String, XFont> fonts, String fileName) {
+
+    Assert.notNull(table);
+    Assert.isTrue(validateFileName(fileName));
+
+    int rowCount = table.getRowCount();
+    int columnCount = table.getColumnCount();
+
+    if (rowCount <= 0 || columnCount <= 0) {
+      String message = Localized.dictionary().noData();
+      logger.warning(message);
+      BeeKeeper.getScreen().notifyWarning(message);
+      return;
+    }
+
+    XSheet sheet = new XSheet();
+
+    int rowIndex = 0;
+
+    XRow row;
+    XCell cell;
+    XFont font;
+    XStyle style;
+
+    Integer styleRef;
+
+    if (!BeeUtils.isEmpty(caption)) {
+      addCaption(sheet, caption, null, rowIndex, columnCount);
+      rowIndex += 2;
+    }
+
+    if (!BeeUtils.isEmpty(headers)) {
+      font = new XFont();
+      font.setFactor(PARENT_LABEL_HEIGHT_FACTOR);
+
+      style = XStyle.center();
+      style.setFontRef(sheet.registerFont(font));
+      styleRef = sheet.registerStyle(style);
+
+      for (String header : headers) {
+        cell = new XCell(0, header, styleRef);
+        if (columnCount > 1) {
+          cell.setColSpan(columnCount);
+        }
+
+        row = new XRow(rowIndex++);
+        row.setHeightFactor(PARENT_LABEL_HEIGHT_FACTOR);
+
+        row.add(cell);
+        sheet.add(row);
+      }
+
+      rowIndex++;
+    }
+
+    DateOrdering dateOrdering = Format.getDefaultDateOrdering();
+
+    ExportController controller = openController(fileName);
+    controller.setInputSize(rowCount);
+
+    boolean proceed = true;
+
+    for (int i = 0; i < rowCount; i++) {
+      row = new XRow(rowIndex++);
+
+      List<TableCellElement> cellElements = table.getRowCells(i);
+
+      int j = 0;
+      for (TableCellElement cellElement : cellElements) {
+        String text = cellElement.getInnerText();
+        int colSpan = cellElement.getColSpan();
+
+        if (!BeeUtils.isEmpty(text)) {
+          Collection<String> styleNames = getStyleNames(cellElement);
+
+          ValueType type = null;
+          if (!BeeUtils.isEmpty(types) && !styleNames.isEmpty()) {
+            for (String styleName : styleNames) {
+              type = types.get(styleName);
+              if (type != null) {
+                break;
+              }
+            }
+          }
+
+          if (type == null) {
+            type = ValueType.TEXT;
+          }
+
+          Value value = Value.parseValue(type, text, true, dateOrdering);
+          cell = new XCell(j, value);
+
+          if (colSpan > 1) {
+            cell.setColSpan(colSpan);
+          }
+
+          String bg = getBg(cellElement);
+          String fg = getFg(cellElement);
+
+          styleRef = getStyleRef(sheet, styleNames, bg, fg, styles, fonts);
+          if (styleRef != null) {
+            cell.setStyleRef(styleRef);
+          }
+
+          row.add(cell);
+        }
+
+        j += Math.max(colSpan, 1);
+      }
+
+      sheet.add(row);
+
+      controller.updateInput(i + 1);
+      proceed = controller.isShowing();
+
+      if (!proceed) {
+        break;
+      }
+    }
+
+    if (proceed) {
+      autosizeNoPictures(sheet, columnCount);
+      export(sheet, fileName, controller);
     }
   }
 
@@ -791,6 +935,32 @@ public final class Exporter {
     sheet.add(row);
   }
 
+  private static String getBg(TableCellElement cellElement) {
+    String bg = cellElement.getStyle().getBackgroundColor();
+
+    if (BeeUtils.isEmpty(bg)) {
+      Element childElement = cellElement.getFirstChildElement();
+      if (childElement != null) {
+        bg = childElement.getStyle().getBackgroundColor();
+      }
+    }
+
+    return BeeUtils.isEmpty(bg) ? null : Color.normalize(bg);
+  }
+
+  private static String getFg(TableCellElement cellElement) {
+    String fg = cellElement.getStyle().getColor();
+
+    if (BeeUtils.isEmpty(fg)) {
+      Element childElement = cellElement.getFirstChildElement();
+      if (childElement != null) {
+        fg = childElement.getStyle().getColor();
+      }
+    }
+
+    return BeeUtils.isEmpty(fg) ? null : Color.normalize(fg);
+  }
+
   private static int getInputStep(int rowCount) {
     int step = BeeUtils.positive(Settings.getExporterInputStepRows(), INPUT_STEP_SIZE);
     return Math.min(rowCount, step);
@@ -807,6 +977,78 @@ public final class Exporter {
       return height / 20d;
     } else {
       return null;
+    }
+  }
+
+  private static Collection<String> getStyleNames(TableCellElement cellElement) {
+    Set<String> styleNames = new HashSet<>(StyleUtils.getClassNames(cellElement));
+
+    Element childElement = cellElement.getFirstChildElement();
+    if (childElement != null) {
+      styleNames.addAll(StyleUtils.getClassNames(childElement));
+    }
+
+    return styleNames;
+  }
+
+  private static Integer getStyleRef(XSheet sheet, Collection<String> styleNames,
+      String bg, String fg, Map<String, XStyle> styles, Map<String, XFont> fonts) {
+
+    XStyle style = null;
+    XFont font = null;
+
+    if (!BeeUtils.isEmpty(styleNames)) {
+      if (!BeeUtils.isEmpty(styles)) {
+        Optional<String> os = styles.keySet().stream().filter(styleNames::contains).findFirst();
+        if (os.isPresent()) {
+          style = styles.get(os.get());
+        }
+      }
+
+      if (!BeeUtils.isEmpty(fonts)) {
+        Optional<String> os = fonts.keySet().stream().filter(styleNames::contains).findFirst();
+        if (os.isPresent()) {
+          font = fonts.get(os.get());
+        }
+      }
+    }
+
+    if (!BeeUtils.isEmpty(bg)) {
+      if (style == null) {
+        style = new XStyle();
+      } else {
+        style = style.copy();
+      }
+
+      style.setColor(bg);
+    }
+
+    if (!BeeUtils.isEmpty(fg)) {
+      if (font == null) {
+        font = new XFont();
+      } else {
+        font = font.copy();
+      }
+
+      font.setColor(fg);
+    }
+
+    if (font != null) {
+      int fontRef = sheet.registerFont(font);
+
+      if (style == null) {
+        style = new XStyle();
+      } else {
+        style = style.copy();
+      }
+
+      style.setFontRef(fontRef);
+    }
+
+    if (style == null) {
+      return null;
+    } else {
+      return sheet.registerStyle(style);
     }
   }
 

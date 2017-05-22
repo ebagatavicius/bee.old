@@ -67,13 +67,9 @@ import com.butent.bee.client.event.Previewer;
 import com.butent.bee.client.grid.GridFactory;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Collator;
-import com.butent.bee.shared.data.filter.Filter;
-import com.butent.bee.shared.data.view.Order;
-import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.i18n.LocaleUtils;
 import com.butent.bee.client.i18n.Money;
-import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.client.images.Flags;
 import com.butent.bee.client.images.Images;
 import com.butent.bee.client.js.Markdown;
@@ -156,14 +152,18 @@ import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.StringMatrix;
 import com.butent.bee.shared.data.TableColumn;
 import com.butent.bee.shared.data.UserData;
+import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.value.BooleanValue;
 import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.html.Attributes;
 import com.butent.bee.shared.html.Keywords;
 import com.butent.bee.shared.html.Tags;
 import com.butent.bee.shared.html.builder.elements.Input;
+import com.butent.bee.shared.i18n.DateTimeFormat;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.shared.i18n.SupportedLocale;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -1517,7 +1517,6 @@ public final class CliWorker {
           case SERVICE_MAINTENANCE_LIST:
           case SHIPPING_SCHEDULE:
           case TASK_LIST:
-          case TASK_REPORTS:
           case TRAILER_TIME_BOARD:
           case TRUCK_TIME_BOARD:
           case TRADE_ACT_LIST:

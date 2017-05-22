@@ -6,8 +6,13 @@
         order="Date"
 >
   <xi:include href="columns/FinancialRecordsMain.columns.xml" />
+  <xi:include href="columns/FinancialRecordsQuantity.columns.xml" />
 
   <xi:include href="columns/FinancialRecordsTradePayment.columns.xml" />
+
+  <g:columns>
+    <DataColumn name="PrepaymentParent" caption="=prepaymentParentShort" visible="false" />
+  </g:columns>
 
   <xi:include href="columns/Employee.columns.xml" />
   <xi:include href="../../Administration/grids/columns/ExtraDimensions.columns.xml" />

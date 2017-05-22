@@ -438,7 +438,7 @@ public class UserServiceBean {
 
   public SupportedLocale getSupportedLocale(Long userId) {
     if (userId == null) {
-      return SupportedLocale.USER_DEFAULT;
+      return SupportedLocale.getUserDefault();
     }
 
     SqlSelect query = new SqlSelect()
@@ -449,7 +449,7 @@ public class UserServiceBean {
     Integer value = qs.getInt(query);
     SupportedLocale locale = EnumUtils.getEnumByIndex(SupportedLocale.class, value);
 
-    return (locale == null) ? SupportedLocale.USER_DEFAULT : locale;
+    return (locale == null) ? SupportedLocale.getUserDefault() : locale;
   }
 
   public SupportedLocale getSupportedLocale(String user) {
@@ -495,7 +495,7 @@ public class UserServiceBean {
       }
     }
 
-    return (locale == null) ? SupportedLocale.USER_DEFAULT : locale;
+    return (locale == null) ? SupportedLocale.getUserDefault() : locale;
   }
 
   public String getUserEmail(Long userId, boolean checkCompany) {

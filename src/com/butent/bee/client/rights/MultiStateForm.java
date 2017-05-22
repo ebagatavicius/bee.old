@@ -3,7 +3,6 @@ package com.butent.bee.client.rights;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.gwt.dom.client.TableCellElement;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
@@ -19,13 +18,11 @@ import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.client.widget.Toggle;
-import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
-import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.ui.Relation;
@@ -55,63 +52,13 @@ abstract class MultiStateForm extends RightsForm {
   private static final String STYLE_ROLE_EMPTY = STYLE_PREFIX + "role-empty";
   private static final String STYLE_ROLE_NOT_EMPTY = STYLE_PREFIX + "role-not-empty";
 
-  private static final String STYLE_MODULE = STYLE_PREFIX + "module";
-  private static final String STYLE_SUB_MODULE = STYLE_PREFIX + "sub-module";
-  private static final String STYLE_MODULE_CELL = STYLE_MODULE + STYLE_SUFFIX_CELL;
-  private static final String STYLE_MODULE_SELECTED = STYLE_MODULE + "-selected";
-
   private static final String STYLE_MSO = STYLE_PREFIX + "mso";
-  private static final String STYLE_MSO_COL_PREFIX = STYLE_MSO + "-col-";
-  private static final String STYLE_MSO_CELL = STYLE_MSO + STYLE_SUFFIX_CELL;
-  private static final String STYLE_MSO_BRANCH = STYLE_MSO + "-branch";
-  private static final String STYLE_MSO_BRANCH_CELL = STYLE_MSO_BRANCH + STYLE_SUFFIX_CELL;
-  private static final String STYLE_MSO_LEAF = STYLE_MSO + "-leaf";
-  private static final String STYLE_MSO_LEAF_CELL = STYLE_MSO_LEAF + STYLE_SUFFIX_CELL;
   private static final String STYLE_MSO_SELECTED = STYLE_MSO + "-selected";
 
   private static final String DATA_KEY_STATE = "rights-state";
-  private static final String DATA_KEY_MODULE = "rights-module";
 
   private static final String DATA_TYPE_STATE_LABEL = "sl";
   private static final String DATA_TYPE_STATE_TOGGLE = "st";
-
-  private static final String DATA_TYPE_MODULE = "mod";
-
-  private static final int MODULE_COL = 0;
-
-  private static void addCellStyleName(Widget widget, String styleName) {
-    TableCellElement cell = DomUtils.getParentCell(widget, false);
-
-    if (cell == null) {
-      severe("parent cell not found");
-    } else {
-      cell.addClassName(styleName);
-    }
-  }
-
-  private static boolean cellHasStyleName(Widget widget, String styleName) {
-    TableCellElement cell = DomUtils.getParentCell(widget, false);
-
-    if (cell == null) {
-      severe("parent cell not found");
-      return false;
-    } else {
-      return cell.hasClassName(styleName);
-    }
-  }
-
-  private static ModuleAndSub getModule(Widget widget) {
-    String value = DomUtils.getDataProperty(widget.getElement(), DATA_KEY_MODULE);
-    if (Module.NEVER_MIND.equals(value)) {
-      return null;
-    } else {
-      ModuleAndSub ms = ModuleAndSub.parse(value);
-      if (ms == null) {
-        severe("Widget", DomUtils.getId(widget), "has no module");
-      }
-      return ms;
-    }
-  }
 
   private static RightsState getRightsState(Widget widget) {
     Integer value = DomUtils.getDataPropertyInt(widget.getElement(), DATA_KEY_STATE);
@@ -215,10 +162,6 @@ abstract class MultiStateForm extends RightsForm {
     }
   }
 
-  protected void addModuleWidget(int row, ModuleAndSub moduleAndSub) {
-    getTable().setWidget(row, MODULE_COL, createModuleWidget(moduleAndSub), STYLE_MODULE_CELL);
-  }
-
   @Override
   protected Set<String> getChangedNames() {
     return changes.keySet();
@@ -293,17 +236,14 @@ abstract class MultiStateForm extends RightsForm {
     int row = getValueStartRow();
 
     for (ModuleAndSub ms : modules) {
-      addModuleWidget(row, ms);
+      getTable().addModuleWidget(row, ms);
       row++;
     }
+    getTable().setModuleSelectionHandler(this::onSelectModule);
+    getTable().setRightObjectSelectionHandler(this::onSelectObject);
 
     ModuleAndSub ms = modules.get(0);
-    Widget widget = getTable().getWidget(getValueStartRow(), MODULE_COL);
-
-    if (widget != null) {
-      addCellStyleName(widget, STYLE_MODULE_SELECTED);
-      onSelectModule(ms);
-    }
+    getTable().setSelectedModule(ms);
 
     int col = getValueStartCol();
 
@@ -383,119 +323,6 @@ abstract class MultiStateForm extends RightsForm {
         updateValueCell(widget, isChanged);
       }
     }
-  }
-
-  private void clearTable(int startCol) {
-    int rc = getTable().getRowCount();
-    int maxRow = getValueStartRow();
-
-    for (int row = getValueStartRow(); row < rc; row++) {
-      int cc = getTable().getCellCount(row);
-
-      for (int col = 0; col < cc; col++) {
-        Widget widget = getTable().getWidget(row, col);
-
-        if (widget != null) {
-          if (col < startCol) {
-            maxRow = Math.max(maxRow, row);
-          } else {
-            getTable().getCellFormatter().setStyleName(row, col, BeeConst.STRING_EMPTY);
-            getTable().remove(widget);
-          }
-        }
-      }
-    }
-
-    if (maxRow < rc - 1) {
-      for (int i = maxRow + 1; i < rc; i++) {
-        getTable().removeRow(maxRow + 1);
-      }
-    }
-  }
-
-  private Widget createModuleWidget(ModuleAndSub moduleAndSub) {
-    String caption;
-
-    if (moduleAndSub == null) {
-      caption = Module.NEVER_MIND;
-    } else if (moduleAndSub.hasSubModule()) {
-      caption = moduleAndSub.getSubModule().getCaption();
-    } else {
-      caption = moduleAndSub.getModule().getCaption();
-    }
-
-    Label widget = new Label(caption);
-
-    String name;
-    if (moduleAndSub == null) {
-      widget.addStyleName(STYLE_MODULE);
-      name = Module.NEVER_MIND;
-    } else {
-      widget.addStyleName(moduleAndSub.hasSubModule() ? STYLE_SUB_MODULE : STYLE_MODULE);
-
-      name = moduleAndSub.getName();
-      widget.setTitle(name);
-    }
-
-    DomUtils.setDataProperty(widget.getElement(), DATA_KEY_MODULE, name);
-    setDataType(widget, DATA_TYPE_MODULE);
-
-    widget.addClickHandler(event -> {
-      if (event.getSource() instanceof Widget) {
-        Widget source = (Widget) event.getSource();
-        ModuleAndSub ms = getModule(source);
-
-        if (!cellHasStyleName(source, STYLE_MODULE_SELECTED)) {
-          TableCellElement cell = getSelectedModuleCell();
-          if (cell != null) {
-            cell.removeClassName(STYLE_MODULE_SELECTED);
-          }
-
-          addCellStyleName(source, STYLE_MODULE_SELECTED);
-
-          clearTable(MODULE_COL + 1);
-          onSelectModule(ms);
-        }
-      }
-    });
-
-    return widget;
-  }
-
-  private Widget createObjectWidget(final int col, RightsObject object) {
-    Label widget = new Label(object.getCaption());
-    widget.addStyleName(STYLE_MSO);
-
-    widget.addStyleName(STYLE_MSO_COL_PREFIX + col);
-    widget.addStyleName(isLeaf(col) ? STYLE_MSO_LEAF : STYLE_MSO_BRANCH);
-
-    String name = object.getName();
-    widget.setTitle(name);
-
-    markObjectLabel(widget, object);
-
-    if (!isLeaf(col)) {
-      widget.addClickHandler(event -> {
-        if (event.getSource() instanceof Widget) {
-          Widget source = (Widget) event.getSource();
-          String objectName = getObjectName(source);
-
-          if (!BeeUtils.isEmpty(objectName) && !cellHasStyleName(source, STYLE_MSO_SELECTED)) {
-            TableCellElement cell = getSelectedObjectCell(col);
-            if (cell != null) {
-              cell.removeClassName(STYLE_MSO_SELECTED);
-            }
-
-            addCellStyleName(source, STYLE_MSO_SELECTED);
-
-            clearTable(col + 1);
-            onSelectObject(col, objectName);
-          }
-        }
-      });
-    }
-
-    return widget;
   }
 
   private static Widget createStateLabel(RightsState state) {
@@ -686,31 +513,6 @@ abstract class MultiStateForm extends RightsForm {
     return roleName;
   }
 
-  private TableCellElement getSelectedModuleCell() {
-    for (int row = getValueStartRow(); row < getTable().getRowCount(); row++) {
-      TableCellElement cell = getTable().getCellFormatter().getElement(row, MODULE_COL);
-      if (cell.hasClassName(STYLE_MODULE_SELECTED)) {
-        return cell;
-      }
-    }
-
-    return null;
-  }
-
-  private TableCellElement getSelectedObjectCell(int col) {
-    for (int row = getValueStartRow(); row < getTable().getRowCount(); row++) {
-      if (col >= getTable().getCellCount(row)) {
-        break;
-      }
-
-      TableCellElement cell = getTable().getCellFormatter().getElement(row, col);
-      if (cell.hasClassName(STYLE_MSO_SELECTED)) {
-        return cell;
-      }
-    }
-    return null;
-  }
-
   private Toggle getStateToggle(RightsState state) {
     for (Widget widget : getTable()) {
       if (widget instanceof Toggle && isDataType(widget, DATA_TYPE_STATE_TOGGLE)
@@ -750,10 +552,6 @@ abstract class MultiStateForm extends RightsForm {
         != changes.containsEntry(objectName, state);
   }
 
-  private boolean isLeaf(int col) {
-    return col == getValueStartCol() - 2;
-  }
-
   private boolean isStateChecked(RightsState state) {
     Set<String> names = getLeaves().keySet();
     for (String name : names) {
@@ -765,7 +563,7 @@ abstract class MultiStateForm extends RightsForm {
   }
 
   private void onSelectModule(ModuleAndSub moduleAndSub) {
-    renderColumn(MODULE_COL + 1, filterByModule(moduleAndSub));
+    renderColumn(RightsTable.MODULE_COL + 1, filterByModule(moduleAndSub));
   }
 
   private void onSelectObject(int col, String objectName) {
@@ -828,14 +626,12 @@ abstract class MultiStateForm extends RightsForm {
   private void renderColumn(int col, List<RightsObject> columnObjects) {
     EnumSet<RightsState> checkedStates = EnumSet.copyOf(getRightsStates());
 
-    int row = getValueStartRow();
+    int row = getTable().getValueStartRow();
 
     for (RightsObject object : columnObjects) {
-      getTable().setWidget(row, col, createObjectWidget(col, object), STYLE_MSO_CELL);
-      getTable().getCellFormatter().addStyleName(row, col,
-          isLeaf(col) ? STYLE_MSO_LEAF_CELL : STYLE_MSO_BRANCH_CELL);
+      getTable().addRightObjectWidget(row, col, object);
 
-      if (isLeaf(col)) {
+      if (getTable().isLeaf(col)) {
         addObjectToggle(row, object);
 
         String objectName = object.getName();
@@ -860,7 +656,7 @@ abstract class MultiStateForm extends RightsForm {
       row++;
     }
 
-    if (isLeaf(col)) {
+    if (getTable().isLeaf(col)) {
       List<Toggle> stateToggles = getStateToggles();
 
       for (Toggle toggle : stateToggles) {
@@ -872,7 +668,7 @@ abstract class MultiStateForm extends RightsForm {
       Widget widget = getTable().getWidget(getValueStartRow(), col);
 
       if (widget != null) {
-        addCellStyleName(widget, STYLE_MSO_SELECTED);
+        getTable().addCellStyleName(widget, STYLE_MSO_SELECTED);
         onSelectObject(col, object.getName());
       }
     }

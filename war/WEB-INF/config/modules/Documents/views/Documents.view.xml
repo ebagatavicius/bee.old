@@ -18,6 +18,17 @@
       </SimpleJoin>
     </SimpleJoin>
 
+    <SimpleColumn name="Location" />
+    <SimpleJoin name="Location" joinType="LEFT">
+      <SimpleColumn name="LocationName" />
+      <SimpleJoin name="Company" joinType="LEFT">
+        <SimpleColumn name="Name" alias="LocationCompanyName" />
+        <SimpleJoin name="CompanyType" joinType="LEFT">
+          <SimpleColumn name="Name" alias="LocationCompanyTypeName" />
+        </SimpleJoin>
+      </SimpleJoin>
+    </SimpleJoin>
+
     <SimpleColumn name="DocumentDate" />
     <SimpleColumn name="Expires" />
 

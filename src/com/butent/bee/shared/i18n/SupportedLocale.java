@@ -14,7 +14,6 @@ import com.butent.bee.shared.utils.NameUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public enum SupportedLocale implements HasCaption {
   LT {
@@ -172,8 +171,13 @@ public enum SupportedLocale implements HasCaption {
   };
 
   public static final SupportedLocale DICTIONARY_DEFAULT = EN;
-  public static final SupportedLocale USER_DEFAULT = LT;
-  public static final List<String> ACTIVE_LOCALES = new ArrayList<>();
+
+  private static SupportedLocale userDefault = DICTIONARY_DEFAULT;
+  private static final List<String> activeLocales = new ArrayList<>();
+
+  public static List<String> getActiveLocales() {
+    return activeLocales;
+  }
 
   public static SupportedLocale getByLanguage(String language) {
     for (SupportedLocale locale : values()) {
@@ -184,12 +188,16 @@ public enum SupportedLocale implements HasCaption {
     return null;
   }
 
+  public static SupportedLocale getUserDefault() {
+    return userDefault;
+  }
+
   public static String normalizeLanguage(String language) {
     return parse(language).getLanguage();
   }
 
   public static SupportedLocale parse(String language) {
-    return BeeUtils.nvl(getByLanguage(language), USER_DEFAULT);
+    return BeeUtils.nvl(getByLanguage(language), getUserDefault());
   }
 
   public static List<SupportedLocale> parseList(String languages) {
@@ -203,6 +211,24 @@ public enum SupportedLocale implements HasCaption {
     }
 
     return result;
+  }
+
+  public static void setActiveLocales(List<String> languages) {
+    activeLocales.clear();
+    if (languages != null) {
+      activeLocales.addAll(languages);
+    }
+  }
+
+  public static boolean setUserDefault(String language) {
+    SupportedLocale locale = getByLanguage(language);
+
+    if (locale != null && getUserDefault() != locale) {
+      userDefault = locale;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public String getDictionaryCustomColumnName() {
@@ -224,7 +250,11 @@ public enum SupportedLocale implements HasCaption {
   public abstract DateTimeFormatInfo getDateTimeFormatInfo();
 
   public boolean isActive() {
-    return ACTIVE_LOCALES.isEmpty() || ACTIVE_LOCALES.stream()
-        .anyMatch(loc -> Objects.equals(this, USER_DEFAULT) || BeeUtils.same(loc, getLanguage()));
+    return isUserDefault() || activeLocales.isEmpty()
+        || activeLocales.stream().anyMatch(loc -> BeeUtils.same(loc, getLanguage()));
+  }
+
+  public boolean isUserDefault() {
+    return this == getUserDefault();
   }
 }

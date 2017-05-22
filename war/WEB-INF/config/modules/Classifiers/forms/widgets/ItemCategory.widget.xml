@@ -13,7 +13,7 @@
   </Table>
 
   <TabbedPages class="flexible" resizable="false">
-    <page module="Trade Orders" predicate="rowId > 0">
+    <page module="Trade Orders Service" predicate="rowId > 0">
       <text>=discounts</text>
       <ChildGrid name="CategoryDiscounts" relColumn="Category" />
     </page>

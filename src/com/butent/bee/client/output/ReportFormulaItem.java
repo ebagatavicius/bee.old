@@ -10,7 +10,10 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.data.SimpleRowSet;
+import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.report.ResultHolder;
+import com.butent.bee.shared.report.ResultValue;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -24,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ReportFormulaItem extends ReportNumericItem {
 
@@ -54,12 +58,12 @@ public class ReportFormulaItem extends ReportNumericItem {
   }
 
   @Override
-  public ReportValue evaluate(SimpleRowSet.SimpleRow row) {
-    return evaluate(item -> item.evaluate(row));
+  public ResultValue evaluate(SimpleRowSet.SimpleRow row, Dictionary dictionary) {
+    return evaluate(item -> item.evaluate(row, dictionary));
   }
 
   @Override
-  public ReportValue evaluate(ReportValue rowGroup, ReportValue[] rowValues, ReportValue colGroup,
+  public ResultValue evaluate(ResultValue rowGroup, ResultValue[] rowValues, ResultValue colGroup,
       ResultHolder resultHolder) {
     return evaluate(item -> item.evaluate(rowGroup, rowValues, colGroup, resultHolder));
   }
@@ -159,13 +163,12 @@ public class ReportFormulaItem extends ReportNumericItem {
   private ReportFormulaItem addItem(List<Pair<String, ReportItem>> list, String op,
       ReportItem item) {
     if (item != null) {
-      list.add(Pair.of(BeeUtils.notEmpty(op, BeeConst.STRING_PLUS),
-          ReportItem.restore(item.serialize())));
+      list.add(Pair.of(BeeUtils.notEmpty(op, BeeConst.STRING_PLUS), item.copy()));
     }
     return this;
   }
 
-  private ReportValue evaluate(Function<ReportItem, ReportValue> evaluator) {
+  private ResultValue evaluate(Function<ReportItem, ResultValue> evaluator) {
     List<BigDecimal> values = new ArrayList<>();
     BigDecimal previous = null;
 
@@ -190,7 +193,7 @@ public class ReportFormulaItem extends ReportNumericItem {
             break;
           case BeeConst.STRING_SLASH:
             if (BeeUtils.isZero(value.doubleValue())) {
-              return ReportValue.empty();
+              return ResultValue.empty();
             }
             previous = previous.divide(value, new MathContext(5));
             break;
@@ -206,34 +209,21 @@ public class ReportFormulaItem extends ReportNumericItem {
       result = result.add(value);
     }
     if (BeeUtils.isZero(result.doubleValue())) {
-      return ReportValue.empty();
+      return ResultValue.empty();
     }
-    return ReportValue.of(result.setScale(getPrecision(), RoundingMode.HALF_UP).toPlainString());
+    return ResultValue.of(result.setScale(getPrecision(), RoundingMode.HALF_UP).toPlainString());
   }
 
   private void render(Flow container, List<ReportItem> reportItems) {
     Runnable refresh = () -> render(container, reportItems);
     container.clear();
-    boolean hasResultItems = false;
+    boolean hasResultItems = temporaryExpression.stream().anyMatch(p -> p.getB().isResultItem());
 
-    for (Pair<String, ReportItem> pair : temporaryExpression) {
-      if (pair.getB().isResultItem()) {
-        hasResultItems = true;
-        break;
-      }
-    }
-    List<ReportItem> choiceItems = new ArrayList<>();
+    List<ReportItem> choiceItems = reportItems.stream()
+        .filter(item -> item instanceof ReportNumericItem || item instanceof ReportDateItem)
+        .filter(item -> temporaryExpression.isEmpty()
+            || Objects.equals(hasResultItems, item.isResultItem())).collect(Collectors.toList());
 
-    for (ReportItem item : reportItems) {
-      if (item instanceof ReportDateItem && !hasResultItems) {
-        choiceItems.add(item);
-      }
-      if (item instanceof ReportNumericItem) {
-        if (temporaryExpression.isEmpty() || Objects.equals(hasResultItems, item.isResultItem())) {
-          choiceItems.add(item);
-        }
-      }
-    }
     for (int i = 0; i < temporaryExpression.size(); i++) {
       Pair<String, ReportItem> pair = temporaryExpression.get(i);
 

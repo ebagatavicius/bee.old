@@ -162,7 +162,7 @@ class EcOrderForm extends AbstractFormInterceptor {
       Queries.deleteRows(VIEW_UNSUPPLIED_ITEMS, delete, new Queries.IntCallback() {
         @Override
         public void onSuccess(Integer result) {
-          DataChangeEvent.fireReset(BeeKeeper.getBus(), VIEW_UNSUPPLIED_ITEMS);
+          DataChangeEvent.fireReset(BeeKeeper.getBus(), VIEW_UNSUPPLIED_ITEMS, null);
         }
       });
     }

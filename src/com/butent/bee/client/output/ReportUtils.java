@@ -59,7 +59,7 @@ public final class ReportUtils {
   public static void getPdfReport(String report, Consumer<FileInfo> reportConsumer,
       Map<String, String> parameters, BeeRowSet... data) {
 
-    makeRequest(report, "pdf", Assert.notNull(reportConsumer), parameters, data);
+    makeRequest(report, Assert.notNull(reportConsumer), parameters, data);
   }
 
   public static void getReports(Report report, Consumer<List<ReportInfo>> consumer) {
@@ -125,12 +125,12 @@ public final class ReportUtils {
     getPdfReport(report, repInfo -> preview(repInfo, callback), parameters, data);
   }
 
-  private static void makeRequest(String report, String format, Consumer<FileInfo> responseConsumer,
+  private static void makeRequest(String report, Consumer<FileInfo> responseConsumer,
       Map<String, String> parameters, BeeRowSet... data) {
 
     ParameterList args = new ParameterList(GET_REPORT);
     args.addDataItem(VAR_REPORT, Assert.notEmpty(report));
-    args.addNotEmptyData(VAR_REPORT_FORMAT, format);
+    args.addNotEmptyData(VAR_REPORT_FORMAT, "pdf");
     args.addDataItem(VAR_REPORT_PARAMETERS, Codec.beeSerialize(parameters));
 
     if (!ArrayUtils.isEmpty(data)) {

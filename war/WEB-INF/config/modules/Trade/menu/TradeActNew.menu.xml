@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
-       name="TradeActNew" label="=tradeActNew" parent="TradeActs" order="10"
+       name="TradeActNew" label="=tradeActNew" parent="TradeActs" order="0"
        module="Trade.Acts">
 
   <Item name="TradeActNewSale" label="=taKindSale" service="trade_act_new" parameters="sale" />

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+           xmlns:ui="http://www.butent.com/ui">
+  <PropColumn name="PrepaymentUsed" type="decimal" label="=prepaymentUsed" scale="2">
+    <dynStyle>
+      <ui:class>bee-fin-prepayment-used</ui:class>
+      <ui:expression>row.PrepaymentUsed</ui:expression>
+    </dynStyle>
+  </PropColumn>
+
+  <CalcColumn name="PrepaymentBalance" type="decimal" caption="=prepaymentBalance" scale="2"
+              visible="true">
+    <style>
+      <bodyStyle>
+        <ui:font>larger bolder</ui:font>
+      </bodyStyle>
+    </style>
+    <render>
+      <ui:expression>row.Amount - (+row.PrepaymentUsed || 0)</ui:expression>
+    </render>
+  </CalcColumn>
+</g:columns>

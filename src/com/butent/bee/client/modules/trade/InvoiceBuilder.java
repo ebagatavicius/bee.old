@@ -29,7 +29,6 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
-import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.RowInfo;
@@ -104,7 +103,7 @@ public abstract class InvoiceBuilder extends AbstractGridInterceptor
                     if (popup != null) {
                       popup.close();
                     }
-                    Data.onViewChange(getViewName(), DataChangeEvent.RESET_REFRESH);
+                    Data.resetLocal(getViewName());
                     RowEditor.openForm(dataInfo.getEditForm(), dataInfo,
                         Filter.compareId(row.getId()), Opener.MODAL);
                   }

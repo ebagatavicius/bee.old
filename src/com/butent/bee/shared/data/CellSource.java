@@ -17,6 +17,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.function.Function;
 
 public final class CellSource implements HasPrecision, HasScale, HasValueType, BeeSerializable {
@@ -482,26 +483,43 @@ public final class CellSource implements HasPrecision, HasScale, HasValueType, B
     }
   }
 
-  public void set(IsRow row, String value) {
+  public boolean set(IsRow row, String value) {
     Assert.notNull(row);
+    boolean changed = false;
 
     switch (sourceType) {
       case COLUMN:
-        row.setValue(index, value);
+        if (!Objects.equals(row.getString(index), value)) {
+          row.setValue(index, value);
+          changed = true;
+        }
         break;
 
       case PROPERTY:
-        row.setProperty(name, userId, value);
+        if (!Objects.equals(row.getProperty(name, userId), value)) {
+          row.setProperty(name, userId, value);
+          changed = true;
+        }
         break;
 
       case ID:
-        row.setId(BeeUtils.toLong(value));
+        long id = BeeUtils.toLong(value);
+        if (!Objects.equals(row.getId(), id)) {
+          row.setId(id);
+          changed = true;
+        }
         break;
 
       case VERSION:
-        row.setVersion(BeeUtils.toLong(value));
+        long version = BeeUtils.toLong(value);
+        if (!Objects.equals(row.getVersion(), version)) {
+          row.setVersion(version);
+          changed = true;
+        }
         break;
     }
+
+    return changed;
   }
 
   public void setIsText(boolean isText) {

@@ -453,14 +453,19 @@ public class AnalysisBean {
               boolean needsBudget = budgetCursor != null;
 
               if (needsBudget && !response.hasErrors()) {
-                if (budgetExchange) {
+                boolean ratio = isRatio(indicator);
+
+                if (ratio) {
+                  budgetExchange = false;
+                } else if (budgetExchange) {
                   budgetExchange = qs.sqlExists(budgetCursor,
                       SqlUtils.notEqual(budgetCursor, COL_BUDGET_HEADER_CURRENCY, currency));
                 }
+
                 Long exchangeTo = budgetExchange ? currency : null;
 
                 results.mergeValues(computeBudgetValues(column.getId(), row.getId(),
-                    budgetCursor, budgetCondition, range, turnoverOrBalance,
+                    budgetCursor, budgetCondition, range, turnoverOrBalance, ratio,
                     columnSplitTypes, columnSplitValues, rowSplitTypes, rowSplitValues,
                     exchangeTo));
 
@@ -1445,6 +1450,15 @@ public class AnalysisBean {
     return (normalBalance == null) ? NormalBalance.DEFAULT : normalBalance;
   }
 
+  private boolean isRatio(long indicator) {
+    SqlSelect query = new SqlSelect()
+        .addFields(TBL_FINANCIAL_INDICATORS, COL_FIN_INDICATOR_RATIO)
+        .addFrom(TBL_FINANCIAL_INDICATORS)
+        .setWhere(sys.idEquals(TBL_FINANCIAL_INDICATORS, indicator));
+
+    return BeeUtils.isTrue(qs.getBoolean(query));
+  }
+
   private static Map<AnalysisSplitType, AnalysisSplitValue> getRootSplit() {
     return new EnumMap<>(AnalysisSplitType.class);
   }
@@ -1925,7 +1939,7 @@ public class AnalysisBean {
 
   private Collection<AnalysisValue> computeBudgetValues(long columnId, long rowId,
       String source, IsCondition condition, MonthRange range,
-      TurnoverOrBalance turnoverOrBalance,
+      TurnoverOrBalance turnoverOrBalance, boolean ratio,
       List<AnalysisSplitType> columnSplitTypes,
       Map<AnalysisSplitType, List<AnalysisSplitValue>> columnSplitValues,
       List<AnalysisSplitType> rowSplitTypes,
@@ -1939,22 +1953,22 @@ public class AnalysisBean {
 
     if (hasColumnSplits && hasRowSplits) {
       values.addAll(computeBudgetSplitMatrix(columnId, rowId, null,
-          source, condition, range, turnoverOrBalance,
+          source, condition, range, turnoverOrBalance, ratio,
           columnSplitTypes, 0, columnSplitValues, 0,
           rowSplitTypes, rowSplitValues, currency));
 
     } else if (hasColumnSplits) {
       values.addAll(computeBudgetSplitVector(columnId, rowId, true, null,
-          source, condition, range, turnoverOrBalance,
+          source, condition, range, turnoverOrBalance, ratio,
           columnSplitTypes, 0, columnSplitValues, 0, currency));
 
     } else if (hasRowSplits) {
       values.addAll(computeBudgetSplitVector(columnId, rowId, false, null,
-          source, condition, range, turnoverOrBalance,
+          source, condition, range, turnoverOrBalance, ratio,
           rowSplitTypes, 0, rowSplitValues, 0, currency));
 
     } else {
-      Double value = getBudgetValue(source, condition, range, turnoverOrBalance, currency);
+      Double value = getBudgetValue(source, condition, range, turnoverOrBalance, ratio, currency);
       if (BeeUtils.isDouble(value)) {
         values.add(AnalysisValue.budget(columnId, rowId, value));
       }
@@ -1966,7 +1980,7 @@ public class AnalysisBean {
   private Collection<AnalysisValue> computeBudgetSplitVector(long columnId, long rowId,
       boolean isColumn, Map<AnalysisSplitType, AnalysisSplitValue> parentSplit,
       String source, IsCondition condition, MonthRange range,
-      TurnoverOrBalance turnoverOrBalance,
+      TurnoverOrBalance turnoverOrBalance, boolean ratio,
       List<AnalysisSplitType> splitTypes, int typeIndex,
       Map<AnalysisSplitType, List<AnalysisSplitValue>> splitValues, int valueIndex,
       Long currency) {
@@ -1988,11 +2002,11 @@ public class AnalysisBean {
             buildSplit(parentSplit, splitType, splitValue);
 
         values.addAll(computeBudgetSplitVector(columnId, rowId, isColumn, split,
-            source, splitCondition, splitRange, turnoverOrBalance,
+            source, splitCondition, splitRange, turnoverOrBalance, ratio,
             splitTypes, typeIndex + 1, splitValues, 0, currency));
 
       } else {
-        Double value = getBudgetValue(source, splitCondition, splitRange, turnoverOrBalance,
+        Double value = getBudgetValue(source, splitCondition, splitRange, turnoverOrBalance, ratio,
             currency);
 
         if (BeeUtils.isDouble(value)) {
@@ -2010,7 +2024,7 @@ public class AnalysisBean {
 
       if (valueIndex < typeValues.size() - 1) {
         values.addAll(computeBudgetSplitVector(columnId, rowId, isColumn, parentSplit,
-            source, condition, range, turnoverOrBalance,
+            source, condition, range, turnoverOrBalance, ratio,
             splitTypes, typeIndex, splitValues, valueIndex + 1, currency));
       }
     }
@@ -2021,7 +2035,7 @@ public class AnalysisBean {
   private Collection<AnalysisValue> computeBudgetSplitMatrix(long columnId, long rowId,
       Map<AnalysisSplitType, AnalysisSplitValue> columnParentSplit,
       String source, IsCondition condition, MonthRange range,
-      TurnoverOrBalance turnoverOrBalance,
+      TurnoverOrBalance turnoverOrBalance, boolean ratio,
       List<AnalysisSplitType> columnSplitTypes, int columnTypeIndex,
       Map<AnalysisSplitType, List<AnalysisSplitValue>> columnSplitValues, int columnValueIndex,
       List<AnalysisSplitType> rowSplitTypes,
@@ -2044,14 +2058,14 @@ public class AnalysisBean {
             buildSplit(columnParentSplit, columnSplitType, columnSplitValue);
 
         values.addAll(computeBudgetSplitMatrix(columnId, rowId, columnSplit,
-            source, splitCondition, splitRange, turnoverOrBalance,
+            source, splitCondition, splitRange, turnoverOrBalance, ratio,
             columnSplitTypes, columnTypeIndex + 1, columnSplitValues, 0,
             rowSplitTypes, rowSplitValues, currency));
 
       } else {
         Collection<AnalysisValue> rowValues = computeBudgetSplitVector(columnId, rowId,
             false, getRootSplit(),
-            source, splitCondition, splitRange, turnoverOrBalance,
+            source, splitCondition, splitRange, turnoverOrBalance, ratio,
             rowSplitTypes, 0, rowSplitValues, 0, currency);
 
         if (!rowValues.isEmpty()) {
@@ -2064,7 +2078,7 @@ public class AnalysisBean {
 
       if (columnValueIndex < columnTypeValues.size() - 1) {
         values.addAll(computeBudgetSplitMatrix(columnId, rowId, columnParentSplit,
-            source, condition, range, turnoverOrBalance,
+            source, condition, range, turnoverOrBalance, ratio,
             columnSplitTypes, columnTypeIndex, columnSplitValues, columnValueIndex + 1,
             rowSplitTypes, rowSplitValues, currency));
       }
@@ -2102,11 +2116,11 @@ public class AnalysisBean {
   }
 
   private Double getBudgetValue(String source, IsCondition condition, MonthRange range,
-      TurnoverOrBalance turnoverOrBalance, Long currency) {
+      TurnoverOrBalance turnoverOrBalance, boolean ratio, Long currency) {
 
-    Double result = null;
+    Double aggregate = null;
     if (range == null) {
-      return result;
+      return aggregate;
     }
 
     String yearColumn = COL_BUDGET_ENTRY_YEAR;
@@ -2122,14 +2136,18 @@ public class AnalysisBean {
 
     SimpleRowSet data = qs.getData(query);
     if (DataUtils.isEmpty(data)) {
-      return result;
+      return aggregate;
     }
+
+    int count = 0;
+    int maxEntryScale = 0;
 
     for (SimpleRow row : data) {
       int year = row.getInt(yearColumn);
 
       for (int month = 1; month <= 12; month++) {
-        Double value = row.getDouble(colBudgetEntryValue(month));
+        String column = colBudgetEntryValue(month);
+        Double value = row.getDouble(column);
 
         if (BeeUtils.isDouble(value)) {
           YearMonth ym = new YearMonth(year, month);
@@ -2152,17 +2170,28 @@ public class AnalysisBean {
               }
             }
 
-            if (result == null) {
-              result = value;
+            if (aggregate == null) {
+              aggregate = value;
             } else {
-              result += value;
+              aggregate += value;
+            }
+
+            count++;
+
+            if (ratio) {
+              maxEntryScale = Math.max(maxEntryScale, BeeUtils.getDecimals(row.getValue(column)));
             }
           }
         }
       }
     }
 
-    return result;
+    if (ratio && count > 1 && BeeUtils.nonZero(aggregate)) {
+      aggregate /= count;
+      aggregate = BeeUtils.round(aggregate, AnalysisUtils.getRatioScale(aggregate, maxEntryScale));
+    }
+
+    return aggregate;
   }
 
   private Collection<YearMonth> getBudgetMonths(String source, IsCondition condition,

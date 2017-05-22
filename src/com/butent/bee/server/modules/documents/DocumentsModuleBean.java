@@ -1,15 +1,12 @@
 package com.butent.bee.server.modules.documents;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 import static com.butent.bee.shared.html.builder.Factory.*;
-import static com.butent.bee.shared.html.builder.Factory.td;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.TIMER_REMIND_DOCUMENT_END;
 import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
-import static com.butent.bee.shared.modules.documents.DocumentConstants.COL_CATEGORY_NAME;
 
 import com.butent.bee.server.Invocation;
 import com.butent.bee.server.communication.ChatBean;
@@ -33,7 +30,6 @@ import com.butent.bee.server.news.UsageQueryProvider;
 import com.butent.bee.server.sql.HasConditions;
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.IsExpression;
-import com.butent.bee.server.sql.IsFrom;
 import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUtils;
@@ -192,48 +188,6 @@ public class DocumentsModuleBean extends TimerBuilder implements BeeModule {
   @Override
   public void init() {
     sys.registerDataEventHandler(new DataEventHandler() {
-      @Subscribe
-      @AllowConcurrentEvents
-      public void applyDocumentRights(ViewQueryEvent event) {
-        if (event.isTarget(TBL_DOCUMENTS, VIEW_RELATED_DOCUMENTS) && !usr.isAdministrator()) {
-          if (event.isBefore()) {
-            SqlSelect query = event.getQuery();
-            String tableAlias = null;
-
-            for (IsFrom from : query.getFrom()) {
-              if (from.getSource() instanceof String
-                  && BeeUtils.same((String) from.getSource(), TBL_DOCUMENT_TREE)) {
-                tableAlias = BeeUtils.notEmpty(from.getAlias(), TBL_DOCUMENT_TREE);
-                break;
-              }
-            }
-            if (!BeeUtils.isEmpty(tableAlias)) {
-              sys.filterVisibleState(query, TBL_DOCUMENT_TREE, tableAlias);
-            }
-          } else {
-            BeeRowSet rs = event.getRowset();
-            int categoryIdx = rs.getColumnIndex(COL_DOCUMENT_CATEGORY);
-            List<Long> categories = new ArrayList<>();
-
-            if (BeeUtils.isNonNegative(categoryIdx)) {
-              for (Long category : rs.getDistinctLongs(categoryIdx)) {
-                categories.add(category);
-              }
-            }
-            if (!BeeUtils.isEmpty(categories)) {
-              BeeRowSet catRs = qs.getViewData(TBL_DOCUMENT_TREE, Filter.idIn(categories), null,
-                  Lists.newArrayList(COL_DOCUMENT_CATEGORY + COL_CATEGORY_NAME));
-
-              for (BeeRow row : rs) {
-                IsRow catRow = catRs.getRowById(row.getLong(categoryIdx));
-                row.setEditable(catRow.isEditable());
-                row.setRemovable(catRow.isRemovable());
-              }
-            }
-          }
-        }
-      }
-
       @Subscribe
       @AllowConcurrentEvents
       public void fillDocumentNumber(ViewInsertEvent event) {
@@ -475,7 +429,7 @@ public class DocumentsModuleBean extends TimerBuilder implements BeeModule {
               .addFromInner(TBL_DOCUMENT_TREE,
                   sysBean.joinTables(TBL_DOCUMENT_TREE, TBL_DOCUMENTS, COL_DOCUMENT_CATEGORY));
 
-          sysBean.filterVisibleState(query, TBL_DOCUMENT_TREE);
+          sysBean.filterVisibleState(query, TBL_DOCUMENT_TREE, null);
         }
         return query;
       }
@@ -506,12 +460,12 @@ public class DocumentsModuleBean extends TimerBuilder implements BeeModule {
       String docIdColumn = sys.getIdName(TBL_DOCUMENTS);
 
       SimpleRowSet data = qs.getData(new SqlSelect()
-      .addFields(TBL_DOCUMENTS, sys.getIdName(TBL_DOCUMENTS), COL_DOCUMENT_EXPIRES)
-      .addFrom(TBL_DOCUMENTS)
-      .setWhere(SqlUtils.and(wh,
-          SqlUtils.notNull(TBL_DOCUMENTS, COL_DOCUMENT_EXPIRES),
-          SqlUtils.moreEqual(TBL_DOCUMENTS,
-              COL_DOCUMENT_EXPIRES, TimeUtils.today(DOCUMENT_EXPIRATION_MIN_DAYS)))));
+          .addFields(TBL_DOCUMENTS, sys.getIdName(TBL_DOCUMENTS), COL_DOCUMENT_EXPIRES)
+          .addFrom(TBL_DOCUMENTS)
+          .setWhere(SqlUtils.and(wh,
+              SqlUtils.notNull(TBL_DOCUMENTS, COL_DOCUMENT_EXPIRES),
+              SqlUtils.moreEqual(TBL_DOCUMENTS,
+                  COL_DOCUMENT_EXPIRES, TimeUtils.today(DOCUMENT_EXPIRATION_MIN_DAYS)))));
 
       for (SimpleRowSet.SimpleRow row : data) {
         Long timerId = row.getLong(docIdColumn);
@@ -519,8 +473,8 @@ public class DocumentsModuleBean extends TimerBuilder implements BeeModule {
         DateTime expDate = TimeUtils.toDateTimeOrNull(row.getValue(COL_DOCUMENT_EXPIRES));
         DateTime timerTime;
 
-        if (TimeUtils.isMeq(
-                        TimeUtils.goMonth(expDate, -1), new DateTime(System.currentTimeMillis()))) {
+        if (TimeUtils.isMeq(TimeUtils.goMonth(expDate, -1),
+            new DateTime(System.currentTimeMillis()))) {
           timerTime = TimeUtils.goMonth(expDate, -1);
 
         } else {
@@ -550,10 +504,10 @@ public class DocumentsModuleBean extends TimerBuilder implements BeeModule {
 
   @Override
   protected Pair<IsCondition, List<String>> getConditionAndTimerIdForUpdate(String timerIdentifier,
-                                                                String viewName, Long relationId) {
+      String viewName, Long relationId) {
     if (BeeUtils.same(timerIdentifier, TIMER_REMIND_DOCUMENT_END)
         && BeeUtils.same(viewName, TBL_DOCUMENTS)) {
-      IsCondition wh = SqlUtils.equals(TBL_DOCUMENTS,  sys.getIdName(TBL_DOCUMENTS), relationId);
+      IsCondition wh = SqlUtils.equals(TBL_DOCUMENTS, sys.getIdName(TBL_DOCUMENTS), relationId);
       List<String> timerIdentifiersIds = new ArrayList<>();
       timerIdentifiersIds.add(timerIdentifier + relationId);
       return Pair.of(wh, timerIdentifiersIds);

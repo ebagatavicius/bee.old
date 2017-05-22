@@ -22,7 +22,6 @@ import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
-import com.butent.bee.shared.data.event.DataChangeEvent.Effect;
 import com.butent.bee.shared.data.event.RowInsertEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
@@ -30,7 +29,6 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -117,7 +115,7 @@ final class TripSelector implements EditStopEvent.Handler, ClickHandler {
               holder.set(holder.get() + 1);
 
               if (Objects.equals(holder.get(), cargos.length)) {
-                Data.onTableChange(TBL_CARGO_TRIPS, EnumSet.of(Effect.REFRESH));
+                Data.refreshLocal(TBL_CARGO_TRIPS);
               }
             }
           });

@@ -12,7 +12,7 @@ public class ModalForm extends ModalView {
   private boolean pendingUnload;
 
   public ModalForm(Presenter presenter, HasDimensions dimensions, boolean requiresUnload) {
-    super(presenter, BeeConst.CSS_CLASS_PREFIX + "ModalForm", dimensions);
+    super(presenter, BeeConst.CSS_CLASS_PREFIX + "ModalForm", dimensions, true);
     this.requiresUnload = requiresUnload;
   }
 

@@ -464,6 +464,7 @@ public final class AdministrationConstants {
   public static final String FORM_IMPORT_MAPPINGS = "ImportOptionMappings";
   public static final String FORM_IMPORT_OPTION = "ImportOption";
 
+  public static final String FORM_DEPENDENCY_RIGHTS = "DependencyRights";
   public static final String FORM_STAGES = "StageEditor";
 
   public static final String PRM_SQL_MESSAGES = "SQLMessages";
@@ -478,6 +479,8 @@ public final class AdministrationConstants {
   public static final String PRM_ERP_ADDRESS = "ERPAddress";
   public static final String PRM_ERP_LOGIN = "ERPLogin";
   public static final String PRM_ERP_PASSWORD = "ERPPassword";
+
+  public static final String PRM_RECORD_DEPENDENCY = "RecordDependency";
 
   public static final String PRM_WS_LB_EXCHANGE_RATES_ADDRESS = "WSLBExchangeRates";
 

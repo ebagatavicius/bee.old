@@ -21,7 +21,7 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.Queries.IntCallback;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.event.logical.SelectorEvent.Handler;
-import com.butent.bee.client.modules.mail.Relations;
+import com.butent.bee.client.composite.Relations;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;

@@ -1,8 +1,6 @@
 package com.butent.bee.client.modules.tasks;
 
-import com.google.common.collect.Lists;
-
-import static com.butent.bee.client.modules.mail.Relations.*;
+import static com.butent.bee.client.composite.Relations.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -20,21 +18,17 @@ import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowDeleteEvent;
 import com.butent.bee.shared.data.view.DataInfo;
-import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.service.ServiceConstants;
 import com.butent.bee.shared.modules.tasks.TaskType;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
-
-import java.util.List;
 
 class RelatedTasksGrid extends TasksGrid {
 
@@ -55,41 +49,37 @@ class RelatedTasksGrid extends TasksGrid {
 
       BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
       RowActionEvent.fireCreateRow(VIEW_TASKS, row, presenter.getMainView().getId());
+      FormView parentForm = ViewHelper.getForm(presenter.getMainView());
 
-      String relViewName = presenter.getGridView().getViewName();
+      if (parentForm != null) {
+        String relViewName = parentForm.getViewName();
+        String relColumn = presenter.getGridView().getRelColumn();
 
-      if (!BeeUtils.isEmpty(relViewName) && BeeUtils.isEmpty(row.getProperty(PFX_RELATED
-        + relViewName))) {
-        row.setProperty(PFX_RELATED + relViewName, DataUtils.buildIdList(relId));
-      }
+        if (!BeeUtils.isEmpty(relViewName) && BeeUtils.isEmpty(row.getProperty(PFX_RELATED
+            + relViewName))) {
+          row.setProperty(PFX_RELATED + relViewName, DataUtils.buildIdList(relId));
+        }
 
-      RowFactory.createRow(dataInfo, row, Modality.ENABLED, new RowCallback() {
-        @Override
-        public void onSuccess(BeeRow result) {
-          if (BeeUtils.same(relViewName, ServiceConstants.COL_SERVICE_MAINTENANCE)
-              && presenter.getMainView() != null) {
-            FormView parentForm = ViewHelper.getForm(presenter.getMainView());
+        if (BeeUtils.same(relColumn, ServiceConstants.COL_SERVICE_MAINTENANCE)
+            && presenter.getMainView() != null) {
+          if (parentForm != null && parentForm.getActiveRow() != null) {
+            int objectColumnIndex = Data.getColumnIndex(parentForm.getViewName(),
+                ServiceConstants.COL_SERVICE_OBJECT);
+            Long objectId = parentForm.getActiveRow().getLong(objectColumnIndex);
 
-            if (parentForm != null && parentForm.getActiveRow() != null) {
-              int objectColumnIndex = Data.getColumnIndex(parentForm.getViewName(),
-                  ServiceConstants.COL_SERVICE_OBJECT);
-              Long objectId = parentForm.getActiveRow().getLong(objectColumnIndex);
-
-              if (DataUtils.isId(objectId)) {
-                List<BeeColumn> columns =
-                    Data.getColumns(AdministrationConstants.VIEW_RELATIONS,
-                        Lists.newArrayList(ServiceConstants.COL_SERVICE_OBJECT,
-                            COL_TASK));
-                List<String> value = Lists.newArrayList(BeeUtils.toString(objectId),
-                    BeeUtils.toString(result.getId()));
-
-                Queries.insert(AdministrationConstants.VIEW_RELATIONS, columns, value);
-              }
+            if (DataUtils.isId(objectId)) {
+              row.setProperty(PFX_RELATED + ServiceConstants.TBL_SERVICE_OBJECTS,
+                  DataUtils.buildIdList(objectId));
             }
           }
-          presenter.handleAction(Action.REFRESH);
         }
-      });
+        RowFactory.createRow(dataInfo, row, Modality.ENABLED, new RowCallback() {
+          @Override
+          public void onSuccess(BeeRow result) {
+            presenter.handleAction(Action.REFRESH);
+          }
+        });
+      }
     });
 
     return false;

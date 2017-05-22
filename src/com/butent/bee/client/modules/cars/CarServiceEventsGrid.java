@@ -20,7 +20,7 @@ import java.util.Objects;
 
 public class CarServiceEventsGrid extends AbstractGridInterceptor {
   @Override
-  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
+  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow, boolean copy) {
     FormView parentForm = ViewHelper.getForm(getGridView());
 
     if (Objects.nonNull(parentForm)) {
@@ -34,7 +34,7 @@ public class CarServiceEventsGrid extends AbstractGridInterceptor {
           COL_COMPANY_PERSON, COL_CAR, COL_CAR).forEach((s, t) ->
           RelationUtils.copyWithDescendants(sourceInfo, s, row, targetInfo, t, newRow));
     }
-    return super.onStartNewRow(gridView, oldRow, newRow);
+    return super.onStartNewRow(gridView, oldRow, newRow, copy);
   }
 
   @Override

@@ -6,5 +6,6 @@
   >
   <Fields>
     <String name="Name" precision="200" notNull="true" label="=type" />
+    <Integer name="Duration" label="=svcWarrantyDuration"/>
   </Fields>
 </Table>

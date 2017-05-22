@@ -6,6 +6,7 @@ import static com.butent.bee.shared.modules.administration.AdministrationConstan
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 
 import com.butent.bee.client.composite.DataSelector;
+import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.ChildGrid;
@@ -15,13 +16,23 @@ import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.grid.interceptor.UniqueChildInterceptor;
+import com.butent.bee.shared.data.BeeRow;
+import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.utils.BeeUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 class DepartmentForm extends AbstractFormInterceptor implements SelectorEvent.Handler {
 
@@ -86,6 +97,48 @@ class DepartmentForm extends AbstractFormInterceptor implements SelectorEvent.Ha
       if (DomUtils.idEquals(selector, parentSelectorId)) {
         if (DataUtils.isId(rowId)) {
           selector.getOracle().setExclusions(Collections.singleton(rowId));
+          Queries.getRowSet(VIEW_DEPARTMENTS, Collections.singletonList(COL_DEPARTMENT_PARENT),
+              Filter.compareId(Operator.NE, BeeUtils.toString(rowId)),
+              new Queries.RowSetCallback() {
+                @Override
+                public void onSuccess(BeeRowSet result) {
+                    if (result.getNumberOfRows() > 0) {
+                      Map<Long, Long> parents = new HashMap<>();
+
+                      for (BeeRow row : result) {
+                        Long id = row.getId();
+                        Long parent = row.getLong(0);
+
+                        if (DataUtils.isId(parent) && !Objects.equals(id, parent)) {
+                          parents.put(id, parent);
+                        }
+                      }
+
+                      Set<Long> exclusions = new HashSet<>();
+                      exclusions.add(rowId);
+
+                      for (BeeRow row : result) {
+                        if (parents.containsKey(row.getId())) {
+                          List<Long> branch = new ArrayList<>();
+                          branch.add(row.getId());
+
+                          Long parent = parents.get(row.getId());
+                          while (parent != null && !branch.contains(parent)) {
+                            branch.add(parent);
+                            parent = parents.get(parent);
+                          }
+
+                          if (branch.contains(rowId)) {
+                            exclusions.add(row.getId());
+                          }
+                        }
+                      }
+
+                      selector.getOracle().setExclusions(exclusions);
+                    }
+                }
+              });
+
         } else {
           selector.getOracle().clearExclusions();
         }

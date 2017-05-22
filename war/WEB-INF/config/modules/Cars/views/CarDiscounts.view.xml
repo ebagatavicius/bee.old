@@ -18,12 +18,6 @@
 
       <SimpleColumn name="ProducedFrom" />
       <SimpleColumn name="ProducedTo" />
-
-      <SimpleColumn name="Job" />
-      <SimpleJoin joinType="LEFT" name="Job">
-        <SimpleColumn name="JobName" />
-        <SimpleColumn name="Code" />
-      </SimpleJoin>
     </SimpleJoin>
   </Columns>
 </View>

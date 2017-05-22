@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-      name="CarBundleItems" source="CarBundleItems"
-      caption="=productsServices+(+=bundle+)"
+      name="CarBundleItems" source="CarBundleItems" caption="=productsServices+(+=bundle+)"
 >
   <Columns>
     <SimpleColumn name="Bundle" />
@@ -16,7 +15,13 @@
       <SimpleJoin joinType="LEFT" name="Unit">
         <SimpleColumn name="Name" alias="UnitName" />
       </SimpleJoin>
+
+      <ExternalJoin name="Item" joinType="LEFT" source="CarJobs">
+        <IdColumn name="Job" hidden="true" />
+      </ExternalJoin>
     </SimpleJoin>
+
+    <SimpleColumn name="Duration" />
 
     <SimpleColumn name="Quantity" />
     <SimpleColumn name="Price" />

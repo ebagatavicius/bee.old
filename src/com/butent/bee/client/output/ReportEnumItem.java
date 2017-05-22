@@ -9,7 +9,9 @@ import com.butent.bee.client.widget.ListBox;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
+import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.report.ResultValue;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.ArrayUtils;
@@ -71,10 +73,10 @@ public class ReportEnumItem extends ReportItem implements ClickHandler {
   }
 
   @Override
-  public ReportValue evaluate(SimpleRow row) {
+  public ResultValue evaluate(SimpleRow row, Dictionary dictionary) {
     Integer value = row.getInt(getExpression());
-    return value == null ? ReportValue.empty()
-        : ReportValue.of(TimeUtils.padTwo(value)).setDisplay(EnumUtils.getCaption(enumKey, value));
+    return value == null ? ResultValue.empty() : ResultValue.of(TimeUtils.padTwo(value))
+        .setDisplay(EnumUtils.getLocalizedCaption(enumKey, value, dictionary));
   }
 
   @Override

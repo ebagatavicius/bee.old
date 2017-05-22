@@ -7,7 +7,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.Window.ClosingHandler;
 
-import static com.butent.bee.shared.Service.PROPERTY_ACTIVE_LOCALES;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 
 import com.butent.bee.client.animation.RafCallback;
@@ -51,7 +50,6 @@ import com.butent.bee.shared.utils.Property;
 import com.butent.bee.shared.utils.PropertyUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -66,6 +64,9 @@ public class Bee implements EntryPoint, ClosingHandler {
   public static void exit() {
     setState(State.UNLOADING);
 
+    if (Endpoint.isOpen()) {
+      BeeKeeper.getStorage().remove(getLastWorkspaceKey());
+    }
     final String workspace = BeeKeeper.getScreen().serialize();
 
     ClientLogManager.close();
@@ -109,12 +110,20 @@ public class Bee implements EntryPoint, ClosingHandler {
     return !(getState() == State.UNLOADING || getState() == State.CLOSED);
   }
 
+  public static void saveWorkspace() {
+    if (BeeKeeper.getUser().workspaceContinue() && getState() == State.INITIALIZED) {
+      BeeKeeper.getStorage().set(getLastWorkspaceKey(), BeeKeeper.getScreen().serialize());
+    }
+  }
+
   private static void initWorkspace() {
     List<String> spaces = new ArrayList<>();
     JSONObject onStartup = Settings.getOnStartup();
 
     if (BeeKeeper.getUser().workspaceContinue()) {
-      String workspace = BeeKeeper.getUser().getLastWorkspace();
+      String workspace = BeeKeeper.getStorage().hasItem(getLastWorkspaceKey())
+          ? BeeKeeper.getStorage().get(getLastWorkspaceKey())
+          : BeeKeeper.getUser().getLastWorkspace();
 
       if (!BeeUtils.isEmpty(workspace) && !BeeConst.EMPTY.equals(workspace)) {
         if (Workspace.isForced(onStartup)) {
@@ -176,10 +185,12 @@ public class Bee implements EntryPoint, ClosingHandler {
           RightsUtils.setViewModules(Codec.deserializeHashMap(value));
           break;
 
-        case PROPERTY_ACTIVE_LOCALES:
-          SupportedLocale.ACTIVE_LOCALES.clear();
-          SupportedLocale.ACTIVE_LOCALES
-              .addAll(Arrays.asList(Codec.beeDeserializeCollection(value)));
+        case Service.PROPERTY_DEFAULT_LOCALE:
+          SupportedLocale.setUserDefault(value);
+          break;
+
+        case Service.PROPERTY_ACTIVE_LOCALES:
+          SupportedLocale.setActiveLocales(Codec.deserializeList(value));
           break;
 
         case PRM_CURRENCY:
@@ -382,6 +393,10 @@ public class Bee implements EntryPoint, ClosingHandler {
   @Override
   public void onWindowClosing(ClosingEvent event) {
     event.setMessage("Don't leave me this way");
+  }
+
+  private static String getLastWorkspaceKey() {
+    return Storage.getUserKey(COL_LAST_WORKSPACE, null);
   }
 
   private void onLogin() {

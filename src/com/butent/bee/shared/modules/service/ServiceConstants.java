@@ -23,8 +23,10 @@ public final class ServiceConstants {
     public static final ServiceCompanyKind DETAULT = CUSTOMER;
   }
 
+  public static final String PRM_CLIENT_CHANGING_SETTING = "ClientChangingSetting";
   public static final String PRM_DEFAULT_MAINTENANCE_TYPE = "DefaultMaintenanceType";
   public static final String PRM_DEFAULT_WARRANTY_TYPE = "DefaultWarrantyType";
+  public static final String PRM_FILTER_ALL_DEVICES = "FilterAllDevices";
   public static final String PRM_URGENT_RATE = "UrgentRate";
   public static final String PRM_SERVICE_MANAGER_WAREHOUSE = "ServiceManagerWarehouse";
   public static final String PRM_SMS_REQUEST_SERVICE_ADDRESS = "SmsRequestServiceAddress";
@@ -106,6 +108,7 @@ public final class ServiceConstants {
   public static final String COL_MAINTENANCE_STATE = "MaintenanceState";
   public static final String COL_MESSAGE = "Message";
   public static final String COL_NOTIFY_CUSTOMER = "NotifyCustomer";
+  public static final String COL_PROHIBIT_EDIT = "ProhibitEdit";
   public static final String COL_REPAIRER = "Repairer";
   public static final String COL_SHOW_CUSTOMER = "ShowCustomer";
   public static final String COL_SEND_EMAIL = "SentEmail";
@@ -135,7 +138,7 @@ public final class ServiceConstants {
   public static final String COL_STATE_COMMENT = "StateComment";
   public static final String COL_STATE_NAME = "Name";
 
-  public static final String COL_MANUFACTURER = "Manufacturer";
+  public static final String COL_MANUFACTURER = "ServiceManufacturer";
   public static final String COL_MAINTENANCE_DATE = "Date";
   public static final String COL_MAINTENANCE_ITEM = "Item";
   public static final String COL_MAINTENANCE_INVOICE = "Invoice";
@@ -170,6 +173,7 @@ public final class ServiceConstants {
 
   public static final String COL_WARRANTY_MAINTENANCE = "WarrantyMaintenance";
   public static final String COL_WARRANTY = "Warranty";
+  public static final String COL_WARRANTY_DURATION = "Duration";
   public static final String COL_WARRANTY_TYPE = "WarrantyType";
   public static final String COL_WARRANTY_VALID_TO = "WarrantyValidTo";
 
@@ -208,6 +212,7 @@ public final class ServiceConstants {
   public static final String GRID_OBJECT_DEFECTS = "ObjectDefects";
   public static final String GRID_SERVICE_INVOICES = "ServiceInvoices";
   public static final String GRID_SERVICE_MAINTENANCE = "ServiceMaintenance";
+  public static final String GRID_SERVICE_MAINTENANCE_INVOICES = "ServiceMaintenanceInvoices";
 
   public static final String PROP_MAIN_ITEM = "MainItem";
   public static final String PROP_CRITERIA = "Criteria";

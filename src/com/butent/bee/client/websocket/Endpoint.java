@@ -96,7 +96,7 @@ public final class Endpoint {
     }
   }
 
-  public static void enqueuePropgress(final String progressId, Consumer<String> consumer) {
+  public static void enqueueProgress(final String progressId, Consumer<String> consumer) {
     Assert.notEmpty(progressId);
     Assert.notNull(consumer);
 
@@ -192,7 +192,7 @@ public final class Endpoint {
     if (progressId == null) {
       consumer.accept(null);
     } else {
-      enqueuePropgress(progressId, input -> {
+      enqueueProgress(progressId, input -> {
         String progress = progressId;
 
         if (BeeUtils.isEmpty(input)) {
@@ -280,7 +280,8 @@ public final class Endpoint {
       socket.send(data);
 
       if (message.isLoggable()) {
-        logger.info("->", data.length(), message.getType().name().toLowerCase(), message.brief());
+        logger.info(BeeConst.STRING_RIGHT_ARROW, data.length(),
+            message.getType().name().toLowerCase(), message.brief());
       }
     }
   }
@@ -354,8 +355,8 @@ public final class Endpoint {
       Message message = Message.decode((String) data);
       if (message != null) {
         if (message.isLoggable()) {
-          logger.info("<-", ((String) data).length(), message.getType().name().toLowerCase(),
-              message.brief());
+          logger.info(BeeConst.STRING_LEFT_ARROW, ((String) data).length(),
+              message.getType().name().toLowerCase(), message.brief());
         }
         MessageDispatcher.dispatch(message);
       }

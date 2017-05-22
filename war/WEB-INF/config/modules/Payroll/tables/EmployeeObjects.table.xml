@@ -10,7 +10,7 @@
     <Relation name="SubstituteFor" relation="Employees" label="=employeeSubstituteFor" />
 
     <Relation name="Object" notNull="true" relation="Locations" cascade="DELETE"
-      label="=object" />
+      label="=objectLocation" />
 
     <Date name="DateFrom" label="=startingDate" />
     <Date name="DateUntil" label="=endingDate" />

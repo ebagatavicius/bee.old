@@ -22,7 +22,7 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Report;
-import com.butent.bee.client.output.ReportParameters;
+import com.butent.bee.shared.report.ReportParameters;
 import com.butent.bee.client.ui.HasIndexedWidgets;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -407,7 +407,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
 
     ParameterList params = TransportHandler.createArgs(SVC_GET_ASSESSMENT_TURNOVER_REPORT);
     final List<String> headers = Lists.newArrayList(BeeUtils.joinWords(getReportCaption(),
-        getFilterLabel(NAME_CURRENCY)));
+        getSelectorLabel(NAME_CURRENCY)));
 
     if (start != null) {
       params.addDataItem(Service.VAR_FROM, start.getTime());
@@ -441,7 +441,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
       } else {
         label = Localized.dictionary().department();
       }
-      headers.add(BeeUtils.joinWords(label, getFilterLabel(NAME_DEPARTMENTS)));
+      headers.add(BeeUtils.joinWords(label, getSelectorLabel(NAME_DEPARTMENTS)));
     }
 
     String managers = getEditorValue(NAME_MANAGERS);
@@ -456,7 +456,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
       } else {
         label = Localized.dictionary().manager();
       }
-      headers.add(BeeUtils.joinWords(label, getFilterLabel(NAME_MANAGERS)));
+      headers.add(BeeUtils.joinWords(label, getSelectorLabel(NAME_MANAGERS)));
     }
 
     String customers = getEditorValue(NAME_CUSTOMERS);
@@ -471,7 +471,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
       } else {
         label = Localized.dictionary().client();
       }
-      headers.add(BeeUtils.joinWords(label, getFilterLabel(NAME_CUSTOMERS)));
+      headers.add(BeeUtils.joinWords(label, getSelectorLabel(NAME_CUSTOMERS)));
     }
 
     if (!groupBy.isEmpty()) {
@@ -550,10 +550,10 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
   protected String getBookmarkLabel() {
     List<String> labels = Lists.newArrayList(getReportCaption(),
         Format.renderPeriod(getDateTime(NAME_START_DATE), getDateTime(NAME_END_DATE)),
-        getFilterLabel(NAME_CURRENCY),
-        getFilterLabel(NAME_DEPARTMENTS),
-        getFilterLabel(NAME_MANAGERS),
-        getFilterLabel(NAME_CUSTOMERS));
+        getSelectorLabel(NAME_CURRENCY),
+        getSelectorLabel(NAME_DEPARTMENTS),
+        getSelectorLabel(NAME_MANAGERS),
+        getSelectorLabel(NAME_CUSTOMERS));
 
     for (String groupName : NAME_GROUP_BY) {
       if (BeeUtils.isPositive(getSelectedIndex(groupName))) {
@@ -1399,7 +1399,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
       String managers = getEditorValue(NAME_MANAGERS);
       if (!BeeUtils.isEmpty(managers)) {
         filter.add(Filter.any(COL_COMPANY_PERSON, DataUtils.parseIdSet(managers)));
-        captions.add(getFilterLabel(NAME_MANAGERS));
+        captions.add(getSelectorLabel(NAME_MANAGERS));
       }
     }
 
@@ -1414,7 +1414,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
       String departments = getEditorValue(NAME_DEPARTMENTS);
       if (!BeeUtils.isEmpty(departments)) {
         filter.add(Filter.any(COL_DEPARTMENT, DataUtils.parseIdSet(departments)));
-        captions.add(getFilterLabel(NAME_DEPARTMENTS));
+        captions.add(getSelectorLabel(NAME_DEPARTMENTS));
       }
     }
 
@@ -1429,7 +1429,7 @@ public class AssessmentTurnoverReport extends ReportInterceptor {
       String customers = getEditorValue(NAME_CUSTOMERS);
       if (!BeeUtils.isEmpty(customers)) {
         filter.add(Filter.any(COL_CUSTOMER, DataUtils.parseIdSet(customers)));
-        captions.add(getFilterLabel(NAME_CUSTOMERS));
+        captions.add(getSelectorLabel(NAME_CUSTOMERS));
       }
     }
 

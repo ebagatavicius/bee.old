@@ -471,6 +471,21 @@ public final class DataUtils {
     return row.getDateTime(getColumnIndex(columnId, columns));
   }
 
+  public static DateTime getDateTimeQuietly(IsRow row, int index) {
+    if (row == null) {
+      return null;
+
+    } else if (index == VERSION_INDEX) {
+      return new DateTime(row.getVersion());
+
+    } else if (row.isIndex(index)) {
+      return row.getDateTime(index);
+
+    } else {
+      return null;
+    }
+  }
+
   public static List<Long> getDistinct(BeeRowSet rowSet, String columnId) {
     return getDistinct(rowSet.getRows(), rowSet.getColumnIndex(columnId));
   }

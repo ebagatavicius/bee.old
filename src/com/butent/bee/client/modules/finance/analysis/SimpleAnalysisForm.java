@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 
 public class SimpleAnalysisForm extends AbstractFormInterceptor {
 
-  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "fin-SimpleAnalysis-";
+  private static final String STYLE_PREFIX = FinanceKeeper.STYLE_PREFIX + "SimpleAnalysis-";
 
   private static final String STYLE_INFO_SUMMARY = STYLE_PREFIX + "info-summary";
   private static final String STYLE_VERIFY = STYLE_PREFIX + "verify";
@@ -155,6 +155,7 @@ public class SimpleAnalysisForm extends AbstractFormInterceptor {
     if (BeeKeeper.getUser().canCreateData(VIEW_ANALYSIS_RESULTS)) {
       enabledActions.add(Action.SAVE);
     }
+    enabledActions.add(Action.EXPORT);
     enabledActions.add(Action.PRINT);
 
     AnalysisViewer viewer = new AnalysisViewer(results, enabledActions);

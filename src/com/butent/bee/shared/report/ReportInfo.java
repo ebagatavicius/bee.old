@@ -8,14 +8,19 @@ import com.butent.bee.client.output.ReportEnumItem;
 import com.butent.bee.client.output.ReportItem;
 import com.butent.bee.client.output.ReportNumericItem;
 import com.butent.bee.client.output.ReportTextItem;
+import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.sql.HasConditions;
 import com.butent.bee.server.sql.IsCondition;
 import com.butent.bee.server.sql.IsExpression;
+import com.butent.bee.server.sql.SqlSelect;
 import com.butent.bee.server.sql.SqlUtils;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
+import com.butent.bee.shared.communication.ResponseObject;
+import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.filter.Operator;
+import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.ArrayUtils;
@@ -23,11 +28,13 @@ import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 public class ReportInfo implements BeeSerializable {
 
@@ -52,7 +59,7 @@ public class ReportInfo implements BeeSerializable {
   private ReportInfo() {
   }
 
-  public void addColItem(ReportItem colItem) {
+  public int addColItem(ReportItem colItem) {
     colItems.add(new ReportInfoItem(colItem));
     int idx = colItems.size() - 1;
 
@@ -64,10 +71,12 @@ public class ReportInfo implements BeeSerializable {
     } else {
       setFunction(idx, ReportFunction.LIST);
     }
+    return idx;
   }
 
-  public void addRowItem(ReportItem rowItem) {
+  public int addRowItem(ReportItem rowItem) {
     rowItems.add(new ReportInfoItem(rowItem));
+    return rowItems.size() - 1;
   }
 
   @Override
@@ -232,36 +241,38 @@ public class ReportInfo implements BeeSerializable {
 
               if (value != null) {
                 Long dt;
+                DateTimeFunction format = ((ReportDateItem) filterItem).getFormat();
 
-                switch (((ReportDateItem) filterItem).getFormat()) {
-                  case DATE:
-                    dt = new JustDate(value.intValue()).getTime();
-                    break;
+                switch (format) {
                   case DATETIME:
                     dt = value;
                     break;
+                  case DATE:
                   case YEAR:
+                    Function<Integer, JustDate> dateSupplier = format == DateTimeFunction.DATE
+                        ? JustDate::new : TimeUtils::startOfYear;
+
                     switch (op) {
                       case EQ:
                         and.add(SqlUtils.compare(expr, Operator.GE,
-                            SqlUtils.constant(TimeUtils.startOfYear(value.intValue()).getTime())));
+                            SqlUtils.constant(dateSupplier.apply(value.intValue()).getTime())));
 
-                        dt = TimeUtils.startOfYear(value.intValue() + 1).getTime();
+                        dt = dateSupplier.apply(value.intValue() + 1).getTime();
                         op = Operator.LT;
                         break;
                       case GE:
-                        dt = TimeUtils.startOfYear(value.intValue()).getTime();
+                        dt = dateSupplier.apply(value.intValue()).getTime();
                         break;
                       case GT:
-                        dt = TimeUtils.startOfYear(value.intValue() + 1).getTime();
+                        dt = dateSupplier.apply(value.intValue() + 1).getTime();
                         op = Operator.GE;
                         break;
                       case LE:
-                        dt = TimeUtils.startOfYear(value.intValue() + 1).getTime();
+                        dt = dateSupplier.apply(value.intValue() + 1).getTime();
                         op = Operator.LT;
                         break;
                       case LT:
-                        dt = TimeUtils.startOfYear(value.intValue()).getTime();
+                        dt = dateSupplier.apply(value.intValue()).getTime();
                         break;
                       default:
                         continue;
@@ -286,6 +297,65 @@ public class ReportInfo implements BeeSerializable {
 
   public Long getId() {
     return id;
+  }
+
+  public ResultHolder getResult(SimpleRowSet rowSet, Dictionary dictionary) {
+    ResultHolder result = new ResultHolder();
+
+    List<ReportInfoItem> rowInfoItems = getRowItems();
+    List<ReportInfoItem> colInfoItems = getColItems();
+
+    rowSet.forEach(row -> {
+      if (getFilterItems().stream().allMatch(filterItem -> filterItem.validate(row))) {
+        ResultValue rowGroup;
+        ResultValue colGroup;
+
+        if (getRowGrouping() != null) {
+          rowGroup = getRowGrouping().getItem().evaluate(row, dictionary);
+        } else {
+          rowGroup = ResultValue.empty();
+        }
+        if (getColGrouping() != null) {
+          colGroup = getColGrouping().getItem().evaluate(row, dictionary);
+        } else {
+          colGroup = ResultValue.empty();
+        }
+        ResultValue[] details = rowInfoItems.stream()
+            .map(infoItem -> infoItem.getItem().evaluate(row, dictionary))
+            .toArray(ResultValue[]::new);
+
+        colInfoItems.stream().filter(colItem -> !colItem.getItem().isResultItem())
+            .forEach(colItem -> result.addValues(rowGroup, details, colGroup, colItem,
+                colItem.getItem().evaluate(row, dictionary)));
+      }
+    });
+    // CALC RESULTS
+    colInfoItems.stream().filter(colItem -> colItem.getItem().isResultItem())
+        .forEach(colItem -> result.getRowGroups(null)
+            .forEach(rowGroup -> result.getRows(rowGroup, null)
+                .forEach(rowValues -> result.getColGroups()
+                    .forEach(colGroup -> result.addValues(rowGroup, rowValues, colGroup, colItem,
+                        colItem.getItem().evaluate(rowGroup, rowValues, colGroup, result))))));
+    return result;
+  }
+
+  @GwtIncompatible
+  public ResponseObject getResultResponse(QueryServiceBean qs, String tmp, Dictionary dictionary,
+      IsCondition... clauses) {
+    SqlSelect resultQuery = new SqlSelect()
+        .addFrom(tmp)
+        .setWhere(SqlUtils.and(clauses));
+
+    Arrays.stream(qs.getData(new SqlSelect()
+        .addAllFields(tmp)
+        .addFrom(tmp)
+        .setWhere(SqlUtils.sqlFalse())).getColumnNames())
+        .filter(this::requiresField)
+        .forEach(s -> resultQuery.addFields(tmp, s));
+
+    ResultHolder result = getResult(qs.getData(resultQuery), dictionary);
+    qs.sqlDropTemp(tmp);
+    return ResponseObject.response(result);
   }
 
   public ReportInfoItem getRowGrouping() {
@@ -349,9 +419,7 @@ public class ReportInfo implements BeeSerializable {
   }
 
   public static ReportInfo restore(String data) {
-    ReportInfo reportInfo = new ReportInfo();
-    reportInfo.deserialize(Assert.notEmpty(data));
-    return reportInfo;
+    return BeeSerializable.restore(data, ReportInfo::new);
   }
 
   @Override

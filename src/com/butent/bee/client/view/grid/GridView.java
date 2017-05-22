@@ -21,6 +21,7 @@ import com.butent.bee.shared.NotificationListener;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.ModificationPreviewer;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.ui.ColumnDescription;
@@ -60,6 +61,8 @@ public interface GridView extends DataView,
   void formConfirm(Consumer<IsRow> consumer);
 
   FormView getActiveForm();
+
+  DataInfo getDataInfo();
 
   List<String> getDynamicColumnGroups();
 

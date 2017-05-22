@@ -112,7 +112,7 @@ public class FinancePostingBean {
       date = docData.getDateTime(rowIndex, COL_TRADE_DATE);
     }
 
-    String series = docData.getString(rowIndex, COL_SERIES);
+    String series = docData.getString(rowIndex, COL_TRADE_SERIES);
     String number = docData.getString(rowIndex, COL_TRADE_NUMBER);
     if (BeeUtils.isEmpty(number)) {
       number = docData.getString(rowIndex, COL_TRADE_DOCUMENT_NUMBER_1);
@@ -192,7 +192,7 @@ public class FinancePostingBean {
     int parentCostIndex = docLines.getColumnIndex(ALS_PARENT_COST);
     int parentCostCurrencyIndex = docLines.getColumnIndex(ALS_PARENT_COST_CURRENCY);
 
-    TradeDocumentSums tdSums = TradeDocumentSums.of(docData, docLines);
+    TradeDocumentSums tdSums = TradeDocumentSums.of(docData, 0, docLines, null);
     double docTotal = tdSums.getTotal();
 
     Map<Long, Long> itemCategoryTree = getItemCategoryTree();
@@ -508,12 +508,16 @@ public class FinancePostingBean {
     int seriesIndex = payments.getColumnIndex(COL_TRADE_PAYMENT_SERIES);
     int numberIndex = payments.getColumnIndex(COL_TRADE_PAYMENT_NUMBER);
 
+    int prepaymentIndex = payments.getColumnIndex(COL_TRADE_PREPAYMENT_PARENT);
+
     int outputPaymentIndex = DataUtils.getColumnIndex(COL_FIN_TRADE_PAYMENT, columns);
 
     int outputSeriesIndex = DataUtils.getColumnIndex(asDebit
         ? COL_FIN_DEBIT_SERIES : COL_FIN_CREDIT_SERIES, columns);
     int outputDocumentIndex = DataUtils.getColumnIndex(asDebit
         ? COL_FIN_DEBIT_DOCUMENT : COL_FIN_CREDIT_DOCUMENT, columns);
+
+    int outputPrepaymentIndex = DataUtils.getColumnIndex(COL_FIN_PREPAYMENT_PARENT, columns);
 
     for (BeeRow row : payments) {
       DateTime date = row.getDateTime(dateIndex);
@@ -536,6 +540,8 @@ public class FinancePostingBean {
       String series = row.getString(seriesIndex);
       String number = row.getString(numberIndex);
 
+      Long prepayment = row.getLong(prepaymentIndex);
+
       Long debit = asDebit ? account : debtAccount;
       Long credit = asDebit ? debtAccount : account;
 
@@ -551,6 +557,10 @@ public class FinancePostingBean {
           if (!BeeUtils.isEmpty(series)) {
             output.setValue(outputSeriesIndex, series.trim());
           }
+        }
+
+        if (DataUtils.isId(prepayment)) {
+          output.setValue(outputPrepaymentIndex, prepayment);
         }
 
         result.add(output);

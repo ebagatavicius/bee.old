@@ -35,7 +35,7 @@
     <Relation name="Vehicle" relation="Vehicles" label="=trdVehicle" />
 
     <Numeric name="DocumentDiscount" precision="12" scale="2" label="=discountForDocument" />
-    <Enum name="PriceName" key="ItemPrice" label="=priceName" />
+    <Enum name="PriceName" key="ItemPrice" label="=priceName" precision="2" />
 
     <Relation name="ExtraDimensions" unique="true" relation="ExtraDimensions" editable="true"
               label="=dimensions" />

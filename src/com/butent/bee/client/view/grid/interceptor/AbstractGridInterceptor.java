@@ -5,6 +5,7 @@ import com.google.gwt.xml.client.Element;
 
 import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.event.logical.ActiveRowChangeEvent;
+import com.butent.bee.client.event.logical.DataReceivedEvent;
 import com.butent.bee.client.event.logical.ParentRowEvent;
 import com.butent.bee.client.event.logical.RenderingEvent;
 import com.butent.bee.client.event.logical.RowCountChangeEvent;
@@ -412,7 +413,12 @@ public abstract class AbstractGridInterceptor implements GridInterceptor {
   }
 
   @Override
-  public void onDataReceived(List<? extends IsRow> rows) {
+  public void onDataReceived(DataReceivedEvent event) {
+  }
+
+  @Override
+  public GridInterceptor getInstance() {
+    return null;
   }
 
   @Override
@@ -449,7 +455,7 @@ public abstract class AbstractGridInterceptor implements GridInterceptor {
   }
 
   @Override
-  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
+  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow, boolean copy) {
     return true;
   }
 

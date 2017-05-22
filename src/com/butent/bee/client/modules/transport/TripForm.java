@@ -1,11 +1,15 @@
 package com.butent.bee.client.modules.transport;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Widget;
 
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_UNIT;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
@@ -18,10 +22,13 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.data.RowUpdateCallback;
+import com.butent.bee.client.dialog.ChoiceCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dialog.Modality;
 import com.butent.bee.client.grid.ChildGrid;
+import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.transport.TransportHandler.Profit;
+import com.butent.bee.client.output.ReportUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.validation.CellValidation;
@@ -32,7 +39,6 @@ import com.butent.bee.client.view.edit.EditEndEvent;
 import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.edit.SaveChangesEvent;
 import com.butent.bee.client.view.form.FormView;
-import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.widget.FaLabel;
@@ -42,21 +48,32 @@ import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
+import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class TripForm extends PrintFormInterceptor {
 
@@ -176,11 +193,6 @@ public class TripForm extends PrintFormInterceptor {
   }
 
   @Override
-  public FormInterceptor getPrintFormInterceptor() {
-    return new PrintTripForm();
-  }
-
-  @Override
   public void onEditEnd(EditEndEvent event, Object source) {
     String colId = event.getColumnId();
 
@@ -228,6 +240,269 @@ public class TripForm extends PrintFormInterceptor {
   @Override
   public boolean saveOnPrintNewRow() {
     return true;
+  }
+
+  @Override
+  protected void print(String report) {
+    getReportParameters(parameters -> {
+
+      final FormView form = getFormView();
+      ParameterList args = TransportHandler.createArgs(SVC_GET_TRIP_INFO);
+      args.addDataItem(COL_TRIP, getActiveRowId());
+
+      BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
+        @Override
+        public void onResponse(ResponseObject response) {
+          response.notify(form);
+
+          if (response.hasErrors()) {
+            return;
+          }
+
+          final Map<String, String> pack =
+              Codec.deserializeLinkedHashMap(response.getResponseAsString());
+
+          // DRIVERS
+          final Map<Long, String> drivers = new LinkedHashMap<>();
+          Long mainDriver = null;
+
+          for (SimpleRowSet.SimpleRow drv : SimpleRowSet.restore(pack.get(TBL_TRIP_DRIVERS))) {
+            if (!DataUtils.isId(mainDriver)) {
+              mainDriver = drv.getLong(COL_MAIN_DRIVER);
+            }
+            drivers.put(drv.getLong(COL_DRIVER),
+                BeeUtils.joinWords(drv.getValue(COL_FIRST_NAME), drv.getValue(COL_LAST_NAME)));
+          }
+          List<String> allDrivers = new ArrayList<>();
+
+          for (Long drv : drivers.keySet()) {
+            if (!Objects.equals(drv, mainDriver)) {
+              allDrivers.add(drivers.get(drv));
+            }
+          }
+
+          parameters.put(TBL_TRIP_DRIVERS, BeeUtils.joinItems(allDrivers));
+          parameters.put(TBL_TRIP_DRIVERS + 2, allDrivers.size() > 0 ? allDrivers.get(0) : "");
+          parameters.put(AdministrationConstants.COL_USER, BeeKeeper.getUser().getUserSign());
+
+          // FUEL
+          double before = BeeUtils.unbox(form.getDoubleValue("FuelBefore"));
+          double after = BeeUtils.unbox(form.getDoubleValue("FuelAfter"));
+          double fuel = before + BeeUtils.toDouble(pack.get(COL_FUEL)) - after;
+
+          before = BeeUtils.unbox(form.getDoubleValue("SpeedometerBefore"));
+          after = BeeUtils.unbox(form.getDoubleValue("SpeedometerAfter"));
+
+          parameters.put(COL_FUEL, BeeUtils.toString(BeeUtils.round(fuel, 2)));
+          parameters.put(TBL_TRIP_FUEL_CONSUMPTIONS, after == before ? ""
+              : BeeUtils.toString(BeeUtils.round(fuel / (after - before) * 100, 2)));
+          parameters.put(TBL_TRIP_FUEL_COSTS, BeeUtils.round(pack.get(TBL_TRIP_FUEL_COSTS), 2));
+
+          // COSTS
+          final Set<Long> dailyCostsItems = new HashSet<>();
+
+          for (String item : Codec.beeDeserializeCollection(pack.get(COL_DAILY_COSTS_ITEM))) {
+            dailyCostsItems.add(BeeUtils.toLong(item));
+          }
+
+          final List<BeeColumn> driverCostCols = Lists.newArrayList(
+              new BeeColumn(ValueType.TEXT, COL_NUMBER),
+              new BeeColumn(ValueType.TEXT, COL_COSTS_DATE),
+              new BeeColumn(ValueType.TEXT, COL_COSTS_ITEM),
+              new BeeColumn(ValueType.TEXT, COL_DRIVER),
+              new BeeColumn(ValueType.TEXT, COL_COSTS_QUANTITY),
+              new BeeColumn(ValueType.TEXT, COL_UNIT),
+              new BeeColumn(ValueType.TEXT, COL_COSTS_PRICE),
+              new BeeColumn(ValueType.TEXT, COL_AMOUNT));
+
+          BeeRowSet driverCosts = new BeeRowSet(driverCostCols);
+          final HashMultimap<Long, SimpleRowSet.SimpleRow> driverInfo = HashMultimap.create();
+          Map<String, Double> otherInfo = new HashMap<>();
+
+          for (SimpleRowSet.SimpleRow cost : SimpleRowSet.restore(pack.get(TBL_TRIP_COSTS))) {
+            String itemName = cost.getValue(COL_ITEM_NAME);
+            double amount = BeeUtils.round(BeeUtils.unbox(cost.getDouble(COL_AMOUNT)), 2);
+
+            if (!BeeUtils.unbox(cost.getBoolean(COL_PAYMENT_CASH))) {
+              otherInfo.put(itemName, BeeUtils.round(BeeUtils.unbox(otherInfo.get(itemName))
+                  + amount, 2));
+              continue;
+            }
+            Long drv = BeeUtils.nvl(cost.getLong(COL_DRIVER), mainDriver);
+            double quantity = BeeUtils.unbox(cost.getDouble(COL_COSTS_QUANTITY));
+            driverInfo.put(drv, cost);
+
+            BeeRow driverCost = driverCosts.addEmptyRow();
+
+            driverCost.setValue(0, cost.getValue(COL_NUMBER));
+            driverCost.setValue(1, Format.renderDate(cost.getDateTime(COL_COSTS_DATE)));
+            driverCost.setValue(2, BeeUtils.joinWords(itemName,
+                dailyCostsItems.contains(cost.getLong(COL_COSTS_ITEM))
+                    ? BeeUtils.parenthesize(cost.getValue(COL_COSTS_COUNTRY)) : null));
+            driverCost.setValue(3, drivers.get(drv));
+            driverCost.setValue(4, BeeUtils.toString(quantity));
+            driverCost.setValue(5, cost.getValue(COL_UNIT));
+            driverCost.setValue(6, quantity > 0 ? BeeUtils.toString(BeeUtils
+                .round(amount / quantity, 2)) : null);
+            driverCost.setValue(7, BeeUtils.toString(amount));
+          }
+          double driverTotal = 0;
+          double otherTotal = 0;
+
+          if (driverInfo.size() > 0) {
+            for (Long drv : driverInfo.keySet()) {
+              double total = 0;
+
+              for (SimpleRowSet.SimpleRow cost : driverInfo.get(drv)) {
+                total += BeeUtils.round(BeeUtils.unbox(cost.getDouble(COL_AMOUNT)), 2);
+              }
+
+              BeeRow driverCost = driverCosts.addEmptyRow();
+              driverCost.setProperty(TradeConstants.VAR_TOTAL, TradeConstants.VAR_TOTAL);
+              driverCost.setValue(3, drivers.get(drv));
+              driverCost.setValue(7, BeeUtils.toString(BeeUtils.round(total, 2)));
+
+              driverTotal += total;
+            }
+          }
+
+          parameters.put("DriverCostsTotal", BeeUtils.toString(driverTotal));
+          parameters.put("DriverCosts", driverCosts.serialize());
+
+          BeeRowSet otherCosts = new BeeRowSet(Arrays.asList(
+              new BeeColumn(ValueType.TEXT, COL_COSTS_ITEM),
+              new BeeColumn(ValueType.TEXT, COL_AMOUNT)));
+
+          if (otherInfo.size() > 0) {
+            for (Map.Entry<String, Double> entry : otherInfo.entrySet()) {
+              double amount = entry.getValue();
+
+              BeeRow row = otherCosts.addEmptyRow();
+              row.setValue(0, entry.getKey());
+              row.setValue(1, BeeUtils.toString(amount));
+
+              otherTotal += amount;
+            }
+            otherTotal = BeeUtils.round(otherTotal, 2);
+          }
+
+          parameters.put(AdministrationConstants.COL_CURRENCY,
+              pack.get(AdministrationConstants.COL_CURRENCY));
+          parameters.put("OtherTotal", BeeUtils.toString(otherTotal));
+          parameters.put("OtherCosts", otherCosts.serialize());
+          parameters.put("CostsTotal",
+              BeeUtils.toString(BeeUtils.round(driverTotal + otherTotal, 2)));
+
+          // ADVANCES
+          BeeRowSet driverAdvances = new BeeRowSet(Arrays.asList(
+              new BeeColumn(ValueType.TEXT, COL_DRIVER),
+              new BeeColumn(ValueType.TEXT, COL_COSTS_ITEM),
+              new BeeColumn(ValueType.TEXT, COL_DATE),
+              new BeeColumn(ValueType.TEXT, COL_AMOUNT),
+              new BeeColumn(ValueType.TEXT, "Remainder")));
+
+          for (Long drv : drivers.keySet()) {
+            double total = 0;
+
+            for (SimpleRowSet.SimpleRow advance
+                : SimpleRowSet.restore(pack.get(TBL_DRIVER_ADVANCES))) {
+
+              if (!Objects.equals(advance.getLong(COL_DRIVER), drv)) {
+                continue;
+              }
+              double amount = BeeUtils.round(BeeUtils.unbox(advance.getDouble(COL_AMOUNT)), 2);
+              total -= amount;
+
+              BeeRow row = driverAdvances.addEmptyRow();
+
+              row.setValue(0, drivers.get(drv));
+              row.setProperty("Advance", "Advance");
+              row.setValue(2, Format.renderDate(advance.getDate(COL_DATE)));
+              row.setValue(3, BeeUtils.toString(amount));
+              row.setValue(4, BeeUtils.toString(BeeUtils.round(total, 2)));
+            }
+            double daily = 0;
+            double other = 0;
+
+            for (SimpleRowSet.SimpleRow cost : driverInfo.get(drv)) {
+              double amount = BeeUtils.round(BeeUtils.unbox(cost.getDouble(COL_AMOUNT)), 2);
+
+              if (dailyCostsItems.contains(cost.getLong(COL_COSTS_ITEM))) {
+                daily += amount;
+              } else {
+                other += amount;
+              }
+            }
+            total += daily;
+
+            BeeRow row1 = driverAdvances.addEmptyRow();
+            row1.setValue(0, drivers.get(drv));
+            row1.setProperty(COL_DAILY_COSTS_ITEM, COL_DAILY_COSTS_ITEM);
+            row1.setValue(3, BeeUtils.toString(BeeUtils.round(daily * (-1), 2)));
+            row1.setValue(4, BeeUtils.toString(BeeUtils.round(total, 2)));
+
+            total += other;
+
+            BeeRow row2 = driverAdvances.addEmptyRow();
+            row2.setValue(0, drivers.get(drv));
+            row2.setProperty("OtherCosts", "OtherCosts");
+            row2.setValue(3, BeeUtils.toString(BeeUtils.round(other * (-1), 2)));
+            row2.setValue(4, BeeUtils.toString(BeeUtils.round(total, 2)));
+
+            BeeRow row3 = driverAdvances.addEmptyRow();
+            row3.setProperty(TradeConstants.VAR_TOTAL, TradeConstants.VAR_TOTAL);
+            row3.setValue(0, drivers.get(drv));
+            row3.setValue(4, BeeUtils.toString(BeeUtils.round(total, 2)));
+          }
+
+          parameters.put("DriverAdvances", driverAdvances.serialize());
+
+          // DAILY COSTS
+          ChoiceCallback choice = value -> {
+            Long drv = BeeUtils.getQuietly(new ArrayList<>(drivers.keySet()), value);
+
+            if (!DataUtils.isId(drv)) {
+              return;
+            }
+
+            parameters.put("CurrentDriver", drivers.get(drv));
+
+            double daily = 0;
+            String dailyCosts = "";
+
+            for (SimpleRowSet.SimpleRow cost : driverInfo.get(drv)) {
+              if (dailyCostsItems.contains(cost.getLong(COL_COSTS_ITEM))) {
+                dailyCosts += BeeUtils.joinWords(cost.getValue(COL_ITEM_NAME),
+                    BeeUtils.parenthesize(cost.getValue(COL_COSTS_COUNTRY)),
+                    BeeUtils.joinWords(cost.getValue(COL_COSTS_QUANTITY), cost.getValue(COL_UNIT)))
+                    + "\n";
+                daily += BeeUtils.round(BeeUtils.unbox(cost.getDouble(COL_AMOUNT)), 2);
+              }
+            }
+
+            parameters.put("DailyCosts", dailyCosts);
+            parameters.put("DailyCostsTotal",
+                BeeUtils.joinWords(BeeUtils.toString(BeeUtils.round(daily, 2)),
+                    pack.get(AdministrationConstants.COL_CURRENCY)));
+
+            getReportData(data -> ReportUtils.showReport(report, getReportCallback(), parameters,
+                data));
+          };
+
+          if (BeeUtils.isPrefix(report, "TripOrder2")) {
+            if (drivers.size() > 1) {
+              Global.choice(Localized.dictionary().drivers(), null,
+                  new ArrayList<>(drivers.values()), choice);
+            } else {
+              choice.onSuccess(0);
+            }
+          } else {
+            getReportData(data -> ReportUtils.showReport(report, getReportCallback(), parameters,
+                data));
+          }
+        }
+      });
+    });
   }
 
   void checkDriver(final HasHandlers listener, final GwtEvent<?> event, final Long driverId) {

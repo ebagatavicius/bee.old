@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Table xmlns="http://www.butent.com/table"
+
+  name="TradePaymentTerms"
+  idName="TradePaymentTermID"
+  >
+  <Fields>
+    <Relation name="TradeDocument" notNull="true" relation="TradeDocuments" cascade="DELETE"
+              label="=trdDocument" />
+
+    <DateTime name="PaymentDate" notNull="true" label="=date" />
+    <Numeric name="PaymentAmount" notNull="true" precision="15" scale="2" label="=amount" />
+  </Fields>
+</Table>

@@ -1,13 +1,5 @@
 package com.butent.bee.client.modules.documents;
 
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.TableCellElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -16,8 +8,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.dom.DomUtils;
-import com.butent.bee.client.event.EventUtils;
-import com.butent.bee.client.grid.HtmlTable;
+import com.butent.bee.client.rights.RightsTable;
 import com.butent.bee.client.ui.FormDescription;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -50,9 +41,6 @@ public class DocumentTreeForm extends AbstractFormInterceptor
   protected static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "Rights-";
   protected static final String STYLE_SUFFIX_CELL = "-cell";
 
-  private static final String STYLE_TABLE = STYLE_PREFIX + "table";
-  private static final String STYLE_HOVER = STYLE_PREFIX + "hover";
-
   private static final String STYLE_ROLE_LABEL = STYLE_PREFIX + "role-label";
   private static final String STYLE_ROLE_LABEL_CELL = STYLE_ROLE_LABEL + STYLE_SUFFIX_CELL;
   private static final String STYLE_STATE_LABEL = STYLE_PREFIX + "state-label";
@@ -75,8 +63,7 @@ public class DocumentTreeForm extends AbstractFormInterceptor
   private List<RightsState> states;
   private Map<String, String> roles;
 
-  private HtmlTable table;
-  private int hoverColumn = BeeConst.UNDEF;
+  private RightsTable table;
 
   @Override
   public boolean beforeCreateWidget(String name, com.google.gwt.xml.client.Element description) {
@@ -118,32 +105,29 @@ public class DocumentTreeForm extends AbstractFormInterceptor
     DomUtils.setDataProperty(toggle.getElement(), DATA_KEY_ROLE, roles.get(roleName));
     DomUtils.setDataProperty(toggle.getElement(), DATA_KEY_STATE, state.ordinal());
 
-    toggle.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        if (event.getSource() instanceof Toggle) {
-          Toggle t = (Toggle) event.getSource();
-          String recordId = DomUtils.getDataProperty(t.getElement(), DATA_KEY_ID);
-          String roleId = DomUtils.getDataProperty(t.getElement(), DATA_KEY_ROLE);
-          String stateIdx = DomUtils.getDataProperty(t.getElement(), DATA_KEY_STATE);
+    toggle.addClickHandler(event -> {
+      if (event.getSource() instanceof Toggle) {
+        Toggle t = (Toggle) event.getSource();
+        String recordId = DomUtils.getDataProperty(t.getElement(), DATA_KEY_ID);
+        String roleId = DomUtils.getDataProperty(t.getElement(), DATA_KEY_ROLE);
+        String stateIdx = DomUtils.getDataProperty(t.getElement(), DATA_KEY_STATE);
 
-          ParameterList params = DocumentsHandler
-              .createArgs(DocumentConstants.SVC_SET_CATEGORY_STATE);
+        ParameterList params = DocumentsHandler
+            .createArgs(DocumentConstants.SVC_SET_CATEGORY_STATE);
 
-          params.addDataItem("id", recordId);
-          params.addDataItem(AdministrationConstants.COL_ROLE, roleId);
-          params.addDataItem(AdministrationConstants.COL_STATE, stateIdx);
-          params.addDataItem("on", Codec.pack(t.isChecked()));
-          treeView.getSelectedItem().setProperty(getPropertyName(roleName, state),
-              BeeUtils.toString(t.isChecked()));
+        params.addDataItem("id", recordId);
+        params.addDataItem(AdministrationConstants.COL_ROLE, roleId);
+        params.addDataItem(AdministrationConstants.COL_STATE, stateIdx);
+        params.addDataItem("on", Codec.pack(t.isChecked()));
+        treeView.getSelectedItem().setProperty(getPropertyName(roleName, state),
+            BeeUtils.toString(t.isChecked()));
 
-          BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
-            @Override
-            public void onResponse(ResponseObject response) {
-              response.notify(getFormView());
-            }
-          });
-        }
+        BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+          @Override
+          public void onResponse(ResponseObject response) {
+            response.notify(getFormView());
+          }
+        });
       }
     });
     return toggle;
@@ -167,33 +151,8 @@ public class DocumentTreeForm extends AbstractFormInterceptor
               .getProperty(AdministrationConstants.TBL_ROLES));
         }
         if (table == null) {
-          table = new HtmlTable(STYLE_TABLE);
+          table = new RightsTable();
           table.addStyleName(STYLE_PREFIX + "multi-role");
-
-          table.addMouseMoveHandler(new MouseMoveHandler() {
-            @Override
-            public void onMouseMove(MouseMoveEvent event) {
-              Element target = EventUtils.getTargetElement(event.getNativeEvent().getEventTarget());
-
-              for (Element el = target; el != null; el = el.getParentElement()) {
-                if (TableCellElement.is(el)) {
-                  int col = ((TableCellElement) el.cast()).getCellIndex();
-
-                  if (getHoverColumn() != col) {
-                    onColumnHover(col);
-                  }
-                } else if (table.getId().equals(el.getId())) {
-                  break;
-                }
-              }
-            }
-          });
-          table.addMouseOutHandler(new MouseOutHandler() {
-            @Override
-            public void onMouseOut(MouseOutEvent event) {
-              onColumnHover(BeeConst.UNDEF);
-            }
-          });
         } else if (!table.isEmpty()) {
           table.clear();
         }
@@ -203,29 +162,8 @@ public class DocumentTreeForm extends AbstractFormInterceptor
     }
   }
 
-  private int getHoverColumn() {
-    return hoverColumn;
-  }
-
   private String getPropertyName(String roleName, RightsState state) {
     return BeeUtils.join("_", roles.get(roleName), state.ordinal());
-  }
-
-  private void onColumnHover(int col) {
-    if (getHoverColumn() >= 1) {
-      List<TableCellElement> cells = table.getColumnCells(getHoverColumn());
-      for (TableCellElement cell : cells) {
-        cell.removeClassName(STYLE_HOVER);
-      }
-    }
-    setHoverColumn(col);
-
-    if (col >= 1) {
-      List<TableCellElement> cells = table.getColumnCells(col);
-      for (TableCellElement cell : cells) {
-        cell.addClassName(STYLE_HOVER);
-      }
-    }
   }
 
   private void populateTable(IsRow selectedItem) {
@@ -255,9 +193,5 @@ public class DocumentTreeForm extends AbstractFormInterceptor
       }
       table.getRowFormatter().addStyleName(row++, STYLE_VALUE_ROW);
     }
-  }
-
-  private void setHoverColumn(int hoverColumn) {
-    this.hoverColumn = hoverColumn;
   }
 }

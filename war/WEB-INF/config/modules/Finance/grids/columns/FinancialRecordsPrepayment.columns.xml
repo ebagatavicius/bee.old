@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <DataColumn name="PrepaymentKind" caption="=prepaymentKindShort" visible="false" />
+  <DataColumn name="PrepaymentParent" caption="=prepaymentParentShort" visible="false" />
+</g:columns>

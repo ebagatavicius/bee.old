@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.Bee;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.Historian;
@@ -877,6 +878,7 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
 
     if (selectedIndex != index) {
       setLastTabId(null);
+      Bee.saveWorkspace();
     }
     return result;
   }
@@ -1045,6 +1047,14 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
     if (tile != null) {
       tile.updateContent(widget, true);
     }
+
+    Bee.saveWorkspace();
+  }
+
+  @Override
+  protected void saveLayout() {
+    super.saveLayout();
+    Bee.saveWorkspace();
   }
 
   private void checkEmptiness() {
@@ -1068,6 +1078,7 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
       ((TilePanel) widget).clear(this);
       clearCaption(index);
     }
+    Bee.saveWorkspace();
   }
 
   private void close(Tile tile) {
@@ -1316,6 +1327,7 @@ public class Workspace extends TabbedPages implements CaptionChangeEvent.Handler
     if (panel != null) {
       panel.addTile(this, direction);
     }
+    Bee.saveWorkspace();
   }
 
   private JSONObject toJson() {

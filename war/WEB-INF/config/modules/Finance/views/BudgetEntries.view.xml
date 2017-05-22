@@ -12,7 +12,7 @@
     <xi:include href="../../Administration/views/viewcolumns/ExtraDimensions.viewcolumns.xml" />
     <xi:include href="viewcolumns/Employee.viewcolumns.xml" />
 
-    <xi:include href="viewcolumns/Indicator.viewcolumns.xml" />
+    <xi:include href="viewcolumns/BudgetIndicator.viewcolumns.xml" />
     <SimpleColumn name="TurnoverOrBalance" />
 
     <xi:include href="viewcolumns/BudgetType.viewcolumns.xml" />

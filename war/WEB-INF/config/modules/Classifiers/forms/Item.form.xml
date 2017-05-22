@@ -13,7 +13,7 @@
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="Item" viewName="Items" caption="=item"
-        width="820" height="750"
+        width="820" widthUnit="px" height="80" heightUnit="vh"
 >
   <FlowPanel class="flexBox-vertical">
     <Table kind="controls" style="margin-top: 1ex; margin-bottom: 1em;">
@@ -337,7 +337,10 @@
 
       <page module="Trade" predicate="!row.IsService &amp;&amp; rowId > 0">
         <text>=trdStock</text>
-        <ChildGrid name="ItemStock" relColumn="Item" />
+        <FlowPanel class="flexBox-vertical">
+          <FlowPanel name="StockByWarehouse" style="margin: auto;" />
+          <ChildGrid name="ItemStock" relColumn="Item" class="flexible" style="min-height: 75%;" />
+        </FlowPanel>
       </page>
 
       <page module="Trade" predicate="rowId > 0">
@@ -359,33 +362,33 @@
           <col index="2" kind="label" />
 
           <row>
-            <Label for="KPNCode" >
+            <Label for="KPNCode">
               &foritem;
             </Label>
-            <InputText source="KPNCode" summarize="true" >
+            <InputText source="KPNCode" summarize="true">
               &foritem;
             </InputText>
 
-            <Label for="AdditionalUnit" >
+            <Label for="AdditionalUnit">
               &foritem;
             </Label>
-            <InputText source="AdditionalUnit" summarize="true" >
+            <InputText source="AdditionalUnit" summarize="true">
               &foritem;
             </InputText>
           </row>
 
           <row>
-            <Label for="CountryOfOrigin" >
+            <Label for="CountryOfOrigin">
               &foritem;
             </Label>
-            <InputText source="CountryOfOrigin" summarize="true" >
+            <InputText source="CountryOfOrigin" summarize="true">
               &foritem;
             </InputText>
 
-            <Label for="Factor" >
+            <Label for="Factor">
               &foritem;
             </Label>
-            <InputDecimal source="Factor" >
+            <InputDecimal source="Factor">
               &foritem;
             </InputDecimal>
           </row>

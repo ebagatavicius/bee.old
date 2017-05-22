@@ -4,6 +4,7 @@
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="BudgetEntries" viewName="BudgetEntries"
+        enabledActions="copy"
 >
   <xi:include href="columns/Ordinal.columns.xml" />
 
@@ -30,9 +31,6 @@
           <ui:font>bolder</ui:font>
         </bodyStyle>
       </style>
-      <render>
-        <ui:expression>row.Month01 + row.Month02 + row.Month03</ui:expression>
-      </render>
     </CalcColumn>
 
     <DataColumn name="Month04" scale="0" visible="true" />
@@ -45,9 +43,6 @@
           <ui:font>bolder</ui:font>
         </bodyStyle>
       </style>
-      <render>
-        <ui:expression>row.Month04 + row.Month05 + row.Month06</ui:expression>
-      </render>
     </CalcColumn>
 
     <DataColumn name="Month07" scale="0" visible="true" />
@@ -60,9 +55,6 @@
           <ui:font>bolder</ui:font>
         </bodyStyle>
       </style>
-      <render>
-        <ui:expression>row.Month07 + row.Month08 + row.Month09</ui:expression>
-      </render>
     </CalcColumn>
 
     <DataColumn name="Month10" scale="0" visible="true" />
@@ -75,9 +67,6 @@
           <ui:font>bolder</ui:font>
         </bodyStyle>
       </style>
-      <render>
-        <ui:expression>row.Month10 + row.Month11 + row.Month12</ui:expression>
-      </render>
     </CalcColumn>
 
     <CalcColumn name="Total" type="decimal" label="=total" format="#,###.#####">
@@ -86,15 +75,6 @@
           <ui:font>bolder larger</ui:font>
         </bodyStyle>
       </style>
-      <render>
-        <ui:function>
-          var total = row.Month01 + row.Month02 + row.Month03;
-          total += row.Month04 + row.Month05 + row.Month06;
-          total += row.Month07 + row.Month08 + row.Month09;
-          total += row.Month10 + row.Month11 + row.Month12;
-          return total;
-        </ui:function>
-      </render>
     </CalcColumn>
 
     <DataColumn name="Note" flexGrow="1" visible="false" />

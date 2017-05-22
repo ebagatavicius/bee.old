@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+<g:columns xmlns="http://www.butent.com/column"
+           xmlns:g="http://www.butent.com/grid"
+           xmlns:ui="http://www.butent.com/ui">
 
   <RelColumn name="Type" renderColumns="TypeName" />
   <DataColumn name="Priority" />
@@ -13,6 +15,14 @@
 
   <RelColumn name="Project" renderColumns="ProjectName" visible="false" autoFit="true"
              editPopup="false"/>
+
+  <RelColumn name="Product" renderColumns="ProductName" visible="false">
+    <dynStyle>
+      <ui:inline>color:[row.ProductForeground];
+        background-color:[row.ProductBackground];
+      </ui:inline>
+    </dynStyle>
+  </RelColumn>
 
   <DataColumn name="ScheduleFrom" />
   <DataColumn name="ScheduleUntil" />

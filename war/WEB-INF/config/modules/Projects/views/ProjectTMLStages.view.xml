@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="ProjectTMLStages" source="ProjectTMLStages" caption="=prjStagesTML"
       editForm="ProjectTMLStage" newRowForm="ProjectTMLStage"
   newRowCaption="=prjNewStage"
   >
   <Columns>
+    <xi:include href="viewcolumns/ProjectStageInfo.viewcolumns.xml" />
+
     <SimpleColumn name="ProjectTemplate" />
     <SimpleJoin name="ProjectTemplate" joinType="LEFT">
       <SimpleColumn name="Company" />
@@ -15,16 +18,6 @@
           <SimpleColumn name="Name" alias="CompanyTypeName" />
         </SimpleJoin>
       </SimpleJoin>
-    </SimpleJoin>
-
-    <SimpleColumn name="Name" />
-    <SimpleColumn name="ExpectedDuration" />
-
-
-    <SimpleColumn name="Expenses" />
-    <SimpleColumn name="Currency" />
-    <SimpleJoin name="Currency" joinType="LEFT">
-      <SimpleColumn name="Name" alias="CurrencyName" />
     </SimpleJoin>
 
     <ExternalJoin source="ProjectTemplates" joinType="LEFT" name="DefaultTMLStage">

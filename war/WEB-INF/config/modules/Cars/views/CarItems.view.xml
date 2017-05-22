@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="CarItems" caption="=itemSelection+(+=cars+)" source="Items"
+      filter="!(Job)"
+>
+  <Columns>
+    <SimpleColumn name="Name" />
+    <SimpleColumn name="Article" />
+    <SimpleColumn name="IsService" />
+    <SimpleColumn name="Ordinal" />
+
+    <SimpleJoin joinType="LEFT" name="Unit">
+      <SimpleColumn name="Name" alias="UnitName" />
+    </SimpleJoin>
+
+    <ExternalJoin name="Item" joinType="LEFT" source="CarJobs">
+      <IdColumn name="Job" hidden="true" />
+    </ExternalJoin>
+  </Columns>
+
+  <Order>
+    <OrderBy column="IsService" nulls="first" />
+    <OrderBy column="Ordinal" />
+    <OrderBy column="Name" />
+    <OrderBy column="Article" />
+  </Order>
+</View>

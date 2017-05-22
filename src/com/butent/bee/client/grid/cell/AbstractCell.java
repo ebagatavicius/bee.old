@@ -30,6 +30,14 @@ import java.util.Set;
 
 public abstract class AbstractCell<C> implements HasClickHandlers, HasAllKeyHandlers {
 
+  public static IsRow getEventRow(GwtEvent<?> event) {
+    if (event != null && event.getSource() instanceof AbstractCell) {
+      return ((AbstractCell<?>) event.getSource()).getEventRow();
+    } else {
+      return null;
+    }
+  }
+
   private Set<String> consumedEvents = new HashSet<>();
   private HandlerManager handlerManager;
 

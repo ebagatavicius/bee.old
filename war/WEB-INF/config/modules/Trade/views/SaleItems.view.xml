@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-      name="SaleItems" source="SaleItems" caption="=trdSaleItems"
+      name="SaleItems" source="SaleItems" caption="=trdSaleItems" module="Trade Transport Orders Service"
     >
   <Columns>
     <SimpleColumn name="Sale" />

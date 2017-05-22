@@ -22,7 +22,6 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
-import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.view.RowInfo;
@@ -86,7 +85,7 @@ public class InvoicesGrid extends AbstractGridInterceptor implements ClickHandle
 
           if (!response.hasErrors()) {
             getERPStocks(ids);
-            Data.onViewChange(view.getViewName(), DataChangeEvent.RESET_REFRESH);
+            Data.resetLocal(view.getViewName());
           }
         }
       });
@@ -140,7 +139,7 @@ public class InvoicesGrid extends AbstractGridInterceptor implements ClickHandle
                     @Override
                     public void onSuccess(RowInfoList result) {
                       payAction.idle();
-                      Data.onViewChange(view.getViewName(), DataChangeEvent.RESET_REFRESH);
+                      Data.resetLocal(view.getViewName());
                     }
                   });
                 } else {

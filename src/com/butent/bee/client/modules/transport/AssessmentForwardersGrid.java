@@ -10,9 +10,7 @@ import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.ParentRowRefreshGrid;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.DataUtils;
-import com.butent.bee.shared.data.event.DataChangeEvent;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +27,7 @@ public class AssessmentForwardersGrid extends ParentRowRefreshGrid {
   @Override
   public boolean previewModify(Set<Long> rowIds) {
     if (super.previewModify(rowIds)) {
-      Data.onTableChange(TBL_CARGO_EXPENSES, EnumSet.of(DataChangeEvent.Effect.REFRESH));
+      Data.refreshLocal(TBL_CARGO_EXPENSES);
       return true;
     }
     return false;

@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
         xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:ui="http://www.butent.com/ui"
         name="Debts" viewName="Debts" disabledActions="add delete" readOnly="true"
-        filter="Debt > 0" caption="=trdDebts">
+        filter="Debt > 0" caption="=debts">
 
   <g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
     <DataColumn name="CustomerCode" caption="=companyCode" label="=companyCode" searchBy="CustomerCode PayerCode" >

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Entry xmlns="http://www.butent.com/menu"
 
-       name="TradeClassifiers" label="=classifiers" parent="Trade" order="90" separator="true"
+       name="TradeClassifiers" label="=classifiers" parent="Trade" order="100" separator="true"
 >
   <Item name="TradeOperations" label="=trdOperations" service="grid" parameters="TradeOperations" />
-  <Item name="TradeSeries" label="=seriesPlural" service="grid" parameters="TradeSeries"
-        module="Trade.Acts" />
-  <Item name="SaleSeries" label="=trdSaleSeries" service="grid" parameters="SaleSeries" />
-  <Item name="TradeStatuses" label="=trdStatuses" service="grid" parameters="TradeStatuses" />
-  <Item name="TradeNotes" label="=trdNoteTemplates" service="grid" parameters="TradeNotes" />
+  <Item name="TradeSeries" label="=seriesPlural" service="grid" parameters="TradeSeries" />
 
+  <Item name="TradeStatuses" label="=trdStatuses" service="grid" parameters="TradeStatuses"
+        separator="true" />
   <Item name="TradeTags" label="=tags" service="grid" parameters="TradeTags" />
 
   <Item name="ExpenditureTypes" label="=trdExpenditureTypes" service="grid"

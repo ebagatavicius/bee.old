@@ -3,6 +3,10 @@ package com.butent.bee.shared.modules.trade;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 public enum TradeDocumentPhase implements HasLocalizedCaption {
   ORDER(false) {
     @Override
@@ -88,6 +92,18 @@ public enum TradeDocumentPhase implements HasLocalizedCaption {
       return false;
     }
   };
+
+  public static Collection<TradeDocumentPhase> getStockPhases() {
+    Set<TradeDocumentPhase> stockPhases = new HashSet<>();
+
+    for (TradeDocumentPhase phase : values()) {
+      if (phase.modifyStock()) {
+        stockPhases.add(phase);
+      }
+    }
+
+    return stockPhases;
+  }
 
   private final boolean modifyStock;
 

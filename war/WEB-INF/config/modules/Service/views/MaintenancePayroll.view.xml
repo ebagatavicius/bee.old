@@ -38,6 +38,12 @@
     </SimpleJoin>
     <SimpleColumn name="ConfirmationDate" />
     <SimpleColumn name="Notes" />
+    <SimpleColumn name="ServiceItem" />
+    <ExternalJoin name="ServiceItem" joinType="LEFT" source="OrderItems" targetName="ServiceItem" >
+      <SimpleJoin name="Item" joinType="LEFT" >
+        <SimpleColumn name="Name" alias="ItemName" />
+      </SimpleJoin>
+    </ExternalJoin>
   </Columns>
   <Order>
     <OrderBy column="Date" descending="true"/>

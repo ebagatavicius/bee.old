@@ -9,5 +9,6 @@ name="ServiceClassifiers" label="=classifiers" order="50" parent="Service" modul
   <Item name="StateProcess" label="=svcStateProcess" service="grid" parameters="StateProcess" />
   <Item name="Equipment" label="=svcMaintenanceEquipment" service="grid" parameters="Equipment" />
   <Item name="MaintenanceTariffs" label="=svcTariffs" service="grid" parameters="MaintenanceTariffs" />
+  <Item name="ServiceManufacturers" label="=manufacturers" service="grid" parameters="ServiceManufacturers"  />
   <Item name="ServiceParameters" label="=parameters" service="parameters" parameters="Service" separator="true"/>
 </Entry>

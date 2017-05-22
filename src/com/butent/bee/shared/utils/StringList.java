@@ -1,5 +1,7 @@
 package com.butent.bee.shared.utils;
 
+import com.butent.bee.shared.BeeConst;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -317,6 +319,15 @@ public class StringList implements List<String> {
   @Override
   public <T> T[] toArray(T[] a) {
     return list.toArray(a);
+  }
+
+  @Override
+  public String toString() {
+    if (isEmpty()) {
+      return BeeConst.STRING_LEFT_BRACKET + BeeConst.STRING_RIGHT_BRACKET;
+    } else {
+      return BeeUtils.bracket(BeeUtils.join(BeeConst.STRING_COMMA, this));
+    }
   }
 
   private String normalize(String s) {

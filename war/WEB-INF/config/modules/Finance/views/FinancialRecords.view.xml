@@ -5,63 +5,21 @@
       caption="=financialRecords" newRowCaption="=newFinancialRecord"
 >
   <Columns>
-    <SimpleColumn name="Journal" />
-    <SimpleJoin joinType="LEFT" name="Journal">
-      <SimpleColumn name="JournalCode" />
-      <SimpleColumn name="Background" alias="JournalBackground" />
-      <SimpleColumn name="Foreground" alias="JournalForeground" />
-    </SimpleJoin>
-
-    <SimpleColumn name="Date" />
-
-    <SimpleColumn name="Company" />
-    <SimpleJoin joinType="LEFT" name="Company">
-      <SimpleColumn name="Name" alias="CompanyName" />
-      <SimpleJoin joinType="LEFT" name="CompanyType">
-        <SimpleColumn name="Name" alias="CompanyTypeName" />
-      </SimpleJoin>
-    </SimpleJoin>
-
-    <SimpleColumn name="Content" />
-
-    <SimpleColumn name="Debit" />
-    <SimpleJoin joinType="LEFT" name="Debit">
-      <SimpleColumn name="AccountCode" alias="DebitCode" />
-      <SimpleColumn name="AccountName" alias="DebitName" />
-      <SimpleColumn name="Background" alias="DebitBackground" />
-      <SimpleColumn name="Foreground" alias="DebitForeground" />
-    </SimpleJoin>
-
-    <SimpleColumn name="DebitSeries" />
-    <SimpleColumn name="DebitDocument" />
-
-    <SimpleColumn name="Credit" />
-    <SimpleJoin joinType="LEFT" name="Credit">
-      <SimpleColumn name="AccountCode" alias="CreditCode" />
-      <SimpleColumn name="AccountName" alias="CreditName" />
-      <SimpleColumn name="Background" alias="CreditBackground" />
-      <SimpleColumn name="Foreground" alias="CreditForeground" />
-    </SimpleJoin>
-
-    <SimpleColumn name="CreditSeries" />
-    <SimpleColumn name="CreditDocument" />
-
-    <SimpleColumn name="Amount" />
-    <SimpleColumn name="Currency" />
-    <SimpleJoin joinType="LEFT" name="Currency">
-      <SimpleColumn name="Name" alias="CurrencyName" />
-    </SimpleJoin>
+    <xi:include href="viewcolumns/FinancialRecordsMain.viewcolumns.xml" />
 
     <SimpleColumn name="Quantity" />
 
     <SimpleColumn name="TradeDocument" />
     <SimpleColumn name="TradePayment" />
 
+    <SimpleColumn name="PrepaymentKind" />
+    <SimpleColumn name="PrepaymentParent" />
+
     <xi:include href="viewcolumns/Employee.viewcolumns.xml" />
     <xi:include href="../../Administration/views/viewcolumns/ExtraDimensions.viewcolumns.xml" />
   </Columns>
 
   <Order>
-    <OrderBy column="Date" descending="true" />
+    <OrderBy column="Date" />
   </Order>
 </View>

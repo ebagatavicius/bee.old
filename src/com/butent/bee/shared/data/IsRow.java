@@ -10,6 +10,7 @@ import com.butent.bee.shared.utils.EnumUtils;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Contains necessary methods for row classes, for example {@code addCell} or {@code setValue}.
@@ -67,6 +68,10 @@ public interface IsRow extends HasCustomProperties {
 
   default boolean isEmpty(int index) {
     return BeeUtils.isEmpty(getString(index));
+  }
+
+  default boolean isEqual(int index, Long value) {
+    return Objects.equals(getLong(index), value);
   }
 
   default boolean isIndex(int index) {

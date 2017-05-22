@@ -10,6 +10,7 @@ name="Rights" label="=rights" order="1" parent="Administration" separator="true"
   <Item name="Menu" label="=menu" service="form" parameters="MenuRights" />
 
   <Item name="Data" label="=objectData" service="form" parameters="DataRights" />
+  <Item name="Dependency" label="=recordsDependency" service="form" parameters="DependencyRights" />
   <Item name="Fields" label="=fields" service="form" parameters="FieldRights" />
 
   <Item name="Widgets" label="=widgets" service="form" parameters="WidgetRights" />

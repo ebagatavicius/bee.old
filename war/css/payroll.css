@@ -155,10 +155,20 @@
   visibility: visible;
 }
 
+.bee-payroll-ws-ro {
+  background-color: whitesmoke;
+}
+
 .bee-payroll-ws-weekend,
 .bee-payroll-ws-editor-weekend {
   background-color: #f2f2f2;
 }
+
+.bee-payroll-ws-weekend.bee-payroll-ws-ro,
+.bee-payroll-ws-editor-weekend.bee-payroll-ws-ro {
+  background-color: #e3e3e3;
+}
+
 .bee-payroll-ws-holiday,
 .bee-payroll-ws-editor-holiday {
   background-color: #ffe0e0;
@@ -183,6 +193,10 @@
 .bee-payroll-ws-item-drag {
   background-image: linear-gradient(to bottom, skyblue, skyblue);
   color: black !important;
+}
+
+.bee-payroll-ws-wapproved-label {
+  text-align: center;
 }
 
 .bee-payroll-ws-control-panel {
@@ -265,7 +279,8 @@
 }
 
 .bee-payroll-ws-wd-label,
-.bee-payroll-ws-wh-label {
+.bee-payroll-ws-wh-label,
+.bee-payroll-ws-wapproved-label {
   font-weight: bolder;
   text-align: center;
 }
@@ -296,7 +311,7 @@
   padding-right: 1em;
 }
 .bee-payroll-ws-trc-input-widget.bee-payroll-ws-trc-input-widget {
-  width: 4em;
+  width: 5em;
 }
 .bee-payroll-ws-trc-options-container {
   margin-top: 2ex;

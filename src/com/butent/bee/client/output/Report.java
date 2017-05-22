@@ -3,29 +3,40 @@ package com.butent.bee.client.output;
 import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.ALS_COMPANY_NAME;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_NOTES;
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_DEPARTMENT;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
+import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.ALS_COMPANY_TYPE_NAME;
+import static com.butent.bee.shared.modules.payroll.PayrollConstants.*;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
+import static com.butent.bee.shared.modules.tasks.TaskConstants.COL_COMMENT;
+import static com.butent.bee.shared.modules.tasks.TaskConstants.COL_EVENT_NOTE;
+import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.dialog.Popup;
+import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.modules.classifiers.CompanyTypeReport;
 import com.butent.bee.client.modules.classifiers.CompanyUsageReport;
 import com.butent.bee.client.modules.trade.acts.TradeActItemsByCompanyReport;
 import com.butent.bee.client.modules.trade.acts.TradeActServicesReport;
 import com.butent.bee.client.modules.trade.acts.TradeActStockReport;
 import com.butent.bee.client.modules.trade.acts.TradeActTransferReport;
+import com.butent.bee.client.modules.trade.reports.TradeMovementOfGoodsReport;
+import com.butent.bee.client.modules.trade.reports.TradeStockReport;
 import com.butent.bee.client.modules.transport.AssessmentQuantityReport;
 import com.butent.bee.client.modules.transport.AssessmentTurnoverReport;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.form.interceptor.ExtendedReportInterceptor;
 import com.butent.bee.client.view.form.interceptor.ReportInterceptor;
+import com.butent.bee.client.widget.InputBoolean;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.css.CssUnit;
@@ -34,18 +45,24 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.modules.finance.FinanceConstants;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.modules.projects.ProjectPriority;
 import com.butent.bee.shared.modules.projects.ProjectStatus;
 import com.butent.bee.shared.modules.tasks.TaskConstants;
-import com.butent.bee.shared.modules.tasks.TaskConstants.*;
+import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.modules.transport.TransportConstants;
 import com.butent.bee.shared.report.DateTimeFunction;
+import com.butent.bee.shared.report.ReportFunction;
 import com.butent.bee.shared.report.ReportInfo;
+import com.butent.bee.shared.report.ReportParameters;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.rights.ModuleAndSub;
 import com.butent.bee.shared.rights.SubModule;
+import com.butent.bee.shared.time.JustDate;
+import com.butent.bee.shared.time.YearMonth;
 import com.butent.bee.shared.ui.HasWidgetSupplier;
+import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -53,6 +70,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +102,20 @@ public enum Report implements HasWidgetSupplier {
     @Override
     protected ReportInterceptor getInterceptor() {
       return new AssessmentTurnoverReport();
+    }
+  },
+
+  TRADE_STOCK(ModuleAndSub.of(Module.TRADE), "TradeStock", "TradeStockReport") {
+    @Override
+    protected ReportInterceptor getInterceptor() {
+      return new TradeStockReport();
+    }
+  },
+  TRADE_MOVEMENT_OF_GOODS(ModuleAndSub.of(Module.TRADE), "TradeMovementOfGoods",
+      "TradeMovementOfGoodsReport") {
+    @Override
+    protected ReportInterceptor getInterceptor() {
+      return new TradeMovementOfGoodsReport();
     }
   },
 
@@ -168,6 +200,14 @@ public enum Report implements HasWidgetSupplier {
     @Override
     public String getReportCaption() {
       return Localized.dictionary().trReportProfitability();
+    }
+
+    @Override
+    public LinkedHashMap<String, Editor> getReportParams() {
+      LinkedHashMap<String, Editor> params = new LinkedHashMap<>();
+      params.put(COL_CURRENCY, getCurrencyEditor());
+      params.put(COL_TRADE_VAT, getWoVatEditor());
+      return params;
     }
 
     @Override
@@ -301,6 +341,14 @@ public enum Report implements HasWidgetSupplier {
     }
 
     @Override
+    public LinkedHashMap<String, Editor> getReportParams() {
+      LinkedHashMap<String, Editor> params = new LinkedHashMap<>();
+      params.put(COL_CURRENCY, getCurrencyEditor());
+      params.put(COL_TRADE_VAT, getWoVatEditor());
+      return params;
+    }
+
+    @Override
     public Collection<ReportInfo> getReports() {
       Map<String, ReportItem> items = new HashMap<>();
 
@@ -335,6 +383,88 @@ public enum Report implements HasWidgetSupplier {
     }
   },
 
+  TRANSPORT_TRIP_COSTS_REPORT(ModuleAndSub.of(Module.TRANSPORT), SVC_TRIP_COSTS_REPORT) {
+    @Override
+    public List<ReportItem> getItems() {
+      Dictionary loc = Localized.dictionary();
+
+      return Arrays.asList(
+          new ReportTextItem(COL_TRIP_NO, loc.trTripNo()),
+          new ReportDateItem(COL_DATE_FROM, loc.trTripDateFrom()),
+          new ReportDateItem(COL_DATE_TO, loc.trTripDateTo()),
+          new ReportTextItem(ALS_VEHICLE_NUMBER, loc.trTruck()),
+          new ReportTextItem(ALS_TRAILER_NUMBER, loc.trailer()),
+          new ReportEnumItem(TaskConstants.COL_STATUS, loc.status(), TripStatus.class),
+          new ReportTextItem(TradeConstants.COL_TRADE_MANAGER, loc.manager()),
+          new ReportTextItem(COL_MAIN_DRIVER, loc.trdDriver()),
+          new ReportNumericItem(COL_SPEEDOMETER_BEFORE, loc.trSpeedometerFrom()),
+          new ReportNumericItem(COL_SPEEDOMETER_AFTER, loc.trSpeedometerAfter()),
+          new ReportNumericItem(COL_FUEL_BEFORE, loc.trFuelBalanceBefore()).setPrecision(3),
+          new ReportNumericItem(COL_FUEL_AFTER, loc.trFuelBalanceAfter()).setPrecision(3),
+          new ReportTextItem(COL_NOTES, loc.note()),
+          new ReportTextItem(COL_ITEM, loc.productService()),
+          new ReportNumericItem(TradeConstants.COL_TRADE_ITEM_QUANTITY,
+              loc.quantity()).setPrecision(2),
+          new ReportNumericItem(COL_ITEM_PRICE, loc.price()).setPrecision(2),
+          new ReportNumericItem(VAR_TOTAL, loc.printDocumentAmount())
+              .setPrecision(2),
+          new ReportTextItem(COL_NUMBER, loc.number()),
+          new ReportTextItem(TradeConstants.COL_TRADE_SUPPLIER, loc.supplier()),
+          new ReportTextItem(ALS_COUNTRY_NAME, loc.country()),
+          new ReportTextItem(COL_NOTE, loc.note()),
+          new ReportTextItem(COL_PAYMENT_NAME, loc.paymentType()),
+          new ReportTextItem(COL_DRIVER, loc.trdDriver()));
+    }
+
+    @Override
+    public String getReportCaption() {
+      return Localized.dictionary().trImportCosts();
+    }
+
+    @Override
+    public Collection<ReportInfo> getReports() {
+      Map<String, ReportItem> items = new HashMap<>();
+      for (ReportItem item : getItems()) {
+        items.put(item.getExpression(), item);
+      }
+      ReportInfo report = new ReportInfo(getReportCaption());
+
+      for (String item : new String[] {
+          COL_DATE_FROM,
+          COL_DATE_TO,
+          COL_SPEEDOMETER_BEFORE,
+          COL_SPEEDOMETER_AFTER,
+          COL_FUEL_BEFORE,
+          COL_FUEL_AFTER,
+          COL_ITEM,
+          COL_NUMBER,
+          TradeConstants.COL_TRADE_SUPPLIER,
+          ALS_COUNTRY_NAME,
+          COL_NOTE,
+          COL_PAYMENT_NAME,
+          COL_DRIVER,
+          COL_ITEM_PRICE
+      }) {
+        report.addRowItem(items.get(item));
+      }
+
+      for (String item : new String[] {
+          TradeConstants.COL_TRADE_ITEM_QUANTITY, VAR_TOTAL
+      }) {
+        report.addColItem(items.get(item));
+      }
+      return Collections.singletonList(report);
+    }
+
+    @Override
+    public LinkedHashMap<String, Editor> getReportParams() {
+      LinkedHashMap<String, Editor> params = new LinkedHashMap<>();
+      params.put(COL_CURRENCY, getCurrencyEditor());
+      params.put(COL_TRADE_VAT, getWoVatEditor());
+      return params;
+    }
+  },
+
   PROJECT_REPORT(ModuleAndSub.of(Module.PROJECTS), ProjectConstants.SVC_PROJECT_REPORT) {
     @Override
     public List<ReportItem> getItems() {
@@ -359,27 +489,27 @@ public enum Report implements HasWidgetSupplier {
           new ReportTextItem(ProjectConstants.ALS_TERM, loc.prjTerm()),
 
           /* calc */
-          new ReportNumericItem(TaskConstants.COL_ACTUAL_DURATION,
+          new ReportNumericItem(COL_ACTUAL_DURATION,
               BeeUtils.join(BeeConst.DEFAULT_LIST_SEPARATOR,
-                  Data.getColumnLabel(TaskConstants.VIEW_TASKS, TaskConstants.COL_ACTUAL_DURATION),
+                  Data.getColumnLabel(VIEW_TASKS, COL_ACTUAL_DURATION),
                   loc.unitHourShort())).setPrecision(2),
 
-          new ReportNumericItem(TaskConstants.COL_EXPECTED_DURATION,
+          new ReportNumericItem(COL_EXPECTED_DURATION,
               BeeUtils.join(BeeConst.DEFAULT_LIST_SEPARATOR,
-                  Data.getColumnLabel(TaskConstants.VIEW_TASKS,
-                      TaskConstants.COL_EXPECTED_DURATION), loc.unitHourShort())).setPrecision(2),
-          new ReportNumericItem(TaskConstants.COL_EXPECTED_EXPENSES, loc.crmTaskExpectedExpenses())
+                  Data.getColumnLabel(VIEW_TASKS,
+                      COL_EXPECTED_DURATION), loc.unitHourShort())).setPrecision(2),
+          new ReportNumericItem(COL_EXPECTED_EXPENSES, loc.crmTaskExpectedExpenses())
               .setPrecision(2),
 
-          new ReportNumericItem(TaskConstants.COL_ACTUAL_EXPENSES,
-              Data.getColumnLabel(TaskConstants.VIEW_TASKS, TaskConstants.COL_ACTUAL_EXPENSES))
+          new ReportNumericItem(COL_ACTUAL_EXPENSES,
+              Data.getColumnLabel(VIEW_TASKS, COL_ACTUAL_EXPENSES))
               .setPrecision(2),
 
-          new ReportNumericItem(TaskConstants.COL_TASK, loc.crmTask()),
+          new ReportNumericItem(COL_TASK, loc.crmTask()),
           new ReportNumericItem(ProjectConstants.ALS_PROFIT, loc.profit()).setPrecision(2),
 
           new ReportEnumItem(ProjectConstants.ALS_TASK_STATUS,
-              BeeUtils.joinWords(Data.getColumnLabel(TaskConstants.VIEW_TASKS,
+              BeeUtils.joinWords(Data.getColumnLabel(VIEW_TASKS,
                   TaskConstants.COL_STATUS), BeeUtils.parenthesize(loc.crmTasks())),
               TaskStatus.class)
       );
@@ -405,10 +535,10 @@ public enum Report implements HasWidgetSupplier {
       report.setRowGrouping(items.get(ClassifierConstants.ALS_COMPANY_NAME));
 
       for (String item : new String[] {
-          TaskConstants.COL_EXPECTED_DURATION,
-          TaskConstants.COL_ACTUAL_DURATION,
-          TaskConstants.COL_EXPECTED_EXPENSES,
-          TaskConstants.COL_ACTUAL_EXPENSES,
+          COL_EXPECTED_DURATION,
+          COL_ACTUAL_DURATION,
+          COL_EXPECTED_EXPENSES,
+          COL_ACTUAL_EXPENSES,
           ProjectConstants.ALS_PROFIT
       }) {
         report.addColItem(items.get(item));
@@ -418,48 +548,58 @@ public enum Report implements HasWidgetSupplier {
     }
   },
 
-  TASK_REPORT(ModuleAndSub.of(Module.TASKS), TaskConstants.SVC_TASK_REPORT) {
+  TASK_REPORT(ModuleAndSub.of(Module.TASKS), SVC_TASK_REPORT) {
     @Override
     public List<ReportItem> getItems() {
       Dictionary loc = Localized.dictionary();
+
       return Arrays.asList(
-          new ReportTextItem(TaskConstants.COL_TASK, loc.crmTask()),
-          new ReportTextItem(TaskConstants.COL_SUMMARY, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_SUMMARY)),
-          new ReportTextItem(TaskConstants.COL_OWNER, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_OWNER)),
-          new ReportTextItem(TaskConstants.COL_EXECUTOR, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_EXECUTOR)),
-          new ReportTextItem(COL_USER, loc.crmTaskObservers()),
-          new ReportEnumItem(TaskConstants.COL_PRIORITY, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_PRIORITY),
-              TaskConstants.TaskPriority.class),
-          new ReportEnumItem(TaskConstants.COL_STATUS, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_STATUS),
-              TaskStatus.class),
-          new ReportTextItem(TaskConstants.ALS_TASK_TYPE_NAME, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_TASK_TYPE)),
-          new ReportTextItem(TaskConstants.ALS_TASK_PRODUCT_NAME, loc.crmTaskProduct()),
-          new ReportTextItem(ALS_COMPANY_NAME, loc.company()),
-          new ReportDateTimeItem(TaskConstants.COL_START_TIME, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_START_TIME)),
-          new ReportDateTimeItem(TaskConstants.COL_FINISH_TIME, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_FINISH_TIME)),
-          new ReportTextItem(TaskConstants.COL_EXPECTED_DURATION, Data.getColumnLabel(
-              TaskConstants.VIEW_TASKS, TaskConstants.COL_EXPECTED_DURATION)),
-          new ReportTextItem(ProjectConstants.ALS_PROJECT_NAME, loc.project()),
-          new ReportTextItem(ProjectConstants.ALS_STAGE_NAME, loc.prjStage()),
-
-          new ReportTextItem(ALS_DURATION_TYPE_NAME, loc.crmDurationType()),
+          new ReportTextItem(COL_TASK, loc.crmTask()),
+          new ReportTextItem(COL_SUMMARY, Data.getColumnLabel(VIEW_TASKS, COL_SUMMARY)),
+          new ReportEnumItem(COL_PRIORITY,
+              Data.getColumnLabel(VIEW_TASKS, COL_PRIORITY), TaskPriority.class),
+          new ReportDateTimeItem(COL_START_TIME, Data.getColumnLabel(VIEW_TASKS, COL_START_TIME)),
+          new ReportDateTimeItem(COL_FINISH_TIME, Data.getColumnLabel(VIEW_TASKS, COL_FINISH_TIME)),
+          new ReportTimeDurationItem(COL_EXPECTED_DURATION,
+              Data.getColumnLabel(VIEW_TASKS, COL_EXPECTED_DURATION)),
+          new ReportNumericItem(COL_EXPECTED_EXPENSES,
+              Data.getColumnLabel(VIEW_TASKS, COL_EXPECTED_EXPENSES)),
+          new ReportEnumItem(TaskConstants.COL_STATUS,
+              Data.getColumnLabel(VIEW_TASKS, TaskConstants.COL_STATUS), TaskStatus.class),
+          new ReportTextItem(ALS_TASK_TYPE_NAME, Data.getColumnLabel(VIEW_TASKS, COL_TASK_TYPE)),
+          new ReportTextItem(TaskConstants.COL_OWNER,
+              Data.getColumnLabel(VIEW_TASKS, TaskConstants.COL_OWNER)),
+          new ReportTextItem(TaskConstants.COL_OWNER + COL_DEPARTMENT,
+              Data.getColumnLabel(VIEW_TASKS, TaskConstants.COL_OWNER)
+                  + BeeUtils.parenthesize(loc.department())),
+          new ReportTextItem(COL_EXECUTOR, Data.getColumnLabel(VIEW_TASKS, COL_EXECUTOR)),
+          new ReportTextItem(COL_EXECUTOR + COL_DEPARTMENT, Data.getColumnLabel(VIEW_TASKS,
+              COL_EXECUTOR) + BeeUtils.parenthesize(loc.department())),
+          new ReportTextItem(ALS_COMPANY_NAME, Data.getColumnLabel(VIEW_TASKS, COL_COMPANY)),
+          new ReportTextItem(ALS_TASK_PRODUCT_NAME, Data.getColumnLabel(VIEW_TASKS, COL_PRODUCT)),
+          new ReportTextItem(ProjectConstants.ALS_PROJECT_NAME,
+              Data.getColumnLabel(VIEW_TASKS, ProjectConstants.COL_PROJECT)),
+          new ReportTextItem(ProjectConstants.ALS_STAGE_NAME,
+              Data.getColumnLabel(VIEW_TASKS, ProjectConstants.COL_PROJECT_STAGE)),
+          new ReportEnumItem(TaskConstants.COL_EVENT,
+              Data.getColumnLabel(VIEW_TASK_EVENTS, TaskConstants.COL_EVENT), TaskEvent.class),
+          new ReportTextItem(COL_PUBLISHER, loc.crmTaskPublisher()),
+          new ReportTextItem(COL_PUBLISHER + COL_DEPARTMENT,
+              loc.crmTaskPublisher() + BeeUtils.parenthesize(loc.department())),
+          new ReportTextItem(COL_EVENT_NOTE, Data.getColumnLabel(VIEW_TASK_EVENTS, COL_EVENT_NOTE)),
+          new ReportTextItem(COL_COMMENT, Data.getColumnLabel(VIEW_TASK_EVENTS, COL_COMMENT)),
+          new ReportTextItem(ALS_DURATION_TYPE_NAME,
+              Data.getColumnLabel(TBL_EVENT_DURATIONS, COL_DURATION_TYPE)),
           new ReportDateTimeItem(COL_DURATION_DATE,
-              BeeUtils.join(BeeConst.DEFAULT_LIST_SEPARATOR,
-                  loc.crmSpentTime(), loc.unitDaysShort())),
+              Data.getColumnLabel(TBL_EVENT_DURATIONS, COL_DURATION_DATE)),
           new ReportTimeDurationItem(COL_DURATION,
-              BeeUtils.join(BeeConst.DEFAULT_LIST_SEPARATOR,
-                  Data.getColumnLabel(TBL_EVENT_DURATIONS,
-                      COL_DURATION), loc.unitHourShort()))
-
+              Data.getColumnLabel(TBL_EVENT_DURATIONS, COL_DURATION))
       );
+    }
+
+    @Override
+    public String getReportCaption() {
+      return Localized.dictionary().crmTaskReports();
     }
 
     @Override
@@ -468,36 +608,51 @@ public enum Report implements HasWidgetSupplier {
       for (ReportItem item : getItems()) {
         items.put(item.getExpression(), item);
       }
-      ReportInfo report = new ReportInfo(getReportCaption());
+      ReportInfo tasks = new ReportInfo(Localized.dictionary().crmTasks());
 
-      report.addRowItem(items.get(TaskConstants.COL_TASK));
+      Stream.of(COL_TASK, COL_SUMMARY, COL_PRIORITY, COL_START_TIME, COL_FINISH_TIME,
+          COL_EXPECTED_DURATION, COL_EXPECTED_EXPENSES, TaskConstants.COL_STATUS,
+          ALS_TASK_TYPE_NAME, TaskConstants.COL_OWNER, COL_EXECUTOR, COL_EXECUTOR + COL_DEPARTMENT,
+          ALS_COMPANY_NAME, ALS_TASK_PRODUCT_NAME, ProjectConstants.ALS_PROJECT_NAME,
+          ProjectConstants.ALS_STAGE_NAME)
+          .forEach(item -> tasks.addRowItem(items.get(item)));
 
-      for (String item : new String[] {
-          TaskConstants.COL_TASK,
-          TaskConstants.COL_SUMMARY,
-          TaskConstants.COL_OWNER,
-          TaskConstants.COL_EXECUTOR,
-          COL_USER,
-          TaskConstants.COL_PRIORITY,
-          TaskConstants.COL_STATUS,
-          TaskConstants.ALS_TASK_TYPE_NAME,
-          TaskConstants.ALS_TASK_PRODUCT_NAME,
-          ALS_COMPANY_NAME,
-          TaskConstants.COL_START_TIME,
-          TaskConstants.COL_FINISH_TIME,
-          TaskConstants.COL_EXPECTED_DURATION,
-          ProjectConstants.ALS_PROJECT_NAME,
-          ProjectConstants.ALS_STAGE_NAME,
-          ALS_DURATION_TYPE_NAME,
-          COL_DURATION_DATE,
-          COL_DURATION
+      tasks.setColGrouping(items.get(TaskConstants.COL_EVENT));
+      int idx = tasks.addColItem(items.get(TaskConstants.COL_EVENT));
+      tasks.setFunction(idx, ReportFunction.COUNT);
+      tasks.setRowSummary(idx, true);
+      tasks.setColSummary(idx, true);
 
-      }) {
-        report.addColItem(items.get(item));
-      }
-      return Collections.singletonList(report);
+      ReportInfo taskDurations = new ReportInfo(Localized.dictionary().crmTaskDurations());
+
+      idx = taskDurations.addRowItem(items.get(COL_TASK));
+      taskDurations.getRowItems().get(idx).setRelation(tasks.getCaption());
+
+      Stream.of(COL_SUMMARY, TaskConstants.COL_STATUS, COL_START_TIME, COL_FINISH_TIME,
+          COL_EXPECTED_DURATION, COL_EXPECTED_EXPENSES)
+          .forEach(item -> taskDurations.addRowItem(items.get(item)));
+
+      taskDurations.setRowGrouping(items.get(COL_PUBLISHER));
+      taskDurations.addColItem(items.get(COL_DURATION));
+      taskDurations.setColGrouping(items.get(ALS_DURATION_TYPE_NAME));
+
+      ReportInfo hoursByExecutors = new ReportInfo(Localized.dictionary().hoursByExecutors());
+      hoursByExecutors.addRowItem(items.get(COL_PUBLISHER));
+      hoursByExecutors.addColItem(items.get(COL_DURATION));
+      hoursByExecutors.setRowGrouping(items.get(COL_PUBLISHER + COL_DEPARTMENT));
+      hoursByExecutors.setColGrouping(items.get(ALS_DURATION_TYPE_NAME));
+      hoursByExecutors.getColItems().forEach(item -> item.setRelation(taskDurations.getCaption()));
+
+      ReportInfo hoursByCompanies = new ReportInfo(Localized.dictionary().hoursByCompanies());
+      hoursByCompanies.addRowItem(items.get(ALS_COMPANY_NAME));
+      hoursByCompanies.addColItem(items.get(COL_DURATION));
+
+      ReportInfo hoursByTypes = new ReportInfo(Localized.dictionary().hoursByTypes());
+      hoursByTypes.addRowItem(items.get(ALS_DURATION_TYPE_NAME));
+      hoursByTypes.addColItem(items.get(COL_DURATION));
+
+      return Arrays.asList(tasks, taskDurations, hoursByExecutors, hoursByTypes, hoursByCompanies);
     }
-
   },
 
   SERVICE_PAYROLL_REPORT(ModuleAndSub.of(Module.SERVICE), SVC_SERVICE_PAYROLL_REPORT) {
@@ -530,7 +685,7 @@ public enum Report implements HasWidgetSupplier {
               Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_PAYROLL_CONFIRMED + COL_USER)),
           new ReportTextItem(COL_NOTES,
               Data.getColumnLabel(TBL_MAINTENANCE_PAYROLL, COL_NOTES))
-          );
+      );
     }
 
     @Override
@@ -553,6 +708,99 @@ public enum Report implements HasWidgetSupplier {
           COL_PAYROLL_CONFIRMATION_DATE, COL_PAYROLL_CONFIRMED + COL_USER, COL_NOTES)
           .forEach(item -> report.addColItem(items.get(item)));
       return Collections.singletonList(report);
+    }
+  },
+
+  PAYROLL_FUND_REPORT(ModuleAndSub.of(Module.PAYROLL), SVC_PAYROLL_FUND_REPORT) {
+    @Override
+    public List<ReportItem> getItems() {
+      Dictionary dict = Localized.dictionary();
+      return Arrays.asList(
+          new ReportDateItem(ALS_REPORT_TIME_PERIOD, dict.period()),
+
+          new ReportTextItem(COL_OSF_AMOUNT,
+              Data.getColumnLabel(TBL_OBJECT_SALARY_FUND, COL_OSF_AMOUNT)),
+
+          new ReportNumericItem(TradeConstants.COL_TRADE_PAID, dict.trdPaid()).setPrecision(2),
+
+          new ReportTextItem(COL_CURRENCY, dict.currency()),
+
+          new ReportTextItem(TradeConstants.COL_TRADE_DEBT, dict.trdItemStock()),
+
+          new ReportTextItem(COL_LOCATION_NAME, dict.objectLocation()),
+
+          new ReportEnumItem(COL_LOCATION_STATUS,
+              Data.getColumnLabel(VIEW_LOCATIONS, COL_LOCATION_STATUS), ObjectStatus.class),
+
+          new ReportTextItem(COL_COMPANY_CODE, dict.companyCode()),
+
+          new ReportTextItem(COL_COMPANY_NAME, dict.companyName()),
+
+          new ReportTextItem(ALS_COMPANY_TYPE_NAME, dict.companyStatusName()),
+
+          new ReportTextItem(COL_FIRST_NAME, dict.firstName()),
+
+          new ReportTextItem(COL_LAST_NAME, dict.lastName()),
+
+          new ReportTextItem(ALS_LOCATION_MANAGER_FIRST_NAME, BeeUtils.joinWords(dict.manager(),
+              dict.firstName())),
+
+          new ReportTextItem(ALS_LOCATION_MANAGER_LAST_NAME, BeeUtils.joinWords(dict.manager(),
+              dict.lastName())),
+
+          new ReportTextItem(FinanceConstants.ALS_EMPLOYEE_FIRST_NAME,
+              BeeUtils.joinWords(dict.employee(), dict.firstName())),
+
+          new ReportTextItem(FinanceConstants.ALS_EMPLOYEE_LAST_NAME,
+              BeeUtils.joinWords(dict.employee(), dict.lastName()))
+      );
+    }
+
+    @Override
+    public LinkedHashMap<String, Editor> getReportParams() {
+      LinkedHashMap<String, Editor> params = new LinkedHashMap<>();
+      params.put(COL_CURRENCY, Report.getCurrencyEditor());
+      return params;
+    }
+
+    @Override
+    public Collection<ReportInfo> getReports() {
+      Dictionary dict = Localized.dictionary();
+      ReportInfo report = new ReportInfo(getReportCaption());
+
+      Map<String, ReportItem> items = new HashMap<>();
+
+      for (ReportItem item : getItems()) {
+        items.put(item.getExpression(), item);
+      }
+
+      ReportExpressionItem period = new ReportExpressionItem(dict.period());
+      period.append(null, new ReportDateItem(ALS_REPORT_TIME_PERIOD,
+          dict.year()).setFormat(DateTimeFunction.YEAR));
+      period.append(null, new ReportDateItem(ALS_REPORT_TIME_PERIOD,
+          dict.month()).setFormat(DateTimeFunction.MONTH));
+
+      report.addRowItem(period);
+      report.addRowItem(items.get(COL_LOCATION_NAME));
+      report.addRowItem(items.get(COL_OSF_AMOUNT));
+      report.addRowItem(items.get(COL_CURRENCY));
+
+      report.addColItem(items.get(TradeConstants.COL_TRADE_PAID));
+      report.addRowItem(items.get(TradeConstants.COL_TRADE_DEBT));
+
+      report.getFilterItems().add(new ReportDateItem(COL_DATE_FROM, dict.dateFrom()).setFilter(
+          BeeUtils.toString(new YearMonth(new JustDate()).previousMonth().getDate().getDays())
+      ));
+
+      report.getFilterItems().add(new ReportDateItem(COL_DATE_TO, dict.dateTo()).setFilter(
+          BeeUtils.toString(new YearMonth(new JustDate()).getDate().getDays())
+      ));
+      return Collections.singletonList(report);
+    }
+
+    @Override
+    public String getReportCaption() {
+      return Localized.dictionary().payrollFundReport();
     }
   };
 
@@ -590,6 +838,10 @@ public enum Report implements HasWidgetSupplier {
 
   public String getReportName() {
     return reportName;
+  }
+
+  public LinkedHashMap<String, Editor> getReportParams() {
+    return new LinkedHashMap<>();
   }
 
   public Collection<ReportInfo> getReports() {
@@ -642,10 +894,9 @@ public enum Report implements HasWidgetSupplier {
     return null;
   }
 
-  public void showModal(ReportInfo reportInfo) {
+  public void showModal(ReportParameters parameters) {
     ReportInterceptor interceptor = getInterceptor();
-    interceptor.setInitialParameters(new ReportParameters(Collections.singletonMap(COL_RS_REPORT,
-        reportInfo.serialize())));
+    interceptor.setInitialParameters(parameters);
 
     FormFactory.getFormDescription(getFormName(),
         description -> FormFactory.openForm(description, interceptor, presenter -> {
@@ -662,5 +913,20 @@ public enum Report implements HasWidgetSupplier {
 
   protected ReportInterceptor getInterceptor() {
     return new ExtendedReportInterceptor(this);
+  }
+
+  private static Editor getCurrencyEditor() {
+    Relation relation = Relation.create(TBL_CURRENCIES,
+        Collections.singletonList(COL_CURRENCY_NAME));
+    relation.disableNewRow();
+    relation.disableEdit();
+    Editor currency = UnboundSelector.create(relation);
+    DomUtils.setPlaceholder(currency.asWidget(), Localized.dictionary().currencyShort());
+    StyleUtils.setWidth(currency.asWidget(), 80);
+    return currency;
+  }
+
+  private static Editor getWoVatEditor() {
+    return new InputBoolean(Localized.dictionary().trdAmountWoVat());
   }
 }

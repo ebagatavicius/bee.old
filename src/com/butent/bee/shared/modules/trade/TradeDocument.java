@@ -549,7 +549,7 @@ public class TradeDocument implements BeeSerializable {
     }
 
     if (!BeeUtils.isEmpty(getSeries())) {
-      values.put(COL_SERIES, new TextValue(getSeries()));
+      values.put(COL_TRADE_SERIES, new TextValue(getSeries()));
     }
     if (!BeeUtils.isEmpty(getNumber())) {
       values.put(COL_TRADE_NUMBER, new TextValue(getNumber()));

@@ -39,7 +39,7 @@ var BeeSettings = {
     "ChildViewHeaderHeight": "30",
     "ViewActionCreateNew": true,
     "GridActionCreateNew": true,
-    "ChildActionCreateNew": true,
+    "ChildActionCreateNew": false,
     "ActionSaveLarge": false,
     "GridHeaderRowHeight": "600, 24, 1200, 34",
     "GridBodyRowHeight": "600, 21, 1200, 43",

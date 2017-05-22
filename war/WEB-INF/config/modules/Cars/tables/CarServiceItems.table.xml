@@ -9,6 +9,8 @@
 
     <Relation name="Item" notNull="true" relation="Items" label="=itemOrService" />
 
+    <String name="Duration" precision="10" label="=expectedDuration" />
+
     <Numeric name="Quantity" precision="15" scale="5" notNull="true" label="=quantity" />
     <Numeric name="Price" precision="18" scale="8" label="=price" />
 

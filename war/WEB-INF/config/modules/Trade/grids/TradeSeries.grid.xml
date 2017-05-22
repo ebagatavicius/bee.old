@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  
-  name="TradeSeries" viewName="TradeSeries" caption="=seriesPlural"
-  >
+
+        name="TradeSeries" viewName="TradeSeries" caption="=seriesPlural"
+>
   <g:columns>
     <DataColumn name="SeriesName" minWidth="100" visible="true" />
+
+    <DataColumn name="NumberPrefix" carry="true" />
+    <DataColumn name="NumberLength" minValue="0" maxValue="10" carry="true" />
 
     <DataColumn name="Notes" whiteSpace="normal" flexGrow="1" />
   </g:columns>

@@ -1,64 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="ProjectTemplates" source="ProjectTemplates" caption="=prjTemplates"
   editForm="ProjectTemplate" newRowForm="ProjectTemplate" newRowCaption="=prjNewTemplate"
   >
   <Relation renderColumns="Name" />
   <Columns>
-    <SimpleColumn name="Priority" />
-    <SimpleColumn name="Name" />
-    
-    <SimpleColumn name="Type" />
-    <SimpleJoin name="Type" joinType="LEFT">
-      <SimpleColumn name="Name" alias="TypeName" />
-    </SimpleJoin>
-    
-    <SimpleColumn name="Company" />
-    <SimpleJoin name="Company" joinType="LEFT">
-      <SimpleColumn alias="CompanyName" name="Name" />
-      <SimpleJoin joinType="LEFT" name="CompanyType">
-        <SimpleColumn name="Name" alias="CompanyTypeName" />
-      </SimpleJoin>
-    </SimpleJoin>
-    
-    <SimpleColumn name="Contact" />
-    <SimpleJoin name="Contact" joinType="LEFT">
-      <SimpleColumn alias="ContactPerson" name="Person" />
-      <SimpleJoin name="Person" joinType="LEFT">
-        <SimpleColumn alias="ContactFirstName" name="FirstName" />
-        <SimpleColumn alias="ContactLastName" name="LastName" />
-      </SimpleJoin>
-      <SimpleJoin name="Company" joinType="LEFT">
-        <SimpleColumn alias="ContactCompanyName" name="Name" />
-      </SimpleJoin>
-    </SimpleJoin>
-
-    <SimpleColumn name="Category" />
-    <SimpleJoin joinType="LEFT" name="Category">
-      <SimpleColumn name="Name" alias="CategoryName" />
-    </SimpleJoin>
+    <xi:include href="viewcolumns/ProjectInfo.viewcolumns.xml" />
 
     <SimpleColumn name="Term" />
-    <SimpleColumn name="ExpectedDuration" />
-    <SimpleColumn name="TimeUnit" />
-    <SimpleJoin name="TimeUnit" joinType="LEFT">
-      <SimpleColumn name="Name" alias="UnitName" />
-      <SimpleColumn name="Factor" />
-      <SimpleColumn name="BaseUnit" />
-    </SimpleJoin>
-    <SimpleColumn name="Price" />
-    <SimpleColumn name="ContractPrice" />
-    <SimpleColumn name="Currency" />
-    <SimpleJoin joinType="LEFT" name="Currency">
-      <SimpleColumn name="Name" alias="CurrencyName" />
-    </SimpleJoin>
-    <SimpleColumn name="Description" />
-    
-    <SimpleColumn name="Expenses" alias="OtherExpenses" label="=prjOtherExpenses" />
     <SimpleColumn name="DefaultTMLStage" />
-
   </Columns>
-
 </View>
  

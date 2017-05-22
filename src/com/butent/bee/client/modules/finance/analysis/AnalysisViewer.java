@@ -21,9 +21,11 @@ import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Horizontal;
 import com.butent.bee.client.modules.finance.FinanceKeeper;
+import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
 import com.butent.bee.client.view.HeaderImpl;
 import com.butent.bee.client.view.HeaderView;
@@ -33,6 +35,8 @@ import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.event.DataChangeEvent;
+import com.butent.bee.shared.data.value.ValueType;
+import com.butent.bee.shared.export.XStyle;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
@@ -131,7 +135,7 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
 
   private static BeeLogger logger = LogUtils.getLogger(AnalysisViewer.class);
 
-  private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "fin-AnalysisViewer-";
+  private static final String STYLE_PREFIX = FinanceKeeper.STYLE_PREFIX + "AnalysisViewer-";
 
   private static final String STYLE_CONTAINER = STYLE_PREFIX + "container";
   private static final String STYLE_BODY = STYLE_PREFIX + "body";
@@ -233,6 +237,10 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
         BeeKeeper.getScreen().closeWidget(this);
         break;
 
+      case EXPORT:
+        onExport();
+        break;
+
       case PRINT:
         Printer.print(this);
         break;
@@ -267,11 +275,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
   }
 
   private void onSave() {
-    List<String> labels = results.getHeaderLabels(formatRange(results.getHeaderRange()), false)
-        .stream()
-        .map(AnalysisLabel::getText).collect(Collectors.toList());
-
+    List<String> labels = getHeaderLabels();
     String caption = BeeUtils.isEmpty(labels) ? getCaption() : BeeUtils.joinItems(labels);
+
     int maxLength = Data.getColumnPrecision(VIEW_ANALYSIS_RESULTS, COL_ANALYSIS_RESULT_CAPTION);
 
     Global.inputString(Localized.dictionary().actionSave(),
@@ -329,12 +335,14 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
       }
     }
 
-    logger.debug("columns", columnIds);
-    logger.debug("c labels", columnLabels);
-    logger.debug("c split types", columnSplitTypes);
-    logger.debug("c split values", columnSplitValues);
-    logger.debug("c cell types", columnCellTypes);
-    logger.addSeparator();
+    if (Global.isDebug()) {
+      logger.debug("columns", columnIds);
+      logger.debug("c labels", columnLabels);
+      logger.debug("c split types", columnSplitTypes);
+      logger.debug("c split values", columnSplitValues);
+      logger.debug("c cell types", columnCellTypes);
+      logger.addSeparator();
+    }
 
     for (BeeRow row : results.getRows()) {
       if (results.isRowVisible(row)) {
@@ -359,12 +367,14 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
       }
     }
 
-    logger.debug("rows", rowIds);
-    logger.debug("r labels", rowLabels);
-    logger.debug("r split types", rowSplitTypes);
-    logger.debug("r split values", rowSplitValues);
-    logger.debug("r cell types", rowCellTypes);
-    logger.addSeparator();
+    if (Global.isDebug()) {
+      logger.debug("rows", rowIds);
+      logger.debug("r labels", rowLabels);
+      logger.debug("r split types", rowSplitTypes);
+      logger.debug("r split values", rowSplitValues);
+      logger.debug("r cell types", rowCellTypes);
+      logger.addSeparator();
+    }
 
     for (AnalysisValue value : results.getValues()) {
       long rowId = value.getRowId();
@@ -392,32 +402,44 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
     if (!columnSplitTree.isEmpty()) {
       columnSplitTree.forEach((id, list) -> {
         sort(list);
-        logger.debug("cst", id, list);
+
+        if (Global.isDebug()) {
+          logger.debug("cst", id, list);
+        }
       });
     }
 
     if (!rowSplitTree.isEmpty()) {
       rowSplitTree.forEach((id, list) -> {
         sort(list);
-        logger.debug("rst", id, list);
+
+        if (Global.isDebug()) {
+          logger.debug("rst", id, list);
+        }
       });
     }
 
     for (long id : columnIds) {
       columnSpan.put(id, getSpan(columnSplitTree.get(id), columnCellTypes.get(id)));
     }
-    logger.debug("c span", columnSpan);
+    if (Global.isDebug()) {
+      logger.debug("c span", columnSpan);
+    }
 
     for (long id : rowIds) {
       rowSpan.put(id, getSpan(rowSplitTree.get(id), rowCellTypes.get(id)));
     }
-    logger.debug("r span", rowSpan);
-    logger.addSeparator();
+    if (Global.isDebug()) {
+      logger.debug("r span", rowSpan);
+      logger.addSeparator();
+    }
 
-    logger.debug("values", values.size(),
-        values.values().stream().mapToInt(List::size).sum());
-    values.values().forEach(list -> list.forEach(value -> logger.debug(value)));
-    logger.addSeparator();
+    if (Global.isDebug()) {
+      logger.debug("values", values.size(),
+          values.values().stream().mapToInt(List::size).sum());
+      values.values().forEach(list -> list.forEach(value -> logger.debug(value)));
+      logger.addSeparator();
+    }
   }
 
   private static void sort(List<SplitTree> list) {
@@ -646,7 +668,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
         c++;
       }
 
-      logger.debug("column labels", maxColumnLabels);
+      if (Global.isDebug()) {
+        logger.debug("column labels", maxColumnLabels);
+      }
     }
 
     if (maxColumnSplitTypes > 0) {
@@ -679,7 +703,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
 
                 for (int j = 0; j < trees.size(); j++) {
                   SplitTree tree = trees.get(j);
-                  logger.debug("c flat", typeIndex, j, tree.valueIndex, tree.size());
+                  if (Global.isDebug()) {
+                    logger.debug("c flat", typeIndex, j, tree.valueIndex, tree.size());
+                  }
 
                   AnalysisSplitValue splitValue = BeeUtils.getQuietly(splitValues, tree.valueIndex);
                   if (splitValue != null) {
@@ -732,7 +758,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
         c += cSpan;
       }
 
-      logger.debug("column splits", maxColumnSplitTypes);
+      if (Global.isDebug()) {
+        logger.debug("column splits", maxColumnSplitTypes);
+      }
     }
 
     if (columnsNeedBudget) {
@@ -761,7 +789,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
         c += span;
       }
 
-      logger.debug("column cell types");
+      if (Global.isDebug()) {
+        logger.debug("column cell types");
+      }
     }
 
     r = rStartValues;
@@ -769,7 +799,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
     Map<Integer, Integer> lastSplitCells = new HashMap<>();
 
     for (long rowId : rowIds) {
-      logger.debug("row", rowId);
+      if (Global.isDebug()) {
+        logger.debug("row", rowId);
+      }
 
       if (maxRowLabels > 0) {
         List<AnalysisLabel> labels = rowLabels.get(rowId);
@@ -781,7 +813,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
             table.setWidgetAndStyle(r, c + i, render(labels.get(i)), STYLE_ROW);
           }
 
-          logger.debug("labels", labels.size());
+          if (Global.isDebug()) {
+            logger.debug("labels", labels.size());
+          }
         }
       }
 
@@ -810,7 +844,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
 
                 for (int i = 0; i < trees.size(); i++) {
                   SplitTree tree = trees.get(i);
-                  logger.debug("r flat", typeIndex, i, tree.valueIndex, tree.size());
+                  if (Global.isDebug()) {
+                    logger.debug("r flat", typeIndex, i, tree.valueIndex, tree.size());
+                  }
 
                   AnalysisSplitValue splitValue = BeeUtils.getQuietly(splitValues, tree.valueIndex);
                   if (splitValue != null) {
@@ -836,7 +872,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
             }
           }
 
-          logger.debug("splits", splitTypes.size());
+          if (Global.isDebug()) {
+            logger.debug("splits", splitTypes.size());
+          }
         }
       }
 
@@ -855,7 +893,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
             }
           }
 
-          logger.debug("cell types", size);
+          if (Global.isDebug()) {
+            logger.debug("cell types", size);
+          }
         }
       }
 
@@ -865,7 +905,9 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
           List<AnalysisValue> analysisValues = values.get(rowId, columnId);
 
           renderValues(analysisValues, table, r, c);
-          logger.debug("column", columnId, "values", analysisValues.size());
+          if (Global.isDebug()) {
+            logger.debug("column", columnId, "values", analysisValues.size());
+          }
         }
 
         c += columnSpan.get(columnId);
@@ -1074,5 +1116,41 @@ class AnalysisViewer extends Flow implements HasCaption, HandlesActions, Printab
         target.getStyle().setColor(fg);
       }
     }
+  }
+
+  private void onExport() {
+    final HtmlTable table = getTable();
+
+    if (table != null && !table.isEmpty()) {
+      final String caption = getCaption();
+
+      Exporter.confirm(caption, new Exporter.FileNameCallback() {
+        @Override
+        public void onSuccess(String fileName) {
+          Map<String, ValueType> types = new HashMap<>();
+          types.put(STYLE_VALUE, ValueType.NUMBER);
+
+          Map<String, XStyle> styles = new HashMap<>();
+          styles.put(STYLE_LABEL, XStyle.center());
+          styles.put(STYLE_SPLIT, XStyle.center());
+          styles.put(STYLE_TYPE, XStyle.center());
+
+          styles.put(STYLE_VALUE, XStyle.right());
+
+          Exporter.export(caption, getHeaderLabels(), table, types, styles, null, fileName);
+        }
+      });
+    }
+  }
+
+  private HtmlTable getTable() {
+    Widget widget = UiHelper.getChildByStyleName(this, STYLE_TABLE);
+    return (widget instanceof HtmlTable) ? (HtmlTable) widget : null;
+  }
+
+  private List<String> getHeaderLabels() {
+    return results.getHeaderLabels(formatRange(results.getHeaderRange()), false)
+        .stream()
+        .map(AnalysisLabel::getText).collect(Collectors.toList());
   }
 }

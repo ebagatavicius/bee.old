@@ -7,4 +7,6 @@
         parameters="TripProfitReport" />
   <Item name="TransportFuelUsageReport" label="=trReportFuelUsage" service="report"
         parameters="FuelUsageReport" />
+  <Item name="TransportTripCostsReport" label="=trImportCosts" service="report"
+        parameters="TripCostsReport" />
 </Entry>

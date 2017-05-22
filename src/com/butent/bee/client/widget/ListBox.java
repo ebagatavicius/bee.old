@@ -167,22 +167,22 @@ public class ListBox extends CustomWidget implements Editor, HasItems, HasValueS
     return "list";
   }
 
-  public int getIndex(String text) {
+  public int getIndex(String value) {
     int index = BeeConst.UNDEF;
-    if (BeeUtils.isEmpty(text)) {
+    if (BeeUtils.isEmpty(value)) {
       return index;
     }
 
     if (isValueNumeric()) {
-      if (BeeUtils.isDigit(BeeUtils.trim(text))) {
-        int z = BeeUtils.toInt(text) - getValueStartIndex();
+      if (BeeUtils.isDigit(BeeUtils.trim(value))) {
+        int z = BeeUtils.toInt(value) - getValueStartIndex();
         if (isIndex(z)) {
           index = z;
         }
       }
     } else {
       for (int i = 0; i < getItemCount(); i++) {
-        if (BeeUtils.same(getValue(i), text)) {
+        if (BeeUtils.same(getValue(i), value)) {
           index = i;
           break;
         }

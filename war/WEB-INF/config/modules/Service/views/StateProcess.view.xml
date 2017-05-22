@@ -26,10 +26,12 @@
     <SimpleColumn name="Item" />
     <SimpleJoin joinType="LEFT" name="Item">
       <SimpleColumn name="Name" alias="ItemName" />
+      <SimpleColumn name="Price" />
     </SimpleJoin>
     <SimpleColumn name="Term" />
     <SimpleColumn name="Warranty" />
     <SimpleColumn name="DaysActive" />
+    <SimpleColumn name="ProhibitEdit" />
   </Columns>
   <Order>
     <OrderBy column="Role" />

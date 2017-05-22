@@ -34,8 +34,9 @@
     </CalcColumn>
 
     <DataColumn name="PrimaryDocumentItem" visible="false" />
-    <DataColumn name="PrimaryDocument" editSource="PrimaryDocument" editViewName="TradeDocuments" />
+    <DataColumn name="PrimaryDocument" editSource="PrimaryDocument" editViewName="TradeDocuments"
+                visible="false" />
 
-    <DataColumn name="PrimaryDate" />
+    <DataColumn name="PrimaryDate" visible="false" />
   </g:columns>
 </g:Grid>

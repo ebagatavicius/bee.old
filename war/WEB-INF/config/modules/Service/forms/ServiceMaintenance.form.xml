@@ -59,31 +59,31 @@
               <FlowPanel style="&mfld; width: 21em;" >
                 <Label for="Type" class="bee-required" style="&flbl;"/>
                 <DataSelector name="Type" source="Type" required="true" choiceColumns="Name" style="&finp;"
-                              newRowEnabled="false" renderColumns="TypeName" />
+                              newRowEnabled="false" renderColumns="TypeName" tabIndex="10"/>
               </FlowPanel>
             </FlowPanel>
 
             <FlowPanel class="&mrcl;" style="&mrst;">
               <FlowPanel style="&mfld; width: 21em;" for="Company">
                 <Label text="=client" class="bee-svc-panel-title" style="&flbl;"/>
-                <DataSelector source="Company" searchableColumns="Name TypeName Phone Email Address CompanyName"
+                <DataSelector name="Company" source="Company" searchableColumns="Name TypeName Phone Email Address CompanyName"
                               choiceColumns="Name TypeName"
-                              renderColumns="CompanyName CompanyTypeName" style="&finp;"/>
+                              renderColumns="CompanyName CompanyTypeName" style="&finp;" tabIndex="30"/>
               </FlowPanel>
             </FlowPanel>
 
             <FlowPanel class="&mrcl;" style="&mrst;">
-              <FlowPanel style="&mfld; width: 21em;" for="ServiceObject">
+              <FlowPanel style="&mfld; width: 31em;" for="ServiceObject">
                 <Label text="=svcDevice" class="bee-required bee-svc-panel-title" style="&flbl;"/>
                 <DataSelector name="ServiceObject" source="ServiceObject" updateMode="row"
                               choiceColumns="SerialNo ArticleNo CategoryName ManufacturerName Model CustomerName ContactPersonFirstName ContactPersonLastName ContactPersonPhone"
-                              style="&finp;"/>
+                              renderColumns="Model CategoryName ArticleNo" style="&finp;" tabIndex="50"/>
               </FlowPanel>
               <FlowPanel for="ServiceObject">
                 <FaLabel name="ServiceObjectAdd" char="plus_circle" class="bee-MultiSelector-plus bee-svc-add-button"/>
               </FlowPanel>
-              <FlowPanel style="&mfld; margin-top: 5ex;" for="Urgent">
-                <CheckBox source="Urgent" summarize="true"/>
+              <FlowPanel style="&mfld; margin-top: 5ex;" for="ServiceObject">
+                <CheckBox name="SearchingAllDevices" summarize="true" text="=svcSearchingAllDevices"/>
               </FlowPanel>
             </FlowPanel>
           </FlowPanel>
@@ -92,8 +92,8 @@
             <FlowPanel class="&mrcl;" style="&mrst;" for="State">
               <FlowPanel style="&mfld; width: 21em;" >
                 <Label for="State" text="=status" class="bee-required" style="&flbl;"/>
-                <DataSelector name="State" source="State" required="true" choiceColumns="Name" style="&finp;"
-                              caching="local" newRowEnabled="false"/>
+                <DataSelector name="State" source="State" required="true" choiceColumns="Name" renderColumns="StateName" style="&finp;"
+                              caching="local" newRowEnabled="false" tabIndex="20"/>
               </FlowPanel>
             </FlowPanel>
 
@@ -102,11 +102,14 @@
                 <Label for="Contact" class="bee-svc-panel-title" style="&flbl;"/>
                   <DataSelector name="Contact" source="Contact" options="Company"
                                 choiceColumns="FirstName LastName Phone Email Address CompanyName"
-                                renderColumns="ContactFirstName ContactLastName" style="&finp;"/>
+                                renderColumns="ContactFirstName ContactLastName" style="&finp;" tabIndex="40"/>
               </FlowPanel>
               <FlowPanel>
                 <FaLabel name="ContactAdd" char="plus_circle" class="bee-MultiSelector-plus bee-svc-add-button"/>
               </FlowPanel>
+            </FlowPanel>
+            <FlowPanel style="&mfld; margin-top: 5.6ex;" for="Urgent">
+              <CheckBox source="Urgent" summarize="true" tabIndex="60"/>
             </FlowPanel>
           </FlowPanel>
         </FlowPanel>
@@ -126,7 +129,7 @@
                   <Label for="Model" />
                   <TextLabel source="Model"/>
                 </row>
-                <row for="Manufacturer" data="ServiceObjects">
+                <row for="ServiceManufacturer" data="ServiceObjects">
                   <Label text="=tcdBrand" />
                   <TextLabel source="ManufacturerName"/>
                 </row>
@@ -172,7 +175,7 @@
               <FlowPanel style="&mfld; width: 30em;">
                 <Label for="Equipment" style="&flbl;"/>
                 <MultiSelector source="Equipment" viewName="Equipment" filter="IsValid" choiceColumns="Name" renderColumns="Name"
-                               class="bee-svc-maintenance-equipment-area" />
+                               class="bee-svc-maintenance-equipment-area" tabIndex="70"/>
               </FlowPanel>
             </FlowPanel>
           </FlowPanel>
@@ -181,7 +184,7 @@
             <FlowPanel class="&mrcl;" style="&mrst;" for="Description">
               <FlowPanel style="&mfld;width: 30em;">
                 <Label for="Description" style="&flbl;"/>
-                <InputArea source="Description" visibleLines="4" style="&finp;"/>
+                <InputArea source="Description" visibleLines="4" style="&finp;" tabIndex="80"/>
               </FlowPanel>
             </FlowPanel>
           </FlowPanel>
@@ -191,13 +194,13 @@
           <FlowPanel class="bee-svc-maintenance-panel" >
             <FlowPanel class="flexBox-horizontal &mrcl;" style="&mrst;">
               <FlowPanel style="&mfld; width: 21em;" >
-                <CheckBox name="Warranty" text="=svcWarrantyMaintenance" summarize="true" style="&finp;"/>
+                <CheckBox name="Warranty" text="=svcWarrantyMaintenance" summarize="true" style="&finp;" tabIndex="90" />
               </FlowPanel>
 
               <FlowPanel name="WarrantyMaintenancePanel" style="&mfld;" for="WarrantyMaintenance">
                 <Label for="WarrantyMaintenance" style="&flbl;" class="bee-required"/>
                 <DataSelector name="WarrantyMaintenance" source="WarrantyMaintenance" choiceColumns="Id"
-                              filter="WarrantyValidTo > {t}" style="&finp;"/>
+                              filter="WarrantyValidTo > {t}" style="&finp;" tabIndex="130" />
               </FlowPanel>
             </FlowPanel>
           </FlowPanel>
@@ -227,7 +230,7 @@
             <FlowPanel class="&mrcl;" style="&mrst;" for="Warehouse">
               <FlowPanel style="&mfld; width: 21em;" >
                 <Label for="Warehouse" style="&flbl;"/>
-                <DataSelector source="Warehouse" style="&finp;" visible="true" />
+                <DataSelector source="Warehouse" style="&finp;" visible="true" tabIndex="100"/>
               </FlowPanel>
             </FlowPanel>
 
@@ -235,7 +238,7 @@
               <FlowPanel style="&mfld; width: 21em;" >
                 <Label for="Department" class="bee-required" style="&flbl;"/>
                 <DataSelector name="Department" source="Department" required="true" renderColumns="DepartmentName"
-                              style="&finp;"/>
+                              style="&finp;" tabIndex="110"/>
               </FlowPanel>
             </FlowPanel>
 
@@ -243,7 +246,7 @@
               <FlowPanel style="&mfld; width: 21em;" >
                 <Label for="Repairer" style="&flbl;"/>
                 <DataSelector source="Repairer" renderColumns="RepairerFirstName RepairerLastName"
-                              style="&finp;"/>
+                              style="&finp;" tabIndex="120"/>
               </FlowPanel>
             </FlowPanel>
           </FlowPanel>
@@ -252,12 +255,14 @@
             <FlowPanel name="WarrantyPanel" class="flexBox-horizontal" style="&mrst;width: 32em;" >
               <FlowPanel style="&mfld;" for="WarrantyType">
                 <Label for="WarrantyType" style="&flbl;"/>
-                <DataSelector source="WarrantyType" style="&finp;"/>
+                <DataSelector name="WarrantyType" source="WarrantyType" style="&finp;"
+                              newRowEnabled="true" newRowColumns="Name Duration" tabIndex="140"/>
               </FlowPanel>
 
               <FlowPanel style="&mfld;" for="WarrantyValidTo" >
                 <Label for="WarrantyValidTo" style="&flbl;"/>
-                <InputDateTime source="WarrantyValidTo" style="&finp;"/>
+                <InputDateTime name="WarrantyValidTo" source="WarrantyValidTo" style="&finp;"
+                               format="DATE_SHORT" tabIndex="150"/>
               </FlowPanel>
             </FlowPanel>
           </FlowPanel>

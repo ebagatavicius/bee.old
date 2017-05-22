@@ -895,6 +895,11 @@ public final class StyleUtils {
     return getBottom(obj.getElement());
   }
 
+  public static List<String> getClassNames(Element el) {
+    Assert.notNull(el);
+    return splitClasses(DomUtils.getClassName(el));
+  }
+
   public static String getCssText(Element el) {
     Assert.notNull(el);
     return getCssText(el.getStyle());

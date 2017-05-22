@@ -11,6 +11,7 @@ import com.butent.bee.shared.utils.Codec;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -29,14 +30,18 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
   public static final EnumSet<Effect> RESET_REFRESH = EnumSet.of(Effect.RESET, Effect.REFRESH);
   public static final EnumSet<Effect> CANCEL_RESET_REFRESH = EnumSet.allOf(Effect.class);
 
+  private static final EnumSet<Effect> JUST_REFRESH = EnumSet.of(Effect.REFRESH);
+
   private static final Type<Handler> TYPE = new Type<>();
 
-  public static void fire(FiresModificationEvents em, String viewName, EnumSet<Effect> effects) {
+  public static void fire(FiresModificationEvents em, String viewName, EnumSet<Effect> effects,
+      Long parentId) {
+
     Assert.notNull(em);
     Assert.notEmpty(viewName);
     Assert.notEmpty(effects);
 
-    em.fireModificationEvent(new DataChangeEvent(viewName, effects), Locality.ENTANGLED);
+    em.fireModificationEvent(new DataChangeEvent(viewName, effects, parentId), Locality.ENTANGLED);
   }
 
   public static void fire(FiresModificationEvents em, Collection<String> viewNames,
@@ -50,32 +55,41 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
   }
 
   public static void fireLocal(FiresModificationEvents em, String viewName,
-      EnumSet<Effect> effects) {
+      EnumSet<Effect> effects, Long parentId) {
+
     Assert.notNull(em);
     Assert.notEmpty(viewName);
     Assert.notEmpty(effects);
 
-    em.fireModificationEvent(new DataChangeEvent(viewName, effects), Locality.LOCAL);
+    em.fireModificationEvent(new DataChangeEvent(viewName, effects, parentId), Locality.LOCAL);
   }
 
   public static void fireLocalRefresh(FiresModificationEvents em, String viewName) {
-    fireLocal(em, viewName, EnumSet.of(Effect.REFRESH));
+    fireLocalRefresh(em, viewName, null);
   }
 
-  public static void fireLocalReset(FiresModificationEvents em, String viewName) {
-    fireLocal(em, viewName, EnumSet.of(Effect.REFRESH, Effect.RESET));
+  public static void fireLocalRefresh(FiresModificationEvents em, String viewName, Long parentId) {
+    fireLocal(em, viewName, JUST_REFRESH, parentId);
+  }
+
+  public static void fireLocalReset(FiresModificationEvents em, String viewName, Long parentId) {
+    fireLocal(em, viewName, RESET_REFRESH, parentId);
   }
 
   public static void fireRefresh(FiresModificationEvents em, String viewName) {
-    fire(em, viewName, EnumSet.of(Effect.REFRESH));
+    fireRefresh(em, viewName, null);
+  }
+
+  public static void fireRefresh(FiresModificationEvents em, String viewName, Long parentId) {
+    fire(em, viewName, JUST_REFRESH, parentId);
   }
 
   public static void fireRefresh(FiresModificationEvents em, Collection<String> viewNames) {
-    fire(em, viewNames, EnumSet.of(Effect.REFRESH));
+    fire(em, viewNames, JUST_REFRESH);
   }
 
-  public static void fireReset(FiresModificationEvents em, String viewName) {
-    fire(em, viewName, EnumSet.of(Effect.REFRESH, Effect.RESET));
+  public static void fireReset(FiresModificationEvents em, String viewName, Long parentId) {
+    fire(em, viewName, RESET_REFRESH, parentId);
   }
 
   public static HandlerRegistration register(EventBus eventBus, Handler handler) {
@@ -87,9 +101,12 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
   private final Set<String> viewNames = new HashSet<>();
   private EnumSet<Effect> effects;
 
-  private DataChangeEvent(String viewName, EnumSet<Effect> effects) {
+  private Long parentId;
+
+  private DataChangeEvent(String viewName, EnumSet<Effect> effects, Long parentId) {
     viewNames.add(viewName);
     this.effects = effects;
+    this.parentId = parentId;
   }
 
   private DataChangeEvent(Collection<String> views, EnumSet<Effect> effects) {
@@ -107,15 +124,13 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
   @Override
   public void deserialize(String s) {
     String[] arr = Codec.beeDeserializeCollection(s);
-    Assert.lengthEquals(arr, 2);
+    Assert.lengthEquals(arr, 3);
 
     viewNames.clear();
 
     String[] packedViews = Codec.beeDeserializeCollection(arr[0]);
     if (!ArrayUtils.isEmpty(packedViews)) {
-      for (String pv : packedViews) {
-        viewNames.add(pv);
-      }
+      Collections.addAll(viewNames, packedViews);
     }
 
     this.effects = EnumSet.noneOf(Effect.class);
@@ -126,6 +141,8 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
         effects.add(Codec.unpack(Effect.class, pe));
       }
     }
+
+    this.parentId = BeeUtils.toLongOrNull(arr[2]);
   }
 
   @Override
@@ -136,6 +153,10 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
   @Override
   public Kind getKind() {
     return Kind.DATA_CHANGE;
+  }
+
+  public Long getParentId() {
+    return parentId;
   }
 
   @Override
@@ -169,7 +190,7 @@ public class DataChangeEvent extends ModificationEvent<DataChangeEvent.Handler> 
       }
     }
 
-    Object[] arr = new Object[] {getViewNames(), packedEffects};
+    Object[] arr = new Object[] {getViewNames(), packedEffects, getParentId()};
     return Codec.beeSerialize(arr);
   }
 

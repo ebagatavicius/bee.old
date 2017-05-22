@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form [
+    <!ENTITY c1 "min-width: 8em;">
+    <!ENTITY dt "width: 10em;">
+    <!ENTITY cbc "padding-left: 1em; vertical-align: top;">
+    <!ENTITY flt "width: 24em;">
+    <!ENTITY glst "margin-right: 1em;">
+    <!ENTITY gitems '<item>-</item>
+      <item value="type">=itemType</item>
+      <item value="group">=itemGroup</item>
+      <item value="item">=item</item>
+      <item value="article">=article</item>
+      <item value="unit">=unit</item>
+      <item value="warehouse">=warehouse</item>
+      <item value="supplier">=supplier</item>
+      <item value="year">=receivedYear</item>
+      <item value="month">=receivedMonth</item>'>
+    ]>
+<f:Form xmlns="http://www.butent.com/widget"
+        xmlns:f="http://www.butent.com/form"
+
+        name="TradeMovementOfGoodsReport" caption="=trdMovementOfGoods"
+>
+  <FlowPanel class="flexBox-vertical">
+    <Table kind="custom" style="margin-top: 1vh;">
+      <col index="0" kind="label" />
+      <col index="2" cellStyle="padding-right: 2em;" />
+      <col index="3" kind="label" />
+      <col index="5" kind="label" />
+
+      <row>
+        <Label text="=dateFrom" class="bee-required" style="&c1;" />
+        <InputDateTime name="StartDate" style="&dt;" />
+
+        <cell style="&cbc;">
+          <CheckBox name="Quantity" text="=quantity" />
+        </cell>
+
+        <Label text="=price" />
+        <ListBox name="Price" enumKey="ItemPrice" value="-" />
+
+        <Label text="=trdReportColumnsStock" />
+        <ListBox name="StockColumns">
+          <item>-</item>
+          <item value="warehouse">=warehouse</item>
+          <item value="type">=itemType</item>
+          <item value="group">=itemGroup</item>
+          <item value="item">=item</item>
+          <item value="article">=article</item>
+          <item value="unit">=unit</item>
+          <item value="supplier">=supplier</item>
+          <item value="year">=receivedYear</item>
+          <item value="month">=receivedMonth</item>
+        </ListBox>
+      </row>
+
+      <row>
+        <Label text="=dateTo" class="bee-required" />
+        <InputDateTime name="EndDate" style="&dt;" />
+
+        <cell style="&cbc;">
+          <CheckBox name="Amount" text="=amount" />
+        </cell>
+
+        <Label text="=currency" />
+        <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
+                         newRowEnabled="false" editEnabled="false" style="width: 5em;" />
+
+        <Label text="=trdReportColumnsMovement" />
+        <ListBox name="MovementColumns">
+          <item>-</item>
+          <item value="operation_type">=trdOperationType</item>
+          <item value="operation">=trdOperation</item>
+          <item value="operation_type,warehouse">=trdOperationType+, +=warehouse</item>
+          <item value="operation,warehouse">=trdOperation+, +=warehouse</item>
+        </ListBox>
+      </row>
+    </Table>
+
+    <Disclosure open="false">
+      <Label text="=filters" />
+      <Table kind="custom" style="margin-top: 5px;">
+        <col index="0" kind="label" />
+        <col index="2" kind="label" />
+
+        <row>
+          <Label text="=warehouses" style="&c1;" />
+          <MultiSelector name="Warehouses" viewName="Warehouses" renderColumns="Code"
+                         choiceColumns="Code Name" newRowEnabled="false" editPopup="true"
+                         style="&flt;" summarize="true" />
+
+          <Label text="=itemTypes" />
+          <MultiSelector name="ItemTypes" viewName="CategoryTree" renderColumns="Name"
+                         choiceColumns="ParentName Name" newRowEnabled="false"
+                         style="&flt;" summarize="true" />
+        </row>
+
+        <row>
+          <Label text="=suppliers" style="&c1;" />
+          <MultiSelector name="Suppliers" viewName="Companies" renderColumns="Name"
+                         choiceColumns="Name TypeName" newRowEnabled="false" editPopup="true"
+                         style="&flt;" summarize="true" />
+
+          <Label text="=itemGroups" />
+          <MultiSelector name="ItemGroups" viewName="CategoryTree" renderColumns="Name"
+                         choiceColumns="ParentName Name" newRowEnabled="false"
+                         style="&flt;" summarize="true" />
+        </row>
+
+        <row>
+          <Label text="=manufacturers" style="&c1;" />
+          <MultiSelector name="Manufacturers" viewName="Companies" renderColumns="Name"
+                         choiceColumns="Name TypeName" newRowEnabled="false" editPopup="true"
+                         style="&flt;" summarize="true" />
+
+          <Label text="=itemCategories" />
+          <MultiSelector name="ItemCategories" viewName="CategoryTree" renderColumns="Name"
+                         choiceColumns="ParentName Name" newRowEnabled="false"
+                         style="&flt;" summarize="true" />
+        </row>
+
+        <row>
+          <Label text="=receivedDateFrom" style="&c1;" />
+          <FlowPanel>
+            <InputDateTime name="ReceivedFrom" style="&dt;" summarize="true" />
+
+            <Label text="=dateToShort"
+                   style="display: inline-block; box-sizing: border-box; min-width: 4em; padding-right: 6px; text-align: right;" />
+            <InputDateTime name="ReceivedTo" style="&dt;" summarize="true" />
+          </FlowPanel>
+
+          <Label text="=goods" />
+          <MultiSelector name="Items" viewName="Items" filter="!(IsService)"
+                         renderColumns="Name Article" newRowEnabled="false" editPopup="true"
+                         style="&flt;" summarize="true" />
+        </row>
+
+        <row>
+          <Label text="=documents" style="&c1;" />
+          <MultiSelector name="Documents" viewName="TradeDocumentSelection"
+                         renderColumns="Series Number"
+                         choiceColumns="Date Series Number OperationName"
+                         searchableColumns="Number" newRowEnabled="false"
+                         style="&flt;" summarize="true" />
+
+          <Label text="=itemFilter" />
+          <InputText name="ItemFilter" style="&flt;" maxLength="256" summarize="true" />
+        </row>
+      </Table>
+    </Disclosure>
+
+    <hr />
+
+    <Table kind="custom">
+      <row>
+        <cell kind="label">
+          <Label text="=groupBy" style="&c1;" />
+        </cell>
+
+        <ListBox name="Group0" style="&glst;">
+          &gitems;
+        </ListBox>
+        <ListBox name="Group1" style="&glst;">
+          &gitems;
+        </ListBox>
+        <ListBox name="Group2" style="&glst;">
+          &gitems;
+        </ListBox>
+        <ListBox name="Group3" style="&glst;">
+          &gitems;
+        </ListBox>
+        <ListBox name="Group4" style="&glst;">
+          &gitems;
+        </ListBox>
+
+        <cell style="&cbc;">
+          <CheckBox name="Summary" text="=summary" />
+        </cell>
+      </row>
+    </Table>
+
+    <FlowPanel name="DataContainer" class="flexible"
+               style="margin-top: 1vh; margin-left: 1em; min-height: 100px; overflow: auto;" />
+  </FlowPanel>
+</f:Form>

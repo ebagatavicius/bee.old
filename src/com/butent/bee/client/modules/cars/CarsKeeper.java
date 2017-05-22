@@ -44,7 +44,7 @@ public final class CarsKeeper {
     FormFactory.registerFormInterceptor(FORM_CAR_SERVICE_EVENT, new CarServiceEventForm());
 
     GridFactory.registerGridInterceptor(VIEW_CARS, new VehiclesGrid());
-    GridFactory.registerGridInterceptor(TBL_CAR_BUNDLE_JOBS, new CarBundleJobsGrid());
+    GridFactory.registerGridInterceptor(GRID_CAR_BUNDLE_JOBS, new CarBundleJobsGrid());
 
     GridFactory.registerGridInterceptor(VIEW_CAR_FILES, new FileGridInterceptor(COL_CAR,
         AdministrationConstants.COL_FILE, AdministrationConstants.COL_FILE_CAPTION,

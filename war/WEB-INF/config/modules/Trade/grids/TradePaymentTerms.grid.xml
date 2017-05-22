@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+
+        name="TradePaymentTerms" viewName="TradePaymentTerms"
+        caption="=trdPaymentTermsShort" newRowCaption="=newPaymentTerm"
+        disabledActions="filter configure"
+>
+  <g:columns>
+    <DataColumn name="PaymentDate" minWidth="120" visible="true" />
+
+    <DataColumn name="PaymentAmount" minWidth="80" visible="true">
+      <footer aggregate="sum" />
+    </DataColumn>
+  </g:columns>
+</g:Grid>

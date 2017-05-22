@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Columns xmlns="http://www.butent.com/view">
+  <SimpleColumn name="Name" />
+  <SimpleColumn name="ExpectedDuration" />
+  <SimpleColumn name="Description" />
+  <SimpleColumn name="Expenses" />
+
+  <SimpleColumn name="Currency" />
+  <SimpleJoin name="Currency" joinType="LEFT">
+    <SimpleColumn name="Name" alias="CurrencyName" />
+  </SimpleJoin>
+</Columns>

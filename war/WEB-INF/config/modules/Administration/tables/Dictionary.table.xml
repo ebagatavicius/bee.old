@@ -7,21 +7,21 @@
   <Fields>
     <String name="Key" precision="100" notNull="true" unique="true" label="=key" />
 
-    <String name="DefaultEN" precision="200" notNull="true" label="English" />
+    <String name="DefaultEN" precision="300" notNull="true" label="English" />
 
-    <String name="DefaultLT" precision="200" label="Lietuviškai" />
-    <String name="DefaultRU" precision="200" label="Русский" />
-    <String name="DefaultFI" precision="200" label="Suomi" />
-    <String name="DefaultLV" precision="200" label="Latviešu" />
-    <String name="DefaultDE" precision="200" label="Deutsch" />
-    <String name="DefaultET" precision="200" label="Eesti" />
+    <String name="DefaultLT" precision="300" label="Lietuviškai" />
+    <String name="DefaultRU" precision="300" label="Русский" />
+    <String name="DefaultFI" precision="300" label="Suomi" />
+    <String name="DefaultLV" precision="300" label="Latviešu" />
+    <String name="DefaultDE" precision="300" label="Deutsch" />
+    <String name="DefaultET" precision="300" label="Eesti" />
 
-    <String name="CustomEN" precision="200" label="English &#x2713;" />
-    <String name="CustomLT" precision="200" label="Lietuviškai &#x2713;" />
-    <String name="CustomRU" precision="200" label="Русский &#x2713;" />
-    <String name="CustomFI" precision="200" label="Suomi &#x2713;" />
-    <String name="CustomLV" precision="200" label="Latviešu &#x2713;" />
-    <String name="CustomDE" precision="200" label="Deutsch &#x2713;" />
-    <String name="CustomET" precision="200" label="Eesti &#x2713;" />
+    <String name="CustomEN" precision="300" label="English &#x2713;" />
+    <String name="CustomLT" precision="300" label="Lietuviškai &#x2713;" />
+    <String name="CustomRU" precision="300" label="Русский &#x2713;" />
+    <String name="CustomFI" precision="300" label="Suomi &#x2713;" />
+    <String name="CustomLV" precision="300" label="Latviešu &#x2713;" />
+    <String name="CustomDE" precision="300" label="Deutsch &#x2713;" />
+    <String name="CustomET" precision="300" label="Eesti &#x2713;" />
   </Fields>
 </Table>

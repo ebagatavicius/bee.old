@@ -50,6 +50,10 @@ public final class Printer {
 
   private static String cssRules;
 
+  public static boolean isPrinting() {
+    return frame != null && !frame.isEmpty();
+  }
+
   public static void onInjectStyleSheet(String css) {
     if (!BeeUtils.isEmpty(css)) {
       if (frame != null) {

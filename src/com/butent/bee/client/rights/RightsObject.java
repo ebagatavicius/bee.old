@@ -6,7 +6,7 @@ import com.butent.bee.shared.rights.RightsUtils;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
 
-class RightsObject implements HasCaption {
+public class RightsObject implements HasCaption {
 
   private final String name;
   private final String caption;
@@ -45,16 +45,16 @@ class RightsObject implements HasCaption {
     return caption;
   }
 
-  int getLevel() {
-    return level;
-  }
-
-  ModuleAndSub getModuleAndSub() {
+  public ModuleAndSub getModuleAndSub() {
     return moduleAndSub;
   }
 
-  String getName() {
+  public String getName() {
     return name;
+  }
+
+  int getLevel() {
+    return level;
   }
 
   String getParent() {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+           xmlns:ui="http://www.butent.com/ui">
+
+  <PropColumn name="TdTotal" type="decimal" label="=total" scale="2">
+    <style>
+      <bodyStyle>
+        <ui:inline>color: mediumblue;</ui:inline>
+      </bodyStyle>
+    </style>
+  </PropColumn>
+
+  <PropColumn name="TdPaid" type="decimal" label="=trdPaid" scale="2">
+    <style>
+      <bodyStyle>
+        <ui:inline>color: darkgreen;</ui:inline>
+      </bodyStyle>
+    </style>
+  </PropColumn>
+
+  <PropColumn name="TdDebt" type="decimal" label="=debt" scale="2">
+    <style>
+      <bodyStyle>
+        <ui:inline>color: fuchsia;</ui:inline>
+      </bodyStyle>
+    </style>
+  </PropColumn>
+</g:columns>

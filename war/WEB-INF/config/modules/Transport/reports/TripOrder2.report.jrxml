@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-04-04T16:23:49 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TripOrder2" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="3ad2372d-bb52-4e1f-9dfe-aaf5bdceb74c">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<import value="com.butent.bee.server.Invocation"/>
+	<import value="com.butent.bee.server.i18n.Localizations"/>
+	<import value="com.butent.bee.server.data.UserServiceBean"/>
+	<import value="com.butent.bee.shared.time.DateTime"/>
+	<import value="com.butent.bee.shared.i18n.Dictionary"/>
+	<import value="com.butent.bee.shared.utils.BeeUtils"/>
+	<import value="com.butent.bee.shared.i18n.Formatter"/>
+	<import value="com.butent.bee.shared.time.JustDate"/>
+	<style name="Cell" markup="" fontName="DejaVu Sans">
+		<paragraph lineSpacingSize="1.0" leftIndent="3" spacingBefore="0" spacingAfter="0"/>
+	</style>
+	<parameter name="TripNo" class="java.lang.String"/>
+	<parameter name="Date" class="java.lang.String"/>
+	<parameter name="usr" class="com.butent.bee.server.data.UserServiceBean">
+		<defaultValueExpression><![CDATA[Invocation.locateRemoteBean(UserServiceBean.class)]]></defaultValueExpression>
+	</parameter>
+	<parameter name="VehicleNumber" class="java.lang.String"/>
+	<parameter name="TrailerNumber" class="java.lang.String"/>
+	<parameter name="Route" class="java.lang.String"/>
+	<parameter name="PlannedEndDate" class="java.lang.String"/>
+	<parameter name="DriverName" class="java.lang.String"/>
+	<parameter name="User" class="java.lang.String"/>
+	<parameter name="TripDrivers2" class="java.lang.String"/>
+	<parameter name="TripDrivers" class="java.lang.String"/>
+	<parameter name="DateFrom" class="java.lang.String"/>
+	<parameter name="DateTo" class="java.lang.String"/>
+	<parameter name="CurrentDriver" class="java.lang.String"/>
+	<parameter name="DailyCosts" class="java.lang.String"/>
+	<parameter name="DailyCostsTotal" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<variable name="docNo" class="java.lang.String">
+		<variableExpression><![CDATA[$V{docNo}]]></variableExpression>
+		<initialValueExpression><![CDATA[BeeUtils.joinWords($V{d}.numeroSign(), $P{TripNo})]]></initialValueExpression>
+	</variable>
+	<variable name="d" class="com.butent.bee.shared.i18n.Dictionary">
+		<variableExpression><![CDATA[$V{d}]]></variableExpression>
+		<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="220" splitType="Stretch">
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement positionType="Float" x="80" y="0" width="400" height="12" uuid="22179593-2343-43a7-ab52-ec7e2f424aa7">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center" markup="html">
+					<font fontName="DejaVu Sans" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>" + $R{tripOrder} + "</b>" + "<br><br>" + BeeUtils.joinWords(new JustDate(), $V{d}.numeroSign(), $P{TripNo})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="0" y="195" width="200" height="17" uuid="7742f253-e770-422c-aab5-a5ebc539fac5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{accountablePerson}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="200" y="195" width="120" height="16" uuid="24bc0661-bf59-4345-ab34-a9f1d1bf2164">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{User}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="200" y="212" width="120" height="8" uuid="02285542-0278-4b8c-817d-ee420e08297d">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[BeeUtils.parenthesize(BeeUtils.joinItems($V{d}.firstName(), $V{d}.lastName()).toLowerCase())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="435" y="195" width="120" height="16" uuid="6ff6b190-7ca4-45d6-8fdf-d07885b55293">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="435" y="212" width="120" height="8" uuid="df1b8278-4297-47ff-9b57-905e2d2dba7d">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[BeeUtils.parenthesize($V{d}.mailSignature()).toLowerCase()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="40" y="30" width="240" height="12" uuid="24d4e873-195b-46cd-81ec-7d3feaf1afff">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{order}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="40" y="42" width="515" height="12" uuid="4e61adda-e9b8-490d-a943-94f6b5f03a10">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[BeeUtils.joinWords($R{text1}, $P{CurrentDriver})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="54" width="555" height="12" isRemoveLineWhenBlank="true" uuid="3cd69a6c-c0a8-4687-b22a-4a91d6f2fccd">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$P{DateFrom} != null || $P{DateTo} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[BeeUtils.joinWords($P{DateFrom} == null ? "" : BeeUtils.joinWords($V{d}.dateFromShort(), Formatter.renderDateTime($P{usr}.getDateTimeFormatInfo(), new JustDate(BeeUtils.toIntOrNull($P{DateFrom})))),  $P{DateTo} == null ? "" : BeeUtils.joinWords($V{d}.dateToShort(), Formatter.renderDateTime($P{usr}.getDateTimeFormatInfo(), new JustDate(BeeUtils.toIntOrNull($P{DateTo})))))]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="66" width="555" height="12" isRemoveLineWhenBlank="true" uuid="b601b0ff-fc57-410d-973f-6479bdf4752f">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>" + $R{missionGoal} + ": " + "</b>" + BeeUtils.joinWords($R{text2}, $P{TripNo})]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="78" width="555" height="12" isRemoveLineWhenBlank="true" uuid="9c93a308-4ffa-4ede-b71c-4e29e07acc15">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$P{VehicleNumber} != null || $P{TrailerNumber} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[BeeUtils.joinWords($R{truckTrailerNumbers}, BeeUtils.joinItems($P{VehicleNumber}, $P{TrailerNumber}))]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="100" width="555" height="12" isRemoveLineWhenBlank="true" uuid="18806af2-87f8-4534-a52b-c10a48fc14a6">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{location}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="136" width="555" height="12" isRemoveLineWhenBlank="true" uuid="3b09d129-f853-4202-9c8d-d4da63f06216">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>" + $R{expenses} + "</b>" + "<br>" + $R{dailyAllowence} + " " + $P{DailyCostsTotal}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="165" width="555" height="12" isRemoveLineWhenBlank="true" uuid="2e12633f-255f-47bb-a1fc-0af85e863c2c">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$R{text3}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="112" width="555" height="12" isRemoveLineWhenBlank="true" uuid="faaffa00-3077-4ce5-aae7-8542082586f6">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font fontName="DejaVu Sans"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DailyCosts}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageFooter>
+		<band height="10" splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>

@@ -22,7 +22,7 @@ import com.butent.bee.client.i18n.Collator;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Report;
-import com.butent.bee.client.output.ReportParameters;
+import com.butent.bee.shared.report.ReportParameters;
 import com.butent.bee.client.ui.HasIndexedWidgets;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
@@ -285,7 +285,7 @@ public class CompanyTypeReport extends ReportInterceptor {
       typesLabel = null;
     } else {
       params.addDataItem(COL_RELATION_TYPE, types);
-      typesLabel = getFilterLabel(NAME_TYPES);
+      typesLabel = getSelectorLabel(NAME_TYPES);
     }
 
     BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
@@ -335,7 +335,7 @@ public class CompanyTypeReport extends ReportInterceptor {
   protected String getBookmarkLabel() {
     return BeeUtils.joinWords(getReportCaption(),
         Format.renderPeriod(getDateTime(NAME_START_DATE), getDateTime(NAME_END_DATE)),
-        getFilterLabel(NAME_TYPES));
+        getSelectorLabel(NAME_TYPES));
   }
 
   @Override

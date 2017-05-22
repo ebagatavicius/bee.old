@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -422,6 +423,16 @@ public final class Codec {
     int len = s.length();
     Assert.isPositive(len);
     return fromBytes(fromBase64(s));
+  }
+
+  public static List<String> deserializeList(String data) {
+    List<String> result = new ArrayList<>();
+
+    String[] arr = beeDeserializeCollection(data);
+    if (arr != null) {
+      Collections.addAll(result, arr);
+    }
+    return result;
   }
 
   public static List<Long> deserializeIdList(String data) {

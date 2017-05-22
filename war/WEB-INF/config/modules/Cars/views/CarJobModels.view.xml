@@ -21,6 +21,8 @@
     <SimpleJoin joinType="LEFT" name="Currency">
       <SimpleColumn name="Name" alias="CurrencyName" />
     </SimpleJoin>
+
+    <SimpleColumn name="Note" />
   </Columns>
   <Order>
     <OrderBy column="BrandName" />

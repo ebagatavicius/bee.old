@@ -1,37 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid" xmlns:ui="http://www.butent.com/ui"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="OrdersProformaInvoices" viewName="OrderChildInvoices" flexGrow="1" disabledActions="add"
   caption="=trProformaInvoices" filter="Proforma=true AND OrderCount > 0">
-  <g:columns>
-    <IdColumn name="ID" caption="=trdInvoiceId" />
-    <DataColumn name="Date" />
-    <DataColumn name="InvoiceNo" searchBy="InvoicePrefix InvoiceNo">
-      <render>
-        <ui:function>
-          if (!row.InvoicePrefix) {
-          return row.InvoiceNo;
-          } else if(!row.InvoiceNo) {
-          return row.InvoicePrefix;
-          } else {
-          return row.InvoicePrefix + " " + row.InvoiceNo;
-          }
-        </ui:function>
-      </render>
-    </DataColumn>
-    <DataColumn name="CustomerName" />
-    <DataColumn name="PayerName" />
-    <RelColumn name="Manager" />
-    <DataColumn name="Amount" />
-    <DataColumn name="CurrencyName" />
-    <DataColumn name="Term" />
-
-    <DataColumn name="PaymentTime" />
-    <DataColumn name="Paid" />
-
-    <DataColumn name="Debt" caption="=trdDebt" format="0.00" />
-    <DataColumn name="Exported" />
-  </g:columns>
+  <xi:include href="columns/ProformaInvoices.columns.xml" />
 
   <g:rowStyle>
     <ui:inline>="color:red"</ui:inline>

@@ -42,66 +42,59 @@ public class TaskSlackRenderer extends AbstractSlackRenderer {
 
   @Override
   public XCell export(IsRow row, int cellIndex, Integer styleRef, XSheet sheet) {
-    TaskStatus status =
-        EnumUtils.getEnumByIndex(TaskStatus.class, Data.getInteger(VIEW_TASKS, row, COL_STATUS));
-    if (status == null || status == TaskStatus.COMPLETED || status == TaskStatus.CANCELED
-        || status == TaskStatus.APPROVED) {
+    if (row == null || sheet == null) {
       return null;
-    } else {
-      if (row == null || sheet == null) {
-        return null;
-      }
-      DateTime now = TimeUtils.nowMinutes();
-
-      DateTime start = getStartDateTime(dataColumns, row);
-      DateTime finish = getFinishDateTime(dataColumns, row);
-
-      SlackKind kind = getKind(start, finish, now);
-      if (kind == null) {
-        return null;
-      }
-
-      long minutes = getMinutes(kind, start, finish, now);
-      String text = (minutes == 0L) ? BeeConst.STRING_EMPTY : getFormatedTimeLabel(minutes);
-
-      XStyle style = new XStyle();
-      XFont font;
-
-      switch (kind) {
-        case LATE:
-          style.setColor(Colors.RED);
-
-          font = XFont.bold();
-          font.setColor(Colors.WHITE);
-          style.setFontRef(sheet.registerFont(font));
-          break;
-
-        case OPENING:
-          style.setColor(Colors.GREEN);
-          style.setTextAlign(TextAlign.CENTER);
-
-          font = XFont.bold();
-          font.setColor(Colors.WHITE);
-          style.setFontRef(sheet.registerFont(font));
-          break;
-
-        case ENDGAME:
-          style.setColor(Colors.ORANGE);
-          style.setTextAlign(TextAlign.CENTER);
-
-          font = XFont.bold();
-          font.setColor(Colors.WHITE);
-          style.setFontRef(sheet.registerFont(font));
-          break;
-
-        case SCHEDULED:
-          style.setColor(Colors.YELLOW);
-          style.setTextAlign(TextAlign.RIGHT);
-          break;
-      }
-
-      return new XCell(cellIndex, text, sheet.registerStyle(style));
     }
+    DateTime now = TimeUtils.nowMinutes();
+
+    DateTime start = getStartDateTime(dataColumns, row);
+    DateTime finish = getFinishDateTime(dataColumns, row);
+
+    SlackKind kind = getKind(start, finish, now);
+    if (kind == null) {
+      return null;
+    }
+
+    long minutes = getMinutes(kind, start, finish, now);
+    String text = (minutes == 0L) ? BeeConst.STRING_EMPTY : getFormatedTimeLabel(minutes);
+
+    XStyle style = new XStyle();
+    XFont font;
+
+    switch (kind) {
+      case LATE:
+        style.setColor(Colors.RED);
+
+        font = XFont.bold();
+        font.setColor(Colors.WHITE);
+        style.setFontRef(sheet.registerFont(font));
+        break;
+
+      case OPENING:
+        style.setColor(Colors.GREEN);
+        style.setTextAlign(TextAlign.CENTER);
+
+        font = XFont.bold();
+        font.setColor(Colors.WHITE);
+        style.setFontRef(sheet.registerFont(font));
+        break;
+
+      case ENDGAME:
+        style.setColor(Colors.ORANGE);
+        style.setTextAlign(TextAlign.CENTER);
+
+        font = XFont.bold();
+        font.setColor(Colors.WHITE);
+        style.setFontRef(sheet.registerFont(font));
+        break;
+
+      case SCHEDULED:
+        style.setColor(Colors.YELLOW);
+        style.setTextAlign(TextAlign.RIGHT);
+        break;
+    }
+
+    return new XCell(cellIndex, text, sheet.registerStyle(style));
   }
 
   @Override

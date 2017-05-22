@@ -143,6 +143,8 @@
     <SimpleJoin joinType="LEFT" name="BoLCarrier">
       <SimpleColumn name="Name" alias="BoLCarrierName" />
     </SimpleJoin>
+
+    <SimpleColumn name="Kind" />
   </Columns>
   <Order>
     <OrderBy column="Date" descending="true" />

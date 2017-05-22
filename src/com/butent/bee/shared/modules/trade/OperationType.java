@@ -5,8 +5,12 @@ import com.butent.bee.shared.modules.classifiers.ItemPrice;
 import com.butent.bee.shared.modules.finance.TradeAccounts;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 public enum OperationType implements HasLocalizedCaption {
-  PURCHASE(false, true, true, true) {
+  PURCHASE(false, true, true, true, DebtKind.PAYABLE) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypePurchase();
@@ -43,7 +47,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  SALE(true, false, false, false) {
+  SALE(true, false, false, false, DebtKind.RECEIVABLE) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeSale();
@@ -80,7 +84,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  TRANSFER(true, true, false, false) {
+  TRANSFER(true, true, false, false, null) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeTransfer();
@@ -117,7 +121,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  WRITE_OFF(true, false, false, false) {
+  WRITE_OFF(true, false, false, false, null) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeWriteOff();
@@ -154,7 +158,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  POS(true, false, false, false) {
+  POS(true, false, false, false, null) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypePointOfSale();
@@ -191,7 +195,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  CUSTOMER_RETURN(false, true, true, false) {
+  CUSTOMER_RETURN(false, true, true, false, DebtKind.PAYABLE) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeCustomerReturn();
@@ -228,7 +232,7 @@ public enum OperationType implements HasLocalizedCaption {
     }
   },
 
-  RETURN_TO_SUPPLIER(true, false, false, true) {
+  RETURN_TO_SUPPLIER(true, false, false, true, DebtKind.RECEIVABLE) {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.trdTypeReturnToSupplier();
@@ -265,6 +269,30 @@ public enum OperationType implements HasLocalizedCaption {
     }
   };
 
+  public static Collection<OperationType> getStockProducers() {
+    Set<OperationType> producers = new HashSet<>();
+
+    for (OperationType type : values()) {
+      if (type.producesStock()) {
+        producers.add(type);
+      }
+    }
+
+    return producers;
+  }
+
+  public static Collection<OperationType> getStockConsumers() {
+    Set<OperationType> consumers = new HashSet<>();
+
+    for (OperationType type : values()) {
+      if (type.consumesStock()) {
+        consumers.add(type);
+      }
+    }
+
+    return consumers;
+  }
+
   private final boolean consumesStock;
   private final boolean producesStock;
 
@@ -272,8 +300,10 @@ public enum OperationType implements HasLocalizedCaption {
 
   private final boolean requireOperationForPriceCalculation;
 
+  private final DebtKind debtKind;
+
   OperationType(boolean consumesStock, boolean producesStock, boolean providesCost,
-      boolean requireOperationForPriceCalculation) {
+      boolean requireOperationForPriceCalculation, DebtKind debtKind) {
 
     this.consumesStock = consumesStock;
     this.producesStock = producesStock;
@@ -281,6 +311,8 @@ public enum OperationType implements HasLocalizedCaption {
     this.providesCost = providesCost;
 
     this.requireOperationForPriceCalculation = requireOperationForPriceCalculation;
+
+    this.debtKind = debtKind;
   }
 
   public boolean consumesStock() {
@@ -297,6 +329,14 @@ public enum OperationType implements HasLocalizedCaption {
 
   public boolean requireOperationForPriceCalculation() {
     return requireOperationForPriceCalculation;
+  }
+
+  public DebtKind getDebtKind() {
+    return debtKind;
+  }
+
+  public boolean hasDebt() {
+    return debtKind != null;
   }
 
   public abstract Long getAmountDebit(TradeAccounts tradeAccounts);

@@ -13,7 +13,7 @@
     <Integer name="Ordinal" label="=ordinal" />
 
     <Enum name="Kind" key="TradeActKind" label="=taKind" />
-    <Enum name="Price" key="ItemPrice" label="=price" />
+    <Enum name="Price" key="ItemPrice" label="=price" precision="2" />
 
     <Enum name="OperationVatMode" key="TradeVatMode" label="=vatMode" />
     <Numeric name="VatPercent" precision="3" label="=vatPercent" />

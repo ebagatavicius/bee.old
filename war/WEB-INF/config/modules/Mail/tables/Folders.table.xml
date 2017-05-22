@@ -14,7 +14,11 @@
     <Long name="ModSeq" />
   </Fields>
 
-  <Constraints>
-    <Unique fields="Account Parent Name" />
-  </Constraints>
+  <Indexes>
+    <Index unique="true">
+      <PostgreSql>(("Account" || ' ' || COALESCE("Parent", 0) || ' ' || "Name"))</PostgreSql>
+      <MsSql/>
+      <Oracle/>
+    </Index>
+  </Indexes>
 </Table>

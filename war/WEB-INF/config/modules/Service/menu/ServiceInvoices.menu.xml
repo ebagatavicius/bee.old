@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+
+name="ServiceInvoices" label="=trdInvoices" order="10" parent="Service" module="Service" separator="true"
+>
+  <Item name="ServiceMaintenanceInvoices" label="=trdInvoices" service="grid" parameters="ServiceMaintenanceInvoices" />
+  <Item name="ServiceMaintenanceProformaInvoices" label="=trProformaInvoices" service="grid" parameters="ServiceMaintenanceProformaInvoices" />
+</Entry>

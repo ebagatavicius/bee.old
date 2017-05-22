@@ -4,8 +4,8 @@
         name="CarJobs" viewName="CarJobs" caption="=serviceJobs"
 >
   <g:columns>
-    <DataColumn name="JobName" />
-    <DataColumn name="Code" />
+    <RelColumn name="Item" renderColumns="ItemName" visible="true" />
+    <DataColumn name="Article" />
     <RelColumn name="JobGroup" />
   </g:columns>
 </g:Grid>

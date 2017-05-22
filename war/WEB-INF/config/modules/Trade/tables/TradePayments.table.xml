@@ -16,5 +16,7 @@
 
     <String name="PaymentSeries" precision="10" label="=trdSeries" />
     <String name="PaymentNumber" precision="50" label="=trdNumber" />
+
+    <Relation name="PrepaymentParent" relation="FinancialRecords" label="=prepaymentParent" />
   </Fields>
 </Table>

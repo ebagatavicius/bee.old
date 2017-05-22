@@ -10,7 +10,7 @@
     <RelColumn name="Place" carry="true" />
     <DataColumn name="StatusName" />
 
-    <IdColumn name="Id" visible="false" />
+    <IdColumn name="ID" visible="false" />
     <DataColumn name="RegistrationNumber" visible="false" />
     <DataColumn name="Received" visible="false" />
     <DataColumn name="Sent" visible="false" />

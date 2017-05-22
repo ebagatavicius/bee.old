@@ -70,9 +70,10 @@ public class ObjectInvoicesGrid extends AbstractGridInterceptor {
     Filter filter;
 
     if (DataUtils.isId(parentId)) {
-      filter = Filter.in(idColumnName, VIEW_MAINTENANCE, COL_MAINTENANCE_INVOICE,
+      filter = Filter.or(Filter.in(idColumnName, VIEW_MAINTENANCE, COL_MAINTENANCE_INVOICE,
           Filter.equals(
-              isFilterByMaintenance() ? COL_SERVICE_MAINTENANCE : COL_SERVICE_OBJECT, parentId));
+              isFilterByMaintenance() ? COL_SERVICE_MAINTENANCE : COL_SERVICE_OBJECT, parentId)),
+          Filter.equals(COL_SERVICE_OBJECT, parentId));
     } else {
       filter = Filter.isFalse();
     }

@@ -165,3 +165,8 @@
   padding: 2px 5px;
   text-align: right;
 }
+
+.bee-fin-prepayment-used:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}

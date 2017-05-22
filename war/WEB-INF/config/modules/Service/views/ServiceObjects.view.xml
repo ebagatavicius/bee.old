@@ -6,7 +6,7 @@
   editForm="ServiceObject" newRowForm="ServiceObject"
   rowCaption="CategoryName Address CustomerName"
   >
-  <Relation renderColumns="Address" choiceColumns="Address CustomerName" />
+  <Relation renderColumns="Model CategoryName ArticleNo" choiceColumns="Model CategoryName ArticleNo" />
   <Columns>
     <SimpleColumn name="Category" />
     <SimpleJoin joinType="LEFT" name="Category">
@@ -48,12 +48,9 @@
         <SimpleColumn name="Address" alias="ContactAddress"/>
       </SimpleJoin>
     </SimpleJoin>
-    <SimpleColumn name="Manufacturer" />
-    <SimpleJoin joinType="LEFT" name="Manufacturer">
-      <SimpleColumn name="Name" alias="ManufacturerName" />
-      <SimpleJoin joinType="LEFT" name="CompanyType">
-        <SimpleColumn name="Name" alias="ManufacturerTypeName" />
-      </SimpleJoin>
+    <SimpleColumn name="ServiceManufacturer" />
+    <SimpleJoin joinType="LEFT" name="ServiceManufacturer">
+      <SimpleColumn name="ManufacturerName" />
     </SimpleJoin>
 
     <SimpleColumn name="Model" />

@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
   name="EmployeeObjects" viewName="EmployeeObjects"
-  newRowCaption="=newObject"
+  newRowCaption="=newObjectLocation"
   >
 
   <g:columns>

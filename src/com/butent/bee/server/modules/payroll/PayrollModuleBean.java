@@ -3,23 +3,36 @@ package com.butent.bee.server.modules.payroll;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.payroll.PayrollConstants.*;
+import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
+import com.butent.bee.client.output.ReportDateItem;
+import com.butent.bee.client.output.ReportItem;
+import com.butent.bee.server.Invocation;
+import com.butent.bee.server.concurrency.ConcurrencyBean;
 import com.butent.bee.server.data.QueryServiceBean;
 import com.butent.bee.server.data.SystemBean;
+import com.butent.bee.server.data.UserServiceBean;
 import com.butent.bee.server.http.RequestInfo;
+import com.butent.bee.server.i18n.Localizations;
 import com.butent.bee.server.modules.BeeModule;
 import com.butent.bee.server.modules.ParamHolderBean;
 import com.butent.bee.server.modules.administration.AdministrationModuleBean;
 import com.butent.bee.server.sql.HasConditions;
 import com.butent.bee.server.sql.IsCondition;
+import com.butent.bee.server.sql.SqlDelete;
+import com.butent.bee.server.sql.SqlInsert;
 import com.butent.bee.server.sql.SqlSelect;
+import com.butent.bee.server.sql.SqlUpdate;
 import com.butent.bee.server.sql.SqlUtils;
+import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.RangeMap;
@@ -33,13 +46,19 @@ import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.SqlConstants.SqlFunction;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.exceptions.BeeException;
+import com.butent.bee.shared.i18n.DateOrdering;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.BeeParameter;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
+import com.butent.bee.shared.modules.finance.FinanceConstants;
 import com.butent.bee.shared.modules.payroll.Earnings;
 import com.butent.bee.shared.modules.payroll.PayrollConstants.WorkScheduleKind;
 import com.butent.bee.shared.modules.payroll.PayrollUtils;
 import com.butent.bee.shared.modules.payroll.WorkScheduleSummary;
+import com.butent.bee.shared.modules.trade.TradeConstants;
+import com.butent.bee.shared.report.ReportInfo;
 import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.time.DateRange;
 import com.butent.bee.shared.time.DateTime;
@@ -49,8 +68,10 @@ import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.time.YearMonth;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.EnumUtils;
+import com.butent.webservice.ButentWS;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,13 +82,19 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.Timer;
+import javax.ejb.TimerService;
 
 @Stateless
 @LocalBean
-public class PayrollModuleBean implements BeeModule {
+public class PayrollModuleBean implements BeeModule, ConcurrencyBean.HasTimerService {
+
+  private static final String EVENT_STATUS_OK = "OK";
 
   private static BeeLogger logger = LogUtils.getLogger(PayrollModuleBean.class);
 
@@ -79,6 +106,16 @@ public class PayrollModuleBean implements BeeModule {
   AdministrationModuleBean adm;
   @EJB
   ParamHolderBean prm;
+  @EJB
+  UserServiceBean usr;
+  @EJB
+  ConcurrencyBean cb;
+
+  @Resource
+  TimerService timerService;
+
+  @Resource
+  EJBContext ctx;
 
   @Override
   public List<SearchResult> doSearch(String query) {
@@ -120,6 +157,9 @@ public class PayrollModuleBean implements BeeModule {
         response = getEarnings(reqInfo);
         break;
 
+      case SVC_PAYROLL_FUND_REPORT:
+        response = getTimeSheetPayrollReportData(reqInfo);
+        break;
       default:
         String msg = BeeUtils.joinWords("service not recognized:", svc);
         logger.warning(msg);
@@ -130,8 +170,30 @@ public class PayrollModuleBean implements BeeModule {
   }
 
   @Override
+  public void ejbTimeout(Timer timer) {
+    if (cb.isParameterTimer(timer, PRM_ERP_SYNC_PAYROLL_DATA + SFX_TIME)
+      || cb.isParameterTimer(timer, PRM_ERP_SYNC_PAYROLL_DATA + SFX_HOURS)) {
+      cb.asynchronousCall(new ConcurrencyBean.AsynchronousRunnable() {
+        @Override
+        public void run() {
+          PayrollModuleBean bean =
+            Assert.notNull(Invocation.locateRemoteBean(PayrollModuleBean.class));
+          bean.importERPData();
+        }
+      });
+    }
+  }
+
+  @Override
   public Collection<BeeParameter> getDefaultParameters() {
-    return null;
+    return Arrays.asList(
+      BeeParameter.createText(getModule().getName(), PRM_ERP_SYNC_PAYROLL_DATA + SFX_HOURS),
+      BeeParameter.createNumber(getModule().getName(), PRM_ERP_SYNC_PAYROLL_DATA + SFX_TIME),
+      BeeParameter.createBoolean(getModule().getName(), PRM_ERP_SYNC_EMPLOYEES, false, true),
+      BeeParameter.createBoolean(getModule().getName(), PRM_ERP_SYNC_LOCATIONS),
+      BeeParameter.createBoolean(getModule().getName(), PRM_ERP_SYNC_TIME_CARDS),
+      BeeParameter.createNumber(getModule().getName(), PRM_ERP_SYNC_PAYROLL_DELTA_HOURS)
+    );
   }
 
   public ResponseObject getEmployeeEarnings(String companyCode, Integer tabNumber,
@@ -336,7 +398,98 @@ public class PayrollModuleBean implements BeeModule {
   }
 
   @Override
+  public TimerService getTimerService() {
+    return timerService;
+  }
+
+  @Override
   public void init() {
+    cb.createIntervalTimer(this.getClass(), PRM_ERP_SYNC_PAYROLL_DATA + SFX_TIME);
+    cb.createCalendarTimer(this.getClass(), PRM_ERP_SYNC_PAYROLL_DATA + SFX_HOURS);
+  }
+
+  public void importERPData() {
+    if (BeeUtils.isFalse(prm.getBoolean(PRM_ERP_SYNC_EMPLOYEES))
+      && BeeUtils.isFalse(prm.getBoolean(PRM_ERP_SYNC_EMPLOYEES))
+      && BeeUtils.isFalse(prm.getBoolean(PRM_ERP_SYNC_EMPLOYEES))) {
+      logger.warning(PRM_ERP_SYNC_PAYROLL_DATA, "nothing not configure");
+      return;
+    }
+
+    long historyId = BeeConst.UNDEF;
+
+    Long companyId = prm.getRelation(PRM_COMPANY);
+    String erpAddress = prm.getValue(PRM_ERP_ADDRESS);
+    String erpLogin = prm.getValue(PRM_ERP_LOGIN);
+    String erpPassword = prm.getValue(PRM_ERP_PASSWORD);
+    DateTime lastSyncTime = getErpLastSyncDate();
+
+    Map<String, Long> departments = getReferences(TBL_COMPANY_DEPARTMENTS, "Name",
+      SqlUtils.equals(TBL_COMPANY_DEPARTMENTS, COL_COMPANY, companyId));
+    Map<String, Long> positions = getReferences(TBL_POSITIONS, COL_POSITION_NAME);
+    SimpleRowSet employees = getEmployees(companyId);
+    StringBuilder syncLog = new StringBuilder();
+
+    syncLog.append(erpAddress + BeeConst.STRING_EOL);
+
+    try {
+      historyId = sys.eventStart(PRM_ERP_SYNC_PAYROLL_DATA);
+      if (BeeUtils.isTrue(prm.getBoolean(PRM_ERP_SYNC_EMPLOYEES))) {
+        SimpleRowSet erpEmployees = getErpEmployees(historyId, erpAddress, erpLogin, erpPassword,
+          lastSyncTime);
+
+        if (erpEmployees == null || erpEmployees.isEmpty()) {
+          syncLog.append(BeeUtils.joinWords("Employees data ", lastSyncTime.toString(), "empty")
+            + BeeConst.STRING_EOL);
+        } else {
+          syncEmployees(companyId, erpEmployees, employees, departments, positions, syncLog);
+        }
+      }
+
+      if (BeeUtils.isTrue(prm.getBoolean(PRM_ERP_SYNC_LOCATIONS))) {
+        SimpleRowSet erpLocations = ButentWS.connect(erpAddress, erpLogin, erpPassword)
+          .getObjects();
+
+        int locNew = 0;
+        Map<String, Long> locations = getReferences(TBL_LOCATIONS, COL_LOCATION_NAME);
+
+        for (SimpleRow row : erpLocations) {
+          String location = row.getValue("objektas");
+
+          if (!locations.containsKey(location)) {
+            locations.put(location, qs.insertData(new SqlInsert(TBL_LOCATIONS)
+              .addConstant(COL_LOCATION_NAME, location)
+              .addConstant(COL_LOCATION_STATUS, ObjectStatus.INACTIVE.ordinal())));
+            locNew++;
+          }
+        }
+        syncLog.append(BeeConst.STRING_EOL + "Locations created " + locNew);
+      }
+
+      if (BeeUtils.isTrue(prm.getBoolean(PRM_ERP_SYNC_TIME_CARDS))) {
+        SimpleRowSet erpTimeCards = ButentWS.connect(erpAddress, erpLogin, erpPassword)
+          .getTimeCards(lastSyncTime);
+
+        importTimeCards(companyId, erpTimeCards, syncLog);
+      }
+    } catch (Throwable e) {
+      ctx.setRollbackOnly();
+
+      if (!BeeConst.isUndef(historyId)) {
+        sys.eventError(historyId, e, syncLog.toString());
+      }
+
+      logger.error(e);
+      return;
+    }
+
+    if (!BeeConst.isUndef(historyId)) {
+      sys.eventEnd(historyId, EVENT_STATUS_OK, syncLog.toString());
+    }
+  }
+
+  private static IsCondition getScheduleKindCondition(WorkScheduleKind kind) {
+    return SqlUtils.equals(TBL_WORK_SCHEDULE, COL_WORK_SCHEDULE_KIND, kind);
   }
 
   private ResponseObject getEarnings(RequestInfo reqInfo) {
@@ -412,6 +565,22 @@ public class PayrollModuleBean implements BeeModule {
     }
 
     return result;
+  }
+
+  private SimpleRowSet getEmployees(Long company) {
+    return qs.getData(new SqlSelect()
+      .addField(TBL_COMPANY_PERSONS, sys.getIdName(TBL_COMPANY_PERSONS), COL_COMPANY_PERSON)
+      .addFields(TBL_COMPANY_PERSONS, COL_PERSON, COL_CONTACT)
+      .addExpr(SqlUtils.concat(SqlUtils.field(TBL_PERSONS, COL_FIRST_NAME), "' '",
+        SqlUtils.field(TBL_PERSONS, COL_LAST_NAME)), COL_FIRST_NAME)
+      .addField(TBL_PERSONS, COL_CONTACT, COL_PERSON + COL_CONTACT)
+      .addFields(TBL_EMPLOYEES, COL_TAB_NUMBER)
+      .addField(TBL_EMPLOYEES, sys.getIdName(TBL_EMPLOYEES), COL_EMPLOYEE)
+      .addFrom(TBL_COMPANY_PERSONS)
+      .addFromInner(TBL_PERSONS, sys.joinTables(TBL_PERSONS, TBL_COMPANY_PERSONS, COL_PERSON))
+      .addFromLeft(TBL_EMPLOYEES,
+        sys.joinTables(TBL_COMPANY_PERSONS, TBL_EMPLOYEES, COL_COMPANY_PERSON))
+      .setWhere(SqlUtils.equals(TBL_COMPANY_PERSONS, COL_COMPANY, company)));
   }
 
   private ResponseObject getEmployeeCondition(String companyCode, Integer tabNumber) {
@@ -620,6 +789,34 @@ public class PayrollModuleBean implements BeeModule {
     return holidays;
   }
 
+  private SimpleRowSet getErpEmployees(long historyId, String erpAddress, String erpLogin,
+                                       String erpPassword, DateTime lastSyncDate) {
+    try {
+      return ButentWS.connect(erpAddress, erpLogin, erpPassword).getEmployees(lastSyncDate);
+    } catch (BeeException e) {
+      ctx.setRollbackOnly();
+      sys.eventError(historyId, e);
+      return null;
+    }
+  }
+
+  private DateTime getErpLastSyncDate() {
+    DateTime lastSyncTime = qs.getDateTime(new SqlSelect()
+      .addMax(TBL_EVENT_HISTORY, COL_EVENT_STARTED)
+      .addFrom(TBL_EVENT_HISTORY)
+      .setWhere(SqlUtils.and(SqlUtils.equals(TBL_EVENT_HISTORY, COL_EVENT,
+        PRM_ERP_SYNC_PAYROLL_DATA),
+        SqlUtils.startsWith(TBL_EVENT_HISTORY, COL_EVENT_RESULT, EVENT_STATUS_OK))));
+
+    Integer delta = prm.getInteger(PRM_ERP_SYNC_PAYROLL_DELTA_HOURS);
+
+    if (lastSyncTime != null && BeeUtils.isPositive(delta)) {
+      lastSyncTime = TimeUtils.nextHour(lastSyncTime, -delta);
+    }
+
+    return lastSyncTime;
+  }
+
   private static IsCondition getScheduleEarningsCondition(JustDate from, JustDate until,
       Long employeeId, Long substituteFor, Long objectId) {
 
@@ -669,8 +866,22 @@ public class PayrollModuleBean implements BeeModule {
     return conditions;
   }
 
-  private static IsCondition getScheduleKindCondition(WorkScheduleKind kind) {
-    return SqlUtils.equals(TBL_WORK_SCHEDULE, COL_WORK_SCHEDULE_KIND, kind);
+  private Map<String, Long> getReferences(String tableName, String keyName) {
+    return getReferences(tableName, keyName, null);
+  }
+
+  private Map<String, Long> getReferences(String tableName, String keyName, IsCondition clause) {
+    Map<String, Long> ref = new HashMap<>();
+
+    for (SimpleRow row : qs.getData(new SqlSelect()
+      .addFields(tableName, keyName)
+      .addField(tableName, sys.getIdName(tableName), tableName)
+      .addFrom(tableName)
+      .setWhere(SqlUtils.and(SqlUtils.notNull(tableName, keyName), clause)))) {
+
+      ref.put(row.getValue(keyName), row.getLong(tableName));
+    }
+    return ref;
   }
 
   private ResponseObject getScheduledMonths(RequestInfo reqInfo) {
@@ -866,6 +1077,406 @@ public class PayrollModuleBean implements BeeModule {
     }
   }
 
+  private ResponseObject getTimeSheetPayrollReportData(RequestInfo reqInfo) {
+    ResponseObject resp;
+    Long currency = reqInfo.getParameterLong(COL_CURRENCY);
+    ReportInfo report = ReportInfo.restore(reqInfo.getParameter(Service.VAR_DATA));
+
+    if (!DataUtils.isId(currency)) {
+      currency = prm.getRelation(PRM_CURRENCY);
+    }
+
+    YearMonth filterFrom = null;
+    YearMonth filterTo = null;
+
+    for (ReportItem item : report.getFilterItems()) {
+      if (item instanceof ReportDateItem) {
+        ReportDateItem dtItem = (ReportDateItem) item;
+
+        if (BeeUtils.same(dtItem.getExpression(), COL_DATE_FROM) && dtItem.getFilter() != null) {
+          filterFrom = new YearMonth(new JustDate(BeeUtils.toInt(dtItem.getFilter())));
+        } else if (BeeUtils.same(dtItem.getExpression(), COL_DATE_TO)
+          && dtItem.getFilter() != null) {
+          filterTo = new YearMonth(new JustDate(BeeUtils.toInt(dtItem.getFilter())));
+        }
+      }
+    }
+
+    if (filterFrom == null || filterTo == null || filterFrom.compareTo(filterTo) > 0) {
+      return ResponseObject.error(usr.getDictionary().invalidPeriod(filterFrom, filterTo));
+    }
+
+
+    String currencyName = qs.getValue(new SqlSelect().addFields(TBL_CURRENCIES, COL_CURRENCY_NAME)
+      .addFrom(TBL_CURRENCIES).setWhere(sys.idEquals(TBL_CURRENCIES, currency)));
+
+    String tblMangerPerson = SqlUtils.uniqueName();
+    String tblManagerCompanyPerson = SqlUtils.uniqueName();
+    String[] reportTableHeader = new String[]{
+      ALS_REPORT_TIME_PERIOD, COL_OSF_AMOUNT, TradeConstants.COL_TRADE_PAID, COL_CURRENCY,
+      TradeConstants.COL_TRADE_DEBT, COL_LOCATION_NAME, COL_LOCATION_STATUS, COL_COMPANY_CODE,
+      COL_COMPANY_NAME, ALS_COMPANY_TYPE_NAME, COL_FIRST_NAME, COL_LAST_NAME,
+      ALS_LOCATION_MANAGER_FIRST_NAME, ALS_LOCATION_MANAGER_LAST_NAME,
+      FinanceConstants.ALS_EMPLOYEE_FIRST_NAME, FinanceConstants.ALS_EMPLOYEE_LAST_NAME,
+    };
+
+    TreeBasedTable<YearMonth, Long, Double> fundAmounts = TreeBasedTable.create();
+    TreeBasedTable<YearMonth, String, Double> employeeAmounts = TreeBasedTable.create();
+    TreeBasedTable<YearMonth, Long, Double> fundDebt = TreeBasedTable.create();
+    TreeBasedTable<YearMonth, Long, Double> objectAmounts = TreeBasedTable.create();
+    Multimap<YearMonth, Long> relObjects = HashMultimap.create();
+    Multimap<YearMonth, Long> relEmployees = HashMultimap.create();
+    Multimap<Long, Long> objectEmployees = HashMultimap.create();
+    Multimap<Long, Long> employeeObjects = HashMultimap.create();
+
+    SqlSelect objectFunds = new SqlSelect()
+      .addAllFields(TBL_OBJECT_SALARY_FUND)
+      .addFields(TBL_LOCATIONS, COL_LOCATION_NAME, COL_LOCATION_STATUS)
+      .addFields(TBL_COMPANIES, COL_COMPANY_CODE, COL_COMPANY_NAME)
+      .addField(TBL_COMPANY_TYPES, COL_COMPANY_TYPE_NAME, ALS_COMPANY_TYPE_NAME)
+      .addFields(TBL_PERSONS, COL_FIRST_NAME, COL_LAST_NAME)
+      .addField(tblMangerPerson, COL_FIRST_NAME, ALS_LOCATION_MANAGER_FIRST_NAME)
+      .addField(tblMangerPerson, COL_LAST_NAME, ALS_LOCATION_MANAGER_LAST_NAME)
+      .addFrom(TBL_OBJECT_SALARY_FUND)
+      .addFromLeft(TBL_LOCATIONS, sys.joinTables(TBL_LOCATIONS, TBL_OBJECT_SALARY_FUND,
+        COL_OBJECT))
+      .addFromLeft(TBL_COMPANIES, sys.joinTables(TBL_COMPANIES, TBL_LOCATIONS, COL_COMPANY))
+      .addFromLeft(TBL_COMPANY_TYPES, sys.joinTables(TBL_COMPANY_TYPES, TBL_COMPANIES,
+        COL_COMPANY_TYPE))
+      .addFromLeft(TBL_COMPANY_PERSONS, sys.joinTables(TBL_COMPANY_PERSONS, TBL_LOCATIONS,
+        COL_COMPANY_PERSON))
+      .addFromLeft(TBL_PERSONS, sys.joinTables(TBL_PERSONS, TBL_COMPANY_PERSONS, COL_PERSON))
+      .addFromLeft(TBL_USERS, sys.joinTables(TBL_USERS, TBL_LOCATIONS, COL_LOCATION_MANAGER))
+      .addFromLeft(TBL_COMPANY_PERSONS, tblManagerCompanyPerson,
+        sys.joinTables(TBL_COMPANY_PERSONS, TBL_USERS, COL_COMPANY_PERSON))
+      .addFromLeft(TBL_PERSONS, tblMangerPerson, sys.joinTables(TBL_PERSONS,
+        tblManagerCompanyPerson, COL_PERSON))
+      .setWhere(
+        SqlUtils.and(
+          SqlUtils.notNull(TBL_OBJECT_SALARY_FUND, COL_OSF_YEAR_FROM),
+          SqlUtils.notNull(TBL_OBJECT_SALARY_FUND, COL_OSF_MONTH_FROM),
+          SqlUtils.notNull(TBL_OBJECT_SALARY_FUND, COL_OSF_YEAR_UNTIL),
+          SqlUtils.notNull(TBL_OBJECT_SALARY_FUND, COL_OSF_MONTH_UNTIL),
+          SqlUtils.and(
+            SqlUtils.or(
+              SqlUtils.more(TBL_OBJECT_SALARY_FUND, COL_OSF_YEAR_FROM, filterFrom.getYear()),
+              SqlUtils.and(
+                SqlUtils.equals(TBL_OBJECT_SALARY_FUND, COL_OSF_YEAR_FROM, filterFrom.getYear()),
+                SqlUtils.moreEqual(TBL_OBJECT_SALARY_FUND, COL_OSF_MONTH_FROM,
+                  filterFrom.getMonth())
+              )
+            ),
+            SqlUtils.or(
+              SqlUtils.less(TBL_OBJECT_SALARY_FUND, COL_OSF_YEAR_UNTIL, filterTo.getYear()),
+              SqlUtils.and(
+                SqlUtils.equals(TBL_OBJECT_SALARY_FUND, COL_OSF_YEAR_UNTIL, filterTo.getYear()),
+                SqlUtils.lessEqual(TBL_OBJECT_SALARY_FUND, COL_OSF_MONTH_UNTIL,
+                  filterTo.getMonth())
+              )
+            )
+          )
+        )
+      )
+      .addOrder(TBL_OBJECT_SALARY_FUND, COL_OSF_YEAR_FROM, COL_OSF_MONTH_FROM);
+
+
+    SqlSelect employeeObjectsQuery = new SqlSelect()
+      .addAllFields(TBL_EMPLOYEE_OBJECTS)
+      .addField(TBL_PERSONS, COL_FIRST_NAME, FinanceConstants.ALS_EMPLOYEE_FIRST_NAME)
+      .addField(TBL_PERSONS, COL_LAST_NAME, FinanceConstants.ALS_EMPLOYEE_LAST_NAME)
+      .addFrom(TBL_EMPLOYEE_OBJECTS)
+      .addFromLeft(TBL_EMPLOYEES, sys.joinTables(TBL_EMPLOYEES, TBL_EMPLOYEE_OBJECTS, COL_EMPLOYEE))
+      .addFromLeft(TBL_COMPANY_PERSONS, sys.joinTables(TBL_COMPANY_PERSONS, TBL_EMPLOYEES,
+        COL_COMPANY_PERSON))
+      .addFromLeft(TBL_PERSONS, sys.joinTables(TBL_PERSONS, TBL_COMPANY_PERSONS, COL_PERSON))
+      .addOrder(TBL_EMPLOYEE_OBJECTS, COL_DATE_FROM);
+
+
+    SimpleRowSet objectFundData = qs.getData(objectFunds);
+
+    if (DataUtils.isEmpty(objectFundData)) {
+      return ResponseObject.emptyResponse();
+    }
+
+    employeeObjectsQuery.setWhere(SqlUtils.inList(TBL_EMPLOYEE_OBJECTS, COL_OBJECT,
+      (Object[]) objectFundData.getColumn(COL_OBJECT)));
+
+    SimpleRowSet employeeObjectData = qs.getData(employeeObjectsQuery);
+    SimpleRowSet reportData = new SimpleRowSet(reportTableHeader);
+    YearMonth minDate = null;
+    YearMonth maxDate = null;
+    Map<Long, YearMonth> minObjectDates = new HashMap<>();
+    Map<Long, YearMonth> maxObjectDates = new HashMap<>();
+
+    for (SimpleRow row : objectFundData) {
+      Long objectId = row.getLong(COL_OBJECT);
+
+      if (!DataUtils.isId(objectId)) {
+        continue;
+      }
+
+      Range<YearMonth> fundRange =
+        Range.closedOpen(
+          new YearMonth(row.getInt(COL_OSF_YEAR_FROM), row.getInt(COL_OSF_MONTH_FROM)),
+          new YearMonth(row.getInt(COL_OSF_YEAR_UNTIL), row.getInt(COL_OSF_MONTH_UNTIL))
+        );
+
+      if (minDate == null) {
+        minDate = fundRange.lowerEndpoint();
+        maxDate = fundRange.upperEndpoint();
+      } else if (maxDate.compareTo(fundRange.upperEndpoint()) < 0) {
+        maxDate = fundRange.upperEndpoint();
+      }
+
+      YearMonth minObjectDate = minObjectDates.get(objectId);
+      YearMonth maxObjectDate = maxObjectDates.get(objectId);
+
+      if (minObjectDate == null) {
+        minObjectDates.put(objectId, fundRange.lowerEndpoint());
+        maxObjectDates.put(objectId, fundRange.upperEndpoint());
+      } else if (maxObjectDate.compareTo(fundRange.upperEndpoint()) < 0) {
+        maxObjectDates.put(objectId, fundRange.upperEndpoint());
+      }
+
+      for (YearMonth startFoundRange = fundRange.lowerEndpoint();
+           fundRange.contains(startFoundRange);
+           startFoundRange = startFoundRange.nextMonth()) {
+        double fundAmount = BeeUtils.unbox(fundAmounts.get(startFoundRange, objectId));
+        double newAmount = BeeUtils.unbox(
+          adm.maybeExchange(row.getLong(COL_CURRENCY), currency, row.getDouble(COL_OSF_AMOUNT),
+            startFoundRange.getDate().getDateTime()));
+
+        relObjects.put(startFoundRange, objectId);
+        fundAmounts.put(startFoundRange, objectId, fundAmount + newAmount);
+      }
+    }
+
+    for (SimpleRow row : employeeObjectData) {
+      Long objectId = row.getLong(COL_OBJECT);
+      Long employeeId = row.getLong(COL_EMPLOYEE);
+
+      if (!DataUtils.isId(objectId) || !DataUtils.isId(employeeId)) {
+        continue;
+      }
+
+      String amountKey = BeeUtils.joinItems(objectId, employeeId);
+      objectEmployees.put(objectId, employeeId);
+      employeeObjects.put(employeeId, objectId);
+
+      YearMonth employeeWorkFrom = row.getDate(COL_EMPLOYEE_OBJECT_FROM) == null
+        ? minObjectDates.get(objectId) : new YearMonth(row.getDate(COL_EMPLOYEE_OBJECT_FROM));
+      YearMonth employeeWorkTo = row.getDate(COL_EMPLOYEE_OBJECT_UNTIL) == null
+        ? maxObjectDates.get(objectId) : new YearMonth(row.getDate(COL_EMPLOYEE_OBJECT_UNTIL));
+
+      if (employeeWorkFrom.compareTo(employeeWorkTo) > 0) {
+       employeeWorkTo = employeeWorkFrom;
+      }
+
+      Range<YearMonth> workRange = Range.closedOpen(employeeWorkFrom, employeeWorkTo);
+
+      if (minDate.compareTo(workRange.lowerEndpoint()) > 0) {
+        minDate = workRange.lowerEndpoint();
+      }
+
+      if (maxDate.compareTo(workRange.upperEndpoint()) < 0) {
+        maxDate = workRange.upperEndpoint();
+      }
+
+      for (YearMonth startWork = workRange.lowerEndpoint(); workRange.contains(startWork);
+           startWork = startWork.nextMonth()) {
+
+        double salary = BeeUtils.unbox(employeeAmounts.get(startWork, amountKey));
+        double newSalary = BeeUtils.unbox(
+          adm.maybeExchange(row.getLong(COL_CURRENCY), currency,
+            row.getDouble(COL_EMPLOYEE_OBJECT_FUND), startWork.getDate().getDateTime()));
+        double objectAmount = BeeUtils.unbox(objectAmounts.get(startWork, objectId));
+
+        employeeAmounts.put(startWork, amountKey, salary + newSalary);
+        objectAmounts.put(startWork, objectId, objectAmount + newSalary);
+
+        if (!relObjects.containsKey(startWork)) {
+          relEmployees.put(startWork, employeeId);
+        }
+      }
+    }
+
+    Range<YearMonth> reportRange = Range.closedOpen(filterFrom, filterTo);
+
+    for (YearMonth reportDate = reportRange.lowerEndpoint(); reportRange.contains(reportDate);
+         reportDate = reportDate.nextMonth()) {
+
+      Collection<Long> employees = relEmployees.get(reportDate);
+      Collection<Long> objects = relObjects.get(reportDate);
+
+
+      for (Long objectOrEmployee : BeeUtils.isEmpty(employees) ? objects : employees) {
+        Collection<Long> dependencies = BeeUtils.isEmpty(employees)
+          ? objectEmployees.get(objectOrEmployee) : employeeObjects.get(objectOrEmployee);
+
+        for (Long employeeOrObject : dependencies) {
+          Long objectId = BeeUtils.isEmpty(employees) ? objectOrEmployee : employeeOrObject;
+          Long employeeId = BeeUtils.isEmpty(employees) ? employeeOrObject : objectOrEmployee;
+
+          if (!DataUtils.isId(objectId) || !DataUtils.isId(employeeId)) {
+            continue;
+          }
+
+          String amountKey = BeeUtils.joinItems(objectId, employeeId);
+
+          SimpleRow reportRow = reportData.addEmptyRow();
+          reportRow.setValue(ALS_REPORT_TIME_PERIOD,
+            BeeUtils.toString(reportDate.getDate().getTime()));
+          reportRow.setValue(COL_OSF_AMOUNT,
+            BeeUtils.toString(BeeUtils.unbox(fundAmounts.get(reportDate, objectId))));
+
+          reportRow.setValue(COL_CURRENCY, currencyName);
+
+          reportRow.setValue(TradeConstants.COL_TRADE_PAID,
+            BeeUtils.toString(BeeUtils.unbox(employeeAmounts.get(reportDate, amountKey))));
+
+          Double debt = BeeUtils.nvl(fundDebt.get(reportDate, objectId), fundDebt.get(reportDate
+              .previousMonth(), objectId),
+            fundAmounts.get(reportDate, objectId));
+          Double totalPaid = BeeUtils.unbox(objectAmounts.get(reportDate, objectId));
+
+          if (debt != null && fundAmounts.get(reportDate, objectId) != null
+            && fundDebt.get(reportDate, objectId) == null) {
+            fundDebt.put(reportDate, objectId, debt - totalPaid);
+            reportRow.setValue(TradeConstants.COL_TRADE_DEBT,
+              BeeUtils.toString(BeeUtils.unbox(fundDebt.get(reportDate, objectId))));
+          } else if (debt != null && fundDebt.get(reportDate, objectId) != null
+            && fundAmounts.get(reportDate, objectId) != null) {
+            reportRow.setValue(TradeConstants.COL_TRADE_DEBT,
+              BeeUtils.toString(BeeUtils.unbox(fundDebt.get(reportDate, objectId))));
+          } else {
+            reportRow.setValue(TradeConstants.COL_TRADE_DEBT,
+              BeeUtils.toString(-totalPaid));
+          }
+          reportRow.setValue(COL_LOCATION_NAME, objectFundData.getValueByKey(COL_OBJECT,
+            BeeUtils.toString(objectId), COL_LOCATION_NAME));
+          reportRow.setValue(COL_LOCATION_STATUS,
+            objectFundData.getValueByKey(COL_OBJECT, BeeUtils.toString(objectId),
+              COL_LOCATION_STATUS));
+
+          reportRow.setValue(COL_COMPANY_CODE,
+            objectFundData.getValueByKey(COL_OBJECT, BeeUtils.toString(objectId),
+              COL_COMPANY_CODE));
+
+          reportRow.setValue(COL_COMPANY_NAME,
+            objectFundData.getValueByKey(COL_OBJECT, BeeUtils.toString(objectId),
+              COL_COMPANY_NAME));
+
+          reportRow.setValue(ALS_COMPANY_TYPE_NAME,
+            objectFundData.getValueByKey(COL_OBJECT, BeeUtils.toString(objectId),
+              ALS_COMPANY_TYPE_NAME));
+
+          reportRow.setValue(COL_FIRST_NAME,
+            objectFundData.getValueByKey(COL_OBJECT, BeeUtils.toString(objectId),
+              COL_FIRST_NAME));
+
+          reportRow.setValue(COL_LAST_NAME,
+            objectFundData.getValueByKey(COL_OBJECT, BeeUtils.toString(objectId),
+              COL_LAST_NAME));
+
+          reportRow.setValue(ALS_LOCATION_MANAGER_FIRST_NAME,
+            objectFundData.getValueByKey(COL_OBJECT, BeeUtils.toString(objectId),
+              ALS_LOCATION_MANAGER_FIRST_NAME));
+
+          reportRow.setValue(ALS_LOCATION_MANAGER_LAST_NAME,
+            objectFundData.getValueByKey(COL_OBJECT, BeeUtils.toString(objectId),
+              ALS_LOCATION_MANAGER_LAST_NAME));
+
+          reportRow.setValue(FinanceConstants.ALS_EMPLOYEE_FIRST_NAME, employeeObjectData
+            .getValueByKey(COL_EMPLOYEE,
+              BeeUtils.toString(employeeId),
+              FinanceConstants.ALS_EMPLOYEE_FIRST_NAME));
+
+          reportRow.setValue(FinanceConstants.ALS_EMPLOYEE_LAST_NAME, employeeObjectData
+            .getValueByKey(COL_EMPLOYEE,
+              BeeUtils.toString(employeeId),
+              FinanceConstants.ALS_EMPLOYEE_LAST_NAME));
+
+          logger.debug("Create report row", reportRow.getDate(ALS_REPORT_TIME_PERIOD).toString(),
+            objectId, employeeId, reportRow.getValues());
+        }
+      }
+    }
+    return ResponseObject.response(report.getResult(reportData,
+        Localizations.getDictionary(reqInfo.getParameter(VAR_LOCALE))));
+  }
+
+  private void importTimeCards(Long companyId, SimpleRowSet erpTimeCards, StringBuilder log) {
+    SimpleRowSet employees = qs.getData(new SqlSelect()
+      .addField(TBL_EMPLOYEES, sys.getIdName(TBL_EMPLOYEES), COL_EMPLOYEE)
+      .addFields(TBL_EMPLOYEES, COL_TAB_NUMBER)
+      .addFrom(TBL_EMPLOYEES)
+      .addFromInner(TBL_COMPANY_PERSONS,
+        sys.joinTables(TBL_COMPANY_PERSONS, TBL_EMPLOYEES, COL_COMPANY_PERSON))
+      .setWhere(SqlUtils.equals(TBL_COMPANY_PERSONS, COL_COMPANY, companyId)));
+
+    Map<String, Long> tcCodes = getReferences(VIEW_TIME_CARD_CODES, COL_TC_CODE);
+
+    int cds = 0;
+    int ins = 0;
+    int upd = 0;
+    int del = 0;
+
+    for (SimpleRow timeCard : erpTimeCards) {
+      Long id = timeCard.getLong("D_TAB_ID");
+      String tabNumber = timeCard.getValue("TAB_NR");
+
+      if (BeeUtils.isEmpty(tabNumber)) {
+        del += qs.updateData(new SqlDelete(VIEW_TIME_CARD_CHANGES)
+          .setWhere(SqlUtils.equals(VIEW_TIME_CARD_CHANGES, COL_COSTS_EXTERNAL_ID, id)));
+        continue;
+      }
+      Long employee = BeeUtils.toLongOrNull(employees.getValueByKey(COL_TAB_NUMBER, tabNumber,
+        COL_EMPLOYEE));
+
+      if (!DataUtils.isId(employee) || BeeUtils.isEmpty(timeCard.getValue("DATA_NUO"))
+        || BeeUtils.isEmpty(timeCard.getValue("DATA_IKI"))) {
+        continue;
+      }
+      String code = timeCard.getValue("TAB_KODAS");
+
+      if (!tcCodes.containsKey(code)) {
+        tcCodes.put(code, qs.insertData(new SqlInsert(VIEW_TIME_CARD_CODES)
+          .addConstant(COL_TC_CODE, code)
+          .addConstant(COL_TC_NAME,
+            sys.clampValue(VIEW_TIME_CARD_CODES, COL_TC_NAME, timeCard.getValue("PAVAD")))));
+        cds++;
+      }
+      int c = qs.updateData(new SqlUpdate(VIEW_TIME_CARD_CHANGES)
+        .addConstant(COL_EMPLOYEE, employee)
+        .addConstant(COL_TIME_CARD_CODE, tcCodes.get(code))
+        .addConstant(COL_TIME_CARD_CHANGES_FROM,
+          TimeUtils.parseDate(timeCard.getValue("DATA_NUO"), DateOrdering.YMD))
+        .addConstant(COL_TIME_CARD_CHANGES_UNTIL,
+          TimeUtils.parseDate(timeCard.getValue("DATA_IKI"), DateOrdering.YMD))
+        .addConstant(COL_NOTES, timeCard.getValue("ISAK_PAVAD"))
+        .setWhere(SqlUtils.equals(VIEW_TIME_CARD_CHANGES, COL_COSTS_EXTERNAL_ID, id)));
+
+      if (BeeUtils.isPositive(c)) {
+        upd++;
+      } else {
+        qs.insertData(new SqlInsert(VIEW_TIME_CARD_CHANGES)
+          .addConstant(COL_EMPLOYEE, employee)
+          .addConstant(COL_TIME_CARD_CODE, tcCodes.get(code))
+          .addConstant(COL_TIME_CARD_CHANGES_FROM,
+            TimeUtils.parseDate(timeCard.getValue("DATA_NUO"), DateOrdering.YMD))
+          .addConstant(COL_TIME_CARD_CHANGES_UNTIL,
+            TimeUtils.parseDate(timeCard.getValue("DATA_IKI"), DateOrdering.YMD))
+          .addConstant(COL_NOTES, timeCard.getValue("ISAK_PAVAD"))
+          .addConstant(COL_COSTS_EXTERNAL_ID, id));
+        ins++;
+      }
+    }
+    log.append(BeeUtils.join(BeeConst.STRING_EOL, cds > 0
+        ? VIEW_TIME_CARD_CODES + ": +" + cds : null,
+      (ins + upd + del) > 0 ? VIEW_TIME_CARD_CHANGES + ":" + (ins > 0 ? " +" + ins : "")
+        + (upd > 0 ? " " + upd : "") + (del > 0 ? " -" + del : "") : null));
+  }
+
   private boolean overlaps(long objId, long emplId, JustDate date, WorkScheduleKind kind) {
     Set<TimeRange> objRanges = new HashSet<>();
     Set<TimeRange> otherRanges = new HashSet<>();
@@ -1051,5 +1662,185 @@ public class PayrollModuleBean implements BeeModule {
         }
       }
     }
+  }
+
+  private void syncEmployees(Long companyId, SimpleRowSet erpEmployees, SimpleRowSet employees,
+                             Map<String, Long> departments, Map<String, Long> positions,
+                             StringBuilder log) throws Throwable {
+    String tabNo = null;
+    int createdEmployeeCount = 0;
+    int updatedEmployeeCount = 0;
+    int createdPositionCount = 0;
+    int createdDepartmentCount = 0;
+
+    for (SimpleRow erpEmployee : erpEmployees) {
+      tabNo = erpEmployee.getValue("CODE");
+      SimpleRow employee = employees.getRowByKey(COL_TAB_NUMBER, tabNo);
+
+      Long personId;
+      Long personContactId = null;
+      Long companyPersonId;
+      Long contactId = null;
+      Long employeeId;
+      String fullName = BeeUtils.joinWords(erpEmployee.getValue("NAME"),
+        erpEmployee.getValue("SURNAME"));
+
+      if (employee == null) {
+        employee = employees.getRowByKey(COL_FIRST_NAME, fullName);
+
+        if (employee != null) {
+          employeeId = employee.getLong(COL_EMPLOYEE);
+
+          if (DataUtils.isId(employeeId)) {
+            qs.updateData(new SqlUpdate(TBL_EMPLOYEES)
+              .addConstant(COL_TAB_NUMBER, tabNo)
+              .setWhere(sys.idEquals(TBL_EMPLOYEES, employeeId)));
+          } else {
+            if (qs.updateData(new SqlUpdate(TBL_EMPLOYEES)
+              .addConstant(COL_TAB_NUMBER, tabNo)
+              .setWhere(SqlUtils.equals(TBL_EMPLOYEES, COL_COMPANY_PERSON,
+                employee.getLong(COL_COMPANY_PERSON)))) < 1) {
+
+              employeeId = qs.insertData(new SqlInsert(TBL_EMPLOYEES)
+                .addConstant(COL_COMPANY_PERSON, employee.getLong(COL_COMPANY_PERSON))
+                .addConstant(COL_TAB_NUMBER, tabNo));
+            } else {
+              employeeId = qs.getLong(new SqlSelect()
+                .addFields(TBL_EMPLOYEES, sys.getIdName(TBL_EMPLOYEES))
+                .addFrom(TBL_EMPLOYEES)
+                .setWhere(
+                  SqlUtils.and(
+                    SqlUtils.equals(TBL_EMPLOYEES, COL_COMPANY_PERSON,
+                      employee.getLong(COL_COMPANY_PERSON)),
+                    SqlUtils.equals(TBL_EMPLOYEES, COL_TAB_NUMBER, tabNo))));
+            }
+          }
+        }
+      }
+      if (employee == null) {
+        personId = qs.insertData(new SqlInsert(TBL_PERSONS)
+          .addConstant(COL_FIRST_NAME, erpEmployee.getValue("NAME"))
+          .addConstant(COL_LAST_NAME, erpEmployee.getValue("SURNAME")));
+
+        companyPersonId = qs.insertData(new SqlInsert(TBL_COMPANY_PERSONS)
+          .addConstant(COL_COMPANY, companyId)
+          .addConstant(COL_PERSON, personId));
+
+        employeeId = qs.insertData(new SqlInsert(TBL_EMPLOYEES)
+          .addConstant(COL_COMPANY_PERSON, companyPersonId)
+          .addConstant(COL_TAB_NUMBER, tabNo));
+        createdEmployeeCount++;
+      } else {
+        personId = employee.getLong(COL_PERSON);
+        personContactId = employee.getLong(COL_PERSON + COL_CONTACT);
+        companyPersonId = employee.getLong(COL_COMPANY_PERSON);
+        contactId = employee.getLong(COL_CONTACT);
+        employeeId = employee.getLong(COL_EMPLOYEE);
+        updatedEmployeeCount++;
+      }
+
+      if (!DataUtils.isId(employeeId)) {
+        logger.debug("ERPEmployees err ", tabNo, fullName);
+        continue;
+      }
+      String address = erpEmployee.getValue("ADDRESS1");
+
+      if (!BeeUtils.isEmpty(address)) {
+        if (!DataUtils.isId(personContactId)) {
+          personContactId = qs.insertData(new SqlInsert(TBL_CONTACTS)
+            .addConstant(COL_ADDRESS, address));
+
+          qs.updateData(new SqlUpdate(TBL_PERSONS)
+            .addConstant(COL_CONTACT, personContactId)
+            .setWhere(sys.idEquals(TBL_PERSONS, personId)));
+        } else {
+          qs.updateData(new SqlUpdate(TBL_CONTACTS)
+            .addConstant(COL_ADDRESS, address)
+            .setWhere(sys.idEquals(TBL_CONTACTS, personContactId)));
+        }
+      }
+      String phone = erpEmployee.getValue("MOBILEPHONE");
+
+      if (!BeeUtils.isEmpty(phone)) {
+        if (!DataUtils.isId(contactId)) {
+          contactId = qs.insertData(new SqlInsert(TBL_CONTACTS)
+            .addConstant(COL_MOBILE, phone));
+
+          qs.updateData(new SqlUpdate(TBL_COMPANY_PERSONS)
+            .addConstant(COL_CONTACT, contactId)
+            .setWhere(sys.idEquals(TBL_COMPANY_PERSONS, companyPersonId)));
+        } else {
+          qs.updateData(new SqlUpdate(TBL_CONTACTS)
+            .addConstant(COL_MOBILE, phone)
+            .setWhere(sys.idEquals(TBL_CONTACTS, contactId)));
+        }
+      }
+      String email = BeeUtils.normalize(erpEmployee.getValue("EMAIL"));
+
+      if (!BeeUtils.isEmpty(email)) {
+        Long emailId = qs.getLong(new SqlSelect()
+          .addFields(TBL_EMAILS, sys.getIdName(TBL_EMAILS))
+          .addFrom(TBL_EMAILS)
+          .setWhere(SqlUtils.equals(TBL_EMAILS, COL_EMAIL_ADDRESS, email)));
+
+        if (!DataUtils.isId(emailId)) {
+          emailId = qs.insertData(new SqlInsert(TBL_EMAILS)
+            .addConstant(COL_EMAIL_ADDRESS, email));
+        }
+        if (DataUtils.isId(emailId)) {
+          if (!DataUtils.isId(contactId)) {
+            contactId = qs.insertData(new SqlInsert(TBL_CONTACTS)
+              .addConstant(COL_EMAIL, emailId));
+
+            qs.updateData(new SqlUpdate(TBL_COMPANY_PERSONS)
+              .addConstant(COL_CONTACT, contactId)
+              .setWhere(sys.idEquals(TBL_COMPANY_PERSONS, companyPersonId)));
+          } else {
+            qs.updateData(new SqlUpdate(TBL_CONTACTS)
+              .addConstant(COL_EMAIL, emailId)
+              .setWhere(sys.idEquals(TBL_CONTACTS, contactId)));
+          }
+        }
+      }
+      String department = erpEmployee.getValue("DEPARTCODE");
+
+      if (!BeeUtils.isEmpty(department) && !departments.containsKey(department)) {
+        departments.put(department, qs.insertData(new SqlInsert(TBL_COMPANY_DEPARTMENTS)
+          .addConstant(COL_COMPANY, companyId)
+          .addConstant("Name", department)));
+        createdDepartmentCount++;
+      }
+      String position = erpEmployee.getValue("POSITIONCODE");
+
+      if (!BeeUtils.isEmpty(position) && !positions.containsKey(position)) {
+        positions.put(position, qs.insertData(new SqlInsert(TBL_POSITIONS)
+          .addConstant(COL_POSITION_NAME, position)));
+        createdPositionCount++;
+      }
+      qs.updateData(new SqlUpdate(TBL_PERSONS)
+        .addConstant(COL_DATE_OF_BIRTH,
+          TimeUtils.parseDate(erpEmployee.getValue("BIRTHDAY"), DateOrdering.YMD))
+        .setWhere(sys.idEquals(TBL_PERSONS, personId)));
+
+      qs.updateData(new SqlUpdate(TBL_COMPANY_PERSONS)
+        .addConstant(AdministrationConstants.COL_DEPARTMENT, departments.get(department))
+        .addConstant(COL_POSITION, positions.get(position))
+        .addConstant(COL_DATE_OF_EMPLOYMENT,
+          TimeUtils.parseDate(erpEmployee.getValue("DIRBA_NUO"), DateOrdering.YMD))
+        .addConstant(COL_DATE_OF_DISMISSAL,
+          TimeUtils.parseDate(erpEmployee.getValue("DISMISSED"), DateOrdering.YMD))
+        .setWhere(sys.idEquals(TBL_COMPANY_PERSONS, companyPersonId)));
+
+      qs.updateData(new SqlUpdate(TBL_EMPLOYEES)
+        .addConstant(COL_PART_TIME, erpEmployee.getDecimal("ETATAS"))
+        .setWhere(sys.idEquals(TBL_EMPLOYEES, employeeId)));
+    }
+
+    log.append(BeeUtils.join(BeeConst.STRING_EOL,
+      createdDepartmentCount > 0 ? TBL_COMPANY_DEPARTMENTS + ": +" + createdDepartmentCount : null,
+      createdPositionCount > 0 ? TBL_POSITIONS + ": +" + createdPositionCount : null,
+      (createdEmployeeCount + updatedEmployeeCount) > 0 ? TBL_EMPLOYEES + ":"
+        + (createdEmployeeCount > 0 ? " +" + createdEmployeeCount : "")
+        + (updatedEmployeeCount > 0 ? " " + updatedEmployeeCount : "") : null));
   }
 }

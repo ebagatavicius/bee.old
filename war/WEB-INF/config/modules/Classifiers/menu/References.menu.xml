@@ -22,7 +22,7 @@
   <Item name="SaleSeries" label="=trdSaleSeries" service="grid" parameters="SaleSeries"/>
 
   <Item name="Warehouses" label="=warehouses" service="grid" parameters="Warehouses"
-        separator="true" module="Trade Ec Orders" />
+        separator="true" module="Trade Ec Orders Service" />
 
   <Item name="Cities" label="=cities" service="grid" parameters="Cities" separator="true" />
   <Item name="Countries" label="=countries" service="grid" parameters="Countries" />
@@ -48,7 +48,7 @@
   <Item name="Themes" label="=colorThemes" service="grid" parameters="Themes" />
 
   <Item name="Discounts" label="=discounts" service="grid" parameters="Discounts" separator="true"
-        module="Trade Orders" />
+        module="Trade Orders Service" />
 
   <Item name="ChartOfAccounts" label="=chartOfAccounts" service="grid" parameters="ChartOfAccounts"
         separator="true" module="Finance" />

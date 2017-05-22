@@ -36,6 +36,9 @@
     <row>
       <Label for="ScheduleDays" />
       <InputSpinner source="ScheduleDays" minValue="-1" maxValue="999" style="width: 60px;" />
+      <Label for="Product" name="Product" />
+      <DataSelector source="Product" renderColumns="ProductName" newRowEnabled="true"
+                    style="width: 11em;" filter="Visible" />
     </row>
 
     <row>

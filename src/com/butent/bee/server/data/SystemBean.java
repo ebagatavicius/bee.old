@@ -249,10 +249,6 @@ public class SystemBean {
         .addConstant(COL_EVENT_STARTED, System.currentTimeMillis()));
   }
 
-  public void filterVisibleState(SqlSelect query, String tblName) {
-    filterVisibleState(query, tblName, null);
-  }
-
   public void filterVisibleState(SqlSelect query, String tblName, String tblAlias) {
     BeeTable table = getTable(tblName);
     table.verifyState(query, tblAlias, RightsState.VIEW, usr.getUserRoles());

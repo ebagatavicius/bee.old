@@ -35,7 +35,7 @@ public class CarForm extends SpecificationForm {
         }
 
         @Override
-        public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
+        public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow, boolean copy) {
           DataInfo orderInfo = Data.getDataInfo(gridView.getViewName());
           DataInfo carInfo = Data.getDataInfo(CarForm.this.getViewName());
           IsRow carRow = CarForm.this.getActiveRow();
@@ -45,7 +45,7 @@ public class CarForm extends SpecificationForm {
           RelationUtils.copyWithDescendants(carInfo, COL_OWNER, carRow, orderInfo, COL_CUSTOMER,
               newRow);
 
-          return super.onStartNewRow(gridView, oldRow, newRow);
+          return super.onStartNewRow(gridView, oldRow, newRow, copy);
         }
       });
     }

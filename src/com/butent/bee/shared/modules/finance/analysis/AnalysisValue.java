@@ -9,7 +9,9 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 public final class AnalysisValue implements BeeSerializable {
 
@@ -136,8 +138,24 @@ public final class AnalysisValue implements BeeSerializable {
     return columnSplit;
   }
 
+  public Set<AnalysisSplitType> getColumnSplitTypes() {
+    Set<AnalysisSplitType> types = EnumSet.noneOf(AnalysisSplitType.class);
+    if (!columnSplit.isEmpty()) {
+      types.addAll(columnSplit.keySet());
+    }
+    return types;
+  }
+
   public Map<AnalysisSplitType, AnalysisSplitValue> getRowSplit() {
     return rowSplit;
+  }
+
+  public Set<AnalysisSplitType> getRowSplitTypes() {
+    Set<AnalysisSplitType> types = EnumSet.noneOf(AnalysisSplitType.class);
+    if (!rowSplit.isEmpty()) {
+      types.addAll(rowSplit.keySet());
+    }
+    return types;
   }
 
   public String getActualValue() {

@@ -41,10 +41,8 @@
     <SimpleColumn name="Important" />
     <SimpleColumn name="PermitComment" />
 
-    <ExternalJoin source="DiscussionsComments" joinType="LEFT"
-      name="Discussion">
-      <AggregateColumn alias="LastCommentPublishTime" aggregate="MAX"
-        name="PublishTime" />
+    <ExternalJoin source="DiscussionsComments" joinType="LEFT" name="Discussion">
+      <AggregateColumn alias="LastCommentPublishTime" aggregate="MAX" name="PublishTime" />
     </ExternalJoin>
 
     <ExternalJoin name="Discussion" source="DiscussionsUsers" joinType="LEFT" filter="DiscussionUser = {u}">

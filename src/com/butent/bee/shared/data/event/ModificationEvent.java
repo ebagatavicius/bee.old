@@ -3,6 +3,7 @@ package com.butent.bee.shared.data.event;
 import com.google.common.collect.Lists;
 import com.google.web.bindery.event.shared.Event;
 
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.BeeSerializable;
 import com.butent.bee.shared.Locality;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -59,10 +60,6 @@ public abstract class ModificationEvent<H> extends Event<H> implements DataEvent
       this.brief = brief;
     }
 
-    public String getBrief() {
-      return brief;
-    }
-
     abstract ModificationEvent<?> createEvent();
   }
 
@@ -88,6 +85,14 @@ public abstract class ModificationEvent<H> extends Event<H> implements DataEvent
   }
 
   private transient Locality locality;
+
+  public String brief() {
+    if (getKind() == null) {
+      return BeeConst.UNKNOWN;
+    } else {
+      return BeeUtils.joinWords(getKind().brief, getViewNames());
+    }
+  }
 
   public boolean containsAny(Collection<String> viewNames) {
     return BeeUtils.intersects(viewNames, getViewNames());

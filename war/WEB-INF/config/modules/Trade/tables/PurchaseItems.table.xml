@@ -13,6 +13,7 @@
     <Boolean name="VatPlus" label="=vatPlus" />
     <Numeric name="Vat" precision="12" scale="2" label="=vat" />
     <Boolean name="VatPercent" label="=vatPercent" />
+    <Numeric name="Discount" precision="7" scale="3" label="=discountPercent" />
     <Text name="Note" label="=trdNote" />
     <Relation name="Parent" relation="PurchaseItems" />
     <Numeric name="Ordinal" precision="2" label="=ordinal" />

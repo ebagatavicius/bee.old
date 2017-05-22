@@ -406,6 +406,11 @@ public class SqlSelect extends HasFrom<SqlSelect> implements IsCloneable<SqlSele
     return getReference();
   }
 
+  public SqlSelect addGroup(String source, Collection<String> fields) {
+    fields.forEach(field -> addGroup(source, field));
+    return getReference();
+  }
+
   /**
    * Adds a MAX function with a specified expression {@code expr} and alias {@code alias}.
    *
@@ -492,6 +497,11 @@ public class SqlSelect extends HasFrom<SqlSelect> implements IsCloneable<SqlSele
     return getReference();
   }
 
+  public SqlSelect addOrder(String source, String field, NullOrdering nullOrdering) {
+    addOrder(false, nullOrdering, source, field);
+    return getReference();
+  }
+
   public SqlSelect addOrderBy(Order.Column column, String source, String field) {
     Assert.notNull(column);
     Assert.notEmpty(field);
@@ -547,6 +557,11 @@ public class SqlSelect extends HasFrom<SqlSelect> implements IsCloneable<SqlSele
    */
   public SqlSelect addSum(String source, String field, String alias) {
     return addSum(SqlUtils.field(source, field), alias);
+  }
+
+  public SqlSelect addSum(String source, Collection<String> fields) {
+    fields.forEach(field -> addSum(source, field));
+    return getReference();
   }
 
   /**

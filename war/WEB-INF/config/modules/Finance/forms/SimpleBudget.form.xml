@@ -86,7 +86,7 @@
             <CheckBox source="EntryEmployee" text="=employee" style="margin-left: 2rem;" />
           </FlowPanel>
 
-          <ChildGrid name="BudgetEntries" relColumn="BudgetHeader" class="flexible" />
+          <ChildGrid name="BudgetEntries" relColumn="BudgetHeader" class="flexible" paging="true" />
         </FlowPanel>
       </page>
 

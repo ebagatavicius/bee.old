@@ -7,21 +7,29 @@ import com.google.gwt.event.shared.HasHandlers;
 import static com.butent.bee.shared.modules.payroll.PayrollConstants.*;
 
 import com.butent.bee.client.communication.RpcCallback;
+import com.butent.bee.client.composite.DataSelector;
+import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Selectors;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.event.logical.RenderingEvent;
 import com.butent.bee.client.grid.GridPanel;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
+import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
+import com.butent.bee.client.view.edit.EditableWidget;
+import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
+import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
+import com.butent.bee.client.widget.InputTimeOfDay;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
@@ -29,21 +37,43 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.filter.CompoundFilter;
+import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.i18n.PredefinedFormat;
 import com.butent.bee.shared.time.Grego;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
+import com.butent.bee.shared.time.YearMonth;
 import com.butent.bee.shared.utils.BeeUtils;
+import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 class WorkScheduleEditor extends AbstractFormInterceptor {
 
   private final GridInterceptor gridInterceptor = new AbstractGridInterceptor() {
+
+    @Override
+    public DeleteMode beforeDeleteRow(GridPresenter presenter, IsRow row) {
+
+      Long employee = row.getLong(getGridView().getDataIndex(COL_EMPLOYEE));
+      YearMonth day = YearMonth.of(row.getDate(getGridView().getDataIndex(COL_WORK_SCHEDULE_DATE)));
+
+      for (int i = 0; i < lockData.getNumberOfRows(); i++) {
+        YearMonth lock = new YearMonth(lockData.getDate(i, COL_WOKR_SCHEDULE_LOCK));
+        if (Objects.equals(employee, lockData.getLong(i, COL_EMPLOYEE)) && lock.equals(day)) {
+          getGridView().notifySevere(Localized.dictionary().rowIsReadOnly());
+          return DeleteMode.CANCEL;
+        }
+      }
+      return super.beforeDeleteRow(presenter, row);
+    }
+
     @Override
     public void afterDeleteRow(long rowId) {
       dayRefresher.run();
@@ -71,8 +101,20 @@ class WorkScheduleEditor extends AbstractFormInterceptor {
     }
 
     @Override
+    public void beforeRender(GridView gridView, RenderingEvent event) {
+
+      if (getWorkScheduleKind(WorkScheduleEditor.this.getFormView()) == WorkScheduleKind.ACTUAL) {
+        gridView.getGrid().removeColumn(COL_TIME_RANGE_CODE);
+        gridView.getGrid().removeColumn("TimeFrom");
+        gridView.getGrid().removeColumn("TimeUntil");
+      }
+
+      super.beforeRender(gridView, event);
+    }
+
+    @Override
     public GridInterceptor getInstance() {
-      return null;
+      return this;
     }
   };
 
@@ -92,10 +134,15 @@ class WorkScheduleEditor extends AbstractFormInterceptor {
   private final Set<Integer> holidays;
 
   private final Runnable dayRefresher;
+  private final BeeRowSet lockData;
+
+  private DataSelector timeCardCodeSelector;
+  private InputTimeOfDay durationInput;
 
   private String calendarId;
 
-  WorkScheduleEditor(JustDate date, Set<Integer> holidays, Runnable dayRefresher) {
+  WorkScheduleEditor(JustDate date, Set<Integer> holidays, Runnable dayRefresher,
+                     BeeRowSet lockData) {
     this.date = date;
 
     if (holidays == null) {
@@ -105,6 +152,27 @@ class WorkScheduleEditor extends AbstractFormInterceptor {
     }
 
     this.dayRefresher = dayRefresher;
+    this.lockData = lockData;
+  }
+
+  @Override
+  public void afterCreateEditableWidget(EditableWidget editableWidget, IdentifiableWidget widget) {
+    switch (editableWidget.getColumnId()) {
+      case COL_TIME_CARD_CODE:
+        if (widget instanceof DataSelector) {
+          timeCardCodeSelector = (DataSelector) widget;
+          timeCardCodeSelector.addEditStopHandler(event -> onTimeCardSelectorEdit());
+        }
+        break;
+      case COL_WORK_SCHEDULE_DURATION:
+        if (widget instanceof  InputTimeOfDay) {
+          durationInput = (InputTimeOfDay) widget;
+          durationInput.addValueChangeHandler(event -> onDurationInputValueChange());
+          durationInput.addEditStopHandler(event -> onDurationInputValueChange());
+        }
+        break;
+    }
+    super.afterCreateEditableWidget(editableWidget, widget);
   }
 
   @Override
@@ -120,8 +188,14 @@ class WorkScheduleEditor extends AbstractFormInterceptor {
   }
 
   @Override
+  public void afterRefresh(FormView form, IsRow row) {
+    initTimeCardCodeSelectorFilter();
+    super.afterRefresh(form, row);
+  }
+
+  @Override
   public FormInterceptor getInstance() {
-    return new WorkScheduleEditor(date, holidays, dayRefresher);
+    return new WorkScheduleEditor(date, holidays, dayRefresher, lockData);
   }
 
   @Override
@@ -133,11 +207,22 @@ class WorkScheduleEditor extends AbstractFormInterceptor {
     boolean to = event.containsColumn(COL_WORK_SCHEDULE_UNTIL);
 
     boolean du = event.containsColumn(COL_WORK_SCHEDULE_DURATION);
+    WorkScheduleKind kind = getWorkScheduleKind(getFormView());
 
-    boolean ok = tr && !tc && !fr && !to && !du
-        || !tr && tc && !fr && !to && !du
-        || !tr && !tc && fr && (to || du)
-        || !tr && !tc && !fr && !to && du;
+    boolean ok;
+    switch (kind) {
+      case PLANNED:
+        ok = tr && !tc && !fr && !to && !du
+          || !tr && tc && !fr && !to && !du
+          || !tr && !tc && fr && (to || du)
+          || !tr && !tc && !fr && !to && du;
+        break;
+      case ACTUAL:
+        ok = !tr && (tc || du) && !fr && !to;
+        break;
+      default:
+          ok = false;
+    }
 
     if (!ok) {
       event.consume();
@@ -182,6 +267,32 @@ class WorkScheduleEditor extends AbstractFormInterceptor {
     }
   }
 
+  private static WorkScheduleKind getWorkScheduleKind(FormView form) {
+    if (form == null) {
+      return null;
+    }
+    return EnumUtils.getEnumByIndex(WorkScheduleKind.class,
+      form.getIntegerValue(COL_WORK_SCHEDULE_KIND));
+  }
+
+  Filter getTimeCardSelectorFilter() {
+    FormView form = getFormView();
+    CompoundFilter filter = CompoundFilter.and();
+
+
+    if (form != null && getWorkScheduleKind(form) != null) {
+      filter.add(Filter.notNull(getWorkScheduleKind(form).getTccColumnName()));
+    }
+
+    if (durationInput != null && timeCardCodeSelector != null) {
+      if (BeeUtils.isEmpty(timeCardCodeSelector.getValue())
+        && !BeeUtils.isEmpty(durationInput.getValue())) {
+        filter.add(Filter.equals(COL_TC_DURATION_TYPE, TcDurationType.PART_TIME));
+      }
+    }
+    return filter;
+  }
+
   private String getCalendarId() {
     return calendarId;
   }
@@ -212,6 +323,32 @@ class WorkScheduleEditor extends AbstractFormInterceptor {
     }
 
     return dates;
+  }
+
+  private void onDurationInputValueChange() {
+    if (timeCardCodeSelector != null) {
+      timeCardCodeSelector.setAdditionalFilter(getTimeCardSelectorFilter());
+    }
+  }
+
+  private void onTimeCardSelectorEdit() {
+    FormView formView = getFormView();
+    if (durationInput != null && timeCardCodeSelector.getRelatedRow() != null && formView != null) {
+      IsRow row = formView.getActiveRow();
+      TcDurationType type = Data.getEnum(VIEW_TIME_CARD_CODES,
+        timeCardCodeSelector.getRelatedRow(), COL_TC_DURATION_TYPE, TcDurationType.class);
+
+      if (type != TcDurationType.PART_TIME) {
+        row.setValue(formView.getDataIndex(COL_WORK_SCHEDULE_DURATION), (String) null);
+        formView.refreshBySource(COL_WORK_SCHEDULE_DURATION);
+      }
+    }
+  }
+
+  private void initTimeCardCodeSelectorFilter() {
+    if (timeCardCodeSelector != null) {
+      timeCardCodeSelector.setAdditionalFilter(getTimeCardSelectorFilter());
+    }
   }
 
   private void renderCalendar(Flow panel) {

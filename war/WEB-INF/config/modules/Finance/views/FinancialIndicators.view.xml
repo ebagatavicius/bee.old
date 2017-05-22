@@ -18,6 +18,7 @@
 
     <SimpleColumn name="IndicatorClosingEntries" />
 
+    <SimpleColumn name="IndicatorRatio" />
     <SimpleColumn name="IndicatorScale" />
 
     <SimpleColumn name="Description" />

@@ -45,7 +45,7 @@ public class VehiclesGrid extends AbstractGridInterceptor {
   }
 
   @Override
-  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
+  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow, boolean copy) {
     if (Objects.nonNull(tree)) {
       TreeItem item = tree.getSelectedItem();
 

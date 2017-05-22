@@ -13,5 +13,7 @@
     <Date name="DateUntil" label="=endingDate" notNull="true" />
 
     <Text name="Notes" label="=notes" />
+
+    <Long name="ExternalID" unique="true" label="=externalId" />
   </Fields>
 </Table>

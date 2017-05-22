@@ -2,7 +2,6 @@ package com.butent.bee.server.modules.cars;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
@@ -90,7 +89,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -246,13 +244,11 @@ public class CarsModuleBean implements BeeModule {
       case SVC_CREATE_INVOICE:
         TradeDocument doc = TradeDocument.restore(reqInfo.getParameter(VAR_DOCUMENT));
         Map<Long, Double> items = new HashMap<>();
-        Map<Long, Double> jobs = new HashMap<>();
 
-        ImmutableMap.of(TBL_SERVICE_ORDER_ITEMS, items, TBL_SERVICE_ORDER_JOBS, jobs)
-            .forEach((view, map) -> Codec.deserializeHashMap(reqInfo.getParameter(view))
-                .forEach((id, qty) -> map.put(BeeUtils.toLong(id), BeeUtils.toDouble(qty))));
+        Codec.deserializeHashMap(reqInfo.getParameter(TBL_SERVICE_ORDER_ITEMS))
+            .forEach((id, qty) -> items.put(BeeUtils.toLong(id), BeeUtils.toDouble(qty)));
 
-        response = createInvoice(doc, items, jobs);
+        response = createInvoice(doc, items);
         break;
 
       default:
@@ -334,12 +330,15 @@ public class CarsModuleBean implements BeeModule {
 
     SqlSelect query = new SqlSelect()
         .addFields(TBL_SERVICE_ORDERS, COL_DATE, COL_ORDER_NO)
+        .addFields(TBL_COMPANIES, COL_COMPANY_NAME)
         .addFields(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY)
         .addExpr(xpr, ALS_COMPLETED)
         .addFrom(TBL_SERVICE_ORDER_ITEMS)
         .addFromInner(TBL_ITEMS, sys.joinTables(TBL_ITEMS, TBL_SERVICE_ORDER_ITEMS, COL_ITEM))
         .addFromInner(TBL_SERVICE_ORDERS,
             sys.joinTables(TBL_SERVICE_ORDERS, TBL_SERVICE_ORDER_ITEMS, COL_SERVICE_ORDER))
+        .addFromLeft(TBL_COMPANIES,
+            sys.joinTables(TBL_COMPANIES, TBL_SERVICE_ORDERS, COL_TRADE_CUSTOMER))
         .addFromLeft(TBL_SERVICE_INVOICES,
             sys.joinTables(TBL_SERVICE_ORDER_ITEMS, TBL_SERVICE_INVOICES, COL_SERVICE_ITEM))
         .setWhere(SqlUtils.and(SqlUtils.equals(TBL_SERVICE_ORDER_ITEMS, COL_ITEM, item),
@@ -347,6 +346,7 @@ public class CarsModuleBean implements BeeModule {
             SqlUtils.isNull(TBL_ITEMS, COL_ITEM_IS_SERVICE),
             SqlUtils.positive(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY)))
         .addGroup(TBL_SERVICE_ORDERS, COL_DATE, COL_ORDER_NO)
+        .addGroup(TBL_COMPANIES, COL_COMPANY_NAME)
         .addGroup(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY)
         .setHaving(SqlUtils.or(SqlUtils.isNull(xpr),
             SqlUtils.more(TBL_SERVICE_ORDER_ITEMS, COL_TRADE_ITEM_QUANTITY, xpr)))
@@ -366,7 +366,7 @@ public class CarsModuleBean implements BeeModule {
 
     qs.getData(query).forEach(row -> {
       String key = BeeUtils.joinItems(Formatter.renderDateTime(dtfInfo, row.getDateTime(COL_DATE)),
-          row.getValue(COL_ORDER_NO));
+          row.getValue(COL_ORDER_NO), row.getValue(COL_COMPANY_NAME));
 
       map.put(key, BeeUtils.unbox(map.get(key))
           + row.getDouble(COL_TRADE_ITEM_QUANTITY) - BeeUtils.unbox(row.getDouble(ALS_COMPLETED)));
@@ -402,20 +402,13 @@ public class CarsModuleBean implements BeeModule {
       Long serviceId = BeeUtils.toLongOrNull(BeeUtils.getQuietly(args, 0));
 
       if (DataUtils.isId(serviceId)) {
-        SqlSelect query = new SqlSelect().setUnionAllMode(false)
+        SqlSelect query = new SqlSelect().setDistinctMode(true)
             .addFields(TBL_SERVICE_INVOICES, COL_TRADE_DOCUMENT)
             .addFrom(TBL_SERVICE_INVOICES)
             .addFromInner(TBL_SERVICE_ORDER_ITEMS,
                 SqlUtils.and(sys.joinTables(TBL_SERVICE_ORDER_ITEMS, TBL_SERVICE_INVOICES,
                     COL_SERVICE_ITEM), SqlUtils.equals(TBL_SERVICE_ORDER_ITEMS, COL_SERVICE_ORDER,
-                    serviceId)))
-            .addUnion(new SqlSelect().setDistinctMode(true)
-                .addFields(TBL_SERVICE_INVOICES, COL_TRADE_DOCUMENT)
-                .addFrom(TBL_SERVICE_INVOICES)
-                .addFromInner(TBL_SERVICE_ORDER_JOBS,
-                    SqlUtils.and(sys.joinTables(TBL_SERVICE_ORDER_JOBS, TBL_SERVICE_INVOICES,
-                        COL_SERVICE_JOB), SqlUtils.equals(TBL_SERVICE_ORDER_JOBS, COL_SERVICE_ORDER,
-                        serviceId))));
+                    serviceId)));
 
         clause = SqlUtils.in(view.getSourceAlias(), view.getSourceIdName(), query);
       } else {
@@ -499,24 +492,28 @@ public class CarsModuleBean implements BeeModule {
         if (event.isAfter(TBL_SERVICE_ORDERS) && event.hasData()) {
           BeeRowSet rowSet = event.getRowset();
           Collection<Long> ids = rowSet.getRowIds();
+          IsExpression totalExpression = TradeModuleBean.getTotal(TBL_SERVICE_ORDER_ITEMS);
 
-          for (String tbl : new String[] {TBL_SERVICE_ORDER_ITEMS, TBL_SERVICE_ORDER_JOBS}) {
-            SimpleRowSet data = qs.getData(new SqlSelect()
-                .addFields(tbl, COL_SERVICE_ORDER)
-                .addSum(TradeModuleBean.getTotal(tbl), VAR_TOTAL)
-                .addSum(TradeModuleBean.getDiscount(tbl), COL_TRADE_DISCOUNT)
-                .addSum(TradeModuleBean.getVat(tbl), COL_TRADE_VAT)
-                .addFrom(tbl)
-                .addFromInner(TBL_SERVICE_ORDERS,
-                    sys.joinTables(TBL_SERVICE_ORDERS, tbl, COL_SERVICE_ORDER))
-                .setWhere(SqlUtils.inList(tbl, COL_SERVICE_ORDER, ids))
-                .addGroup(tbl, COL_SERVICE_ORDER));
+          SimpleRowSet data = qs.getData(new SqlSelect()
+              .addFields(TBL_SERVICE_ORDER_ITEMS, COL_SERVICE_ORDER)
+              .addSum(SqlUtils.sqlIf(SqlUtils.isNull(TBL_CAR_JOBS, COL_ITEM), totalExpression, 0),
+                  COL_ITEM + VAR_TOTAL)
+              .addSum(SqlUtils.sqlIf(SqlUtils.isNull(TBL_CAR_JOBS, COL_ITEM), 0, totalExpression),
+                  COL_JOB + VAR_TOTAL)
+              .addSum(TradeModuleBean.getDiscount(TBL_SERVICE_ORDER_ITEMS), COL_TRADE_DISCOUNT)
+              .addSum(TradeModuleBean.getVat(TBL_SERVICE_ORDER_ITEMS), COL_TRADE_VAT)
+              .addFrom(TBL_SERVICE_ORDER_ITEMS)
+              .addFromInner(TBL_SERVICE_ORDERS,
+                  sys.joinTables(TBL_SERVICE_ORDERS, TBL_SERVICE_ORDER_ITEMS, COL_SERVICE_ORDER))
+              .addFromLeft(TBL_CAR_JOBS,
+                  SqlUtils.joinUsing(TBL_SERVICE_ORDER_ITEMS, TBL_CAR_JOBS, COL_ITEM))
+              .setWhere(SqlUtils.inList(TBL_SERVICE_ORDER_ITEMS, COL_SERVICE_ORDER, ids))
+              .addGroup(TBL_SERVICE_ORDER_ITEMS, COL_SERVICE_ORDER));
 
-            for (BeeRow row : rowSet) {
-              Stream.of(VAR_TOTAL, COL_TRADE_DISCOUNT, COL_TRADE_VAT).forEach(col ->
-                  row.setProperty(tbl + col, data.getValueByKey(COL_SERVICE_ORDER,
-                      BeeUtils.toString(row.getId()), col)));
-            }
+          for (BeeRow row : rowSet) {
+            Arrays.stream(data.getColumnNames()).forEach(col ->
+                row.setProperty(col, data.getValueByKey(COL_SERVICE_ORDER,
+                    BeeUtils.toString(row.getId()), col)));
           }
         }
       }
@@ -780,8 +777,7 @@ public class CarsModuleBean implements BeeModule {
     return ResponseObject.emptyResponse();
   }
 
-  private ResponseObject createInvoice(TradeDocument document, Map<Long, Double> items,
-      Map<Long, Double> jobs) {
+  private ResponseObject createInvoice(TradeDocument document, Map<Long, Double> items) {
     ResponseObject response = trd.createDocument(document);
 
     if (response.hasErrors()) {
@@ -789,11 +785,10 @@ public class CarsModuleBean implements BeeModule {
     }
     Long tradeId = response.getResponseAsLong();
 
-    ImmutableMap.of(COL_SERVICE_ITEM, items, COL_SERVICE_JOB, jobs).forEach((col, map) ->
-        map.forEach((id, qty) -> qs.insertData(new SqlInsert(TBL_SERVICE_INVOICES)
-            .addConstant(COL_TRADE_DOCUMENT, tradeId)
-            .addConstant(col, id)
-            .addConstant(COL_TRADE_ITEM_QUANTITY, qty))));
+    items.forEach((id, qty) -> qs.insertData(new SqlInsert(TBL_SERVICE_INVOICES)
+        .addConstant(COL_TRADE_DOCUMENT, tradeId)
+        .addConstant(COL_SERVICE_ITEM, id)
+        .addConstant(COL_TRADE_ITEM_QUANTITY, qty)));
 
     return ResponseObject.response(tradeId);
   }

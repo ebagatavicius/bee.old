@@ -9,7 +9,7 @@ import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.ui.Widget;
 
-import static com.butent.bee.client.modules.mail.Relations.*;
+import static com.butent.bee.client.composite.Relations.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 
 import com.butent.bee.client.BeeKeeper;

@@ -19,7 +19,7 @@
     <Integer name="QuantityTo" label="=quantityTo" />
     <Relation name="Unit" relation="Units" label="=unit" />
 
-    <Enum name="PriceName" key="ItemPrice" label="=priceName" />
+    <Enum name="PriceName" key="ItemPrice" label="=priceName" precision="2" />
 
     <Numeric name="Percent" precision="7" scale="3" label="=discountPercent" />
 

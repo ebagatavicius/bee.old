@@ -9,7 +9,7 @@
   <DataColumn name="PlaceName" />
   <DataColumn name="StatusName" />
 
-  <IdColumn name="Id" visible="false" />
+  <DataColumn name="ID" visible="false" />
   <DataColumn name="RegistrationNumber" visible="false" />
   <DataColumn name="Received" visible="false" />
   <DataColumn name="Sent" visible="false" />

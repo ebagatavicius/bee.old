@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-  name="TradeSeries" source="TradeSeries"
-  caption="=seriesPlural" newRowCaption="=trdNewSeries"
-  editForm="TradeSeries" newRowForm="TradeSeries"
-  >
+      name="TradeSeries" source="TradeSeries"
+      caption="=seriesPlural" newRowCaption="=trdNewSeries"
+      editForm="TradeSeries" newRowForm="TradeSeries"
+>
   <Columns>
     <SimpleColumn name="SeriesName" />
+
+    <SimpleColumn name="NumberPrefix" />
+    <SimpleColumn name="NumberLength" />
+
     <SimpleColumn name="Notes" />
   </Columns>
-  
+
   <Order>
     <OrderBy column="SeriesName" />
   </Order>

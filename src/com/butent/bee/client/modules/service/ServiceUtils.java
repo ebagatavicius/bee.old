@@ -11,6 +11,9 @@ import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
+import com.butent.bee.client.dialog.ConfirmationCallback;
+import com.butent.bee.client.dialog.StringCallback;
+import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
@@ -20,8 +23,12 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
+import com.butent.bee.shared.i18n.Dictionary;
+import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.trade.TradeConstants;
+import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -29,6 +36,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public final class ServiceUtils {
 
@@ -56,11 +64,8 @@ public final class ServiceUtils {
 
         maintenanceRow.setValue(maintenanceDataInfo.getColumnIndex(ALS_CONTACT_ADDRESS),
             objectRow.getString(objectDataInfo.getColumnIndex(ALS_CONTACT_ADDRESS)));
-
-        return;
       }
     }
-    clearContactValue(maintenanceRow);
   }
 
   public static double calculateServicePrice(double price, IsRow serviceMaintenanceRow) {
@@ -69,6 +74,22 @@ public final class ServiceUtils {
 
   public static double calculateServicePrice(BeeRow commentRow, IsRow serviceMaintenanceRow) {
     return calculateServicePrice(0, commentRow, serviceMaintenanceRow);
+  }
+
+  public static DateTime calculateWarrantyDate(SelectorEvent event) {
+    DateTime warrantyDate = null;
+    BeeRow warrantyRow = event.getRelatedRow();
+
+    if (warrantyRow != null) {
+      int duration = BeeUtils.unbox(warrantyRow.getInteger(
+          Data.getColumnIndex(event.getRelatedViewName(), COL_WARRANTY_DURATION)));
+      if (BeeUtils.isPositive(duration)) {
+        DateTime warrantyValidToValue = new DateTime();
+        TimeUtils.add(warrantyValidToValue, TimeUtils.FIELD_DATE, duration);
+        warrantyDate = warrantyValidToValue;
+      }
+    }
+    return warrantyDate;
   }
 
   public static void checkCanChangeState(Boolean isFinalState,
@@ -104,15 +125,13 @@ public final class ServiceUtils {
   }
 
   public static void clearContactValue(IsRow maintenanceRow) {
+    setClientValuesForRevert(maintenanceRow);
     maintenanceRow.clearCell(maintenanceDataInfo.getColumnIndex(COL_CONTACT));
     maintenanceRow.clearCell(maintenanceDataInfo.getColumnIndex(ALS_CONTACT_PHONE));
     maintenanceRow.clearCell(maintenanceDataInfo.getColumnIndex(ALS_CONTACT_FIRST_NAME));
     maintenanceRow.clearCell(maintenanceDataInfo.getColumnIndex(ALS_CONTACT_LAST_NAME));
     maintenanceRow.clearCell(maintenanceDataInfo.getColumnIndex(ALS_CONTACT_EMAIL));
     maintenanceRow.clearCell(maintenanceDataInfo.getColumnIndex(ALS_CONTACT_ADDRESS));
-    maintenanceRow.clearCell(maintenanceDataInfo.getColumnIndex(COL_COMPANY));
-    maintenanceRow.clearCell(maintenanceDataInfo.getColumnIndex(ALS_COMPANY_NAME));
-    maintenanceRow.clearCell(maintenanceDataInfo.getColumnIndex(ALS_COMPANY_TYPE_NAME));
   }
 
   public static void fillCompanyColumns(IsRow maintenanceRow, IsRow dataRow, String dataViewName,
@@ -127,15 +146,13 @@ public final class ServiceUtils {
       String companyColumnName, String companyColumnAlias, String companyTypeColumnAlias) {
     if (dataRow != null) {
       Long company = dataRow.getLong(Data.getColumnIndex(dataViewName, companyColumnName));
-
       if (DataUtils.isId(company)) {
         maintenanceRow.setValue(maintenanceDataInfo.getColumnIndex(COL_COMPANY), company);
         fillCompanyColumns(maintenanceRow, dataRow, dataViewName, companyColumnAlias,
             companyTypeColumnAlias);
-        return;
       }
+      setClientValuesForRevert(maintenanceRow);
     }
-    clearContactValue(maintenanceRow);
   }
 
   public static void fillContractorAndManufacturerValues(IsRow maintenanceRow, IsRow objectRow) {
@@ -160,6 +177,21 @@ public final class ServiceUtils {
         DataUtils.isId(stateId) ? Filter.equals(COL_MAINTENANCE_STATE, stateId) : null,
         DataUtils.isId(typeId) ? Filter.equals(COL_MAINTENANCE_TYPE, typeId) : null,
         roleFilter, stateFilter);
+  }
+
+  public static void getStateProcessRowSet(IsRow maintenanceRow,
+      Consumer<BeeRowSet> processConsumer) {
+    Long stateId = maintenanceRow.getLong(maintenanceDataInfo
+        .getColumnIndex(AdministrationConstants.COL_STATE));
+    Long maintenanceTypeId = maintenanceRow.getLong(maintenanceDataInfo.getColumnIndex(COL_TYPE));
+
+    Queries.getRowSet(TBL_STATE_PROCESS, null,
+        ServiceUtils.getStateFilter(stateId, maintenanceTypeId), new Queries.RowSetCallback() {
+          @Override
+          public void onSuccess(BeeRowSet result) {
+            processConsumer.accept(result);
+          }
+        });
   }
 
   private ServiceUtils() {
@@ -193,6 +225,95 @@ public final class ServiceUtils {
     }
   }
 
+  public static void setClientValuesForRevert(IsRow maintenanceRow) {
+    Stream.of(COL_COMPANY, ALS_COMPANY_NAME, ALS_COMPANY_TYPE_NAME).forEach(column ->
+        maintenanceRow.setProperty(column,
+            maintenanceRow.getString(maintenanceDataInfo.getColumnIndex(column)))
+    );
+  }
+
+  public static void setObjectValuesForRevert(IsRow maintenanceRow) {
+    Stream.of(COL_SERVICE_OBJECT, COL_MANUFACTURER, ALS_MANUFACTURER_NAME, COL_SERVICE_CONTRACTOR,
+        ALS_SERVICE_CONTRACTOR_NAME, COL_CATEGORY, ALS_SERVICE_CATEGORY_NAME, COL_MODEL,
+        COL_SERIAL_NO, COL_ARTICLE_NO, COL_SERVICE_CUSTOMER).forEach(column ->
+        maintenanceRow.setProperty(column,
+            maintenanceRow.getString(maintenanceDataInfo.getColumnIndex(column)))
+    );
+  }
+
+  public static void onClientOrObjectUpdate(SelectorEvent event, FormView formView,
+      Consumer<String> reasonValue) {
+    Dictionary loc = Localized.dictionary();
+    String viewName = event.getRelatedViewName();
+    String repairCompanyId = BeeUtils.same(viewName, VIEW_COMPANIES)
+        ? BeeUtils.toString(event.getValue())
+        : formView.getActiveRow().getString(maintenanceDataInfo.getColumnIndex(COL_COMPANY));
+    String objectCompanyId = BeeUtils.same(viewName, VIEW_SERVICE_OBJECTS)
+        ? event.getRelatedRow().getString(objectDataInfo.getColumnIndex(COL_SERVICE_CUSTOMER))
+        : formView.getActiveRow().getString(maintenanceDataInfo
+        .getColumnIndex(COL_SERVICE_CUSTOMER));
+    Number clientChangingPrm = Global.getParameterNumber(PRM_CLIENT_CHANGING_SETTING);
+
+    if (repairCompanyId != null && objectCompanyId != null && clientChangingPrm != null
+        && !BeeUtils.same(repairCompanyId, objectCompanyId)) {
+      boolean requiredReason = Objects.equals(clientChangingPrm.intValue(), 2);
+
+      switch (clientChangingPrm.intValue()) {
+        case 1:
+        case 2:
+          Global.inputString(loc.svcChangingClient(), loc.trAssessmentReason(),
+              new StringCallback() {
+            @Override
+            public void onSuccess(String value) {
+              updateClientAndContact(event, formView, false);
+              reasonValue.accept(value);
+            }
+
+            @Override
+            public void onCancel() {
+              revertClientOrObject(event, formView);
+              super.onCancel();
+            }
+
+            @Override
+            public boolean isRequired() {
+              return requiredReason;
+            }
+          }, null);
+          break;
+
+        case 3:
+          Global.confirm(loc.svcChangingClient(), new ConfirmationCallback() {
+            @Override
+            public void onConfirm() {
+              updateClientAndContact(event, formView, false);
+            }
+
+            @Override
+            public void onCancel() {
+              revertClientOrObject(event, formView);
+            }
+          });
+          break;
+
+        case 4:
+          updateClientAndContact(event, formView, true);
+          formView.notifyInfo(Localized.dictionary().svcChangedClient());
+          break;
+
+        case 6:
+          updateClientAndContact(event, formView, false);
+          break;
+
+        case 5:
+        default:
+          updateClientAndContact(event, formView, !BeeUtils.same(repairCompanyId, objectCompanyId));
+      }
+    } else {
+      updateClientAndContact(event, formView, !BeeUtils.same(repairCompanyId, objectCompanyId));
+    }
+  }
+
   private static double calculateServicePrice(double price, BeeRow commentRow,
       IsRow serviceMaintenanceRow) {
     Number urgentRate = Global.getParameterNumber(PRM_URGENT_RATE);
@@ -212,5 +333,78 @@ public final class ServiceUtils {
     }
 
     return calculatedPrice;
+  }
+
+  private static void revertClientOrObject(SelectorEvent event, FormView formView) {
+    event.consume();
+    if (event.hasRelatedView(VIEW_SERVICE_OBJECTS)) {
+      Stream.of(COL_SERVICE_OBJECT, COL_MANUFACTURER, ALS_MANUFACTURER_NAME, COL_SERVICE_CONTRACTOR,
+          ALS_SERVICE_CONTRACTOR_NAME, COL_CATEGORY, ALS_SERVICE_CATEGORY_NAME, COL_MODEL,
+          COL_SERIAL_NO, COL_ARTICLE_NO, COL_SERVICE_CUSTOMER).forEach(column -> {
+        if (formView.getActiveRow().hasPropertyValue(column)) {
+          formView.getActiveRow().setValue(maintenanceDataInfo.getColumnIndex(column),
+              formView.getActiveRow().getProperty(column));
+        }
+      });
+
+      formView.refreshBySource(COL_SERVICE_OBJECT);
+      formView.refreshBySource(ALS_MANUFACTURER_NAME);
+      formView.refreshBySource(ALS_SERVICE_CONTRACTOR_NAME);
+      formView.refreshBySource(ALS_SERVICE_CATEGORY_NAME);
+      formView.refreshBySource(COL_MODEL);
+      formView.refreshBySource(COL_SERIAL_NO);
+      formView.refreshBySource(COL_ARTICLE_NO);
+
+    } else if (event.hasRelatedView(VIEW_COMPANIES)) {
+      Stream.of(COL_COMPANY, ALS_COMPANY_NAME, ALS_COMPANY_TYPE_NAME).forEach(column -> {
+        if (formView.getActiveRow().hasPropertyValue(column)) {
+          formView.getActiveRow().setValue(maintenanceDataInfo.getColumnIndex(column),
+              formView.getActiveRow().getProperty(column));
+        }
+      });
+      formView.refreshBySource(COL_COMPANY);
+    }
+  }
+
+  private static void updateClientAndContact(SelectorEvent event, FormView formView,
+      boolean fillClientFormObject) {
+    if (event.hasRelatedView(VIEW_SERVICE_OBJECTS)) {
+
+      if (fillClientFormObject) {
+        ServiceUtils.fillCompanyValues(formView.getActiveRow(), event.getRelatedRow(),
+            event.getRelatedViewName(), COL_SERVICE_CUSTOMER, ALS_SERVICE_CUSTOMER_NAME,
+            ALS_CUSTOMER_TYPE_NAME);
+        formView.refreshBySource(COL_COMPANY);
+      }
+
+      Number clientChangingPrm = Global.getParameterNumber(PRM_CLIENT_CHANGING_SETTING);
+      Long maintenanceContactId = formView.getActiveRow()
+          .getLong(maintenanceDataInfo.getColumnIndex(COL_CONTACT));
+
+      if (clientChangingPrm == null
+          || (BeeUtils.inList(clientChangingPrm.intValue(), 1, 2, 3, 6)
+              && !DataUtils.isId(maintenanceContactId))
+          || BeeUtils.inList(clientChangingPrm.intValue(), 4, 5)) {
+        fillContactValues(formView.getActiveRow(), event.getRelatedRow());
+        formView.refreshBySource(COL_CONTACT);
+        formView.refreshBySource(ALS_CONTACT_PHONE);
+        formView.refreshBySource(ALS_CONTACT_EMAIL);
+        formView.refreshBySource(ALS_CONTACT_ADDRESS);
+      }
+
+      fillContractorAndManufacturerValues(formView.getActiveRow(),
+          event.getRelatedRow());
+      formView.refreshBySource(ALS_MANUFACTURER_NAME);
+      formView.refreshBySource(ALS_SERVICE_CONTRACTOR_NAME);
+
+      setObjectValuesForRevert(formView.getActiveRow());
+
+    } else if (event.hasRelatedView(VIEW_COMPANIES)) {
+      clearContactValue(formView.getActiveRow());
+      formView.refreshBySource(COL_CONTACT);
+      formView.refreshBySource(ALS_CONTACT_PHONE);
+      formView.refreshBySource(ALS_CONTACT_EMAIL);
+      formView.refreshBySource(ALS_CONTACT_ADDRESS);
+    }
   }
 }

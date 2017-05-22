@@ -8,6 +8,5 @@
     <Relation name="Model" relation="VehicleModels" label="=vehicleModel" />
     <DateTime name="ProducedFrom" label="=vehicleProductionDateShort+(+=dateFromShort+)" />
     <DateTime name="ProducedTo" label="=vehicleProductionDateShort+(+=dateToShort+)" />
-    <Relation name="Job" relation="CarJobs" label="=serviceJob" />
   </Fields>
 </Table>

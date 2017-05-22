@@ -26,6 +26,7 @@ import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.composite.FileCollector;
+import com.butent.bee.client.composite.Relations;
 import com.butent.bee.client.composite.TabBar;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
@@ -113,9 +114,14 @@ public class MailMessage extends AbstractFormInterceptor {
               @Override
               public void execute() {
                 if (++counter == 2) {
-                  if (!BeeUtils.same(viewName, TransportConstants.TBL_ASSESSMENTS)) {
+                  if (!BeeUtils.inList(viewName, TransportConstants.TBL_ASSESSMENTS, VIEW_TASKS)) {
                     FileCollector.pushFiles(attachments);
                   }
+
+                  if (BeeUtils.same(viewName, VIEW_TASKS)) {
+                    row.setProperty(PROP_FILES, Codec.beeSerialize(attachments));
+                  }
+
                   RowFactory.createRelatedRow(formName, row, selector, null);
                 }
               }

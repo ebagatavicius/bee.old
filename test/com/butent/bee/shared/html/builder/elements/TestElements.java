@@ -1,6 +1,6 @@
 package com.butent.bee.shared.html.builder.elements;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 

@@ -14,7 +14,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 
-import static com.butent.bee.client.modules.mail.Relations.PFX_RELATED;
+import static com.butent.bee.client.composite.Relations.PFX_RELATED;
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
@@ -54,7 +54,7 @@ import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.layout.Split;
 import com.butent.bee.client.layout.TabbedPages;
-import com.butent.bee.client.modules.mail.Relations;
+import com.butent.bee.client.composite.Relations;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.render.AbstractSlackRenderer;

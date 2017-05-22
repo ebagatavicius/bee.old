@@ -6,7 +6,7 @@
   disabledActions="add"
   >
   <g:columns>
-    <DataColumn name="LocationName" label="=object" flexGrow="1" visible="true" />
+    <DataColumn name="LocationName" label="=objectLocation" flexGrow="1" visible="true" />
 
     <RelColumn name="Employee" renderColumns="FirstName LastName" sortBy="LastName FirstName"
       readOnly="true" flexGrow="1" visible="true" />

@@ -26,6 +26,7 @@
     </SimpleJoin>
 
     <SimpleJoin name="Document" joinType="INNER">
+      <IdColumn name="ID" />
 
       <SimpleColumn name="Name" />
 

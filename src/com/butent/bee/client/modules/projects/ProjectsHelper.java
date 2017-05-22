@@ -23,6 +23,7 @@ import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowInsertEvent;
 import com.butent.bee.shared.data.filter.Filter;
@@ -48,6 +49,41 @@ import java.util.Map;
  */
 public final class ProjectsHelper {
 
+  public static void copyProjectTemplateData(DataInfo templateData, IsRow templateRow,
+                                             DataInfo destData, IsRow destRow) {
+    for (BeeColumn tmlColumn : templateData.getColumns()) {
+      if (tmlColumn.getLevel() != 0 || tmlColumn.isReadOnly()) {
+        continue;
+      }
+
+      switch (tmlColumn.getId()) {
+        case ProjectConstants.COL_DEFAULT_PROJECT_TEMPLATE_STAGE:
+          if (BeeUtils.same(destData.getViewName(), VIEW_PROJECTS)) {
+            destRow.setProperty(tmlColumn.getId(),
+              Data.getString(templateData.getViewName(), templateRow, tmlColumn.getId()));
+          }
+          break;
+        default:
+          if (!destData.containsColumn(tmlColumn.getId())) {
+            break;
+          }
+          BeeColumn destColumn = destData.getColumn(tmlColumn.getId());
+
+          if (destColumn.getLevel() != 0 || destColumn.isReadOnly()) {
+            break;
+          }
+          Data.setValue(destData.getViewName(), destRow, tmlColumn.getId(),
+            Data.getString(templateData.getViewName(), templateRow, tmlColumn.getId()));
+
+          if (templateData.hasRelation(tmlColumn.getId())) {
+            RelationUtils.updateRow(destData, tmlColumn.getId(), destRow, templateData,
+              templateRow, false);
+          }
+          break;
+      }
+    }
+  }
+
   /**
    * Checks current online user of system is owner related row of Projects table. Returns true if
    * {@code BeeKeeper.getUser().getUserId} are equals with Projects.Owner field relation.
@@ -70,7 +106,7 @@ public final class ProjectsHelper {
     if (BeeUtils.same(form.getViewName(), VIEW_PROJECTS)) {
       idxOwner = form.getDataIndex(COL_PROJECT_OWNER);
     } else {
-      idxOwner = form.getDataIndex(ALS_PROJECT_OWNER);
+      idxOwner = form.getDataIndex(COL_PROJECT_OWNER);
     }
 
     Assert.nonNegative(idxOwner);

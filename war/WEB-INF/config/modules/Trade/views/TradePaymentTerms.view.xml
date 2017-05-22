@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+  name="TradePaymentTerms" source="TradePaymentTerms"
+  caption="=trdPaymentTerms" newRowCaption="=newPaymentTerm"
+  >
+  <Columns>
+    <SimpleColumn name="TradeDocument" />
+
+    <SimpleColumn name="PaymentDate" />
+    <SimpleColumn name="PaymentAmount" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="PaymentDate" />
+  </Order>
+</View>

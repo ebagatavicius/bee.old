@@ -3,10 +3,12 @@ package com.butent.bee.client.modules.service;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
+import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.view.edit.Editor;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.data.BeeRow;
@@ -23,6 +25,14 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class MaintenancePayrollGrid extends AbstractGridInterceptor {
+
+  @Override
+  public void afterCreateEditor(String source, Editor editor, boolean embedded) {
+    if (BeeUtils.same(source, COL_REPAIRER) && editor instanceof DataSelector) {
+      ServiceHelper.setRepairerFilter(editor);
+    }
+    super.afterCreateEditor(source, editor, embedded);
+  }
 
   @Override
   public void afterUpdateCell(IsColumn column, String oldValue, String newValue, IsRow result,

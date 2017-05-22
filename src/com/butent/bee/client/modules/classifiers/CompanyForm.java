@@ -219,7 +219,7 @@ class CompanyForm extends AbstractFormInterceptor {
                   new RowCallback() {
                     @Override
                     public void onSuccess(BeeRow result) {
-                      Data.onViewChange(viewName, DataChangeEvent.RESET_REFRESH);
+                      Data.refreshLocal(viewName);
                     }
                   });
             }

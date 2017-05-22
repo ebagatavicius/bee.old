@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Entry xmlns="http://www.butent.com/menu"
+
+       name="TradeReports" label="=reports" parent="Trade" order="110" separator="true"
+>
+  <Item name="TradeStockReport" label="=trdReportStock" service="report" parameters="TradeStock" />
+  <Item name="TradeMovementOfGoodsReport" label="=trdMovementOfGoods" service="report"
+        parameters="TradeMovementOfGoods" />
+</Entry>

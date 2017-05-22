@@ -80,7 +80,7 @@
 
     <TabbedPages class="flexible">
       <page module="Payroll">
-        <text>=objects</text>
+        <text>=objectLocations</text>
         <ChildGrid name="EmployeeObjects" relColumn="Employee" />
       </page>
 

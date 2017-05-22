@@ -171,7 +171,7 @@ public interface IsTable<R extends IsRow, C extends IsColumn> extends Iterable<R
 
   void setRows(Collection<R> rows);
 
-  void setTableProperties(CustomProperties properterties);
+  void setTableProperties(CustomProperties properties);
 
   void setTableProperty(String propertyKey, String propertyValue);
 

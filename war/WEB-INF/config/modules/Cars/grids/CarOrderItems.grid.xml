@@ -12,7 +12,7 @@
     <DataColumn name="Article" />
     <DataColumn name="Quantity" visible="true" scale="3" />
     <DataColumn name="UnitName" caption="=unitShort" flexGrow="0" />
-    <DataColumn name="Price" visible="true" />
+    <DataColumn name="Price" visible="true" scale="2" />
 
     <DataColumn name="Discount" />
     <DataColumn name="VatPlus" width="20" sortable="false" caption="+" format="+" carry="true" />

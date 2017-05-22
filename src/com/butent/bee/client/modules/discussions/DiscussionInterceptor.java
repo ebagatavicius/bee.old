@@ -37,7 +37,7 @@ import com.butent.bee.client.event.logical.SelectorEvent.Handler;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
-import com.butent.bee.client.modules.mail.Relations;
+import com.butent.bee.client.composite.Relations;
 import com.butent.bee.client.render.PhotoRenderer;
 import com.butent.bee.client.richtext.RichTextEditor;
 import com.butent.bee.client.style.StyleUtils;

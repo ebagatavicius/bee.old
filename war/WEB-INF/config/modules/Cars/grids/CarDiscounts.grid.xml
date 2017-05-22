@@ -17,13 +17,12 @@
     <RelColumn name="Model" newRowEnabled="false" />
     <DataColumn name="ProducedFrom" />
     <DataColumn name="ProducedTo" />
-    <RelColumn name="Job" newRowEnabled="false" />
   </g:columns>
 
   <g:rowValidation>
     <ui:function>
-      if (!(row.Company || row.Category || row.Item || row.Model || row.Job)) {
-      return $wnd.Bee_maybeTranslate("=company+, +=category+, +=item+, +=vehicleModel+, +=serviceJob+: +=allValuesCannotBeEmpty");
+      if (!(row.Company || row.Category || row.Item || row.Model)) {
+      return $wnd.Bee_maybeTranslate("=company+, +=category+, +=item+, +=vehicleModel+: +=allValuesCannotBeEmpty");
       }
       if (!(row.PriceName || row.Percent || row.Price > 0)) {
       return $wnd.Bee_maybeTranslate("=priceName+, +=discountPercent+, +=discountPrice+: +=allValuesCannotBeEmpty");

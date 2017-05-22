@@ -3,10 +3,11 @@
         xmlns:ui="http://www.butent.com/ui"
 
         name="CarBundleItems" viewName="CarBundleItems" autoFlex="true"
+        filter="!(Job)" newRowCaption="=newItem"
 >
   <g:columns>
-    <RelColumn name="Item" renderColumns="ItemName" flexGrow="2" visible="true"
-               newRowEnabled="false">
+    <RelColumn name="Item" viewName="CarItems" choiceColumns="Name Article" renderColumns="ItemName"
+               flexGrow="2" visible="true" newRowEnabled="false" caching="none">
       <dynStyle>
         <ui:inline>color:blue;</ui:inline>
         <ui:expression>row.IsService</ui:expression>

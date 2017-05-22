@@ -71,8 +71,8 @@
             <Label text="=serviceJobs" />
           </row>
           <row>
-            <MoneyLabel property="CarServiceItemsTotal" />
-            <MoneyLabel property="CarServiceJobsTotal" />
+            <MoneyLabel property="ItemTotal" />
+            <MoneyLabel property="JobTotal" />
           </row>
           <row>
             <Label text="=totalOf" style="font-weight:bold;" />
@@ -88,8 +88,7 @@
           <row>
             <MoneyLabel style="font-weight:bold;">
               <render>
-                <ui:expression>(+row.CarServiceItemsTotal||0) + (+row.CarServiceJobsTotal||0)
-                </ui:expression>
+                <ui:expression>(+row.ItemTotal||0) + (+row.JobTotal||0)</ui:expression>
               </render>
             </MoneyLabel>
           </row>
@@ -99,8 +98,7 @@
           <row>
             <MoneyLabel>
               <render>
-                <ui:expression>(+row.CarServiceItemsDiscount||0) + (+row.CarServiceJobsDiscount||0)
-                </ui:expression>
+                <ui:expression>(+row.Discount||0)</ui:expression>
               </render>
             </MoneyLabel>
           </row>
@@ -111,15 +109,13 @@
           <row>
             <MoneyLabel>
               <render>
-                <ui:expression>(+row.CarServiceItemsTotal||0) + (+row.CarServiceJobsTotal||0)
-                  - (+row.CarServiceItemsVat||0) - (+row.CarServiceJobsVat||0)
+                <ui:expression>(+row.ItemTotal||0) + (+row.JobTotal||0) - (+row.Vat||0)
                 </ui:expression>
               </render>
             </MoneyLabel>
             <MoneyLabel>
               <render>
-                <ui:expression>(+row.CarServiceItemsVat||0) + (+row.CarServiceJobsVat||0)
-                </ui:expression>
+                <ui:expression>(+row.Vat||0)</ui:expression>
               </render>
             </MoneyLabel>
           </row>
@@ -129,19 +125,19 @@
     <br />
     <TabbedPages class="flexible">
       <page>
+        <text>=productsServices</text>
+        <ChildGrid name="CarServiceItems" relColumn="ServiceOrder" />
+      </page>
+      <page>
         <text>=serviceJobs</text>
         <FlowPanel class="flexBox-vertical">
           <ChildGrid name="CarServiceJobs" relColumn="ServiceOrder" class="flexible" />
           <FlowPanel class="flexible flexBox-horizontal">
             <FlowPanel style="width:100px;" />
             <ChildGrid name="CarJobProgress" parent="CarServiceJobs" relColumn="ServiceJob"
-                       class="flexible" />
+                       class="flexible" summarize="false" />
           </FlowPanel>
         </FlowPanel>
-      </page>
-      <page>
-        <text>=productsServices</text>
-        <ChildGrid name="CarServiceItems" relColumn="ServiceOrder" />
       </page>
       <page>
         <text>=calAppointments</text>

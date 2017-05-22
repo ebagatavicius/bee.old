@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="TradeSeries"
-  idName="TradeSeriesID"
-  >
+       name="TradeSeries"
+       idName="TradeSeriesID"
+>
   <Fields>
     <String name="SeriesName" precision="10" notNull="true" unique="true" label="=trdSeries" />
+
+    <String name="NumberPrefix" precision="20" label="=trdSeriesNumberPrefix" />
+    <Integer name="NumberLength" label="=trdSeriesNumberLength" />
+
     <Text name="Notes" label="=notes" />
   </Fields>
 </Table>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+           xmlns:ui="http://www.butent.com/ui">
+
+  <DataColumn name="TradeDocument" caption="=trdDocumentShort" editEnabled="true" />
+
+  <DataColumn name="Date" visible="true" />
+
+  <DataColumn name="Series" visible="false" />
+  <DataColumn name="Number" />
+
+  <DataColumn name="Number1" visible="false" />
+  <DataColumn name="Number2" visible="false" />
+
+  <RelColumn name="Operation" renderColumns="OperationName" visible="true" />
+  <DataColumn name="Phase" visible="true" />
+  <RelColumn name="Status" renderColumns="StatusName" visible="false" />
+
+  <DataColumn name="Article" sortBy="PrimaryArticle Article" searchBy="Article PrimaryArticle">
+    <render>
+      <ui:expression>row.Parent ? row.PrimaryArticle : row.Article</ui:expression>
+    </render>
+  </DataColumn>
+
+  <DataColumn name="Quantity" scale="0" visible="true" />
+  <DataColumn name="UnitName" label="=unitShort" visible="false" />
+
+  <DataColumn name="Price" scale="2" />
+  <RelColumn name="Currency" renderColumns="CurrencyName" />
+
+  <RelColumn name="Supplier" renderColumns="SupplierName" />
+  <RelColumn name="Customer" renderColumns="CustomerName" />
+
+  <RelColumn name="WarehouseFrom" caption="=trdWarehouseFromShort"
+             renderColumns="WarehouseFromCode" />
+  <RelColumn name="WarehouseTo" caption="=trdWarehouseToShort"
+             renderColumns="WarehouseToCode" />
+
+  <RelColumn name="Payer" renderColumns="PayerName" visible="false" />
+  <DataColumn name="Term" visible="false" />
+
+  <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName"
+             sortBy="ManagerLastName ManagerFirstName" />
+  <RelColumn name="Vehicle" caption="=trdVehicleShort"
+             renderColumns="VehicleBrandName VehicleModelName VehicleNumber VehicleBodyNumber" />
+
+  <DataColumn name="DocumentDiscount" visible="false" />
+  <DataColumn name="PriceName" visible="false" />
+
+  <DataColumn name="DocumentVatMode" visible="false" />
+  <DataColumn name="DocumentDiscountMode" visible="false" />
+
+  <DataColumn name="ReceivedDate" visible="false" />
+
+  <DataColumn name="Discount" scale="0" visible="false" />
+  <DataColumn name="DiscountIsPercent" width="20" sortable="false" format="%" visible="false" />
+
+  <DataColumn name="Vat" scale="0" visible="false" />
+  <DataColumn name="VatIsPercent" width="20" sortable="false" format="%" visible="false" />
+
+  <CalcColumn name="Cost" type="decimal" label="=cost" format="0.00######" visible="false">
+    <render>
+      <ui:expression>row.Parent ? row.ParentCost : row.Cost</ui:expression>
+    </render>
+  </CalcColumn>
+
+  <RelColumn name="ItemWarehouseFrom" choiceColumns="Code Name"
+             renderColumns="ItemWarehouseFromCode" visible="false" />
+  <RelColumn name="ItemWarehouseTo" choiceColumns="Code Name"
+             renderColumns="ItemWarehouseToCode" visible="false" />
+
+  <RelColumn name="Employee" renderColumns="EmployeeFirstName EmployeeLastName"
+             sortBy="EmployeeLastName EmployeeFirstName" visible="false" />
+  <RelColumn name="ItemVehicle" caption="=trdItemVehicleShort"
+             renderColumns="ItemVehicleBrandName ItemVehicleModelName ItemVehicleNumber ItemVehicleBodyNumber"
+             visible="false" />
+</g:columns>

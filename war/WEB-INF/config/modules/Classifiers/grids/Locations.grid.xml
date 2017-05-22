@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
-  name="Locations" viewName="Locations" caption="=objects"
+  name="Locations" viewName="Locations" caption="=objectLocations"
   newRowForm="Location" editForm="Location" favorite="LocationName"
   flexGrow="1"
   >

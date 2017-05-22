@@ -14,31 +14,33 @@ import com.butent.bee.shared.css.CssUnit;
 
 public class ModalGrid extends ModalView implements ReadyEvent.Handler {
 
-  public static PresenterCallback opener(int width, int height) {
-    return opener(new Dimensions(width, height));
+  public static PresenterCallback opener(int width, int height, boolean storeSize) {
+    return opener(new Dimensions(width, height), storeSize);
   }
 
   public static PresenterCallback opener(double width, CssUnit widthUnit,
       double height, CssUnit heightUnit) {
-    return opener(new Dimensions(width, widthUnit, height, heightUnit));
+    return opener(width, widthUnit, height, heightUnit, true);
   }
 
-  public static PresenterCallback opener(final HasDimensions dimensions) {
-    return new PresenterCallback() {
-      @Override
-      public void onCreate(Presenter presenter) {
-        ModalGrid modalGrid = new ModalGrid(presenter, dimensions);
+  public static PresenterCallback opener(double width, CssUnit widthUnit,
+      double height, CssUnit heightUnit, boolean storeSize) {
+    return opener(new Dimensions(width, widthUnit, height, heightUnit), storeSize);
+  }
 
-        modalGrid.setAnimationEnabled(true);
-        modalGrid.setHideOnEscape(true);
+  public static PresenterCallback opener(final HasDimensions dimensions, final boolean storeSize) {
+    return presenter -> {
+      ModalGrid modalGrid = new ModalGrid(presenter, dimensions, storeSize);
 
-        modalGrid.cascade();
-      }
+      modalGrid.setAnimationEnabled(true);
+      modalGrid.setHideOnEscape(true);
+
+      modalGrid.cascade();
     };
   }
 
-  public ModalGrid(Presenter presenter, HasDimensions dimensions) {
-    super(presenter, BeeConst.CSS_CLASS_PREFIX + "ModalGrid", dimensions);
+  public ModalGrid(Presenter presenter, HasDimensions dimensions, boolean storeSize) {
+    super(presenter, BeeConst.CSS_CLASS_PREFIX + "ModalGrid", dimensions, storeSize);
 
     presenter.getMainView().addReadyHandler(this);
   }

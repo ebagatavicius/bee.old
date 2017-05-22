@@ -4,7 +4,7 @@
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="BudgetHeaders" viewName="BudgetHeaders" caption="=finBudgets"
-        editForm="SimpleBudget" newRowForm="SimpleBudget"
+        enabledActions="copy"
 >
   <xi:include href="columns/Ordinal.columns.xml" />
 

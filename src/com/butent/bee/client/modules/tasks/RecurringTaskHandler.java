@@ -27,6 +27,7 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.layout.Flow;
+import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -36,7 +37,6 @@ import com.butent.bee.client.validation.CellValidateEvent;
 import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.edit.EditableWidget;
 import com.butent.bee.client.view.form.FormView;
-import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.FaLabel;
@@ -93,7 +93,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-class RecurringTaskHandler extends AbstractFormInterceptor implements CellValidateEvent.Handler {
+class RecurringTaskHandler extends ProductSupportInterceptor implements CellValidateEvent.Handler {
 
   private enum Cron {
     DAY_OF_MONTH(Field.DAY_OF_MONTH, COL_RT_DAY_OF_MONTH, 1) {
@@ -343,6 +343,13 @@ class RecurringTaskHandler extends AbstractFormInterceptor implements CellValida
           break;
       }
     }
+  }
+
+  @Override
+  public boolean beforeAction(Action action, Presenter presenter) {
+    return action != Action.SAVE || !maybeNotifyEmptyProduct(
+        msg -> getFormView().notifySevere(msg));
+
   }
 
   @Override

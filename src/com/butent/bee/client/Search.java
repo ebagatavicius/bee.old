@@ -2,11 +2,7 @@ package com.butent.bee.client;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Panel;
@@ -228,9 +224,8 @@ public class Search {
     @Override
     public void onCellUpdate(CellUpdateEvent event) {
       ResultWidget widget = findWidget(this, event.getViewName(), event.getRowId());
-      if (widget != null) {
-        event.applyTo(widget.getRow());
 
+      if (widget != null && event.applyTo(widget.getRow())) {
         DataInfo dataInfo = Data.getDataInfo(event.getViewName());
         if (dataInfo != null) {
           widget.render(query, dataInfo);
@@ -330,7 +325,7 @@ public class Search {
       super.onUnload();
     }
 
-    private ResultWidget findWidget(HasWidgets container, String viewName, long rowId) {
+    private static ResultWidget findWidget(HasWidgets container, String viewName, long rowId) {
       for (Widget child : container) {
         if (child instanceof ResultWidget) {
           ResultWidget widget = (ResultWidget) child;
@@ -568,13 +563,10 @@ public class Search {
     getInput().addStyleName(STYLE_INPUT);
     getInput().setTitle(Localized.dictionary().searchTips());
 
-    getInput().addKeyDownHandler(new KeyDownHandler() {
-      @Override
-      public void onKeyDown(KeyDownEvent event) {
-        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-          event.preventDefault();
-          submit();
-        }
+    getInput().addKeyDownHandler(event -> {
+      if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+        event.preventDefault();
+        submit();
       }
     });
 
@@ -583,12 +575,7 @@ public class Search {
     FaLabel submit = new FaLabel(FontAwesome.SEARCH);
     submit.addStyleName(STYLE_SUBMIT);
 
-    submit.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        submit();
-      }
-    });
+    submit.addClickHandler(event -> submit());
 
     getSearchPanel().add(submit);
   }

@@ -14,5 +14,7 @@
       <editor type="number" currencySource="Currency" />
     </DataColumn>
     <RelColumn name="Currency" newRowEnabled="false" editEnabled="false" />
+
+    <DataColumn name="Note" />
   </g:columns>
 </g:Grid>

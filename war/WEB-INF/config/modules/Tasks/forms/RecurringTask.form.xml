@@ -39,8 +39,8 @@
           <Relation viewName="Appointments" renderColumns="Summary" editPopup="true"
             choiceColumns="Summary StartDateTime EndDateTime" />
           <Relation viewName="Discussions" renderColumns="Subject" newRowEnabled="false" editPopup="true" />
-          <Relation viewName="ServiceObjects" renderColumns="Address" newRowEnabled="false" editPopup="true"
-            choiceColumns="Address CustomerName" property="ServiceObjects" />
+          <Relation viewName="ServiceObjects" renderColumns="Model CategoryName ArticleNo" newRowEnabled="false" editPopup="true"
+            choiceColumns="Model CategoryName ArticleNo" property="RelServiceObjects"/>
           <Relation viewName="Tasks" renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
             newRowEnabled="false" editPopup="true"
             choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime" />

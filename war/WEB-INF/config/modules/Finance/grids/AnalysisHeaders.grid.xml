@@ -5,6 +5,7 @@
 
         name="AnalysisHeaders" viewName="AnalysisHeaders" caption="=finAnalysisForms"
         editForm="SimpleAnalysis" newRowForm="SimpleAnalysis"
+        enabledActions="copy" favorite="AnalysisName"
 >
   <xi:include href="columns/Ordinal.columns.xml" />
 

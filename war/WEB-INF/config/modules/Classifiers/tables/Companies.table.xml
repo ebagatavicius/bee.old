@@ -40,7 +40,7 @@
 
     <Numeric name="DiscountPercent" precision="7" scale="3" label="=discountPercent" />
     <Relation name="DiscountParent" relation="Companies" label="=discountParent" />
-    <Enum name="PriceName" key="ItemPrice" label="=priceName" />
+    <Enum name="PriceName" key="ItemPrice" label="=priceName" precision="2" />
 
     <Relation name="ExtraDimensions" unique="true" relation="ExtraDimensions" editable="true"
               label="=dimensions" />

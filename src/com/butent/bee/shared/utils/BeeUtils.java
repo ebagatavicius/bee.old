@@ -1108,6 +1108,16 @@ public final class BeeUtils {
     }
   }
 
+  public static int indexOf(String src, String ctxt, int fromIndex, boolean caseSensitive) {
+    if (src == null || ctxt == null) {
+      return BeeConst.UNDEF;
+    } else if (caseSensitive) {
+      return src.indexOf(ctxt, fromIndex);
+    } else {
+      return src.toLowerCase().indexOf(ctxt.toLowerCase(), fromIndex);
+    }
+  }
+
   public static <T> int indexOf(List<? extends T> list, T item) {
     return (list == null) ? BeeConst.UNDEF : list.indexOf(item);
   }
@@ -2158,12 +2168,12 @@ public final class BeeUtils {
     }
   }
 
-  public static int positive(int x, int def) {
-    return (x > 0) ? x : def;
-  }
-
-  public static int positive(int x, int y, int def) {
-    return (x > 0) ? x : positive(y, def);
+  public static int positive(Integer x, int def) {
+    if (isPositive(x)) {
+      return x;
+    } else {
+      return def;
+    }
   }
 
   public static Long positive(Long x, Long def) {
@@ -2507,7 +2517,7 @@ public final class BeeUtils {
    * @return a String with replaced phrases.
    */
   public static String replace(String text, String search, String replacement) {
-    return replace(text, search, replacement, -1);
+    return replace(text, search, replacement, -1, true);
   }
 
   /**
@@ -2519,13 +2529,15 @@ public final class BeeUtils {
    * @param max the number of occurrences to replace
    * @return a String with replaced phrases.
    */
-  public static String replace(String text, String search, String replacement, int max) {
+  public static String replace(String text, String search, String replacement, int max,
+      boolean caseSensitive) {
+
     if (!hasLength(text) || !hasLength(search) || max == 0) {
       return text;
     }
 
     int start = 0;
-    int end = text.indexOf(search, start);
+    int end = indexOf(text, search, start, caseSensitive);
     if (end < 0) {
       return text;
     }
@@ -2544,11 +2556,15 @@ public final class BeeUtils {
       if (--cnt == 0) {
         break;
       }
-      end = text.indexOf(search, start);
+      end = indexOf(text, search, start, caseSensitive);
     }
     sb.append(text.substring(start));
 
     return sb.toString();
+  }
+
+  public static String replaceSame(String text, String search, String replacement) {
+    return replace(text, search, replacement, -1, false);
   }
 
   /**

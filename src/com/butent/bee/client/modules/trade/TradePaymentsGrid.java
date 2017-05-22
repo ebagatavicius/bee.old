@@ -2,6 +2,7 @@ package com.butent.bee.client.modules.trade;
 
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
+import com.butent.bee.client.event.logical.DataReceivedEvent;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
 import com.butent.bee.shared.data.IsRow;
@@ -11,13 +12,13 @@ import com.butent.bee.shared.data.event.RowDeleteEvent;
 import com.butent.bee.shared.modules.trade.TradeDocumentSums;
 import com.butent.bee.shared.utils.BeeUtils;
 
-import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class TradePaymentsGrid extends AbstractGridInterceptor {
 
   private Supplier<TradeDocumentSums> tdsSupplier;
-  private Runnable tdsListener;
+  private Consumer<Boolean> tdsListener;
 
   TradePaymentsGrid() {
   }
@@ -31,29 +32,29 @@ public class TradePaymentsGrid extends AbstractGridInterceptor {
     this.tdsSupplier = tdsSupplier;
   }
 
-  void setTdsListener(Runnable tdsListener) {
+  void setTdsListener(Consumer<Boolean> tdsListener) {
     this.tdsListener = tdsListener;
   }
 
   @Override
-  public void onDataReceived(List<? extends IsRow> rows) {
-    if (tdsSupplier != null) {
+  public void onDataReceived(DataReceivedEvent event) {
+    if (tdsSupplier != null && event != null) {
       if (getGridPresenter() != null && getGridPresenter().getUserFilter() == null) {
         tdsSupplier.get().clearPayments();
       }
 
-      if (!BeeUtils.isEmpty(rows)) {
+      if (!BeeUtils.isEmpty(event.getRows())) {
         int index = getDataIndex(COL_TRADE_PAYMENT_AMOUNT);
 
-        for (IsRow row : rows) {
+        for (IsRow row : event.getRows()) {
           tdsSupplier.get().addPayment(row.getId(), row.getDouble(index));
         }
       }
 
-      fireTdsChange();
+      fireTdsChange(event.isInsert());
     }
 
-    super.onDataReceived(rows);
+    super.onDataReceived(event);
   }
 
   @Override
@@ -64,7 +65,7 @@ public class TradePaymentsGrid extends AbstractGridInterceptor {
         && tdsSupplier != null && tdsSupplier.get().containsPayment(id)
         && tdsSupplier.get().updatePayment(id, BeeUtils.toDoubleOrNull(event.getValue()))) {
 
-      fireTdsChange();
+      fireTdsChange(true);
     }
 
     return super.previewCellUpdate(event);
@@ -83,7 +84,7 @@ public class TradePaymentsGrid extends AbstractGridInterceptor {
       }
 
       if (fire) {
-        fireTdsChange();
+        fireTdsChange(true);
       }
     }
 
@@ -94,15 +95,15 @@ public class TradePaymentsGrid extends AbstractGridInterceptor {
   public boolean previewRowDelete(RowDeleteEvent event) {
     if (tdsSupplier != null && tdsSupplier.get().containsPayment(event.getRowId())) {
       tdsSupplier.get().deletePayment(event.getRowId());
-      fireTdsChange();
+      fireTdsChange(true);
     }
 
     return super.previewRowDelete(event);
   }
 
-  private void fireTdsChange() {
+  private void fireTdsChange(boolean update) {
     if (tdsListener != null) {
-      tdsListener.run();
+      tdsListener.accept(update);
     }
   }
 }

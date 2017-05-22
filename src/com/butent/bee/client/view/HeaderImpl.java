@@ -261,6 +261,22 @@ public class HeaderImpl extends Flow implements HeaderView {
   }
 
   @Override
+  public boolean enableCommandByStyleName(String styleName, boolean enable) {
+    if (BeeUtils.isEmpty(styleName)) {
+      return false;
+    }
+
+    Widget command = UiHelper.getChildByStyleName(getCommandPanel(), styleName);
+    if (command instanceof HasEnabled) {
+      ((HasEnabled) command).setEnabled(enable);
+      return true;
+
+    } else {
+      return false;
+    }
+  }
+
+  @Override
   public String getCaption() {
     return captionWidget.getHtml();
   }

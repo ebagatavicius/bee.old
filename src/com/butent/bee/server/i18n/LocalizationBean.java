@@ -94,8 +94,8 @@ public class LocalizationBean {
     Localizations.setCustomGlossary(locale,
         getDictionaryData(locale.getDictionaryCustomColumnName()));
 
-    if (locale == SupportedLocale.USER_DEFAULT || locale == SupportedLocale.DICTIONARY_DEFAULT) {
-      Localized.setGlossary(Localizations.getGlossary(SupportedLocale.USER_DEFAULT));
+    if (locale.isUserDefault() || locale == SupportedLocale.DICTIONARY_DEFAULT) {
+      Localized.setGlossary(Localizations.getGlossary(SupportedLocale.getUserDefault()));
     }
 
     SupportedLocale userLocale = usr.getSupportedLocale();

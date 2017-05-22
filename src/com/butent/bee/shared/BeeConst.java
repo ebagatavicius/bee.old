@@ -92,6 +92,8 @@ public final class BeeConst {
   public static final String STRING_EXCLAMATION = "!";
   public static final String STRING_NUMBER_SIGN = "#";
   public static final String STRING_CHECK_MARK = "\u2713";
+  public static final String STRING_LEFT_ARROW = "\u2190";
+  public static final String STRING_RIGHT_ARROW = "\u2192";
 
   public static final String STRING_FALSE = Boolean.toString(false);
   public static final String STRING_TRUE = Boolean.toString(true);

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:ui="http://www.butent.com/ui"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="OutstandingPrepaymentGiven" viewName="FinancePrepayments"
+        readOnly="true" disabledActions="filter"
+>
+  <xi:include href="columns/FinancialRecordsMain.columns.xml" />
+  <xi:include href="columns/PrepaymentInfo.columns.xml" />
+
+  <xi:include href="columns/FinancialRecordsHiddenQuantity.columns.xml" />
+
+  <xi:include href="columns/HiddenEmployee.columns.xml" />
+  <xi:include href="../../Administration/grids/columns/HiddenDimensions.columns.xml" />
+
+  <g:rowMessage>
+    <ui:expression>[row.DebitCode, row.CreditCode].join(' ')</ui:expression>
+  </g:rowMessage>
+</g:Grid>

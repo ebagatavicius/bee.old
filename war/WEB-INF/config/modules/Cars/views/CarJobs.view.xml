@@ -5,20 +5,18 @@
       newRowCaption="=newServiceJob" editForm="CarJob" newRowForm="CarJob"
 >
   <Columns>
-    <SimpleColumn name="JobName" />
-    <SimpleColumn name="Code" />
+    <SimpleColumn name="Item"/>
+    <SimpleJoin joinType="LEFT" name="Item">
+      <SimpleColumn name="Name" alias="ItemName" />
+      <SimpleColumn name="Article" />
+    </SimpleJoin>
+
     <SimpleColumn name="Duration" />
 
     <SimpleColumn name="Price" />
     <SimpleColumn name="Currency" />
     <SimpleJoin joinType="LEFT" name="Currency">
       <SimpleColumn name="Name" alias="CurrencyName" />
-    </SimpleJoin>
-
-    <SimpleColumn name="Item"/>
-    <SimpleJoin joinType="LEFT" name="Item">
-      <SimpleColumn name="Name" alias="ItemName" />
-      <SimpleColumn name="Article" />
     </SimpleJoin>
 
     <SimpleColumn name="JobGroup" />
@@ -31,9 +29,13 @@
       <AggregateColumn name="Duration" alias="ModelDuration" aggregate="MAX" />
       <AggregateColumn name="Price" alias="ModelPrice" aggregate="MAX" />
       <AggregateColumn name="Currency" alias="ModelCurrency" aggregate="MAX" />
+      <SimpleJoin joinType="LEFT" name="Currency">
+        <AggregateColumn name="Name" alias="ModelCurrencyName" aggregate="MAX" />
+      </SimpleJoin>
     </ExternalJoin>
   </Columns>
   <Order>
-    <OrderBy column="JobName" />
+    <OrderBy column="ItemName" />
+    <OrderBy column="Article" />
   </Order>
 </View>

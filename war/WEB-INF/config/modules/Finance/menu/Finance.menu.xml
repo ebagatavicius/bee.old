@@ -6,6 +6,11 @@
   <Item name="FinancialRecords" label="=financialRecords" service="grid"
         parameters="FinancialRecords" />
 
+  <Item name="PrepaymentSuppliers" label="=prepaymentSuppliers" service="grid"
+        parameters="PrepaymentSuppliers" separator="true" />
+  <Item name="PrepaymentCustomers" label="=prepaymentCustomers" service="grid"
+        parameters="PrepaymentCustomers" />
+
   <Item name="ChartOfAccounts" label="=chartOfAccounts" service="grid" parameters="ChartOfAccounts"
         separator="true" />
   <Item name="Journals" label="=journals" service="grid" parameters="Journals" />

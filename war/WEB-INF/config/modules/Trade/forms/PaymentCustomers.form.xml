@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Form []>
+<f:Form xmlns="http://www.butent.com/widget"
+        xmlns:f="http://www.butent.com/form"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="PaymentCustomers" caption="=paymentCustomers"
+>
+  <FlowPanel class="flexBox-vertical">
+    <xi:include href="widgets/PaymentBody.widget.xml" />
+
+    <TabbedPages class="flexible">
+      <page>
+        <text>=trdAccountsReceivable</text>
+        <GridPanel name="TradeReceivables" paging="false" />
+      </page>
+      <page>
+        <text>=prepaymentReceived</text>
+        <GridPanel name="OutstandingPrepaymentReceived" paging="false" />
+      </page>
+
+      <page>
+        <text>=trdAccountsPayable</text>
+        <GridPanel name="TradePayables" paging="false" />
+      </page>
+      <page>
+        <text>=prepaymentGiven</text>
+        <GridPanel name="OutstandingPrepaymentGiven" paging="false" />
+      </page>
+    </TabbedPages>
+  </FlowPanel>
+</f:Form>

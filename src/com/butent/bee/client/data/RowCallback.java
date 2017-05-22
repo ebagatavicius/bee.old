@@ -21,11 +21,15 @@ public abstract class RowCallback extends RpcCallback<BeeRow> {
     };
   }
 
-  public static RowCallback refreshView(final String viewName) {
+  public static RowCallback refreshView(String viewName) {
+    return refreshView(viewName, null);
+  }
+
+  public static RowCallback refreshView(final String viewName, final Long parentId) {
     return new RowCallback() {
       @Override
       public void onSuccess(BeeRow result) {
-        DataChangeEvent.fireRefresh(BeeKeeper.getBus(), viewName);
+        DataChangeEvent.fireRefresh(BeeKeeper.getBus(), viewName, parentId);
       }
     };
   }

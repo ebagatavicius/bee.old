@@ -14,6 +14,7 @@ import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.rights.RightsHelper;
 import com.butent.bee.client.rights.Roles;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.ui.UiOption;
@@ -27,6 +28,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.rights.RegulatedWidget;
 import com.butent.bee.shared.rights.RightsState;
 import com.butent.bee.shared.ui.Action;
@@ -38,6 +40,7 @@ import com.butent.bee.shared.utils.EnumUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class GridMenu {
@@ -218,7 +221,9 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().isEmpty();
+        return !presenter.getGridView().isEmpty()
+            && !Global.getParameterMap(AdministrationConstants.PRM_RECORD_DEPENDENCY)
+            .containsKey(presenter.getViewName());
       }
 
       @Override
@@ -244,7 +249,9 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().isEmpty();
+        return !presenter.getGridView().isEmpty()
+            && !Global.getParameterMap(AdministrationConstants.PRM_RECORD_DEPENDENCY)
+            .containsKey(presenter.getViewName());
       }
 
       @Override
@@ -265,7 +272,9 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().isEmpty();
+        return !presenter.getGridView().isEmpty()
+            && !Global.getParameterMap(AdministrationConstants.PRM_RECORD_DEPENDENCY)
+            .containsKey(presenter.getViewName());
       }
 
       @Override
@@ -291,7 +300,9 @@ public class GridMenu {
 
       @Override
       boolean isVisible(GridPresenter presenter) {
-        return !presenter.getGridView().isEmpty();
+        return !presenter.getGridView().isEmpty()
+            && !Global.getParameterMap(AdministrationConstants.PRM_RECORD_DEPENDENCY)
+            .containsKey(presenter.getViewName());
       }
 
       @Override
@@ -311,6 +322,52 @@ public class GridMenu {
             presenter.handleAction(Action.RIGHTS);
           }
         });
+      }
+    },
+    ADDICTED(Action.RIGHTS) {
+      private String label = Localized.dictionary().recordDependent();
+
+      @Override
+      String getLabel() {
+        return label;
+      }
+
+      @Override
+      boolean isEnabled(GridDescription gridDescription, Collection<UiOption> uiOptions) {
+        ensureLabel(gridDescription.getViewName());
+        return Data.getDataInfo(gridDescription.getViewName(), false) != null;
+      }
+
+      @Override
+      boolean isVisible(GridPresenter presenter) {
+        ensureLabel(presenter.getViewName());
+        return Data.getDataInfo(presenter.getViewName(), false) != null
+            && Global.getParameterMap(AdministrationConstants.PRM_RECORD_DEPENDENCY)
+            .containsKey(presenter.getViewName());
+      }
+
+      @Override
+      Widget renderIcon(GridPresenter presenter) {
+        return null;
+      }
+
+      @Override
+      boolean separatorBefore() {
+        return true;
+      }
+
+      void ensureLabel(String viewName) {
+        Map<String, String> dependency = Global.getParameterMap(AdministrationConstants
+            .PRM_RECORD_DEPENDENCY);
+
+        if (dependency.containsKey(viewName)) {
+          setLabel(BeeUtils.joinWords(Localized.dictionary().recordDependent(),
+              RightsHelper.buildDependencyName(dependency, viewName)));
+        }
+      }
+
+      void setLabel(String label) {
+        this.label = label;
       }
     };
 
@@ -364,9 +421,6 @@ public class GridMenu {
 
     abstract boolean isVisible(GridPresenter presenter);
 
-    /**
-     * @param presenter
-     */
     Widget renderIcon(GridPresenter presenter) {
       if (action == null) {
         return null;
@@ -483,7 +537,7 @@ public class GridMenu {
         }
 
         table.getRowFormatter().addStyleName(r, STYLE_PREFIX + item.getStyleSuffix());
-        if (item.formKind != null) {
+        if (item.formKind != null || item == Item.ADDICTED) {
           table.getRowFormatter().addStyleName(r, STYLE_SECTION_HEADER);
         }
 
@@ -529,7 +583,8 @@ public class GridMenu {
           Item item = EnumUtils.getEnumByIndex(Item.class, index);
           Integer subIndex = DomUtils.getDataPropertyInt(rowElement, KEY_SUB_INDEX);
 
-          if (item != null && (item.formKind == null || subIndex != null)) {
+          if (item != null && item != Item.ADDICTED
+              && (item.formKind == null || subIndex != null)) {
             UiHelper.closeDialog(table);
             item.select(presenter, subIndex);
           }

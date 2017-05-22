@@ -1,8 +1,8 @@
 package com.butent.bee.server.rest;
 
 import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.TBL_COMPANIES;
-import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.COL_COMPANY_NAME;
+import static com.butent.bee.shared.modules.ec.EcConstants.COL_TCD_MANUFACTURER_NAME;
+import static com.butent.bee.shared.modules.ec.EcConstants.TBL_TCD_MANUFACTURERS;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
 import static com.butent.bee.shared.modules.tasks.TaskConstants.COL_PUBLISHER;
 
@@ -65,12 +65,12 @@ public class ServiceCommentWorker {
               COL_MAINTENANCE_DESCRIPTION, COL_EQUIPMENT)
           .addFrom(TBL_SERVICE_MAINTENANCE)
           .addFields(TBL_SERVICE_OBJECTS, COL_MODEL, COL_SERIAL_NO)
-          .addField(TBL_COMPANIES, COL_COMPANY_NAME, ALS_MANUFACTURER_NAME)
+          .addField(TBL_TCD_MANUFACTURERS, COL_TCD_MANUFACTURER_NAME, ALS_MANUFACTURER_NAME)
           .addField(VIEW_MAINTENANCE_STATES, COL_STATE_NAME, COL_STATE)
           .addFromLeft(TBL_SERVICE_OBJECTS,
               sys.joinTables(TBL_SERVICE_OBJECTS, TBL_SERVICE_MAINTENANCE, COL_SERVICE_OBJECT))
-          .addFromLeft(TBL_COMPANIES,
-              sys.joinTables(TBL_COMPANIES, TBL_SERVICE_OBJECTS, COL_MANUFACTURER))
+          .addFromLeft(TBL_TCD_MANUFACTURERS,
+              sys.joinTables(TBL_TCD_MANUFACTURERS, TBL_SERVICE_OBJECTS, COL_MANUFACTURER))
           .addFromLeft(VIEW_MAINTENANCE_STATES,
               sys.joinTables(VIEW_MAINTENANCE_STATES, TBL_SERVICE_MAINTENANCE, COL_STATE))
           .setWhere(sys.idEquals(TBL_SERVICE_MAINTENANCE, serviceId))
@@ -127,7 +127,7 @@ public class ServiceCommentWorker {
 
       if (!commentsRowSet.isEmpty()) {
         DateTimeFormat dateFormatter = DateTimeFormat.of(PredefinedFormat.DATE_SHORT,
-            SupportedLocale.USER_DEFAULT.getDateTimeFormatInfo());
+            SupportedLocale.getUserDefault().getDateTimeFormatInfo());
         JsonArrayBuilder commentsJsonArray = Json.createArrayBuilder();
         commentsRowSet.forEach(commentRow -> {
           JsonObjectBuilder commentJson = Json.createObjectBuilder();

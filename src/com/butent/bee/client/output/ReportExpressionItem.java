@@ -10,7 +10,9 @@ import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
+import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.report.ResultValue;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
 
@@ -49,12 +51,12 @@ public class ReportExpressionItem extends ReportItem {
   }
 
   @Override
-  public ReportValue evaluate(SimpleRow row) {
-    List<ReportValue> values = new ArrayList<>();
+  public ResultValue evaluate(SimpleRow row, Dictionary dictionary) {
+    List<ResultValue> values = new ArrayList<>();
     StringBuilder display = new StringBuilder();
 
     for (Pair<String, ReportItem> pair : expression) {
-      ReportValue val = pair.getB().evaluate(row);
+      ResultValue val = pair.getB().evaluate(row, dictionary);
       values.add(val);
       String text = val.toString();
 
@@ -65,7 +67,7 @@ public class ReportExpressionItem extends ReportItem {
         display.append(text);
       }
     }
-    return ReportValue.of(values.toArray(new ReportValue[0])).setDisplay(display.toString());
+    return ResultValue.of(values.toArray(new ResultValue[0])).setDisplay(display.toString());
   }
 
   @Override
@@ -144,8 +146,7 @@ public class ReportExpressionItem extends ReportItem {
   private ReportExpressionItem addItem(List<Pair<String, ReportItem>> list, String sep,
       ReportItem item) {
     if (item != null) {
-      list.add(Pair.of(encodeSpaces(BeeUtils.nvl(sep, BeeConst.STRING_SPACE)),
-          ReportItem.restore(item.serialize())));
+      list.add(Pair.of(encodeSpaces(BeeUtils.nvl(sep, BeeConst.STRING_SPACE)), item.copy()));
     }
     return this;
   }
@@ -157,13 +158,8 @@ public class ReportExpressionItem extends ReportItem {
   private void render(Flow container, List<ReportItem> reportItems) {
     Runnable refresh = () -> render(container, reportItems);
     container.clear();
-    List<ReportItem> choiceItems = new ArrayList<>();
+    List<ReportItem> choiceItems = new ArrayList<>(reportItems);
 
-    for (ReportItem item : reportItems) {
-      if (!(item instanceof ReportNumericItem)) {
-        choiceItems.add(item);
-      }
-    }
     for (int i = 0; i < temporaryExpression.size(); i++) {
       Pair<String, ReportItem> pair = temporaryExpression.get(i);
 

@@ -1,6 +1,6 @@
 package com.butent.bee.client.modules.cars;
 
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.COL_CURRENCY;
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
 import static com.butent.bee.shared.modules.transport.TransportConstants.COL_MODEL;
 
@@ -25,7 +25,7 @@ import java.util.Objects;
 public class CarBundleJobsGrid extends AbstractGridInterceptor implements SelectorEvent.Handler {
   @Override
   public void afterCreateEditor(String source, Editor editor, boolean embedded) {
-    if (Objects.equals(source, COL_JOB) && editor instanceof DataSelector) {
+    if (editor instanceof DataSelector && ((DataSelector) editor).hasRelatedView(TBL_CAR_JOBS)) {
       ((DataSelector) editor).addSelectorHandler(this);
     }
     super.afterCreateEditor(source, editor, embedded);
@@ -75,6 +75,8 @@ public class CarBundleJobsGrid extends AbstractGridInterceptor implements Select
 
       values.put(COL_CURRENCY, BeeUtils.nvl(Data.getString(srcView, srcRow,
           COL_MODEL + COL_CURRENCY), Data.getString(srcView, srcRow, COL_CURRENCY)));
+      values.put(ALS_CURRENCY_NAME, BeeUtils.nvl(Data.getString(srcView, srcRow,
+          COL_MODEL + ALS_CURRENCY_NAME), Data.getString(srcView, srcRow, ALS_CURRENCY_NAME)));
 
       values.forEach((col, val) -> {
         int colIndex = dataView.getDataIndex(col);
@@ -82,7 +84,7 @@ public class CarBundleJobsGrid extends AbstractGridInterceptor implements Select
         if (dataView.isFlushable()) {
           target.setValue(colIndex, val);
           dataView.refreshBySource(col);
-        } else {
+        } else if (!Objects.equals(col, ALS_CURRENCY_NAME)) {
           target.preliminaryUpdate(colIndex, val);
         }
       });

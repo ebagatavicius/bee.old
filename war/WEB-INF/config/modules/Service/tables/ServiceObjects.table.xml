@@ -12,7 +12,9 @@
     <Relation name="Contractor" relation="Companies" label="=svcContractor" />
 
     <Relation name="ContactPerson" relation="CompanyPersons" label="=contact" />
+    <!--TODO: remove Manufacturer deprecated-->
     <Relation name="Manufacturer" relation="Companies" label="=tcdBrand" />
+    <Relation name="ServiceManufacturer" relation="TcdManufacturers" label="=tcdBrand" />
     <String name="Model" precision="200" label="=svcModel" />
     <String name="SerialNo" precision="200" label="=svcSerialNo" />
 

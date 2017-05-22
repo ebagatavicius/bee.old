@@ -26,7 +26,7 @@ public class DocumentTemplatesGrid extends TreeGridInterceptor {
   }
 
   @Override
-  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow) {
+  public boolean onStartNewRow(GridView gridView, IsRow oldRow, IsRow newRow, boolean copy) {
     if (getSelectedTreeItem() != null) {
       IsRow category = getSelectedTreeItem();
 

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view"
+
+      name="WorkScheduleLocks" source="WorkScheduleLocks"
+      caption="=timeSheetLock"
+>
+  <Columns>
+    <SimpleColumn name="Kind" />
+
+    <SimpleColumn name="Employee" />
+    <SimpleJoin name="Employee" joinType="LEFT">
+      <SimpleColumn name="CompanyPerson" />
+      <SimpleJoin name="CompanyPerson" joinType="LEFT">
+        <SimpleJoin name="Company" joinType="LEFT">
+          <SimpleColumn name="Name" alias="EmployeeCompanyName" />
+          <SimpleJoin name="CompanyType" joinType="LEFT">
+            <SimpleColumn name="Name" alias="EmployeeCompanyTypeName" />
+          </SimpleJoin>
+        </SimpleJoin>
+
+        <SimpleJoin name="Person" joinType="LEFT">
+          <SimpleColumn name="FirstName" />
+          <SimpleColumn name="LastName" />
+        </SimpleJoin>
+
+        <SimpleColumn name="DateOfEmployment" />
+        <SimpleColumn name="DateOfDismissal" />
+
+        <SimpleJoin name="Contact" joinType="LEFT">
+          <SimpleColumn name="Phone" alias="EmployeePhone" />
+          <SimpleColumn name="Mobile" alias="EmployeeMobile" />
+          <SimpleJoin name="Email" joinType="LEFT">
+            <SimpleColumn name="Email" alias="EmployeeEmail" />
+          </SimpleJoin>
+          <SimpleColumn name="Address" alias="EmployeeAddress" />
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleColumn name="TabNumber" />
+    </SimpleJoin>
+
+    <SimpleColumn name="Object" />
+    <SimpleJoin name="Object" joinType="LEFT">
+      <SimpleColumn name="LocationName" />
+
+      <SimpleJoin name="Company" joinType="LEFT">
+        <SimpleColumn name="Name" alias="ObjectCompanyName" />
+        <SimpleJoin name="CompanyType" joinType="LEFT">
+          <SimpleColumn name="Name" alias="ObjectCompanyTypeName" />
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleColumn name="Manager" />
+      <SimpleJoin name="Manager" joinType="LEFT">
+        <SimpleJoin name="CompanyPerson" joinType="LEFT">
+          <SimpleJoin name="Person" joinType="LEFT">
+            <SimpleColumn name="FirstName" alias="ManagerFirstName" />
+            <SimpleColumn name="LastName" alias="ManagerLastName" />
+          </SimpleJoin>
+        </SimpleJoin>
+      </SimpleJoin>
+
+      <SimpleJoin name="Contact" joinType="LEFT">
+        <SimpleColumn name="Phone" alias="ObjectPhone" />
+        <SimpleColumn name="Mobile" alias="ObjectMobile" />
+        <SimpleJoin name="Email" joinType="LEFT">
+          <SimpleColumn name="Email" alias="ObjectEmail" />
+        </SimpleJoin>
+        <SimpleColumn name="Address" alias="ObjectAddress" />
+      </SimpleJoin>
+    </SimpleJoin>
+
+    <SimpleColumn name="Lock"/>
+
+    <SimpleColumn name="Exported"/>
+  </Columns>
+</View>

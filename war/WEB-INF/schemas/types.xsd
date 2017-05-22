@@ -271,7 +271,6 @@
       <xs:enumeration value="Calendars" />
       <xs:enumeration value="CalExecutorGroups" />
       <xs:enumeration value="CarBundleItems" />
-      <xs:enumeration value="CarBundleJobs" />
       <xs:enumeration value="CarBundles" />
       <xs:enumeration value="CarEmissionStandards" />
       <xs:enumeration value="CarDiscounts" />
@@ -290,6 +289,7 @@
       <xs:enumeration value="CargoTypes" />
       <xs:enumeration value="CargoUnloading" />
       <xs:enumeration value="CarFiles" />
+      <xs:enumeration value="CarItems" />
       <xs:enumeration value="CarJobGroups" />
       <xs:enumeration value="CarJobModels" />
       <xs:enumeration value="CarJobProgress" />
@@ -302,7 +302,6 @@
       <xs:enumeration value="CarServiceEvents" />
       <xs:enumeration value="CarServiceFiles" />
       <xs:enumeration value="CarServiceItems" />
-      <xs:enumeration value="CarServiceJobs" />
       <xs:enumeration value="CarServiceOrders" />
       <xs:enumeration value="CarServiceSymptoms" />
       <xs:enumeration value="CarStatus" />
@@ -426,6 +425,7 @@
       <xs:enumeration value="FinanceDistributionOfItems" />
       <xs:enumeration value="FinanceDistributionOfTradeDocuments" />
       <xs:enumeration value="FinanceDistributionOfTradeOperations" />
+      <xs:enumeration value="FinancePrepayments" />
       <xs:enumeration value="FinancialIndicators" />
       <xs:enumeration value="FinancialRecords" />
       <xs:enumeration value="FinancialStates" />
@@ -630,14 +630,16 @@
       <xs:enumeration value="TradeActTmplServices" />
       <xs:enumeration value="TradeDocumentFiles" />
       <xs:enumeration value="TradeDocumentItems" />
-      <xs:enumeration value="TradeDocuments" />
+      <xs:enumeration value="TradeDocumentSelection" />
       <xs:enumeration value="TradeDocumentTags" />
       <xs:enumeration value="TradeDocumentTypes" />
+      <xs:enumeration value="TradeDocuments" />
       <xs:enumeration value="TradeExpenditures" />
       <xs:enumeration value="TradeItemCost" />
       <xs:enumeration value="TradeMovement" />
       <xs:enumeration value="TradeNotes" />
       <xs:enumeration value="TradeOperations" />
+      <xs:enumeration value="TradePaymentTerms" />
       <xs:enumeration value="TradePayments" />
       <xs:enumeration value="TradeSeries" />
       <xs:enumeration value="TradeStatuses" />
@@ -687,6 +689,7 @@
       <xs:enumeration value="Warehouses" />
       <xs:enumeration value="WarrantyTypes" />
       <xs:enumeration value="WorkSchedule" />
+      <xs:enumeration value="WorkScheduleLocks" />
       <xs:enumeration value="Workspaces" />
 
       <!-- samples -->

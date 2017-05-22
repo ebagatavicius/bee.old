@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        name="TradeRelatedItems" viewName="TradeMovement"
+        readOnly="true" paging="false"
+>
+  <g:columns>
+    <PropColumn name="Level" type="integer" label="=level" />
+  </g:columns>
+
+  <xi:include href="columns/TradeMovementMain.columns.xml" />
+
+  <xi:include href="../../Administration/grids/columns/HiddenDimensions.columns.xml" />
+  <xi:include href="../../Classifiers/grids/columns/HiddenTradeAccounts.columns.xml" />
+
+  <xi:include href="columns/TradeMovementRest.columns.xml" />
+</g:Grid>

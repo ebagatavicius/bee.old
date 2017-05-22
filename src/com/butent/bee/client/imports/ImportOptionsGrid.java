@@ -10,6 +10,7 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
+import com.butent.bee.client.event.logical.DataReceivedEvent;
 import com.butent.bee.client.modules.administration.AdministrationKeeper;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.tree.Tree;
@@ -22,7 +23,6 @@ import com.butent.bee.client.widget.CustomAction;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.DataUtils;
-import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
@@ -61,9 +61,9 @@ public class ImportOptionsGrid extends AbstractGridInterceptor {
   }
 
   @Override
-  public void onDataReceived(List<? extends IsRow> rows) {
-    createImportTemplates.setVisible(BeeUtils.isEmpty(rows));
-    super.onDataReceived(rows);
+  public void onDataReceived(DataReceivedEvent event) {
+    createImportTemplates.setVisible(BeeUtils.isEmpty(event.getRows()));
+    super.onDataReceived(event);
   }
 
   @Override

@@ -31,6 +31,9 @@
     <Relation name="TradePayment" relation="TradePayments" cascade="DELETE"
               label="=trdPayment" />
 
+    <Enum name="PrepaymentKind" key="PrepaymentKind" label="=prepaymentKind" />
+    <Relation name="PrepaymentParent" relation="FinancialRecords" label="=prepaymentParent" />
+
     <Relation name="Employee" relation="Employees" label="=employee" />
 
     <Relation name="ExtraDimensions" unique="true" relation="ExtraDimensions" editable="true"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <View xmlns="http://www.butent.com/view"
 
-      name="CarServiceItems" source="CarServiceItems" caption="=productsServices"
+      name="CarServiceItems" source="CarServiceItems" caption="=productsServices+(+=serviceOrder+)"
 >
   <Columns>
     <SimpleColumn name="ServiceOrder" />
@@ -18,7 +18,13 @@
       <SimpleJoin joinType="LEFT" name="Unit">
         <SimpleColumn name="Name" alias="UnitName" />
       </SimpleJoin>
+
+      <ExternalJoin name="Item" joinType="LEFT" source="CarJobs">
+        <IdColumn name="Job" />
+      </ExternalJoin>
     </SimpleJoin>
+
+    <SimpleColumn name="Duration" />
 
     <SimpleColumn name="Quantity" />
     <SimpleColumn name="Price" />

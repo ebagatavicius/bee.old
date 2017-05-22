@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
+  <DataColumn name="Quantity" scale="0" visible="false" />
+</g:columns>

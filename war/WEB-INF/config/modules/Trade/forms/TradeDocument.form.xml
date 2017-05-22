@@ -44,24 +44,31 @@
 
           <page>
             <text>=trdPayment</text>
-            <FlowPanel class="flexBox-vertical">
-              <Table kind="controls" style="margin-bottom: 1vh;">
-                <col index="0" kind="label" />
-                <col index="2" kind="label" />
-
-                <row>
-                  <Label for="Term" />
+            <FlowPanel class="flexBox-horizontal">
+              <FlowPanel class="flexBox-vertical" style="width: 256px; margin-right: 3vw;">
+                <HorizontalPanel style="margin-bottom: 1vh;">
+                  <cell kind="label">
+                    <Label for="Term" />
+                  </cell>
                   <InputDateTime source="Term" style="&dtw;" summarize="true" />
+                </HorizontalPanel>
 
-                  <Label for="Payer" />
+                <ChildGrid name="TradePaymentTerms" relColumn="TradeDocument" class="flexible" />
+              </FlowPanel>
+
+              <FlowPanel class="flexBox-vertical flexible">
+                <HorizontalPanel style="margin-bottom: 1vh;">
+                  <cell kind="label">
+                    <Label for="Payer" />
+                  </cell>
                   <DataSelector source="Payer" style="width: 30em;"
                                 choiceColumns="Name TypeName"
                                 renderColumns="PayerName PayerTypeName"
                                 summarize="true" />
-                </row>
-              </Table>
+                </HorizontalPanel>
 
-              <ChildGrid name="TradePayments" relColumn="TradeDocument" class="flexible" />
+                <ChildGrid name="TradePayments" relColumn="TradeDocument" class="flexible" />
+              </FlowPanel>
             </FlowPanel>
           </page>
 
@@ -220,7 +227,9 @@
           <FlowPanel class="&mrcl;" style="&mrst;">
             <FlowPanel style="&mfld; width: 5em;">
               <Label for="Series" style="&flbl;" />
-              <InputText source="Series" upperCase="true" style="&finp;" />
+              <DataSelector name="Series" source="Series" viewName="TradeSeries"
+                            valueSource="SeriesName" caching="none" strict="false" upperCase="true"
+                            style="&finp;" />
             </FlowPanel>
 
             <FlowPanel class="flexible flexBox-horizontal-top">

@@ -1091,24 +1091,18 @@ public class DiscussionsModuleBean implements BeeModule {
   private SimpleRowSet getDiscussionsLastComment(Set<Long> discussionIds) {
     //    Map<Long, String> ls = new HashMap<>();
 
-    SqlSelect select =
-        new SqlSelect()
-            .addField(TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION, COL_DISCUSSION)
-            .addMax(TBL_DISCUSSIONS_COMMENTS, sys.getIdName(TBL_DISCUSSIONS_COMMENTS),
-                ALS_LAST_COMMET)
-            .addCount(TBL_DISCUSSIONS_COMMENTS, sys.getIdName(TBL_DISCUSSIONS_COMMENTS),
-                PROP_COMMENT_COUNT)
-
-            .addFrom(TBL_DISCUSSIONS)
-            .addFromLeft(TBL_DISCUSSIONS_COMMENTS,
-                sys.joinTables(TBL_DISCUSSIONS, TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION))
-            .setWhere(
-                SqlUtils
-                    .and(SqlUtils.notNull(TBL_DISCUSSIONS_COMMENTS, sys
-                            .getIdName(TBL_DISCUSSIONS_COMMENTS)),
-                        SqlUtils.inList(TBL_DISCUSSIONS, sys.getIdName(TBL_DISCUSSIONS),
-                            discussionIds)))
-            .addGroup(TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION);
+    SqlSelect select = new SqlSelect()
+        .addField(TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION, COL_DISCUSSION)
+        .addMax(TBL_DISCUSSIONS_COMMENTS, sys.getIdName(TBL_DISCUSSIONS_COMMENTS), ALS_LAST_COMMET)
+        .addCount(TBL_DISCUSSIONS_COMMENTS, sys.getIdName(TBL_DISCUSSIONS_COMMENTS),
+            PROP_COMMENT_COUNT)
+        .addFrom(TBL_DISCUSSIONS)
+        .addFromLeft(TBL_DISCUSSIONS_COMMENTS, sys.joinTables(TBL_DISCUSSIONS,
+            TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION))
+        .setWhere(SqlUtils.and(SqlUtils.notNull(TBL_DISCUSSIONS_COMMENTS,
+            sys.getIdName(TBL_DISCUSSIONS_COMMENTS)), SqlUtils.inList(TBL_DISCUSSIONS,
+            sys.getIdName(TBL_DISCUSSIONS), discussionIds)))
+        .addGroup(TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION);
 
     SimpleRowSet maxComments = qs.getData(select);
 
@@ -1116,49 +1110,38 @@ public class DiscussionsModuleBean implements BeeModule {
       return null;
     }
 
-    select =
-        new SqlSelect()
-            .addField(TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION, COL_DISCUSSION)
-            .addField(TBL_DISCUSSIONS_COMMENTS, COL_PUBLISH_TIME, COL_PUBLISH_TIME)
-            .addField(TBL_PERSONS, COL_FIRST_NAME,
-                COL_FIRST_NAME)
-            .addField(TBL_PERSONS, COL_LAST_NAME,
-                COL_LAST_NAME)
-            .addEmptyInt(PROP_COMMENT_COUNT)
-            .addFrom(TBL_DISCUSSIONS)
-            .addFromLeft(TBL_DISCUSSIONS_COMMENTS,
-                sys.joinTables(TBL_DISCUSSIONS, TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION))
-            .addFromLeft(
-                AdministrationConstants.TBL_USERS,
-                sys.joinTables(AdministrationConstants.TBL_USERS, TBL_DISCUSSIONS_COMMENTS,
-                    COL_PUBLISHER))
-            .addFromLeft(
-                TBL_COMPANY_PERSONS,
-                sys.joinTables(TBL_COMPANY_PERSONS, AdministrationConstants.TBL_USERS,
-                    COL_COMPANY_PERSON))
-            .addFromLeft(
-                TBL_PERSONS,
-                sys.joinTables(TBL_PERSONS, TBL_COMPANY_PERSONS,
-                    COL_PERSON))
-            .setWhere(
-                SqlUtils
-                    .and(SqlUtils.notNull(TBL_DISCUSSIONS_COMMENTS, sys
-                            .getIdName(TBL_DISCUSSIONS_COMMENTS)),
-                        SqlUtils.inList(TBL_DISCUSSIONS_COMMENTS,
-                            sys.getIdName(TBL_DISCUSSIONS_COMMENTS),
-                            (Object[]) maxComments.getColumn(maxComments
-                                .getColumnIndex(ALS_LAST_COMMET))),
-                        SqlUtils.inList(TBL_DISCUSSIONS, sys.getIdName(TBL_DISCUSSIONS),
-                            (Object[]) maxComments.getColumn(maxComments
-                                .getColumnIndex(COL_DISCUSSION)))));
+    select = new SqlSelect()
+        .addField(TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION, COL_DISCUSSION)
+        .addField(TBL_DISCUSSIONS_COMMENTS, COL_PUBLISH_TIME, COL_PUBLISH_TIME)
+        .addField(TBL_PERSONS, COL_FIRST_NAME, COL_FIRST_NAME)
+        .addField(TBL_PERSONS, COL_LAST_NAME, COL_LAST_NAME)
+        .addEmptyInt(PROP_COMMENT_COUNT)
+        .addFrom(TBL_DISCUSSIONS)
+        .addFromLeft(TBL_DISCUSSIONS_COMMENTS, sys.joinTables(TBL_DISCUSSIONS,
+            TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION))
+        .addFromLeft(AdministrationConstants.TBL_USERS,
+            sys.joinTables(AdministrationConstants.TBL_USERS, TBL_DISCUSSIONS_COMMENTS,
+                COL_PUBLISHER))
+        .addFromLeft(TBL_COMPANY_PERSONS, sys.joinTables(TBL_COMPANY_PERSONS,
+            AdministrationConstants.TBL_USERS, COL_COMPANY_PERSON))
+        .addFromLeft(TBL_PERSONS, sys.joinTables(TBL_PERSONS, TBL_COMPANY_PERSONS, COL_PERSON))
+        .setWhere(SqlUtils.and(SqlUtils.notNull(TBL_DISCUSSIONS_COMMENTS,
+            sys.getIdName(TBL_DISCUSSIONS_COMMENTS)), SqlUtils.inList(TBL_DISCUSSIONS_COMMENTS,
+            sys.getIdName(TBL_DISCUSSIONS_COMMENTS), (Object[])
+                maxComments.getColumn(maxComments.getColumnIndex(ALS_LAST_COMMET))),
+            SqlUtils.inList(TBL_DISCUSSIONS, sys.getIdName(TBL_DISCUSSIONS),
+                (Object[]) maxComments.getColumn(maxComments.getColumnIndex(COL_DISCUSSION)))));
     /* .addGroup(TBL_DISCUSSIONS_COMMENTS, COL_DISCUSSION); */
 
     SimpleRowSet rs = qs.getData(select);
 
+    String count = maxComments.getValueByKey(ALS_LAST_COMMET, rs.getRow(0).getValue(COL_DISCUSSION),
+        PROP_COMMENT_COUNT);
     for (SimpleRow row : rs) {
-      row.setValue(PROP_COMMENT_COUNT, maxComments.getValueByKey(ALS_LAST_COMMET,
+      row.setValue(PROP_COMMENT_COUNT, maxComments.getValueByKey(COL_DISCUSSION,
           row.getValue(COL_DISCUSSION), PROP_COMMENT_COUNT));
     }
+
     return rs;
   }
 

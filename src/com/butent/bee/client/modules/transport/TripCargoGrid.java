@@ -14,6 +14,7 @@ import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.data.RowInsertCallback;
 import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.dialog.Modality;
+import com.butent.bee.client.event.logical.DataReceivedEvent;
 import com.butent.bee.client.grid.ColumnFooter;
 import com.butent.bee.client.grid.ColumnHeader;
 import com.butent.bee.client.grid.HtmlTable;
@@ -177,13 +178,13 @@ public class TripCargoGrid extends PercentEditor {
   }
 
   @Override
-  public void onDataReceived(List<? extends IsRow> rows) {
-    super.onDataReceived(rows);
+  public void onDataReceived(DataReceivedEvent event) {
+    super.onDataReceived(event);
     Order order = getGridView().getGrid().getSortOrder();
 
-    if (rows != null && (!BeeConst.isUndef(order.getIndex(ALS_LOADING_DATE))
+    if (event.getRows() != null && (!BeeConst.isUndef(order.getIndex(ALS_LOADING_DATE))
         || !BeeConst.isUndef(order.getIndex(ALS_UNLOADING_DATE)))) {
-      Collections.sort(rows, (row1, row2) -> {
+      Collections.sort(event.getRows(), (row1, row2) -> {
         int result = BeeConst.COMPARE_EQUAL;
 
         for (Order.Column column : order.getColumns()) {

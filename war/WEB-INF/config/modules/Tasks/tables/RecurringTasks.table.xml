@@ -42,5 +42,7 @@
     
     <Boolean name="CopyByMail" label="=mailNotify" />
     <Boolean name="PrivateTask" />
+
+    <Relation name="Product" relation="TaskProducts" label="=crmTaskProduct" />
   </Fields>
 </Table>

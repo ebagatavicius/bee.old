@@ -7,6 +7,10 @@
   >
 
   <g:columns>
+    <DataColumn name="Task" editEnabled="true" />
+    <DataColumn name="Status" />
+    <DataColumn name="Completed" />
+
     <DataColumn name="DurationDate" format="DATE_SHORT" flexShrink="0" visible="true" />
     <DataColumn name="DurationType" visible="true" />
     <DataColumn name="Duration" visible="true" />
@@ -15,7 +19,7 @@
 
     <RelColumn name="Company" caption="=client" renderColumns="CompanyName CompanyTypeName" />
 
-    <RelColumn name="Task" editEnabled="true" renderColumns="Summary" flexGrow="1" />
+    <DataColumn name="Summary" editEnabled="true" flexGrow="1" />
 
     <RelColumn name="Publisher" renderColumns="PublisherFirstName PublisherLastName" />
     

@@ -7,6 +7,8 @@
   <Fields>
     <String name="TcCode" precision="2" notNull="true" unique="true" label="=code" />
     <String name="TcName" precision="100" label="=name" />
+
+    <Enum name="TcDurationType" key="TcDurationType" label="=duration" />
     
     <Boolean name="WsPlanned" label="=workSchedulePlannedShort" />
     <Boolean name="WsActual" defValue="true" label="=workScheduleActualShort" />

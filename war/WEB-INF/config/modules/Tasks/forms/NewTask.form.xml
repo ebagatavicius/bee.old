@@ -46,6 +46,11 @@
       <col index="0" cellStyle="&col1;" />
 
       <row>
+        <Label />
+        <CheckBox name="NotScheduledTask" text="=crmTasksNotScheduledTask"/>
+      </row>
+
+      <row>
         <Label name="ExecutorsLabel" text="=crmTaskExecutors" />
         <MultiSelector name="Executors" viewName="Users" property="Executors" renderColumns="FirstName LastName"
           editPopup="true" newRowEnabled="false" editSource="CompanyPerson" style="&inp2x;" label="=crmTaskExecutors" />
@@ -155,7 +160,6 @@
         <Label />
         <CheckBox name="Mail" text="=mailNotify" />
         <CheckBox source="PrivateTask" />
-        <CheckBox name="NotScheduledTask" text="=crmTasksNotScheduledTask"/>
       </row>
     </Table>
 
@@ -174,9 +178,9 @@
                 newRowEnabled="false" editPopup="true"/>
       <Relation viewName="Discussions" property="RelDiscussions" renderColumns="Subject"
                 newRowEnabled="false" editPopup="true"/>
-      <Relation viewName="ServiceObjects" property="RelServiceObjects" renderColumns="Address"
+      <Relation viewName="ServiceObjects" property="RelServiceObjects" renderColumns="Model CategoryName ArticleNo"
                 newRowEnabled="false" editPopup="true"
-                choiceColumns="Address CustomerName"/>
+                choiceColumns="Model CategoryName ArticleNo"/>
       <Relation viewName="Tasks" property="RelTasks"
                 renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
                 newRowEnabled="false" editPopup="true" style="&inp2x;"

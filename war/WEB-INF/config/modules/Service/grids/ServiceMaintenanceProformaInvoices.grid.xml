@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid" xmlns:ui="http://www.butent.com/ui"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+
+  name="ServiceMaintenanceProformaInvoices" viewName="OrderChildInvoices" flexGrow="1" disabledActions="add"
+  caption="=trProformaInvoices" filter="Proforma=true AND (Kind 1 OR ServiceMaintenance)">
+  <xi:include href="../../Orders/grids/columns/ProformaInvoices.columns.xml" />
+  <g:columns>
+    <RelColumn name="ServiceMaintenance" viewName="ServiceMaintenance" renderColumns="ServiceMaintenance" filterSupplier="value"
+               editPopup="true" label="=svcRepair" />
+  </g:columns>
+
+  <g:rowStyle>
+    <ui:inline>="color:red"</ui:inline>
+    <ui:expression>row.Debt &gt; 0 &amp;&amp; row.Term &lt; new Date().getTime()</ui:expression>
+  </g:rowStyle>
+  <g:rowStyle>
+    <ui:inline>="color:green"</ui:inline>
+    <ui:expression>row.Debt == 0</ui:expression>
+  </g:rowStyle>
+</g:Grid>

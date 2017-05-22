@@ -63,7 +63,13 @@ abstract class MaintenanceStateChangeInterceptor extends MaintenanceExpanderForm
                 getFormView().notifySevere(Localized.dictionary().ordEmptyInvoice());
                 revertState();
 
-              } else if (BeeUtils.isTrue(comment)) {
+              } else if (BeeUtils.isTrue(comment)
+                  || !BeeUtils.isEmpty(stateProcessRow.getString(Data
+                  .getColumnIndex(TBL_STATE_PROCESS, COL_MAINTENANCE_ITEM)))
+                  || !BeeUtils.isEmpty(stateProcessRow.getString(Data
+                  .getColumnIndex(TBL_STATE_PROCESS, COL_TERM)))
+                  || !BeeUtils.isEmpty(stateProcessRow.getString(Data
+                  .getColumnIndex(TBL_STATE_PROCESS, COL_WARRANTY)))) {
                 registerReason(getActiveRow(), stateProcessRow, result -> {
 
                   if (result == null) {

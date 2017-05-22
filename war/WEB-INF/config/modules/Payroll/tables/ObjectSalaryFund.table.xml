@@ -6,7 +6,7 @@
   >
   <Fields>
     <Relation name="Object" notNull="true" relation="Locations" cascade="DELETE"
-      label="=object" />
+      label="=objectLocation" />
 
     <Numeric name="YearFrom" precision="4" label="=startingYear" />
     <Numeric name="MonthFrom" precision="2" label="=startingMonth" />

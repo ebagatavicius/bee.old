@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Columns xmlns="http://www.butent.com/view">
+  <SimpleColumn name="Indicator" />
+  <SimpleJoin joinType="LEFT" name="Indicator">
+    <SimpleColumn name="IndicatorName" />
+    <SimpleColumn name="IndicatorAbbreviation" />
+
+    <SimpleColumn name="IndicatorRatio" />
+    <SimpleColumn name="IndicatorScale" />
+
+    <SimpleColumn name="Background" alias="IndicatorBackground" />
+    <SimpleColumn name="Foreground" alias="IndicatorForeground" />
+  </SimpleJoin>
+</Columns>

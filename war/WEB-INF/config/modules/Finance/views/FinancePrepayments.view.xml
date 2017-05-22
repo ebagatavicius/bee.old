@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View xmlns="http://www.butent.com/view" xmlns:xi="http://www.w3.org/2001/XInclude"
+
+      name="FinancePrepayments" source="FinancialRecords"
+      caption="=prepayments" newRowCaption="=newPrepayment"
+>
+  <Columns>
+    <xi:include href="viewcolumns/FinancialRecordsMain.viewcolumns.xml" />
+
+    <SimpleColumn name="Quantity" />
+
+    <SimpleColumn name="TradeDocument" />
+    <SimpleColumn name="TradePayment" />
+
+    <SimpleColumn name="PrepaymentKind" />
+    <SimpleColumn name="PrepaymentParent" />
+
+    <xi:include href="viewcolumns/Employee.viewcolumns.xml" />
+    <xi:include href="../../Administration/views/viewcolumns/ExtraDimensions.viewcolumns.xml" />
+  </Columns>
+
+  <Order>
+    <OrderBy column="Date" />
+  </Order>
+</View>

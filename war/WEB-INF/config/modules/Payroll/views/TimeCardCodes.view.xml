@@ -8,6 +8,8 @@
     <SimpleColumn name="TcCode" />
     <SimpleColumn name="TcName" />
 
+    <SimpleColumn name="TcDurationType" />
+
     <SimpleColumn name="WsPlanned" />
     <SimpleColumn name="WsActual" />
     

@@ -1,5 +1,6 @@
 package com.butent.bee.shared.rights;
 
+import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -46,6 +47,42 @@ public enum RegulatedWidget implements HasLocalizedCaption {
     @Override
     public String getCaption(Dictionary constants) {
       return constants.exportToMsExcel();
+    }
+  },
+  TIME_SHEET {
+    @Override
+    public String getCaption(Dictionary constants) {
+      return BeeUtils.join(BeeConst.STRING_POINT, Module.PAYROLL.getCaption(constants),
+        constants.timeSheet());
+    }
+
+    @Override
+    public ModuleAndSub getModuleAndSub() {
+      return ModuleAndSub.of(Module.PAYROLL);
+    }
+  },
+  WORK_SCHEDULE {
+    @Override
+    public String getCaption(Dictionary constants) {
+      return BeeUtils.join(BeeConst.STRING_POINT, Module.PAYROLL.getCaption(constants),
+        constants.workSchedule());
+    }
+
+    @Override
+    public ModuleAndSub getModuleAndSub() {
+      return ModuleAndSub.of(Module.PAYROLL);
+    }
+  },
+  EARNINGS {
+    @Override
+    public String getCaption(Dictionary constants) {
+      return BeeUtils.join(BeeConst.STRING_POINT, Module.PAYROLL.getCaption(constants),
+        constants.payrollEarnings());
+    }
+
+    @Override
+    public ModuleAndSub getModuleAndSub() {
+      return ModuleAndSub.of(Module.PAYROLL);
     }
   };
 

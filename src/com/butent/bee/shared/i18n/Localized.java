@@ -73,6 +73,10 @@ public final class Localized {
     return labels;
   }
 
+  public static boolean isMoney(Double x) {
+    return BeeUtils.nonZero(normalizeMoney(x));
+  }
+
   public static boolean maybeTranslatable(String text) {
     return text != null && text.length() >= 3 && text.charAt(0) == L10N_PREFIX;
   }

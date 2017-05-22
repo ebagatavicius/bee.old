@@ -19,6 +19,7 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
+import com.butent.bee.client.modules.finance.FinanceKeeper;
 import com.butent.bee.client.render.AbstractCellRenderer;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.FormWidget;
@@ -85,7 +86,7 @@ class AnalysisValueTypesEditor extends Flow implements Editor, AdjustmentListene
   }
 
   private static final String STYLE_PREFIX =
-      BeeConst.CSS_CLASS_PREFIX + "fin-AnalysisValueTypesEditor-";
+      FinanceKeeper.STYLE_PREFIX + "AnalysisValueTypesEditor-";
 
   private static final String STYLE_CONTAINER = STYLE_PREFIX + "container";
   private static final String STYLE_TABLE = STYLE_PREFIX + "table";

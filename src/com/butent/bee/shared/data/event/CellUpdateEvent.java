@@ -24,10 +24,7 @@ import java.util.Collections;
 public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
     implements HasRowId, HasViewName {
 
-  /**
-   * Requires implementing classes to have a method to handle cell update event.
-   */
-
+  @FunctionalInterface
   public interface Handler {
     void onCellUpdate(CellUpdateEvent event);
   }
@@ -48,6 +45,7 @@ public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
 
   public static void forward(Handler handler, String viewName, long rowId, long version,
       CellSource source, String value) {
+
     Assert.notNull(handler);
     handler.onCellUpdate(new CellUpdateEvent(viewName, rowId, version, source, value));
   }
@@ -69,6 +67,7 @@ public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
 
   private CellUpdateEvent(String viewName, long rowId, long version, CellSource source,
       String value) {
+
     this.viewName = viewName;
 
     this.rowId = rowId;
@@ -89,16 +88,24 @@ public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
     if (row == null) {
       return false;
     } else {
-      applyTo(row);
-      return true;
+      return applyTo(row);
     }
   }
 
-  public void applyTo(IsRow row) {
+  public boolean applyTo(IsRow row) {
     Assert.notNull(row);
-    row.setVersion(getVersion());
 
-    source.set(row, value);
+    if (source.set(row, value)) {
+      row.setVersion(getVersion());
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public String brief() {
+    return BeeUtils.joinWords(getViewName(), getRowId(), getSourceName(), getValue());
   }
 
   @Override
@@ -112,7 +119,7 @@ public class CellUpdateEvent extends ModificationEvent<CellUpdateEvent.Handler>
     this.rowId = BeeUtils.toLong(arr[i++]);
     this.version = BeeUtils.toLong(arr[i++]);
     this.source = CellSource.restore(arr[i++]);
-    this.value = arr[i++];
+    this.value = arr[i];
   }
 
   @Override

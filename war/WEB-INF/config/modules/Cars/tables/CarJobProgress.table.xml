@@ -4,7 +4,7 @@
        name="CarJobProgress"
        idName="JobProgressID">
   <Fields>
-    <Relation name="ServiceJob" notNull="true" relation="CarServiceJobs" cascade="DELETE"
+    <Relation name="ServiceJob" notNull="true" relation="CarServiceItems" cascade="DELETE"
               label="=serviceJob" />
 
     <Relation name="CompanyPerson" notNull="true" relation="CompanyPersons" label="=employee" />

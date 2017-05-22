@@ -250,7 +250,12 @@ public final class Queries {
   }
 
   public static int getData(Collection<String> viewNames, DataCallback callback) {
-    return getData(viewNames, null, CachingPolicy.NONE, callback);
+    return getData(viewNames, null, callback);
+  }
+
+  public static int getData(Collection<String> viewNames, Map<String, Filter> filters,
+      DataCallback callback) {
+    return getData(viewNames, filters, CachingPolicy.NONE, callback);
   }
 
   public static int getData(Collection<String> viewNames, Map<String, Filter> filters,

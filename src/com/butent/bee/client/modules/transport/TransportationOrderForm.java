@@ -234,13 +234,14 @@ class TransportationOrderForm extends PrintFormInterceptor implements ClickHandl
     if (copyAction == null) {
       copyAction = new FaLabel(FontAwesome.COPY);
       copyAction.setTitle(Localized.dictionary().actionCopy());
-
-      copyAction.addClickHandler(clickEvent -> TransportUtils.copyOrderWithCargos(getActiveRowId(),
-          Filter.equals(COL_ORDER, getActiveRowId()), (newOrderId, newCargos) -> {
-            RowEditor.open(getViewName(), newOrderId, Opener.MODAL);
-        })
+      copyAction.addClickHandler(clickEvent ->
+          Global.confirm(Localized.dictionary().trCopyOrder(), () ->
+              TransportUtils.copyOrderWithCargos(getActiveRowId(), Filter.equals(COL_ORDER,
+                  getActiveRowId()), (newOrderId, newCargos) ->
+                  RowEditor.open(getViewName(), newOrderId, Opener.MODAL)))
       );
     }
-    return copyAction;
+
+    return this.copyAction;
   }
 }

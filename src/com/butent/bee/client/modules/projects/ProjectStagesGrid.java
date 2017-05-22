@@ -43,7 +43,7 @@ class ProjectStagesGrid extends AbstractGridInterceptor {
     Provider provider = presenter.getDataProvider();
 
     int idxTaskCount = provider.getColumnIndex(ALS_TASK_COUNT);
-    int idxOwner = provider.getColumnIndex(ProjectConstants.ALS_PROJECT_OWNER);
+    int idxOwner = provider.getColumnIndex(ProjectConstants.COL_PROJECT_OWNER);
     int idxStatus = provider.getColumnIndex(ProjectConstants.ALS_PROJECT_STATUS);
 
     if (BeeUtils.unbox(activeRow.getLong(idxOwner)) == BeeKeeper.getUser().getUserId()) {

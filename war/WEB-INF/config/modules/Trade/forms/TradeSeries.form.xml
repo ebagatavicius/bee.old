@@ -1,26 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  
-  name="TradeSeries" viewName="TradeSeries" caption="=trdSeries"
-  width="500" height="300"
-  >
+        xmlns:f="http://www.butent.com/form"
+
+        name="TradeSeries" viewName="TradeSeries" caption="=trdSeries"
+        width="500" height="300"
+>
   <FlowPanel class="flexBox-vertical">
-    <br/>
-    <Table kind="controls">
+    <Table kind="controls" style="margin-top: 1vh; margin-bottom: 2vh;">
       <col index="0" kind="label" />
+      <col index="2" kind="label" />
 
       <row>
         <Label for="SeriesName" />
-        <InputText source="SeriesName" upperCase="true" style="width: 100px;" visible="true" />
+        <InputText source="SeriesName" upperCase="true" style="width: 10em;" visible="true" />
       </row>
+
+      <row>
+        <Label for="NumberPrefix" />
+        <InputText source="NumberPrefix" style="width: 10em;" />
+
+        <Label for="NumberLength" />
+        <InputInteger source="NumberLength" style="width: 3em;" minValue="0" maxValue="10" />
+      </row>
+
       <row>
         <Label for="Notes" />
-        <InputArea source="Notes" visibleLines="5" style="width: 350px;" />
+        <cell colSpan="3">
+          <InputArea source="Notes" visibleLines="3" style="width: 350px;" />
+        </cell>
       </row>
     </Table>
 
-    <br/>
     <ChildGrid class="flexible" name="SeriesManagers" relColumn="Series" />
   </FlowPanel>
 </f:Form>  

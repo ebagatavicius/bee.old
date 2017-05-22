@@ -11,11 +11,16 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
+import com.butent.bee.shared.rights.Module;
 import com.butent.bee.shared.utils.BeeUtils;
 
 public class ServiceItemsPicker extends ReservationItemsPicker {
 
   private CheckBox filterServices;
+
+  public ServiceItemsPicker(Module module) {
+    super(module);
+  }
 
   @Override
   protected void addAdditionalFilter(ParameterList params) {
