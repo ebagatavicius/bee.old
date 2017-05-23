@@ -181,6 +181,13 @@ public final class ChildSelector extends MultiSelector implements HasFosterParen
     }
   }
 
+  /**
+   * hack.
+   */
+  @Override
+  public void render(String value) {
+  }
+
   @Override
   public void setParentId(String parentId) {
     this.parentId = parentId;

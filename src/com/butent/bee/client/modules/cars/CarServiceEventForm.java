@@ -10,7 +10,7 @@ import static com.butent.bee.shared.modules.calendar.CalendarConstants.*;
 import static com.butent.bee.shared.modules.cars.CarsConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.COL_TRADE_CUSTOMER;
-import static com.butent.bee.shared.modules.transport.TransportConstants.*;
+import static com.butent.bee.shared.modules.transport.TransportConstants.COL_MODEL;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
@@ -23,7 +23,6 @@ import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.data.RowInsertCallback;
 import com.butent.bee.client.data.RowUpdateCallback;
-import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.modules.calendar.Appointment;
 import com.butent.bee.client.modules.calendar.CalendarKeeper;
 import com.butent.bee.client.modules.calendar.CalendarPanel;
@@ -61,8 +60,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-public class CarServiceEventForm extends AbstractFormInterceptor implements ClickHandler,
-    SelectorEvent.Handler {
+public class CarServiceEventForm extends AbstractFormInterceptor implements ClickHandler {
 
   @Override
   public void afterDeleteRow(long rowId) {
@@ -71,8 +69,17 @@ public class CarServiceEventForm extends AbstractFormInterceptor implements Clic
 
   @Override
   public void afterCreateEditableWidget(EditableWidget editableWidget, IdentifiableWidget widget) {
-    if (Objects.equals(editableWidget.getColumnId(), COL_CAR) && widget instanceof DataSelector) {
-      ((DataSelector) widget).addSelectorHandler(this);
+    if (widget instanceof DataSelector) {
+      switch (editableWidget.getColumnId()) {
+        case COL_CAR:
+          ((DataSelector) widget).addSelectorHandler(ev ->
+              CarServiceOrderForm.onCarSelection(getFormView(), ev, COL_COMPANY));
+          break;
+        case COL_COMPANY:
+          ((DataSelector) widget).addSelectorHandler(ev ->
+              CarServiceOrderForm.onCustomerSelection(getFormView(), ev));
+          break;
+      }
     }
     super.afterCreateEditableWidget(editableWidget, widget);
   }
@@ -147,27 +154,6 @@ public class CarServiceEventForm extends AbstractFormInterceptor implements Clic
         getFormView().refresh();
       }
     });
-  }
-
-  @Override
-  public void onDataSelector(SelectorEvent event) {
-    DataInfo eventInfo = Data.getDataInfo(getViewName());
-    DataInfo carInfo = Data.getDataInfo(event.getRelatedViewName());
-    Long owner = getLongValue(COL_COMPANY);
-
-    if (event.isNewRow()) {
-      RelationUtils.copyWithDescendants(eventInfo, COL_COMPANY, getActiveRow(),
-          carInfo, COL_OWNER, event.getNewRow());
-
-    } else if (event.isOpened()) {
-      event.getSelector().setAdditionalFilter(Objects.isNull(owner) ? null
-          : Filter.equals(COL_OWNER, owner));
-
-    } else if (event.isChanged() && Objects.isNull(owner)) {
-      RelationUtils.copyWithDescendants(carInfo, COL_OWNER, event.getRelatedRow(),
-          eventInfo, COL_COMPANY, getActiveRow());
-      getFormView().refresh();
-    }
   }
 
   @Override

@@ -309,7 +309,8 @@
           <FlowPanel class="&mrcl;" style="&mrst;">
             <FlowPanel class="flexible" style="&mfld;">
               <Label for="Vehicle" style="&flbl;" />
-              <DataSelector source="Vehicle" style="&finp; &fmax;" newRowEnabled="false"
+              <DataSelector source="Vehicle" style="&finp; &fmax;"
+                            newRowEnabled="false" editViewName="Cars"
                             choiceColumns="BrandName ModelName Number BodyNumber"
                             renderColumns="VehicleBrandName VehicleModelName VehicleNumber VehicleBodyNumber" />
             </FlowPanel>

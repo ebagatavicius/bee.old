@@ -98,8 +98,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class CarServiceOrderForm extends PrintFormInterceptor implements HasStages,
-    SelectorEvent.Handler {
+public class CarServiceOrderForm extends PrintFormInterceptor implements HasStages {
 
   private HasWidgets stageContainer;
   private List<Stage> orderStages;
@@ -117,16 +116,16 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
 
   @Override
   public void afterCreateEditableWidget(EditableWidget editableWidget, IdentifiableWidget widget) {
-    if (Objects.equals(editableWidget.getColumnId(), COL_CAR) && widget instanceof DataSelector) {
-      ((DataSelector) widget).addSelectorHandler(this);
-    }
-    if (Objects.equals(editableWidget.getColumnId(), COL_CUSTOMER)
-        && widget instanceof DataSelector) {
-      ((DataSelector) widget).addSelectorHandler(event -> {
-        if (event.isChanged()) {
-          showCustomerWarning();
-        }
-      });
+    if (widget instanceof DataSelector) {
+      switch (editableWidget.getColumnId()) {
+        case COL_CAR:
+          ((DataSelector) widget).addSelectorHandler(ev ->
+              onCarSelection(getFormView(), ev, COL_CUSTOMER));
+          break;
+        case COL_CUSTOMER:
+          ((DataSelector) widget).addSelectorHandler(ev -> onCustomerSelection(getFormView(), ev));
+          break;
+      }
     }
     super.afterCreateEditableWidget(editableWidget, widget);
   }
@@ -224,15 +223,15 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
     return orderStages;
   }
 
-  @Override
-  public void onDataSelector(SelectorEvent event) {
-    DataInfo eventInfo = Data.getDataInfo(getViewName());
+  public static void onCarSelection(FormView formView, SelectorEvent event, String ownerCol) {
+    DataInfo eventInfo = Data.getDataInfo(formView.getViewName());
     DataInfo carInfo = Data.getDataInfo(event.getRelatedViewName());
-    Long owner = getLongValue(COL_CUSTOMER);
+    Long owner = formView.getLongValue(ownerCol);
+    IsRow dataRow = formView.getActiveRow();
 
     if (event.isNewRow()) {
-      RelationUtils.copyWithDescendants(eventInfo, COL_CUSTOMER, getActiveRow(),
-          carInfo, COL_OWNER, event.getNewRow());
+      RelationUtils.copyWithDescendants(eventInfo, ownerCol, dataRow, carInfo, COL_OWNER,
+          event.getNewRow());
 
     } else if (event.isOpened()) {
       event.getSelector().setAdditionalFilter(Objects.isNull(owner) ? null
@@ -240,12 +239,28 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
 
     } else if (event.isChanged()) {
       if (Objects.isNull(owner)) {
-        RelationUtils.copyWithDescendants(carInfo, COL_OWNER, event.getRelatedRow(),
-            eventInfo, COL_CUSTOMER, getActiveRow());
-        getFormView().refresh();
-      } else {
-        showCarWarning();
+        RelationUtils.copyWithDescendants(carInfo, COL_OWNER, event.getRelatedRow(), eventInfo,
+            ownerCol, dataRow);
       }
+      formView.refresh(false, false);
+    }
+  }
+
+  public static void onCustomerSelection(FormView formView, SelectorEvent event) {
+    if (event.isChanged()) {
+      IsRow dataRow = formView.getActiveRow();
+
+      Queries.getRowSet(VIEW_CARS, null, Filter.equals(COL_OWNER, event.getValue()), null, 0, 2,
+          new Queries.RowSetCallback() {
+            @Override
+            public void onSuccess(BeeRowSet result) {
+              if (Objects.equals(result.getNumberOfRows(), 1)) {
+                RelationUtils.updateRow(Data.getDataInfo(formView.getViewName()), COL_CAR, dataRow,
+                    Data.getDataInfo(result.getViewName()), result.getRow(0), true);
+              }
+              formView.refresh(false, false);
+            }
+          });
     }
   }
 
@@ -530,13 +545,15 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
           getFormView().notifyWarning(d.noData());
           return;
         }
-        doc.setDocumentDiscountMode(TradeDiscountMode.FROM_AMOUNT);
         doc.setDate(TimeUtils.nowSeconds());
         doc.setCurrency(getLongValue(COL_CURRENCY));
         doc.setNumber1(getStringValue(COL_ORDER_NO));
         doc.setCustomer(getLongValue(COL_CUSTOMER));
         doc.setManager(getLongValue(COL_EMPLOYEE));
         doc.setWarehouseFrom(getLongValue(COL_WAREHOUSE));
+        doc.setVehicle(getLongValue(COL_CAR));
+
+        doc.setDocumentDiscountMode(TradeDiscountMode.FROM_AMOUNT);
         doc.setDocumentVatMode(EnumUtils.getEnumByIndex(TradeVatMode.class,
             getIntegerValue(COL_TRADE_DOCUMENT_VAT_MODE)));
 
