@@ -45,7 +45,7 @@
   <xi:include href="columns/TradeDocumentTotals.columns.xml" />
 
   <g:columns>
-    <RelColumn name="Payer" renderColumns="PayerName" visible="false" />
+    <RelColumn name="Payer" renderColumns="PayerName" />
     <DataColumn name="Term" visible="false" />
 
     <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName"

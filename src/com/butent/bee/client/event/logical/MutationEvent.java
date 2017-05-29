@@ -14,6 +14,7 @@ public final class MutationEvent extends GwtEvent<MutationEvent.Handler> impleme
     HandlerRegistration addMutationHandler(Handler handler);
   }
 
+  @FunctionalInterface
   public interface Handler extends EventHandler {
     void onMutation(MutationEvent event);
   }

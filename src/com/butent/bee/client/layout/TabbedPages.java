@@ -219,7 +219,7 @@ public class TabbedPages extends Flow implements
     public void onSummaryChange(SummaryChangeEvent event) {
       Value oldValue = summaryValues.get(event.getSourceId());
 
-      if (!Objects.equals(event.getValue(), oldValue)) {
+      if (summaryRenderer != null || !Objects.equals(event.getValue(), oldValue)) {
         summaryValues.put(event.getSourceId(), event.getValue());
 
         String html = (summaryRenderer == null)

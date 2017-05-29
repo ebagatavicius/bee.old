@@ -94,6 +94,21 @@ public class AnalysisCellType {
   }
 
   public static boolean needsActual(List<AnalysisCellType> first, List<AnalysisCellType> second) {
+    if (BeeUtils.size(first) == 1 && BeeUtils.size(second) == 1) {
+      AnalysisCellType cellType1 = first.get(0);
+      AnalysisValueType valueType1 = (cellType1 == null) ? null : cellType1.getAnalysisValueType();
+
+      AnalysisCellType cellType2 = second.get(0);
+      AnalysisValueType valueType2 = (cellType2 == null) ? null : cellType2.getAnalysisValueType();
+
+      if (AnalysisValueType.BUDGET == valueType1 && AnalysisValueType.ACTUAL == valueType2) {
+        return false;
+      }
+      if (AnalysisValueType.ACTUAL == valueType1 && AnalysisValueType.BUDGET == valueType2) {
+        return false;
+      }
+    }
+
     return needsActual(first) || needsActual(second);
   }
 

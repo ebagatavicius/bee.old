@@ -9,7 +9,8 @@ public enum FilterSupplierType {
   ENUM("enum"),
   ID("id"),
   VERSION("version"),
-  CUSTOM("custom");
+  CUSTOM("custom"),
+  CUSTOM_DATE_TIME("customDateTime");
 
   public static FilterSupplierType getByTypeCode(String code) {
     if (code == null || code.isEmpty()) {

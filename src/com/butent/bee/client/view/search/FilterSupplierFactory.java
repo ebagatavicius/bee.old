@@ -76,6 +76,11 @@ public final class FilterSupplierFactory {
           supplier = new CustomFilterSupplier(viewName, dataColumns, idColumnName,
               versionColumnName, columnId, valueType, label, searchColumns, options);
           break;
+
+        case CUSTOM_DATE_TIME:
+          supplier = new CustomDateTimeFilterSupplier(viewName, filterColumn, columnId, valueType,
+              label, options);
+          break;
       }
     }
 

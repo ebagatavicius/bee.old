@@ -9,6 +9,7 @@ import java.util.List;
 
 public class DataReceivedEvent extends GwtEvent<DataReceivedEvent.Handler> {
 
+  @FunctionalInterface
   public interface Handler extends EventHandler {
     void onDataReceived(DataReceivedEvent event);
   }

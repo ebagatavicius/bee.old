@@ -6,6 +6,10 @@
         name="OutstandingPrepaymentGiven" viewName="FinancePrepayments"
         readOnly="true" disabledActions="filter"
 >
+  <g:columns>
+    <SelectionColumn name="Select" width="20" />
+  </g:columns>
+
   <xi:include href="columns/FinancialRecordsMain.columns.xml" />
   <xi:include href="columns/PrepaymentInfo.columns.xml" />
 

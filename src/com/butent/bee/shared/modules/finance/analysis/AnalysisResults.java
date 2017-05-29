@@ -96,11 +96,11 @@ public final class AnalysisResults implements BeeSerializable {
     }
   }
 
-  public void mergeValue(AnalysisValue value) {
-    if (value != null) {
+  public void updateBudget(AnalysisValue value) {
+    if (value != null && value.hasBudgetValue()) {
       for (AnalysisValue av : values) {
         if (av.matches(value)) {
-          av.add(value);
+          av.setBudgetValue(value.getBudgetNumber());
           return;
         }
       }
@@ -109,9 +109,9 @@ public final class AnalysisResults implements BeeSerializable {
     }
   }
 
-  public void mergeValues(Collection<AnalysisValue> collection) {
+  public void updateBudget(Collection<AnalysisValue> collection) {
     if (collection != null) {
-      collection.forEach(this::mergeValue);
+      collection.forEach(this::updateBudget);
     }
   }
 

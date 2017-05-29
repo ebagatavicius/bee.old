@@ -9,21 +9,21 @@
   <FlowPanel class="flexBox-vertical">
     <xi:include href="widgets/PaymentBody.widget.xml" />
 
-    <TabbedPages class="flexible">
-      <page>
+    <TabbedPages name="pages" class="flexible">
+      <page key="TradePayables">
         <text>=trdAccountsPayable</text>
         <GridPanel name="TradePayables" paging="false" />
       </page>
-      <page>
+      <page key="OutstandingPrepaymentGiven">
         <text>=prepaymentGiven</text>
         <GridPanel name="OutstandingPrepaymentGiven" paging="false" />
       </page>
 
-      <page>
+      <page key="TradeReceivables">
         <text>=trdAccountsReceivable</text>
         <GridPanel name="TradeReceivables" paging="false" />
       </page>
-      <page>
+      <page key="OutstandingPrepaymentReceived">
         <text>=prepaymentReceived</text>
         <GridPanel name="OutstandingPrepaymentReceived" paging="false" />
       </page>

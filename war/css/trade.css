@@ -538,6 +538,34 @@
   color: #00e;
 }
 
+.bee-form-PaymentSuppliers .bee-TabbedPages-tabCaption,
+.bee-form-PaymentCustomers .bee-TabbedPages-tabCaption {
+  align-self: center;
+  -webkit-align-self: center;
+  -ms-flex-item-align: center;
+}
+.bee-trade-payment-summary-amount {
+  padding-left: 5px;
+  text-align: right;
+  font-size: large;
+}
+.bee-trade-payment-summary-currency {
+  vertical-align: middle;
+}
+
 .bee-trade-debts-phase-toggle {
   padding-right: 1vw;
+}
+.bee-Button.bee-trade-debt-command-discharge,
+.bee-Button.bee-trade-prepayment-command-discharge {
+  margin-right: 1vw;
+  font-size: larger;
+  border: 1px solid green;
+}
+.bee-Button.bee-trade-debt-command-discharge {
+  margin-left: 1vw;
+}
+.bee-GridContainer-no-data .bee-trade-debt-command-discharge,
+.bee-GridContainer-no-data .bee-trade-prepayment-command-discharge {
+  visibility: hidden;
 }

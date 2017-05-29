@@ -188,6 +188,7 @@
       <xs:enumeration value="id" />
       <xs:enumeration value="version" />
       <xs:enumeration value="custom" />
+      <xs:enumeration value="customDateTime" />
     </xs:restriction>
   </xs:simpleType>
 

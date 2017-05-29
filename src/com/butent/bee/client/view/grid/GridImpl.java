@@ -1412,6 +1412,11 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
   }
 
   @Override
+  public boolean hasSelection() {
+    return !getGrid().getSelectedRows().isEmpty();
+  }
+
+  @Override
   public boolean hasNotifications() {
     return getNotification() != null && getNotification().isActive();
   }

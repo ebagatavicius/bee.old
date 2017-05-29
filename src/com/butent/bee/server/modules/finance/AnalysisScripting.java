@@ -48,8 +48,6 @@ final class AnalysisScripting {
 
   private static final int ROOT_LEVEL = 0;
 
-  private static final double MIN_VALUE = 1e-5;
-
   static Multimap<Integer, Long> buildSecondaryCalculationSequence(Collection<BeeRow> input,
       int indicatorIndex, int abbreviationIndex, int scriptIndex, Consumer<String> errorHandler) {
 
@@ -333,7 +331,7 @@ final class AnalysisScripting {
       budgetValue = null;
     }
 
-    if (isValue(actualValue) || isValue(budgetValue)) {
+    if (AnalysisUtils.isValue(actualValue) || AnalysisUtils.isValue(budgetValue)) {
       return AnalysisValue.of(columnId, rowId, columnSplit, rowSplit, actualValue, budgetValue);
     } else {
       return null;
@@ -390,40 +388,6 @@ final class AnalysisScripting {
     return values;
   }
 
-  private static AnalysisValue calculateSecondaryIndicator(ScriptEngine engine, String script,
-      long columnId, long rowId,
-      Map<AnalysisSplitType, AnalysisSplitValue> columnSplit,
-      Map<AnalysisSplitType, AnalysisSplitValue> rowSplit,
-      Collection<String> variables, Multimap<String, AnalysisValue> input,
-      ResponseObject errorCollector) {
-
-    Map<String, Double> values = new HashMap<>();
-
-    variables.forEach(key -> values.put(key, BeeConst.DOUBLE_ZERO));
-
-    input.forEach((key, value) -> {
-      if (value.containsColumnSplit(columnSplit) && value.containsRowSplit(rowSplit)) {
-        values.merge(key, value.getActualNumber(), Double::sum);
-      }
-    });
-
-    Bindings bindings;
-    if (values.isEmpty()) {
-      bindings = null;
-    } else {
-      bindings = engine.createBindings();
-      bindings.putAll(values);
-    }
-
-    Double actualValue = ScriptUtils.evalToDouble(engine, bindings, script, errorCollector);
-
-    if (isValue(actualValue)) {
-      return AnalysisValue.of(columnId, rowId, columnSplit, rowSplit, actualValue, null);
-    } else {
-      return null;
-    }
-  }
-
   static List<AnalysisValue> calculateSecondaryIndicator(ScriptEngine engine, String script,
       long columnId, long rowId,
       Collection<String> variables, Multimap<String, AnalysisValue> input,
@@ -431,7 +395,7 @@ final class AnalysisScripting {
       Map<AnalysisSplitType, List<AnalysisSplitValue>> columnSplitValues,
       List<AnalysisSplitType> rowSplitTypes,
       Map<AnalysisSplitType, List<AnalysisSplitValue>> rowSplitValues,
-      ResponseObject errorCollector) {
+      boolean needsActual, boolean needsBudget, ResponseObject errorCollector) {
 
     List<AnalysisValue> values = new NonNullList<>();
 
@@ -447,23 +411,26 @@ final class AnalysisScripting {
 
       if (!columnPermutations.isEmpty() && !rowPermutations.isEmpty()) {
         columnPermutations.forEach(columnPermutation -> rowPermutations.forEach(rowPermutation ->
-            values.add(calculateSecondaryIndicator(engine, script, columnId, rowId,
-                columnPermutation, rowPermutation, variables, input, errorCollector))));
+            values.add(calculateValue(engine, script, columnId, null, rowId, null,
+                columnPermutation, rowPermutation, variables, input,
+                needsActual, needsBudget, errorCollector))));
       }
 
     } else if (hasColumnSplits) {
       AnalysisSplitValue.getPermutations(null, columnSplitTypes, 0, columnSplitValues, 0)
-          .forEach(permutation -> values.add(calculateSecondaryIndicator(engine, script,
-              columnId, rowId, permutation, null, variables, input, errorCollector)));
+          .forEach(permutation -> values.add(calculateValue(engine, script,
+              columnId, null, rowId, null, permutation, null, variables, input,
+              needsActual, needsBudget, errorCollector)));
 
     } else if (hasRowSplits) {
       AnalysisSplitValue.getPermutations(null, rowSplitTypes, 0, rowSplitValues, 0)
-          .forEach(permutation -> values.add(calculateSecondaryIndicator(engine, script,
-              columnId, rowId, null, permutation, variables, input, errorCollector)));
+          .forEach(permutation -> values.add(calculateValue(engine, script,
+              columnId, null, rowId, null, null, permutation, variables, input,
+              needsActual, needsBudget, errorCollector)));
 
     } else {
-      values.add(calculateSecondaryIndicator(engine, script, columnId, rowId, null, null,
-          variables, input, errorCollector));
+      values.add(calculateValue(engine, script, columnId, null, rowId, null, null, null,
+          variables, input, needsActual, needsBudget, errorCollector));
     }
 
     return values;
@@ -597,16 +564,9 @@ final class AnalysisScripting {
       messages.add(BeeUtils.joinWords(name, "script engine not available"));
 
     } else {
-      Bindings bindings;
+      Bindings bindings = createActualBindings(engine);
 
-      if (BeeUtils.isEmpty(variables)
-          || variables.containsKey(indicator) && variables.size() == 1) {
-
-        bindings = null;
-
-      } else {
-        bindings = engine.createBindings();
-
+      if (!BeeUtils.isEmpty(variables)) {
         for (Map.Entry<Long, String> entry : variables.entrySet()) {
           if (!Objects.equals(entry.getKey(), indicator)) {
             bindings.put(entry.getValue(), BeeConst.DOUBLE_ZERO);
@@ -615,11 +575,7 @@ final class AnalysisScripting {
       }
 
       try {
-        if (bindings == null) {
-          engine.eval(script);
-        } else {
-          engine.eval(script, bindings);
-        }
+        engine.eval(script, bindings);
 
       } catch (ScriptException ex) {
         logger.severe(name, script, bindings, ex.getMessage());
@@ -643,10 +599,6 @@ final class AnalysisScripting {
     }
 
     return result;
-  }
-
-  private static boolean isValue(Double value) {
-    return BeeUtils.isDouble(value) && Math.abs(value) >= MIN_VALUE;
   }
 
   private AnalysisScripting() {

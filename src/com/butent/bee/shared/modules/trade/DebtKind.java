@@ -62,6 +62,10 @@ public enum DebtKind implements HasLocalizedCaption {
 
   public abstract String getPayerLabel(Dictionary dictionary);
 
+  public String getStyleSuffix() {
+    return name().toLowerCase();
+  }
+
   public abstract String tradeDebtsMainGrid();
 
   public abstract String tradeDebtsOtherGrid();

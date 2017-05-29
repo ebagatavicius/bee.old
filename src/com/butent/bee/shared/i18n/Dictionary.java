@@ -4210,6 +4210,10 @@ public interface Dictionary {
 
   default String paymentCustomers() {return g("paymentCustomers");}
 
+  default String paymentDischargeDebt() {return g("paymentDischargeDebt");}
+
+  default String paymentDischargePrepayment() {return g("paymentDischargePrepayment");}
+
   default String paymentDueDate() {return g("paymentDueDate");}
 
   default String paymentSuppliers() {return g("paymentSuppliers");}

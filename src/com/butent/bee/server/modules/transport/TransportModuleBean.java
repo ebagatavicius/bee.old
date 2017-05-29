@@ -1,5 +1,6 @@
 package com.butent.bee.server.modules.transport;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedListMultimap;
@@ -931,9 +932,31 @@ public class TransportModuleBean implements BeeModule {
             sys.joinTables(TBL_COUNTRIES, TBL_CARGO_PLACES, COL_PLACE_COUNTRY));
 
       } else if (Objects.equals(col, COL_PLACE_DATE)) {
-        clause = SqlUtils.equals(TBL_CARGO_PLACES, col,
-            TimeUtils.parseDateTime(val, usr.getDateOrdering()));
+        String start = null;
+        String end = null;
+        int i = 0;
 
+        for (String s : Splitter.on(BeeConst.CHAR_COMMA).trimResults().split(val)) {
+          if (i == 0) {
+            start = s;
+          } else if (i == 1) {
+            end = s;
+          }
+
+          i++;
+        }
+
+        if (BeeUtils.isEmpty(end)) {
+          clause = SqlUtils.moreEqual(TBL_CARGO_PLACES, col, start);
+
+        } else if (BeeUtils.isEmpty(start)) {
+          clause = SqlUtils.lessEqual(TBL_CARGO_PLACES, col, end);
+
+        } else {
+          clause = SqlUtils.and(SqlUtils.moreEqual(TBL_CARGO_PLACES, col, start),
+              SqlUtils.lessEqual(TBL_CARGO_PLACES, col, end));
+
+        }
       } else if (table.hasField(col)) {
         clause = SqlUtils.contains(TBL_CARGO_PLACES, col, val);
       } else {

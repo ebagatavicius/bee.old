@@ -4,7 +4,7 @@
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="BudgetEntries" viewName="BudgetEntries"
-        enabledActions="copy"
+        enabledActions="copy" autoFlex="true"
 >
   <xi:include href="columns/Ordinal.columns.xml" />
 

@@ -16,5 +16,9 @@ public enum PrepaymentKind implements HasLocalizedCaption {
     public String getCaption(Dictionary dictionary) {
       return dictionary.prepaymentSuppliersShort();
     }
+  };
+
+  public String getStyleSuffix() {
+    return name().toLowerCase();
   }
 }

@@ -6,6 +6,7 @@
         disabledActions="add delete filter rights"
 >
   <g:columns>
+    <SelectionColumn name="Select" width="20" />
     <IdColumn name="Id" />
 
     <DataColumn name="Date" visible="true" />

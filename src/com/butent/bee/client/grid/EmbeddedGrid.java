@@ -80,6 +80,10 @@ abstract class EmbeddedGrid extends Simple implements EnablableWidget, HasFoster
     }
   }
 
+  public GridInterceptor getGridInterceptor() {
+    return gridInterceptor;
+  }
+
   @Override
   public GridView getGridView() {
     return (getPresenter() == null) ? null : getPresenter().getGridView();
@@ -172,10 +176,6 @@ abstract class EmbeddedGrid extends Simple implements EnablableWidget, HasFoster
         }
       }
     }
-  }
-
-  protected GridInterceptor getGridInterceptor() {
-    return gridInterceptor;
   }
 
   protected String getGridKey(String suffix) {

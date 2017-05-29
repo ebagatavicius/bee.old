@@ -13,6 +13,7 @@ public class SelectionCountChangeEvent extends GwtEvent<SelectionCountChangeEven
    * Requires implementing classes to have a method to handle selection count changes.
    */
 
+  @FunctionalInterface
   public interface Handler extends EventHandler {
     void onSelectionCountChange(SelectionCountChangeEvent event);
   }

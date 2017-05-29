@@ -9,6 +9,8 @@ import com.butent.bee.client.Storage;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.event.logical.RowCountChangeEvent;
+import com.butent.bee.client.event.logical.SummaryChangeEvent;
 import com.butent.bee.client.presenter.GridPresenter;
 import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiOption;
@@ -19,6 +21,7 @@ import com.butent.bee.client.view.form.FormView;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
+import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CheckBox;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.DataUtils;
@@ -39,16 +42,22 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 class TradeDebtsGrid extends AbstractGridInterceptor {
 
+  private static final String STYLE_COMMAND_DISCHARGE =
+      TradeKeeper.STYLE_PREFIX + "debt-command-discharge";
   private static final String STYLE_PHASE_TOGGLE = TradeKeeper.STYLE_PREFIX + "debts-phase-toggle";
 
   private static final String PARENT_FILTER_KEY = "parent";
   private static final String PHASE_FILTER_KEY = "phase";
 
   private final DebtKind debtKind;
+
+  private String dischargerCaption;
+  private Consumer<GridView> discharger;
 
   private EnumSet<TradeDocumentPhase> phases = EnumSet.noneOf(TradeDocumentPhase.class);
   private String phasesStorageKey;
@@ -62,12 +71,21 @@ class TradeDebtsGrid extends AbstractGridInterceptor {
     return new TradeDebtsGrid(debtKind);
   }
 
+  public DebtKind getDebtKind() {
+    return debtKind;
+  }
+
   @Override
   public Map<String, Filter> getInitialParentFilters(Collection<UiOption> uiOptions) {
     Map<String, Filter> filters = new HashMap<>();
     filters.put(PARENT_FILTER_KEY, Filter.isFalse());
 
     return filters;
+  }
+
+  public void initDischarger(String caption, Consumer<GridView> consumer) {
+    this.dischargerCaption = caption;
+    this.discharger = consumer;
   }
 
   @Override
@@ -86,10 +104,10 @@ class TradeDebtsGrid extends AbstractGridInterceptor {
     HeaderView header = (presenter == null) ? null : presenter.getHeader();
 
     if (header != null) {
+      header.clearCommandPanel();
+
       initPhases(gridView);
       presenter.getDataProvider().setParentFilter(PHASE_FILTER_KEY, buildPhaseFilter());
-
-      header.clearCommandPanel();
 
       for (TradeDocumentPhase phase : TradeDocumentPhase.values()) {
         CheckBox checkBox = new CheckBox(phase.getCaption());
@@ -118,9 +136,30 @@ class TradeDebtsGrid extends AbstractGridInterceptor {
 
         header.addCommandItem(checkBox);
       }
+
+      if (!BeeUtils.isEmpty(dischargerCaption)) {
+        Button discharge = new Button(dischargerCaption);
+        discharge.addStyleName(STYLE_COMMAND_DISCHARGE);
+
+        discharge.addClickHandler(event -> {
+          if (discharger != null && !gridView.isEmpty()) {
+            discharger.accept(gridView);
+          }
+        });
+
+        header.addCommandItem(discharge);
+      }
     }
 
+    gridView.getGrid().addMutationHandler(e -> SummaryChangeEvent.maybeFire(gridView));
+    gridView.getGrid().addSelectionCountChangeHandler(e -> SummaryChangeEvent.maybeFire(gridView));
+
     super.onLoad(gridView);
+  }
+
+  @Override
+  public boolean onRowCountChange(GridView gridView, RowCountChangeEvent event) {
+    return false;
   }
 
   void onParentChange(Long company, Long currency, DateTime dateTo, DateTime termTo) {
@@ -199,7 +238,9 @@ class TradeDebtsGrid extends AbstractGridInterceptor {
 
   private void maybeRefresh(String key, Filter filter) {
     GridPresenter presenter = getGridPresenter();
+
     if (presenter != null && presenter.getDataProvider().setParentFilter(key, filter)) {
+      getGridView().getGrid().clearSelection();
       presenter.handleAction(Action.REFRESH);
     }
   }

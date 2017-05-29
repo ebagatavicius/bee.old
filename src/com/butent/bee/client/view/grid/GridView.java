@@ -92,6 +92,8 @@ public interface GridView extends DataView,
 
   boolean hasChildUi();
 
+  boolean hasSelection();
+
   void initData(int rowCount, BeeRowSet rowSet);
 
   boolean isAdding();
