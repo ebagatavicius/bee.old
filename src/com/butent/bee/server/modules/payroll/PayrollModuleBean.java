@@ -192,7 +192,8 @@ public class PayrollModuleBean implements BeeModule, ConcurrencyBean.HasTimerSer
       BeeParameter.createBoolean(getModule().getName(), PRM_ERP_SYNC_EMPLOYEES, false, true),
       BeeParameter.createBoolean(getModule().getName(), PRM_ERP_SYNC_LOCATIONS),
       BeeParameter.createBoolean(getModule().getName(), PRM_ERP_SYNC_TIME_CARDS),
-      BeeParameter.createNumber(getModule().getName(), PRM_ERP_SYNC_PAYROLL_DELTA_HOURS)
+      BeeParameter.createNumber(getModule().getName(), PRM_ERP_SYNC_PAYROLL_DELTA_HOURS),
+      BeeParameter.createBoolean(getModule().getName(), PRM_REST_EARNINGS_FUNDS_ONLY)
     );
   }
 
@@ -218,6 +219,7 @@ public class PayrollModuleBean implements BeeModule, ConcurrencyBean.HasTimerSer
       return ResponseObject.error("cannot filter employees", companyCode, tabNumber);
     }
 
+    boolean fundsOnly = BeeUtils.isTrue(prm.getBoolean(PRM_REST_EARNINGS_FUNDS_ONLY));
     String emplIdName = sys.getIdName(TBL_EMPLOYEES);
 
     IsCondition employeeCondition = (IsCondition) ecr.getResponse();
@@ -248,11 +250,46 @@ public class PayrollModuleBean implements BeeModule, ConcurrencyBean.HasTimerSer
       Integer tnr = row.getInt(COL_TAB_NUMBER);
 
       if (DataUtils.isId(employeeId) && BeeUtils.isPositive(tnr)) {
-        List<Earnings> earnings = getEarnings(ym, holidays, employeeId, null, currency);
+        List<Earnings> earnings = fundsOnly
+          ? new ArrayList<>() : getEarnings(ym, holidays, employeeId, null, currency);
+
+        if (fundsOnly) {
+          DateRange range = ym.getRange();
+          for (SimpleRow fundRow : qs.getData(new SqlSelect()
+            .addAllFields(TBL_EMPLOYEE_OBJECTS)
+            .addFrom(TBL_EMPLOYEE_OBJECTS)
+            .setWhere(
+              SqlUtils.and(
+                SqlUtils.equals(TBL_EMPLOYEE_OBJECTS, COL_EMPLOYEE, employeeId),
+                SqlUtils.notNull(TBL_EMPLOYEE_OBJECTS, COL_EMPLOYEE_OBJECT_FROM),
+                SqlUtils.and(
+                  SqlUtils.lessEqual(TBL_EMPLOYEE_OBJECTS, COL_EMPLOYEE_OBJECT_FROM,
+                    range.getMinDate()),
+                  SqlUtils.or(
+                  SqlUtils.moreEqual(TBL_EMPLOYEE_OBJECTS, COL_EMPLOYEE_OBJECT_UNTIL,
+                    range.getMaxDate()),
+                    SqlUtils.isNull(TBL_EMPLOYEE_OBJECTS, COL_EMPLOYEE_OBJECT_UNTIL)
+                  )
+                )
+              )
+            )
+            )) {
+            Earnings item = new Earnings(employeeId, fundRow.getLong(COL_SUBSTITUTE_FOR), fundRow
+              .getLong(COL_OBJECT));
+            item.setDateFrom(fundRow.getDate(COL_EMPLOYEE_OBJECT_FROM));
+            item.setDateUntil(fundRow.getDate(COL_EMPLOYEE_OBJECT_UNTIL));
+            item.setSalaryFund(adm.maybeExchange(fundRow.getLong(COL_CURRENCY), currency,
+              fundRow.getDouble(COL_EMPLOYEE_OBJECT_FUND), null));
+            item.setHourlyWage(adm.maybeExchange(fundRow.getLong(COL_CURRENCY), currency,
+              fundRow.getDouble(COL_WAGE), null));
+
+            earnings.add(item);
+          }
+        }
 
         if (!BeeUtils.isEmpty(earnings)) {
           for (Earnings item : earnings) {
-            Double amount = item.total();
+            Double amount = fundsOnly ? item.getSalaryFund() : item.total();
 
             if (BeeUtils.isPositive(amount)) {
               Long objectId = item.getObjectId();
@@ -322,31 +359,62 @@ public class PayrollModuleBean implements BeeModule, ConcurrencyBean.HasTimerSer
     JustDate from = range.getMinDate();
     JustDate until = range.getMaxDate();
 
-    SqlSelect query = new SqlSelect()
+    SimpleRowSet tableLocks = qs.getData(new SqlSelect()
+      .addAllFields(TBL_WORK_SCHEDULE_LOCKS)
+      .addFrom(TBL_WORK_SCHEDULE_LOCKS)
+      .addFromLeft(TBL_EMPLOYEES,
+        sys.joinTables(TBL_EMPLOYEES, TBL_WORK_SCHEDULE_LOCKS, COL_EMPLOYEE))
+      .addFromLeft(TBL_COMPANY_PERSONS,
+        sys.joinTables(TBL_COMPANY_PERSONS, TBL_EMPLOYEES, COL_COMPANY_PERSON))
+      .setWhere(SqlUtils.and(employeeCondition,
+        SqlUtils.equals(TBL_WORK_SCHEDULE_LOCKS, COL_WORK_SCHEDULE_KIND, kind),
+        SqlUtils.moreEqual(TBL_WORK_SCHEDULE_LOCKS, COL_WOKR_SCHEDULE_LOCK, from),
+        SqlUtils.lessEqual(TBL_WORK_SCHEDULE_LOCKS, COL_WOKR_SCHEDULE_LOCK, until)))
+    );
+
+    if (DataUtils.isEmpty(tableLocks)) {
+      return ResponseObject.info("work schedule not found", companyCode, tabNumber, range);
+    }
+
+    SimpleRowSet data = null;
+
+    for (SimpleRow lock : tableLocks) {
+      DateRange lockRange = YearMonth.of(lock.getDate(COL_WOKR_SCHEDULE_LOCK)).getRange();
+
+      SqlSelect query = new SqlSelect()
         .addFields(TBL_EMPLOYEES, COL_TAB_NUMBER)
         .addFields(TBL_WORK_SCHEDULE, COL_WORK_SCHEDULE_DATE,
-            COL_TIME_RANGE_CODE, COL_TIME_CARD_CODE,
-            COL_WORK_SCHEDULE_FROM, COL_WORK_SCHEDULE_UNTIL, COL_WORK_SCHEDULE_DURATION)
+          COL_TIME_RANGE_CODE, COL_TIME_CARD_CODE,
+          COL_WORK_SCHEDULE_FROM, COL_WORK_SCHEDULE_UNTIL, COL_WORK_SCHEDULE_DURATION)
         .addField(TBL_TIME_RANGES, COL_TR_FROM, ALS_TR_FROM)
         .addField(TBL_TIME_RANGES, COL_TR_UNTIL, ALS_TR_UNTIL)
         .addField(TBL_TIME_RANGES, COL_TR_DURATION, ALS_TR_DURATION)
-        .addFields(TBL_TIME_CARD_CODES, COL_TC_CODE)
+        .addFields(TBL_TIME_CARD_CODES, COL_TC_CODE, COL_TC_DURATION_TYPE)
         .addFrom(TBL_WORK_SCHEDULE)
         .addFromLeft(TBL_TIME_RANGES,
-            sys.joinTables(TBL_TIME_RANGES, TBL_WORK_SCHEDULE, COL_TIME_RANGE_CODE))
+          sys.joinTables(TBL_TIME_RANGES, TBL_WORK_SCHEDULE, COL_TIME_RANGE_CODE))
         .addFromLeft(TBL_TIME_CARD_CODES,
-            sys.joinTables(TBL_TIME_CARD_CODES, TBL_WORK_SCHEDULE, COL_TIME_CARD_CODE))
+          sys.joinTables(TBL_TIME_CARD_CODES, TBL_WORK_SCHEDULE, COL_TIME_CARD_CODE))
         .addFromLeft(TBL_EMPLOYEES,
-            sys.joinTables(TBL_EMPLOYEES, TBL_WORK_SCHEDULE, COL_EMPLOYEE))
+          sys.joinTables(TBL_EMPLOYEES, TBL_WORK_SCHEDULE, COL_EMPLOYEE))
         .addFromLeft(TBL_COMPANY_PERSONS,
-            sys.joinTables(TBL_COMPANY_PERSONS, TBL_EMPLOYEES, COL_COMPANY_PERSON))
+          sys.joinTables(TBL_COMPANY_PERSONS, TBL_EMPLOYEES, COL_COMPANY_PERSON))
         .setWhere(
-            SqlUtils.and(employeeCondition,
-                SqlUtils.equals(TBL_WORK_SCHEDULE, COL_WORK_SCHEDULE_KIND, kind),
-                SqlUtils.moreEqual(TBL_WORK_SCHEDULE, COL_WORK_SCHEDULE_DATE, from),
-                SqlUtils.lessEqual(TBL_WORK_SCHEDULE, COL_WORK_SCHEDULE_DATE, until)));
+          SqlUtils.and(
+            SqlUtils.equals(TBL_WORK_SCHEDULE, COL_EMPLOYEE, lock.getLong(COL_EMPLOYEE)),
+            SqlUtils.equals(TBL_WORK_SCHEDULE, COL_OBJECT, lock.getLong(COL_OBJECT)),
+            SqlUtils.equals(TBL_WORK_SCHEDULE, COL_WORK_SCHEDULE_KIND, kind),
+            SqlUtils.moreEqual(TBL_WORK_SCHEDULE, COL_WORK_SCHEDULE_DATE, lockRange.getMinDate()),
+            SqlUtils.lessEqual(TBL_WORK_SCHEDULE, COL_WORK_SCHEDULE_DATE, lockRange.getMaxDate())
+          )
+        );
 
-    SimpleRowSet data = qs.getData(query);
+      if (data == null) {
+        data = qs.getData(query);
+      } else {
+        data.append(qs.getData(query));
+      }
+    }
     if (DataUtils.isEmpty(data)) {
       return ResponseObject.info("work schedule not found", companyCode, tabNumber, range);
     }
@@ -361,6 +429,24 @@ public class PayrollModuleBean implements BeeModule, ConcurrencyBean.HasTimerSer
       if (DataUtils.isId(row.getLong(COL_TIME_CARD_CODE))) {
         duration = BeeConst.LONG_UNDEF;
         tcCode = row.getValue(COL_TC_CODE);
+
+        if (row.getEnum(COL_TC_DURATION_TYPE, TcDurationType.class) != null) {
+          TcDurationType t = row.getEnum(COL_TC_DURATION_TYPE, TcDurationType.class);
+
+          switch (t) {
+            case PART_TIME:
+              duration = TimeUtils.parseTime(row.getValue(COL_WORK_SCHEDULE_DURATION));
+              break;
+            case FULL_TIME:
+              duration = TimeUtils.parseTime(TcDurationType.getDefaultTimeOfDay());
+              break;
+              default:
+                break;
+          }
+        } else if (BeeUtils.isPositive(TimeUtils.parseTime(
+          row.getValue(COL_WORK_SCHEDULE_DURATION)))) {
+          duration = TimeUtils.parseTime(row.getValue(COL_WORK_SCHEDULE_DURATION));
+        }
 
       } else if (DataUtils.isId(row.getLong(COL_TIME_RANGE_CODE))) {
         duration = PayrollUtils.getMillis(row.getValue(ALS_TR_FROM), row.getValue(ALS_TR_UNTIL),
@@ -387,7 +473,9 @@ public class PayrollModuleBean implements BeeModule, ConcurrencyBean.HasTimerSer
 
           if (duration > 0) {
             wss.addMillis(duration);
-          } else {
+          }
+
+          if (!BeeUtils.isEmpty(tcCode)) {
             wss.addTimeCardCode(tcCode);
           }
         }

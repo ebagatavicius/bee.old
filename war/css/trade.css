@@ -569,3 +569,8 @@
 .bee-GridContainer-no-data .bee-trade-prepayment-command-discharge {
   visibility: hidden;
 }
+.bee-trade-payment-updating .bee-trade-debt-command-discharge,
+.bee-trade-payment-updating .bee-trade-prepayment-command-discharge {
+  opacity: 0.5;
+  cursor: wait;
+}

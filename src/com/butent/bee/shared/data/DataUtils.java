@@ -78,6 +78,11 @@ public final class DataUtils {
     }
   }
 
+  @SuppressWarnings("unchecked")
+  public static Set<Long> asIdSet(Object obj) {
+    return (obj instanceof Set) ? (Set<Long>) obj : null;
+  }
+
   public static String buildIdList(BeeRowSet rowSet) {
     if (rowSet == null) {
       return null;

@@ -137,7 +137,7 @@ public class InvoicesGrid extends AbstractGridInterceptor implements ClickHandle
                   }
                   Queries.updateRows(rowSet, new RpcCallback<RowInfoList>() {
                     @Override
-                    public void onSuccess(RowInfoList result) {
+                    public void onSuccess(RowInfoList info) {
                       payAction.idle();
                       Data.resetLocal(view.getViewName());
                     }

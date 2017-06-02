@@ -43,6 +43,10 @@ public final class TradeConstants {
   public static final String SVC_TRADE_STOCK_REPORT = "GetTradeStockReport";
   public static final String SVC_TRADE_MOVEMENT_OF_GOODS_REPORT = "GetTradeMovementOfGoodsReport";
 
+  public static final String SVC_SUBMIT_PAYMENT = "SubmitPayment";
+  public static final String SVC_DISCHARGE_DEBT = "DischargeDebt";
+  public static final String SVC_DISCHARGE_PREPAYMENT = "DischargePrepayment";
+
   public static final String TBL_PURCHASES = "Purchases";
   public static final String TBL_PURCHASE_USAGE = "PurchaseUsage";
   public static final String TBL_PURCHASE_ITEMS = "PurchaseItems";
@@ -67,6 +71,7 @@ public final class TradeConstants {
   public static final String TBL_EXPENDITURE_TYPES = "ExpenditureTypes";
   public static final String TBL_TRADE_EXPENDITURES = "TradeExpenditures";
 
+  public static final String TBL_TRADE_PAYMENTS = "TradePayments";
   public static final String TBL_TRADE_PAYMENT_TERMS = "TradePaymentTerms";
 
   public static final String VAR_VIEW_NAME = "view_name";
@@ -231,6 +236,7 @@ public final class TradeConstants {
   public static final String COL_TRADE_PAYMENT_DATE = "PaymentDate";
   public static final String COL_TRADE_PAYMENT_AMOUNT = "PaymentAmount";
   public static final String COL_TRADE_PAYMENT_ACCOUNT = "PaymentAccount";
+  public static final String COL_TRADE_PAYMENT_TYPE = "PaymentType";
   public static final String COL_TRADE_PAYMENT_SERIES = "PaymentSeries";
   public static final String COL_TRADE_PAYMENT_NUMBER = "PaymentNumber";
   public static final String COL_TRADE_PREPAYMENT_PARENT = "PrepaymentParent";
@@ -311,8 +317,10 @@ public final class TradeConstants {
   public static final String VAR_OVERDUE = "Overdue";
   public static final String VAR_DOCUMENT = "Document";
   public static final String VAR_ITEMS = "Items";
-
   public static final String VAR_RESERVATIONS = "Reservations";
+  public static final String VAR_PAYMENTS = "Payments";
+  public static final String VAR_PREPAYMENT = "Prepayment";
+  public static final String VAR_KIND = "Kind";
 
   public static final String GRID_TRADE_OPERATIONS = "TradeOperations";
   public static final String GRID_TRADE_STATUSES = "TradeStatuses";

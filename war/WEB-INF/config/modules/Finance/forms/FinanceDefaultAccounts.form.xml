@@ -101,6 +101,9 @@
       <Label for="CostOfMerchandise" />
       <DataSelector source="CostOfMerchandise" style="&sw;" newRowEnabled="false"
                     choiceColumns="AccountCode AccountName" renderColumns="CostOfMerchandiseCode" />
+      <Label for="DischargeAccount" />
+      <DataSelector source="DischargeAccount" style="&sw;" newRowEnabled="false"
+                    choiceColumns="AccountCode AccountName" renderColumns="DischargeAccountCode" />
     </row>
   </Table>
 </f:Form>

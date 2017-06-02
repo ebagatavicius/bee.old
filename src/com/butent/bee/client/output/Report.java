@@ -759,7 +759,7 @@ public enum Report implements HasWidgetSupplier {
     @Override
     public LinkedHashMap<String, Editor> getReportParams() {
       LinkedHashMap<String, Editor> params = new LinkedHashMap<>();
-      params.put(COL_CURRENCY, Report.getCurrencyEditor());
+      params.put(COL_CURRENCY, getCurrencyEditor());
       return params;
     }
 

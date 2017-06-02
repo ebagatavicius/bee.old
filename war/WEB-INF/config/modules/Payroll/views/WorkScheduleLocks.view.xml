@@ -71,7 +71,5 @@
     </SimpleJoin>
 
     <SimpleColumn name="Lock"/>
-
-    <SimpleColumn name="Exported"/>
   </Columns>
 </View>

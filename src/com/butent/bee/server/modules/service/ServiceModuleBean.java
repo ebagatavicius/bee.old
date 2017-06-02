@@ -14,6 +14,8 @@ import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.*;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.ALS_CONTACT_FIRST_NAME;
 import static com.butent.bee.shared.modules.classifiers.ClassifierConstants.ALS_CONTACT_LAST_NAME;
 import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
+import static com.butent.bee.shared.modules.ec.EcConstants.COL_TCD_MANUFACTURER_NAME;
+import static com.butent.bee.shared.modules.ec.EcConstants.TBL_TCD_MANUFACTURERS;
 import static com.butent.bee.shared.modules.orders.OrdersConstants.*;
 import static com.butent.bee.shared.modules.projects.ProjectConstants.COL_INCOME_ITEM;
 import static com.butent.bee.shared.modules.service.ServiceConstants.*;
@@ -1345,7 +1347,7 @@ public class ServiceModuleBean implements BeeModule {
           .addFields(TBL_CONTACTS, COL_PHONE)
           .addFields(TBL_PERSONS, COL_FIRST_NAME)
           .addFields(TBL_SERVICE_OBJECTS, COL_MODEL, COL_SERIAL_NO, COL_ARTICLE_NO)
-          .addField(TBL_COMPANIES, COL_COMPANY_NAME, ALS_MANUFACTURER_NAME)
+          .addField(TBL_TCD_MANUFACTURERS, COL_TCD_MANUFACTURER_NAME, ALS_MANUFACTURER_NAME)
           .addFields(TBL_SERVICE_MAINTENANCE, COL_DEPARTMENT, COL_EQUIPMENT,
               COL_MAINTENANCE_DESCRIPTION)
           .addField(TBL_SERVICE_TREE, COL_SERVICE_CATEGORY_NAME, ALS_CATEGORY_NAME)
@@ -1354,8 +1356,8 @@ public class ServiceModuleBean implements BeeModule {
               TBL_MAINTENANCE_COMMENTS, COL_SERVICE_MAINTENANCE))
           .addFromInner(TBL_SERVICE_OBJECTS, sys.joinTables(TBL_SERVICE_OBJECTS,
               TBL_SERVICE_MAINTENANCE, COL_SERVICE_OBJECT))
-          .addFromLeft(TBL_COMPANIES, sys.joinTables(TBL_COMPANIES,
-              TBL_SERVICE_OBJECTS, COL_MANUFACTURER))
+          .addFromLeft(TBL_TCD_MANUFACTURERS,
+              sys.joinTables(TBL_TCD_MANUFACTURERS, TBL_SERVICE_OBJECTS, COL_MANUFACTURER))
           .addFromLeft(TBL_COMPANY_PERSONS,
               sys.joinTables(TBL_COMPANY_PERSONS, TBL_SERVICE_MAINTENANCE, COL_CONTACT))
           .addFromLeft(TBL_CONTACTS,

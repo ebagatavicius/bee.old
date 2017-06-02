@@ -64,7 +64,7 @@
         <ChildGrid name="TripCargo" relColumn="Trip" />
       </page>
       <page>
-        <text>=transportTripCosts</text>
+        <text>=trTripCosts</text>
         <ChildGrid name="TripCosts" relColumn="Trip" />
       </page>
     </TabbedPages>

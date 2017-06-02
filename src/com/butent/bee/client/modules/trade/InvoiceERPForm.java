@@ -3,8 +3,7 @@ package com.butent.bee.client.modules.trade;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 
-import static com.butent.bee.shared.modules.trade.TradeConstants.COL_SALE_PROFORMA;
-import static com.butent.bee.shared.modules.trade.TradeConstants.COL_TRADE_EXPORTED;
+import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
@@ -20,7 +19,6 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
-import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
@@ -76,7 +74,7 @@ public abstract class InvoiceERPForm extends PrintFormInterceptor implements Cli
 
           if (!response.hasErrors()) {
             getERPStocks(invoiceId);
-            Data.onViewChange(getViewName(), DataChangeEvent.RESET_REFRESH);
+            Data.resetLocal(getViewName());
           }
         }
       });

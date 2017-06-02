@@ -100,12 +100,22 @@ public abstract class AbstractFormInterceptor implements FormInterceptor {
   }
 
   @Override
+  public boolean focusName(String name) {
+    if (getFormView() == null) {
+      return false;
+    } else {
+      Widget widget = getFormView().getWidgetByName(name);
+      return UiHelper.focus(widget);
+    }
+  }
+
+  @Override
   public boolean focusSource(String source) {
     if (getFormView() == null) {
       return false;
     } else {
       Widget widget = getFormView().getWidgetBySource(source);
-      return (widget == null) ? null : UiHelper.focus(widget);
+      return UiHelper.focus(widget);
     }
   }
 

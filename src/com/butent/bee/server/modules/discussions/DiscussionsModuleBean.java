@@ -241,24 +241,23 @@ public class DiscussionsModuleBean implements BeeModule {
             } else {
               row.setProperty(PROP_MARK_COUNT, BeeConst.STRING_EMPTY);
             }
+            if (commentData != null
+              && commentData.getRowByKey(COL_DISCUSSION, BeeUtils.toString(row.getId())) != null) {
 
-            if (commentData != null) {
               SimpleRow lastCommentData = commentData.getRowByKey(COL_DISCUSSION,
-                  BeeUtils.toString(row.getId()));
+                BeeUtils.toString(row.getId()));
 
-              long publishTime = BeeUtils.unbox(lastCommentData.getLong(COL_PUBLISH_TIME));
+              long publishTime =
+                BeeUtils.unbox(lastCommentData.getLong(COL_PUBLISH_TIME));
 
-              String lastCommentVal = lastCommentData != null
-                  ? BeeUtils.joinWords(
-                  Formatter.renderDateTime(dtfInfo, TimeUtils.dropMillis(publishTime)) + ",",
-                  lastCommentData.getValue(COL_FIRST_NAME), lastCommentData.getValue(COL_LAST_NAME))
-                  : BeeConst.STRING_EMPTY;
+              String lastCommentVal = BeeUtils.joinWords(
+                Formatter.renderDateTime(dtfInfo, TimeUtils.dropMillis(publishTime))
+                  + ",", lastCommentData.getValue(COL_FIRST_NAME),
+                lastCommentData.getValue(COL_LAST_NAME));
 
               row.setProperty(PROP_LAST_COMMENT_DATA, lastCommentVal);
-              row.setProperty(PROP_COMMENT_COUNT, lastCommentData != null
-                  ? BeeUtils.nvl(lastCommentData.getValue(PROP_COMMENT_COUNT),
-                  BeeConst.STRING_EMPTY)
-                  : BeeConst.STRING_EMPTY);
+              row.setProperty(PROP_COMMENT_COUNT,
+                BeeUtils.nvl(lastCommentData.getValue(PROP_COMMENT_COUNT), BeeConst.STRING_EMPTY));
             } else {
               row.setProperty(PROP_LAST_COMMENT_DATA, BeeConst.STRING_EMPTY);
               row.setProperty(PROP_COMMENT_COUNT, BeeConst.STRING_EMPTY);
@@ -266,11 +265,11 @@ public class DiscussionsModuleBean implements BeeModule {
 
             if (fileData != null) {
               SimpleRow fileDataRow = fileData.getRowByKey(COL_DISCUSSION,
-                  BeeUtils.toString(row.getId()));
+                BeeUtils.toString(row.getId()));
 
               row.setProperty(PROP_FILES_COUNT, fileDataRow != null
-                  ? BeeUtils.nvl(fileDataRow.getValue(PROP_FILES_COUNT), BeeConst.STRING_EMPTY)
-                  : BeeConst.STRING_EMPTY);
+                ? BeeUtils.nvl(fileDataRow.getValue(PROP_FILES_COUNT), BeeConst.STRING_EMPTY)
+                : BeeConst.STRING_EMPTY);
             } else {
               row.setProperty(PROP_FILES_COUNT, BeeConst.STRING_EMPTY);
             }

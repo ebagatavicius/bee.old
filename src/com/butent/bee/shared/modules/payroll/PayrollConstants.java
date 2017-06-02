@@ -169,6 +169,7 @@ public final class PayrollConstants {
   public static final String TBL_EMPLOYEE_OBJECTS = "EmployeeObjects";
 
   public static final String TBL_WORK_SCHEDULE = "WorkSchedule";
+  public static final String TBL_WORK_SCHEDULE_LOCKS = "WorkScheduleLocks";
 
   public static final String TBL_OBJECT_SALARY_FUND = "ObjectSalaryFund";
 
@@ -287,6 +288,7 @@ public final class PayrollConstants {
   public static final String PRM_ERP_SYNC_LOCATIONS = "ERPSyncLocations";
   public static final String PRM_ERP_SYNC_TIME_CARDS = "ERPSyncTimeCards";
 
+  public static final String PRM_REST_EARNINGS_FUNDS_ONLY = "RESTEarningsFundsOnly";
 
   public static final String SFX_HOURS = "Hours";
   public static final String SFX_TIME = "Time";

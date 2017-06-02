@@ -437,6 +437,12 @@ public final class ViewHelper {
     }
   }
 
+  public static void refresh(View view) {
+    if (view != null && view.getViewPresenter() != null) {
+      view.getViewPresenter().handleAction(Action.REFRESH);
+    }
+  }
+
   public static void updateForm(String widgetId, String columnId, String value) {
     Assert.notEmpty(widgetId);
     Assert.notEmpty(columnId);

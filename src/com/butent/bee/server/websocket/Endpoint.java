@@ -13,6 +13,7 @@ import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.UserData;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.FiresModificationEvents;
+import com.butent.bee.shared.data.event.RowDeleteEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogLevel;
@@ -116,20 +117,35 @@ public class Endpoint {
     return MODIFICATION_SHOOTER;
   }
 
-  public static int refreshRows(BeeRowSet rowSet) {
-    int count = 0;
+  public static void fireDelete(String viewName, Collection<Long> ids) {
+    if (!BeeUtils.isEmpty(viewName) && !BeeUtils.isEmpty(ids)) {
+      for (Long id : ids) {
+        if (DataUtils.isId(id)) {
+          RowDeleteEvent.fire(MODIFICATION_SHOOTER, viewName, id);
+        }
+      }
+    }
+  }
 
+  public static void refreshChildren(String viewName, Collection<Long> parents) {
+    if (!BeeUtils.isEmpty(viewName) && !BeeUtils.isEmpty(parents)) {
+      for (Long parent : parents) {
+        if (DataUtils.isId(parent)) {
+          DataChangeEvent.fireRefresh(MODIFICATION_SHOOTER, viewName, parent);
+        }
+      }
+    }
+  }
+
+  public static void refreshRows(BeeRowSet rowSet) {
     if (!DataUtils.isEmpty(rowSet) && !BeeUtils.isEmpty(rowSet.getViewName())) {
       for (BeeRow row : rowSet) {
         RowUpdateEvent.fire(MODIFICATION_SHOOTER, rowSet.getViewName(), row);
-        count++;
       }
     }
-
-    return count;
   }
 
-  public static int refreshViews(String viewName, String... rest) {
+  public static void refreshViews(String viewName, String... rest) {
     Set<String> viewNames = new HashSet<>();
     if (!BeeUtils.isEmpty(viewName)) {
       viewNames.add(viewName);
@@ -148,8 +164,6 @@ public class Endpoint {
     } else {
       DataChangeEvent.fireRefresh(MODIFICATION_SHOOTER, viewNames);
     }
-
-    return viewNames.size();
   }
 
   public static void sendToAll(Message message) {

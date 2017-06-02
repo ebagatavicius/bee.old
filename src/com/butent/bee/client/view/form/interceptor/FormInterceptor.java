@@ -53,6 +53,8 @@ public interface FormInterceptor extends WidgetInterceptor, HasGridView, Handles
 
   void beforeStateChange(State state, boolean modal);
 
+  boolean focusName(String name);
+
   boolean focusSource(String source);
 
   FormView getFormView();

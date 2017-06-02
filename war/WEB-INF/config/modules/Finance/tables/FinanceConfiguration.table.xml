@@ -40,6 +40,8 @@
 
     <Relation name="CostOfMerchandise" relation="ChartOfAccounts" label="=finCostOfMerchandise" />
 
+    <Relation name="DischargeAccount" relation="ChartOfAccounts" label="=finDischargeAccount" />
+
     <Text name="TradeAccountsPrecedence" label="=finTradeAccountsPrecedence" />
     <Text name="TradeDimensionsPrecedence" label="=finTradeDimensionsPrecedence" />
   </Fields>

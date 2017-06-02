@@ -11,6 +11,7 @@ import com.butent.bee.shared.utils.EnumUtils;
 public final class FinanceConstants {
 
   public static final String SVC_POST_TRADE_DOCUMENT = "postTradeDocument";
+  public static final String SVC_POST_TRADE_DOCUMENTS = "postTradeDocuments";
 
   public static final String SVC_VERIFY_ANALYSIS_FORM = "verifyAnalysisForm";
   public static final String SVC_CALCULATE_ANALYSIS_FORM = "calculateAnalysisForm";
@@ -93,6 +94,7 @@ public final class FinanceConstants {
   public static final String COL_ADVANCE_PAYMENTS_GIVEN = "AdvancePaymentsGiven";
   public static final String COL_ADVANCE_PAYMENTS_RECEIVED = "AdvancePaymentsReceived";
   public static final String COL_COST_OF_MERCHANDISE = "CostOfMerchandise";
+  public static final String COL_DISCHARGE_ACCOUNT = "DischargeAccount";
 
   public static final String COL_TRADE_ACCOUNTS_PRECEDENCE = "TradeAccountsPrecedence";
   public static final String COL_TRADE_DIMENSIONS_PRECEDENCE = "TradeDimensionsPrecedence";

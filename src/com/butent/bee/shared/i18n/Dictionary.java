@@ -2996,6 +2996,8 @@ public interface Dictionary {
 
   default String finDefaultJournal() {return g("finDefaultJournal");}
 
+  default String finDischargeAccount() {return g("finDischargeAccount");}
+
   default String finDistribution() {return g("finDistribution");}
 
   default String finDistributionOfItems() {return g("finDistributionOfItems");}
@@ -4188,6 +4190,12 @@ public interface Dictionary {
 
   default String parameterName() {return g("parameterName");}
 
+  default String parameterNotFound(Object p0) {
+    Map<String, Object> _m = new HashMap<>();
+    _m.put("{0}", p0);
+    return Localized.format(g("parameterNotFound"), _m);
+  }
+
   default String parameterType() {return g("parameterType");}
 
   default String parameters() {return g("parameters");}
@@ -4215,6 +4223,10 @@ public interface Dictionary {
   default String paymentDischargePrepayment() {return g("paymentDischargePrepayment");}
 
   default String paymentDueDate() {return g("paymentDueDate");}
+
+  default String paymentEnterAccountOrType() {return g("paymentEnterAccountOrType");}
+
+  default String paymentSubmitQuestion() {return g("paymentSubmitQuestion");}
 
   default String paymentSuppliers() {return g("paymentSuppliers");}
 
@@ -4820,6 +4832,8 @@ public interface Dictionary {
   default String prmProjectCommonRate() {return g("prmProjectCommonRate");}
 
   default String prmProjectHourUnit() {return g("prmProjectHourUnit");}
+
+  default String prmRESTEarningsFundsOnly() {return g("prmRESTEarningsFundsOnly");}
 
   default String prmReturnedActStatus() {return g("prmReturnedActStatus");}
 

@@ -131,7 +131,7 @@
         <ChildGrid name="TripCargo" relColumn="Trip" />
       </page>
       <page>
-        <text>=transportTripCosts</text>
+        <text>=trTripCosts</text>
         <FlowPanel class="flexBox-vertical">
           <ChildGrid name="TripCosts" relColumn="Trip" class="flexible" />
           <ChildGrid name="TripFuelCosts" relColumn="Trip" class="flexible" />
