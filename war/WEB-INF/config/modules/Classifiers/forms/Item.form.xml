@@ -46,10 +46,10 @@
 
       <row>
         <Label for="Type" />
-        <DataSelector source="Type" />
+        <DataSelector source="Type" newRowEnabled="false" />
 
         <Label for="Group" />
-        <DataSelector source="Group" />
+        <DataSelector source="Group" newRowEnabled="false" />
 
         <CheckBox source="Vat" text="=vat" />
         <FlowPanel>

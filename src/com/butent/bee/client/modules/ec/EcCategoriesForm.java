@@ -62,10 +62,10 @@ class EcCategoriesForm extends AbstractFormInterceptor implements CatchHandler<I
 
     if (destination != null) {
       actions.add(Localized.dictionary().ecCategoryMerge());
-      prompt = Localized.dictionary().ecCategoryMigrate(presenter.evaluate(source),
-          presenter.evaluate(destination));
+      prompt = Localized.dictionary().ecCategoryMigrate(presenter.format(source),
+          presenter.format(destination));
     } else {
-      prompt = Localized.dictionary().ecCategoryMigrate(presenter.evaluate(source),
+      prompt = Localized.dictionary().ecCategoryMigrate(presenter.format(source),
           Localized.maybeTranslate(presenter.getCaption()));
     }
     Global.choice(presenter.getCaption(), prompt, actions, new ChoiceCallback() {

@@ -59,14 +59,11 @@ public class AnalysisHeadersGrid extends AbstractGridInterceptor {
                 final String newName = BeeUtils.trim(value);
 
                 Queries.getRowCount(getViewName(), Filter.equals(COL_ANALYSIS_NAME, newName),
-                    new Queries.IntCallback() {
-                      @Override
-                      public void onSuccess(Integer result) {
-                        if (BeeUtils.isPositive(result)) {
-                          getGridView().notifyWarning(Localized.dictionary().valueExists(newName));
-                        } else {
-                          copyAnalysisForm(oldRow, newName);
-                        }
+                    result -> {
+                      if (BeeUtils.isPositive(result)) {
+                        getGridView().notifyWarning(Localized.dictionary().valueExists(newName));
+                      } else {
+                        copyAnalysisForm(oldRow, newName);
                       }
                     });
               }
@@ -94,15 +91,12 @@ public class AnalysisHeadersGrid extends AbstractGridInterceptor {
     BeeRowSet rowSet = DataUtils.createRowSetForInsert(getViewName(),
         getGridView().getDataColumns(), headerRow);
 
-    Queries.insertRow(rowSet, new RowCallback() {
-      @Override
-      public void onSuccess(BeeRow newRow) {
-        if (DataUtils.hasId(newRow)) {
-          copyChildren(oldRow.getId(), newRow.getId(), ok -> {
-            getGridView().getGrid().insertRow(newRow, true);
-            RowInsertEvent.fire(BeeKeeper.getBus(), getViewName(), newRow, getGridView().getId());
-          });
-        }
+    Queries.insertRow(rowSet, (RowCallback) newRow -> {
+      if (DataUtils.hasId(newRow)) {
+        copyChildren(oldRow.getId(), newRow.getId(), ok -> {
+          getGridView().getGrid().insertRow(newRow, true);
+          RowInsertEvent.fire(BeeKeeper.getBus(), getViewName(), newRow, getGridView().getId());
+        });
       }
     });
   }
@@ -119,7 +113,7 @@ public class AnalysisHeadersGrid extends AbstractGridInterceptor {
     Queries.getData(viewNames, filters, new Queries.DataCallback() {
       @Override
       public void onFailure(String... reason) {
-        super.onFailure(reason);
+        Queries.DataCallback.super.onFailure(reason);
         callback.accept(false);
       }
 
@@ -225,7 +219,7 @@ public class AnalysisHeadersGrid extends AbstractGridInterceptor {
     Queries.getRowSet(VIEW_ANALYSIS_FILTERS, null, filter, new Queries.RowSetCallback() {
       @Override
       public void onFailure(String... reason) {
-        super.onFailure(reason);
+        Queries.RowSetCallback.super.onFailure(reason);
         callback.accept(false);
       }
 
@@ -266,7 +260,7 @@ public class AnalysisHeadersGrid extends AbstractGridInterceptor {
         new RpcCallback<RowInfoList>() {
           @Override
           public void onFailure(String... reason) {
-            super.onFailure(reason);
+            RpcCallback.super.onFailure(reason);
             callback.accept(new HashMap<>());
           }
 

@@ -829,6 +829,7 @@
         </xs:sequence>
         <xs:attribute name="caption" type="xs:string" use="required" />
         <xs:attribute name="viewName" type="tp:dataView" use="required" />
+        <xs:attribute name="filter" type="xs:normalizedString" />
         <xs:attribute name="parentColumn" type="tp:fieldNameType" use="required" />
         <xs:attribute name="orderColumn" type="tp:fieldNameType" />
         <xs:attribute name="disabledActions" type="ui:viewActions" />

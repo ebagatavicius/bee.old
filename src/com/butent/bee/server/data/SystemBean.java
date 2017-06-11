@@ -394,7 +394,7 @@ public class SystemBean {
   @Lock(LockType.WRITE)
   public void init() {
     auditOff = BeeUtils.toBoolean(Config.getProperty(Service.PROPERTY_AUDIT_OFF));
-    dataEventBus = new EventBus();
+    dataEventBus = new EventBus(logger::error);
     initTables();
   }
 

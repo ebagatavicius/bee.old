@@ -310,23 +310,30 @@ public class AnalysisBean {
                   needsActual = false;
                 }
 
-                Filter finSplitFilter = Filter.and(valueFilter, Filter.or(plusFilter, minusFilter));
-
                 Map<String, IsCondition> budgetCursors = new HashMap<>();
                 if (budgetCursor != null) {
                   budgetCursors.put(budgetCursor, budgetCondition);
                 }
 
-                columnSplitValues = getPotentialSplit(columnSplitTypes,
-                    finView, userId, finSplitFilter, budgetCursors, range, turnoverOrBalance);
-                rowSplitValues = getPotentialSplit(rowSplitTypes,
-                    finView, userId, finSplitFilter, budgetCursors, range, turnoverOrBalance);
-
                 if (needsActual) {
+                  Filter finSplitFilter =
+                      Filter.and(valueFilter, Filter.or(plusFilter, minusFilter));
+
+                  columnSplitValues = getPotentialSplit(columnSplitTypes,
+                      finView, userId, finSplitFilter, budgetCursors, range, turnoverOrBalance);
+                  rowSplitValues = getPotentialSplit(rowSplitTypes,
+                      finView, userId, finSplitFilter, budgetCursors, range, turnoverOrBalance);
+
                   results.addValues(computeActualValues(column.getId(), row.getId(),
                       valueFilter, plusFilter, minusFilter, range, turnoverOrBalance,
                       columnSplitTypes, columnSplitValues, rowSplitTypes, rowSplitValues,
                       indicatorSource, finView, userId, sourceCurrency, actualValueStats));
+
+                } else if (!budgetCursors.isEmpty()) {
+                  columnSplitValues = getPotentialBudgetSplit(columnSplitTypes, budgetCursors,
+                      range, turnoverOrBalance);
+                  rowSplitValues = getPotentialBudgetSplit(rowSplitTypes, budgetCursors,
+                      range, turnoverOrBalance);
                 }
 
               } else {
@@ -401,10 +408,18 @@ public class AnalysisBean {
                       budgetCursors.put(budgetCursor, budgetCondition);
                     }
 
-                    columnSplitValues = getPotentialSplit(columnSplitTypes,
-                        finView, userId, finSplitFilter, budgetCursors, range, turnoverOrBalance);
-                    rowSplitValues = getPotentialSplit(rowSplitTypes,
-                        finView, userId, finSplitFilter, budgetCursors, range, turnoverOrBalance);
+                    if (needsActual) {
+                      columnSplitValues = getPotentialSplit(columnSplitTypes,
+                          finView, userId, finSplitFilter, budgetCursors, range, turnoverOrBalance);
+                      rowSplitValues = getPotentialSplit(rowSplitTypes,
+                          finView, userId, finSplitFilter, budgetCursors, range, turnoverOrBalance);
+
+                    } else {
+                      columnSplitValues = getPotentialBudgetSplit(columnSplitTypes, budgetCursors,
+                          range, turnoverOrBalance);
+                      rowSplitValues = getPotentialBudgetSplit(rowSplitTypes, budgetCursors,
+                          range, turnoverOrBalance);
+                    }
 
                     for (long primary : primaries) {
                       List<AnalysisValue> primaryValues = new ArrayList<>();
@@ -506,6 +521,15 @@ public class AnalysisBean {
                     if (!budgets.isEmpty()) {
                       budgets.values().forEach(pair -> qs.sqlDropTemp(pair.getA()));
                     }
+
+                  } else if (budgetCursor != null) {
+                    Map<String, IsCondition> budgetCursors = new HashMap<>();
+                    budgetCursors.put(budgetCursor, budgetCondition);
+
+                    columnSplitValues = getPotentialBudgetSplit(columnSplitTypes, budgetCursors,
+                        range, turnoverOrBalance);
+                    rowSplitValues = getPotentialBudgetSplit(rowSplitTypes, budgetCursors,
+                        range, turnoverOrBalance);
                   }
                 }
               }
@@ -1192,6 +1216,13 @@ public class AnalysisBean {
     return AnalysisUtils.normalize(filter);
   }
 
+  private Map<AnalysisSplitType, List<AnalysisSplitValue>> getPotentialBudgetSplit(
+      List<AnalysisSplitType> splitTypes, Map<String, IsCondition> budgetCursors,
+      MonthRange range, TurnoverOrBalance turnoverOrBalance) {
+
+    return getPotentialSplit(splitTypes, null, null, null, budgetCursors, range, turnoverOrBalance);
+  }
+
   private Map<AnalysisSplitType, List<AnalysisSplitValue>> getPotentialSplit(
       List<AnalysisSplitType> splitTypes, BeeView finView, Long userId, Filter finFilter,
       Map<String, IsCondition> budgetCursors,
@@ -1220,37 +1251,37 @@ public class AnalysisBean {
 
     List<AnalysisSplitValue> result = new ArrayList<>();
 
+    String finTmp = null;
     String finColumn = type.getFinColumn();
-    if (!finView.hasColumn(finColumn)) {
-      return result;
-    }
 
-    CompoundFilter filter = Filter.and();
-    filter.add(finFilter);
+    if (finView != null && finView.hasColumn(finColumn)) {
+      CompoundFilter filter = Filter.and();
+      filter.add(finFilter);
 
-    if (!type.isPeriod() && TurnoverOrBalance.isBalance(turnoverOrBalance)) {
-      filter.add(TurnoverOrBalance.CLOSING_BALANCE.getRangeFilter(COL_FIN_DATE, range));
-    } else {
-      filter.add(AnalysisUtils.getFilter(COL_FIN_DATE, range));
-    }
+      if (!type.isPeriod() && TurnoverOrBalance.isBalance(turnoverOrBalance)) {
+        filter.add(TurnoverOrBalance.CLOSING_BALANCE.getRangeFilter(COL_FIN_DATE, range));
+      } else {
+        filter.add(AnalysisUtils.getFilter(COL_FIN_DATE, range));
+      }
 
-    SqlSelect sourceQuery = finView.getQuery(userId, filter, null,
-        Collections.singletonList(finColumn));
-    String sourceQueryAlias = SqlUtils.uniqueName();
+      SqlSelect sourceQuery = finView.getQuery(userId, filter, null,
+          Collections.singletonList(finColumn));
+      String sourceQueryAlias = SqlUtils.uniqueName();
 
-    SqlSelect query = new SqlSelect().setDistinctMode(true)
-        .addFields(sourceQueryAlias, finColumn)
-        .addFrom(sourceQuery, sourceQueryAlias);
+      SqlSelect query = new SqlSelect().setDistinctMode(true)
+          .addFields(sourceQueryAlias, finColumn)
+          .addFrom(sourceQuery, sourceQueryAlias);
 
-    if (type.isPeriod()) {
-      query.addEmptyNumeric(BeeConst.YEAR, 4, 0);
-      query.addEmptyNumeric(BeeConst.MONTH, 2, 0);
-    }
+      if (type.isPeriod()) {
+        query.addEmptyNumeric(BeeConst.YEAR, 4, 0);
+        query.addEmptyNumeric(BeeConst.MONTH, 2, 0);
+      }
 
-    String finTmp = qs.sqlCreateTemp(query);
-    if (qs.isEmpty(finTmp)) {
-      qs.sqlDropTemp(finTmp);
-      finTmp = null;
+      finTmp = qs.sqlCreateTemp(query);
+      if (qs.isEmpty(finTmp)) {
+        qs.sqlDropTemp(finTmp);
+        finTmp = null;
+      }
     }
 
     boolean hasBudget = !BeeUtils.isEmpty(budgetCursors);
@@ -2190,7 +2221,7 @@ public class AnalysisBean {
       return null;
 
     } else if (DataUtils.isId(splitValue.getId())) {
-      return SqlUtils.equals(source, splitType.getBudgetColumn(), splitValue.getId());
+      return SqlUtils.equalsOrIsNull(source, splitType.getBudgetColumn(), splitValue.getId());
 
     } else {
       return SqlUtils.isNull(source, splitType.getBudgetColumn());

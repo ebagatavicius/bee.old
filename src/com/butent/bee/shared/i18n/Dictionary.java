@@ -4218,9 +4218,17 @@ public interface Dictionary {
 
   default String paymentCustomers() {return g("paymentCustomers");}
 
-  default String paymentDischargeDebt() {return g("paymentDischargeDebt");}
+  default String paymentDischargeAmount() {return g("paymentDischargeAmount");}
 
-  default String paymentDischargePrepayment() {return g("paymentDischargePrepayment");}
+  default String paymentDischargeDebtCaption() {return g("paymentDischargeDebtCaption");}
+
+  default String paymentDischargeDebtCommand() {return g("paymentDischargeDebtCommand");}
+
+  default String paymentDischargeDebtQuestion() {return g("paymentDischargeDebtQuestion");}
+
+  default String paymentDischargePrepaymentCommand() {return g("paymentDischargePrepaymentCommand");}
+
+  default String paymentDischargePrepaymentQuestion() {return g("paymentDischargePrepaymentQuestion");}
 
   default String paymentDueDate() {return g("paymentDueDate");}
 

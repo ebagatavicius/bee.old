@@ -393,7 +393,7 @@ public class CalendarModuleBean extends TimerBuilder implements BeeModule {
                 SqlUtils.notEqual(TBL_APPOINTMENTS, COL_STATUS,
                     AppointmentStatus.CANCELED.ordinal()))));
 
-        List<String> timerIdentifiersIds = new ArrayList<String>();
+        List<String> timerIdentifiersIds = new ArrayList<>();
         if (data != null) {
           for (SimpleRow row : data) {
             timerIdentifiersIds.add(
@@ -406,7 +406,7 @@ public class CalendarModuleBean extends TimerBuilder implements BeeModule {
       } else if (BeeUtils.same(idName, TBL_APPOINTMENT_REMINDERS)) {
         wh = SqlUtils.equals(TBL_APPOINTMENT_REMINDERS, reminderIdName, id);
 
-        List<String> timerIdentifiersIds = new ArrayList<String>();
+        List<String> timerIdentifiersIds = new ArrayList<>();
         timerIdentifiersIds.add(timerIdentifier + id);
         return Pair.of(wh, timerIdentifiersIds);
       }
@@ -436,7 +436,7 @@ public class CalendarModuleBean extends TimerBuilder implements BeeModule {
 
   @Override
   public ResponseObject doService(String svc, RequestInfo reqInfo) {
-    ResponseObject response = null;
+    ResponseObject response;
 
     if (BeeUtils.same(svc, SVC_GET_USER_CALENDAR)) {
       response = getUserCalendar(reqInfo);
@@ -1077,8 +1077,10 @@ public class CalendarModuleBean extends TimerBuilder implements BeeModule {
 
     BeeRowSet result = new BeeRowSet(new BeeColumn(ValueType.TEXT, ALS_ATTENDEE_TYPE_NAME),
         new BeeColumn(ValueType.TEXT, COL_ATTENDEE_NAME));
+
+    DateTimeFormatInfo dtfInfo = usr.getDateTimeFormatInfo();
     for (YearMonth ym : months) {
-      result.addColumn(ValueType.TEXT, ym.toString());
+      result.addColumn(ValueType.TEXT, Formatter.renderYearMonthNum(dtfInfo, ym));
     }
 
     if (months.size() > 1) {

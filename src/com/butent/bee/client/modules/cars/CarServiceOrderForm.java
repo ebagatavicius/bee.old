@@ -15,8 +15,6 @@ import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
-import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.composite.ChildSelector;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.data.Data;
@@ -24,7 +22,6 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
-import com.butent.bee.client.data.RowUpdateCallback;
 import com.butent.bee.client.dialog.InputCallback;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.grid.ChildGrid;
@@ -56,7 +53,6 @@ import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Latch;
 import com.butent.bee.shared.Pair;
-import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.values.FontStyle;
 import com.butent.bee.shared.css.values.FontWeight;
 import com.butent.bee.shared.css.values.TextAlign;
@@ -68,7 +64,6 @@ import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.view.DataInfo;
-import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.i18n.Localized;
@@ -251,15 +246,12 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
       IsRow dataRow = formView.getActiveRow();
 
       Queries.getRowSet(VIEW_CARS, null, Filter.equals(COL_OWNER, event.getValue()), null, 0, 2,
-          new Queries.RowSetCallback() {
-            @Override
-            public void onSuccess(BeeRowSet result) {
-              if (Objects.equals(result.getNumberOfRows(), 1)) {
-                RelationUtils.updateRow(Data.getDataInfo(formView.getViewName()), COL_CAR, dataRow,
-                    Data.getDataInfo(result.getViewName()), result.getRow(0), true);
-              }
-              formView.refresh(false, false);
+          result -> {
+            if (Objects.equals(result.getNumberOfRows(), 1)) {
+              RelationUtils.updateRow(Data.getDataInfo(formView.getViewName()), COL_CAR, dataRow,
+                  Data.getDataInfo(result.getViewName()), result.getRow(0), true);
             }
+            formView.refresh(false, false);
           });
     }
   }
@@ -274,7 +266,7 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
               getFormView().getOldRow().getString(getDataIndex(source)), value);
 
           if (!DataUtils.isEmpty(rs)) {
-            Queries.updateRow(rs, RowUpdateCallback.refreshRow(getViewName(), true));
+            Queries.updateRow(rs, RowCallback.refreshRow(getViewName(), true));
           }
           break;
       }
@@ -320,37 +312,25 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
           }
         });
     Queries.insertRow(DataUtils.createRowSetForInsert(orderInfo.getViewName(),
-        orderInfo.getColumns(), orderClone), new RowCallback() {
-      @Override
-      public void onSuccess(BeeRow newOrder) {
-        Queries.getRowSet(TBL_SERVICE_ORDER_ITEMS, null,
-            Filter.equals(COL_SERVICE_ORDER, order.getId()), new Queries.RowSetCallback() {
-              @Override
-              public void onSuccess(BeeRowSet rowSet) {
-                Runnable finalizer = () -> {
-                  copyAction.idle();
-                  RowEditor.open(getViewName(), newOrder.getId(), Opener.MODAL);
-                };
-                if (!DataUtils.isEmpty(rowSet)) {
-                  BeeRowSet newRowSet = DataUtils.createRowSetForInsert(rowSet);
-                  int serviceOrderIdx = newRowSet.getColumnIndex(COL_SERVICE_ORDER);
+        orderInfo.getColumns(), orderClone),
+        (RowCallback) newOrder -> Queries.getRowSet(TBL_SERVICE_ORDER_ITEMS, null,
+            Filter.equals(COL_SERVICE_ORDER, order.getId()), rowSet -> {
+              Runnable finalizer = () -> {
+                copyAction.idle();
+                RowEditor.open(getViewName(), newOrder.getId(), Opener.MODAL);
+              };
+              if (!DataUtils.isEmpty(rowSet)) {
+                BeeRowSet newRowSet = DataUtils.createRowSetForInsert(rowSet);
+                int serviceOrderIdx = newRowSet.getColumnIndex(COL_SERVICE_ORDER);
 
-                  for (BeeRow row : newRowSet) {
-                    row.setValue(serviceOrderIdx, newOrder.getId());
-                  }
-                  Queries.insertRows(newRowSet, new RpcCallback<RowInfoList>() {
-                    @Override
-                    public void onSuccess(RowInfoList res) {
-                      finalizer.run();
-                    }
-                  });
-                } else {
-                  finalizer.run();
+                for (BeeRow row : newRowSet) {
+                  row.setValue(serviceOrderIdx, newOrder.getId());
                 }
+                Queries.insertRows(newRowSet, res -> finalizer.run());
+              } else {
+                finalizer.run();
               }
-            });
-      }
-    });
+            }));
   }
 
   private void renderInvoiceTable(BeeRowSet rs, Map<Long, Pair<Double, Double>> quantities) {
@@ -560,16 +540,13 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
         args.addDataItem(VAR_DOCUMENT, Codec.beeSerialize(doc));
         createInvoice.running();
 
-        BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            createInvoice.idle();
-            response.notify(getFormView());
+        BeeKeeper.getRpc().makePostRequest(args, response -> {
+          createInvoice.idle();
+          response.notify(getFormView());
 
-            if (!response.hasErrors()) {
-              getFormView().refresh();
-              RowEditor.open(VIEW_TRADE_DOCUMENTS, response.getResponseAsLong(), Opener.NEW_TAB);
-            }
+          if (!response.hasErrors()) {
+            getFormView().refresh();
+            RowEditor.open(VIEW_TRADE_DOCUMENTS, response.getResponseAsLong(), Opener.NEW_TAB);
           }
         });
       }
@@ -578,33 +555,30 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
 
   private void selectServicesAndJobs() {
     Queries.getRowSet(TBL_SERVICE_ORDER_ITEMS, null,
-        Filter.equals(COL_SERVICE_ORDER, getActiveRowId()), new Queries.RowSetCallback() {
-          @Override
-          public void onSuccess(BeeRowSet itemsRs) {
-            Set<Long> items = itemsRs.getDistinctLongs(itemsRs.getColumnIndex(COL_ITEM));
-            Map<Long, Pair<Double, Double>> stocks = new HashMap<>();
+        Filter.equals(COL_SERVICE_ORDER, getActiveRowId()), itemsRs -> {
+          Set<Long> items = itemsRs.getDistinctLongs(itemsRs.getColumnIndex(COL_ITEM));
+          Map<Long, Pair<Double, Double>> stocks = new HashMap<>();
 
-            if (items.isEmpty()) {
+          if (items.isEmpty()) {
+            renderInvoiceTable(itemsRs, stocks);
+          } else {
+            DateTime dateTime = getDateTimeValue(COL_DATE);
+            Set<Long> rsv = new HashSet<>();
+            itemsRs.getRows().stream()
+                .filter(beeRow -> beeRow.isTrue(itemsRs.getColumnIndex(COL_RESERVE)))
+                .forEach(beeRow -> rsv.add(beeRow.getLong(itemsRs.getColumnIndex(COL_ITEM))));
+
+            TradeKeeper.getStock(getLongValue(COL_WAREHOUSE), items, true, stockMultimap -> {
+              stockMultimap.asMap().forEach((item, quantities) -> stocks.put(item,
+                  Pair.of(quantities.stream().mapToDouble(ItemQuantities::getStock).sum(),
+                      quantities.stream().mapToDouble(itemQuantities ->
+                          itemQuantities.getReservedMap().entrySet().stream().filter(entry ->
+                              !rsv.contains(item) || TimeUtils.isLess(entry.getKey(), dateTime))
+                              .mapToDouble(Map.Entry::getValue).sum())
+                          .sum())));
+
               renderInvoiceTable(itemsRs, stocks);
-            } else {
-              DateTime dateTime = getDateTimeValue(COL_DATE);
-              Set<Long> rsv = new HashSet<>();
-              itemsRs.getRows().stream()
-                  .filter(beeRow -> beeRow.isTrue(itemsRs.getColumnIndex(COL_RESERVE)))
-                  .forEach(beeRow -> rsv.add(beeRow.getLong(itemsRs.getColumnIndex(COL_ITEM))));
-
-              TradeKeeper.getStock(getLongValue(COL_WAREHOUSE), items, true, stockMultimap -> {
-                stockMultimap.asMap().forEach((item, quantities) -> stocks.put(item,
-                    Pair.of(quantities.stream().mapToDouble(ItemQuantities::getStock).sum(),
-                        quantities.stream().mapToDouble(itemQuantities ->
-                            itemQuantities.getReservedMap().entrySet().stream().filter(entry ->
-                                !rsv.contains(item) || TimeUtils.isLess(entry.getKey(), dateTime))
-                                .mapToDouble(Map.Entry::getValue).sum())
-                            .sum())));
-
-                renderInvoiceTable(itemsRs, stocks);
-              });
-            }
+            });
           }
         });
   }
@@ -619,16 +593,13 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
     if (DataUtils.isId(car)) {
       Queries.getRowSet(TBL_CAR_RECALLS, Arrays.asList(COL_CODE, CarsConstants.COL_DESCRIPTION),
           Filter.and(Filter.equals(COL_VEHICLE, car), Filter.isNull(COL_CHECKED)),
-          new Queries.RowSetCallback() {
-            @Override
-            public void onSuccess(BeeRowSet result) {
-              carMessages.clear();
-              result.forEach(beeRow -> carMessages.add(BeeUtils.joinWords(
-                  beeRow.getString(result.getColumnIndex(COL_CODE)),
-                  beeRow.getString(result.getColumnIndex(CarsConstants.COL_DESCRIPTION)))));
+          result -> {
+            carMessages.clear();
+            result.forEach(beeRow -> carMessages.add(BeeUtils.joinWords(
+                beeRow.getString(result.getColumnIndex(COL_CODE)),
+                beeRow.getString(result.getColumnIndex(CarsConstants.COL_DESCRIPTION)))));
 
-              carWarning.setVisible(!carMessages.isEmpty());
-            }
+            carWarning.setVisible(!carMessages.isEmpty());
           });
     } else {
       carWarning.setVisible(false);
@@ -649,17 +620,14 @@ public class CarServiceOrderForm extends PrintFormInterceptor implements HasStag
         filter = Filter.and(filter, Filter.compareId(Operator.NE, getActiveRowId()));
       }
       Queries.getRowSet(getViewName(), Arrays.asList(COL_ORDER_DATE, COL_ORDER_NO, COL_STAGE_NAME),
-          filter, new Queries.RowSetCallback() {
-            @Override
-            public void onSuccess(BeeRowSet result) {
-              customerMessages.clear();
-              result.forEach(beeRow -> customerMessages.add(BeeUtils.joinWords(
-                  beeRow.getDateTime(result.getColumnIndex(COL_ORDER_DATE)),
-                  beeRow.getString(result.getColumnIndex(COL_ORDER_NO)),
-                  beeRow.getString(result.getColumnIndex(COL_STAGE_NAME)))));
+          filter, result -> {
+            customerMessages.clear();
+            result.forEach(beeRow -> customerMessages.add(BeeUtils.joinWords(
+                beeRow.getDateTime(result.getColumnIndex(COL_ORDER_DATE)),
+                beeRow.getString(result.getColumnIndex(COL_ORDER_NO)),
+                beeRow.getString(result.getColumnIndex(COL_STAGE_NAME)))));
 
-              customerWarning.setVisible(!customerMessages.isEmpty());
-            }
+            customerWarning.setVisible(!customerMessages.isEmpty());
           });
     } else {
       customerWarning.setVisible(false);

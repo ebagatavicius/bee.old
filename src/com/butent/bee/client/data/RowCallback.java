@@ -6,34 +6,25 @@ import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 
-public abstract class RowCallback extends RpcCallback<BeeRow> {
+@FunctionalInterface
+public interface RowCallback extends RpcCallback<BeeRow> {
 
-  public static RowCallback refreshRow(String viewName) {
+  static RowCallback refreshRow(String viewName) {
     return refreshRow(viewName, false);
   }
 
-  public static RowCallback refreshRow(final String viewName, final boolean refreshChildren) {
-    return new RowCallback() {
-      @Override
-      public void onSuccess(BeeRow result) {
-        RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, result, refreshChildren);
-      }
-    };
+  static RowCallback refreshRow(final String viewName, final boolean refreshChildren) {
+    return result -> RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, result, refreshChildren);
   }
 
-  public static RowCallback refreshView(String viewName) {
+  static RowCallback refreshView(String viewName) {
     return refreshView(viewName, null);
   }
 
-  public static RowCallback refreshView(final String viewName, final Long parentId) {
-    return new RowCallback() {
-      @Override
-      public void onSuccess(BeeRow result) {
-        DataChangeEvent.fireRefresh(BeeKeeper.getBus(), viewName, parentId);
-      }
-    };
+  static RowCallback refreshView(final String viewName, final Long parentId) {
+    return result -> DataChangeEvent.fireRefresh(BeeKeeper.getBus(), viewName, parentId);
   }
 
-  public void onCancel() {
+  default void onCancel() {
   }
 }

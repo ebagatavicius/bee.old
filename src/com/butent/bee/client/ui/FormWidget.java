@@ -1875,10 +1875,8 @@ public enum FormWidget {
             editForm != null ? Action.parse(attributes.get(FormDescription.ATTR_DISABLED_ACTIONS))
                 : EnumSet.allOf(Action.class), treeViewName, treeFavoriteName);
 
-        ((TreeView) widget).setViewPresenter(new TreePresenter((TreeView) widget,
-            treeViewName, attributes.get("parentColumn"),
-            attributes.get("orderColumn"), attributes.get("relationColumn"),
-            XmlUtils.getCalculation(element, TAG_CALC), editForm));
+        ((TreeView) widget).setViewPresenter(TreePresenter.create(name, (TreeView) widget,
+            treeViewName, attributes, XmlUtils.getCalculation(element, TAG_CALC), editForm));
         break;
 
       case DECORATOR:

@@ -148,8 +148,12 @@ public class AsyncCallback implements RequestCallback {
 
     if (info != null) {
       ResponseCallback callback = info.getRespCallback();
+
       if (callback != null) {
-        callback.setRpcId(id);
+        if (callback instanceof HasRpcId) {
+          ((HasRpcId) callback).setRpcId(id);
+        }
+
         callback.onResponse(response);
       }
     }

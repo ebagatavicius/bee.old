@@ -11,6 +11,9 @@
       <SimpleColumn name="Name" alias="ParentName" />
     </SimpleJoin>
 
+    <SimpleColumn name="Goods" />
+    <SimpleColumn name="Services" />
+
     <xi:include href="../../Administration/views/viewcolumns/ExtraDimensions.viewcolumns.xml" />
     <SimpleJoin name="TradeAccounts" joinType="LEFT">
       <xi:include href="viewcolumns/TradeAccounts.viewcolumns.xml" />

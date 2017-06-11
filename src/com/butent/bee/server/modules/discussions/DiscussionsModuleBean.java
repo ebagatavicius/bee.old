@@ -961,26 +961,18 @@ public class DiscussionsModuleBean implements BeeModule {
     SimpleRowSet birthdays =
         new SimpleRowSet(new String[] {COL_NAME, COL_PHOTO, COL_DATE_OF_BIRTH, COL_ORDINAL});
 
-    for (String[] upRow : up.getRows()) {
-      if (!BeeUtils.isLong(upRow[up.getColumnIndex(COL_DATE_OF_BIRTH)])) {
-        continue;
-      }
-
-      JustDate date =
-          new JustDate(BeeUtils
-              .toLong(upRow[up.getColumnIndex(COL_DATE_OF_BIRTH)]));
+    for (SimpleRow upRow : up) {
+      JustDate date = upRow.getDate(COL_DATE_OF_BIRTH);
 
       if (availableDays.contains(date.getDoy())) {
         String[] birthdaysRow = new String[] {
-            BeeUtils.joinWords(upRow[up.getColumnIndex(COL_FIRST_NAME)], upRow[up.getColumnIndex(
-                COL_LAST_NAME)]),
-            upRow[up.getColumnIndex(COL_PHOTO)],
-            upRow[up.getColumnIndex(COL_DATE_OF_BIRTH)],
+            BeeUtils.joinWords(upRow.getValue(COL_FIRST_NAME), upRow.getValue(COL_LAST_NAME)),
+            upRow.getValue(COL_PHOTO),
+            upRow.getValue(COL_DATE_OF_BIRTH),
             BeeUtils.toString(date.getDoy())
         };
         birthdays.addRow(birthdaysRow);
       }
-
     }
 
     if (!birthdays.isEmpty()) {

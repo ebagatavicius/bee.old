@@ -21,7 +21,7 @@ import java.util.Collection;
 
 final class SelfServiceUtils {
 
-  private static final class RelatedValuesCallback extends Queries.RowSetCallback {
+  private static final class RelatedValuesCallback implements Queries.RowSetCallback {
     private final FormView formView;
     private final IsRow newRow;
     private final String targetColumn;

@@ -1,35 +1,34 @@
 package com.butent.bee.shared.data;
 
-import com.butent.bee.shared.utils.BeeUtils;
-
+import java.util.Objects;
 import java.util.function.Predicate;
 
-public abstract class RowPredicate implements Predicate<IsRow> {
+@FunctionalInterface
+public interface RowPredicate extends Predicate<IsRow> {
 
-  public static RowPredicate isNull(final int index) {
-    return new RowPredicate() {
-      @Override
-      public boolean test(IsRow input) {
-        return input == null || input.isNull(index);
-      }
-    };
+  static RowPredicate and(RowPredicate p1, RowPredicate p2) {
+    if (p1 == null) {
+      return p2;
+    } else if (p2 == null) {
+      return p1;
+    } else {
+      return row -> p1.test(row) && p2.test(row);
+    }
   }
 
-  public static RowPredicate isTrue(final int index) {
-    return new RowPredicate() {
-      @Override
-      public boolean test(IsRow input) {
-        return input != null && BeeUtils.isTrue(input.getBoolean(index));
-      }
-    };
+  static RowPredicate equals(int index, Long value) {
+    return row -> row != null && Objects.equals(row.getLong(index), value);
   }
 
-  public static RowPredicate notNull(final int index) {
-    return new RowPredicate() {
-      @Override
-      public boolean test(IsRow input) {
-        return input != null && !input.isNull(index);
-      }
-    };
+  static RowPredicate isNull(int index) {
+    return row -> row == null || row.isNull(index);
+  }
+
+  static RowPredicate isTrue(int index) {
+    return row -> row != null && row.isTrue(index);
+  }
+
+  static RowPredicate notNull(int index) {
+    return row -> row != null && !row.isNull(index);
   }
 }

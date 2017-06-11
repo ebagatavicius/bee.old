@@ -49,14 +49,11 @@ public class BudgetHeadersGrid extends AbstractGridInterceptor {
                 final String newName = BeeUtils.trim(value);
 
                 Queries.getRowCount(getViewName(), Filter.equals(COL_BUDGET_NAME, newName),
-                    new Queries.IntCallback() {
-                      @Override
-                      public void onSuccess(Integer result) {
-                        if (BeeUtils.isPositive(result)) {
-                          getGridView().notifyWarning(Localized.dictionary().valueExists(newName));
-                        } else {
-                          copyBudget(oldRow, newName);
-                        }
+                    result -> {
+                      if (BeeUtils.isPositive(result)) {
+                        getGridView().notifyWarning(Localized.dictionary().valueExists(newName));
+                      } else {
+                        copyBudget(oldRow, newName);
                       }
                     });
               }
@@ -84,46 +81,43 @@ public class BudgetHeadersGrid extends AbstractGridInterceptor {
     BeeRowSet rowSet = DataUtils.createRowSetForInsert(getViewName(),
         getGridView().getDataColumns(), headerRow);
 
-    Queries.insertRow(rowSet, new RowCallback() {
-      @Override
-      public void onSuccess(BeeRow newHeader) {
-        if (DataUtils.hasId(newHeader)) {
-          Queries.getRowSet(VIEW_BUDGET_ENTRIES, null,
-              Filter.equals(COL_BUDGET_HEADER, oldRow.getId()), new Queries.RowSetCallback() {
-                @Override
-                public void onFailure(String... reason) {
+    Queries.insertRow(rowSet, (RowCallback) newHeader -> {
+      if (DataUtils.hasId(newHeader)) {
+        Queries.getRowSet(VIEW_BUDGET_ENTRIES, null,
+            Filter.equals(COL_BUDGET_HEADER, oldRow.getId()), new Queries.RowSetCallback() {
+              @Override
+              public void onFailure(String... reason) {
+                afterCopy(newHeader);
+                Queries.RowSetCallback.super.onFailure(reason);
+              }
+
+              @Override
+              public void onSuccess(BeeRowSet oldEntries) {
+                if (DataUtils.isEmpty(oldEntries)) {
                   afterCopy(newHeader);
-                  super.onFailure(reason);
+
+                } else {
+                  int index = oldEntries.getColumnIndex(COL_BUDGET_HEADER);
+                  long newHeaderId = newHeader.getId();
+
+                  oldEntries.getRows().forEach(row -> row.setValue(index, newHeaderId));
+
+                  Queries.insertRows(DataUtils.createRowSetForInsert(oldEntries),
+                      new RpcCallback<RowInfoList>() {
+                        @Override
+                        public void onFailure(String... reason) {
+                          afterCopy(newHeader);
+                          RpcCallback.super.onFailure(reason);
+                        }
+
+                        @Override
+                        public void onSuccess(RowInfoList riList) {
+                          afterCopy(newHeader);
+                        }
+                      });
                 }
-
-                @Override
-                public void onSuccess(BeeRowSet oldEntries) {
-                  if (DataUtils.isEmpty(oldEntries)) {
-                    afterCopy(newHeader);
-
-                  } else {
-                    int index = oldEntries.getColumnIndex(COL_BUDGET_HEADER);
-                    long newHeaderId = newHeader.getId();
-
-                    oldEntries.getRows().forEach(row -> row.setValue(index, newHeaderId));
-
-                    Queries.insertRows(DataUtils.createRowSetForInsert(oldEntries),
-                        new RpcCallback<RowInfoList>() {
-                          @Override
-                          public void onFailure(String... reason) {
-                            afterCopy(newHeader);
-                            super.onFailure(reason);
-                          }
-
-                          @Override
-                          public void onSuccess(RowInfoList riList) {
-                            afterCopy(newHeader);
-                          }
-                        });
-                  }
-                }
-              });
-        }
+              }
+            });
       }
     });
   }

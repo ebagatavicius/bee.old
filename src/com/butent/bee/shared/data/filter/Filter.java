@@ -319,23 +319,43 @@ public abstract class Filter implements BeeSerializable, RowFilter {
   }
 
   public static Filter equals(String column, DateTime value) {
-    return compareWithValue(column, Operator.EQ, new DateTimeValue(value));
+    if (value == null) {
+      return isNull(column);
+    } else {
+      return compareWithValue(column, Operator.EQ, new DateTimeValue(value));
+    }
   }
 
   public static Filter equals(String column, Integer value) {
-    return compareWithValue(column, Operator.EQ, new IntegerValue(value));
+    if (value == null) {
+      return isNull(column);
+    } else {
+      return compareWithValue(column, Operator.EQ, new IntegerValue(value));
+    }
   }
 
   public static Filter equals(String column, JustDate value) {
-    return compareWithValue(column, Operator.EQ, new DateValue(value));
+    if (value == null) {
+      return isNull(column);
+    } else {
+      return compareWithValue(column, Operator.EQ, new DateValue(value));
+    }
   }
 
   public static Filter equals(String column, Long value) {
-    return compareWithValue(column, Operator.EQ, new LongValue(value));
+    if (value == null) {
+      return isNull(column);
+    } else {
+      return compareWithValue(column, Operator.EQ, new LongValue(value));
+    }
   }
 
   public static Filter equals(String column, String value) {
-    return compareWithValue(column, Operator.EQ, new TextValue(value));
+    if (value == null) {
+      return isNull(column);
+    } else {
+      return compareWithValue(column, Operator.EQ, new TextValue(value));
+    }
   }
 
   public static Filter equals(String column, Enum<?> value) {

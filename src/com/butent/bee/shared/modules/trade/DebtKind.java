@@ -4,6 +4,7 @@ import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.shared.i18n.Dictionary;
 import com.butent.bee.shared.modules.finance.PrepaymentKind;
+import com.butent.bee.shared.modules.finance.TradeAccounts;
 import com.butent.bee.shared.ui.HasLocalizedCaption;
 
 public enum DebtKind implements HasLocalizedCaption {
@@ -21,6 +22,16 @@ public enum DebtKind implements HasLocalizedCaption {
     @Override
     public PrepaymentKind getPrepaymentKind() {
       return PrepaymentKind.SUPPLIERS;
+    }
+
+    @Override
+    public Long getTradeAccount(TradeAccounts tradeAccounts) {
+      return tradeAccounts.getTradePayables();
+    }
+
+    @Override
+    public DebtKind opposite() {
+      return RECEIVABLE;
     }
 
     @Override
@@ -56,6 +67,16 @@ public enum DebtKind implements HasLocalizedCaption {
     }
 
     @Override
+    public Long getTradeAccount(TradeAccounts tradeAccounts) {
+      return tradeAccounts.getTradeReceivables();
+    }
+
+    @Override
+    public DebtKind opposite() {
+      return PAYABLE;
+    }
+
+    @Override
     public String tradeDebtsMainGrid() {
       return GRID_TRADE_RECEIVABLES;
     }
@@ -78,6 +99,10 @@ public enum DebtKind implements HasLocalizedCaption {
   public String getStyleSuffix() {
     return name().toLowerCase();
   }
+
+  public abstract Long getTradeAccount(TradeAccounts tradeAccounts);
+
+  public abstract DebtKind opposite();
 
   public abstract String tradeDebtsMainGrid();
 

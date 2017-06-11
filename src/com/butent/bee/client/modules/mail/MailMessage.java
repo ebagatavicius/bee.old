@@ -24,6 +24,7 @@ import static com.butent.bee.shared.modules.tasks.TaskConstants.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.ResponseCallbackWithId;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.composite.FileCollector;
 import com.butent.bee.client.composite.Relations;
@@ -58,7 +59,6 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
-import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.SimpleRowSet;
@@ -130,95 +130,86 @@ public class MailMessage extends AbstractFormInterceptor {
 
             Queries.getRowSet(TBL_COMPANY_PERSONS,
                 Lists.newArrayList(COL_COMPANY, "CompanyName", COL_FIRST_NAME, COL_LAST_NAME),
-                filter, new Queries.RowSetCallback() {
-                  @Override
-                  public void onSuccess(BeeRowSet result) {
-                    if (result.getNumberOfRows() == 1) {
-                      Long company = result.getLong(0, COL_COMPANY);
-                      String companyName = result.getString(0, "CompanyName");
-                      Long persion = result.getRow(0).getId();
-                      String firstName = result.getString(0, COL_FIRST_NAME);
-                      String lastName = result.getString(0, COL_LAST_NAME);
+                filter, result -> {
+                  if (result.getNumberOfRows() == 1) {
+                    Long company = result.getLong(0, COL_COMPANY);
+                    String companyName = result.getString(0, "CompanyName");
+                    Long person = result.getRow(0).getId();
+                    String firstName = result.getString(0, COL_FIRST_NAME);
+                    String lastName = result.getString(0, COL_LAST_NAME);
 
-                      switch (viewName) {
-                        case TBL_TASKS:
-                          Data.setValue(viewName, row, COL_COMPANY, company);
-                          Data.setValue(viewName, row, "CompanyName", companyName);
-                          Data.setValue(viewName, row, "ContactPerson", persion);
-                          Data.setValue(viewName, row, "ContactFirstName", firstName);
-                          Data.setValue(viewName, row, "ContactLastName", lastName);
-                          break;
+                    switch (viewName) {
+                      case TBL_TASKS:
+                        Data.setValue(viewName, row, COL_COMPANY, company);
+                        Data.setValue(viewName, row, "CompanyName", companyName);
+                        Data.setValue(viewName, row, "ContactPerson", person);
+                        Data.setValue(viewName, row, "ContactFirstName", firstName);
+                        Data.setValue(viewName, row, "ContactLastName", lastName);
+                        break;
 
-                        case TBL_REQUESTS:
-                        case TransportConstants.TBL_ASSESSMENTS:
-                          Data.setValue(viewName, row, "Customer", company);
-                          Data.setValue(viewName, row, "CustomerName", companyName);
-                          Data.setValue(viewName, row, "CustomerPerson", persion);
-                          Data.setValue(viewName, row, "PersonFirstName", firstName);
-                          Data.setValue(viewName, row, "PersonLastName", lastName);
-                          break;
-                      }
-                      executor.execute();
-
-                    } else {
-                      Queries.getRowSet(TBL_COMPANIES, Lists.newArrayList(COL_COMPANY_NAME),
-                          filter, new Queries.RowSetCallback() {
-                            @Override
-                            public void onSuccess(BeeRowSet res) {
-                              if (res.getNumberOfRows() == 1) {
-                                Long company = res.getRow(0).getId();
-                                String companyName = res.getString(0, COL_COMPANY_NAME);
-
-                                switch (viewName) {
-                                  case TBL_TASKS:
-                                    Data.setValue(viewName, row, COL_COMPANY, company);
-                                    Data.setValue(viewName, row, "CompanyName", companyName);
-                                    break;
-
-                                  case TBL_REQUESTS:
-                                  case TransportConstants.TBL_ASSESSMENTS:
-                                    Data.setValue(viewName, row, "Customer", company);
-                                    Data.setValue(viewName, row, "CustomerName", companyName);
-                                    break;
-                                }
-                              }
-                              executor.execute();
-                            }
-                          });
+                      case TBL_REQUESTS:
+                      case TransportConstants.TBL_ASSESSMENTS:
+                        Data.setValue(viewName, row, "Customer", company);
+                        Data.setValue(viewName, row, "CustomerName", companyName);
+                        Data.setValue(viewName, row, "CustomerPerson", person);
+                        Data.setValue(viewName, row, "PersonFirstName", firstName);
+                        Data.setValue(viewName, row, "PersonLastName", lastName);
+                        break;
                     }
+                    executor.execute();
+
+                  } else {
+                    Queries.getRowSet(TBL_COMPANIES, Lists.newArrayList(COL_COMPANY_NAME),
+                        filter, res -> {
+                          if (res.getNumberOfRows() == 1) {
+                            Long company = res.getRow(0).getId();
+                            String companyName = res.getString(0, COL_COMPANY_NAME);
+
+                            switch (viewName) {
+                              case TBL_TASKS:
+                                Data.setValue(viewName, row, COL_COMPANY, company);
+                                Data.setValue(viewName, row, "CompanyName", companyName);
+                                break;
+
+                              case TBL_REQUESTS:
+                              case TransportConstants.TBL_ASSESSMENTS:
+                                Data.setValue(viewName, row, "Customer", company);
+                                Data.setValue(viewName, row, "CustomerName", companyName);
+                                break;
+                            }
+                          }
+                          executor.execute();
+                        });
                   }
                 });
             ParameterList params = MailKeeper.createArgs(SVC_STRIP_HTML);
             params.addDataItem(COL_HTML_CONTENT, getContent());
 
-            BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
-              @Override
-              public void onResponse(ResponseObject response) {
-                response.notify(getFormView());
+            BeeKeeper.getRpc().makePostRequest(params, response -> {
+              response.notify(getFormView());
 
-                if (!response.hasErrors()) {
-                  switch (viewName) {
-                    case TBL_TASKS:
-                      Data.setValue(viewName, row, COL_SUMMARY, getSubject());
-                      Data.setValue(viewName, row, COL_DESCRIPTION, response.getResponseAsString());
-                      break;
+              if (!response.hasErrors()) {
+                switch (viewName) {
+                  case TBL_TASKS:
+                    Data.setValue(viewName, row, COL_SUMMARY, getSubject());
+                    Data.setValue(viewName, row, COL_DESCRIPTION, response.getResponseAsString());
+                    break;
 
-                    case TBL_REQUESTS:
-                      Data.setValue(viewName, row, COL_CONTENT, response.getResponseAsString());
-                      break;
+                  case TBL_REQUESTS:
+                    Data.setValue(viewName, row, COL_CONTENT, response.getResponseAsString());
+                    break;
 
-                    case TransportConstants.TBL_ASSESSMENTS:
-                      Data.setValue(viewName, row, "OrderNotes", response.getResponseAsString());
-                      break;
+                  case TransportConstants.TBL_ASSESSMENTS:
+                    Data.setValue(viewName, row, "OrderNotes", response.getResponseAsString());
+                    break;
 
-                    case DocumentConstants.TBL_DOCUMENTS:
-                      Data.setValue(viewName, row, DocumentConstants.COL_DOCUMENT_NAME,
-                          getSubject());
-                      break;
-                  }
+                  case DocumentConstants.TBL_DOCUMENTS:
+                    Data.setValue(viewName, row, DocumentConstants.COL_DOCUMENT_NAME,
+                        getSubject());
+                    break;
                 }
-                executor.execute();
               }
+              executor.execute();
             });
             break;
         }
@@ -343,14 +334,11 @@ public class MailMessage extends AbstractFormInterceptor {
                   ParameterList args = MailKeeper.createArgs(SVC_GET_RAW_CONTENT);
                   args.addDataItem(COL_MESSAGE, messageId);
 
-                  BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
-                    @Override
-                    public void onResponse(ResponseObject response) {
-                      response.notify(BeeUtils.nvl(getFormView(), BeeKeeper.getScreen()));
+                  BeeKeeper.getRpc().makePostRequest(args, response -> {
+                    response.notify(BeeUtils.nvl(getFormView(), BeeKeeper.getScreen()));
 
-                      if (!response.hasErrors()) {
-                        ReportUtils.preview(FileInfo.restore(response.getResponseAsString()));
-                      }
+                    if (!response.hasErrors()) {
+                      ReportUtils.preview(FileInfo.restore(response.getResponseAsString()));
                     }
                   });
                   break;
@@ -539,7 +527,7 @@ public class MailMessage extends AbstractFormInterceptor {
     ParameterList params = MailKeeper.createArgs(SVC_GET_MESSAGE);
     params.addDataItem(column, columnId);
 
-    rpcId = BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+    rpcId = BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (!Objects.equals(getRpcId(), rpcId)) {

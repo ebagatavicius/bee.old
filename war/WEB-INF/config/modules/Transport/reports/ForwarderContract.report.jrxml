@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
-<!-- 2017-03-23T11:49:33 -->
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-06-06T10:12:19 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AssessmenForwarder" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="3ad2372d-bb52-4e1f-9dfe-aaf5bdceb74c">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<import value="com.butent.bee.server.Invocation"/>
-	<import value="com.butent.bee.shared.data.BeeRowSet"/>
-	<import value="com.butent.bee.server.i18n.Localizations"/>
-	<import value="com.butent.bee.shared.i18n.Dictionary"/>
-	<import value="com.butent.bee.shared.utils.BeeUtils"/>
-	<import value="com.butent.bee.server.data.QueryServiceBean"/>
 	<import value="com.butent.bee.server.RsDataSource"/>
 	<import value="com.butent.bee.shared.time.JustDate"/>
+	<import value="com.butent.bee.shared.data.BeeRowSet"/>
+	<import value="com.butent.bee.server.i18n.Localizations"/>
+	<import value="com.butent.bee.server.data.UserServiceBean"/>
+	<import value="com.butent.bee.shared.time.DateTime"/>
+	<import value="com.butent.bee.shared.i18n.Dictionary"/>
+	<import value="com.butent.bee.shared.utils.BeeUtils"/>
+	<import value="com.butent.bee.shared.i18n.Formatter"/>
+	<import value="com.butent.bee.server.data.QueryServiceBean"/>
+	<import value="com.butent.bee.shared.i18n.SupportedLocale"/>
+	<import value="com.butent.bee.shared.i18n.PredefinedFormat"/>
 	<style name="Cell" markup="" fontName="DejaVu Sans">
 		<paragraph lineSpacingSize="1.0" leftIndent="3" spacingBefore="0" spacingAfter="0"/>
 	</style>
@@ -30,6 +35,32 @@
 		<variable name="d" class="com.butent.bee.shared.i18n.Dictionary">
 			<variableExpression><![CDATA[$V{d}]]></variableExpression>
 			<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
+		</variable>
+	</subDataset>
+	<subDataset name="CargoPlaces" whenResourceMissingType="Error" uuid="e025bddd-902a-484a-a462-0ad50120d4cf">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+		<parameter name="usr" class="com.butent.bee.server.data.UserServiceBean">
+			<defaultValueExpression><![CDATA[Invocation.locateRemoteBean(UserServiceBean.class)]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="Company" class="java.lang.String"/>
+		<field name="Address" class="java.lang.String"/>
+		<field name="PostIndex" class="java.lang.String"/>
+		<field name="CityName" class="java.lang.String"/>
+		<field name="CountryName" class="java.lang.String"/>
+		<field name="Date" class="java.lang.Long"/>
+		<field name="Contact" class="java.lang.String"/>
+		<field name="Number" class="java.lang.String"/>
+		<field name="Note" class="java.lang.String"/>
+		<variable name="d" class="com.butent.bee.shared.i18n.Dictionary">
+			<variableExpression><![CDATA[$V{d}]]></variableExpression>
+			<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
+		</variable>
+		<variable name="qs" class="com.butent.bee.server.data.QueryServiceBean">
+			<variableExpression><![CDATA[$V{qs}]]></variableExpression>
+			<initialValueExpression><![CDATA[Invocation.locateRemoteBean(QueryServiceBean.class)]]></initialValueExpression>
 		</variable>
 	</subDataset>
 	<parameter name="OrderNo" class="java.lang.String"/>
@@ -81,6 +112,8 @@
 	<parameter name="ForwarderFax" class="java.lang.String"/>
 	<parameter name="ForwarderEmail" class="java.lang.String"/>
 	<parameter name="ForwarderCompanyBankAccounts" class="java.lang.String"/>
+	<parameter name="CargoLoading" class="java.lang.String"/>
+	<parameter name="CargoUnloading" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -194,20 +227,33 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$R{loadingPlace}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement key="" style="Cell" positionType="Float" x="280" y="0" width="274" height="16" uuid="f84d5fdb-0753-4f7e-a714-c359435036f1">
+				<frame>
+					<reportElement positionType="Float" x="280" y="0" width="275" height="16" uuid="6fe923d1-fe78-45db-8fba-772d38d224ba">
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					</reportElement>
 					<box>
 						<leftPen lineWidth="1.0"/>
 					</box>
-					<textElement verticalAlignment="Middle" markup="none">
-						<font fontName="DejaVu Sans" size="10"/>
-						<paragraph spacingBefore="0"/>
-					</textElement>
-					<textFieldExpression><![CDATA[BeeUtils.isEmpty($P{LoadingAddress}) ? "" : $P{LoadingAddress}]]></textFieldExpression>
-				</textField>
+					<componentElement>
+						<reportElement key="" style="Cell" x="0" y="0" width="274" height="16" uuid="5c3fcdee-cbdc-4207-bf04-8818151412e6"/>
+						<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+							<datasetRun subDataset="CargoPlaces" uuid="82a5ddef-7e37-4ab8-bbdc-9b6498cb2996">
+								<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($P{CargoLoading}))]]></dataSourceExpression>
+							</datasetRun>
+							<jr:listContents height="16" width="274">
+								<textField isStretchWithOverflow="true">
+									<reportElement style="Cell" positionType="Float" x="0" y="0" width="274" height="16" uuid="cb15de45-5d45-480e-9458-8c7260a35e94"/>
+									<textElement verticalAlignment="Middle" markup="none">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[BeeUtils.joinItems($F{Address}, $F{PostIndex}, BeeUtils.notEmpty($V{qs}.getLocalizedValue("Cities", "Name", $F{CityName}, $P{REPORT_LOCALE}), $F{CityName}), BeeUtils.notEmpty($V{qs}.getLocalizedValue("Countries", "Name", $F{CountryName}, $P{REPORT_LOCALE}), $F{CountryName}))]]></textFieldExpression>
+								</textField>
+							</jr:listContents>
+						</jr:list>
+					</componentElement>
+				</frame>
 			</frame>
 			<frame>
 				<reportElement positionType="Float" x="0" y="234" width="555" height="16" uuid="f6e7fb7f-9734-4aa9-8162-09efca5f4eb7">
@@ -237,20 +283,33 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$R{deliveryPlace}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement key="" style="Cell" positionType="Float" x="280" y="0" width="274" height="16" uuid="6c16143a-1f6c-4442-b68b-771a91030388">
+				<frame>
+					<reportElement positionType="Float" x="280" y="0" width="275" height="16" uuid="346d3816-60fb-4ee1-90d0-586f66dca5cf">
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					</reportElement>
 					<box>
 						<leftPen lineWidth="1.0"/>
 					</box>
-					<textElement verticalAlignment="Middle" markup="none">
-						<font fontName="DejaVu Sans" size="10"/>
-						<paragraph spacingBefore="0"/>
-					</textElement>
-					<textFieldExpression><![CDATA[BeeUtils.isEmpty($P{UnloadingAddress}) ? "" : $P{UnloadingAddress}]]></textFieldExpression>
-				</textField>
+					<componentElement>
+						<reportElement key="" style="Cell" x="0" y="0" width="274" height="16" uuid="0a373748-5c0d-4879-abbf-8b1d78896a1e"/>
+						<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+							<datasetRun subDataset="CargoPlaces" uuid="34ea51a3-9ee5-4caf-aa95-42b0ae857371">
+								<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($P{CargoUnloading}))]]></dataSourceExpression>
+							</datasetRun>
+							<jr:listContents height="16" width="274">
+								<textField isStretchWithOverflow="true">
+									<reportElement style="Cell" positionType="Float" x="0" y="0" width="274" height="16" uuid="84e8d602-9bdb-461f-8d43-eb6aef582dac"/>
+									<textElement verticalAlignment="Middle" markup="none">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[BeeUtils.joinItems($F{Address}, $F{PostIndex}, BeeUtils.notEmpty($V{qs}.getLocalizedValue("Cities", "Name", $F{CityName}, $P{REPORT_LOCALE}), $F{CityName}), BeeUtils.notEmpty($V{qs}.getLocalizedValue("Countries", "Name", $F{CountryName}, $P{REPORT_LOCALE}), $F{CountryName}))]]></textFieldExpression>
+								</textField>
+							</jr:listContents>
+						</jr:list>
+					</componentElement>
+				</frame>
 			</frame>
 			<frame>
 				<reportElement positionType="Float" x="0" y="250" width="555" height="16" uuid="d1ea2c35-bf51-4ffe-8952-6a609b6b3f23">
@@ -280,20 +339,33 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{d}.trRequestDeliveryDate()]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement key="" style="Cell" positionType="Float" x="280" y="0" width="274" height="16" uuid="8302aa54-e660-4302-967c-675d840ca548">
+				<frame>
+					<reportElement positionType="Float" x="280" y="0" width="275" height="16" uuid="4b3565d2-8203-4364-af89-374097f010d7">
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					</reportElement>
 					<box>
 						<leftPen lineWidth="1.0"/>
 					</box>
-					<textElement verticalAlignment="Middle" markup="none">
-						<font fontName="DejaVu Sans" size="10"/>
-						<paragraph spacingBefore="0"/>
-					</textElement>
-					<textFieldExpression><![CDATA[BeeUtils.isEmpty($P{UnloadingDate}) ? "" : $P{UnloadingDate}]]></textFieldExpression>
-				</textField>
+					<componentElement>
+						<reportElement key="" style="Cell" x="0" y="0" width="274" height="16" uuid="264dbc6a-2f03-4a60-853a-5d5e020fd85e"/>
+						<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+							<datasetRun subDataset="CargoPlaces" uuid="b7e462b9-23d4-4619-966b-409d46fc09f6">
+								<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($P{CargoUnloading}))]]></dataSourceExpression>
+							</datasetRun>
+							<jr:listContents height="16" width="274">
+								<textField isStretchWithOverflow="true">
+									<reportElement style="Cell" positionType="Float" x="0" y="0" width="274" height="16" uuid="514fbd48-60b9-49ba-96fd-798dc401938e"/>
+									<textElement verticalAlignment="Middle" markup="none">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[Formatter.render(PredefinedFormat.DATE_SHORT, SupportedLocale.parse($P{REPORT_LOCALE}.getLanguage()).getDateTimeFormatInfo(), new DateTime($F{Date}))]]></textFieldExpression>
+								</textField>
+							</jr:listContents>
+						</jr:list>
+					</componentElement>
+				</frame>
 			</frame>
 			<frame>
 				<reportElement positionType="Float" x="0" y="266" width="555" height="16" uuid="e5e18288-fd15-4967-a131-2bcaba5fe2db">
@@ -825,19 +897,33 @@
 					</textElement>
 					<textFieldExpression><![CDATA[$V{d}.trLoadingDate()]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="true">
-					<reportElement key="" style="Cell" positionType="Float" x="280" y="0" width="274" height="16" uuid="3aff781a-1b43-4ca6-a4a3-45bc389b1cc3">
+				<frame>
+					<reportElement positionType="Float" x="280" y="0" width="275" height="16" uuid="997f5fcd-87ae-4551-b93d-0754cb817247">
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					</reportElement>
 					<box>
 						<leftPen lineWidth="1.0"/>
 					</box>
-					<textElement verticalAlignment="Middle" markup="none">
-						<font fontName="DejaVu Sans" size="10"/>
-						<paragraph spacingBefore="0"/>
-					</textElement>
-					<textFieldExpression><![CDATA[BeeUtils.isEmpty($P{LoadingDate}) ? "" : $P{LoadingDate}]]></textFieldExpression>
-				</textField>
+					<componentElement>
+						<reportElement key="" style="Cell" x="0" y="0" width="274" height="16" uuid="6af23674-0f68-489b-9130-677bb2d7d02b"/>
+						<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+							<datasetRun subDataset="CargoPlaces" uuid="1e072d37-61a0-4ad3-94b4-d5df59bd9105">
+								<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($P{CargoLoading}))]]></dataSourceExpression>
+							</datasetRun>
+							<jr:listContents height="16" width="274">
+								<textField isStretchWithOverflow="true">
+									<reportElement style="Cell" positionType="Float" x="0" y="0" width="274" height="16" uuid="dd26f1d6-0d63-427c-bcb7-7e34ba9a86d2"/>
+									<textElement verticalAlignment="Middle" markup="none">
+										<font fontName="DejaVu Sans"/>
+									</textElement>
+									<textFieldExpression><![CDATA[Formatter.render(PredefinedFormat.DATE_SHORT, SupportedLocale.parse($P{REPORT_LOCALE}.getLanguage()).getDateTimeFormatInfo(), new DateTime($F{Date}))]]></textFieldExpression>
+								</textField>
+							</jr:listContents>
+						</jr:list>
+					</componentElement>
+				</frame>
 			</frame>
 		</band>
 	</title>

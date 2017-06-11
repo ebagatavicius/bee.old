@@ -8,6 +8,9 @@
     <String name="Name" precision="60" notNull="true" label="=name" />
     <Relation name="Parent" relation="CategoryTree" label="=category" />
 
+    <Boolean name="Goods" label="=goods" />
+    <Boolean name="Services" label="=services" />
+
     <Relation name="ExtraDimensions" unique="true" relation="ExtraDimensions" editable="true"
               label="=dimensions" />
     <Relation name="TradeAccounts" unique="true" relation="TradeAccounts" editable="true"

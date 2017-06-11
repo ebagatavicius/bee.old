@@ -957,7 +957,6 @@ public final class TradeUtils {
     return amountFormat;
   }
 
-
   private TradeUtils() {
   }
 }

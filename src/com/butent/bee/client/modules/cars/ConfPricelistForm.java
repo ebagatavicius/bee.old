@@ -17,6 +17,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.ResponseCallbackWithId;
 import com.butent.bee.client.composite.TabBar;
 import com.butent.bee.client.composite.UnboundSelector;
 import com.butent.bee.client.data.Data;
@@ -60,7 +61,6 @@ import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
-import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
@@ -114,34 +114,31 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
 
       Queries.getRowSet(TBL_CONF_GROUPS, Collections.singletonList(COL_GROUP_NAME),
           DataUtils.isId(type) ? Filter.equals(COL_TYPE, type) : null,
-          new Queries.RowSetCallback() {
-            @Override
-            public void onSuccess(BeeRowSet result) {
-              List<String> choice = new ArrayList<>();
-              Map<String, Dimension> map = new HashMap<>();
+          result -> {
+            List<String> choice = new ArrayList<>();
+            Map<String, Dimension> map = new HashMap<>();
 
-              for (BeeRow row : result) {
-                String name = row.getString(0);
-                Dimension dimension = new Dimension(row.getId(), name);
+            for (BeeRow row : result) {
+              String name = row.getString(0);
+              Dimension dimension = new Dimension(row.getId(), name);
 
-                if (!configuration.getAllDimensions().contains(dimension)) {
-                  choice.add(name);
-                  map.put(name, dimension);
-                }
+              if (!configuration.getAllDimensions().contains(dimension)) {
+                choice.add(name);
+                map.put(name, dimension);
               }
-              Dictionary loc = Localized.dictionary();
+            }
+            Dictionary loc = Localized.dictionary();
 
-              if (choice.isEmpty()) {
-                getFormView().notifyWarning(loc.noData());
-              } else {
-                Global.choice(rowMode ? loc.rows() : loc.columns(), loc.optionGroups(), choice,
-                    idx -> {
-                      String name = choice.get(idx);
-                      configuration.addDimension(map.get(name), rowMode ? null : Integer.MIN_VALUE);
-                      saveDimensions();
-                      refresh();
-                    });
-              }
+            if (choice.isEmpty()) {
+              getFormView().notifyWarning(loc.noData());
+            } else {
+              Global.choice(rowMode ? loc.rows() : loc.columns(), loc.optionGroups(), choice,
+                  idx -> {
+                    String name = choice.get(idx);
+                    configuration.addDimension(map.get(name), rowMode ? null : Integer.MIN_VALUE);
+                    saveDimensions();
+                    refresh();
+                  });
             }
           });
     }
@@ -302,14 +299,11 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
   private Integer rpcId;
   private CustomAction importAction = new CustomAction(FontAwesome.CLOUD_UPLOAD, this);
 
-  private ResponseCallback defaultResponse = new ResponseCallback() {
-    @Override
-    public void onResponse(ResponseObject response) {
-      response.notify(getFormView());
+  private ResponseCallback defaultResponse = response -> {
+    response.notify(getFormView());
 
-      if (response.hasErrors()) {
-        requery();
-      }
+    if (response.hasErrors()) {
+      requery();
     }
   };
 
@@ -354,26 +348,23 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
       boolean testMode = clickEvent.isShiftKeyDown();
 
       Queries.getRowSet(TBL_IMPORT_OPTIONS, Collections.singletonList(COL_IMPORT_DESCRIPTION),
-          Filter.equals(COL_IMPORT_TYPE, importType), new Queries.RowSetCallback() {
-            @Override
-            public void onSuccess(BeeRowSet result) {
-              switch (result.getNumberOfRows()) {
-                case 0:
-                  getFormView().notifyWarning(Localized.dictionary().noData());
-                  break;
+          Filter.equals(COL_IMPORT_TYPE, importType), result -> {
+            switch (result.getNumberOfRows()) {
+              case 0:
+                getFormView().notifyWarning(Localized.dictionary().noData());
+                break;
 
-                case 1:
-                  doImport(importType, result.getRow(0).getId(), testMode);
-                  break;
+              case 1:
+                doImport(importType, result.getRow(0).getId(), testMode);
+                break;
 
-                default:
-                  Global.choice(Localized.dictionary().selectImport(), null, result.getRows()
-                      .stream().map(row -> row.getString(0)).collect(Collectors.toList()), idx ->
-                      doImport(importType, result.getRow(idx).getId(), testMode));
-                  break;
-              }
-
+              default:
+                Global.choice(Localized.dictionary().selectImport(), null, result.getRows()
+                    .stream().map(row -> row.getString(0)).collect(Collectors.toList()), idx ->
+                    doImport(importType, result.getRow(idx).getId(), testMode));
+                break;
             }
+
           });
     }
   }
@@ -381,19 +372,16 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
   @Override
   public void onLoad(FormView form) {
     Queries.getRowCount(TBL_IMPORT_OPTIONS, Filter.equals(COL_IMPORT_TYPE,
-        ImportType.CONFIGURATION.ordinal()), new Queries.IntCallback() {
-      @Override
-      public void onSuccess(Integer cnt) {
-        if (BeeUtils.isPositive(cnt)) {
-          importAction.setTitle(Localized.dictionary().actionImport());
-          importAction.setCallback(response -> {
-            ImportCallback.showResponse(response);
-            requery();
-          });
-          getHeaderView().addCommandItem(importAction);
-        }
-      }
-    });
+        ImportType.CONFIGURATION.ordinal()), cnt -> {
+          if (BeeUtils.isPositive(cnt)) {
+            importAction.setTitle(Localized.dictionary().actionImport());
+            importAction.setCallback(response -> {
+              ImportCallback.showResponse(response);
+              requery();
+            });
+            getHeaderView().addCommandItem(importAction);
+          }
+        });
     super.onLoad(form);
   }
 
@@ -724,7 +712,7 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
     ParameterList args = CarsKeeper.createSvcArgs(SVC_GET_CONFIGURATION);
     args.addDataItem(COL_BRANCH, branchId);
 
-    rpcId = BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
+    rpcId = BeeKeeper.getRpc().makePostRequest(args, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (!Objects.equals(getRpcId(), rpcId)) {
@@ -1088,17 +1076,14 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
               Icon.QUESTION, Collections.singletonList(Localized.dictionary().selectAll()),
               () -> Queries.getRowSet(TBL_CONF_OPTIONS, null, Filter.and(Filter.equals(COL_GROUP,
                   inputGroup.getRelatedId()), Filter.idNotIn(excludedOptions)),
-                  new Queries.RowSetCallback() {
-                    @Override
-                    public void onSuccess(BeeRowSet rs) {
-                      if (DataUtils.isEmpty(rs)) {
-                        getFormView().notifyWarning(Localized.dictionary().noData());
-                      } else {
-                        List<Option> opts = new ArrayList<>();
-                        rs.forEach(row -> opts.add(new Option(row)));
-                        opts.forEach(opt -> setOptionInfo(opt, ConfInfo.of(null, null)));
-                        setPackets(opts);
-                      }
+                  rs -> {
+                    if (DataUtils.isEmpty(rs)) {
+                      getFormView().notifyWarning(Localized.dictionary().noData());
+                    } else {
+                      List<Option> opts = new ArrayList<>();
+                      rs.forEach(row -> opts.add(new Option(row)));
+                      opts.forEach(opt -> setOptionInfo(opt, ConfInfo.of(null, null)));
+                      setPackets(opts);
                     }
                   }));
         }
@@ -1225,25 +1210,19 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
   private void setPackets(Collection<Option> opts) {
     Queries.getRowSet(TBL_CONF_PACKET_OPTIONS, Arrays.asList(COL_PACKET, COL_OPTION),
         Filter.any(COL_PACKET, opts.stream().map(Option::getId).collect(Collectors.toSet())),
-        new Queries.RowSetCallback() {
-          @Override
-          public void onSuccess(BeeRowSet packRs) {
-            if (DataUtils.isEmpty(packRs)) {
-              refresh();
-            } else {
-              Multimap<Long, Long> packs = HashMultimap.create();
-              packRs.forEach(row -> packs.put(row.getLong(0), row.getLong(1)));
+        packRs -> {
+          if (DataUtils.isEmpty(packRs)) {
+            refresh();
+          } else {
+            Multimap<Long, Long> packs = HashMultimap.create();
+            packRs.forEach(row -> packs.put(row.getLong(0), row.getLong(1)));
 
-              Queries.getRowSet(TBL_CONF_OPTIONS, null, Filter.idIn(packs.values()),
-                  new Queries.RowSetCallback() {
-                    @Override
-                    public void onSuccess(BeeRowSet optsRs) {
-                      opts.forEach(opt -> packs.get(opt.getId()).forEach(pack ->
-                          configuration.getPackets(opt).add(new Option(optsRs.getRowById(pack)))));
-                      refresh();
-                    }
-                  });
-            }
+            Queries.getRowSet(TBL_CONF_OPTIONS, null, Filter.idIn(packs.values()),
+                optsRs -> {
+                  opts.forEach(opt -> packs.get(opt.getId()).forEach(pack ->
+                      configuration.getPackets(opt).add(new Option(optsRs.getRowById(pack)))));
+                  refresh();
+                });
           }
         });
   }

@@ -59,4 +59,6 @@
   <source path="client" />
   <source path="shared" />
   <super-source path="translatable" />
+
+  <set-property name="jre.checks.checkLevel" value="MINIMAL"/>
 </module>

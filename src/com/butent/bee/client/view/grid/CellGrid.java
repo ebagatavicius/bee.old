@@ -1217,6 +1217,8 @@ public class CellGrid extends Widget implements IdentifiableWidget, HasDataTable
   public void clearSelection() {
     if (!getSelectedRows().isEmpty()) {
       getSelectedRows().clear();
+      getRenderedRows().clear();
+
       fireSelectionCountChange();
     }
   }

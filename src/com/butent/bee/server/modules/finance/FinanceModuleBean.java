@@ -339,6 +339,20 @@ public class FinanceModuleBean implements BeeModule {
     return response;
   }
 
+  public Long getDefaultAccount(String colName) {
+    SqlSelect query = new SqlSelect()
+        .addFields(TBL_FINANCE_CONFIGURATION, colName)
+        .addFrom(TBL_FINANCE_CONFIGURATION)
+        .setWhere(SqlUtils.notNull(TBL_FINANCE_CONFIGURATION, colName));
+
+    Set<Long> set = qs.getLongSet(query);
+    if (set.size() == 1) {
+      return set.stream().findFirst().get();
+    } else {
+      return null;
+    }
+  }
+
   private ResponseObject postTradeDocuments(RequestInfo reqInfo) {
     Set<Long> docIds = DataUtils.parseIdSet(reqInfo.getParameter(Service.VAR_LIST));
     if (BeeUtils.isEmpty(docIds)) {

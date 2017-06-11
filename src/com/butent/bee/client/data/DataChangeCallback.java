@@ -9,7 +9,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.EnumSet;
 
-public class DataChangeCallback extends RpcCallback<RowInfoList> {
+public class DataChangeCallback implements RpcCallback<RowInfoList> {
 
   private static final EnumSet<Effect> DEFAULT_EFFECTS = EnumSet.of(Effect.REFRESH);
 

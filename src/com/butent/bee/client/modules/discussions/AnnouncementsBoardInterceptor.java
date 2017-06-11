@@ -745,14 +745,14 @@ class AnnouncementsBoardInterceptor extends AbstractFormInterceptor implements
     HtmlTable listTbl = new HtmlTable();
     int row = listTbl.getRowCount();
 
-    for (String[] birthListData : rs.getRows()) {
-      String photoUrl1 = PhotoRenderer.getPhotoUrl(birthListData[rs.getColumnIndex(COL_PHOTO)]);
+    for (SimpleRow birthListData : rs) {
+      String photoUrl1 = PhotoRenderer.getPhotoUrl(birthListData.getValue(COL_PHOTO));
 
       Image img = new Image(photoUrl1);
       img.addStyleName(STYLE_HB_PHOTO);
       listTbl.setWidget(row, 0, img);
 
-      listTbl.setHtml(row, 1, birthListData[rs.getColumnIndex(COL_NAME)]);
+      listTbl.setHtml(row, 1, birthListData.getValue(COL_NAME));
       listTbl.addStyleName(STYLE_NAME_SUR_HB);
 
       if (BeeKeeper.getUser().getSupportedLocale() == SupportedLocale.LT) {
@@ -760,23 +760,20 @@ class AnnouncementsBoardInterceptor extends AbstractFormInterceptor implements
         listTbl.setWidget(row, 2, happyBirthdayDate);
         TextLabel date = new TextLabel(true);
         date.setValue(Format.getPredefinedFormat(PredefinedFormat.MONTH_DAY)
-            .format(new JustDate(BeeUtils.toLong(birthListData[rs
-                .getColumnIndex(COL_DATE_OF_BIRTH)])))
+            .format(birthListData.getDate(COL_DATE_OF_BIRTH))
             + " " + DAY);
         happyBirthdayDate.add(date);
         happyBirthdayDate.setStyleName(STYLE_HB_DATE);
       } else {
         listTbl.setHtml(row, 2, Format.getPredefinedFormat(PredefinedFormat.MONTH_DAY)
-            .format(new JustDate(BeeUtils.toLong(birthListData[rs
-                .getColumnIndex(COL_DATE_OF_BIRTH)]))));
+            .format(birthListData.getDate(COL_DATE_OF_BIRTH)));
       }
 
       listTbl.getRow(row).addClassName(STYLE_BIRTH_LIST);
 
       JustDate now = new JustDate();
 
-      if (now.getDoy() == (new JustDate(BeeUtils.toLong(birthListData[rs
-          .getColumnIndex(COL_DATE_OF_BIRTH)]))).getDoy()) {
+      if (now.getDoy() == birthListData.getDate(COL_DATE_OF_BIRTH).getDoy()) {
         listTbl.getRow(row).addClassName(STYLE_HAPPY_DAY);
       }
       row++;

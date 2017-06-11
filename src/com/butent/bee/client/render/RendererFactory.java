@@ -16,6 +16,7 @@ import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.CellSource;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
+import com.butent.bee.shared.data.RowFormatter;
 import com.butent.bee.shared.data.value.ValueType;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.logging.BeeLogger;
@@ -30,7 +31,9 @@ import com.butent.bee.shared.ui.RendererType;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class RendererFactory {
 
@@ -38,6 +41,8 @@ public final class RendererFactory {
 
   private static final Table<String, String, ProvidesGridColumnRenderer> gcrProviders =
       HashBasedTable.create();
+
+  private static final Map<String, RowFormatter> treeFormatters = new HashMap<>();
 
   public static AbstractCellRenderer createRenderer(String viewName, List<String> renderColumns) {
     return createRenderer(viewName, renderColumns, null);
@@ -110,6 +115,10 @@ public final class RendererFactory {
     return getRenderer(description, calculation, tokens, enumKey, renderColumns, columns, source);
   }
 
+  public static RowFormatter getTreeFormatter(String treeName) {
+    return BeeUtils.isEmpty(treeName) ? null : treeFormatters.get(treeName);
+  }
+
   public static void registerGcrProvider(String gridName, String columnName,
       ProvidesGridColumnRenderer provider) {
 
@@ -118,6 +127,13 @@ public final class RendererFactory {
     Assert.notNull(provider);
 
     gcrProviders.put(gridName, columnName, provider);
+  }
+
+  public static void registerTreeFormatter(String treeName, RowFormatter rowFormatter) {
+    Assert.notEmpty(treeName);
+    Assert.notNull(rowFormatter);
+
+    treeFormatters.put(treeName, rowFormatter);
   }
 
   private static AbstractCellRenderer createRenderer(Calculation calculation,

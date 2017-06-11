@@ -2,17 +2,13 @@
 <!DOCTYPE Form []>
 <f:Form xmlns="http://www.butent.com/widget"
         xmlns:f="http://www.butent.com/form"
-        xmlns:ui="http://www.butent.com/ui"
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="CategoryTree" caption="=itemCategoryTree" data="CategoryTree"
 >
 
-  <DataTree caption="=itemCategories" viewName="CategoryTree" parentColumn="Parent">
-    <calc>
-      <ui:expression>row.Name + ' [' + rowId + ']'</ui:expression>
-    </calc>
-
+  <DataTree name="ItemCategoryTree" caption="=itemCategories" viewName="CategoryTree"
+            parentColumn="Parent">
     <form>
       <xi:include href="widgets/ItemCategory.widget.xml" />
     </form>

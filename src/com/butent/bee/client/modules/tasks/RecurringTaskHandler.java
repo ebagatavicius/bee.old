@@ -64,11 +64,9 @@ import com.butent.bee.shared.logging.LogUtils;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
-import com.butent.bee.shared.modules.tasks.TaskConstants.*;
 import com.butent.bee.shared.modules.tasks.TaskUtils;
 import com.butent.bee.shared.time.CronExpression;
 import com.butent.bee.shared.time.CronExpression.Field;
-import com.butent.bee.shared.time.DateRange;
 import com.butent.bee.shared.time.HasDateValue;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.ScheduleDateMode;
@@ -1143,7 +1141,7 @@ class RecurringTaskHandler extends ProductSupportInterceptor implements CellVali
     StyleUtils.setMaxHeight(container, BeeKeeper.getScreen().getHeight() * 8 / 10);
 
     String caption = BeeUtils.joinWords(getStringValue(COL_SUMMARY),
-        DateRange.closed(min, max));
+        BeeUtils.bracket(Format.renderPeriod(min, max)));
     Global.showModalWidget(caption, container);
   }
 

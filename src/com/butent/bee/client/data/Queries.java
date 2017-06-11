@@ -5,8 +5,9 @@ import static com.butent.bee.shared.Service.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Callback;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.communication.HasRpcId;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.ResponseCallbackWithId;
 import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.communication.RpcParameter;
 import com.butent.bee.shared.Assert;
@@ -59,16 +60,32 @@ import java.util.TreeSet;
 
 public final class Queries {
 
-  public abstract static class DataCallback extends RpcCallback<Collection<BeeRowSet>> {
+  public interface DataCallback extends RpcCallback<Collection<BeeRowSet>> {
+    @Override
+    default void onFailure(String... reason) {
+      RpcCallback.super.onFailure(reason);
+    }
   }
 
-  public abstract static class IdListCallback extends RpcCallback<String> {
+  public interface IdListCallback extends RpcCallback<String> {
+    @Override
+    default void onFailure(String... reason) {
+      RpcCallback.super.onFailure(reason);
+    }
   }
 
-  public abstract static class IntCallback extends RpcCallback<Integer> {
+  public interface IntCallback extends RpcCallback<Integer> {
+    @Override
+    default void onFailure(String... reason) {
+      RpcCallback.super.onFailure(reason);
+    }
   }
 
-  public abstract static class RowSetCallback extends RpcCallback<BeeRowSet> {
+  public interface RowSetCallback extends RpcCallback<BeeRowSet> {
+    @Override
+    default void onFailure(String... reason) {
+      RpcCallback.super.onFailure(reason);
+    }
   }
 
   private static final BeeLogger logger = LogUtils.getLogger(Queries.class);
@@ -106,19 +123,15 @@ public final class Queries {
   public static boolean checkResponse(String service, String viewName, ResponseObject response,
       Class<?> clazz) {
 
-    return checkResponse(service, BeeConst.UNDEF, viewName, response, clazz,
-        new RpcCallback<Object>() {
-          @Override
-          public void onSuccess(Object result) {
-          }
-        });
+    return checkResponse(service, BeeConst.UNDEF, viewName, response, clazz, result -> {
+    });
   }
 
   public static boolean checkResponse(String service, int rpcId, String viewName,
       ResponseObject response, Class<?> clazz, RpcCallback<?> callback) {
 
-    if (callback != null) {
-      callback.setRpcId(rpcId);
+    if (callback instanceof HasRpcId) {
+      ((HasRpcId) callback).setRpcId(rpcId);
     }
 
     if (response == null) {
@@ -155,7 +168,7 @@ public final class Queries {
     ParameterList parameters = new ParameterList(DELETE, RpcParameter.Section.DATA, lst);
     parameters.setSummary(viewName, filter);
 
-    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallback() {
+    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(DELETE, getRpcId(), viewName, response, Integer.class, callback)) {
@@ -187,12 +200,9 @@ public final class Queries {
   }
 
   public static void deleteRowAndFire(final String viewName, final long rowId) {
-    delete(viewName, Filter.compareId(rowId), new IntCallback() {
-      @Override
-      public void onSuccess(Integer result) {
-        if (BeeUtils.isPositive(result)) {
-          RowDeleteEvent.fire(BeeKeeper.getBus(), viewName, rowId);
-        }
+    delete(viewName, Filter.compareId(rowId), result -> {
+      if (BeeUtils.isPositive(result)) {
+        RowDeleteEvent.fire(BeeKeeper.getBus(), viewName, rowId);
       }
     });
   }
@@ -221,7 +231,7 @@ public final class Queries {
     }
     params.setSummary(viewName, rowIds);
 
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(DELETE_ROWS, getRpcId(), viewName, response, Integer.class, callback)) {
@@ -249,17 +259,18 @@ public final class Queries {
     });
   }
 
-  public static int getData(Collection<String> viewNames, DataCallback callback) {
+  public static int getData(Collection<String> viewNames,
+      RpcCallback<Collection<BeeRowSet>> callback) {
     return getData(viewNames, null, callback);
   }
 
   public static int getData(Collection<String> viewNames, Map<String, Filter> filters,
-      DataCallback callback) {
+      RpcCallback<Collection<BeeRowSet>> callback) {
     return getData(viewNames, filters, CachingPolicy.NONE, callback);
   }
 
   public static int getData(Collection<String> viewNames, Map<String, Filter> filters,
-      final CachingPolicy cachingPolicy, final DataCallback callback) {
+      final CachingPolicy cachingPolicy, final RpcCallback<Collection<BeeRowSet>> callback) {
 
     Assert.notEmpty(viewNames);
     Assert.notNull(callback);
@@ -307,7 +318,7 @@ public final class Queries {
 
     parameters.setSummary(viewNames.toString());
 
-    return BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallback() {
+    return BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(service, getRpcId(), viewList.toString(), response, null, callback)) {
@@ -348,7 +359,7 @@ public final class Queries {
     ParameterList params = new ParameterList(GET_DISTINCT_LONGS, RpcParameter.Section.DATA, lst);
     params.setSummary(viewName, column, filter);
 
-    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(GET_DISTINCT_LONGS, getRpcId(), viewName, response, String.class,
@@ -378,7 +389,7 @@ public final class Queries {
     ParameterList params = new ParameterList(GET_LAST_UPDATED, RpcParameter.Section.QUERY, lst);
     params.setSummary(tableName, rowId, column);
 
-    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(GET_LAST_UPDATED, getRpcId(), tableName, response, null, callback)) {
@@ -408,7 +419,7 @@ public final class Queries {
         RpcParameter.Section.QUERY, lst);
     params.setSummary(tableName, filterColumn, filterValue, resultColumn);
 
-    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(GET_RELATED_VALUES, getRpcId(), tableName, response,
@@ -442,7 +453,7 @@ public final class Queries {
     ParameterList params = new ParameterList(QUERY, RpcParameter.Section.DATA, lst);
     params.setSummary(viewName, filter);
 
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(QUERY, getRpcId(), viewName, response, BeeRowSet.class, callback)) {
@@ -477,7 +488,7 @@ public final class Queries {
     ParameterList params = new ParameterList(COUNT_ROWS, RpcParameter.Section.DATA, lst);
     params.setSummary(viewName, filter);
 
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(COUNT_ROWS, getRpcId(), viewName, response, Integer.class, callback)) {
@@ -529,7 +540,7 @@ public final class Queries {
 
   public static int getRowSet(final String viewName, List<String> columns, final Filter filter,
       final Order order, final int offset, final int limit, final CachingPolicy cachingPolicy,
-      final Collection<Property> options, final RowSetCallback callback) {
+      final Collection<Property> options, final RpcCallback<BeeRowSet> callback) {
 
     Assert.notEmpty(viewName);
     Assert.notNull(callback);
@@ -577,7 +588,7 @@ public final class Queries {
     ParameterList params = new ParameterList(QUERY, RpcParameter.Section.DATA, lst);
     params.setSummary(viewName, filter, portion, BeeUtils.emptyToNull(options));
 
-    return BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+    return BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(QUERY, getRpcId(), viewName, response, BeeRowSet.class, callback)) {
@@ -639,7 +650,7 @@ public final class Queries {
     ParameterList params = new ParameterList(GET_VALUE, RpcParameter.Section.QUERY, lst);
     params.setSummary(viewName, rowId, column);
 
-    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(GET_VALUE, getRpcId(), viewName, response, String.class, callback)) {
@@ -707,7 +718,7 @@ public final class Queries {
     ParameterList params = new ParameterList(service);
     params.setSummary(viewName);
 
-    BeeKeeper.getRpc().sendText(params, Codec.beeSerialize(rowSet), new ResponseCallback() {
+    BeeKeeper.getRpc().sendText(params, Codec.beeSerialize(rowSet), new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(service, getRpcId(), viewName, response, RowInfo.class, callback)) {
@@ -745,7 +756,7 @@ public final class Queries {
     ParameterList params = new ParameterList(svc);
     params.setSummary(viewName, rowSet.getNumberOfRows());
 
-    BeeKeeper.getRpc().sendText(params, Codec.beeSerialize(rowSet), new ResponseCallback() {
+    BeeKeeper.getRpc().sendText(params, Codec.beeSerialize(rowSet), new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(svc, getRpcId(), viewName, response, RowInfoList.class, callback)) {
@@ -779,7 +790,7 @@ public final class Queries {
 
     params.setSummary(viewName, from, into);
 
-    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(MERGE_ROWS, getRpcId(), viewName, response, null, callback)) {
@@ -884,7 +895,7 @@ public final class Queries {
     ParameterList parameters = new ParameterList(UPDATE, RpcParameter.Section.DATA, lst);
     parameters.setSummary(viewName, filter, columns, values);
 
-    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallback() {
+    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(UPDATE, getRpcId(), viewName, response, Integer.class, callback)
@@ -951,29 +962,15 @@ public final class Queries {
       rowSet.addRow(row);
 
       if (eventKind == ModificationEvent.Kind.UPDATE_ROW) {
-        updateRow(rowSet, new RowCallback() {
-          @Override
-          public void onSuccess(BeeRow result) {
-            RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, result);
-          }
-        });
+        updateRow(rowSet, result -> RowUpdateEvent.fire(BeeKeeper.getBus(), viewName, result));
 
       } else if (eventKind == ModificationEvent.Kind.DATA_CHANGE) {
-        updateCell(rowSet, new RowCallback() {
-          @Override
-          public void onSuccess(BeeRow result) {
-            DataChangeEvent.fireRefresh(BeeKeeper.getBus(), viewName);
-          }
-        });
+        updateCell(rowSet, result -> DataChangeEvent.fireRefresh(BeeKeeper.getBus(), viewName));
 
       } else {
-        updateCell(rowSet, new RowCallback() {
-          @Override
-          public void onSuccess(BeeRow result) {
-            CellUpdateEvent.fire(BeeKeeper.getBus(), viewName, result.getId(), result.getVersion(),
-                CellSource.forColumn(column, colIndex), result.getString(0));
-          }
-        });
+        updateCell(rowSet, result -> CellUpdateEvent.fire(BeeKeeper.getBus(), viewName,
+            result.getId(), result.getVersion(),
+            CellSource.forColumn(column, colIndex), result.getString(0)));
       }
     }
   }
@@ -1003,7 +1000,7 @@ public final class Queries {
         RpcParameter.Section.DATA, lst);
     parameters.setSummary(viewName, rowId);
 
-    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallback() {
+    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(UPDATE_RELATED_VALUES, getRpcId(), viewName, response,
@@ -1040,7 +1037,7 @@ public final class Queries {
     ParameterList params = new ParameterList(svc);
     params.setSummary(viewName, rowSet.getRowIds());
 
-    BeeKeeper.getRpc().sendText(params, Codec.beeSerialize(rowSet), new ResponseCallback() {
+    BeeKeeper.getRpc().sendText(params, Codec.beeSerialize(rowSet), new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(svc, getRpcId(), viewName, response, RowInfoList.class, callback)) {
@@ -1088,7 +1085,7 @@ public final class Queries {
       params.setSummary(viewName);
     }
 
-    BeeKeeper.getRpc().sendText(params, Codec.beeSerialize(rowSet), new ResponseCallback() {
+    BeeKeeper.getRpc().sendText(params, Codec.beeSerialize(rowSet), new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(service, getRpcId(), viewName, response, BeeRow.class, callback)) {

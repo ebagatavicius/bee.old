@@ -7,7 +7,9 @@ import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
+import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
+import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.filter.Filter;
 
 import java.util.HashMap;
@@ -27,7 +29,18 @@ public class AssessmentTransportationForm extends PrintFormInterceptor {
         new Queries.RowSetCallback() {
           @Override
           public void onSuccess(BeeRowSet result) {
-            dataConsumer.accept(new BeeRowSet[] {result});
+            TransportUtils.getCargoPlaces(Filter.any(COL_CARGO_TRIP, result.getRowIds()),
+                (loading, unloading) -> {
+              for (BeeRowSet places : new BeeRowSet[] {loading, unloading}) {
+                for (BeeRow cargoRow : result) {
+                  BeeRowSet current = TransportUtils.copyCargoPlaces(places,
+                      DataUtils.filterRows(places, COL_CARGO_TRIP, cargoRow.getId()));
+
+                  cargoRow.setProperty(places.getViewName(), current.serialize());
+                }
+              }
+              dataConsumer.accept(new BeeRowSet[] {result});
+            });
           }
         });
   }

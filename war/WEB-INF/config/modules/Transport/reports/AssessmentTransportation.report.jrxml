@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
-<!-- 2017-03-23T11:44:05 -->
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2017-06-09T11:17:17 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AssessmenTransportation" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" uuid="3ad2372d-bb52-4e1f-9dfe-aaf5bdceb74c">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<import value="com.butent.bee.server.Invocation"/>
@@ -16,6 +16,8 @@
 	<import value="com.butent.bee.shared.utils.BeeUtils"/>
 	<import value="com.butent.bee.shared.i18n.Formatter"/>
 	<import value="com.butent.bee.server.data.QueryServiceBean"/>
+	<import value="com.butent.bee.shared.i18n.SupportedLocale"/>
+	<import value="com.butent.bee.shared.i18n.PredefinedFormat"/>
 	<style name="Cell" markup="" fontName="DejaVu Sans">
 		<paragraph lineSpacingSize="1.0" leftIndent="3" spacingBefore="0" spacingAfter="0"/>
 	</style>
@@ -34,8 +36,11 @@
 		<sortField name="DefaultBankAccount" order="Descending"/>
 	</subDataset>
 	<subDataset name="TripCargo" uuid="1d249828-4e22-4fef-a089-92c8a29db185">
-		<parameter name="TransportationCargoTripsDataSet" class="com.butent.bee.server.RsDataSource"/>
+		<parameter name="TransportationCargoTripsDataSet" class="com.butent.bee.server.RsDataSource">
+			<defaultValueExpression><![CDATA[$P{TransportationCargoTripsDataSet}.getRowValue()]]></defaultValueExpression>
+		</parameter>
 		<parameter name="USB" class="com.butent.bee.server.data.UserServiceBean"/>
+		<parameter name="QSB" class="com.butent.bee.server.data.QueryServiceBean"/>
 		<queryString>
 			<![CDATA[]]>
 		</queryString>
@@ -54,6 +59,22 @@
 			<variableExpression><![CDATA[$V{d}]]></variableExpression>
 			<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
 		</variable>
+	</subDataset>
+	<subDataset name="CargoPlaces" whenResourceMissingType="Error" uuid="ec7ebab6-8d15-492d-9b6a-f035479970dc">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+		<parameter name="qsb" class="com.butent.bee.server.data.QueryServiceBean"/>
+		<queryString>
+			<![CDATA[]]>
+		</queryString>
+		<field name="Company" class="java.lang.String"/>
+		<field name="Address" class="java.lang.String"/>
+		<field name="PostIndex" class="java.lang.String"/>
+		<field name="CityName" class="java.lang.String"/>
+		<field name="CountryName" class="java.lang.String"/>
+		<field name="Date" class="java.lang.Long"/>
+		<field name="Contact" class="java.lang.String"/>
+		<field name="Number" class="java.lang.String"/>
+		<field name="Note" class="java.lang.String"/>
 	</subDataset>
 	<parameter name="Date" class="java.lang.String"/>
 	<parameter name="Quantity" class="java.lang.String"/>
@@ -110,6 +131,8 @@
 	<parameter name="USB" class="com.butent.bee.server.data.UserServiceBean">
 		<defaultValueExpression><![CDATA[Invocation.locateRemoteBean(UserServiceBean.class)]]></defaultValueExpression>
 	</parameter>
+	<parameter name="CargoLoading" class="java.lang.String"/>
+	<parameter name="CargoUnloading" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -648,12 +671,15 @@
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="TripCargo" uuid="732ad827-6a4b-4cac-a5dd-901c28b4a649">
+					<datasetRun subDataset="TripCargo" uuid="34e7cf2e-f646-4d26-a002-eb568d07bbeb">
 						<datasetParameter name="TransportationCargoTripsDataSet">
 							<datasetParameterExpression><![CDATA[$P{TripCargoDataSet}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="USB">
 							<datasetParameterExpression><![CDATA[$P{USB}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="QSB">
+							<datasetParameterExpression><![CDATA[$V{qs}]]></datasetParameterExpression>
 						</datasetParameter>
 						<dataSourceExpression><![CDATA[$P{TripCargoDataSet}]]></dataSourceExpression>
 					</datasetRun>
@@ -802,13 +828,26 @@
 								<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
-							<textField isStretchWithOverflow="true">
-								<reportElement style="Cell" x="0" y="0" width="185" height="12" uuid="76e57678-a1c3-4b35-abc2-1ca24e56504f"/>
-								<textElement markup="none">
-									<font fontName="DejaVu Sans"/>
-								</textElement>
-								<textFieldExpression><![CDATA[BeeUtils.join(", ", (BeeUtils.isEmpty($V{row}.getProperty("LoadingDate")) ? "" :  Formatter.renderDateTime($P{USB}.getDateTimeFormatInfo(), new DateTime(BeeUtils.toLong($V{row}.getProperty("LoadingDate"))))), $V{row}.getProperty("LoadingAddress"), $V{row}.getProperty("LoadingPostIndex"), $V{row}.getProperty("LoadingCountryName"))]]></textFieldExpression>
-							</textField>
+							<componentElement>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="12" uuid="d630edb8-8f81-41f5-91c4-62afcfc4f833"/>
+								<jr:list printOrder="Vertical">
+									<datasetRun subDataset="CargoPlaces" uuid="c8f827f5-6085-42d7-bd0c-30585b15c218">
+										<datasetParameter name="qsb">
+											<datasetParameterExpression><![CDATA[$P{QSB}]]></datasetParameterExpression>
+										</datasetParameter>
+										<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($V{row}.getProperty("CargoLoading")))]]></dataSourceExpression>
+									</datasetRun>
+									<jr:listContents height="12" width="185">
+										<textField isStretchWithOverflow="true">
+											<reportElement positionType="Float" x="0" y="0" width="185" height="12" uuid="6ee1f892-b970-4270-ab38-a59e302f8dbc"/>
+											<textElement verticalAlignment="Middle">
+												<font fontName="DejaVu Sans"/>
+											</textElement>
+											<textFieldExpression><![CDATA[BeeUtils.joinItems(Formatter.render(PredefinedFormat.DATE_SHORT, SupportedLocale.parse($P{REPORT_LOCALE}.getLanguage()).getDateTimeFormatInfo(), new DateTime($F{Date})), $F{Address}, $F{PostIndex}, BeeUtils.nvl($P{qsb}.getLocalizedValue("Cities", "Name", $F{CityName}, $P{REPORT_LOCALE}), $F{CityName}), BeeUtils.notEmpty($P{qsb}.getLocalizedValue("Countries", "Name", $F{CountryName}, $P{REPORT_LOCALE}), $F{CountryName}))]]></textFieldExpression>
+										</textField>
+									</jr:listContents>
+								</jr:list>
+							</componentElement>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="185" uuid="7ff57a82-0755-4f2d-9f96-c64791cfa94e">
@@ -843,13 +882,26 @@
 								<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 								<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
-							<textField>
-								<reportElement style="Cell" x="0" y="0" width="185" height="12" uuid="f69729e7-b25c-47c1-9837-676e18d49a7d"/>
-								<textElement markup="none">
-									<font fontName="DejaVu Sans"/>
-								</textElement>
-								<textFieldExpression><![CDATA[BeeUtils.join(", ", (BeeUtils.isEmpty($V{row}.getProperty("UnloadingDate")) ? "" :  Formatter.renderDateTime($P{USB}.getDateTimeFormatInfo(), new DateTime(BeeUtils.toLong($V{row}.getProperty("UnloadingDate"))))), $V{row}.getProperty("UnloadingAddress"), $V{row}.getProperty("UnloadingPostIndex"), $V{row}.getProperty("UnloadingCountryName"))]]></textFieldExpression>
-							</textField>
+							<componentElement>
+								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="185" height="12" uuid="92c6fedd-5eb4-4228-bc13-5e1d1fd57253"/>
+								<jr:list printOrder="Vertical">
+									<datasetRun subDataset="CargoPlaces" uuid="049db6f2-c266-4666-87bd-39652e673336">
+										<datasetParameter name="qsb">
+											<datasetParameterExpression><![CDATA[$P{QSB}]]></datasetParameterExpression>
+										</datasetParameter>
+										<dataSourceExpression><![CDATA[new RsDataSource(BeeRowSet.restore($V{row}.getProperty("CargoUnloading")))]]></dataSourceExpression>
+									</datasetRun>
+									<jr:listContents height="12" width="185">
+										<textField isStretchWithOverflow="true">
+											<reportElement positionType="Float" x="0" y="0" width="185" height="12" uuid="499bf571-74b8-4f91-ad9e-8956cf387143"/>
+											<textElement verticalAlignment="Middle">
+												<font fontName="DejaVu Sans"/>
+											</textElement>
+											<textFieldExpression><![CDATA[BeeUtils.joinItems(Formatter.render(PredefinedFormat.DATE_SHORT, SupportedLocale.parse($P{REPORT_LOCALE}.getLanguage()).getDateTimeFormatInfo(), new DateTime($F{Date})), $F{Address}, $F{PostIndex}, BeeUtils.nvl($P{qsb}.getLocalizedValue("Cities", "Name", $F{CityName}, $P{REPORT_LOCALE}), $F{CityName}), BeeUtils.notEmpty($P{qsb}.getLocalizedValue("Countries", "Name", $F{CountryName}, $P{REPORT_LOCALE}), $F{CountryName}))]]></textFieldExpression>
+										</textField>
+									</jr:listContents>
+								</jr:list>
+							</componentElement>
 						</jr:detailCell>
 					</jr:column>
 				</jr:table>

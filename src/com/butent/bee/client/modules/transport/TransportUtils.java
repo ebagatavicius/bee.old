@@ -23,6 +23,7 @@ import com.butent.bee.shared.utils.BeeUtils;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -30,6 +31,30 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public final class TransportUtils {
+
+  static BeeRowSet copyCargoPlaces(BeeRowSet places) {
+    return copyCargoPlaces(places, places.getRows());
+  }
+
+  static BeeRowSet copyCargoPlaces(BeeRowSet places, List<BeeRow> data) {
+    BeeRowSet current = new BeeRowSet(places.getViewName(), places.getColumns());
+
+    for (BeeRow place : data) {
+      BeeRow cloned = DataUtils.cloneRow(place);
+
+      Stream.of(COL_PLACE_CITY, COL_PLACE_COUNTRY).forEach(key -> {
+        int idx = current.getColumnIndex(key + "Name");
+
+        if (!BeeConst.isUndef(idx) && BeeUtils.isEmpty(cloned.getString(idx))) {
+          cloned.setValue(idx,
+              cloned.getString(current.getColumnIndex(key + VAR_UNBOUND)));
+        }
+      });
+      current.addRow(cloned);
+    }
+
+    return current;
+  }
 
   public static void copyOrderWithCargos(Long orderId, Filter cargoFilter,
       BiConsumer<Long, RowInfoList> consumer) {

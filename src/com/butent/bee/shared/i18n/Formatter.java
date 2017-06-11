@@ -4,6 +4,7 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.i18n.DateTimeFormatInfo.DateTimeFormatInfo;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateValue;
+import com.butent.bee.shared.time.HasYearMonth;
 
 import java.util.function.Function;
 
@@ -58,6 +59,14 @@ public final class Formatter {
 
     } else {
       return BeeConst.STRING_EMPTY;
+    }
+  }
+
+  public static String renderYearMonthNum(DateTimeFormatInfo dtfInfo, HasYearMonth ym) {
+    if (dtfInfo == null || ym == null) {
+      return BeeConst.STRING_EMPTY;
+    } else {
+      return render(PredefinedFormat.YEAR_MONTH_NUM, dtfInfo, ym.getDate());
     }
   }
 

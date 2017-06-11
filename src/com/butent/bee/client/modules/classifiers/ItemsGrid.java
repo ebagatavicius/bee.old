@@ -12,7 +12,6 @@ import static com.butent.bee.shared.modules.service.ServiceConstants.TBL_SERVICE
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dom.DomUtils;
@@ -25,8 +24,12 @@ import com.butent.bee.client.modules.service.ServiceMaintenanceForm;
 import com.butent.bee.client.modules.trade.TradeKeeper;
 import com.butent.bee.client.modules.trade.TradeUtils;
 import com.butent.bee.client.presenter.GridPresenter;
+import com.butent.bee.client.presenter.TreePresenter;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.view.TreeView;
 import com.butent.bee.client.view.edit.EditStartEvent;
 import com.butent.bee.client.view.grid.GridView;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
@@ -34,7 +37,6 @@ import com.butent.bee.client.view.grid.interceptor.TreeGridInterceptor;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
-import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.SimpleRowSet;
@@ -103,6 +105,25 @@ class ItemsGrid extends TreeGridInterceptor {
     }
 
     super.afterCreatePresenter(presenter);
+  }
+
+  @Override
+  public void afterCreateWidget(String name, IdentifiableWidget widget,
+      FormFactory.WidgetDescriptionCallback callback) {
+
+    super.afterCreateWidget(name, widget, callback);
+
+    if (widget instanceof TreeView) {
+      TreePresenter treePresenter = ((TreeView) widget).getTreePresenter();
+
+      if (treePresenter != null) {
+        Filter filter = services
+            ? Filter.or(Filter.notNull(COL_CATEGORY_SERVICES), Filter.isNull(COL_CATEGORY_GOODS))
+            : Filter.or(Filter.notNull(COL_CATEGORY_GOODS), Filter.isNull(COL_CATEGORY_SERVICES));
+
+        treePresenter.setFilter(filter);
+      }
+    }
   }
 
   @Override
@@ -182,33 +203,27 @@ class ItemsGrid extends TreeGridInterceptor {
       ParameterList reservationParams = ClassifierKeeper.createArgs(SVC_GET_RESERVATION);
       reservationParams.addDataItem(COL_ITEM, row.getId());
 
-      BeeKeeper.getRpc().makePostRequest(reservationParams, new ResponseCallback() {
-        @Override
-        public void onResponse(ResponseObject reservationResponse) {
-          if (!reservationResponse.hasErrors()) {
-            SimpleRowSet rowSet = SimpleRowSet.restore(reservationResponse.getResponseAsString());
-            if (rowSet.getNumberOfRows() > 0) {
-              ParameterList params = ClassifierKeeper.createArgs(SVC_FILTER_ORDERS);
-              params.addDataItem(TBL_ORDERS, Codec.beeSerialize(rowSet.getLongColumn(COL_ORDER)));
-              params.addDataItem(COL_SERVICE_MAINTENANCE,
-                  Codec.beeSerialize(rowSet.getLongColumn(COL_SERVICE_MAINTENANCE)));
-              params.addDataItem(COL_ITEM, row.getId());
+      BeeKeeper.getRpc().makePostRequest(reservationParams, reservationResponse -> {
+        if (!reservationResponse.hasErrors()) {
+          SimpleRowSet rowSet = SimpleRowSet.restore(reservationResponse.getResponseAsString());
+          if (rowSet.getNumberOfRows() > 0) {
+            ParameterList params = ClassifierKeeper.createArgs(SVC_FILTER_ORDERS);
+            params.addDataItem(TBL_ORDERS, Codec.beeSerialize(rowSet.getLongColumn(COL_ORDER)));
+            params.addDataItem(COL_SERVICE_MAINTENANCE,
+                Codec.beeSerialize(rowSet.getLongColumn(COL_SERVICE_MAINTENANCE)));
+            params.addDataItem(COL_ITEM, row.getId());
 
-              BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
-                @Override
-                public void onResponse(ResponseObject response) {
-                  if (!response.hasErrors()) {
-                    Map<Pair<String, String>, Pair<String, String>> remainders = new HashMap<>();
-                    for (Map.Entry<String, String> entry : Codec.deserializeHashMap(response
-                        .getResponseAsString()).entrySet()) {
-                      remainders.put(Pair.restore(entry.getKey()), Pair.restore(entry.getValue()));
-                    }
-
-                    Global.showModalWidget(renderOrders(rowSet, remainders));
-                  }
+            BeeKeeper.getRpc().makePostRequest(params, response -> {
+              if (!response.hasErrors()) {
+                Map<Pair<String, String>, Pair<String, String>> remainders = new HashMap<>();
+                for (Map.Entry<String, String> entry : Codec.deserializeHashMap(response
+                    .getResponseAsString()).entrySet()) {
+                  remainders.put(Pair.restore(entry.getKey()), Pair.restore(entry.getValue()));
                 }
-              });
-            }
+
+                Global.showModalWidget(renderOrders(rowSet, remainders));
+              }
+            });
           }
         }
       });

@@ -384,6 +384,14 @@ public final class SqlUtils {
     return orCondition;
   }
 
+  public static IsCondition equalsOrIsNull(String source, String field, Object value) {
+    if (value == null) {
+      return isNull(source, field);
+    } else {
+      return or(equals(source, field, value), isNull(source, field));
+    }
+  }
+
   public static IsExpression expression(Object... members) {
     Assert.minLength(ArrayUtils.length(members), 1);
     Assert.noNulls(members);

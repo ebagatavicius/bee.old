@@ -4,7 +4,7 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 
-public class RowUpdateCallback extends RowCallback {
+public class RowUpdateCallback implements RowCallback {
 
   private final String viewName;
   private final RowCallback chain;

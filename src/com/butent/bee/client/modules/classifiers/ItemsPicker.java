@@ -50,6 +50,7 @@ import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.Operator;
 import com.butent.bee.shared.data.value.TextValue;
+import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.font.FontAwesome;
 import com.butent.bee.shared.html.builder.elements.Div;
 import com.butent.bee.shared.html.builder.elements.Span;
@@ -637,7 +638,7 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
     if (!BeeUtils.isEmpty(warehouses)) {
       warehouseIds.addAll(warehouses.keySet());
     }
-
+    DataInfo viewInfo = Data.getDataInfo(items.getViewName());
     itemPanel.clear();
 
     HtmlTable table = new HtmlTable(STYLE_ITEM_TABLE);
@@ -666,6 +667,11 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
     }
 
     for (ItemPrice ip : ItemPrice.values()) {
+      if (viewInfo != null
+        && !BeeKeeper.getUser().isColumnVisible(viewInfo, ip.getPriceColumn())) {
+        continue;
+      }
+
       table.setText(r, c, ip.getCaption(),
           (ip == itemPrice) ? STYLE_SELECTED_PRICE_HEADER_CELL : STYLE_PRICE_HEADER_CELL);
 
@@ -706,6 +712,11 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
     EnumMap<ItemPrice, Integer> currencyIndexes = new EnumMap<>(ItemPrice.class);
 
     for (ItemPrice ip : ItemPrice.values()) {
+      if (viewInfo != null
+        && !BeeKeeper.getUser().isColumnVisible(viewInfo, ip.getPriceColumn())) {
+        continue;
+      }
+
       priceIndexes.put(ip, items.getColumnIndex(ip.getPriceColumn()));
       currencyIndexes.put(ip, items.getColumnIndex(ip.getCurrencyNameAlias()));
     }
@@ -756,6 +767,11 @@ public abstract class ItemsPicker extends Flow implements HasSelectionHandlers<B
           ? selectedPrices.get(item.getId()) : itemPrice;
 
       for (ItemPrice ip : ItemPrice.values()) {
+        if (viewInfo != null
+          && !BeeKeeper.getUser().isColumnVisible(viewInfo, ip.getPriceColumn())) {
+          continue;
+        }
+
         String html = renderPrice(item, priceIndexes.get(ip), currencyIndexes.get(ip));
 
         if (html == null) {

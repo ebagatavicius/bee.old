@@ -298,6 +298,14 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
   }
 
   @Override
+  public void launch() {
+    TreePresenter treePresenter = getTreePresenter();
+    if (treePresenter != null) {
+      treePresenter.launch();
+    }
+  }
+
+  @Override
   public void onCatch(CatchEvent<TreeItem> event) {
     boolean isConsumable = !event.isConsumed();
 

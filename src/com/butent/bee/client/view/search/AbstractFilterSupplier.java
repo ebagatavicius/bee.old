@@ -4,14 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.TableRowElement;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.ResponseCallbackWithId;
 import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.communication.RpcParameter;
 import com.butent.bee.client.data.Queries;
@@ -20,7 +18,6 @@ import com.butent.bee.client.dialog.Popup.OutsideClick;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.Binder;
 import com.butent.bee.client.event.EventUtils;
-import com.butent.bee.client.event.logical.CloseEvent;
 import com.butent.bee.client.event.logical.OpenEvent;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
@@ -231,25 +228,22 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
     final HtmlTable display = new HtmlTable(getDisplayStyle());
 
     if (addSelectionHandler) {
-      Binder.addClickHandler(display, new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          Element target = EventUtils.getEventTargetElement(event);
-          TableRowElement rowElement = DomUtils.getParentRow(target, true);
+      Binder.addClickHandler(display, event -> {
+        Element target = EventUtils.getEventTargetElement(event);
+        TableRowElement rowElement = DomUtils.getParentRow(target, true);
 
-          if (rowElement != null && display.getElement().isOrHasChild(rowElement)) {
-            int rc = display.getRowCount();
-            if (EventUtils.hasModifierKey(event.getNativeEvent()) && rc > 1) {
-              for (int i = 0; i < rc; i++) {
-                invertSelection(i, display.getRow(i));
-              }
-
-            } else {
-              invertSelection(rowElement.getRowIndex(), rowElement);
+        if (rowElement != null && display.getElement().isOrHasChild(rowElement)) {
+          int rc = display.getRowCount();
+          if (EventUtils.hasModifierKey(event.getNativeEvent()) && rc > 1) {
+            for (int i = 0; i < rc; i++) {
+              invertSelection(i, display.getRow(i));
             }
 
-            countSelection();
+          } else {
+            invertSelection(rowElement.getRowIndex(), rowElement);
           }
+
+          countSelection();
         }
       });
     }
@@ -330,12 +324,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
       Button actionWidget = new Button(action.getCaption());
       actionWidget.addStyleName(getStylePrefix() + action.getStyleSuffix());
 
-      actionWidget.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          doAction(action);
-        }
-      });
+      actionWidget.addClickHandler(event -> doAction(action));
 
       panel.add(actionWidget);
     }
@@ -419,7 +408,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
 
     ParameterList params = new ParameterList(Service.HISTOGRAM, RpcParameter.Section.DATA, props);
 
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
+    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (Queries.checkResponse(Service.HISTOGRAM, getRpcId(), getViewName(), response,
@@ -473,7 +462,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   }
 
   protected boolean isColumnNullable() {
-    return (getColumn() == null) ? false : getColumn().isNullable();
+    return getColumn() != null && getColumn().isNullable();
   }
 
   protected boolean isSelected(Integer item) {
@@ -503,14 +492,11 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
     popup.setWidget(widget);
     popup.setHideOnEscape(true);
 
-    popup.addCloseHandler(new CloseEvent.Handler() {
-      @Override
-      public void onClose(CloseEvent event) {
-        if (event.actionCancel()) {
-          onDialogCancel();
-        } else if (filterChanged()) {
-          onChange.execute();
-        }
+    popup.addCloseHandler(event -> {
+      if (event.actionCancel()) {
+        onDialogCancel();
+      } else if (filterChanged()) {
+        onChange.execute();
       }
     });
 

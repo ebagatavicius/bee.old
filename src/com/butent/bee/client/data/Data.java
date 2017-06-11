@@ -107,7 +107,7 @@ public final class Data {
           @Override
           public void onFailure(String... reason) {
             consumeSize(BeeConst.UNDEF);
-            super.onFailure(reason);
+            Queries.IntCallback.super.onFailure(reason);
           }
 
           @Override

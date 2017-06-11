@@ -9,6 +9,9 @@
     <row>
       <Label for="Name" text="=category" />
       <InputText source="Name" style="width: 300px;" />
+
+      <CheckBox source="Goods" style="margin-left: 3vw;" />
+      <CheckBox source="Services" style="margin-left: 1vw;" />
     </row>
   </Table>
 

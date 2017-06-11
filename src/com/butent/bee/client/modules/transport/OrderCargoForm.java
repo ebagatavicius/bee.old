@@ -44,7 +44,7 @@ class OrderCargoForm extends AbstractFormInterceptor {
       Queries.getRow(VIEW_CARGO_TYPES, typeId, new RowCallback() {
         @Override
         public void onFailure(String... reason) {
-          super.onFailure(reason);
+          RowCallback.super.onFailure(reason);
           defaultCargoType = null;
           command.run();
         }

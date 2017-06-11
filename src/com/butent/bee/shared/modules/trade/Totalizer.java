@@ -48,19 +48,10 @@ public class Totalizer {
     }
     int idx = DataUtils.getColumnIndex(COL_TRADE_DISCOUNT_PERC, columns);
 
-    setDiscountPercentPredicate(BeeConst.isUndef(idx) ? new RowPredicate() {
-      @Override
-      public boolean test(IsRow isRow) {
-        return true;
-      }
-    } : RowPredicate.isTrue(idx));
+    setDiscountPercentPredicate(BeeConst.isUndef(idx)
+        ? (RowPredicate) isRow -> true : RowPredicate.isTrue(idx));
 
-    setVatInclusivePredicate(new RowPredicate() {
-      @Override
-      public boolean test(IsRow input) {
-        return !isVatPlus(input);
-      }
-    });
+    setVatInclusivePredicate(input -> !isVatPlus(input));
     int index = DataUtils.getColumnIndex(COL_TRADE_DOCUMENT_VAT_MODE, columns);
 
     if (!BeeConst.isUndef(index)) {
@@ -74,20 +65,10 @@ public class Totalizer {
       if (!BeeConst.isUndef(idx)) {
         setVatPercentPredicate(RowPredicate.isTrue(idx));
       }
-      setVatPlusPredicate(new RowPredicate() {
-        @Override
-        public boolean test(IsRow input) {
-          return input != null && Objects.equals(TradeVatMode.PLUS,
-              EnumUtils.getEnumByIndex(TradeVatMode.class, input.getInteger(index)));
-        }
-      });
-      setVatInclusivePredicate(new RowPredicate() {
-        @Override
-        public boolean test(IsRow input) {
-          return input != null && Objects.equals(TradeVatMode.INCLUSIVE,
-              EnumUtils.getEnumByIndex(TradeVatMode.class, input.getInteger(index)));
-        }
-      });
+      setVatPlusPredicate(input -> input != null && Objects.equals(TradeVatMode.PLUS,
+          EnumUtils.getEnumByIndex(TradeVatMode.class, input.getInteger(index))));
+      setVatInclusivePredicate(input -> input != null && Objects.equals(TradeVatMode.INCLUSIVE,
+          EnumUtils.getEnumByIndex(TradeVatMode.class, input.getInteger(index))));
       predicates.put(COL_TRADE_DOCUMENT_VAT_MODE, RowPredicate.notNull(index));
     }
   }

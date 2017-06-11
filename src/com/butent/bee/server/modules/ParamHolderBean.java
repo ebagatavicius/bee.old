@@ -213,7 +213,7 @@ public class ParamHolderBean {
   }
 
   public void init() {
-    parameterEventBus = new EventBus();
+    parameterEventBus = new EventBus(logger::error);
 
     sys.registerDataEventHandler(new DataEventHandler() {
       @Subscribe

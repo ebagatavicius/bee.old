@@ -502,7 +502,7 @@ public final class TimeBoardHelper {
       @Override
       public void onFailure(String... reason) {
         settings.setValue(0, index, oldValue);
-        super.onFailure(reason);
+        RowCallback.super.onFailure(reason);
       }
 
       @Override
@@ -882,7 +882,6 @@ public final class TimeBoardHelper {
       final Widget widget, final boolean isStart) {
 
     Binder.addClickHandler(widget, event -> {
-
       final JustDate startBound = owner.getMaxRange().lowerEndpoint();
       final JustDate endBound = owner.getMaxRange().upperEndpoint();
 
@@ -892,7 +891,7 @@ public final class TimeBoardHelper {
       final JustDate oldValue = isStart ? oldStart : oldEnd;
 
       final Popup popup = new Popup(OutsideClick.CLOSE);
-      DatePicker datePicker = new DatePicker(oldValue, startBound, endBound);
+      final DatePicker datePicker = new DatePicker(oldValue, startBound, endBound);
 
       datePicker.addValueChangeHandler(vce -> {
         popup.close();
@@ -920,6 +919,10 @@ public final class TimeBoardHelper {
       });
 
       popup.setWidget(datePicker);
+
+      popup.setHideOnEscape(true);
+      popup.addOpenHandler(oe -> datePicker.setFocus(true));
+
       popup.showRelativeTo(EventUtils.getTargetElement(event.getNativeEvent().getEventTarget()));
     });
   }

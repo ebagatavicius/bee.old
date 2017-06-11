@@ -609,7 +609,7 @@ public final class Exporter {
                   cancel();
                   controller.close();
 
-                  super.onFailure(reason);
+                  Queries.RowSetCallback.super.onFailure(reason);
                 }
 
                 @Override

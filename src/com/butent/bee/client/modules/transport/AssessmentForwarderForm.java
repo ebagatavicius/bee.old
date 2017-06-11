@@ -4,7 +4,6 @@ import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.composite.DataSelector;
-import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.modules.classifiers.ClassifierUtils;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
@@ -15,7 +14,6 @@ import com.butent.bee.client.view.form.interceptor.PrintFormInterceptor;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.filter.Filter;
-import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.HashMap;
@@ -64,29 +62,11 @@ public class AssessmentForwarderForm extends PrintFormInterceptor {
 
           TransportUtils.getCargoPlaces(Filter.equals(COL_CARGO_TRIP,
               getActiveRow().getLong(form.getDataIndex(COL_CARGO_TRIP))), (loading, unloading) -> {
-
             for (BeeRowSet places : new BeeRowSet[] {loading, unloading}) {
-              String prefix = BeeUtils.removePrefix(places.getViewName(), COL_CARGO);
-              String dates = "";
-              String addresses = "";
 
-              for (int i = 0; i < places.getNumberOfRows(); i++) {
-                DateTime date = places.getDateTime(i, COL_PLACE_DATE);
-                String txt = places.getString(i, COL_PLACE_NOTE);
+              BeeRowSet current = TransportUtils.copyCargoPlaces(places);
 
-                if (date != null) {
-                  dates += BeeUtils.joinWords(Format.renderDate(date), txt) + "\n";
-                }
-
-                addresses += BeeUtils.joinItems(places.getString(i, COL_PLACE_COMPANY),
-                    places.getString(i, COL_PLACE_ADDRESS),
-                    places.getString(i, COL_PLACE_POST_INDEX),
-                    places.getString(i, COL_PLACE_CITY + "Name"),
-                    places.getString(i, COL_PLACE_COUNTRY + "Name"),
-                    places.getString(i, COL_PLACE_CONTACT)) + "\n";
-              }
-              defaultParameters.put(prefix + COL_PLACE_DATE, dates);
-              defaultParameters.put(prefix + COL_PLACE_ADDRESS, addresses);
+              defaultParameters.put(places.getViewName(), current.serialize());
             }
             parametersConsumer.accept(defaultParameters);
           });

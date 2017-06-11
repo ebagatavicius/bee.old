@@ -1,13 +1,9 @@
 package com.butent.bee.shared.data;
 
-public abstract class RowToLong implements RowFunction<Long> {
+@FunctionalInterface
+public interface RowToLong extends RowFunction<Long> {
 
-  public static RowToLong at(final int index) {
-    return new RowToLong() {
-      @Override
-      public Long apply(IsRow input) {
-        return (input == null) ? null : input.getLong(index);
-      }
-    };
+  static RowToLong at(final int index) {
+    return input -> (input == null) ? null : input.getLong(index);
   }
 }

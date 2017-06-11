@@ -46,7 +46,7 @@ public class OutstandingPrepaymentGrid extends PrepaymentGrid {
   public void afterCreatePresenter(GridPresenter presenter) {
     HeaderView header = (presenter == null) ? null : presenter.getHeader();
     if (header != null) {
-      Button discharge = new Button(Localized.dictionary().paymentDischargePrepayment());
+      Button discharge = new Button(Localized.dictionary().paymentDischargePrepaymentCommand());
       discharge.addStyleName(STYLE_COMMAND_DISCHARGE);
 
       discharge.addClickHandler(event -> {
