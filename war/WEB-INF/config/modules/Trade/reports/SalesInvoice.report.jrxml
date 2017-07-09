@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
-<!-- 2017-05-15T17:01:35 -->
+<!-- 2017-06-19T13:55:29 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SalesInvoice" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30" isSummaryWithPageHeaderAndFooter="true" uuid="c8648f9a-efc1-466e-be02-a124c2efc4a2">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<import value="com.butent.bee.server.i18n.Localizations"/>
@@ -115,6 +115,16 @@
 	<parameter name="SupplierEmail" class="java.lang.String"/>
 	<parameter name="PayerEmail" class="java.lang.String"/>
 	<parameter name="CustomerEmail" class="java.lang.String"/>
+	<parameter name="PositionName" class="java.lang.String"/>
+	<parameter name="SupplierPostIndex" class="java.lang.String"/>
+	<parameter name="SupplierCityName" class="java.lang.String"/>
+	<parameter name="SupplierCountryName" class="java.lang.String"/>
+	<parameter name="CustomerPostIndex" class="java.lang.String"/>
+	<parameter name="CustomerCityName" class="java.lang.String"/>
+	<parameter name="CustomerCountryName" class="java.lang.String"/>
+	<parameter name="PayerPostIndex" class="java.lang.String"/>
+	<parameter name="PayerCityName" class="java.lang.String"/>
+	<parameter name="PayerCountryName" class="java.lang.String"/>
 	<variable name="loc" class="com.butent.bee.shared.i18n.Dictionary">
 		<variableExpression><![CDATA[$V{loc}]]></variableExpression>
 		<initialValueExpression><![CDATA[Localizations.getDictionary($P{REPORT_LOCALE}.getLanguage())]]></initialValueExpression>
@@ -188,11 +198,11 @@
 				<textField isStretchWithOverflow="true">
 					<reportElement positionType="Float" x="70" y="14" width="300" height="14" isRemoveLineWhenBlank="true" uuid="18615d15-3cba-4188-b2e4-a44dacef30ac"/>
 					<textElement textAlignment="Left"/>
-					<textFieldExpression><![CDATA[$P{PayerAddress}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[BeeUtils.joinWords($P{PayerAddress}, $P{PayerPostIndex}, $P{PayerCityName}, $P{PayerCountryName})]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true">
 					<reportElement positionType="Float" x="70" y="28" width="484" height="14" isRemoveLineWhenBlank="true" uuid="a99a8c85-0b77-41ac-93cd-cb0894eee90f">
-						<printWhenExpression><![CDATA[!BeeUtils.isEmpty($P{PayerName})]]></printWhenExpression>
+						<printWhenExpression><![CDATA[!BeeUtils.allEmpty($P{PayerPhone}, $P{PayerMobile}, $P{PayerFax})]]></printWhenExpression>
 					</reportElement>
 					<textElement textAlignment="Left"/>
 					<textFieldExpression><![CDATA[$V{loc}.phone() + " " + BeeUtils.joinItems($P{PayerPhone}, $P{PayerMobile}, $P{PayerFax})]]></textFieldExpression>
@@ -268,10 +278,12 @@ BeeUtils.isEmpty($P{PayerEmail}) ? "" : BeeUtils.join(": ", $V{loc}.email(), $P{
 				<textField isStretchWithOverflow="true">
 					<reportElement positionType="Float" x="70" y="14" width="300" height="14" isRemoveLineWhenBlank="true" uuid="6d096f6a-66c8-4e32-b73d-b30e6da0417c"/>
 					<textElement textAlignment="Left"/>
-					<textFieldExpression><![CDATA[$P{CustomerAddress}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[BeeUtils.joinWords($P{CustomerAddress}, $P{CustomerPostIndex}, $P{CustomerCityName}, $P{CustomerCountryName})]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="70" y="28" width="484" height="14" isRemoveLineWhenBlank="true" uuid="817fc941-0b53-4a17-8ff6-3607a8e616e0"/>
+					<reportElement positionType="Float" x="70" y="28" width="484" height="14" isRemoveLineWhenBlank="true" uuid="817fc941-0b53-4a17-8ff6-3607a8e616e0">
+						<printWhenExpression><![CDATA[!BeeUtils.allEmpty($P{CustomerPhone}, $P{CustomerMobile}, $P{CustomerFax})]]></printWhenExpression>
+					</reportElement>
 					<textElement textAlignment="Left"/>
 					<textFieldExpression><![CDATA[$V{loc}.phone() + " " + BeeUtils.joinItems($P{CustomerPhone}, $P{CustomerMobile}, $P{CustomerFax})]]></textFieldExpression>
 				</textField>
@@ -344,10 +356,12 @@ BeeUtils.isEmpty($P{PayerEmail}) ? "" : BeeUtils.join(": ", $V{loc}.email(), $P{
 				<textField isStretchWithOverflow="true">
 					<reportElement positionType="Float" x="70" y="15" width="300" height="14" isRemoveLineWhenBlank="true" uuid="3fc9cc4d-f8be-495b-90b4-3eacb9d876af"/>
 					<textElement textAlignment="Left"/>
-					<textFieldExpression><![CDATA[$P{SupplierAddress}]]></textFieldExpression>
+					<textFieldExpression><![CDATA[BeeUtils.joinWords($P{SupplierAddress}, $P{SupplierPostIndex}, $P{SupplierCityName}, $P{SupplierCountryName})]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true">
-					<reportElement positionType="Float" x="70" y="29" width="484" height="14" isRemoveLineWhenBlank="true" uuid="3048f397-e7bf-4e16-a384-94acccdf3a35"/>
+					<reportElement positionType="Float" x="70" y="29" width="484" height="14" isRemoveLineWhenBlank="true" uuid="3048f397-e7bf-4e16-a384-94acccdf3a35">
+						<printWhenExpression><![CDATA[!BeeUtils.allEmpty($P{SupplierPhone}, $P{SupplierMobile}, $P{SupplierFax})]]></printWhenExpression>
+					</reportElement>
 					<textElement textAlignment="Left"/>
 					<textFieldExpression><![CDATA[$V{loc}.phone() + " " + BeeUtils.joinItems($P{SupplierPhone}, $P{SupplierMobile}, $P{SupplierFax})]]></textFieldExpression>
 				</textField>
@@ -668,7 +682,7 @@ BeeUtils.isEmpty($P{PayerEmail}) ? "" : BeeUtils.join(": ", $V{loc}.email(), $P{
 			</textField>
 			<textField>
 				<reportElement positionType="Float" x="80" y="183" width="178" height="12" uuid="08446029-9964-4625-936c-3e2f477f0160"/>
-				<textFieldExpression><![CDATA[BeeUtils.joinWords($P{ManagerFirstName}, $P{ManagerLastName})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[BeeUtils.joinWords($P{PositionName}, $P{ManagerFirstName}, $P{ManagerLastName})]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement positionType="Float" x="0" y="212" width="554" height="12" isRemoveLineWhenBlank="true" uuid="11dda54f-2352-43ce-8192-9b339d9e0009"/>

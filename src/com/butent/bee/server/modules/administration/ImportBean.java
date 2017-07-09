@@ -80,9 +80,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellReference;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -1230,24 +1229,39 @@ public class ImportBean {
     ImportObject op = io.getPropertyRelation(TBL_CONF_OPTIONS);
 
     if (Objects.nonNull(op)) {
+      Long id;
       try {
-        File tmp = File.createTempFile("bee_", null);
-        tmp.deleteOnExit();
-        FileOutputStream os = new FileOutputStream(tmp);
-        Files.copy(file.toPath(), os);
-        os.close();
-        file = tmp;
+        id = fs.storeFile(new FileInputStream(file), null, null).getId();
       } catch (IOException ex) {
         file.delete();
         return ResponseObject.error(ex);
       }
-      ResponseObject response = importData(op.getObjectId(), fileId, progress);
+      ResponseObject response = importData(op.getObjectId(), id, progress);
 
       if (response.hasErrors()) {
         file.delete();
         return response;
       }
-      status = response.getResponse(status, null);
+      status.putAll(response.getResponse(status, null));
+    }
+    // Packets
+    ImportObject pk = io.getPropertyRelation(TBL_CONF_PACKET_OPTIONS);
+
+    if (Objects.nonNull(pk)) {
+      Long id;
+      try {
+        id = fs.storeFile(new FileInputStream(file), null, null).getId();
+      } catch (IOException ex) {
+        file.delete();
+        return ResponseObject.error(ex);
+      }
+      ResponseObject response = importData(pk.getObjectId(), id, progress);
+
+      if (response.hasErrors()) {
+        file.delete();
+        return response;
+      }
+      status.putAll(response.getResponse(status, null));
     }
     SqlSelect query = new SqlSelect()
         .addField(TBL_CONF_OPTIONS, sys.getIdName(TBL_CONF_OPTIONS), COL_OPTION)

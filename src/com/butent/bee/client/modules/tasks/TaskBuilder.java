@@ -287,6 +287,20 @@ class TaskBuilder extends ProductSupportInterceptor {
     } else if (BeeUtils.same(name,
         AdministrationConstants.TBL_RELATIONS) && widget instanceof Relations) {
       relations = (Relations) widget;
+      relations.setSelectorHandler(new TaskHelper.TaskRelationsHandler() {
+
+        @Override
+        public void onDataSelector(SelectorEvent event) {
+          IsRow row = DataUtils.cloneRow(getActiveRow());
+
+          Data.setValue(getViewName(), row, COL_START_TIME, getStart());
+          Data.setValue(getViewName(), row, COL_FINISH_TIME, getEnd(getStart(),
+            Data.getString(VIEW_TASKS, row, COL_EXPECTED_DURATION)));
+
+          setTaskRow(row);
+          super.onDataSelector(event);
+        }
+      });
     }
 
     super.afterCreateWidget(name, widget, callback);
@@ -858,48 +872,43 @@ class TaskBuilder extends ProductSupportInterceptor {
 
     Queries.getRowSet(ProjectConstants.VIEW_PROJECT_USERS, Lists
         .newArrayList(AdministrationConstants.COL_USER), Filter.isEqual(
-        ProjectConstants.COL_PROJECT, Value.getValue(projectId)), new RowSetCallback() {
+        ProjectConstants.COL_PROJECT, Value.getValue(projectId)), result -> {
+          if (DataUtils.isEmpty(result)) {
+            if (executors != null) {
+              executors.getOracle().setAdditionalFilter(Filter.compareId(projectOwner), true);
+              TaskHelper.setWidgetEnabled(executors, notScheduledTask != null
+                  && !notScheduledTask.isChecked());
+              return;
+            }
+          }
 
-      @Override
-      public void onSuccess(BeeRowSet result) {
-        if (DataUtils.isEmpty(result)) {
-          if (executors != null) {
-            executors.getOracle().setAdditionalFilter(Filter.compareId(projectOwner), true);
-            TaskHelper.setWidgetEnabled(executors, notScheduledTask != null
-                && !notScheduledTask.isChecked());
+          List<Long> userIds = Lists.newArrayList(projectOwner);
+          int idxUser = result.getColumnIndex(AdministrationConstants.COL_USER);
+
+          if (BeeConst.isUndef(idxUser)) {
+            Assert.untouchable();
             return;
           }
-        }
 
-        List<Long> userIds = Lists.newArrayList(projectOwner);
-        int idxUser = result.getColumnIndex(AdministrationConstants.COL_USER);
+          for (IsRow userRow : result) {
+            long projectUser = BeeUtils.unbox(userRow.getLong(idxUser));
 
-        if (BeeConst.isUndef(idxUser)) {
-          Assert.untouchable();
-          return;
-        }
-
-        for (IsRow userRow : result) {
-          long projectUser = BeeUtils.unbox(userRow.getLong(idxUser));
-
-          if (DataUtils.isId(projectUser)) {
-            userIds.add(projectUser);
+            if (DataUtils.isId(projectUser)) {
+              userIds.add(projectUser);
+            }
           }
-        }
 
-        if (executors != null) {
-          executors.getOracle().setAdditionalFilter(Filter.idIn(userIds), true);
-          TaskHelper.setWidgetEnabled(executors, notScheduledTask != null
-              && !notScheduledTask.isChecked());
-        }
+          if (executors != null) {
+            TaskHelper.setWidgetEnabled(executors, notScheduledTask != null
+                && !notScheduledTask.isChecked());
+          }
 
-        if (observers != null) {
-          observers.getOracle().setAdditionalFilter(Filter.idIn(userIds), true);
-          TaskHelper.setWidgetEnabled(observers, notScheduledTask != null
-              && !notScheduledTask.isChecked());
-        }
-      }
-    });
+          if (observers != null) {
+            observers.getOracle().setAdditionalFilter(Filter.idIn(userIds), true);
+            TaskHelper.setWidgetEnabled(observers, notScheduledTask != null
+                && !notScheduledTask.isChecked());
+          }
+        });
   }
 
   private void showFiles(IsRow row) {

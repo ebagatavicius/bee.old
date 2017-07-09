@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
-  name="PersonFamily" viewName="PersonFamily" caption="=contactFamily"
-  newRowPopup="true" editPopup="false"  flexGrow="1" flexShrink="1"
-  >
+        name="PersonFamily" viewName="PersonFamily" caption="=contactFamily"
+        newRowWindow="modal" flexGrow="1" flexShrink="1"
+>
   <g:columns>
     <DataColumn name="FirstName" visible="true" />
     <DataColumn name="LastName" visible="true" />

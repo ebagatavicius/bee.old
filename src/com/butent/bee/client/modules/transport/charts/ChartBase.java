@@ -7,6 +7,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
+import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
@@ -20,8 +21,8 @@ import com.butent.bee.client.Global;
 import com.butent.bee.client.animation.RafCallback;
 import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
-import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dialog.StringCallback;
@@ -37,6 +38,9 @@ import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.client.view.ViewFactory;
+import com.butent.bee.client.view.edit.SaveChangesEvent;
+import com.butent.bee.client.view.form.interceptor.AbstractFormInterceptor;
+import com.butent.bee.client.view.form.interceptor.FormInterceptor;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.HasState;
@@ -60,6 +64,7 @@ import com.butent.bee.shared.menu.MenuService;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.transport.TransportUtils;
+import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.time.TimeUtils;
@@ -80,6 +85,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public abstract class ChartBase extends TimeBoard implements HasState {
 
@@ -138,6 +144,8 @@ public abstract class ChartBase extends TimeBoard implements HasState {
   private boolean showOrderCustomer;
   private boolean showOrderNo;
 
+  private boolean filterDependsOnData;
+
   private final Set<String> relevantDataViews = Sets.newHashSet(VIEW_ORDER_CARGO,
       VIEW_CARGO_TYPES, TBL_CARGO_LOADING, TBL_CARGO_UNLOADING, VIEW_CARGO_TRIPS, VIEW_TRIP_CARGO,
       VIEW_TRANSPORT_GROUPS, ClassifierConstants.VIEW_COUNTRIES,
@@ -148,10 +156,13 @@ public abstract class ChartBase extends TimeBoard implements HasState {
 
   private State state;
 
+  private boolean updateFilterResults = true;
+
   private final List<ChartData> filterData = new ArrayList<>();
 
-  protected ChartBase() {
+  protected ChartBase(ResponseObject settingsResponse) {
     super();
+    initSettings(settingsResponse);
 
     this.refreshTimer = new Timer() {
       @Override
@@ -172,69 +183,60 @@ public abstract class ChartBase extends TimeBoard implements HasState {
   public void handleAction(Action action) {
     switch (action) {
       case FILTER:
-        FilterHelper.enableDataTypes(getFilterData(), getEnabledFilterDataTypes());
+        setState(State.LOADING);
 
-        FilterHelper.openDialog(getFilterData(), getSavedFilters(),
-            new FilterHelper.DialogCallback() {
-              @Override
-              public boolean applySavedFilter(int index) {
-                return onApplyFilter(index);
-              }
+        updateFilterSelection(isFilterUpdated -> {
+          updateFilterResults = false;
+          if (isFilterUpdated) {
+            FilterHelper.enableDataTypes(getFilterData(), getEnabledFilterDataTypes());
+            formatManagerFilterValue(getFilterData());
+          }
 
-              @Override
-              public void onDataTypesChange(Set<ChartData.Type> types) {
-                updateEnabledFilterDataTypes(types);
-                handleAction(Action.FILTER);
-              }
+          setState(State.LOADED);
 
-              @Override
-              public boolean onFilter() {
-                boolean ok;
+          FilterHelper.openDialog(getFilterData(), getAllFilterTypes(), getEnabledFilterDataTypes(),
+              getSavedFilters(), new FilterHelper.DialogCallback() {
+                @Override
+                public boolean applySavedFilter(int index) {
+                  return onApplyFilter(index);
+                }
 
-                if (FilterHelper.hasSelection(getFilterData())) {
-                  ok = tryFilter();
-                  if (ok) {
-                    setFiltered(persistFilter());
-                    refreshFilterInfo();
+                @Override
+                public void onDataTypesChange(Set<ChartDataType> types) {
+                  updateEnabledFilterDataTypes(types);
+                  updateFilterResults = true;
+                  handleAction(Action.FILTER);
+                }
+
+                @Override
+                public boolean onFilter() {
+                  if (filterDependsOnData) {
+                    updateFilterResults = true;
                   }
-
-                } else {
-                  ok = true;
-                  clearFilter();
+                  return applyFilterData(true, true);
                 }
 
-                if (ok) {
-                  render(false);
+                @Override
+                public void onSave(Callback<List<ChartFilter>> callback) {
+                  onSaveFilter(callback);
                 }
-                return ok;
-              }
 
-              @Override
-              public void onSave(Callback<List<ChartFilter>> callback) {
-                if (FilterHelper.hasSelection(getFilterData())) {
-                  if (tryFilter()) {
-                    onSaveFilter(callback);
-                  }
-                } else {
-                  BeeKeeper.getScreen().notifyWarning(Localized.dictionary().noData());
+                @Override
+                public void removeSavedFilter(int index, Callback<List<ChartFilter>> callback) {
+                  onRemoveFilter(index, callback);
                 }
-              }
 
-              @Override
-              public void removeSavedFilter(int index, Callback<List<ChartFilter>> callback) {
-                onRemoveFilter(index, callback);
-              }
-
-              @Override
-              public void setInitial(int index, boolean initial, Runnable callback) {
-                onSetInitialFilter(index, initial, callback);
-              }
-            });
+                @Override
+                public void setInitial(int index, boolean initial, Runnable callback) {
+                  onSetInitialFilter(index, initial, callback);
+                }
+              });
+        });
         break;
 
       case REMOVE_FILTER:
         clearFilter();
-        render(false);
+        refresh();
         break;
 
       default:
@@ -256,6 +258,40 @@ public abstract class ChartBase extends TimeBoard implements HasState {
       }
 
       logger.debug(NameUtils.getName(this), getId(), state);
+    }
+  }
+
+  protected abstract void addFilterSettingParams(ParameterList params);
+
+  protected void addFilterValuesToParams(ParameterList params) {
+    if (!getFilterData().isEmpty()) {
+      params.addDataItem(PRM_CHART_FILTER,
+          Codec.beeSerialize(FilterHelper.updateServerFilter(getFilterData())));
+
+    } else {
+      Map<String, Set<Long>> filterValuesMap = new HashMap<>();
+
+      getSavedFilters().stream().filter(ChartFilter::isInitial).forEach(savedFilter ->
+        savedFilter.getValues().stream().filter(filter -> filter.getType().isServerFilter())
+            .forEach(filter -> {
+              if (filter.getType().isServerFilter()) {
+                String typeOrdinalValue = BeeUtils.toString(filter.getType().ordinal());
+
+                if (filterValuesMap.containsKey(typeOrdinalValue)) {
+                  filterValuesMap.get(typeOrdinalValue).add(filter.getId());
+                } else {
+                  filterValuesMap.put(typeOrdinalValue, Sets.newHashSet(filter.getId()));
+                }
+              }
+            }));
+
+      if (filterValuesMap.isEmpty()
+          && getEnabledFilterDataTypes().contains(ChartDataType.MANAGER)) {
+        filterValuesMap.put(BeeUtils.toString(ChartDataType.MANAGER.ordinal()),
+            Sets.newHashSet(BeeKeeper.getUser().getUserId()));
+      }
+
+      params.addDataItem(PRM_CHART_FILTER, Codec.beeSerialize(filterValuesMap));
     }
   }
 
@@ -327,6 +363,37 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     return panel;
   }
 
+  protected Multimap<Long, CargoHandling> deserializeCargoHandling(String serialized) {
+    Multimap<Long, CargoHandling> cargoHandlingData = ArrayListMultimap.create();
+
+    if (!BeeUtils.isEmpty(serialized)) {
+      long millis = System.currentTimeMillis();
+
+      SimpleRowSet srs = SimpleRowSet.restore(serialized);
+      for (SimpleRow row : srs) {
+        cargoHandlingData.put(row.getLong(COL_CARGO), new CargoHandling(row));
+      }
+
+      logger.debug(PROP_CARGO_HANDLING, cargoHandlingData.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return cargoHandlingData;
+  }
+
+  protected static void deserializeCountriesAndCities(String countriesData, String citiesData) {
+    long millis;
+    if (!BeeUtils.isEmpty(countriesData)) {
+      millis = System.currentTimeMillis();
+      int size = Places.setCountries(SimpleRowSet.restore(countriesData));
+      logger.debug(PROP_COUNTRIES, size, TimeUtils.elapsedMillis(millis));
+    }
+
+    if (!BeeUtils.isEmpty(citiesData)) {
+      millis = System.currentTimeMillis();
+      int size = Places.setCities(Codec.deserializeHashMap(citiesData));
+      logger.debug(PROP_CITIES, size, TimeUtils.elapsedMillis(millis));
+    }
+  }
+
   @Override
   protected void editSettings() {
     if (BeeUtils.isEmpty(getSettingsFormName()) || DataUtils.isEmpty(getSettings())) {
@@ -338,61 +405,146 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     final BeeRow oldRow = DataUtils.cloneRow(oldSettings);
     final Long oldTheme = getColorTheme(oldSettings);
 
-    RowEditor.openForm(getSettingsFormName(), getSettings().getViewName(), oldSettings,
-        Opener.MODAL, new RowCallback() {
-          @Override
-          public void onSuccess(BeeRow result) {
-            if (result != null) {
-              getSettings().clearRows();
-              getSettings().addRow(DataUtils.cloneRow(result));
+    RowEditor.openForm(getSettingsFormName(), Data.getDataInfo(getSettings().getViewName()),
+        oldSettings,
+        Opener.MODAL, result -> {
+          if (result != null) {
+            getSettings().clearRows();
+            getSettings().addRow(DataUtils.cloneRow(result));
 
-              boolean refresh = oldRow == null;
-              Collection<String> colNames = getSettingsColumnsTriggeringRefresh();
+            boolean refresh = oldRow == null;
+            Collection<String> colNames = getSettingsColumnsTriggeringRefresh();
 
-              if (!refresh && !BeeUtils.isEmpty(colNames)) {
-                for (String colName : colNames) {
-                  int index = getSettings().getColumnIndex(colName);
-                  if (!BeeConst.isUndef(index)
-                      && !BeeUtils.equalsTrimRight(oldRow.getString(index),
-                      result.getString(index))) {
+            if (!refresh && !BeeUtils.isEmpty(colNames)) {
+              for (String colName : colNames) {
+                int index = getSettings().getColumnIndex(colName);
+                if (!BeeConst.isUndef(index)
+                    && !BeeUtils.equalsTrimRight(oldRow.getString(index),
+                    result.getString(index))) {
 
-                    refresh = true;
-                    break;
-                  }
-                }
-              }
-
-              if (refresh) {
-                refresh();
-
-              } else {
-                Long newTheme = getColorTheme(result);
-                if (Objects.equals(oldTheme, newTheme)) {
-                  render(false);
-                } else {
-                  updateColorTheme(newTheme);
+                  refresh = true;
+                  break;
                 }
               }
             }
+
+            if (refresh) {
+              setSettings(null);
+              refresh();
+
+            } else {
+              Long newTheme = getColorTheme(result);
+              if (Objects.equals(oldTheme, newTheme)) {
+                render(false);
+              } else {
+                updateColorTheme(newTheme);
+              }
+            }
+          }
+        }, new AbstractFormInterceptor() {
+
+          @Override
+          public void onSaveChanges(HasHandlers listener, SaveChangesEvent event) {
+            if (BeeUtils.allNotEmpty(getSettingsMinDate(), getSettingsMaxDate())) {
+              DateTime start = getDateTimeValue(getSettingsMinDate());
+              DateTime end = getDateTimeValue(getSettingsMaxDate());
+
+              if (!Objects.isNull(start) && !Objects.isNull(end)) {
+                boolean ok = TimeUtils.isMore(end, start);
+
+                if (!ok) {
+                  getFormView().focus(getSettingsMaxDate());
+                  getFormView()
+                      .notifySevere(Localized.dictionary().crmFinishDateMustBeGreaterThanStart());
+                  event.consume();
+                }
+              }
+            }
+          }
+
+          @Override
+          public FormInterceptor getInstance() {
+            return null;
           }
         });
   }
 
   protected abstract boolean filter(FilterType filterType);
 
-  protected Collection<CargoHandling> getCargoHandling(Long cargoId) {
-    return cargoHandling.get(cargoId);
+  protected void filterData(FilterType filterType, Boolean filterServerSide,
+      Consumer<Boolean> consumer) {
+    if (filterServerSide) {
+      setState(State.UPDATING);
+      requestData(response -> {
+        BeeRowSet rowSet = BeeRowSet.restore((String) response.getResponse());
+        initDataForVisualization(rowSet);
+        setState(State.LOADED);
+        consumer.accept(filter(filterType));
+      });
+    } else {
+      consumer.accept(filter(filterType));
+    }
   }
 
-  protected Pair<JustDate, JustDate> getCargoHandlingSpan(Long cargoId) {
+  protected abstract Set<ChartDataType> getAllFilterTypes();
+
+  protected Multimap<Long, CargoHandling> getCargoHandling() {
+    return this.cargoHandling;
+  }
+
+  protected Collection<CargoHandling> getCargoHandling(Long cargoId, Long cargoTripId) {
+    return getCargoHandling(getCargoHandling(), cargoId, cargoTripId);
+  }
+
+  protected Collection<CargoHandling> getCargoHandling(Multimap<Long, CargoHandling> handlingData,
+      Long cargoId, Long cargoTripId) {
+    if (!(cargoId != null && handlingData.containsKey(cargoId))) {
+      return Collections.emptyList();
+
+    } else if (cargoTripId == null) {
+      return handlingData.get(cargoId);
+
+    } else {
+      Collection<CargoHandling> input = handlingData.get(cargoId);
+      List<CargoHandling> result = new ArrayList<>();
+
+      boolean hasLoading = false;
+      boolean hasUnloading = false;
+
+      for (CargoHandling ch : input) {
+        if (Objects.equals(cargoTripId, ch.getCargoTripId())) {
+          if (ch.isLoading()) {
+            hasLoading = true;
+          } else {
+            hasUnloading = true;
+          }
+
+          result.add(ch);
+        }
+      }
+
+      if (!hasLoading || !hasUnloading) {
+        for (CargoHandling ch : input) {
+          if (ch.getCargoTripId() == null) {
+            if (!hasLoading && ch.isLoading() || !hasUnloading && ch.isUnloading()) {
+              result.add(ch);
+            }
+          }
+        }
+      }
+
+      return result;
+    }
+  }
+
+  protected Pair<JustDate, JustDate> getCargoHandlingSpan(
+      Multimap<Long, CargoHandling> handlingData, Long cargoId, Long cargoTripId) {
     JustDate minLoad = null;
     JustDate maxUnload = null;
 
-    if (hasCargoHandling(cargoId)) {
-      for (CargoHandling ch : getCargoHandling(cargoId)) {
-        minLoad = BeeUtils.min(minLoad, ch.getLoadingDate());
-        maxUnload = BeeUtils.max(maxUnload, ch.getUnloadingDate());
-      }
+    for (CargoHandling ch : getCargoHandling(handlingData, cargoId, cargoTripId)) {
+      minLoad = BeeUtils.min(minLoad, ch.getLoadingDate());
+      maxUnload = BeeUtils.max(maxUnload, ch.getUnloadingDate());
     }
 
     return Pair.of(minLoad, maxUnload);
@@ -421,6 +573,8 @@ public abstract class ChartBase extends TimeBoard implements HasState {
 
   protected abstract String getFiltersColumnName();
 
+  protected abstract String getFilterService();
+
   protected abstract String getRefreshLocalChangesColumnName();
 
   protected abstract String getRefreshRemoteChangesColumnName();
@@ -428,6 +582,10 @@ public abstract class ChartBase extends TimeBoard implements HasState {
   protected abstract Collection<String> getSettingsColumnsTriggeringRefresh();
 
   protected abstract String getSettingsFormName();
+
+  protected abstract String getSettingsMaxDate();
+
+  protected abstract String getSettingsMinDate();
 
   protected abstract String getShowAdditionalInfoColumnName();
 
@@ -449,15 +607,15 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     return transportGroups.get(id);
   }
 
-  protected boolean hasCargoHandling(Long cargoId) {
-    return cargoId != null && cargoHandling.containsKey(cargoId);
-  }
-
   protected abstract void initData(Map<String, String> properties);
 
   @Override
   protected boolean isDataEventRelevant(ModificationEvent<?> event) {
     return event != null && event.containsAny(relevantDataViews);
+  }
+
+  protected boolean isFilterDependsOnData() {
+    return filterDependsOnData;
   }
 
   protected boolean isItemVisible(Filterable item) {
@@ -518,42 +676,40 @@ public abstract class ChartBase extends TimeBoard implements HasState {
 
     setShowPlaceCities(TimeBoardHelper.getBoolean(getSettings(), getShowPlaceCitiesColumnName()));
     setShowPlaceCodes(TimeBoardHelper.getBoolean(getSettings(), getShowPlaceCodesColumnName()));
+
+    setFilterDependsOnData(TimeBoardHelper.getBoolean(getSettings(), COL_FILTER_DEPENDS_ON_DATA));
   }
 
-  protected abstract List<ChartData> prepareFilterData();
+  protected abstract List<ChartData> prepareFilterData(ResponseObject response);
 
   @Override
   protected void refresh() {
     cancelRefreshTimer();
     setState(State.LOADING);
 
-    BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(getDataService()),
-        new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            setState(State.UPDATING);
+    requestData(response -> {
+      setState(State.UPDATING);
 
-            scheduleDeferred(() -> {
-              if (setData(response, false)) {
-                render(false, new Callback<Integer>() {
-                  @Override
-                  public void onFailure(String... reason) {
-                    onSuccess(null);
-                    logger.warning(ArrayUtils.joinWords(reason));
-                  }
+      scheduleDeferred(() -> {
+        if (setData(response, false)) {
+          render(false, new Callback<Integer>() {
+            @Override
+            public void onFailure(String... reason) {
+              onSuccess(null);
+              logger.warning(ArrayUtils.joinWords(reason));
+            }
 
-                  @Override
-                  public void onSuccess(Integer result) {
-                    setState(refreshTimer.isRunning() ? State.PENDING : State.LOADED);
-                  }
-                });
+            @Override
+            public void onSuccess(Integer result) {
+              setState(refreshTimer.isRunning() ? State.PENDING : State.LOADED);
+            }
+          });
 
-              } else {
-                setState(refreshTimer.isRunning() ? State.PENDING : State.ERROR);
-              }
-            });
-          }
-        });
+        } else {
+          setState(refreshTimer.isRunning() ? State.PENDING : State.ERROR);
+        }
+      });
+    });
   }
 
   @Override
@@ -593,6 +749,7 @@ public abstract class ChartBase extends TimeBoard implements HasState {
 
   protected void renderCargoShipment(HasWidgets panel, OrderCargo cargo, String parentTitle,
       String styleInfo) {
+
     if (panel == null || cargo == null) {
       return;
     }
@@ -684,10 +841,18 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     }
   }
 
+  protected void requestData(ResponseCallback responseCallback) {
+    ParameterList params = TransportHandler.createArgs(getDataService());
+    addFilterValuesToParams(params);
+    BeeKeeper.getRpc().makePostRequest(params, responseCallback);
+  }
+
   protected abstract void resetFilter(FilterType filterType);
 
   @Override
   protected boolean setData(ResponseObject response, boolean init) {
+    updateFilterResults = true;
+
     long startMillis = System.currentTimeMillis();
     long millis;
 
@@ -696,97 +861,14 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     }
 
     BeeRowSet rowSet = BeeRowSet.restore((String) response.getResponse());
-    setSettings(rowSet);
+
+    if (getSettings() == null) {
+      setSettings(rowSet);
+    }
 
     logger.debug(rowSet.getViewName(), TimeUtils.elapsedMillis(startMillis));
 
-    String serialized = rowSet.getTableProperty(PROP_COUNTRIES);
-    if (!BeeUtils.isEmpty(serialized)) {
-      millis = System.currentTimeMillis();
-      int size = Places.setCountries(BeeRowSet.restore(serialized));
-      logger.debug(PROP_COUNTRIES, size, TimeUtils.elapsedMillis(millis));
-    }
-
-    serialized = rowSet.getTableProperty(PROP_CITIES);
-    if (!BeeUtils.isEmpty(serialized)) {
-      millis = System.currentTimeMillis();
-      int size = Places.setCities(Codec.deserializeHashMap(serialized));
-      logger.debug(PROP_CITIES, size, TimeUtils.elapsedMillis(millis));
-    }
-
-    serialized = rowSet.getTableProperty(PROP_COLORS);
-    if (!BeeUtils.isEmpty(serialized)) {
-      millis = System.currentTimeMillis();
-      int size = restoreColors(serialized);
-      logger.debug(PROP_COLORS, size, TimeUtils.elapsedMillis(millis));
-    }
-
-    transportGroups.clear();
-    serialized = rowSet.getTableProperty(PROP_TRANSPORT_GROUPS);
-    if (!BeeUtils.isEmpty(serialized)) {
-      millis = System.currentTimeMillis();
-
-      BeeRowSet groups = BeeRowSet.restore(serialized);
-      int nameIndex = groups.getColumnIndex(COL_GROUP_NAME);
-
-      for (BeeRow group : groups) {
-        String name = group.getString(nameIndex);
-        if (!BeeUtils.isEmpty(name)) {
-          transportGroups.put(group.getId(), name);
-        }
-      }
-      logger.debug(PROP_TRANSPORT_GROUPS, transportGroups.size(), TimeUtils.elapsedMillis(millis));
-    }
-
-    cargoTypeColors.clear();
-    cargoTypeNames.clear();
-
-    serialized = rowSet.getTableProperty(PROP_CARGO_TYPES);
-    if (!BeeUtils.isEmpty(serialized)) {
-      millis = System.currentTimeMillis();
-
-      BeeRowSet cargoTypes = BeeRowSet.restore(serialized);
-
-      int nameIndex = cargoTypes.getColumnIndex(COL_CARGO_TYPE_NAME);
-      int colorIndex = cargoTypes.getColumnIndex(COL_CARGO_TYPE_COLOR);
-      int bgIndex = cargoTypes.getColumnIndex(COL_BACKGROUND);
-      int fgIndex = cargoTypes.getColumnIndex(COL_FOREGROUND);
-
-      for (BeeRow cargoType : cargoTypes) {
-        String name = cargoType.getString(nameIndex);
-        if (!BeeUtils.isEmpty(name)) {
-          cargoTypeNames.put(cargoType.getId(), name);
-        }
-
-        String bg = cargoType.getString(bgIndex);
-        String fg = cargoType.getString(fgIndex);
-
-        if (!BeeUtils.isEmpty(bg)) {
-          cargoTypeColors.put(cargoType.getId(),
-              new Color(cargoType.getLong(colorIndex), bg.trim(), BeeUtils.trim(fg)));
-        }
-      }
-
-      logger.debug(PROP_CARGO_TYPES, cargoTypeNames.size(), cargoTypeColors.size(),
-          TimeUtils.elapsedMillis(millis));
-    }
-
-    cargoHandling.clear();
-    serialized = rowSet.getTableProperty(PROP_CARGO_HANDLING);
-    if (!BeeUtils.isEmpty(serialized)) {
-      millis = System.currentTimeMillis();
-
-      SimpleRowSet srs = SimpleRowSet.restore(serialized);
-      for (SimpleRow row : srs) {
-        cargoHandling.put(row.getLong(COL_CARGO), new CargoHandling(row));
-      }
-
-      logger.debug(PROP_CARGO_HANDLING, cargoHandling.size(), TimeUtils.elapsedMillis(millis));
-    }
-
-    millis = System.currentTimeMillis();
-    initData(rowSet.getTableProperties());
-    logger.debug("init data", TimeUtils.elapsedMillis(millis));
+    initDataForVisualization(rowSet);
 
     millis = System.currentTimeMillis();
     updateMaxRange();
@@ -798,7 +880,9 @@ public abstract class ChartBase extends TimeBoard implements HasState {
       initFilterData();
       setState(State.LOADED);
     } else {
-      updateFilterData();
+      updateFilterData(null);
+      applyFilterData(false, false);
+
     }
     logger.debug(init ? "init" : "update", "filter data", TimeUtils.elapsedMillis(millis));
 
@@ -836,15 +920,13 @@ public abstract class ChartBase extends TimeBoard implements HasState {
       result.put(cargo.getUnloadingDate(), new CargoEvent(cargo, false));
     }
 
-    if (hasCargoHandling(cargo.getCargoId())) {
-      for (CargoHandling ch : getCargoHandling(cargo.getCargoId())) {
-        if (ch.getLoadingDate() != null && range.contains(ch.getLoadingDate())) {
-          result.put(ch.getLoadingDate(), new CargoEvent(cargo, ch, true));
-        }
+    for (CargoHandling ch : getCargoHandling(cargo.getCargoId(), cargo.getCargoTripId())) {
+      if (ch.getLoadingDate() != null && range.contains(ch.getLoadingDate())) {
+        result.put(ch.getLoadingDate(), new CargoEvent(cargo, ch, true));
+      }
 
-        if (ch.getUnloadingDate() != null && range.contains(ch.getUnloadingDate())) {
-          result.put(ch.getUnloadingDate(), new CargoEvent(cargo, ch, false));
-        }
+      if (ch.getUnloadingDate() != null && range.contains(ch.getUnloadingDate())) {
+        result.put(ch.getUnloadingDate(), new CargoEvent(cargo, ch, false));
       }
     }
 
@@ -866,16 +948,28 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     return result;
   }
 
-  private void applyFilterData() {
-    setFiltered(filter(FilterType.TENTATIVE));
+  private boolean applyFilterData(Boolean filterServerSide, boolean checkIfSelected) {
+    if (checkIfSelected) {
+      final List<FilterValue> filterValues = FilterHelper.getSelectedValues(getFilterData());
 
-    if (isFiltered()) {
-      persistFilter();
-      refreshFilterInfo();
-
-    } else {
-      clearFilter();
+      if (BeeUtils.isEmpty(filterValues)) {
+        BeeKeeper.getScreen().notifyWarning(Localized.dictionary().noDataSelectedInFilter());
+        return false;
+      }
     }
+
+    filterData(FilterType.TENTATIVE, filterServerSide, filtered -> {
+      setFiltered(filtered);
+
+      render(false);
+
+      if (isFiltered()) {
+        persistFilter();
+      }
+      refreshFilterInfo();
+    });
+
+    return true;
   }
 
   private void cancelRefreshTimer() {
@@ -1032,6 +1126,15 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     return widget;
   }
 
+  private void formatManagerFilterValue(List<ChartData> filters) {
+    ChartData managerChartData = FilterHelper.getDataByType(filters, ChartDataType.MANAGER);
+    if (managerChartData != null && !managerChartData.contains(BeeKeeper.getUser().getUserId())) {
+      String managerLabel = BeeUtils.joinWords(
+          BeeKeeper.getUser().getFirstName(), BeeKeeper.getUser().getLastName());
+      managerChartData.add(managerLabel, BeeKeeper.getUser().getUserId());
+    }
+  }
+
   private Long getColorTheme(BeeRow row) {
     if (row == null || BeeUtils.isEmpty(getThemeColumnName()) || DataUtils.isEmpty(getSettings())) {
       return null;
@@ -1040,12 +1143,14 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     }
   }
 
-  private Set<ChartData.Type> getEnabledFilterDataTypes() {
-    Set<ChartData.Type> types = EnumSet.noneOf(ChartData.Type.class);
+  protected Set<ChartDataType> getEnabledFilterDataTypes() {
+    Set<ChartDataType> types = EnumSet.noneOf(ChartDataType.class);
 
     String s = TimeBoardHelper.getString(getSettings(), getFilterDataTypesColumnName());
     if (!BeeUtils.isEmpty(s)) {
-      types.addAll(EnumUtils.parseNameSet(ChartData.Type.class, s));
+      types.addAll(EnumUtils.parseNameSet(ChartDataType.class, s));
+    } else {
+      types.addAll(getAllFilterTypes());
     }
 
     return types;
@@ -1066,6 +1171,76 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     return filters;
   }
 
+  private void initDataForVisualization(BeeRowSet rowSet) {
+    long millis;
+    deserializeCountriesAndCities(rowSet.getTableProperty(PROP_COUNTRIES),
+        rowSet.getTableProperty(PROP_CITIES));
+
+    String serialized = rowSet.getTableProperty(PROP_COLORS);
+    if (!BeeUtils.isEmpty(serialized)) {
+      millis = System.currentTimeMillis();
+      int size = restoreColors(serialized);
+      logger.debug(PROP_COLORS, size, TimeUtils.elapsedMillis(millis));
+    }
+
+    transportGroups.clear();
+    serialized = rowSet.getTableProperty(PROP_TRANSPORT_GROUPS);
+    if (!BeeUtils.isEmpty(serialized)) {
+      millis = System.currentTimeMillis();
+
+      BeeRowSet groups = BeeRowSet.restore(serialized);
+      int nameIndex = groups.getColumnIndex(COL_GROUP_NAME);
+
+      for (BeeRow group : groups) {
+        String name = group.getString(nameIndex);
+        if (!BeeUtils.isEmpty(name)) {
+          transportGroups.put(group.getId(), name);
+        }
+      }
+      logger.debug(PROP_TRANSPORT_GROUPS, transportGroups.size(), TimeUtils.elapsedMillis(millis));
+    }
+
+    cargoTypeColors.clear();
+    cargoTypeNames.clear();
+
+    serialized = rowSet.getTableProperty(PROP_CARGO_TYPES);
+    if (!BeeUtils.isEmpty(serialized)) {
+      millis = System.currentTimeMillis();
+
+      BeeRowSet cargoTypes = BeeRowSet.restore(serialized);
+
+      int nameIndex = cargoTypes.getColumnIndex(COL_CARGO_TYPE_NAME);
+      int colorIndex = cargoTypes.getColumnIndex(COL_CARGO_TYPE_COLOR);
+      int bgIndex = cargoTypes.getColumnIndex(COL_BACKGROUND);
+      int fgIndex = cargoTypes.getColumnIndex(COL_FOREGROUND);
+
+      for (BeeRow cargoType : cargoTypes) {
+        String name = cargoType.getString(nameIndex);
+        if (!BeeUtils.isEmpty(name)) {
+          cargoTypeNames.put(cargoType.getId(), name);
+        }
+
+        String bg = cargoType.getString(bgIndex);
+        String fg = cargoType.getString(fgIndex);
+
+        if (!BeeUtils.isEmpty(bg)) {
+          cargoTypeColors.put(cargoType.getId(),
+              new Color(cargoType.getLong(colorIndex), bg.trim(), BeeUtils.trim(fg)));
+        }
+      }
+
+      logger.debug(PROP_CARGO_TYPES, cargoTypeNames.size(), cargoTypeColors.size(),
+          TimeUtils.elapsedMillis(millis));
+    }
+
+    cargoHandling.clear();
+    cargoHandling.putAll(deserializeCargoHandling(rowSet.getTableProperty(PROP_CARGO_HANDLING)));
+
+    millis = System.currentTimeMillis();
+    initData(rowSet.getTableProperties());
+    logger.debug("init data", TimeUtils.elapsedMillis(millis));
+  }
+
   private void initFilterData() {
     if (!getFilterData().isEmpty()) {
       getFilterData().clear();
@@ -1074,7 +1249,8 @@ public abstract class ChartBase extends TimeBoard implements HasState {
       clearFilter();
     }
 
-    List<ChartData> data = FilterHelper.notEmptyData(prepareFilterData());
+    List<ChartData> data = FilterHelper.onlyEnabledAndSavedData(prepareFilterData(null),
+        getEnabledFilterDataTypes(), getSavedFilters());
 
     if (!BeeUtils.isEmpty(data)) {
       List<ChartFilter> savedFilters = getSavedFilters();
@@ -1085,13 +1261,28 @@ public abstract class ChartBase extends TimeBoard implements HasState {
           filter |= cf.applyTo(data);
         }
       }
+      if (!filter) {
+        ChartData managerFilter = FilterHelper.getDataByType(data, ChartDataType.MANAGER);
+
+        if (managerFilter != null) {
+          String managerLabel = BeeUtils.joinWords(
+              BeeKeeper.getUser().getFirstName(), BeeKeeper.getUser().getLastName());
+          managerFilter.setItemSelected(managerLabel, true);
+        }
+      }
 
       getFilterData().addAll(data);
 
-      if (filter) {
-        applyFilterData();
-      }
+      applyFilterData(false, false);
     }
+  }
+
+  private void initSettings(ResponseObject settingsResponse) {
+    Long millis = System.currentTimeMillis();
+    BeeRowSet rowSet = BeeRowSet.restore((String) settingsResponse.getResponse());
+    setSettings(rowSet);
+
+    logger.debug("init", "settings", TimeUtils.elapsedMillis(millis));
   }
 
   private boolean onApplyFilter(int index) {
@@ -1104,10 +1295,9 @@ public abstract class ChartBase extends TimeBoard implements HasState {
         clearFilter();
 
         if (cf.applyTo(getFilterData())) {
-          applyFilterData();
+          applyFilterData(true, false);
         }
 
-        render(false);
         return true;
 
       } else {
@@ -1137,7 +1327,7 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     final List<FilterValue> filterValues = FilterHelper.getSelectedValues(getFilterData());
 
     if (BeeUtils.isEmpty(filterValues)) {
-      BeeKeeper.getScreen().notifyWarning(Localized.dictionary().noData());
+      BeeKeeper.getScreen().notifyWarning(Localized.dictionary().noDataSelectedInFilter());
 
     } else {
       String label = BeeUtils.left(FilterHelper.getSelectionLabel(getFilterData()),
@@ -1169,12 +1359,7 @@ public abstract class ChartBase extends TimeBoard implements HasState {
   }
 
   private void refreshFilterInfo() {
-    String label;
-    if (isFiltered()) {
-      label = FilterHelper.getSelectionLabel(getFilterData());
-    } else {
-      label = null;
-    }
+    String label = FilterHelper.getSelectionLabel(getFilterData());
 
     if (BeeUtils.isEmpty(label)) {
       getFilterLabel().getElement().setInnerText(BeeConst.STRING_EMPTY);
@@ -1217,6 +1402,10 @@ public abstract class ChartBase extends TimeBoard implements HasState {
       }
       refreshTimer.schedule(delayMillis);
     }
+  }
+
+  private void setFilterDependsOnData(boolean filterDependsOnData) {
+    this.filterDependsOnData = filterDependsOnData;
   }
 
   private void setRefreshTimerScheduled(long refreshTimerScheduled) {
@@ -1279,30 +1468,39 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     return showPlaceInfo;
   }
 
-  private boolean tryFilter() {
-    boolean ok = filter(FilterType.TENTATIVE);
-    if (!ok) {
-      BeeKeeper.getScreen().notifyWarning(Localized.dictionary().nothingFound());
-    }
-    return ok;
-  }
-
   private void updateColorTheme(Long theme) {
     ParameterList args = TransportHandler.createArgs(SVC_GET_COLORS);
     if (theme != null) {
       args.addQueryItem(Service.VAR_ID, theme);
     }
 
-    BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        restoreColors(response.getResponseAsString());
-        render(false);
-      }
+    BeeKeeper.getRpc().makePostRequest(args, response -> {
+      restoreColors(response.getResponseAsString());
+      render(false);
     });
   }
 
-  private boolean updateEnabledFilterDataTypes(Set<ChartData.Type> types) {
+  private void updateFilterSelection(Consumer<Boolean> filterUpdateConsumer) {
+    if (updateFilterResults) {
+      if (isFilterDependsOnData()) {
+        updateFilterData(null);
+        filterUpdateConsumer.accept(true);
+
+      } else {
+        ParameterList params = TransportHandler.createArgs(getFilterService());
+        addFilterSettingParams(params);
+
+        BeeKeeper.getRpc().makePostRequest(params, response -> {
+          updateFilterData(response);
+          filterUpdateConsumer.accept(true);
+        });
+      }
+    } else {
+      filterUpdateConsumer.accept(false);
+    }
+  }
+
+  private boolean updateEnabledFilterDataTypes(Set<ChartDataType> types) {
     if (!DataUtils.isEmpty(getSettings())
         && getSettings().containsColumn(getFilterDataTypesColumnName())
         && !BeeUtils.sameElements(types, getEnabledFilterDataTypes())) {
@@ -1315,40 +1513,30 @@ public abstract class ChartBase extends TimeBoard implements HasState {
     }
   }
 
-  private void updateFilterData() {
-    List<ChartData> newData = FilterHelper.notEmptyData(prepareFilterData());
-
-    boolean wasFiltered = isFiltered();
+  private void updateFilterData(ResponseObject response) {
+    List<ChartData> newData = FilterHelper.onlyEnabledAndSavedData(prepareFilterData(response),
+        getEnabledFilterDataTypes(), getSavedFilters());
 
     if (BeeUtils.isEmpty(newData)) {
       getFilterData().clear();
-      if (wasFiltered) {
-        clearFilter();
-      }
 
     } else if (getFilterData().isEmpty()) {
       getFilterData().addAll(newData);
 
     } else {
-      if (wasFiltered) {
-        for (ChartData ocd : getFilterData()) {
-          ChartData ncd = FilterHelper.getDataByType(newData, ocd.getType());
+      for (ChartData ocd : getFilterData()) {
+        ChartData ncd = FilterHelper.getDataByType(newData, ocd.getType());
 
-          if (ncd != null) {
-            Collection<String> selectedItems = ocd.getSelectedItems();
-            for (String item : selectedItems) {
-              ncd.setItemSelected(item, true);
-            }
+        if (ncd != null) {
+          Collection<String> selectedItems = ocd.getSelectedItems();
+          for (String item : selectedItems) {
+            ncd.setItemSelected(item, true);
           }
         }
       }
 
       getFilterData().clear();
       getFilterData().addAll(newData);
-
-      if (wasFiltered) {
-        applyFilterData();
-      }
     }
   }
 }

@@ -7,7 +7,7 @@
         flexGrow="1" newRowCaption="=newItem">
   <g:columns>
     <RelColumn name="Item" renderColumns="ItemName"
-               choiceColumns="Name Article" filter="!(IsService)" editPopup="true" visible="true" />
+               choiceColumns="Name Article" filter="!(IsService)" editWindow="modal" visible="true" />
 
     <DataColumn name="Article" />
     <DataColumn name="Quantity" visible="true" scale="3" />

@@ -21,7 +21,7 @@
       <br/>
       <row>
         <Label text="=personFullName" for="CompanyPerson" />
-        <DataSelector source="CompanyPerson" editSource="Person" editPopup="true"
+        <DataSelector source="CompanyPerson" editSource="Person" editWindow="modal"
           renderColumns="FirstName Lastname" choiceColumns="FirstName Lastname CompanyName" style="width: 14em;" />
         <Label text="=company" for="CompanyName" />
         <InputText source="CompanyName" readOnly="true" style="width: 200px;" />

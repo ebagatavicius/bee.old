@@ -3,7 +3,7 @@
 
   name="CompanyTypes" viewName="CompanyTypes" caption="=clientStatus"
   flexGrow="1" flexShrink="1"
-  newRowPopup="true" editPopup="true"
+  newRowWindow="modal" editWindow="modal"
   >
   <g:columns>
     <DataColumn name="Name" minWidth="100" maxWidth="200" visible="true" />

@@ -22,7 +22,7 @@ import java.util.Set;
 public final class ColumnRelation implements BeeSerializable, HasInfo {
 
   private static final Set<String> relevantAttributes =
-      Sets.newHashSet(ATTR_EDIT_ENABLED, ATTR_EDIT_FORM, ATTR_EDIT_KEY, ATTR_EDIT_POPUP,
+      Sets.newHashSet(ATTR_EDIT_ENABLED, ATTR_EDIT_FORM, ATTR_EDIT_KEY, ATTR_EDIT_WINDOW,
           ATTR_EDIT_SOURCE, ATTR_EDIT_TARGET, ATTR_EDIT_VIEW_NAME);
 
   public static ColumnRelation maybeCreate(Map<String, String> input) {
@@ -89,8 +89,8 @@ public final class ColumnRelation implements BeeSerializable, HasInfo {
     return !attributes.isEmpty() && !BeeConst.isFalse(getAttribute(ATTR_EDIT_ENABLED));
   }
 
-  public Boolean isEditModal() {
-    return BeeUtils.toBooleanOrNull(getAttribute(ATTR_EDIT_POPUP));
+  public WindowType getEditWindowType() {
+    return WindowType.parse(getAttribute(ATTR_EDIT_WINDOW));
   }
 
   public String getSourceColumn(DataInfo dataInfo, String defSource) {

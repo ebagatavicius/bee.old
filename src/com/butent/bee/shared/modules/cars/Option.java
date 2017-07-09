@@ -38,7 +38,9 @@ public class Option implements BeeSerializable, Comparable<Option> {
   }
 
   public Option(SimpleRowSet.SimpleRow simpleRow) {
-    this(simpleRow.getLong(COL_OPTION), simpleRow.getValue(COL_OPTION_NAME),
+    this(simpleRow.getLong(COL_OPTION), simpleRow.hasColumn(COL_OPTION_NAME2)
+            ? BeeUtils.notEmpty(simpleRow.getValue(COL_OPTION_NAME2),
+        simpleRow.getValue(COL_OPTION_NAME)) : simpleRow.getValue(COL_OPTION_NAME),
         new Dimension(simpleRow.getLong(CarsConstants.COL_GROUP),
             simpleRow.getValue(CarsConstants.COL_GROUP_NAME)));
 

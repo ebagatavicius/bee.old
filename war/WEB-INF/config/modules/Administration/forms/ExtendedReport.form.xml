@@ -13,7 +13,7 @@
           <FlowPanel name="LayoutContainer" />
         </Disclosure>
 
-        <FlowPanel name="ParamsContainer" class="flexBox-horizontal-center" style="margin:10px;" />
+        <FlowPanel name="ParamsContainer" style="margin:10px;" />
 
         <Disclosure open="true">
           <Label text="=filters" />

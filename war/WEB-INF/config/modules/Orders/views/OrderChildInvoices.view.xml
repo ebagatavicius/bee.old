@@ -81,6 +81,7 @@
           <SimpleColumn name="Email" alias="CustomerEmail" />
         </SimpleJoin>
       </SimpleJoin>
+      <SimpleColumn name="CreditDays" />
     </SimpleJoin>
 
     <SimpleColumn name="Payer" />

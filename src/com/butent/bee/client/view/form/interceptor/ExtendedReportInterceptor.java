@@ -193,6 +193,7 @@ public class ExtendedReportInterceptor extends ReportInterceptor {
   private static final String STYLE_REPORT_NORMAL = STYLE_PREFIX + "-report-normal";
   private static final String STYLE_REPORT_ACTIVE = STYLE_PREFIX + "-report-active";
   private static final String STYLE_REPORT_GLOBAL = STYLE_PREFIX + "-report-global";
+  private static final String STYLE_REPORT_PARAM = STYLE_REPORT + "-param";
 
   private static final String STYLE_FILTER_CAPTION = STYLE_PREFIX + "-filter-cap";
 
@@ -1254,6 +1255,7 @@ public class ExtendedReportInterceptor extends ReportInterceptor {
     }
     container.clear();
     getReport().getReportParams().forEach((name, editor) -> {
+      editor.addStyleName(STYLE_REPORT_PARAM);
       DomUtils.setDataKey(editor.getElement(), name);
       container.add(editor.asWidget());
     });

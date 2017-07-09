@@ -23,9 +23,11 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.ui.AutocompleteProvider;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.HasHtml;
 import com.butent.bee.shared.HasOptions;
 import com.butent.bee.shared.NotificationListener;
 import com.butent.bee.shared.Service;
@@ -92,8 +94,9 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   private Popup dialog;
 
   private Filter effectiveFilter;
-  private String counterId;
+  private boolean filtersOnCommit;
 
+  private String counterId;
   private int counterValue;
 
   private final List<Integer> selectedItems = new ArrayList<>();
@@ -186,6 +189,10 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
   }
 
   public abstract void setFilterValue(FilterValue filterValue);
+
+  public void setFiltersOnCommit(boolean filtersOnCommit) {
+    this.filtersOnCommit = filtersOnCommit;
+  }
 
   @Override
   public void setOptions(String options) {
@@ -319,8 +326,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
     Flow panel = new Flow();
     panel.addStyleName(getStylePrefix() + "commandPanel");
 
-    List<SupplierAction> actions = getActions();
-    for (final SupplierAction action : actions) {
+    for (SupplierAction action : getActions()) {
       Button actionWidget = new Button(action.getCaption());
       actionWidget.addStyleName(getStylePrefix() + action.getStyleSuffix());
 
@@ -488,6 +494,7 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
       final Scheduler.ScheduledCommand onChange) {
 
     Popup popup = new Popup(OutsideClick.CLOSE, getDialogStyle());
+    DomUtils.preventSelection(popup);
 
     popup.setWidget(widget);
     popup.setHideOnEscape(true);
@@ -499,6 +506,16 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
         onChange.execute();
       }
     });
+
+    Widget commitCommand = UiHelper.getChildByStyleName(widget,
+        getStylePrefix() + SupplierAction.COMMIT.getStyleSuffix());
+
+    if (commitCommand instanceof HasHtml) {
+      ((HasHtml) commitCommand).setText(filtersOnCommit()
+          ? Localized.dictionary().doFilter() : Localized.dictionary().actionSelect());
+
+      popup.setOnSave(event -> doAction(SupplierAction.COMMIT));
+    }
 
     setDialog(popup);
     setFilterChanged(false);
@@ -559,6 +576,10 @@ public abstract class AbstractFilterSupplier implements HasViewName, HasOptions,
 
   private boolean filterChanged() {
     return filterChanged;
+  }
+
+  private boolean filtersOnCommit() {
+    return filtersOnCommit;
   }
 
   private String getCounterId() {

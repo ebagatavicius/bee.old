@@ -373,15 +373,15 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
   public void onLoad(FormView form) {
     Queries.getRowCount(TBL_IMPORT_OPTIONS, Filter.equals(COL_IMPORT_TYPE,
         ImportType.CONFIGURATION.ordinal()), cnt -> {
-          if (BeeUtils.isPositive(cnt)) {
-            importAction.setTitle(Localized.dictionary().actionImport());
-            importAction.setCallback(response -> {
-              ImportCallback.showResponse(response);
-              requery();
-            });
-            getHeaderView().addCommandItem(importAction);
-          }
+      if (BeeUtils.isPositive(cnt)) {
+        importAction.setTitle(Localized.dictionary().actionImport());
+        importAction.setCallback(response -> {
+          ImportCallback.showResponse(response);
+          requery();
         });
+        getHeaderView().addCommandItem(importAction);
+      }
+    });
     super.onLoad(form);
   }
 
@@ -711,6 +711,7 @@ public class ConfPricelistForm extends AbstractFormInterceptor implements Select
     }
     ParameterList args = CarsKeeper.createSvcArgs(SVC_GET_CONFIGURATION);
     args.addDataItem(COL_BRANCH, branchId);
+    args.addDataItem(COL_BLOCKED, true);
 
     rpcId = BeeKeeper.getRpc().makePostRequest(args, new ResponseCallbackWithId() {
       @Override

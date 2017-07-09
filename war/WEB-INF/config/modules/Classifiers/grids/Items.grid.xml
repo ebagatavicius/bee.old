@@ -10,7 +10,7 @@
 
         name="Items" viewName="Items"
         newRowForm="Item" editForm="Item" editShowId="true"
-        newRowPopup="true" editPopup="true" editInPlace="true"
+        newRowWindow="modal" editWindow="modal" editInPlace="true"
 >
   <g:west size="200" splitterSize="2">
     <w:DataTree name="Categories" caption="=categories" viewName="CategoryTree"

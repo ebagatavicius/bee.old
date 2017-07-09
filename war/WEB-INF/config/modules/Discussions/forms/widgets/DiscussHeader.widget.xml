@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Form [
+<!DOCTYPE FlowPanel [
   <!ENTITY inline "display: inline-block;">
 
   <!ENTITY section "margin-top: 4px;">
@@ -57,7 +57,7 @@
   <Label name="membersLabel" text="=discussMembers"
    style="&top1;min-width:80px; padding-left:24px; padding-right: 0px;" />
   <MultiSelector name="Members" viewName="Users" data="DiscussionsUsers" property="Members"
-   renderColumns="FirstName LastName" editPopup="true" editSource="CompanyPerson"
+   renderColumns="FirstName LastName" editWindow="modal" editSource="CompanyPerson"
    disablable="true" style="&inp2x; margin-left: 15px;" label="=discussMembers" />
  </FlowPanel>
 
@@ -65,7 +65,7 @@
   <Label name="groupsLabel" text="=discussUserGroup"
    style="&top1;min-width:104px; padding-right: 0px;" />
   <MultiSelector name="UserGroups" viewName="UserGroupSettings"
-   property="MemberGroup" renderColumns="Name" editPopup="false"
+   property="MemberGroup" renderColumns="Name" editWindow="new-tab"
    style="&inp2x; margin-left: 15px;" label="=discussMembers" filter="Owner={u} OR Visibility=1" />
  </FlowPanel>
 

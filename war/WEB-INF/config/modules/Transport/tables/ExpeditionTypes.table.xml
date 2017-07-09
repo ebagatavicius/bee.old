@@ -8,5 +8,6 @@
             translatable="true" />
     <Integer name="SelfService" label="=trSelfService" />
     <Boolean name="Logistics" label="=trLogistics" />
+    <Relation name="Manager" relation="Users" label="=companyResponsibleUser"/>
   </Fields>
 </Table>

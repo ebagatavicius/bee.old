@@ -5,8 +5,10 @@ import com.google.gwt.dom.client.ButtonElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FocusWidget;
 
+import com.butent.bee.client.animation.HasAnimatableActivity;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.ui.EnablableWidget;
@@ -20,9 +22,12 @@ import com.butent.bee.shared.HasHtml;
  */
 
 public class Button extends FocusWidget implements IdentifiableWidget, HasCommand, HasHtml,
-    EnablableWidget {
+    EnablableWidget, HasAnimatableActivity {
 
   private Scheduler.ScheduledCommand command;
+
+  private Timer animationTimer;
+  private int animationDuration;
 
   public Button() {
     super(Document.get().createPushButtonElement());
@@ -39,13 +44,23 @@ public class Button extends FocusWidget implements IdentifiableWidget, HasComman
     addClickHandler(handler);
   }
 
-  public Button(String html, Scheduler.ScheduledCommand cmnd) {
+  public Button(String html, Scheduler.ScheduledCommand command) {
     this(html);
-    setCommand(cmnd);
+    setCommand(command);
   }
 
   public void click() {
     ButtonElement.as(getElement()).click();
+  }
+
+  @Override
+  public int getAnimationDuration() {
+    return animationDuration;
+  }
+
+  @Override
+  public Timer getAnimationTimer() {
+    return animationTimer;
   }
 
   @Override
@@ -69,6 +84,11 @@ public class Button extends FocusWidget implements IdentifiableWidget, HasComman
   }
 
   @Override
+  public double getSensitivityRatio() {
+    return BeeConst.DOUBLE_UNDEF;
+  }
+
+  @Override
   public String getText() {
     return getElement().getInnerText();
   }
@@ -76,12 +96,28 @@ public class Button extends FocusWidget implements IdentifiableWidget, HasComman
   @Override
   public void onBrowserEvent(Event event) {
     if (EventUtils.isClick(event)) {
+      if (!isEnabled() || isAnimationRunning()) {
+        return;
+      }
+
+      maybeAnimate();
+
       if (getCommand() != null) {
         getCommand().execute();
       }
     }
 
     super.onBrowserEvent(event);
+  }
+
+  @Override
+  public void setAnimationDuration(int animationDuration) {
+    this.animationDuration = animationDuration;
+  }
+
+  @Override
+  public void setAnimationTimer(Timer animationTimer) {
+    this.animationTimer = animationTimer;
   }
 
   @Override
@@ -105,6 +141,12 @@ public class Button extends FocusWidget implements IdentifiableWidget, HasComman
   @Override
   public void setText(String text) {
     getElement().setInnerText(text);
+  }
+
+  @Override
+  protected void onUnload() {
+    stop();
+    super.onUnload();
   }
 
   private void init() {

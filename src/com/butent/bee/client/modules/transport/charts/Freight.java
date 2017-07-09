@@ -100,6 +100,7 @@ final class Freight extends OrderCargo {
     }
   }
 
+  @Override
   Long getCargoTripId() {
     return cargoTripId;
   }

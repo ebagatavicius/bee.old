@@ -11,10 +11,10 @@
 
   <RelColumn name="Company" />
   <RelColumn name="Contact" renderColumns="ContactFirstName ContactLastName"
-    sortBy="ContactLastName ContactFirstName" visible="false" />
+             sortBy="ContactLastName ContactFirstName" visible="false" />
 
   <RelColumn name="Project" renderColumns="ProjectName" visible="false" autoFit="true"
-             editPopup="false"/>
+             editWindow="new-tab" />
 
   <RelColumn name="Product" renderColumns="ProductName" visible="false">
     <dynStyle>
@@ -39,7 +39,7 @@
   <DataColumn name="StartAt" visible="false" />
   <DataColumn name="DurationDays" visible="false" />
   <DataColumn name="DurationTime" visible="false" />
-    
+
   <RelColumn name="Reminder" />
   <DataColumn name="RemindBefore" visible="false" />
   <DataColumn name="RemindAt" visible="false" />

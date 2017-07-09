@@ -3,12 +3,13 @@ package com.butent.bee.client.view.grid;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.Settings;
+import com.butent.bee.client.Storage;
 import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.grid.HtmlTable;
@@ -21,6 +22,7 @@ import com.butent.bee.client.view.search.FilterConsumer;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.FaLabel;
+import com.butent.bee.client.widget.Toggle;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.filter.FilterComponent;
@@ -41,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class GridFilterManager {
 
@@ -71,6 +72,11 @@ public class GridFilterManager {
   private static final String STYLE_SAVE_MESSAGE = STYLE_SAVE_PREFIX + "message";
 
   private static final String STYLE_FILTER_PANEL = STYLE_PREFIX + "saved-filters";
+
+  private static final String STYLE_SUBMIT_COMMAND = STYLE_PREFIX + "submit-command";
+  private static final String STYLE_SUBMIT_TOGGLE = STYLE_PREFIX + "submit-toggle";
+  private static final String STYLE_SUBMIT_ON = STYLE_PREFIX + "submit-on";
+  private static final String STYLE_SUBMIT_OFF = STYLE_PREFIX + "submit-off";
 
   public static Filter parseFilter(CellGrid grid, List<FilterComponent> components) {
     if (BeeUtils.isEmpty(components)) {
@@ -135,11 +141,15 @@ public class GridFilterManager {
 
   private final FilterConsumer filterConsumer;
 
+  private final String submitCommandStorageKey;
+
   private final Map<String, FilterValue> valuesByColumn = new HashMap<>();
 
   private final Flow contentPanel = new Flow(STYLE_CONTENT);
 
   private Filter externalFilter;
+
+  private boolean hasSubmitCommand;
 
   public GridFilterManager(GridView gridView, FilterConsumer filterConsumer) {
     super();
@@ -149,10 +159,13 @@ public class GridFilterManager {
     this.isChild = gridView.hasChildUi();
 
     this.filterConsumer = filterConsumer;
+
+    this.submitCommandStorageKey = Storage.getUserKey(gridKey, "submit-command");
   }
 
   public void clearFilter() {
     List<ColumnInfo> columns = grid.getPredefinedColumns();
+
     for (ColumnInfo columnInfo : columns) {
       AbstractFilterSupplier filterSupplier = columnInfo.getFilterSupplier();
       if (filterSupplier != null && !filterSupplier.isEmpty()) {
@@ -193,15 +206,25 @@ public class GridFilterManager {
     externalFilter = queryFilter;
     retainValues();
 
-    DialogBox dialog = DialogBox.create(Localized.dictionary().filter(), STYLE_DIALOG);
+    DialogBox dialog = DialogBox.withoutCloseBox(Localized.dictionary().filter(), STYLE_DIALOG);
     if (isChild) {
       dialog.addStyleName(STYLE_CHILD);
     }
+
+    hasSubmitCommand = readSubmitCommandState();
+    dialog.addStyleName(hasSubmitCommand ? STYLE_SUBMIT_ON : STYLE_SUBMIT_OFF);
+
+    addCommands(dialog);
 
     buildContentPanel();
     dialog.setWidget(contentPanel);
 
     dialog.setHideOnEscape(true);
+    dialog.setOnSave(event -> {
+      if (hasSubmitCommand) {
+        onSubmit();
+      }
+    });
 
     dialog.setAnimationEnabled(true);
     dialog.showRelativeTo(target);
@@ -213,6 +236,41 @@ public class GridFilterManager {
     } else {
       updateFilterValues(asValues(components), true);
     }
+  }
+
+  private void addCommands(DialogBox dialog) {
+    Button submitCommand = new Button(Localized.dictionary().doFilter());
+    submitCommand.addStyleName(STYLE_SUBMIT_COMMAND);
+
+    submitCommand.addClickHandler(event -> onSubmit());
+
+    dialog.addCommand(submitCommand);
+
+    Toggle submitToggle = new Toggle(FontAwesome.TOGGLE_OFF, FontAwesome.TOGGLE_ON,
+        STYLE_SUBMIT_TOGGLE, hasSubmitCommand);
+    submitToggle.addStyleName(FaLabel.STYLE_NAME);
+    submitToggle.setTitle(Localized.dictionary().showGridFilterCommand());
+
+    submitToggle.addClickHandler(event -> {
+      boolean on = submitToggle.isChecked();
+      hasSubmitCommand = on;
+
+      dialog.setStyleName(STYLE_SUBMIT_ON, on);
+      dialog.setStyleName(STYLE_SUBMIT_OFF, !on);
+
+      if (!BeeUtils.isEmpty(gridKey)) {
+        int value = on ? 1 : 0;
+        BeeKeeper.getStorage().set(submitCommandStorageKey, value);
+      }
+
+      if (!on && !valuesByColumn.isEmpty()) {
+        onSubmit();
+      }
+    });
+
+    dialog.addCommand(submitToggle);
+
+    dialog.addDefaultCloseBox();
   }
 
   private void buildContentPanel() {
@@ -259,15 +317,12 @@ public class GridFilterManager {
     }
 
     if (Global.getFilters().containsKey(gridKey)) {
-      BiConsumer<FilterDescription, Action> callback = new BiConsumer<FilterDescription, Action>() {
-        @Override
-        public void accept(FilterDescription t, Action u) {
-          if (t != null) {
-            updateFilterValues(asValues(t.getComponents()), true);
-            onChange(null, true, null);
-          } else if (Action.DELETE == u) {
-            buildContentPanel();
-          }
+      BiConsumer<FilterDescription, Action> callback = (t, u) -> {
+        if (t != null) {
+          updateFilterValues(asValues(t.getComponents()), true);
+          onChange(null, null);
+        } else if (Action.DELETE == u) {
+          buildContentPanel();
         }
       };
 
@@ -282,40 +337,31 @@ public class GridFilterManager {
     Flow panel = new Flow();
     panel.addStyleName(STYLE_SAVE_PANEL);
 
-    ClickHandler clickHandler = new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        String label = getFilterLabel(false);
+    ClickHandler clickHandler = event -> {
+      String label = getFilterLabel(false);
 
-        if (BeeUtils.isEmpty(label)) {
-          logger.severe("filter has no label:", valuesByColumn);
+      if (BeeUtils.isEmpty(label)) {
+        logger.severe("filter has no label:", valuesByColumn);
 
-        } else {
-          Scheduler.ScheduledCommand onSave = new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-              buildContentPanel();
+      } else {
+        Scheduler.ScheduledCommand onSave = () -> {
+          buildContentPanel();
 
-              Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-                @Override
-                public void execute() {
-                  for (Widget widget : contentPanel) {
-                    if (StyleUtils.hasClassName(widget.getElement(), STYLE_FILTER_PANEL)) {
-                      NodeList<Element> nodes =
-                          widget.getElement().getElementsByTagName(Tags.TR);
-                      if (nodes != null && nodes.getLength() > 1) {
-                        DomUtils.scrollIntoView(nodes.getItem(nodes.getLength() - 1));
-                      }
-                      break;
-                    }
-                  }
+          Scheduler.get().scheduleDeferred(() -> {
+            for (Widget widget : contentPanel) {
+              if (StyleUtils.hasClassName(widget.getElement(), STYLE_FILTER_PANEL)) {
+                NodeList<Element> nodes =
+                    widget.getElement().getElementsByTagName(Tags.TR);
+                if (nodes != null && nodes.getLength() > 1) {
+                  DomUtils.scrollIntoView(nodes.getItem(nodes.getLength() - 1));
                 }
-              });
+                break;
+              }
             }
-          };
+          });
+        };
 
-          Global.getFilters().addCustomFilter(gridKey, label, asComponents(valuesByColumn), onSave);
-        }
+        Global.getFilters().addCustomFilter(gridKey, label, asComponents(valuesByColumn), onSave);
       }
     };
 
@@ -332,38 +378,52 @@ public class GridFilterManager {
     return panel;
   }
 
-  private void createSupplierRow(HtmlTable table, int row, final ColumnInfo columnInfo,
-      final AbstractFilterSupplier filterSupplier) {
+  private void createSupplierRow(HtmlTable table, int row, ColumnInfo columnInfo,
+      AbstractFilterSupplier filterSupplier) {
 
     CustomDiv label = new CustomDiv();
     label.setHtml(columnInfo.getLabel());
 
     table.setWidgetAndStyle(row, 0, label, STYLE_SUPPLIER_LABEL);
 
-    final Button button = new Button();
+    Flow actionContainer = new Flow();
+
+    Button button = new Button();
     button.addStyleName(STYLE_SUPPLIER_BUTTON);
 
     if (!filterSupplier.isEmpty()) {
-      button.getElement().setInnerText(filterSupplier.getLabel());
+      button.setText(filterSupplier.getLabel());
       button.setTitle(filterSupplier.getTitle());
     }
 
-    ClickHandler clickHandler = new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        filterSupplier.setEffectiveFilter(getFilter(externalFilter, columnInfo.getColumnId()));
-        filterSupplier.onRequest(button.getElement(), new Scheduler.ScheduledCommand() {
-          @Override
-          public void execute() {
-            onChange(columnInfo, true, new Scheduler.ScheduledCommand() {
-              @Override
-              public void execute() {
-                filterSupplier.retainInput();
+    ClickHandler clickHandler = event -> {
+      filterSupplier.setEffectiveFilter(getFilter(externalFilter, columnInfo.getColumnId()));
+      filterSupplier.setFiltersOnCommit(!hasSubmitCommand);
+
+      filterSupplier.onRequest(button.getElement(), () -> {
+        if (hasSubmitCommand) {
+          if (filterSupplier.isEmpty()) {
+            buildContentPanel();
+
+          } else {
+            filterConsumer.hasAnyRows(getFilter(), has -> {
+              if (!has) {
+                BeeKeeper.getScreen().notifyWarning(
+                    filterSupplier.getComponentLabel(columnInfo.getLabel()),
+                    Localized.dictionary().nothingFound());
+
+                filterSupplier.setFilterValue(null);
               }
+
+              retainValues();
+              buildContentPanel();
             });
           }
-        });
-      }
+
+        } else {
+          onChange(columnInfo, filterSupplier::retainInput);
+        }
+      });
     };
 
     label.addClickHandler(clickHandler);
@@ -373,15 +433,18 @@ public class GridFilterManager {
     clear.setText(String.valueOf(BeeConst.CHAR_TIMES));
     clear.setTitle(Action.REMOVE_FILTER.getCaption());
 
-    clear.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        filterSupplier.setFilterValue(null);
-        onChange(columnInfo, true, null);
+    clear.addClickHandler(event -> {
+      filterSupplier.setFilterValue(null);
+
+      if (hasSubmitCommand) {
+        retainValues();
+        buildContentPanel();
+
+      } else {
+        onChange(columnInfo, null);
       }
     });
 
-    Flow actionContainer = new Flow();
     actionContainer.add(button);
     actionContainer.add(clear);
 
@@ -390,6 +453,10 @@ public class GridFilterManager {
     actionContainer.addStyleName(filterSupplier.isEmpty()
         ? STYLE_SUPPLIER_EMPTY : STYLE_SUPPLIER_NOT_EMPTY);
     table.getRowFormatter().addStyleName(row, STYLE_SUPPLIER_ROW);
+  }
+
+  private Filter getFilter() {
+    return getFilter(null, null);
   }
 
   private Filter getFilter(Filter queryFilter, String excludeColumn) {
@@ -433,37 +500,56 @@ public class GridFilterManager {
     return values;
   }
 
-  private void onChange(final ColumnInfo columnInfo, final boolean closeDialog,
-      final Scheduler.ScheduledCommand onSuccess) {
+  private void onChange(ColumnInfo columnInfo, Scheduler.ScheduledCommand onSuccess) {
+    Filter filter = getFilter();
 
-    final Filter filter = getFilter(null, null);
+    filterConsumer.tryFilter(filter, input -> {
+      if (BeeUtils.isTrue(input)) {
+        if (onSuccess != null) {
+          onSuccess.execute();
+        }
 
-    filterConsumer.tryFilter(filter, new Consumer<Boolean>() {
-      @Override
-      public void accept(Boolean input) {
-        if (BeeUtils.isTrue(input)) {
-          if (onSuccess != null) {
-            onSuccess.execute();
-          }
+        UiHelper.closeDialog(contentPanel);
 
-          if (closeDialog) {
-            UiHelper.closeDialog(contentPanel);
-          } else {
-            retainValues();
-            buildContentPanel();
-          }
+      } else {
+        BeeKeeper.getScreen().notifyWarning(Localized.dictionary().nothingFound());
 
+        if (columnInfo == null) {
+          updateFilterValues(valuesByColumn, false);
         } else {
-          BeeKeeper.getScreen().notifyWarning(Localized.dictionary().nothingFound());
-          if (columnInfo == null) {
-            updateFilterValues(valuesByColumn, false);
-          } else {
-            FilterValue filterValue = valuesByColumn.get(columnInfo.getColumnId());
-            columnInfo.getFilterSupplier().setFilterValue(filterValue);
-          }
+          FilterValue filterValue = valuesByColumn.get(columnInfo.getColumnId());
+          columnInfo.getFilterSupplier().setFilterValue(filterValue);
         }
       }
     }, false);
+  }
+
+  private void onSubmit() {
+    Filter filter = getFilter();
+
+    filterConsumer.tryFilter(filter, input -> {
+      if (BeeUtils.isTrue(input)) {
+        UiHelper.closeDialog(contentPanel);
+      } else {
+        BeeKeeper.getScreen().notifyWarning(Localized.dictionary().nothingFound());
+      }
+    }, false);
+  }
+
+  private boolean readSubmitCommandState() {
+    if (!BeeUtils.isEmpty(gridKey)) {
+      Integer stored = BeeKeeper.getStorage().getInteger(submitCommandStorageKey);
+      if (stored != null) {
+        return BeeUtils.isPositive(stored);
+      }
+    }
+
+    Boolean show = BeeKeeper.getUser().getShowGridFilterCommand();
+    if (show != null) {
+      return show;
+    }
+
+    return Settings.showGridFilterCommand();
   }
 
   private void retainValues() {

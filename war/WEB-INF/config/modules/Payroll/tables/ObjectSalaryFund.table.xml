@@ -14,7 +14,7 @@
     <Numeric name="MonthUntil" precision="2" label="=endingMonth" />
 
     <Numeric name="Amount" precision="12" scale="2" notNull="true" label="=amount" />
-    <Relation name="Currency" relation="Currencies" label="=currency" />
+    <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
 
     <String name="Note" precision="100" label="=note" />
   </Fields>

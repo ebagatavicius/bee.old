@@ -61,12 +61,12 @@
     <xs:attribute name="newRowColumns" type="xs:normalizedString" />
     <xs:attribute name="newRowDefaults" type="xs:normalizedString" />
     <xs:attribute name="newRowCaption" type="xs:string" />
-    <xs:attribute name="newRowPopup" type="xs:boolean" />
+    <xs:attribute name="newRowWindow" type="ui:windowType" />
     <xs:attribute name="editForm" type="xs:normalizedString" />
     <xs:attribute name="editMode" type="xs:boolean" />
     <xs:attribute name="editSave" type="xs:boolean" default="true" />
     <xs:attribute name="editShowId" type="xs:boolean" />
-    <xs:attribute name="editPopup" type="xs:boolean" />
+    <xs:attribute name="editWindow" type="ui:windowType" />
     <xs:attribute name="editInPlace" type="xs:boolean" />
     <xs:attribute name="enabledActions" type="ui:viewActions" />
     <xs:attribute name="disabledActions" type="ui:viewActions" />

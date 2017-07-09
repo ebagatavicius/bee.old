@@ -260,17 +260,24 @@ final class AnalysisScripting {
       long columnId, String columnAbbreviation, long rowId, String rowAbbreviation,
       Map<AnalysisSplitType, AnalysisSplitValue> columnSplit,
       Map<AnalysisSplitType, AnalysisSplitValue> rowSplit,
-      Collection<String> variables, Multimap<String, AnalysisValue> input,
-      boolean needsActual, boolean needsBudget, ResponseObject errorCollector) {
+      Collection<String> variables, Collection<String> ratios,
+      Multimap<String, AnalysisValue> input, boolean needsActual, boolean needsBudget,
+      ResponseObject errorCollector) {
 
     Map<String, Double> actualValues = new HashMap<>();
+    Map<String, Integer> actualCounts = new HashMap<>();
+
     Map<String, Double> budgetValues = new HashMap<>();
+    Map<String, Integer> budgetCounts = new HashMap<>();
 
     variables.forEach(key -> {
       actualValues.put(key, BeeConst.DOUBLE_ZERO);
       budgetValues.put(key, BeeConst.DOUBLE_ZERO);
 
       if (input.containsKey(key)) {
+        actualCounts.put(key, 0);
+        budgetCounts.put(key, 0);
+
         Collection<AnalysisValue> values = input.get(key);
 
         Map<AnalysisSplitType, AnalysisSplitValue> vcSplit = new HashMap<>();
@@ -300,14 +307,35 @@ final class AnalysisScripting {
           if (value.containsColumnSplit(vcSplit) && value.containsRowSplit(vrSplit)) {
             if (needsActual && value.hasActualValue()) {
               actualValues.merge(key, value.getActualNumber(), Double::sum);
+              actualCounts.merge(key, 1, Integer::sum);
             }
+
             if (needsBudget && value.hasBudgetValue()) {
               budgetValues.merge(key, value.getBudgetNumber(), Double::sum);
+              budgetCounts.merge(key, 1, Integer::sum);
             }
           }
         });
       }
     });
+
+    if (!BeeUtils.isEmpty(ratios)) {
+      for (String key : ratios) {
+        if (needsActual && actualCounts.containsKey(key)) {
+          Integer count = actualCounts.get(key);
+          if (count > 1) {
+            actualValues.put(key, actualValues.get(key) / count);
+          }
+        }
+
+        if (needsBudget && budgetCounts.containsKey(key)) {
+          Integer count = budgetCounts.get(key);
+          if (count > 1) {
+            budgetCounts.put(key, budgetCounts.get(key) / count);
+          }
+        }
+      }
+    }
 
     Double actualValue;
     if (needsActual) {
@@ -340,7 +368,8 @@ final class AnalysisScripting {
 
   static List<AnalysisValue> calculateValues(ScriptEngine engine, String script,
       long columnId, String columnAbbreviation, long rowId, String rowAbbreviation,
-      Collection<String> variables, Multimap<String, AnalysisValue> input,
+      Collection<String> variables, Collection<String> ratios,
+      Multimap<String, AnalysisValue> input,
       List<AnalysisSplitType> columnSplitTypes,
       Map<AnalysisSplitType, List<AnalysisSplitValue>> columnSplitValues,
       List<AnalysisSplitType> rowSplitTypes,
@@ -364,25 +393,25 @@ final class AnalysisScripting {
             values.add(calculateValue(engine, script,
                 columnId, columnAbbreviation, rowId, rowAbbreviation,
                 columnPermutation, rowPermutation,
-                variables, input, needsActual, needsBudget, errorCollector))));
+                variables, ratios, input, needsActual, needsBudget, errorCollector))));
       }
 
     } else if (hasColumnSplits) {
       AnalysisSplitValue.getPermutations(null, columnSplitTypes, 0, columnSplitValues, 0)
           .forEach(permutation -> values.add(calculateValue(engine, script,
-              columnId, columnAbbreviation, rowId, rowAbbreviation,
-              permutation, null, variables, input, needsActual, needsBudget, errorCollector)));
+              columnId, columnAbbreviation, rowId, rowAbbreviation, permutation, null,
+              variables, ratios, input, needsActual, needsBudget, errorCollector)));
 
     } else if (hasRowSplits) {
       AnalysisSplitValue.getPermutations(null, rowSplitTypes, 0, rowSplitValues, 0)
           .forEach(permutation -> values.add(calculateValue(engine, script,
-              columnId, columnAbbreviation, rowId, rowAbbreviation,
-              null, permutation, variables, input, needsActual, needsBudget, errorCollector)));
+              columnId, columnAbbreviation, rowId, rowAbbreviation, null, permutation,
+              variables, ratios, input, needsActual, needsBudget, errorCollector)));
 
     } else {
       values.add(calculateValue(engine, script,
           columnId, columnAbbreviation, rowId, rowAbbreviation, null, null,
-          variables, input, needsActual, needsBudget, errorCollector));
+          variables, ratios, input, needsActual, needsBudget, errorCollector));
     }
 
     return values;
@@ -390,7 +419,8 @@ final class AnalysisScripting {
 
   static List<AnalysisValue> calculateSecondaryIndicator(ScriptEngine engine, String script,
       long columnId, long rowId,
-      Collection<String> variables, Multimap<String, AnalysisValue> input,
+      Collection<String> variables, Collection<String> ratios,
+      Multimap<String, AnalysisValue> input,
       List<AnalysisSplitType> columnSplitTypes,
       Map<AnalysisSplitType, List<AnalysisSplitValue>> columnSplitValues,
       List<AnalysisSplitType> rowSplitTypes,
@@ -412,25 +442,25 @@ final class AnalysisScripting {
       if (!columnPermutations.isEmpty() && !rowPermutations.isEmpty()) {
         columnPermutations.forEach(columnPermutation -> rowPermutations.forEach(rowPermutation ->
             values.add(calculateValue(engine, script, columnId, null, rowId, null,
-                columnPermutation, rowPermutation, variables, input,
+                columnPermutation, rowPermutation, variables, ratios, input,
                 needsActual, needsBudget, errorCollector))));
       }
 
     } else if (hasColumnSplits) {
       AnalysisSplitValue.getPermutations(null, columnSplitTypes, 0, columnSplitValues, 0)
           .forEach(permutation -> values.add(calculateValue(engine, script,
-              columnId, null, rowId, null, permutation, null, variables, input,
+              columnId, null, rowId, null, permutation, null, variables, ratios, input,
               needsActual, needsBudget, errorCollector)));
 
     } else if (hasRowSplits) {
       AnalysisSplitValue.getPermutations(null, rowSplitTypes, 0, rowSplitValues, 0)
           .forEach(permutation -> values.add(calculateValue(engine, script,
-              columnId, null, rowId, null, null, permutation, variables, input,
+              columnId, null, rowId, null, null, permutation, variables, ratios, input,
               needsActual, needsBudget, errorCollector)));
 
     } else {
       values.add(calculateValue(engine, script, columnId, null, rowId, null, null, null,
-          variables, input, needsActual, needsBudget, errorCollector));
+          variables, ratios, input, needsActual, needsBudget, errorCollector));
     }
 
     return values;

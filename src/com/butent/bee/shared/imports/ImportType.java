@@ -90,6 +90,8 @@ public enum ImportType implements HasLocalizedCaption {
 
       addRelationProperty(CarsConstants.TBL_CONF_OPTIONS, locale.options(),
           CarsConstants.TBL_CONF_OPTIONS);
+      addRelationProperty(CarsConstants.TBL_CONF_PACKET_OPTIONS, locale.packets(),
+          CarsConstants.TBL_CONF_PACKET_OPTIONS);
       addSimpleProperty(prfx + VAR_IMPORT_SHEET, capPrfx + locale.sheetName());
       addSimpleProperty(prfx + VAR_IMPORT_START_ROW, capPrfx + locale.startRow());
       addSimpleProperty(prfx + VAR_IMPORT_END_ROW, capPrfx + locale.endRow());

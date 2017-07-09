@@ -161,26 +161,26 @@
                    defaultRelations="Companies Persons Documents Appointments Discussions
                        Projects Tasks Requests Messages">
           <Relation viewName="Companies" renderColumns="Name TypeName"
-                    newRowEnabled="false" editPopup="true"/>
+                    newRowEnabled="false" editWindow="modal"/>
           <Relation viewName="Persons" renderColumns="FirstName LastName"
-                    newRowEnabled="false" editPopup="true"/>
+                    newRowEnabled="false" editWindow="modal"/>
           <Relation viewName="Documents"
                     renderColumns="Name Number RegistrationNumber DocumentDate"
-                    newRowEnabled="false" editPopup="true"/>
+                    newRowEnabled="false" editWindow="modal"/>
           <Relation viewName="Discussions" renderColumns="Subject"
-                    newRowEnabled="false" editPopup="true"/>
+                    newRowEnabled="false" editWindow="modal"/>
           <Relation viewName="ServiceObjects" renderColumns="Model CategoryName ArticleNo"
-                    newRowEnabled="false" editPopup="true" choiceColumns="Model CategoryName ArticleNo"/>
+                    newRowEnabled="false" editWindow="modal" choiceColumns="Model CategoryName ArticleNo"/>
           <Relation viewName="Tasks"
                     renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
-                    newRowEnabled="false" editPopup="true"
+                    newRowEnabled="false" editWindow="modal"
                     choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime
                       FinishTime"/>
           <Relation viewName="OrderCargo"
-                    renderColumns="Description" newRowEnabled="false" editPopup="true" />
+                    renderColumns="Description" newRowEnabled="false" editWindow="modal" />
           <Relation viewName="ServiceMaintenance"
                     renderColumns="ID" choiceColumns="ID TypeName StateName"
-                    newRowEnabled="false" editPopup="true" />
+                    newRowEnabled="false" editWindow="modal" />
         </Relations>
       </page>
 

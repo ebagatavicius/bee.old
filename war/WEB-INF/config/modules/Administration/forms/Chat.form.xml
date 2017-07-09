@@ -21,7 +21,7 @@
       <row for="Creator">
         <Label for="Creator" />
         <DataSelector source="Creator" renderColumns="CreatorFirstName CreatorLastName" 
-          style="width: 300px;" editSource="CreatorCompanyPerson" editPopup="true" >
+          style="width: 300px;" editSource="CreatorCompanyPerson" editWindow="modal" >
         </DataSelector>
       </row>
     </Table>

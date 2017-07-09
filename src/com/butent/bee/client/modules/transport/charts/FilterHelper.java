@@ -13,7 +13,6 @@ import com.butent.bee.client.event.EventUtils;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.layout.Simple;
 import com.butent.bee.client.layout.Split;
-import com.butent.bee.client.modules.transport.charts.ChartData.Type;
 import com.butent.bee.client.modules.transport.charts.ChartFilter.FilterValue;
 import com.butent.bee.client.modules.transport.charts.Filterable.FilterType;
 import com.butent.bee.client.style.StyleUtils;
@@ -24,9 +23,11 @@ import com.butent.bee.client.widget.CheckBox;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.BeeConst;
+import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.logging.BeeLogger;
 import com.butent.bee.shared.logging.LogUtils;
+import com.butent.bee.shared.modules.transport.TransportConstants.ChartDataType;
 import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -36,7 +37,9 @@ import com.butent.bee.shared.utils.StringList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 final class FilterHelper {
@@ -45,7 +48,7 @@ final class FilterHelper {
 
     boolean applySavedFilter(int index);
 
-    void onDataTypesChange(Set<ChartData.Type> types);
+    void onDataTypesChange(Set<ChartDataType> types);
 
     boolean onFilter();
 
@@ -123,7 +126,7 @@ final class FilterHelper {
     filters.add(filter);
   }
 
-  static void enableDataTypes(Collection<ChartData> data, Set<ChartData.Type> types) {
+  static void enableDataTypes(Collection<ChartData> data, Set<ChartDataType> types) {
     if (BeeUtils.isEmpty(data)) {
       return;
     }
@@ -156,7 +159,7 @@ final class FilterHelper {
     }
   }
 
-  static ChartData getDataByType(Collection<ChartData> data, ChartData.Type type) {
+  static ChartData getDataByType(Collection<ChartData> data, ChartDataType type) {
     if (data != null && type != null) {
       for (ChartData cd : data) {
         if (cd != null && cd.getType() == type) {
@@ -209,7 +212,7 @@ final class FilterHelper {
     if (data != null) {
       for (ChartData cd : data) {
         if (cd != null && cd.hasSelection()) {
-          Type type = cd.getType();
+          ChartDataType type = cd.getType();
           List<String> selectedItems = cd.getSelectedItems();
 
           for (String item : selectedItems) {
@@ -240,17 +243,6 @@ final class FilterHelper {
     } else {
       return BeeUtils.join(BeeConst.STRING_COMMA, labels);
     }
-  }
-
-  static boolean hasSelection(Collection<ChartData> data) {
-    if (data != null) {
-      for (ChartData cd : data) {
-        if (cd != null && cd.hasSelection()) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 
   static boolean matches(ChartData data, JustDate date) {
@@ -299,12 +291,15 @@ final class FilterHelper {
     }
   }
 
-  static List<ChartData> notEmptyData(Collection<ChartData> data) {
+  public static List<ChartData> onlyEnabledAndSavedData(List<ChartData> data,
+      Set<ChartDataType> enabledFilterDataTypes, List<ChartFilter> savedFilters) {
     List<ChartData> result = new ArrayList<>();
+
+    addSavedFiltersData(data, savedFilters);
 
     if (data != null) {
       for (ChartData cd : data) {
-        if (cd != null && !cd.isEmpty()) {
+        if (cd != null && enabledFilterDataTypes.contains(cd.getType())) {
           result.add(cd);
         }
       }
@@ -313,7 +308,8 @@ final class FilterHelper {
     return result;
   }
 
-  static void openDialog(final List<ChartData> filterData, List<ChartFilter> savedFilters,
+  static void openDialog(final List<ChartData> filterData, Set<ChartDataType> allFilters,
+      Set<ChartDataType> enabledFilters, List<ChartFilter> savedFilters,
       final DialogCallback callback) {
 
     int dataCounter = 0;
@@ -359,7 +355,7 @@ final class FilterHelper {
 
     final Split dataContainer = new Split(DATA_SPLITTER_WIDTH);
     dataContainer.addStyleName(STYLE_DATA_CONTAINER);
-    StyleUtils.setSize(dataContainer, dataContainerWidth, dataContainerHeight);
+    StyleUtils.setHeight(dataContainer, dataContainerHeight);
 
     int dataIndex = 0;
     for (ChartData data : filterData) {
@@ -401,7 +397,8 @@ final class FilterHelper {
     commands.add(clear);
 
     Button configure = new Button(Localized.dictionary().actionConfigure(),
-        event -> configureDataTypes(filterData, EventUtils.getEventTargetElement(event), result -> {
+        event -> configureDataTypes(allFilters, enabledFilters, EventUtils
+            .getEventTargetElement(event), result -> {
           dialog.setAnimationEnabled(false);
           dialog.close();
           callback.onDataTypesChange(result);
@@ -424,16 +421,17 @@ final class FilterHelper {
 
     Simple dataWrapper = new Simple(dataContainer);
     dataWrapper.addStyleName(STYLE_DATA_WRAPPER);
-    StyleUtils.setSize(dataWrapper, dataWrapperWidth, dataWrapperHeight);
+    StyleUtils.setHeight(dataWrapper, dataWrapperHeight);
 
     Flow content = new Flow(STYLE_CONTENT);
-    StyleUtils.setSize(content, dataWrapperWidth, contentHeight);
+    StyleUtils.setHeight(content, contentHeight);
 
     content.add(dataWrapper);
     content.add(savedContainer);
     content.add(commands);
 
     dialog.setWidget(content);
+    StyleUtils.setWidth(dialog, dataWrapperWidth);
 
     dialog.setHideOnEscape(true);
     dialog.setAnimationEnabled(true);
@@ -465,17 +463,51 @@ final class FilterHelper {
     }
   }
 
-  private static void configureDataTypes(List<ChartData> filterData, Element target,
-      final Callback<Set<ChartData.Type>> callback) {
+  static Map<String, Set<Long>> updateServerFilter(List<ChartData> data) {
+    Map<String, Set<Long>> filtersValueMap = new HashMap<>();
 
-    final Set<ChartData.Type> oldTypes = EnumSet.noneOf(ChartData.Type.class);
-    final Set<ChartData.Type> newTypes = EnumSet.noneOf(ChartData.Type.class);
+    if (data != null) {
+      for (ChartData cd : data) {
+        if (cd != null && cd.hasSelection() && cd.getType().isServerFilter()) {
+          filtersValueMap.put(BeeUtils.toString(cd.getType().ordinal()), cd.getSelectedIds());
+        }
+      }
+    }
+    return filtersValueMap;
+  }
+
+  private static void addSavedFiltersData(List<ChartData> data, List<ChartFilter> savedFilters) {
+    for (ChartFilter cf : savedFilters) {
+      for (FilterValue fv: cf.getValues()) {
+        if (fv.isValid()) {
+          ChartData ncd = getDataByType(data, fv.getType());
+
+          if (ncd == null) {
+            ncd = new ChartData(fv.getType());
+            data.add(ncd);
+          }
+
+          if (DataUtils.isId(fv.getId()) && !ncd.contains(fv.getId())) {
+            ncd.add(fv.getName(), fv.getId());
+          } else if (!ncd.contains(fv.getName())) {
+            ncd.add(fv.getName());
+          }
+        }
+      }
+    }
+  }
+
+  private static void configureDataTypes(Set<ChartDataType> allFilters,
+      Set<ChartDataType> enabledFilters, Element target,
+      final Callback<Set<ChartDataType>> callback) {
+
+    final Set<ChartDataType> oldTypes = EnumSet.noneOf(ChartDataType.class);
+    final Set<ChartDataType> newTypes = EnumSet.noneOf(ChartDataType.class);
 
     Flow panel = new Flow(STYLE_CONFIGURE_PANEL);
 
-    for (ChartData chartData : filterData) {
-      ChartData.Type type = chartData.getType();
-      boolean enabled = chartData.isEnabled();
+    for (ChartDataType type : allFilters) {
+      boolean enabled = enabledFilters.contains(type);
 
       CheckBox item = new CheckBox(type.getCaption());
       DomUtils.setDataIndex(item.getElement(), type.ordinal());
@@ -486,7 +518,7 @@ final class FilterHelper {
       item.addClickHandler(event -> {
         if (event.getSource() instanceof CheckBox) {
           CheckBox source = (CheckBox) event.getSource();
-          ChartData.Type tp = EnumUtils.getEnumByIndex(ChartData.Type.class,
+          ChartDataType tp = EnumUtils.getEnumByIndex(ChartDataType.class,
               DomUtils.getDataIndexInt(source.getElement()));
 
           if (tp != null) {

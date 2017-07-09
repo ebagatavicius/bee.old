@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
   name="TransportGroups" viewName="TransportGroups" caption="=trTransportGroups"
-  newRowCaption="=trNewTransportGroup" editForm="TransportGroup" editPopup="true"
+  newRowCaption="=trNewTransportGroup" editForm="TransportGroup" editWindow="modal"
   minColumnWidth="150"
   >
   <g:columns>

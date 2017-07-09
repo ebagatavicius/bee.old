@@ -168,9 +168,19 @@
         </row>
 
         <row>
-          <CheckBox source="CustomsBrokerage" title="=trRequestCustomsBrokeragePlaceholder" />
+          <FlowPanel>
+            <CheckBox source="CustomsBrokerage" />
+            <FaLabel name="CustomsBrokerageQst" char="question_circle" disablable="false"
+                     style="display: inline-block; margin-left: 5px;"
+                     title="=trRequestCustomsBrokeragePlaceholder" />
+          </FlowPanel>
           <cell horizontalAlignment="right">
-            <CheckBox source="FreightInsurance" title="=trRequestFreightInsurancePlaceholder" />
+            <FlowPanel>
+              <CheckBox source="FreightInsurance" />
+              <FaLabel name="FreightInsuranceQst" char="question_circle" disablable="false"
+                       style="display: inline-block; margin-left: 5px;"
+                       title="=trRequestFreightInsurancePlaceholder" />
+            </FlowPanel>
           </cell>
           <Label for="Value" name="ValueLabel" />
           <FlowPanel>
@@ -181,6 +191,29 @@
         </row>
       </Table>
     </Details>
+    &separator;
+
+    <Table kind="custom" style="&table;" cellStyle="&cells;">
+      <col index="0" cellStyle="&colLabel; font-weight:bold;" />
+
+      <row>
+        <Label for="Manager" />
+        <DataSelector source="Manager" renderColumns="ManagerFirstName ManagerLastName"
+                      newRowEnabled="false" editSource="ManagerPerson" style="width:15em;" />
+      </row>
+      <row>
+        <Label for="ManagerEmail" />
+        <TextLabel source="ManagerEmail" />
+      </row>
+      <row>
+        <Label for="ManagerPhone" />
+        <TextLabel source="ManagerPhone">
+          <renderToken source="ManagerPhone" suffix=" " />
+          <renderToken source="ManagerMobile" prefix="=mobile+ " suffix=" " />
+          <renderToken source="ManagerFax" prefix="=fax+ " />
+        </TextLabel>
+      </row>
+    </Table>
     &separator;
 
     <Details open="true">
@@ -250,12 +283,6 @@
 
       <Table kind="controls" style="&table;" cellStyle="&cells;">
         &cols;
-
-        <row>
-          <Label for="Manager" />
-          <DataSelector source="Manager" renderColumns="ManagerFirstName ManagerLastName"
-                        newRowEnabled="false" editSource="ManagerPerson" style="width:15em;" />
-        </row>
 
         <row>
           <Label for="Vehicle" />

@@ -5,7 +5,7 @@
   newRowColumns="-" minColumnWidth="100" flexGrow="1"
   >
   <g:columns>
-    <DataColumn name="Login" editPopup="true" />
+    <DataColumn name="Login" editWindow="modal" />
     <DataColumn name="FirstName" />
     <DataColumn name="LastName" visible="true" />
     <DataColumn name="CompanyName" label="=company" />

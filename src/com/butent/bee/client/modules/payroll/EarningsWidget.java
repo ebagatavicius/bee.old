@@ -31,6 +31,7 @@ import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.output.Printer;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.Opener;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Label;
@@ -626,16 +627,14 @@ abstract class EarningsWidget extends Flow implements HasSummaryChangeHandlers, 
 
     FaLabel refresh = new FaLabel(Action.REFRESH.getIcon(), STYLE_ACTION);
     refresh.addStyleName(STYLE_PREFIX + Action.REFRESH.getStyleSuffix());
-    refresh.setTitle(Action.REFRESH.getCaption());
-    StyleUtils.enableAnimation(Action.REFRESH, refresh);
+    UiHelper.initActionWidget(Action.REFRESH, refresh);
 
     refresh.addClickHandler(event -> refresh());
     headerPanel.add(refresh);
 
     FaLabel print = new FaLabel(Action.PRINT.getIcon(), STYLE_ACTION);
     print.addStyleName(STYLE_PREFIX + Action.PRINT.getStyleSuffix());
-    print.setTitle(Action.PRINT.getCaption());
-    StyleUtils.enableAnimation(Action.PRINT, print);
+    UiHelper.initActionWidget(Action.PRINT, print);
 
     print.addClickHandler(event -> Printer.print(this));
     headerPanel.add(print);

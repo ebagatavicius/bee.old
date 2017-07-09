@@ -53,18 +53,6 @@ final class SelfServiceUtils {
     }
   }
 
-  static void setDefaultExpeditionType(FormView form, IsRow newRow, String targetColumn) {
-    RelatedValuesCallback callback = new RelatedValuesCallback(form, newRow, targetColumn);
-
-    int rpcId = Queries.getRowSet(VIEW_EXPEDITION_TYPES, null, Filter.notNull(COL_SELF_SERVICE),
-        Order.ascending(COL_SELF_SERVICE, COL_EXPEDITION_TYPE_NAME), 0, 1, CachingPolicy.FULL,
-        callback);
-
-    if (!Queries.isResponseFromCache(rpcId)) {
-      callback.setRefresh(true);
-    }
-  }
-
   static void setDefaultPerson(FormView form, IsRow newRow, String targetColumn) {
     RelatedValuesCallback callback = new RelatedValuesCallback(form, newRow, targetColumn);
 

@@ -2,7 +2,8 @@
 <!DOCTYPE Form[
   <!ENTITY lbl "margin-right: 1em; text-align: right; padding-left: 30px">
 ]>
-<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form" name="Newsletter" caption="=mailNewsletter">
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form" name="Newsletter"
+        caption="=mailNewsletter">
 
   <FlowPanel class="flexBox-vertical">
     <FlowPanel class="flexBox-vertical" style="margin:5px; height:350px;">
@@ -20,10 +21,10 @@
       </FlowPanel>
       <RichTextEditor source="Content" class="bee-mail-Content flexible" required="true" />
     </FlowPanel>
-    <TabbedPages style="height: 400px;">
+    <TabbedPages class="flexible">
       <page>
         <text>=contacts</text>
-        <ChildGrid name="NewsletterContacts" relColumn="Newsletter" />
+        <ChildGrid name="NewsletterContacts" relColumn="Newsletter" paging="true" />
       </page>
       <page>
         <text>=files</text>

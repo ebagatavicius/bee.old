@@ -766,6 +766,11 @@ public class TransportReportsBean {
 
     ReportInfo report = ReportInfo.restore(reqInfo.getParameter(Service.VAR_DATA));
     Long currency = reqInfo.getParameterLong(COL_CURRENCY);
+
+    if (!DataUtils.isId(currency)) {
+      currency = prm.getRelation(PRM_CURRENCY);
+    }
+
     boolean woVat = BeeUtils.toBoolean(reqInfo.getParameter(COL_TRADE_VAT));
 
     Function<String, IsExpression> firstLastNameJoiner = alias ->
@@ -930,6 +935,11 @@ public class TransportReportsBean {
 
     selectTripCosts.addExpr(costsTotalExpr, VAR_TOTAL);
     selectFuelCosts.addExpr(fuelTotalExpr, VAR_TOTAL);
+
+    String currencyName = qs.getValue(new SqlSelect().addFields(TBL_CURRENCIES, COL_CURRENCY_NAME)
+        .addFrom(TBL_CURRENCIES).setWhere(sys.idEquals(TBL_CURRENCIES, currency)));
+    selectTripCosts.addExpr(SqlUtils.constant(currencyName), COL_CURRENCY);
+    selectFuelCosts.addExpr(SqlUtils.constant(currencyName), COL_CURRENCY);
 
     SqlSelect selectCosts = selectTripCosts
         .setUnionAllMode(true)

@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
   name="DocumentPlaces" viewName="DocumentPlaces" caption="=documentPlaces"
-  newRowPopup="true"
+  newRowWindow="modal"
   >
   <g:columns>
     <DataColumn name="Name" minWidth="200" visible="true" />

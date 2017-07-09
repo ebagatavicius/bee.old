@@ -33,16 +33,16 @@
       <page data="Relations" for="RecurringTask">
         <text>=relatedTo</text>
         <Relations relColumn="RecurringTask" inline="true" summarize="true">
-          <Relation viewName="Companies" renderColumns="Name" newRowEnabled="false" editPopup="true" />
-          <Relation viewName="Persons" renderColumns="FirstName LastName" newRowEnabled="false" editPopup="true" />
-          <Relation viewName="Documents" renderColumns="Name" newRowEnabled="false" editPopup="true" />
-          <Relation viewName="Appointments" renderColumns="Summary" editPopup="true"
+          <Relation viewName="Companies" renderColumns="Name" newRowEnabled="false" editWindow="modal" />
+          <Relation viewName="Persons" renderColumns="FirstName LastName" newRowEnabled="false" editWindow="modal" />
+          <Relation viewName="Documents" renderColumns="Name" newRowEnabled="false" editWindow="modal" />
+          <Relation viewName="Appointments" renderColumns="Summary" editWindow="modal"
             choiceColumns="Summary StartDateTime EndDateTime" />
-          <Relation viewName="Discussions" renderColumns="Subject" newRowEnabled="false" editPopup="true" />
-          <Relation viewName="ServiceObjects" renderColumns="Model CategoryName ArticleNo" newRowEnabled="false" editPopup="true"
+          <Relation viewName="Discussions" renderColumns="Subject" newRowEnabled="false" editWindow="modal" />
+          <Relation viewName="ServiceObjects" renderColumns="Model CategoryName ArticleNo" newRowEnabled="false" editWindow="modal"
             choiceColumns="Model CategoryName ArticleNo" property="RelServiceObjects"/>
           <Relation viewName="Tasks" renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
-            newRowEnabled="false" editPopup="true"
+            newRowEnabled="false" editWindow="modal"
             choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime" />
         </Relations>
       </page>

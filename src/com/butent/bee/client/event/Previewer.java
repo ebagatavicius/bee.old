@@ -92,6 +92,8 @@ public final class Previewer implements NativePreviewHandler, HasInfo {
   private static final int DEFAULT_CLICK_SENSITIVITY_MILLIS = 0;
   private static final int DEFAULT_CLICK_SENSITIVITY_DISTANCE = 1;
 
+  private static final int DEFAULT_ACTION_SENSITIVITY_MILLIS = 500;
+
   public static void ensureRegistered(PreviewHandler handler) {
     Assert.notNull(handler);
     if (!INSTANCE.contains(handler)) {
@@ -175,6 +177,15 @@ public final class Previewer implements NativePreviewHandler, HasInfo {
     }
 
     return (millis > 0) ? millis : DEFAULT_CLICK_SENSITIVITY_MILLIS;
+  }
+
+  public static int getActionSensitivityMillis() {
+    int millis = BeeKeeper.getUser().getActionSensitivityMillis();
+    if (millis <= 0) {
+      millis = Settings.getActionSensitivityMillis();
+    }
+
+    return (millis > 0) ? millis : DEFAULT_ACTION_SENSITIVITY_MILLIS;
   }
 
   private static boolean isExternalElement(Element element) {

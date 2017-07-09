@@ -1,5 +1,6 @@
 package com.butent.bee.client.modules.transport.charts;
 
+import com.butent.bee.shared.modules.transport.TransportConstants.ChartDataType;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Collection;
@@ -11,14 +12,14 @@ final class CargoMatcher {
       return null;
     }
 
-    ChartData customerData = FilterHelper.getDataByType(data, ChartData.Type.CUSTOMER);
-    ChartData managerData = FilterHelper.getDataByType(data, ChartData.Type.MANAGER);
+    ChartData customerData = FilterHelper.getDataByType(data, ChartDataType.CUSTOMER);
+    ChartData managerData = FilterHelper.getDataByType(data, ChartDataType.MANAGER);
 
-    ChartData orderData = FilterHelper.getDataByType(data, ChartData.Type.ORDER);
-    ChartData statusData = FilterHelper.getDataByType(data, ChartData.Type.ORDER_STATUS);
+    ChartData orderData = FilterHelper.getDataByType(data, ChartDataType.ORDER);
+    ChartData statusData = FilterHelper.getDataByType(data, ChartDataType.ORDER_STATUS);
 
-    ChartData cargoData = FilterHelper.getDataByType(data, ChartData.Type.CARGO);
-    ChartData cargoTypeData = FilterHelper.getDataByType(data, ChartData.Type.CARGO_TYPE);
+    ChartData cargoData = FilterHelper.getDataByType(data, ChartDataType.CARGO);
+    ChartData cargoTypeData = FilterHelper.getDataByType(data, ChartDataType.CARGO_TYPE);
 
     if (BeeUtils.anyNotNull(customerData, managerData, orderData, statusData,
         cargoData, cargoTypeData)) {

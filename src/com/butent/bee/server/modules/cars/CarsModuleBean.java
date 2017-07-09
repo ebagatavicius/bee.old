@@ -131,7 +131,8 @@ public class CarsModuleBean implements BeeModule {
 
     switch (service) {
       case SVC_GET_CONFIGURATION:
-        response = getConfiguration(reqInfo.getParameterLong(COL_BRANCH));
+        response = getConfiguration(reqInfo.getParameterLong(COL_BRANCH),
+            !reqInfo.getParameterBoolean(COL_BLOCKED));
         break;
 
       case SVC_SAVE_DIMENSIONS:
@@ -816,7 +817,7 @@ public class CarsModuleBean implements BeeModule {
     return ResponseObject.response(calendarId);
   }
 
-  private ResponseObject getConfiguration(Long branchId) {
+  private ResponseObject getConfiguration(Long branchId, boolean skipBlocked) {
     Configuration configuration = new Configuration();
 
     SimpleRowSet data = qs.getData(new SqlSelect()
@@ -840,8 +841,8 @@ public class CarsModuleBean implements BeeModule {
         .addField(TBL_CONF_BRANCH_BUNDLES, COL_CRITERIA, COL_BUNDLE + COL_CRITERIA)
         .addField(alsBranchBundles, COL_FILE_HASH, COL_BUNDLE + COL_FILE_HASH)
         .addFields(TBL_CONF_BUNDLE_OPTIONS, COL_BUNDLE, COL_OPTION)
-        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_CODE2,
-            COL_DESCRIPTION)
+        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_OPTION_NAME2, COL_CODE,
+            COL_CODE2, COL_DESCRIPTION)
         .addFields(TBL_FILES, COL_FILE_HASH)
         .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME, COL_REQUIRED)
         .addFrom(TBL_CONF_BRANCH_BUNDLES)
@@ -850,7 +851,8 @@ public class CarsModuleBean implements BeeModule {
         .addFromInner(TBL_CONF_BUNDLE_OPTIONS,
             SqlUtils.joinUsing(TBL_CONF_BRANCH_BUNDLES, TBL_CONF_BUNDLE_OPTIONS, COL_BUNDLE))
         .addFromInner(TBL_CONF_OPTIONS,
-            sys.joinTables(TBL_CONF_OPTIONS, TBL_CONF_BUNDLE_OPTIONS, COL_OPTION))
+            SqlUtils.and(sys.joinTables(TBL_CONF_OPTIONS, TBL_CONF_BUNDLE_OPTIONS, COL_OPTION),
+                skipBlocked ? SqlUtils.isNull(TBL_CONF_OPTIONS, COL_BLOCKED) : null))
         .addFromLeft(TBL_FILES, sys.joinTables(TBL_FILES, TBL_CONF_OPTIONS, COL_PHOTO))
         .addFromInner(TBL_CONF_GROUPS, sys.joinTables(TBL_CONF_GROUPS, TBL_CONF_OPTIONS, COL_GROUP))
         .setWhere(SqlUtils.equals(TBL_CONF_BRANCH_BUNDLES, COL_BRANCH, branchId)));
@@ -886,8 +888,8 @@ public class CarsModuleBean implements BeeModule {
         .addField(TBL_CONF_BRANCH_OPTIONS, COL_DESCRIPTION, COL_OPTION + COL_DESCRIPTION)
         .addField(TBL_CONF_BRANCH_OPTIONS, COL_CRITERIA, COL_OPTION + COL_CRITERIA)
         .addField(alsBranchOptions, COL_FILE_HASH, COL_BRANCH_OPTION + COL_FILE_HASH)
-        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_CODE2,
-            COL_DESCRIPTION)
+        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_OPTION_NAME2, COL_CODE,
+            COL_CODE2, COL_DESCRIPTION)
         .addFields(TBL_FILES, COL_FILE_HASH)
         .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME, COL_REQUIRED)
         .addFields(TBL_CONF_RELATIONS, COL_PRICE, COL_PACKET)
@@ -899,7 +901,8 @@ public class CarsModuleBean implements BeeModule {
         .addFromLeft(TBL_FILES, alsBranchOptions,
             sys.joinTables(TBL_FILES, alsBranchOptions, TBL_CONF_BRANCH_OPTIONS, COL_PHOTO))
         .addFromInner(TBL_CONF_OPTIONS,
-            sys.joinTables(TBL_CONF_OPTIONS, TBL_CONF_BRANCH_OPTIONS, COL_OPTION))
+            SqlUtils.and(sys.joinTables(TBL_CONF_OPTIONS, TBL_CONF_BRANCH_OPTIONS, COL_OPTION),
+                skipBlocked ? SqlUtils.isNull(TBL_CONF_OPTIONS, COL_BLOCKED) : null))
         .addFromLeft(TBL_FILES, sys.joinTables(TBL_FILES, TBL_CONF_OPTIONS, COL_PHOTO))
         .addFromInner(TBL_CONF_GROUPS, sys.joinTables(TBL_CONF_GROUPS, TBL_CONF_OPTIONS, COL_GROUP))
         .addFromLeft(TBL_CONF_RELATIONS,
@@ -938,34 +941,39 @@ public class CarsModuleBean implements BeeModule {
 
       data = qs.getData(new SqlSelect()
           .addFields(TBL_CONF_PACKET_OPTIONS, COL_PACKET, COL_OPTION)
-          .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_CODE2)
+          .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_OPTION_NAME2, COL_CODE,
+              COL_CODE2)
           .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME)
           .addFrom(TBL_CONF_PACKET_OPTIONS)
           .addFromInner(TBL_CONF_OPTIONS,
-              sys.joinTables(TBL_CONF_OPTIONS, TBL_CONF_PACKET_OPTIONS, COL_OPTION))
+              SqlUtils.and(sys.joinTables(TBL_CONF_OPTIONS, TBL_CONF_PACKET_OPTIONS, COL_OPTION),
+                  skipBlocked ? SqlUtils.isNull(TBL_CONF_OPTIONS, COL_BLOCKED) : null))
           .addFromInner(TBL_CONF_GROUPS,
               sys.joinTables(TBL_CONF_GROUPS, TBL_CONF_OPTIONS, COL_GROUP))
           .setWhere(SqlUtils.inList(TBL_CONF_PACKET_OPTIONS, COL_PACKET, optMap.keySet())));
 
       data.forEach(simpleRow -> configuration.getPackets(optMap.get(simpleRow.getLong(COL_PACKET)))
           .add(new Option(simpleRow)));
-    }
-    data = qs.getData(new SqlSelect()
-        .addFields(TBL_CONF_RESTRICTIONS, COL_BRANCH_OPTION, COL_OPTION, COL_DENIED)
-        .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_CODE, COL_CODE2,
-            COL_DESCRIPTION)
-        .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME, COL_REQUIRED)
-        .addFrom(TBL_CONF_RESTRICTIONS)
-        .addFromInner(TBL_CONF_OPTIONS,
-            sys.joinTables(TBL_CONF_OPTIONS, TBL_CONF_RESTRICTIONS, COL_OPTION))
-        .addFromInner(TBL_CONF_GROUPS, sys.joinTables(TBL_CONF_GROUPS, TBL_CONF_OPTIONS, COL_GROUP))
-        .addFromInner(TBL_CONF_BRANCH_OPTIONS,
-            sys.joinTables(TBL_CONF_BRANCH_OPTIONS, TBL_CONF_RESTRICTIONS, COL_BRANCH_OPTION))
-        .setWhere(SqlUtils.equals(TBL_CONF_BRANCH_OPTIONS, COL_BRANCH, branchId)));
 
-    for (SimpleRowSet.SimpleRow row : data) {
-      configuration.setRestriction(branchOptions.get(row.getLong(COL_BRANCH_OPTION)),
-          new Option(row), BeeUtils.unbox(row.getBoolean(COL_DENIED)));
+      data = qs.getData(new SqlSelect()
+          .addFields(TBL_CONF_RESTRICTIONS, COL_BRANCH_OPTION, COL_OPTION, COL_DENIED)
+          .addFields(TBL_CONF_OPTIONS, COL_GROUP, COL_OPTION_NAME, COL_OPTION_NAME2, COL_CODE,
+              COL_CODE2, COL_DESCRIPTION)
+          .addFields(TBL_CONF_GROUPS, COL_GROUP_NAME, COL_REQUIRED)
+          .addFrom(TBL_CONF_RESTRICTIONS)
+          .addFromInner(TBL_CONF_OPTIONS,
+              SqlUtils.and(sys.joinTables(TBL_CONF_OPTIONS, TBL_CONF_RESTRICTIONS, COL_OPTION),
+                  skipBlocked ? SqlUtils.isNull(TBL_CONF_OPTIONS, COL_BLOCKED) : null))
+          .addFromInner(TBL_CONF_GROUPS,
+              sys.joinTables(TBL_CONF_GROUPS, TBL_CONF_OPTIONS, COL_GROUP))
+          .addFromInner(TBL_CONF_BRANCH_OPTIONS,
+              sys.joinTables(TBL_CONF_BRANCH_OPTIONS, TBL_CONF_RESTRICTIONS, COL_BRANCH_OPTION))
+          .setWhere(sys.idInList(TBL_CONF_BRANCH_OPTIONS, branchOptions.keySet())));
+
+      for (SimpleRowSet.SimpleRow row : data) {
+        configuration.setRestriction(branchOptions.get(row.getLong(COL_BRANCH_OPTION)),
+            new Option(row), BeeUtils.unbox(row.getBoolean(COL_DENIED)));
+      }
     }
     return ResponseObject.response(configuration);
   }

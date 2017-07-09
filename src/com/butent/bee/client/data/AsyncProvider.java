@@ -275,6 +275,11 @@ public class AsyncProvider extends Provider {
   }
 
   @Override
+  public void hasAnyRows(Filter filter, Consumer<Boolean> callback) {
+    Queries.hasAnyRows(getViewName(), getQueryFilter(filter), callback::accept);
+  }
+
+  @Override
   public void onDataRequest(DataRequestEvent event) {
     switch (event.getOrigin()) {
       case SCROLLER:

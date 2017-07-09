@@ -118,5 +118,10 @@
       <InputRange source="DtbStripOpacity" minValue="0" maxValue="100" step="5" style="&slider_inp;" />
     </FlowPanel>
 
+    &separator;
+    <FlowPanel style="&cb_row;">
+      <Label text="=trTbSettingsFilterDependsOnData" style="&lbl;" />
+      <CheckBox source="FilterDependsOnData" html="-" style="&cb_inp;" />
+    </FlowPanel>
   </FlowPanel>
 </f:Form>

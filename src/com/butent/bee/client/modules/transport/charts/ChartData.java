@@ -5,7 +5,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.shared.data.value.ValueType;
-import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.modules.transport.TransportConstants.ChartDataType;
 import com.butent.bee.shared.time.JustDate;
 import com.butent.bee.shared.ui.HasCaption;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -21,43 +21,7 @@ import java.util.Set;
 
 class ChartData implements HasEnabled {
 
-  enum Type implements HasCaption {
-    DRIVER(Localized.dictionary().drivers(), ValueType.TEXT),
-    DRIVER_GROUP(Localized.dictionary().driverGroupsShort(), ValueType.TEXT),
-    CARGO(Localized.dictionary().cargos(), ValueType.TEXT),
-    CARGO_TYPE(Localized.dictionary().trCargoTypes(), ValueType.TEXT),
-    CUSTOMER(Localized.dictionary().transportationCustomers(), ValueType.TEXT),
-    MANAGER(Localized.dictionary().managers(), ValueType.TEXT),
-    LOADING(Localized.dictionary().cargoLoading(), ValueType.TEXT),
-    ORDER(Localized.dictionary().trOrders(), ValueType.TEXT),
-    ORDER_STATUS(Localized.dictionary().trOrderStatus(), ValueType.TEXT),
-    PLACE(Localized.dictionary().cargoHandlingPlaces(), ValueType.TEXT),
-    TRAILER(Localized.dictionary().trailers(), ValueType.TEXT),
-    TRIP(Localized.dictionary().trips(), ValueType.TEXT),
-    TRIP_STATUS(Localized.dictionary().trTripStatus(), ValueType.TEXT),
-    TRIP_ARRIVAL(Localized.dictionary().transportArrival(), ValueType.DATE),
-    TRIP_DEPARTURE(Localized.dictionary().transportDeparture(), ValueType.DATE),
-    TRUCK(Localized.dictionary().trucks(), ValueType.TEXT),
-    UNLOADING(Localized.dictionary().cargoUnloading(), ValueType.TEXT),
-    VEHICLE_GROUP(Localized.dictionary().vehicleGroupsShort(), ValueType.TEXT),
-    VEHICLE_MODEL(Localized.dictionary().vehicleModelsShort(), ValueType.TEXT),
-    VEHICLE_TYPE(Localized.dictionary().trVehicleTypesShort(), ValueType.TEXT);
-
-    private final String caption;
-    private final ValueType valueType;
-
-    Type(String caption, ValueType valueType) {
-      this.caption = caption;
-      this.valueType = valueType;
-    }
-
-    @Override
-    public String getCaption() {
-      return caption;
-    }
-  }
-
-  private final Type type;
+  private final ChartDataType type;
 
   private final Set<String> items = new HashSet<>();
   private final List<String> orderedItems = new ArrayList<>();
@@ -70,7 +34,7 @@ class ChartData implements HasEnabled {
 
   private boolean enabled = true;
 
-  ChartData(Type type) {
+  ChartData(ChartDataType type) {
     this.type = type;
   }
 
@@ -170,6 +134,10 @@ class ChartData implements HasEnabled {
     }
   }
 
+  Set<Long> getIds() {
+    return ids;
+  }
+
   Long getItemId(String item) {
     return itemToId.get(item);
   }
@@ -182,7 +150,7 @@ class ChartData implements HasEnabled {
       if (size() > 1) {
         Comparator<String> comparator;
 
-        if (type.valueType == ValueType.DATE) {
+        if (type.getValueType() == ValueType.DATE) {
           comparator = (o1, o2) -> BeeUtils.compareNullsFirst(itemToId.get(o1), itemToId.get(o2));
         } else {
           comparator = null;
@@ -211,7 +179,13 @@ class ChartData implements HasEnabled {
     return result;
   }
 
-  Type getType() {
+  Set<Long> getSelectedIds() {
+    Set<Long> selectedIds = new HashSet<>();
+    getSelectedItems().forEach(itemName -> selectedIds.add(getItemId(itemName)));
+    return selectedIds;
+  }
+
+  ChartDataType getType() {
     return type;
   }
 

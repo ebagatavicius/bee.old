@@ -15,10 +15,13 @@ import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Settings;
+import com.butent.bee.client.animation.HasAnimatableActivity;
+import com.butent.bee.client.animation.HasHoverAnimation;
 import com.butent.bee.client.dialog.Popup;
 import com.butent.bee.client.dom.DomUtils;
 import com.butent.bee.client.dom.Rulers;
 import com.butent.bee.client.event.EventUtils;
+import com.butent.bee.client.event.Previewer;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.style.Font;
 import com.butent.bee.client.style.HasTextAlign;
@@ -38,6 +41,7 @@ import com.butent.bee.shared.css.values.WhiteSpace;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsColumn;
 import com.butent.bee.shared.data.value.ValueType;
+import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.ui.HasMaxLength;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -51,12 +55,14 @@ public final class UiHelper {
 
   public static void add(HasWidgets container, Holder<Widget> holder,
       WidgetInitializer initializer, String name) {
+
     Assert.notNull(holder);
     holder.set(add(container, holder.get(), initializer, name));
   }
 
   public static Widget add(HasWidgets container, Widget widget, WidgetInitializer initializer,
       String name) {
+
     if (container == null || widget == null) {
       return null;
     }
@@ -439,25 +445,22 @@ public final class UiHelper {
   }
 
   public static Consumer<InputText> getTextBoxResizer(final int reserve) {
-    return new Consumer<InputText>() {
-      @Override
-      public void accept(InputText input) {
-        String value = input.getValue();
+    return input -> {
+      String value = input.getValue();
 
-        int oldWidth = input.getOffsetWidth();
-        int newWidth = reserve;
+      int oldWidth = input.getOffsetWidth();
+      int newWidth = reserve;
 
-        if (value != null && value.length() > 0) {
-          if (value.contains(BeeConst.STRING_SPACE)) {
-            value = value.replace(BeeConst.STRING_SPACE, BeeConst.HTML_NBSP);
-          }
-          Font font = Font.getComputed(input.getElement());
-          newWidth += Rulers.getAreaWidth(font, value, true);
+      if (value != null && value.length() > 0) {
+        if (value.contains(BeeConst.STRING_SPACE)) {
+          value = value.replace(BeeConst.STRING_SPACE, BeeConst.HTML_NBSP);
         }
+        Font font = Font.getComputed(input.getElement());
+        newWidth += Rulers.getAreaWidth(font, value, true);
+      }
 
-        if (newWidth != oldWidth) {
-          StyleUtils.setWidth(input, newWidth);
-        }
+      if (newWidth != oldWidth) {
+        StyleUtils.setWidth(input, newWidth);
       }
     };
   }
@@ -473,6 +476,24 @@ public final class UiHelper {
       }
     }
     return false;
+  }
+
+  public static void initActionWidget(Action action, Widget widget) {
+    if (action != null && widget != null) {
+      if (BeeUtils.isEmpty(widget.getTitle())) {
+        widget.setTitle(action.getCaption());
+      }
+
+      if (action.animate() && widget instanceof HasAnimatableActivity) {
+        int duration = BeeUtils.round(Previewer.getActionSensitivityMillis()
+            * action.getSensitivityRatio());
+        if (duration > 0) {
+          ((HasAnimatableActivity) widget).enableAnimation(duration);
+        }
+      }
+
+      HasHoverAnimation.init(widget);
+    }
   }
 
   public static Widget initialize(Widget widget, WidgetInitializer initializer, String name) {
@@ -638,12 +659,9 @@ public final class UiHelper {
       return;
     }
 
-    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-      @Override
-      public void execute() {
-        if (text.equals(widget.getText())) {
-          widget.selectAll();
-        }
+    Scheduler.get().scheduleDeferred(() -> {
+      if (text.equals(widget.getText())) {
+        widget.selectAll();
       }
     });
   }

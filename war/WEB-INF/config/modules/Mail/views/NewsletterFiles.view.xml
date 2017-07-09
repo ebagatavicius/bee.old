@@ -2,9 +2,9 @@
 <View xmlns="http://www.butent.com/view"
       xmlns:xi="http://www.w3.org/2001/XInclude"
 
-  name="NewsletterFiles" source="NewsletterFiles" module="Mail"
-  caption="=files"
-  >
+      name="NewsletterFiles" source="NewsletterFiles" module="Mail"
+      caption="=files"
+>
   <Columns>
     <SimpleColumn name="Newsletter" />
 

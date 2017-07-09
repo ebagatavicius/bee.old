@@ -19,7 +19,6 @@ import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.shared.data.event.RowUpdateEvent;
 import com.butent.bee.shared.data.filter.Filter;
 import com.butent.bee.shared.data.view.DataInfo;
-import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -46,83 +45,78 @@ abstract class MaintenanceStateChangeInterceptor extends MaintenanceExpanderForm
       Long maintenanceTypeId = event.getRowValue().getLong(getDataIndex(COL_TYPE));
 
       Queries.getRowSet(TBL_STATE_PROCESS, null,
-          ServiceUtils.getStateFilter(stateId, maintenanceTypeId), new Queries.RowSetCallback() {
-        @Override
-        public void onSuccess(BeeRowSet stateProcessRowSet) {
+          ServiceUtils.getStateFilter(stateId, maintenanceTypeId), stateProcessRowSet -> {
 
-          if (!DataUtils.isEmpty(stateProcessRowSet)) {
-            IsRow stateProcessRow = stateProcessRowSet.getRow(0);
-            Boolean comment = stateProcessRow.getBoolean(stateProcessRowSet
-                .getColumnIndex(COL_COMMENT));
+            if (!DataUtils.isEmpty(stateProcessRowSet)) {
+              IsRow stateProcessRow = stateProcessRowSet.getRow(0);
+              boolean comment = stateProcessRow.isTrue(stateProcessRowSet
+                  .getColumnIndex(COL_COMMENT));
 
-            Boolean isFinalState = stateProcessRow.getBoolean(Data
-                .getColumnIndex(TBL_STATE_PROCESS, COL_FINITE));
+              boolean isFinalState = stateProcessRow.isTrue(Data
+                  .getColumnIndex(TBL_STATE_PROCESS, COL_FINITE));
+              boolean isItemsRequired = stateProcessRow.isTrue(Data
+                  .getColumnIndex(TBL_STATE_PROCESS, COL_IS_ITEMS_REQUIRED));
 
-            Consumer<Boolean> changeStateConsumer = canChangeState -> {
-              if (!canChangeState) {
-                getFormView().notifySevere(Localized.dictionary().ordEmptyInvoice());
-                revertState();
+              Consumer<String> changeStateConsumer = canChangeStateErrorMsg -> {
+                if (!BeeUtils.isEmpty(canChangeStateErrorMsg)) {
+                  getFormView().notifySevere(canChangeStateErrorMsg);
+                  revertState();
 
-              } else if (BeeUtils.isTrue(comment)
-                  || !BeeUtils.isEmpty(stateProcessRow.getString(Data
-                  .getColumnIndex(TBL_STATE_PROCESS, COL_MAINTENANCE_ITEM)))
-                  || !BeeUtils.isEmpty(stateProcessRow.getString(Data
-                  .getColumnIndex(TBL_STATE_PROCESS, COL_TERM)))
-                  || !BeeUtils.isEmpty(stateProcessRow.getString(Data
-                  .getColumnIndex(TBL_STATE_PROCESS, COL_WARRANTY)))) {
-                registerReason(getActiveRow(), stateProcessRow, result -> {
+                } else if (comment
+                    || !BeeUtils.isEmpty(stateProcessRow.getString(Data
+                    .getColumnIndex(TBL_STATE_PROCESS, COL_MAINTENANCE_ITEM)))
+                    || !BeeUtils.isEmpty(stateProcessRow.getString(Data
+                    .getColumnIndex(TBL_STATE_PROCESS, COL_TERM)))
+                    || !BeeUtils.isEmpty(stateProcessRow.getString(Data
+                    .getColumnIndex(TBL_STATE_PROCESS, COL_WARRANTY)))) {
+                  registerReason(getActiveRow(), stateProcessRow, result -> {
 
-                  if (result == null) {
-                    return;
-                  }
-
-                  if (result.getA()) {
-                    List<String> columns = Lists.newArrayList(event.getColumnId());
-                    List<String> oldValues = Lists.newArrayList(event.getOldValue());
-                    List<String> newValues = Lists.newArrayList(event.getNewValue());
-                    IsRow oldRow = getFormView().getOldRow();
-
-                    Map<String, String> maintenanceValues = result.getB();
-                    maintenanceValues.forEach((column, value) -> {
-                          if (!BeeUtils.isEmpty(value)) {
-                            columns.add(column);
-                            int columnIndex = getDataIndex(column);
-                            oldValues.add(oldRow.getString(columnIndex));
-                            newValues.add(value);
-                          }
-                        }
-                    );
-
-                    int endingDateIndex = getDataIndex(COL_ENDING_DATE);
-                    columns.add(COL_ENDING_DATE);
-                    oldValues.add(oldRow.getString(endingDateIndex));
-
-                    if (BeeUtils.isTrue(isFinalState)) {
-                      newValues.add(BeeUtils.toString(System.currentTimeMillis()));
-                    } else {
-                      newValues.add(null);
+                    if (result == null) {
+                      return;
                     }
 
-                    Queries.update(getViewName(), oldRow.getId(), oldRow.getVersion(),
-                        Data.getColumns(getViewName(), columns), oldValues, newValues,
-                        null, new RowCallback() {
+                    if (result.getA()) {
+                      List<String> columns = Lists.newArrayList(event.getColumnId());
+                      List<String> oldValues = Lists.newArrayList(event.getOldValue());
+                      List<String> newValues = Lists.newArrayList(event.getNewValue());
+                      IsRow oldRow = getFormView().getOldRow();
 
-                          @Override
-                          public void onSuccess(BeeRow maintenanceRow) {
-                            RowUpdateEvent.fire(BeeKeeper.getBus(), getViewName(), maintenanceRow);
+                      Map<String, String> maintenanceValues = result.getB();
+                      maintenanceValues.forEach((column, value) -> {
+                            if (!BeeUtils.isEmpty(value)) {
+                              columns.add(column);
+                              int columnIndex = getDataIndex(column);
+                              oldValues.add(oldRow.getString(columnIndex));
+                              newValues.add(value);
+                            }
                           }
-                        });
+                      );
 
-                  } else {
-                    revertState();
-                  }
-                });
-              }
-            };
-            ServiceUtils.checkCanChangeState(isFinalState, changeStateConsumer, getFormView());
-          }
-        }
-      });
+                      int endingDateIndex = getDataIndex(COL_ENDING_DATE);
+                      columns.add(COL_ENDING_DATE);
+                      oldValues.add(oldRow.getString(endingDateIndex));
+
+                      if (isFinalState) {
+                        newValues.add(BeeUtils.toString(System.currentTimeMillis()));
+                      } else {
+                        newValues.add(null);
+                      }
+
+                      Queries.update(getViewName(), oldRow.getId(), oldRow.getVersion(),
+                          Data.getColumns(getViewName(), columns), oldValues, newValues, null,
+                          maintenanceRow -> RowUpdateEvent.fire(BeeKeeper.getBus(), getViewName(),
+                              maintenanceRow));
+
+                    } else {
+                      revertState();
+                    }
+                  });
+                }
+              };
+              ServiceUtils.checkCanChangeState(isFinalState, isItemsRequired, changeStateConsumer,
+                  getFormView());
+            }
+          });
     }
   }
 
@@ -188,26 +182,19 @@ abstract class MaintenanceStateChangeInterceptor extends MaintenanceExpanderForm
 
       Queries.getRowSet(ClassifierConstants.TBL_ITEMS,
           Arrays.asList(ClassifierConstants.COL_ITEM_VAT, ClassifierConstants.COL_ITEM_VAT_PERCENT),
-          Filter.compareId(itemId), new Queries.RowSetCallback() {
-            @Override
-            public void onSuccess(BeeRowSet result) {
-              if (!result.isEmpty()) {
-                columns.add(ClassifierConstants.COL_ITEM_VAT);
-                values.add(result.getRow(0).getString(result
-                    .getColumnIndex(ClassifierConstants.COL_ITEM_VAT_PERCENT)));
-                columns.add(ClassifierConstants.COL_ITEM_VAT_PERCENT);
-                values.add(result.getRow(0).getString(result
-                    .getColumnIndex(ClassifierConstants.COL_ITEM_VAT)));
-              }
-
-              Queries.insert(TBL_SERVICE_ITEMS, Data.getColumns(TBL_SERVICE_ITEMS, columns),
-                  values, null, new RowCallback() {
-                    @Override
-                    public void onSuccess(BeeRow createdServiceItem) {
-                      DataChangeEvent.fireRefresh(BeeKeeper.getBus(), TBL_SERVICE_ITEMS);
-                    }
-                  });
+          Filter.compareId(itemId), result -> {
+            if (!result.isEmpty()) {
+              columns.add(ClassifierConstants.COL_ITEM_VAT);
+              values.add(result.getRow(0).getString(result
+                  .getColumnIndex(ClassifierConstants.COL_ITEM_VAT_PERCENT)));
+              columns.add(ClassifierConstants.COL_ITEM_VAT_PERCENT);
+              values.add(result.getRow(0).getString(result
+                  .getColumnIndex(ClassifierConstants.COL_ITEM_VAT)));
             }
+
+            Queries.insert(TBL_SERVICE_ITEMS, Data.getColumns(TBL_SERVICE_ITEMS, columns),
+                values, null, createdServiceItem ->
+                    DataChangeEvent.fireRefresh(BeeKeeper.getBus(), TBL_SERVICE_ITEMS));
           });
     }
   }

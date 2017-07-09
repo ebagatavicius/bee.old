@@ -8,14 +8,12 @@ import static com.butent.bee.shared.modules.service.ServiceConstants.ALS_COMPANY
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.dialog.ConfirmationCallback;
 import com.butent.bee.client.dialog.StringCallback;
 import com.butent.bee.client.event.logical.SelectorEvent;
 import com.butent.bee.client.view.form.FormView;
-import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
@@ -92,34 +90,33 @@ public final class ServiceUtils {
     return warrantyDate;
   }
 
-  public static void checkCanChangeState(Boolean isFinalState,
-      Consumer<Boolean> changeStateConsumer, FormView formView) {
+  public static void checkCanChangeState(Boolean isFinalState, Boolean isItemsRequired,
+      Consumer<String> changeStateConsumer, FormView formView) {
     if (!BeeUtils.unbox(isFinalState)) {
-      changeStateConsumer.accept(true);
+      changeStateConsumer.accept(null);
 
     } else {
       Filter filter = Filter.equals(COL_SERVICE_MAINTENANCE, formView.getActiveRowId());
-      Queries.getRowSet(TBL_SERVICE_ITEMS, null, filter, new Queries.RowSetCallback() {
+      Queries.getRowSet(TBL_SERVICE_ITEMS, null, filter, result -> {
+        int qtyIdx = Data.getColumnIndex(TBL_SERVICE_ITEMS, TradeConstants.COL_TRADE_ITEM_QUANTITY);
+        String changeStateErrorMsg = null;
 
-        @Override
-        public void onSuccess(BeeRowSet result) {
-          int qtyIdx =
-              Data.getColumnIndex(TBL_SERVICE_ITEMS, TradeConstants.COL_TRADE_ITEM_QUANTITY);
-          boolean canChangeState = true;
+        if (isItemsRequired && (result == null || result.isEmpty())) {
+          changeStateErrorMsg = Localized.dictionary().shoppingCartIsEmpty();
+        }
 
-          if (result != null) {
-            for (IsRow row : result) {
-              Double completed = row.getPropertyDouble(PRP_COMPLETED_INVOICES);
-              Double qty = row.getDouble(qtyIdx);
+        if (result != null) {
+          for (IsRow row : result) {
+            Double completed = row.getPropertyDouble(PRP_COMPLETED_INVOICES);
+            Double qty = row.getDouble(qtyIdx);
 
-              if (BeeUtils.unbox(completed) <= 0 || !Objects.equals(completed, qty)) {
-                canChangeState = false;
-                break;
-              }
+            if (BeeUtils.unbox(completed) <= 0 || !Objects.equals(completed, qty)) {
+              changeStateErrorMsg = Localized.dictionary().ordEmptyInvoice();
+              break;
             }
           }
-          changeStateConsumer.accept(canChangeState);
         }
+        changeStateConsumer.accept(changeStateErrorMsg);
       });
     }
   }
@@ -186,12 +183,7 @@ public final class ServiceUtils {
     Long maintenanceTypeId = maintenanceRow.getLong(maintenanceDataInfo.getColumnIndex(COL_TYPE));
 
     Queries.getRowSet(TBL_STATE_PROCESS, null,
-        ServiceUtils.getStateFilter(stateId, maintenanceTypeId), new Queries.RowSetCallback() {
-          @Override
-          public void onSuccess(BeeRowSet result) {
-            processConsumer.accept(result);
-          }
-        });
+        ServiceUtils.getStateFilter(stateId, maintenanceTypeId), processConsumer::accept);
   }
 
   private ServiceUtils() {
@@ -204,22 +196,19 @@ public final class ServiceUtils {
       ParameterList params = ServiceKeeper.createArgs(SVC_INFORM_CUSTOMER);
       params.addDataItem(COL_COMMENT, commentRow.getId());
 
-      BeeKeeper.getRpc().makePostRequest(params, new ResponseCallback() {
-        @Override
-        public void onResponse(ResponseObject response) {
-          if (response.hasErrors()) {
-            Global.showError(Arrays.asList(response.getErrors()));
+      BeeKeeper.getRpc().makePostRequest(params, response -> {
+        if (response.hasErrors()) {
+          Global.showError(Arrays.asList(response.getErrors()));
+        }
+
+        if (!response.isEmpty()) {
+          for (Map.Entry<String, String> entry : Codec.deserializeHashMap(response
+              .getResponseAsString()).entrySet()) {
+            commentRow.setValue(Data.getColumnIndex(TBL_MAINTENANCE_COMMENTS, entry.getKey()),
+                entry.getValue());
           }
 
-          if (!response.isEmpty()) {
-            for (Map.Entry<String, String> entry : Codec.deserializeHashMap(response
-                .getResponseAsString()).entrySet()) {
-              commentRow.setValue(Data.getColumnIndex(TBL_MAINTENANCE_COMMENTS, entry.getKey()),
-                  entry.getValue());
-            }
-
-            RowUpdateEvent.fire(BeeKeeper.getBus(), TBL_MAINTENANCE_COMMENTS, commentRow);
-          }
+          RowUpdateEvent.fire(BeeKeeper.getBus(), TBL_MAINTENANCE_COMMENTS, commentRow);
         }
       });
     }

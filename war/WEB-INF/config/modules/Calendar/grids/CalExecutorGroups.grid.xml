@@ -4,7 +4,7 @@
   name="CalExecutorGroups" viewName="CalExecutorGroups" minColumnWidth="120"
   >
   <g:columns>
-    <RelColumn name="Group" visible="true" readOnly="true" editEnabled="true" editPopup="true" />
+    <RelColumn name="Group" visible="true" readOnly="true" editEnabled="true" editWindow="modal" />
 
     <DataColumn name="Background" updateMode="row">
       <editor type="color" />

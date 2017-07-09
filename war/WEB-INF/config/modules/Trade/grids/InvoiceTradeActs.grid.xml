@@ -13,7 +13,7 @@
     <DataColumn name="Article" />
 
     <RelColumn name="TradeAct" renderColumns="TradeAct" label="=tradeAct"
-      editEnabled="true" editPopup="true" editViewName="TradeActs" editSource="TradeAct"
+      editEnabled="true" editWindow="modal" editViewName="TradeActs" editSource="TradeAct"
       readOnly="true" />
     <DataColumn name="Parent" visible="false" />
 

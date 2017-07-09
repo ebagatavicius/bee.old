@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
   name="CompanyUsageReport" viewName="Companies" flexGrow="1" disabledActions="close"
-  editPopup="true"
+  editWindow="modal"
   >
   <g:columns>
     <DataColumn name="Name" visible="true" />

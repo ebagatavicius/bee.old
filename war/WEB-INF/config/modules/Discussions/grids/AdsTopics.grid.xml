@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
  xmlns:ui="http://www.butent.com/ui" xmlns:w="http://www.butent.com/widget"
 
- name="AdsTopics" viewName="AdsTopics" caption="=adsTopics" newRowPopup="true"
+ name="AdsTopics" viewName="AdsTopics" caption="=adsTopics" newRowWindow="modal"
  disabledActions="delete">
  <g:columns>
   <DataColumn name="Ordinal" visible="true" />

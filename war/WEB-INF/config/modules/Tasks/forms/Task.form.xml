@@ -118,13 +118,13 @@
 
                 <row>
                  <Label for="Company" />
-                  <DataSelector source="Company" editPopup="true" newRowEnabled="true" choiceColumns="Name TypeName"
+                  <DataSelector source="Company" editWindow="modal" newRowEnabled="true" choiceColumns="Name TypeName"
                       renderColumns="CompanyName CompanyTypeName" style="&inp2x;" />
                 </row>
 
                 <row>
                   <Label for="Contact" />
-                  <DataSelector source="Contact" editPopup="true" newRowEnabled="true" style="&inp2x;"
+                  <DataSelector source="Contact" editWindow="modal" newRowEnabled="true" style="&inp2x;"
                     renderColumns="ContactFirstName ContactLastName"
                     choiceColumns="FirstName LastName CompanyName" options="Company" />
                 </row>
@@ -141,21 +141,7 @@
                   <Label for="FinishTime" />
                   <FlowPanel class="flexBox-horizontal">
                       <InputDateTime source="FinishTime" style="&inp2;" readOnly="true" />
-                      <TextLabel name="LateIndicator" style="&inp2; margin-left: -160px" >
-                        <dynStyle>
-                          <ui:class>bee-crm-task-break</ui:class>
-                          <ui:expression>
-                            row.Status == 3 || row.Status == 4 || row.Status == 5 || row.Status == 6
-                          </ui:expression>
-                        </dynStyle>
-
-                        <dynStyle>
-                          <ui:class>bee-crm-task-progress</ui:class>
-                          <ui:expression>
-                            !(row.Status == 3 || row.Status == 4 || row.Status == 5 || row.Status == 6)
-                          </ui:expression>
-                        </dynStyle>
-                      </TextLabel>
+                      <TextLabel name="LateIndicator" style="&inp2; margin-left: -160px" />
                   </FlowPanel>
                 </row>
 
@@ -198,26 +184,26 @@
                      defaultRelations="Companies Persons Documents Appointments Discussions
                        Projects Tasks Requests Messages">
             <Relation viewName="Companies" renderColumns="Name TypeName"
-                      newRowEnabled="false" editPopup="true"/>
+                      newRowEnabled="false" editWindow="modal"/>
             <Relation viewName="Persons" renderColumns="FirstName LastName"
-                      newRowEnabled="false" editPopup="true"/>
+                      newRowEnabled="false" editWindow="modal"/>
             <Relation viewName="Documents"
                       renderColumns="Name Number RegistrationNumber DocumentDate"
-                      newRowEnabled="false" editPopup="true"/>
+                      newRowEnabled="false" editWindow="modal"/>
             <Relation viewName="Discussions" renderColumns="Subject"
-                      newRowEnabled="false" editPopup="true"/>
+                      newRowEnabled="false" editWindow="modal"/>
             <Relation viewName="ServiceObjects" renderColumns="Model CategoryName ArticleNo"
-                      newRowEnabled="false" editPopup="true" choiceColumns="Model CategoryName ArticleNo"/>
+                      newRowEnabled="false" editWindow="modal" choiceColumns="Model CategoryName ArticleNo"/>
             <Relation viewName="Tasks"
                       renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
-                      newRowEnabled="false" editPopup="true"
+                      newRowEnabled="false" editWindow="modal"
                       choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime
                          FinishTime"/>
             <Relation viewName="OrderCargo"
-                      renderColumns="Description" newRowEnabled="false" editPopup="true" />
+                      renderColumns="Description" newRowEnabled="false" editWindow="modal" />
             <Relation viewName="ServiceMaintenance"
                       renderColumns="ID" choiceColumns="ID TypeName StateName"
-                      newRowEnabled="false" editPopup="true" />
+                      newRowEnabled="false" editWindow="modal" />
           </Relations>
         </page>
       </TabbedPages>

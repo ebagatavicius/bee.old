@@ -732,12 +732,12 @@ public final class Relation implements BeeSerializable, HasInfo, HasViewName {
     } else {
       String enabled = getAttribute(UiConstants.ATTR_EDIT_ENABLED);
       return BeeConst.isTrue(enabled)
-          || BeeUtils.isEmpty(enabled) && getAttributes().containsKey(UiConstants.ATTR_EDIT_POPUP);
+          || BeeUtils.isEmpty(enabled) && getAttributes().containsKey(UiConstants.ATTR_EDIT_WINDOW);
     }
   }
 
-  public Boolean isEditModal() {
-    return BeeUtils.toBooleanOrNull(getAttribute(UiConstants.ATTR_EDIT_POPUP));
+  public WindowType getEditWindowType() {
+    return WindowType.parse(getAttribute(UiConstants.ATTR_EDIT_WINDOW));
   }
 
   public boolean isNewRowEnabled() {

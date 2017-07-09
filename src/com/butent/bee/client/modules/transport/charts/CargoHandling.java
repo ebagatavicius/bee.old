@@ -9,11 +9,12 @@ import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.time.HasDateRange;
 import com.butent.bee.shared.time.JustDate;
-import com.butent.bee.shared.utils.BeeUtils;
 
 class CargoHandling implements HasDateRange, HasShipmentInfo {
 
+  private final Long cargoTripId;
   private final boolean unloading;
+
   private final JustDate date;
   private final Long country;
   private final String place;
@@ -24,7 +25,9 @@ class CargoHandling implements HasDateRange, HasShipmentInfo {
   private final Range<JustDate> range;
 
   CargoHandling(SimpleRow row) {
-    this.unloading = BeeUtils.unbox(row.getBoolean(VAR_UNLOADING));
+    this.cargoTripId = row.getLong(COL_CARGO_TRIP);
+    this.unloading = row.isTrue(VAR_UNLOADING);
+
     this.date = Places.getDate(row, COL_PLACE_DATE);
     this.country = row.getLong(COL_PLACE_COUNTRY);
     this.place = row.getValue(COL_PLACE_ADDRESS);
@@ -101,8 +104,20 @@ class CargoHandling implements HasDateRange, HasShipmentInfo {
     return unloading ? number : null;
   }
 
+  Long getCargoTripId() {
+    return cargoTripId;
+  }
+
   static String getTitle(String loadInfo, String unloadInfo) {
     return TimeBoardHelper.buildTitle(Localized.dictionary().intermediateLoading(), loadInfo,
         Localized.dictionary().intermediateUnloading(), unloadInfo);
+  }
+
+  boolean isLoading() {
+    return !unloading;
+  }
+
+  boolean isUnloading() {
+    return unloading;
   }
 }

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Table xmlns="http://www.butent.com/table" name="UserSettings"
-  idName="UserSettingID">
+<Table xmlns="http://www.butent.com/table"
+
+       name="UserSettings"
+       idName="UserSettingID"
+>
   <Fields>
     <Relation name="User" relation="Users" notNull="true"
-      unique="true" cascade="DELETE" label="=user" />
+              unique="true" cascade="DELETE" label="=user" />
 
     <Enum name="Locale" key="SupportedLocale" label="=userLocale" />
     <Enum name="DateFormat" key="SupportedLocale" label="=dateFormat" />
@@ -21,18 +24,22 @@
     <Integer name="ClickSensitivityMillis" label="=clickSensitivityMillis" />
     <Integer name="ClickSensitivityDistance" label="=clickSensitivityDistance" />
 
+    <Integer name="ActionSensitivityMillis" label="=actionSensitivityMillis" />
+
     <Integer name="CompanyActionRemindBefore" label="=calMailPlannedActions" />
     <Integer name="NewsRefreshIntervalSeconds" label="=newsRefreshIntervalSeconds" />
     <Integer name="LoadingStateDelayMillis" label="=loadingStateDelayMillis" />
 
     <Relation name="UiTheme" relation="UiThemes" label="=uiTheme" />
 
-    <String name="TasksMailingTime" precision="10" label="=crmMailTasksSummary"/>
+    <String name="TasksMailingTime" precision="10" label="=crmMailTasksSummary" />
 
     <Text name="Style" label="=style" />
 
     <Boolean name="MenuHide" />
     <Boolean name="ShowNewMessagesNotifier" label="=showNewMessagesNotifier" />
     <Boolean name="Assistant" label="=assistant" />
+
+    <Integer name="ShowGridFilterCommand" label="=showGridFilterCommand" />
   </Fields>
 </Table>

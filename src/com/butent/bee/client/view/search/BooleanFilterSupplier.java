@@ -2,8 +2,6 @@ package com.butent.bee.client.view.search;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Widget;
 
 import com.butent.bee.client.grid.HtmlTable;
@@ -68,68 +66,7 @@ public class BooleanFilterSupplier extends AbstractFilterSupplier {
     return DEFAULT_STYLE_PREFIX + "boolean-";
   }
 
-  private Widget createWidget() {
-    HtmlTable container = new HtmlTable();
-    container.addStyleName(getStylePrefix() + "container");
-
-    Button notEmpty = new Button(getLabelForNotEmpty());
-    notEmpty.addStyleName(getStylePrefix() + "notEmpty");
-
-    notEmpty.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        boolean changed = !BeeUtils.isTrue(value);
-        value = true;
-        update(changed);
-      }
-    });
-
-    container.setWidget(0, 0, notEmpty);
-
-    Button empty = new Button(getLabelForEmpty());
-    empty.addStyleName(getStylePrefix() + "empty");
-
-    empty.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        boolean changed = !BeeUtils.isFalse(value);
-        value = false;
-        update(changed);
-      }
-    });
-
-    container.setWidget(0, 1, empty);
-
-    Button all = new Button(Localized.dictionary().filterAll());
-    all.addStyleName(getStylePrefix() + "all");
-
-    all.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        boolean changed = value != null;
-        value = null;
-        update(changed);
-      }
-    });
-
-    container.setWidget(1, 0, all);
-
-    Button cancel = new Button(Localized.dictionary().cancel());
-    cancel.addStyleName(getStylePrefix() + "cancel");
-
-    cancel.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        closeDialog();
-      }
-    });
-
-    container.setWidget(1, 1, cancel);
-
-    return container;
-  }
-
-  private static Boolean getBoolean(FilterValue filterValue) {
+  protected static Boolean getBoolean(FilterValue filterValue) {
     if (filterValue == null) {
       return null;
     } else if (filterValue.hasValue()) {
@@ -139,6 +76,53 @@ public class BooleanFilterSupplier extends AbstractFilterSupplier {
     } else {
       return null;
     }
+  }
+
+  private Widget createWidget() {
+    HtmlTable container = new HtmlTable();
+    container.addStyleName(getStylePrefix() + "container");
+
+    Button notEmpty = new Button(getLabelForNotEmpty());
+    notEmpty.addStyleName(getStylePrefix() + "notEmpty");
+
+    notEmpty.addClickHandler(event -> {
+      boolean changed = !BeeUtils.isTrue(value);
+      value = true;
+      update(changed);
+    });
+
+    container.setWidget(0, 0, notEmpty);
+
+    Button empty = new Button(getLabelForEmpty());
+    empty.addStyleName(getStylePrefix() + "empty");
+
+    empty.addClickHandler(event -> {
+      boolean changed = !BeeUtils.isFalse(value);
+      value = false;
+      update(changed);
+    });
+
+    container.setWidget(0, 1, empty);
+
+    Button all = new Button(Localized.dictionary().filterAll());
+    all.addStyleName(getStylePrefix() + "all");
+
+    all.addClickHandler(event -> {
+      boolean changed = value != null;
+      value = null;
+      update(changed);
+    });
+
+    container.setWidget(1, 0, all);
+
+    Button cancel = new Button(Localized.dictionary().cancel());
+    cancel.addStyleName(getStylePrefix() + "cancel");
+
+    cancel.addClickHandler(event -> closeDialog());
+
+    container.setWidget(1, 1, cancel);
+
+    return container;
   }
 
   private String getLabelForEmpty() {

@@ -16,10 +16,12 @@
       <SimpleColumn name="GroupName" />
     </SimpleJoin>
     <SimpleColumn name="OptionName" />
+    <SimpleColumn name="OptionName2" />
     <SimpleColumn name="Code" />
     <SimpleColumn name="Code2" />
     <SimpleColumn name="Description" />
     <SimpleColumn name="PhotoCode" />
+    <SimpleColumn name="Blocked" />
 
     <SimpleColumn name="PhotoFile" />
     <SimpleJoin name="PhotoFile" joinType="LEFT">

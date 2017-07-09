@@ -2,8 +2,8 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
         name="Accounts" viewName="Accounts" caption="=mailAccounts"
-        newRowForm="NewAccount" newRowPopup="true"
-        editForm="Account" editPopup="true"
+        newRowForm="NewAccount" newRowWindow="modal"
+        editForm="Account" editWindow="modal"
         filter="User={u} OR AccountUser={u}"
     >
 

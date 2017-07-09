@@ -7,6 +7,7 @@
   <Fields>
     <Relation name="Group" relation="ConfGroups" notNull="true" label="=optionGroup" />
     <String name="OptionName" precision="150" notNull="true" label="=option" />
+    <String name="OptionName2" precision="100" label="=option+2" />
     <String name="Code" precision="20" label="=code" />
     <String name="Code2" precision="20" label="=code+2" />
     <Text name="Description" label="=description" />
@@ -14,6 +15,7 @@
     <String name="PhotoCode" precision="10" label="=code+ (+=photo+)" />
     <Relation name="Bundle" relation="ConfBundles" label="=bundle" editable="true" />
     <Relation name="Item" relation="Items" label="=item" />
+    <Boolean name="Blocked" label="=actionBlock" />
   </Fields>
   <Constraints>
     <Unique fields="Group Code" />

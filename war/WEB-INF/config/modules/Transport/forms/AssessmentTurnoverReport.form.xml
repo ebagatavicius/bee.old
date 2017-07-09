@@ -19,7 +19,7 @@
       
           <Label text="=currency" style="padding-left: 3em; padding-right: 10px;" />
           <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
-            newRowEnabled="false" editPopup="true" style="width: 80px;" />
+            newRowEnabled="false" editWindow="modal" style="width: 80px;" />
         </HorizontalPanel>
       </row>
 

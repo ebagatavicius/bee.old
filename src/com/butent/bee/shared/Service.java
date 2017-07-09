@@ -68,6 +68,7 @@ public final class Service {
   public static final String GET_TABLE_INFO = DATA_SERVICE_PREFIX + "table_info";
   public static final String GENERATE = DATA_SERVICE_PREFIX + "generate";
   public static final String COUNT_ROWS = DATA_SERVICE_PREFIX + "row_count";
+  public static final String HAS_ANY_ROWS = DATA_SERVICE_PREFIX + "has_any_rows";
   public static final String DELETE = DATA_SERVICE_PREFIX + "delete";
   public static final String DELETE_ROWS = DATA_SERVICE_PREFIX + "delete_rows";
   public static final String UPDATE_CELL = DATA_SERVICE_PREFIX + "update_cell";

@@ -30,6 +30,7 @@ import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.trade.TradeConstants;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.Arrays;
@@ -101,7 +102,7 @@ public class OrdersInvoicesGrid extends InvoicesGrid {
       joinAction.setVisible(false);
       List<String> cols = Arrays.asList(COL_TRADE_OPERATION, COL_TRADE_OPERATION + "Name",
           COL_TRADE_CUSTOMER, COL_TRADE_CUSTOMER + "Name", COL_TRADE_WAREHOUSE_FROM,
-          COL_TRADE_WAREHOUSE_FROM + "Code");
+          COL_TRADE_WAREHOUSE_FROM + "Code", COL_COMPANY_CREDIT_DAYS);
 
       Queries.getRowSet(getViewName(), null, Filter.idIn(ids), new Queries.RowSetCallback() {
         @Override
@@ -141,6 +142,13 @@ public class OrdersInvoicesGrid extends InvoicesGrid {
               BeeKeeper.getUser().getCompany());
           newRow.setValue(dataInfo.getColumnIndex(ALS_SUPPLIER_NAME),
               BeeKeeper.getUser().getCompanyName());
+
+          Integer days = result.getInteger(0, result.getColumnIndex(COL_COMPANY_CREDIT_DAYS));
+
+          if (BeeUtils.isPositive(days)) {
+            newRow.setValue(dataInfo.getColumnIndex(TradeConstants.COL_TRADE_TERM),
+              TimeUtils.nextDay(TimeUtils.today(), days));
+          }
 
           for (String col : cols) {
               newRow.setValue(dataInfo.getColumnIndex(col),

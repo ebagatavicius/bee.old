@@ -6,7 +6,7 @@
   flexGrow="1" disabledActions="add" caption="=svcDefects"
   >
   <g:columns>
-    <RelColumn name="ServiceObject" editEnabled="true" editPopup="true" />
+    <RelColumn name="ServiceObject" editEnabled="true" editWindow="modal" />
   </g:columns>
 
   <xi:include href="columns/ServiceDefect.columns.xml" />

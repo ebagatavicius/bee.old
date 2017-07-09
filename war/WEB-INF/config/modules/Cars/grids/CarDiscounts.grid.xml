@@ -6,9 +6,9 @@
         flexGrow="1"
 >
   <g:columns>
-    <RelColumn name="Company" editPopup="true" />
+    <RelColumn name="Company" editWindow="modal" />
     <RelColumn name="Category" choiceColumns="ParentName Name" />
-    <RelColumn name="Item" editPopup="true" />
+    <RelColumn name="Item" editWindow="modal" />
   </g:columns>
 
   <xi:include href="../../Classifiers/grids/columns/Discount.columns.xml" />

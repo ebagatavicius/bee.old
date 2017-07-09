@@ -3,6 +3,7 @@ package com.butent.bee.client.ui;
 import com.google.gwt.xml.client.Element;
 
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
+import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.time.DateTime;
 import com.butent.bee.shared.time.JustDate;
@@ -44,9 +45,35 @@ public interface WidgetInterceptor extends HasCaption, HasWidgetSupplier {
     return EnumUtils.getEnumByIndex(clazz, getIntegerValue(source));
   }
 
+  HeaderView getHeaderView();
+
   Integer getIntegerValue(String source);
 
   Long getLongValue(String source);
 
   String getStringValue(String source);
+
+  default boolean startCommand(String styleName, int duration) {
+    HeaderView headerView = getHeaderView();
+
+    if (headerView == null) {
+      return false;
+    } else {
+      return headerView.startCommandByStyleName(styleName, duration);
+    }
+  }
+
+  default boolean endCommand(String styleName) {
+    return endCommand(styleName, false);
+  }
+
+  default boolean endCommand(String styleName, boolean disableAnimation) {
+    HeaderView headerView = getHeaderView();
+
+    if (headerView == null) {
+      return false;
+    } else {
+      return headerView.stopCommandByStyleName(styleName, disableAnimation);
+    }
+  }
 }

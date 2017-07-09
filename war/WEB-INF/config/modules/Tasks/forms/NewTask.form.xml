@@ -53,13 +53,13 @@
       <row>
         <Label name="ExecutorsLabel" text="=crmTaskExecutors" />
         <MultiSelector name="Executors" viewName="Users" property="Executors" renderColumns="FirstName LastName"
-          editPopup="true" newRowEnabled="false" editSource="CompanyPerson" style="&inp2x;" label="=crmTaskExecutors" />
+          editWindow="modal" newRowEnabled="false" editSource="CompanyPerson" style="&inp2x;" label="=crmTaskExecutors" />
       </row>
 
       <row>
         <Label text="=crmTaskExecutorGroups" />
         <MultiSelector name="UserGroupSettings" viewName="UserGroupSettings" property="ExecutorGroups"
-          renderColumns="Name" editPopup="true" newRowEnabled="false" style="&inp2y;" label="=crmTaskExecutorGroups"
+          renderColumns="Name" editWindow="modal" newRowEnabled="false" style="&inp2y;" label="=crmTaskExecutorGroups"
           filter="Owner {u} or Visibility 1">
         </MultiSelector>
       </row>
@@ -67,20 +67,20 @@
       <row>
         <Label text="=crmTaskObservers" />
         <MultiSelector name="Observers" viewName="Users" property="Observers" renderColumns="FirstName LastName"
-          editPopup="true" newRowEnabled="false" editSource="CompanyPerson" style="&inp2x;" label="=crmTaskObservers" />
+          editWindow="modal" newRowEnabled="false" editSource="CompanyPerson" style="&inp2x;" label="=crmTaskObservers" />
       </row>
 
       <row>
         <Label text="=crmTaskObserverGroups" />
         <MultiSelector name="ObserverGroups" viewName="UserGroupSettings" property="ObserverGroups"
-          renderColumns="Name" editPopup="true" newRowEnabled="false" style="&inp2y;" label="=crmTaskObserverGroups"
+          renderColumns="Name" editWindow="modal" newRowEnabled="false" style="&inp2y;" label="=crmTaskObserverGroups"
           filter="Owner {u} or Visibility 1" />
       </row>
 
       <row module="Projects" data="Projects">
         <Label text="=project" name="ProjectLabel" />
         <DataSelector source="Project" renderColumns="ProjectName" style="&inp2x;" disablable="true"
-                      editPopup="false" />
+                      editWindow="new-tab" />
       </row>
       <row module="Projects" data="ProjectStages">
         <Label text="=prjStage" name="ProjectStageLabel" />
@@ -115,13 +115,13 @@
       
       <row>
        <Label for="Company" />
-        <DataSelector source="Company" editPopup="true" newRowEnabled="true" choiceColumns="Name TypeName"
+        <DataSelector source="Company" editWindow="modal" newRowEnabled="true" choiceColumns="Name TypeName"
             renderColumns="CompanyName CompanyTypeName" style="&inp2x;" />
       </row>
       
       <row>
         <Label for="Contact" />
-        <DataSelector source="Contact" editPopup="true" newRowEnabled="true" style="&inp2x;"
+        <DataSelector source="Contact" editWindow="modal" newRowEnabled="true" style="&inp2x;"
           renderColumns="ContactFirstName ContactLastName"
           choiceColumns="FirstName LastName CompanyName" options="Company" />
       </row>
@@ -169,27 +169,27 @@
                defaultRelations="Companies Persons Documents Appointments Discussions
                        Projects Tasks Requests Messages" style="width: 628px">
       <Relation viewName="Companies" property="RelCompanies" renderColumns="Name TypeName"
-                newRowEnabled="false" editPopup="true"/>
+                newRowEnabled="false" editWindow="modal"/>
       <Relation viewName="Persons" property="RelPersons" renderColumns="FirstName LastName"
                 newRowEnabled="false"
-                editPopup="true"/>
+                editWindow="modal"/>
       <Relation viewName="Documents" property="RelDocuments"
                 renderColumns="Name Number RegistrationNumber DocumentDate"
-                newRowEnabled="false" editPopup="true"/>
+                newRowEnabled="false" editWindow="modal"/>
       <Relation viewName="Discussions" property="RelDiscussions" renderColumns="Subject"
-                newRowEnabled="false" editPopup="true"/>
+                newRowEnabled="false" editWindow="modal"/>
       <Relation viewName="ServiceObjects" property="RelServiceObjects" renderColumns="Model CategoryName ArticleNo"
-                newRowEnabled="false" editPopup="true"
+                newRowEnabled="false" editWindow="modal"
                 choiceColumns="Model CategoryName ArticleNo"/>
       <Relation viewName="Tasks" property="RelTasks"
                 renderColumns="Id Summary ExecutorFirstName ExecutorLastName"
-                newRowEnabled="false" editPopup="true" style="&inp2x;"
+                newRowEnabled="false" editWindow="modal" style="&inp2x;"
                 choiceColumns="Id Summary ExecutorFirstName ExecutorLastName StartTime FinishTime"/>
       <Relation viewName="OrderCargo" property="RelOrderCargo"
-                renderColumns="Description" newRowEnabled="false" editPopup="true" />
+                renderColumns="Description" newRowEnabled="false" editWindow="modal" />
       <Relation viewName="ServiceMaintenance" property="RelServiceMaintenance"
                 renderColumns="ID" choiceColumns="ID TypeName StateName"
-                newRowEnabled="false" editPopup="true" />
+                newRowEnabled="false" editWindow="modal" />
     </Relations>
   </FlowPanel>
 </f:Form>

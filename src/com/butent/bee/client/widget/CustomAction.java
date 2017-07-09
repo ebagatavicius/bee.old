@@ -21,6 +21,10 @@ public class CustomAction extends FaLabel {
     addClickHandler(action);
   }
 
+  @Override
+  public void enableAnimation(int duration) {
+  }
+
   public Consumer<ResponseObject> getCallback() {
     return callback;
   }

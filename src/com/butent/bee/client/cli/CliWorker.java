@@ -35,7 +35,6 @@ import com.butent.bee.client.Historian;
 import com.butent.bee.client.Settings;
 import com.butent.bee.client.animation.RafCallback;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.communication.RpcInfo;
 import com.butent.bee.client.communication.RpcList;
 import com.butent.bee.client.composite.FileGroup;
@@ -132,7 +131,6 @@ import com.butent.bee.shared.Resource;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.Size;
 import com.butent.bee.shared.communication.ContentType;
-import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.communication.TextMessage;
 import com.butent.bee.shared.css.CssAngle;
 import com.butent.bee.shared.css.CssProperties;
@@ -303,6 +301,9 @@ public final class CliWorker {
     } else if ("cornify".equals(z)) {
       cornify(arr);
 
+    } else if ("count".equals(z) && !args.isEmpty()) {
+      countRows(v, arr, errorPopup);
+
     } else if ("create".equals(z)) {
       createResource(args, errorPopup);
 
@@ -415,6 +416,9 @@ public final class CliWorker {
 
     } else if ("gwt".equals(z)) {
       showGwt();
+
+    } else if (("has".equals(z) || z.startsWith("exist")) && !args.isEmpty()) {
+      hasAnyRows(v, arr, errorPopup);
 
     } else if (BeeUtils.inList(z, "h5", "html5") || z.startsWith("feat")) {
       showSupport(args, errorPopup);
@@ -899,6 +903,37 @@ public final class CliWorker {
   }-*/;
 //@formatter:on
 
+  private static void countRows(String input, String[] arr, boolean errorPopup) {
+    String viewName = arr[1];
+    DataInfo dataInfo = Data.getDataInfo(viewName);
+    if (dataInfo == null) {
+      return;
+    }
+
+    Filter filter;
+    if (arr.length > 2) {
+      String s = ArrayUtils.join(BeeConst.STRING_SPACE, arr, 2);
+      filter = dataInfo.parseFilter(s, BeeKeeper.getUser().getUserId());
+
+      if (filter == null) {
+        showError(errorPopup, input, s, "cannot parse filter");
+        return;
+      }
+
+    } else {
+      filter = null;
+    }
+
+    Queries.getRowCount(viewName, filter, count -> {
+      logger.debug(viewName);
+      if (filter != null) {
+        logger.debug(filter);
+      }
+      logger.debug("row count", count);
+      logger.addSeparator();
+    });
+  }
+
   private static void createResource(String args, boolean errorPopup) {
     if (BeeUtils.isEmpty(args)) {
       showError(errorPopup, "path not specified");
@@ -1230,75 +1265,65 @@ public final class CliWorker {
     }
 
     BeeKeeper.getRpc().makeRequest(AdministrationKeeper.createArgs(service),
-        new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            if (!response.hasErrors()) {
-              if (SVC_GET_DICTIONARY.equals(service)) {
-                Localized.setGlossary(Codec.deserializeHashMap(response.getResponseAsString()));
-                logger.debug(service, Localized.getGlossary().size());
+        response -> {
+          if (!response.hasErrors()) {
+            if (SVC_GET_DICTIONARY.equals(service)) {
+              Localized.setGlossary(Codec.deserializeHashMap(response.getResponseAsString()));
+              logger.debug(service, Localized.getGlossary().size());
 
-              } else {
-                logger.debug(service, response.getResponse());
-              }
+            } else {
+              logger.debug(service, response.getResponse());
             }
           }
         });
   }
 
   private static void doDsn() {
-    BeeKeeper.getRpc().makeGetRequest(Service.GET_DSNS, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        final List<String> dsns = new ArrayList<>();
-        String current = null;
+    BeeKeeper.getRpc().makeGetRequest(Service.GET_DSNS, response -> {
+      final List<String> dsns = new ArrayList<>();
+      String current = null;
 
-        if (response.hasResponse()) {
-          char defChar = '*';
-          String[] arr = Codec.beeDeserializeCollection(response.getResponseAsString());
+      if (response.hasResponse()) {
+        char defChar = '*';
+        String[] arr = Codec.beeDeserializeCollection(response.getResponseAsString());
 
-          if (arr != null) {
-            for (String s : arr) {
-              if (BeeUtils.isPrefixOrSuffix(s, defChar)) {
-                current = BeeUtils.removePrefixAndSuffix(s, defChar);
-                dsns.add(current);
-              } else {
-                dsns.add(s);
-              }
+        if (arr != null) {
+          for (String s : arr) {
+            if (BeeUtils.isPrefixOrSuffix(s, defChar)) {
+              current = BeeUtils.removePrefixAndSuffix(s, defChar);
+              dsns.add(current);
+            } else {
+              dsns.add(s);
             }
           }
         }
-        if (dsns.isEmpty()) {
-          Global.showError(Collections.singletonList("No DSN's available"));
+      }
+      if (dsns.isEmpty()) {
+        Global.showError(Collections.singletonList("No DSN's available"));
 
-        } else if (dsns.size() == 1) {
-          inform("Only one DSN is available:", dsns.get(0));
+      } else if (dsns.size() == 1) {
+        inform("Only one DSN is available:", dsns.get(0));
 
-        } else {
-          Horizontal panel = new Horizontal();
-          panel.add(new Label("Available DSN's"));
+      } else {
+        Horizontal panel = new Horizontal();
+        panel.add(new Label("Available DSN's"));
 
-          final String currentDsn = current;
-          final RadioGroup rg = new RadioGroup(Orientation.VERTICAL, dsns.indexOf(currentDsn),
-              dsns);
-          panel.add(rg);
+        final String currentDsn = current;
+        final RadioGroup rg = new RadioGroup(Orientation.VERTICAL, dsns.indexOf(currentDsn),
+            dsns);
+        panel.add(rg);
 
-          Global.inputWidget("Choose DSN", panel, () -> {
-            String dsn = dsns.get(rg.getSelectedIndex());
+        Global.inputWidget("Choose DSN", panel, () -> {
+          String dsn = dsns.get(rg.getSelectedIndex());
 
-            if (!BeeUtils.same(dsn, currentDsn)) {
-              ParameterList params = BeeKeeper.getRpc().createParameters(Service.SWITCH_DSN);
-              params.addQueryItem(Service.VAR_DSN, dsn);
+          if (!BeeUtils.same(dsn, currentDsn)) {
+            ParameterList params = BeeKeeper.getRpc().createParameters(Service.SWITCH_DSN);
+            params.addQueryItem(Service.VAR_DSN, dsn);
 
-              BeeKeeper.getRpc().makeGetRequest(params, new ResponseCallback() {
-                @Override
-                public void onResponse(ResponseObject rsp) {
-                  logger.info("DSN switched to:", rsp.getResponseAsString());
-                }
-              });
-            }
-          });
-        }
+            BeeKeeper.getRpc().makeGetRequest(params,
+                rsp -> logger.info("DSN switched to:", rsp.getResponseAsString()));
+          }
+        });
       }
     });
   }
@@ -1647,19 +1672,16 @@ public final class CliWorker {
 
   private static void doSql(final String sql) {
     BeeKeeper.getRpc().sendText(new ParameterList(Service.DO_SQL), sql,
-        new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            Assert.notNull(response);
+        response -> {
+          Assert.notNull(response);
 
-            if (response.hasResponse(BeeRowSet.class)) {
-              BeeRowSet rs = BeeRowSet.restore((String) response.getResponse());
+          if (response.hasResponse(BeeRowSet.class)) {
+            BeeRowSet rs = BeeRowSet.restore((String) response.getResponse());
 
-              if (rs.isEmpty()) {
-                logger.debug("sql: RowSet is empty");
-              } else {
-                Global.showTable(BeeUtils.clip(sql, 100), rs);
-              }
+            if (rs.isEmpty()) {
+              logger.debug("sql: RowSet is empty");
+            } else {
+              Global.showTable(BeeUtils.clip(sql, 100), rs);
             }
           }
         });
@@ -1770,27 +1792,24 @@ public final class CliWorker {
   }
 
   private static void getFiles() {
-    BeeKeeper.getRpc().makeGetRequest(Service.GET_FILES, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        if (response.hasResponse()) {
-          FileGroup fileGroup = new FileGroup(Lists.newArrayList(Column.ICON, Column.NAME,
-              Column.SIZE, Column.TYPE, Column.DATE));
-          fileGroup.render((String) response.getResponse());
+    BeeKeeper.getRpc().makeGetRequest(Service.GET_FILES, response -> {
+      if (response.hasResponse()) {
+        FileGroup fileGroup = new FileGroup(Lists.newArrayList(Column.ICON, Column.NAME,
+            Column.SIZE, Column.TYPE, Column.DATE));
+        fileGroup.render((String) response.getResponse());
 
-          if (fileGroup.isEmpty()) {
-            inform("files not available");
-            return;
-          }
-
-          long totSize = 0;
-          for (FileInfo sf : fileGroup.getFiles()) {
-            totSize += sf.getSize();
-          }
-
-          fileGroup.setCaption("Files: " + fileGroup.getFiles().size() + " size: " + totSize);
-          BeeKeeper.getScreen().show(fileGroup);
+        if (fileGroup.isEmpty()) {
+          inform("files not available");
+          return;
         }
+
+        long totSize = 0;
+        for (FileInfo sf : fileGroup.getFiles()) {
+          totSize += sf.getSize();
+        }
+
+        fileGroup.setCaption("Files: " + fileGroup.getFiles().size() + " size: " + totSize);
+        BeeKeeper.getScreen().show(fileGroup);
       }
     });
   }
@@ -1827,35 +1846,29 @@ public final class CliWorker {
     for (String v : arr) {
       params.addPositionalData(v);
     }
-    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        if (response.hasResponse(Resource.class)) {
-          Resource resource = Resource.restore(response.getResponseAsString());
-          ResourceEditor resourceEditor = new ResourceEditor(resource);
+    BeeKeeper.getRpc().makeRequest(params, response -> {
+      if (response.hasResponse(Resource.class)) {
+        Resource resource = Resource.restore(response.getResponseAsString());
+        ResourceEditor resourceEditor = new ResourceEditor(resource);
 
-          BeeKeeper.getScreen().show(resourceEditor);
+        BeeKeeper.getScreen().show(resourceEditor);
 
-        } else {
-          ResponseHandler.dispatch(ArrayUtils.joinWords(arr), response);
-        }
+      } else {
+        ResponseHandler.dispatch(ArrayUtils.joinWords(arr), response);
       }
     });
   }
 
   private static void getSimpleRowSet(final String caption, ParameterList params) {
-    BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        if (response.hasErrors()) {
-          Global.showError(caption, Arrays.asList(response.getErrors()));
-        } else if (response.hasResponse(SimpleRowSet.class)) {
-          showSimpleRowSet(caption, SimpleRowSet.restore(response.getResponseAsString()));
-        } else if (response.hasWarnings()) {
-          Global.showError(caption, Arrays.asList(response.getWarnings()));
-        } else {
-          Global.showError(caption, Arrays.asList("response type", response.getType()));
-        }
+    BeeKeeper.getRpc().makeRequest(params, response -> {
+      if (response.hasErrors()) {
+        Global.showError(caption, Arrays.asList(response.getErrors()));
+      } else if (response.hasResponse(SimpleRowSet.class)) {
+        showSimpleRowSet(caption, SimpleRowSet.restore(response.getResponseAsString()));
+      } else if (response.hasWarnings()) {
+        Global.showError(caption, Arrays.asList(response.getWarnings()));
+      } else {
+        Global.showError(caption, Arrays.asList("response type", response.getType()));
       }
     });
   }
@@ -1894,6 +1907,37 @@ public final class CliWorker {
     }
 
     BeeKeeper.getRpc().makeRequest(params, ResponseHandler.callback(input));
+  }
+
+  private static void hasAnyRows(String input, String[] arr, boolean errorPopup) {
+    String viewName = arr[1];
+    DataInfo dataInfo = Data.getDataInfo(viewName);
+    if (dataInfo == null) {
+      return;
+    }
+
+    Filter filter;
+    if (arr.length > 2) {
+      String s = ArrayUtils.join(BeeConst.STRING_SPACE, arr, 2);
+      filter = dataInfo.parseFilter(s, BeeKeeper.getUser().getUserId());
+
+      if (filter == null) {
+        showError(errorPopup, input, s, "cannot parse filter");
+        return;
+      }
+
+    } else {
+      filter = null;
+    }
+
+    Queries.hasAnyRows(viewName, filter, has -> {
+      logger.debug(viewName);
+      if (filter != null) {
+        logger.debug(filter);
+      }
+      logger.debug("exists", has);
+      logger.addSeparator();
+    });
   }
 
   private static void inform(String... messages) {
@@ -2143,52 +2187,43 @@ public final class CliWorker {
         if (!BeeUtils.isEmpty(progress)) {
           params.addQueryItem(Service.VAR_PROGRESS, progress);
         }
-        BeeKeeper.getRpc().sendText(params, args, new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            Assert.notNull(response);
+        BeeKeeper.getRpc().sendText(params, args, response -> {
+          Assert.notNull(response);
 
-            if (progress != null) {
-              Endpoint.removeProgress(progress);
-              Endpoint.send(ProgressMessage.close(progress));
-            }
-            if (response.hasResponse()) {
-              showPropData(BeeUtils.joinWords("Rebuild", args),
-                  PropertyUtils.restoreProperties((String) response.getResponse()));
-            }
+          if (progress != null) {
+            Endpoint.removeProgress(progress);
+            Endpoint.send(ProgressMessage.close(progress));
+          }
+          if (response.hasResponse()) {
+            showPropData(BeeUtils.joinWords("Rebuild", args),
+                PropertyUtils.restoreProperties((String) response.getResponse()));
           }
         });
       });
 
     } else {
-      BeeKeeper.getRpc().sendText(new ParameterList(Service.REBUILD), args, new ResponseCallback() {
-        @Override
-        public void onResponse(ResponseObject response) {
-          Assert.notNull(response);
+      BeeKeeper.getRpc().sendText(new ParameterList(Service.REBUILD), args, response -> {
+        Assert.notNull(response);
 
-          if (response.hasResponse()) {
-            showPropData(BeeUtils.joinWords("Rebuild", args),
-                PropertyUtils.restoreProperties((String) response.getResponse()));
-          }
+        if (response.hasResponse()) {
+          showPropData(BeeUtils.joinWords("Rebuild", args),
+              PropertyUtils.restoreProperties((String) response.getResponse()));
         }
       });
     }
   }
 
   private static void respectMyAuthoritah() {
-    BeeKeeper.getRpc().makeGetRequest(Service.RESPECT_MY_AUTHORITAH, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        if (response.hasResponse(Boolean.class)) {
-          boolean authoritah = BeeUtils.toBoolean(response.getResponseAsString());
-          UserData userData = BeeKeeper.getUser().getUserData();
+    BeeKeeper.getRpc().makeGetRequest(Service.RESPECT_MY_AUTHORITAH, response -> {
+      if (response.hasResponse(Boolean.class)) {
+        boolean authoritah = BeeUtils.toBoolean(response.getResponseAsString());
+        UserData userData = BeeKeeper.getUser().getUserData();
 
-          if (userData != null && userData.hasAuthoritah() != authoritah) {
-            BeeKeeper.getUser().getUserData().respectMyAuthoritah();
-            BeeKeeper.onRightsChange();
+        if (userData != null && userData.hasAuthoritah() != authoritah) {
+          BeeKeeper.getUser().getUserData().respectMyAuthoritah();
+          BeeKeeper.onRightsChange();
 
-            logger.debug(authoritah ? "respect my authoritah" : "screw you guys i'm going home");
-          }
+          logger.debug(authoritah ? "respect my authoritah" : "screw you guys i'm going home");
         }
       }
     });
@@ -3641,50 +3676,47 @@ public final class CliWorker {
     }
 
     Queries.getRowSet(VIEW_CURRENCIES, Collections.singletonList(COL_CURRENCY_NAME),
-        new Queries.RowSetCallback() {
-          @Override
-          public void onSuccess(BeeRowSet result) {
-            if (DataUtils.isEmpty(result)) {
-              showError(errorPopup, VIEW_CURRENCIES, "not available");
-              return;
-            }
+        result -> {
+          if (DataUtils.isEmpty(result)) {
+            showError(errorPopup, VIEW_CURRENCIES, "not available");
+            return;
+          }
 
-            List<Pair<Long, String>> currencies = new ArrayList<>();
-            int index = result.getColumnIndex(COL_CURRENCY_NAME);
+          List<Pair<Long, String>> currencies = new ArrayList<>();
+          int index = result.getColumnIndex(COL_CURRENCY_NAME);
 
-            for (BeeRow row : result) {
-              currencies.add(Pair.of(row.getId(), row.getString(index)));
-            }
+          for (BeeRow row : result) {
+            currencies.add(Pair.of(row.getId(), row.getString(index)));
+          }
 
-            HtmlTable table = new HtmlTable(StyleUtils.NAME_INFO_TABLE);
+          HtmlTable table = new HtmlTable(StyleUtils.NAME_INFO_TABLE);
 
-            String center = StyleUtils.className(TextAlign.CENTER);
-            String right = StyleUtils.className(TextAlign.RIGHT);
-            String bold = StyleUtils.className(FontWeight.BOLD);
+          String center = StyleUtils.className(TextAlign.CENTER);
+          String right = StyleUtils.className(TextAlign.RIGHT);
+          String bold = StyleUtils.className(FontWeight.BOLD);
 
-            table.setText(0, 0, Localized.dictionary().currency());
+          table.setText(0, 0, Localized.dictionary().currency());
 
-            for (int i = 0; i < currencies.size(); i++) {
-              String name = currencies.get(i).getB();
+          for (int i = 0; i < currencies.size(); i++) {
+            String name = currencies.get(i).getB();
 
-              table.setText(i + 1, 0, name, bold);
-              table.setText(0, i + 1, name, bold, center);
-            }
+            table.setText(i + 1, 0, name, bold);
+            table.setText(0, i + 1, name, bold, center);
+          }
 
-            for (int r = 0; r < currencies.size(); r++) {
-              long from = currencies.get(r).getA();
+          for (int r = 0; r < currencies.size(); r++) {
+            long from = currencies.get(r).getA();
 
-              for (int c = 0; c < currencies.size(); c++) {
-                Double rate = rates.get(from, currencies.get(c).getA());
-                if (rate != null) {
-                  table.setText(r + 1, c + 1, BeeUtils.toString(rate, 10), right);
-                }
+            for (int c = 0; c < currencies.size(); c++) {
+              Double rate = rates.get(from, currencies.get(c).getA());
+              if (rate != null) {
+                table.setText(r + 1, c + 1, BeeUtils.toString(rate, 10), right);
               }
             }
-
-            table.setCaption(BeeUtils.joinWords(Localized.dictionary().currencyRates(), dt));
-            BeeKeeper.getScreen().show(table);
           }
+
+          table.setCaption(BeeUtils.joinWords(Localized.dictionary().currencyRates(), dt));
+          BeeKeeper.getScreen().show(table);
         });
   }
 
@@ -4323,12 +4355,7 @@ public final class CliWorker {
     }
 
     Queries.getRowSet(viewName, columns, filter.get(), order.get(), offset.get(), limit.get(),
-        new Queries.RowSetCallback() {
-          @Override
-          public void onSuccess(BeeRowSet result) {
-            showTable(input, result);
-          }
-        });
+        result -> showTable(input, result));
   }
 
   private static void showViewInfo(String input, String args) {
@@ -4463,12 +4490,9 @@ public final class CliWorker {
       String millis = arr[i];
 
       if (BeeUtils.isPositiveInt(millis)) {
-        BeeKeeper.getRpc().invoke("sleep", millis, new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            if (response.hasResponse()) {
-              logger.debug(response.getResponseAsString());
-            }
+        BeeKeeper.getRpc().invoke("sleep", millis, response -> {
+          if (response.hasResponse()) {
+            logger.debug(response.getResponseAsString());
           }
         });
       }
@@ -4713,12 +4737,8 @@ public final class CliWorker {
 
     final String input = sb.toString();
 
-    BeeKeeper.getRpc().invoke("stringInfo", input, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        ResponseHandler.unicodeTest(input, response);
-      }
-    });
+    BeeKeeper.getRpc().invoke("stringInfo", input,
+        response -> ResponseHandler.unicodeTest(input, response));
   }
 
   private static void upload() {

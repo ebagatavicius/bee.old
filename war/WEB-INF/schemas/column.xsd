@@ -247,7 +247,7 @@
 
   <xs:attributeGroup name="columnRelation">
     <xs:attribute name="editForm" type="tp:nameType" />
-    <xs:attribute name="editPopup" type="xs:boolean" />
+    <xs:attribute name="editWindow" type="ui:windowType" />
     <xs:attribute name="editEnabled" type="xs:boolean" />
     <xs:attribute name="editKey" type="xs:int" />
     <xs:attribute name="editSource" type="tp:fieldNameType" />

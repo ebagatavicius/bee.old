@@ -27,6 +27,8 @@ public final class ServiceConstants {
   public static final String PRM_DEFAULT_MAINTENANCE_TYPE = "DefaultMaintenanceType";
   public static final String PRM_DEFAULT_WARRANTY_TYPE = "DefaultWarrantyType";
   public static final String PRM_FILTER_ALL_DEVICES = "FilterAllDevices";
+  public static final String PRM_ITEM_ARTICLE_SOURCE_COLUMN = "ItemArticleSourceColumn";
+  public static final String PRM_ITEM_NOTE_SOURCE_COLUMNS = "ItemNoteSourceColumns";
   public static final String PRM_URGENT_RATE = "UrgentRate";
   public static final String PRM_SERVICE_MANAGER_WAREHOUSE = "ServiceManagerWarehouse";
   public static final String PRM_SMS_REQUEST_SERVICE_ADDRESS = "SmsRequestServiceAddress";
@@ -103,6 +105,7 @@ public final class ServiceConstants {
   public static final String COL_EQUIPMENT = "Equipment";
   public static final String COL_EQUIPMENT_NAME = "Name";
   public static final String COL_INITIAL = "Initial";
+  public static final String COL_IS_ITEMS_REQUIRED = "IsItemsRequired";
   public static final String COL_FINITE = "Finite";
   public static final String COL_TYPE = "Type";
   public static final String COL_MAINTENANCE_STATE = "MaintenanceState";
@@ -151,6 +154,7 @@ public final class ServiceConstants {
   public static final String COL_PUBLISH_TIME = "PublishTime";
   public static final String COL_SERIAL_NO = "SerialNo";
   public static final String COL_SERVICE_MAINTENANCE = "ServiceMaintenance";
+  public static final String COL_SERVICE_MAINTENANCE_ID = "ServiceMaintenanceID";
   public static final String COL_SERVICE_ITEM = "ServiceItem";
   public static final String COL_SERVICE_DATE_FROM = "DateFrom";
   public static final String COL_SERVICE_DATE_UNTIL = "DateUntil";
@@ -174,6 +178,7 @@ public final class ServiceConstants {
   public static final String COL_WARRANTY_MAINTENANCE = "WarrantyMaintenance";
   public static final String COL_WARRANTY = "Warranty";
   public static final String COL_WARRANTY_DURATION = "Duration";
+  public static final String COL_WARRANTY_NAME = "Name";
   public static final String COL_WARRANTY_TYPE = "WarrantyType";
   public static final String COL_WARRANTY_VALID_TO = "WarrantyValidTo";
 

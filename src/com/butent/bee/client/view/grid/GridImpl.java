@@ -148,6 +148,7 @@ import com.butent.bee.shared.ui.NavigationOrigin;
 import com.butent.bee.shared.ui.Relation;
 import com.butent.bee.shared.ui.RenderableToken;
 import com.butent.bee.shared.ui.UiConstants;
+import com.butent.bee.shared.ui.WindowType;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.NameUtils;
@@ -349,8 +350,8 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
   private Runnable onFormOpen;
 
-  private boolean showNewRowPopup;
-  private boolean showEditPopup;
+  private WindowType newRowWindowType;
+  private WindowType editWindowType;
 
   private final Set<String> pendingResize = new HashSet<>();
   private String options;
@@ -903,8 +904,18 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
     initForms();
 
-    setShowEditPopup(BeeUtils.nvl(gridDescription.getEditPopup(), hasChildUi()));
-    setShowNewRowPopup(BeeUtils.nvl(gridDescription.getNewRowPopup(), hasChildUi()));
+    WindowType windowType = gridDescription.getEditWindow();
+    if (windowType == null) {
+      windowType = hasChildUi() ? WindowType.DEFAULT_CHILD_EDIT : WindowType.DEFAULT_GRID_EDIT;
+    }
+    setEditWindowType(windowType);
+
+    windowType = gridDescription.getNewRowWindow();
+    if (windowType == null) {
+      windowType = hasChildUi()
+          ? WindowType.DEFAULT_CHILD_NEW_ROW : WindowType.DEFAULT_GRID_NEW_ROW;
+    }
+    setNewRowWindowType(windowType);
 
     if (!editForms.isEmpty()) {
       if (gridDescription.getEditMessage() != null) {
@@ -1044,7 +1055,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
   @Override
   public void finishNewRow(IsRow row) {
     showForm(GridFormKind.NEW_ROW, false);
-    fireEvent(new GridFormEvent(GridFormKind.NEW_ROW, State.CLOSED, showNewRowPopup()));
+    fireEvent(new GridFormEvent(GridFormKind.NEW_ROW, State.CLOSED, getNewRowWindowType()));
 
     setAdding(false);
     getGrid().setEditing(false);
@@ -2006,7 +2017,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
   private void closeEditForm() {
     showForm(GridFormKind.EDIT, false);
-    fireEvent(new GridFormEvent(GridFormKind.EDIT, State.CLOSED, showEditPopup()));
+    fireEvent(new GridFormEvent(GridFormKind.EDIT, State.CLOSED, getEditWindowType()));
 
     if (feed != null) {
       getGrid().getRowData().remove(getActiveRow());
@@ -2024,7 +2035,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
       FormFactory.createFormView(gridForm.getName(), getViewName(), getDataColumns(), true,
           (formDescription, result) -> {
-            createFormContainer(gridForm, result, GridFormKind.EDIT, null, showEditPopup());
+            createFormContainer(gridForm, result, GridFormKind.EDIT, null, getEditWindowType());
             gridForm.setFormView(result);
 
             gridForm.removeState(State.LOADING);
@@ -2038,7 +2049,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
   }
 
   private void createFormContainer(GridForm gridForm, final FormView formView, GridFormKind kind,
-      String caption, boolean asPopup) {
+      String caption, WindowType windowType) {
 
     String formCaption = BeeUtils.notEmpty(caption, formView.getCaption());
 
@@ -2063,7 +2074,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
     Widget container = gfp.getMainView().asWidget();
 
-    if (asPopup) {
+    if (WindowType.MODAL == windowType) {
       ModalForm popup = new ModalForm(gfp, formView, true);
 
       popup.setOnSave(input -> {
@@ -2179,7 +2190,7 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
   private void embraceNewRowForm(GridForm gridForm, FormView formView) {
     if (gridForm != null && formView != null) {
       createFormContainer(gridForm, formView, GridFormKind.NEW_ROW, getNewRowCaption(),
-          showNewRowPopup());
+          getNewRowWindowType());
       gridForm.setFormView(formView);
     }
   }
@@ -2298,6 +2309,10 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
     return editShowId;
   }
 
+  private WindowType getEditWindowType() {
+    return editWindowType;
+  }
+
   private String getFormStorageKey(GridFormKind kind) {
     String prefix = BeeUtils.notEmpty(getGridKey(), getGridName());
     String suffix = kind.name().toLowerCase().replace(BeeConst.CHAR_UNDER, BeeConst.CHAR_MINUS);
@@ -2361,6 +2376,10 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
   private int getNewRowFormIndex() {
     return newRowFormIndex;
+  }
+
+  private WindowType getNewRowWindowType() {
+    return newRowWindowType;
   }
 
   private Notification getNotification() {
@@ -2713,16 +2732,17 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
       modal = true;
 
     } else {
-      Boolean editModal;
+      WindowType windowType;
       if (relation != null) {
-        editModal = relation.isEditModal();
+        windowType = relation.getEditWindowType();
       } else if (columnRelation != null) {
-        editModal = columnRelation.isEditModal();
+        windowType = columnRelation.getEditWindowType();
       } else {
-        editModal = null;
+        windowType = null;
       }
 
-      modal = BeeUtils.nvl(editModal, charCode != EditStartEvent.CLICK);
+      modal = WindowType.MODAL == windowType
+          || windowType == null && charCode != EditStartEvent.CLICK;
     }
 
     RowCallback rowCallback;
@@ -2871,12 +2891,12 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
           }
         }
 
-        fireEvent(new GridFormEvent(GridFormKind.EDIT, State.OPEN, showEditPopup()));
+        fireEvent(new GridFormEvent(GridFormKind.EDIT, State.OPEN, getEditWindowType()));
       };
 
       setOnFormOpen(() -> form.editRow(rowValue, focusCommand));
 
-      fireEvent(new GridFormEvent(GridFormKind.EDIT, State.PENDING, showEditPopup()));
+      fireEvent(new GridFormEvent(GridFormKind.EDIT, State.PENDING, getEditWindowType()));
       showForm(GridFormKind.EDIT, true);
 
       return;
@@ -3030,10 +3050,10 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
       form.updateRow(newRow, true);
       form.focus();
 
-      fireEvent(new GridFormEvent(GridFormKind.NEW_ROW, State.OPEN, showNewRowPopup()));
+      fireEvent(new GridFormEvent(GridFormKind.NEW_ROW, State.OPEN, getNewRowWindowType()));
     });
 
-    fireEvent(new GridFormEvent(GridFormKind.NEW_ROW, State.PENDING, showNewRowPopup()));
+    fireEvent(new GridFormEvent(GridFormKind.NEW_ROW, State.PENDING, getNewRowWindowType()));
     showForm(GridFormKind.NEW_ROW, true);
   }
 
@@ -3183,6 +3203,10 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
     this.editShowId = editShowId;
   }
 
+  private void setEditWindowType(WindowType editWindowType) {
+    this.editWindowType = editWindowType;
+  }
+
   private void setNewRowCaption(String newRowCaption) {
     this.newRowCaption = newRowCaption;
   }
@@ -3193,6 +3217,10 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
   private void setNewRowFormIndex(int newRowFormIndex) {
     this.newRowFormIndex = newRowFormIndex;
+  }
+
+  private void setNewRowWindowType(WindowType newRowWindowType) {
+    this.newRowWindowType = newRowWindowType;
   }
 
   private Runnable getOnFormOpen() {
@@ -3221,18 +3249,6 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
   private void setRowValidation(Evaluator rowValidation) {
     this.rowValidation = rowValidation;
-  }
-
-  private void setShowEditPopup(boolean showEditPopup) {
-    this.showEditPopup = showEditPopup;
-  }
-
-  private void setShowNewRowPopup(boolean showNewRowPopup) {
-    this.showNewRowPopup = showNewRowPopup;
-  }
-
-  private boolean showEditPopup() {
-    return showEditPopup;
   }
 
   private void showForm(GridFormKind kind, boolean show) {
@@ -3337,10 +3353,6 @@ public class GridImpl extends Absolute implements GridView, EditEndEvent.Handler
 
   private void showGrid(boolean show) {
     getGrid().setVisible(show);
-  }
-
-  private boolean showNewRowPopup() {
-    return showNewRowPopup;
   }
 
   private void showNote(LogLevel level, String... messages) {

@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.Widget;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.Modality;
@@ -41,6 +41,7 @@ import com.butent.bee.shared.Size;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
+import com.butent.bee.shared.data.CustomProperties;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
@@ -58,12 +59,15 @@ import com.butent.bee.shared.ui.Color;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 final class DriverTimeBoard extends ChartBase {
 
@@ -149,6 +153,7 @@ final class DriverTimeBoard extends ChartBase {
 
   static final String SUPPLIER_KEY = "driver_time_board";
   private static final String DATA_SERVICE = SVC_GET_DTB_DATA;
+  private static final String FILTER_DATA_SERVICE = SVC_GET_DTB_FILTER_DATA;
 
   private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-dtb-";
 
@@ -173,15 +178,32 @@ final class DriverTimeBoard extends ChartBase {
 
   private static final Set<String> SETTINGS_COLUMNS_TRIGGERING_REFRESH =
       Sets.newHashSet(COL_DTB_MIN_DATE, COL_DTB_MAX_DATE,
-          COL_DTB_TRANSPORT_GROUPS, COL_DTB_COMPLETED_TRIPS);
+          COL_DTB_TRANSPORT_GROUPS, COL_DTB_COMPLETED_TRIPS, COL_FILTER_DEPENDS_ON_DATA);
+
+  private static final List<ChartDataType> TRIP_DATA_FILTERS = Arrays.asList(ChartDataType.TRUCK,
+      ChartDataType.TRAILER, ChartDataType.TRIP, ChartDataType.TRIP_STATUS,
+      ChartDataType.TRIP_DEPARTURE, ChartDataType.TRIP_ARRIVAL);
+
+  private static final List<ChartDataType> FREIGHT_DATA_FILTERS = Arrays.asList(
+      ChartDataType.CUSTOMER, ChartDataType.MANAGER, ChartDataType.ORDER,
+      ChartDataType.ORDER_STATUS, ChartDataType.CARGO, ChartDataType.CARGO_TYPE
+      );
+
+  private static final List<ChartDataType> HANDLING_DATA_FILTERS = Arrays.asList(
+      ChartDataType.LOADING, ChartDataType.UNLOADING, ChartDataType.PLACE);
+
+  private static final Set<ChartDataType> AVAILABLE_TYPES = EnumSet.allOf(ChartDataType.class)
+      .stream().filter(type -> !BeeUtils.contains(Arrays.asList(ChartDataType.VEHICLE_GROUP,
+          ChartDataType.VEHICLE_MODEL, ChartDataType.VEHICLE_TYPE), type))
+      .collect(Collectors.toSet());
 
   static void open(final ViewCallback callback) {
-    BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(DATA_SERVICE),
-        new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            DriverTimeBoard dtb = new DriverTimeBoard();
-            dtb.onCreate(response, callback);
+    BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(SVC_GET_SETTINGS),
+        settingsResponse -> {
+          if (!settingsResponse.hasErrors()) {
+            DriverTimeBoard dtb = new DriverTimeBoard(settingsResponse);
+
+            dtb.requestData(response -> dtb.onCreate(response, callback));
           }
         });
   }
@@ -197,8 +219,8 @@ final class DriverTimeBoard extends ChartBase {
   private int driverWidth = BeeConst.UNDEF;
   private Color itemColor;
 
-  private DriverTimeBoard() {
-    super();
+  private DriverTimeBoard(ResponseObject settingsResponse) {
+    super(settingsResponse);
     addStyleName(STYLE_PREFIX + "View");
 
     addRelevantDataViews(VIEW_DRIVERS, VIEW_DRIVER_ABSENCE, VIEW_ABSENCE_TYPES, VIEW_TRIP_DRIVERS,
@@ -230,26 +252,33 @@ final class DriverTimeBoard extends ChartBase {
   }
 
   @Override
-  protected boolean filter(FilterType filterType) {
-    boolean filtered = false;
+  protected void addFilterSettingParams(ParameterList params) {
+    params.addDataItem(PROP_TRIPS, BeeUtils.intersects(getEnabledFilterDataTypes(),
+        TRIP_DATA_FILTERS));
+    params.addDataItem(PROP_FREIGHTS, BeeUtils.intersects(getEnabledFilterDataTypes(),
+        FREIGHT_DATA_FILTERS));
+    params.addDataItem(PROP_CARGO_HANDLING, BeeUtils.intersects(getEnabledFilterDataTypes(),
+        HANDLING_DATA_FILTERS));
+  }
 
+  @Override
+  protected boolean filter(FilterType filterType) {
     List<ChartData> selectedData = FilterHelper.getSelectedData(getFilterData());
     if (selectedData.isEmpty()) {
       resetFilter(filterType);
-      return filtered;
+      return false;
     }
 
-    ChartData driverData = FilterHelper.getDataByType(selectedData, ChartData.Type.DRIVER);
-    ChartData groupData = FilterHelper.getDataByType(selectedData, ChartData.Type.DRIVER_GROUP);
+    ChartData groupData = FilterHelper.getDataByType(selectedData, ChartDataType.DRIVER_GROUP);
 
-    ChartData truckData = FilterHelper.getDataByType(selectedData, ChartData.Type.TRUCK);
-    ChartData trailerData = FilterHelper.getDataByType(selectedData, ChartData.Type.TRAILER);
+    ChartData truckData = FilterHelper.getDataByType(selectedData, ChartDataType.TRUCK);
+    ChartData trailerData = FilterHelper.getDataByType(selectedData, ChartDataType.TRAILER);
 
-    ChartData tripData = FilterHelper.getDataByType(selectedData, ChartData.Type.TRIP);
-    ChartData tripStatusData = FilterHelper.getDataByType(selectedData, ChartData.Type.TRIP_STATUS);
+    ChartData tripData = FilterHelper.getDataByType(selectedData, ChartDataType.TRIP);
+    ChartData tripStatusData = FilterHelper.getDataByType(selectedData, ChartDataType.TRIP_STATUS);
     ChartData departureData = FilterHelper.getDataByType(selectedData,
-        ChartData.Type.TRIP_DEPARTURE);
-    ChartData arrivalData = FilterHelper.getDataByType(selectedData, ChartData.Type.TRIP_ARRIVAL);
+        ChartDataType.TRIP_DEPARTURE);
+    ChartData arrivalData = FilterHelper.getDataByType(selectedData, ChartDataType.TRIP_ARRIVAL);
 
     CargoMatcher cargoMatcher = CargoMatcher.maybeCreate(selectedData);
     PlaceMatcher placeMatcher = PlaceMatcher.maybeCreate(selectedData);
@@ -260,8 +289,8 @@ final class DriverTimeBoard extends ChartBase {
         || departureData != null || arrivalData != null;
 
     for (Driver driver : drivers) {
-      boolean driverMatch = FilterHelper.matches(driverData, driver.getItemName())
-          && FilterHelper.matchesAny(groupData, driver.getGroups());
+      boolean driverMatch =
+           FilterHelper.matchesAny(groupData, driver.getGroups());
 
       boolean hasTrips = driverMatch && driverTrips.containsKey(driver.getId());
       if (driverMatch && !hasTrips && tripRequired) {
@@ -298,8 +327,9 @@ final class DriverTimeBoard extends ChartBase {
 
               if (freightMatch && placeMatcher != null) {
                 boolean ok = placeMatcher.matches(freight);
-                if (!ok && hasCargoHandling(freight.getCargoId())) {
-                  ok = placeMatcher.matchesAnyOf(getCargoHandling(freight.getCargoId()));
+                if (!ok) {
+                  ok = placeMatcher.matchesAnyOf(getCargoHandling(freight.getCargoId(),
+                      freight.getCargoTripId()));
                 }
 
                 if (!ok) {
@@ -330,13 +360,14 @@ final class DriverTimeBoard extends ChartBase {
       }
 
       driver.setMatch(filterType, driverMatch);
-
-      if (driverMatch) {
-        filtered = true;
-      }
     }
 
-    return filtered;
+    return true;
+  }
+
+  @Override
+  protected Set<ChartDataType> getAllFilterTypes() {
+    return AVAILABLE_TYPES;
   }
 
   @Override
@@ -377,6 +408,11 @@ final class DriverTimeBoard extends ChartBase {
   }
 
   @Override
+  protected String getFilterService() {
+    return FILTER_DATA_SERVICE;
+  }
+
+  @Override
   protected String getFooterHeightColumnName() {
     return COL_DTB_FOOTER_HEIGHT;
   }
@@ -409,6 +445,16 @@ final class DriverTimeBoard extends ChartBase {
   @Override
   protected String getSettingsFormName() {
     return FORM_DTB_SETTINGS;
+  }
+
+  @Override
+  protected String getSettingsMaxDate() {
+    return COL_DTB_MAX_DATE;
+  }
+
+  @Override
+  protected String getSettingsMinDate() {
+    return COL_DTB_MIN_DATE;
   }
 
   @Override
@@ -469,159 +515,21 @@ final class DriverTimeBoard extends ChartBase {
       return;
     }
 
-    long millis = System.currentTimeMillis();
-    BeeRowSet brs = BeeRowSet.getIfPresent(properties, PROP_DRIVERS);
-
-    if (!DataUtils.isEmpty(brs)) {
-      int firstNameIndex = brs.getColumnIndex(ClassifierConstants.COL_FIRST_NAME);
-      int lastNameIndex = brs.getColumnIndex(ClassifierConstants.COL_LAST_NAME);
-
-      int startDateIndex = brs.getColumnIndex(COL_DRIVER_START_DATE);
-      int endDateIndex = brs.getColumnIndex(COL_DRIVER_END_DATE);
-
-      int experienceIndex = brs.getColumnIndex(COL_DRIVER_EXPERIENCE);
-      int notesIndex = brs.getColumnIndex(COL_DRIVER_NOTES);
-
-      for (BeeRow row : brs.getRows()) {
-        drivers.add(new Driver(row.getId(),
-            row.getString(firstNameIndex), row.getString(lastNameIndex),
-            row.getDate(startDateIndex), row.getDate(endDateIndex),
-            row.getDate(experienceIndex), row.getString(notesIndex),
-            DataUtils.parseIdSet(row.getProperty(PROP_DRIVER_GROUPS))));
-      }
-
-      logger.debug(PROP_DRIVERS, drivers.size(), TimeUtils.elapsedMillis(millis));
-    }
+    drivers.addAll(deserializeDrivers(properties));
 
     if (drivers.isEmpty()) {
       return;
     }
 
-    millis = System.currentTimeMillis();
-    brs = BeeRowSet.getIfPresent(properties, PROP_ABSENCE);
-
-    if (!DataUtils.isEmpty(brs)) {
-      int driverIndex = brs.getColumnIndex(COL_DRIVER);
-
-      int dateFromIndex = brs.getColumnIndex(COL_ABSENCE_FROM);
-      int dateToIndex = brs.getColumnIndex(COL_ABSENCE_TO);
-
-      int nameIndex = brs.getColumnIndex(ALS_ABSENCE_NAME);
-      int labelIndex = brs.getColumnIndex(ALS_ABSENCE_LABEL);
-
-      int bgIndex = brs.getColumnIndex(AdministrationConstants.COL_BACKGROUND);
-      int fgIndex = brs.getColumnIndex(AdministrationConstants.COL_FOREGROUND);
-
-      int notesIndex = brs.getColumnIndex(COL_ABSENCE_NOTES);
-
-      for (BeeRow row : brs.getRows()) {
-        Long driverId = row.getLong(driverIndex);
-        JustDate dateFrom = row.getDate(dateFromIndex);
-
-        if (DataUtils.isId(driverId) && dateFrom != null) {
-          driverAbsence.put(driverId, new Absence(dateFrom, row.getDate(dateToIndex),
-              row.getString(nameIndex), row.getString(labelIndex),
-              row.getString(bgIndex), row.getString(fgIndex), row.getString(notesIndex)));
-        }
-      }
-
-      logger.debug(PROP_ABSENCE, driverAbsence.size(), TimeUtils.elapsedMillis(millis));
-    }
-
-    millis = System.currentTimeMillis();
-    SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_FREIGHTS);
-
-    if (!DataUtils.isEmpty(srs)) {
-      for (SimpleRow row : srs) {
-        Pair<JustDate, JustDate> handlingSpan = getCargoHandlingSpan(row.getLong(COL_CARGO));
-        freights.put(row.getLong(COL_TRIP_ID),
-            Freight.create(row, handlingSpan.getA(), handlingSpan.getB()));
-      }
-      logger.debug(PROP_FREIGHTS, freights.size(), TimeUtils.elapsedMillis(millis));
-    }
+    driverAbsence.putAll(deserializeDriversAbsence(properties));
+    freights.putAll(deserializeFreight(properties, getCargoHandling()));
 
     Multimap<Long, Driver> tripDrivers = HashMultimap.create();
+    deserializeDriversByTrip(properties, tripDrivers, driverTrips);
 
-    millis = System.currentTimeMillis();
-    srs = SimpleRowSet.getIfPresent(properties, PROP_TRIP_DRIVERS);
+    trips.putAll(deserializeTrips(properties, freights, tripDrivers));
 
-    if (!DataUtils.isEmpty(srs)) {
-      for (SimpleRow row : srs) {
-        Long driverId = row.getLong(COL_DRIVER);
-        Long tripId = row.getLong(COL_TRIP);
-
-        DateTime dateFrom = row.getDateTime(COL_TRIP_DRIVER_FROM);
-        DateTime dateTo = row.getDateTime(COL_TRIP_DRIVER_TO);
-
-        String note = row.getValue(COL_TRIP_DRIVER_NOTE);
-
-        if (DataUtils.isId(driverId) && DataUtils.isId(tripId)) {
-          driverTrips.put(driverId, new DriverTrip(tripId, dateFrom, dateTo, note));
-
-          tripDrivers.put(tripId, new Driver(driverId,
-              row.getValue(ClassifierConstants.COL_FIRST_NAME),
-              row.getValue(ClassifierConstants.COL_LAST_NAME),
-              dateFrom, dateTo, note));
-        }
-      }
-
-      logger.debug(PROP_TRIP_DRIVERS, driverTrips.size(), TimeUtils.elapsedMillis(millis));
-    }
-
-    millis = System.currentTimeMillis();
-    srs = SimpleRowSet.getIfPresent(properties, PROP_TRIPS);
-
-    if (!DataUtils.isEmpty(srs)) {
-      for (SimpleRow row : srs) {
-        Long tripId = row.getLong(COL_TRIP_ID);
-
-        Collection<Driver> td = BeeUtils.getIfContains(tripDrivers, tripId);
-
-        if (freights.containsKey(tripId)) {
-          JustDate minDate = null;
-          JustDate maxDate = null;
-
-          int cargoCount = 0;
-
-          Collection<String> tripCustomers = new ArrayList<>();
-          Collection<String> tripManagers = new ArrayList<>();
-
-          for (Freight freight : freights.get(tripId)) {
-            minDate = BeeUtils.min(minDate, freight.getMinDate());
-            maxDate = BeeUtils.max(maxDate, freight.getMaxDate());
-
-            cargoCount++;
-
-            String customerName = freight.getCustomerName();
-            if (!BeeUtils.isEmpty(customerName) && !tripCustomers.contains(customerName)) {
-              tripCustomers.add(customerName);
-            }
-
-            String managerName = freight.getManagerName();
-            if (!BeeUtils.isEmpty(managerName) && !tripManagers.contains(managerName)) {
-              tripManagers.add(managerName);
-            }
-          }
-
-          Trip trip = new Trip(row, td, minDate, maxDate, cargoCount, tripCustomers, tripManagers);
-          trips.put(tripId, trip);
-
-          for (Freight freight : freights.get(tripId)) {
-            freight.adjustRange(trip.getRange());
-
-            freight.setTripTitle(trip.getTitle());
-            freight.setEditable(trip.isEditable());
-          }
-
-        } else {
-          trips.put(tripId, new Trip(row, td));
-        }
-      }
-
-      logger.debug(PROP_TRIPS, trips.size(), TimeUtils.elapsedMillis(millis));
-    }
-
-    millis = System.currentTimeMillis();
+    long millis = System.currentTimeMillis();
     for (DriverTrip driverTrip : driverTrips.values()) {
       Trip trip = trips.get(driverTrip.tripId);
       if (trip != null) {
@@ -655,147 +563,41 @@ final class DriverTimeBoard extends ChartBase {
   }
 
   @Override
-  protected List<ChartData> prepareFilterData() {
-    List<ChartData> data = new ArrayList<>();
-    if (drivers.isEmpty()) {
-      return data;
+  protected List<ChartData> prepareFilterData(ResponseObject response) {
+    if (response != null && response.getResponse() != null) {
+      BeeRowSet rowSet = BeeRowSet.restore((String) response.getResponse());
+      CustomProperties properties = rowSet.getTableProperties();
+
+      if (properties == null) {
+        return new ArrayList<>();
+      }
+
+      Multimap<Long, CargoHandling> cargoHandlingData = deserializeCargoHandling(properties
+          .get(PROP_CARGO_HANDLING));
+
+      deserializeCountriesAndCities(properties.get(PROP_COUNTRIES), properties.get(PROP_CITIES));
+
+      Multimap<Long, DriverTrip> driverTripsData = ArrayListMultimap.create();
+      Multimap<Long, Driver> tripDriversData = ArrayListMultimap.create();
+      deserializeDriversByTrip(properties, tripDriversData, driverTripsData);
+      Multimap<Long, Freight> freightsData = deserializeFreight(properties, cargoHandlingData);
+
+      return prepareFilterData(deserializeDrivers(properties), driverTripsData,
+          deserializeTrips(properties, freightsData, tripDriversData), freightsData,
+          cargoHandlingData);
+
+    } else {
+      boolean handlingRequired = BeeUtils.intersects(getEnabledFilterDataTypes(),
+          HANDLING_DATA_FILTERS);
+      boolean freightsRequired = BeeUtils.intersects(getEnabledFilterDataTypes(),
+          FREIGHT_DATA_FILTERS) || handlingRequired;
+      boolean tripRequired = BeeUtils.intersects(getEnabledFilterDataTypes(),
+          TRIP_DATA_FILTERS) || freightsRequired;
+
+      return prepareFilterData(drivers, driverTrips, tripRequired ? trips : new HashMap<>(),
+          freightsRequired ? freights : ArrayListMultimap.create(),
+          handlingRequired ? getCargoHandling() : ArrayListMultimap.create());
     }
-
-    ChartData driverData = new ChartData(ChartData.Type.DRIVER);
-    ChartData groupData = new ChartData(ChartData.Type.DRIVER_GROUP);
-
-    ChartData truckData = new ChartData(ChartData.Type.TRUCK);
-    ChartData trailerData = new ChartData(ChartData.Type.TRAILER);
-
-    ChartData tripData = new ChartData(ChartData.Type.TRIP);
-    ChartData tripStatusData = new ChartData(ChartData.Type.TRIP_STATUS);
-    ChartData departureData = new ChartData(ChartData.Type.TRIP_DEPARTURE);
-    ChartData arrivalData = new ChartData(ChartData.Type.TRIP_ARRIVAL);
-
-    ChartData customerData = new ChartData(ChartData.Type.CUSTOMER);
-    ChartData managerData = new ChartData(ChartData.Type.MANAGER);
-
-    ChartData orderData = new ChartData(ChartData.Type.ORDER);
-    ChartData orderStatusData = new ChartData(ChartData.Type.ORDER_STATUS);
-
-    ChartData cargoData = new ChartData(ChartData.Type.CARGO);
-    ChartData cargoTypeData = new ChartData(ChartData.Type.CARGO_TYPE);
-
-    ChartData loadData = new ChartData(ChartData.Type.LOADING);
-    ChartData unloadData = new ChartData(ChartData.Type.UNLOADING);
-    ChartData placeData = new ChartData(ChartData.Type.PLACE);
-
-    Set<Long> processedTrips = new HashSet<>();
-
-    for (Driver driver : drivers) {
-      driverData.add(driver.getItemName());
-
-      if (!BeeUtils.isEmpty(driver.getGroups())) {
-        for (Long group : driver.getGroups()) {
-          groupData.add(getTransportGroupName(group), group);
-        }
-      }
-
-      if (!driverTrips.containsKey(driver.getId())) {
-        continue;
-      }
-
-      for (DriverTrip driverTrip : driverTrips.get(driver.getId())) {
-        Long tripId = driverTrip.tripId;
-        if (processedTrips.contains(tripId)) {
-          continue;
-        }
-        processedTrips.add(tripId);
-
-        Trip trip = trips.get(tripId);
-        if (trip == null) {
-          continue;
-        }
-
-        if (DataUtils.isId(trip.getTruckId())) {
-          truckData.add(trip.getTruckNumber(), trip.getTruckId());
-        }
-        if (DataUtils.isId(trip.getTrailerId())) {
-          trailerData.add(trip.getTrailerNumber(), trip.getTrailerId());
-        }
-
-        tripData.add(trip.getTripNo(), tripId);
-        tripStatusData.add(trip.getStatus());
-        departureData.add(trip.getTripDeparture());
-        arrivalData.add(trip.getTripArrival());
-
-        if (!freights.containsKey(tripId)) {
-          continue;
-        }
-
-        for (Freight freight : freights.get(trip.getTripId())) {
-          customerData.add(freight.getCustomerName(), freight.getCustomerId());
-          managerData.addUser(freight.getManager());
-
-          orderData.add(freight.getOrderName(), freight.getOrderId());
-          orderStatusData.add(freight.getOrderStatus());
-
-          cargoData.add(freight.getCargoDescription(), freight.getCargoId());
-          if (DataUtils.isId(freight.getCargoType())) {
-            cargoTypeData.add(getCargoTypeName(freight.getCargoType()), freight.getCargoType());
-          }
-
-          String loading = Places.getLoadingPlaceInfo(freight);
-          if (!BeeUtils.isEmpty(loading)) {
-            loadData.add(loading);
-            placeData.add(loading);
-          }
-
-          String unloading = Places.getUnloadingPlaceInfo(freight);
-          if (!BeeUtils.isEmpty(unloading)) {
-            unloadData.add(unloading);
-            placeData.add(unloading);
-          }
-
-          if (hasCargoHandling(freight.getCargoId())) {
-            for (CargoHandling ch : getCargoHandling(freight.getCargoId())) {
-              loading = Places.getLoadingPlaceInfo(ch);
-              if (!BeeUtils.isEmpty(loading)) {
-                loadData.add(loading);
-                placeData.add(loading);
-              }
-
-              unloading = Places.getUnloadingPlaceInfo(ch);
-              if (!BeeUtils.isEmpty(unloading)) {
-                unloadData.add(unloading);
-                placeData.add(unloading);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    data.add(driverData);
-    data.add(groupData);
-
-    data.add(truckData);
-    data.add(trailerData);
-
-    data.add(tripData);
-    data.add(tripStatusData);
-    data.add(departureData);
-    data.add(arrivalData);
-
-    data.add(customerData);
-    data.add(managerData);
-
-    data.add(orderData);
-    data.add(orderStatusData);
-
-    data.add(cargoData);
-    data.add(cargoTypeData);
-
-    data.add(loadData);
-    data.add(unloadData);
-    data.add(placeData);
-
-    return data;
   }
 
   @Override
@@ -1050,6 +852,174 @@ final class DriverTimeBoard extends ChartBase {
     return panel;
   }
 
+  private Multimap<Long, Freight> deserializeFreight(Map<String, String> properties,
+      Multimap<Long, CargoHandling> cargoHandling) {
+    Multimap<Long, Freight> freightsData = ArrayListMultimap.create();
+    long millis = System.currentTimeMillis();
+    SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_FREIGHTS);
+
+    if (!DataUtils.isEmpty(srs)) {
+      for (SimpleRow row : srs) {
+        Pair<JustDate, JustDate> handlingSpan = getCargoHandlingSpan(cargoHandling,
+            row.getLong(COL_CARGO), row.getLong(COL_CARGO_TRIP_ID));
+
+        freightsData.put(row.getLong(COL_TRIP_ID),
+            Freight.create(row, handlingSpan.getA(), handlingSpan.getB()));
+      }
+      logger.debug(PROP_FREIGHTS, freightsData.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return freightsData;
+  }
+
+  private void deserializeDriversByTrip(Map<String, String> properties,
+      Multimap<Long, Driver> tripDriversData, Multimap<Long, DriverTrip> driverTripsData) {
+    long millis = System.currentTimeMillis();
+    SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_TRIP_DRIVERS);
+
+    if (!DataUtils.isEmpty(srs)) {
+      for (SimpleRow row : srs) {
+        Long driverId = row.getLong(COL_DRIVER);
+        Long tripId = row.getLong(COL_TRIP);
+
+        DateTime dateFrom = row.getDateTime(COL_TRIP_DRIVER_FROM);
+        DateTime dateTo = row.getDateTime(COL_TRIP_DRIVER_TO);
+
+        String note = row.getValue(COL_TRIP_DRIVER_NOTE);
+
+        if (DataUtils.isId(driverId) && DataUtils.isId(tripId)) {
+          driverTripsData.put(driverId, new DriverTrip(tripId, dateFrom, dateTo, note));
+
+          tripDriversData.put(tripId, new Driver(driverId,
+              row.getValue(ClassifierConstants.COL_FIRST_NAME),
+              row.getValue(ClassifierConstants.COL_LAST_NAME),
+              dateFrom, dateTo, note));
+        }
+      }
+      logger.debug(PROP_TRIP_DRIVERS, driverTripsData.size(), TimeUtils.elapsedMillis(millis));
+    }
+  }
+
+  private static Multimap<Long, Absence> deserializeDriversAbsence(Map<String, String> properties) {
+    Multimap<Long, Absence> driverAbsenceData = ArrayListMultimap.create();
+    long millis = System.currentTimeMillis();
+    BeeRowSet brs = BeeRowSet.getIfPresent(properties, PROP_ABSENCE);
+
+    if (!DataUtils.isEmpty(brs)) {
+      int driverIndex = brs.getColumnIndex(COL_DRIVER);
+
+      int dateFromIndex = brs.getColumnIndex(COL_ABSENCE_FROM);
+      int dateToIndex = brs.getColumnIndex(COL_ABSENCE_TO);
+
+      int nameIndex = brs.getColumnIndex(ALS_ABSENCE_NAME);
+      int labelIndex = brs.getColumnIndex(ALS_ABSENCE_LABEL);
+
+      int bgIndex = brs.getColumnIndex(AdministrationConstants.COL_BACKGROUND);
+      int fgIndex = brs.getColumnIndex(AdministrationConstants.COL_FOREGROUND);
+
+      int notesIndex = brs.getColumnIndex(COL_ABSENCE_NOTES);
+
+      for (BeeRow row : brs.getRows()) {
+        Long driverId = row.getLong(driverIndex);
+        JustDate dateFrom = row.getDate(dateFromIndex);
+
+        if (DataUtils.isId(driverId) && dateFrom != null) {
+          driverAbsenceData.put(driverId, new Absence(dateFrom, row.getDate(dateToIndex),
+              row.getString(nameIndex), row.getString(labelIndex),
+              row.getString(bgIndex), row.getString(fgIndex), row.getString(notesIndex)));
+        }
+      }
+
+      logger.debug(PROP_ABSENCE, driverAbsenceData.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return driverAbsenceData;
+  }
+
+  private static List<Driver> deserializeDrivers(Map<String, String> properties) {
+    List<Driver> driversData = new ArrayList<>();
+    long millis = System.currentTimeMillis();
+    BeeRowSet brs = BeeRowSet.getIfPresent(properties, PROP_DRIVERS);
+
+    if (!DataUtils.isEmpty(brs)) {
+      int firstNameIndex = brs.getColumnIndex(ClassifierConstants.COL_FIRST_NAME);
+      int lastNameIndex = brs.getColumnIndex(ClassifierConstants.COL_LAST_NAME);
+
+      int startDateIndex = brs.getColumnIndex(COL_DRIVER_START_DATE);
+      int endDateIndex = brs.getColumnIndex(COL_DRIVER_END_DATE);
+
+      int experienceIndex = brs.getColumnIndex(COL_DRIVER_EXPERIENCE);
+      int notesIndex = brs.getColumnIndex(COL_DRIVER_NOTES);
+
+      for (BeeRow row : brs.getRows()) {
+        driversData.add(new Driver(row.getId(),
+            row.getString(firstNameIndex), row.getString(lastNameIndex),
+            row.getDate(startDateIndex), row.getDate(endDateIndex),
+            row.getDate(experienceIndex), row.getString(notesIndex),
+            DataUtils.parseIdSet(row.getProperty(PROP_DRIVER_GROUPS))));
+      }
+
+      logger.debug(PROP_DRIVERS, driversData.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return driversData;
+  }
+
+  private Map<Long, Trip> deserializeTrips(Map<String, String> properties,
+      Multimap<Long, Freight> freightsData, Multimap<Long, Driver> tripDrivers) {
+    Map<Long, Trip> tripsData = new HashMap<>();
+    long millis = System.currentTimeMillis();
+    SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_TRIPS);
+
+    if (!DataUtils.isEmpty(srs)) {
+      for (SimpleRow row : srs) {
+        Long tripId = row.getLong(COL_TRIP_ID);
+
+        Collection<Driver> td = BeeUtils.getIfContains(tripDrivers, tripId);
+
+        if (freightsData.containsKey(tripId)) {
+          JustDate minDate = null;
+          JustDate maxDate = null;
+
+          int cargoCount = 0;
+
+          Collection<String> tripCustomers = new ArrayList<>();
+          Collection<String> tripManagers = new ArrayList<>();
+
+          for (Freight freight : freightsData.get(tripId)) {
+            minDate = BeeUtils.min(minDate, freight.getMinDate());
+            maxDate = BeeUtils.max(maxDate, freight.getMaxDate());
+
+            cargoCount++;
+
+            String customerName = freight.getCustomerName();
+            if (!BeeUtils.isEmpty(customerName) && !tripCustomers.contains(customerName)) {
+              tripCustomers.add(customerName);
+            }
+
+            String managerName = freight.getManagerName();
+            if (!BeeUtils.isEmpty(managerName) && !tripManagers.contains(managerName)) {
+              tripManagers.add(managerName);
+            }
+          }
+
+          Trip trip = new Trip(row, td, minDate, maxDate, cargoCount, tripCustomers, tripManagers);
+          tripsData.put(tripId, trip);
+
+          for (Freight freight : freightsData.get(tripId)) {
+            freight.adjustRange(trip.getRange());
+
+            freight.setTripTitle(trip.getTitle());
+            freight.setEditable(trip.isEditable());
+          }
+
+        } else {
+          tripsData.put(tripId, new Trip(row, td));
+        }
+      }
+
+      logger.debug(PROP_TRIPS, tripsData.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return tripsData;
+  }
+
   private List<TimeBoardRowLayout> doLayout() {
     List<TimeBoardRowLayout> result = new ArrayList<>();
     Range<JustDate> range = getVisibleRange();
@@ -1129,6 +1099,151 @@ final class DriverTimeBoard extends ChartBase {
         render(false);
       }
     }
+  }
+
+  private List<ChartData> prepareFilterData(List<Driver> driversData,
+      Multimap<Long, DriverTrip> driverTripsData, Map<Long, Trip> tripsData,
+      Multimap<Long, Freight> freightsData, Multimap<Long, CargoHandling> cargoHandlingData) {
+    List<ChartData> data = new ArrayList<>();
+    if (driversData.isEmpty()) {
+      return data;
+    }
+
+    ChartData driverData = new ChartData(ChartDataType.DRIVER);
+    ChartData groupData = new ChartData(ChartDataType.DRIVER_GROUP);
+
+    ChartData truckData = new ChartData(ChartDataType.TRUCK);
+    ChartData trailerData = new ChartData(ChartDataType.TRAILER);
+
+    ChartData tripData = new ChartData(ChartDataType.TRIP);
+    ChartData tripStatusData = new ChartData(ChartDataType.TRIP_STATUS);
+    ChartData departureData = new ChartData(ChartDataType.TRIP_DEPARTURE);
+    ChartData arrivalData = new ChartData(ChartDataType.TRIP_ARRIVAL);
+
+    ChartData customerData = new ChartData(ChartDataType.CUSTOMER);
+    ChartData managerData = new ChartData(ChartDataType.MANAGER);
+
+    ChartData orderData = new ChartData(ChartDataType.ORDER);
+    ChartData orderStatusData = new ChartData(ChartDataType.ORDER_STATUS);
+
+    ChartData cargoData = new ChartData(ChartDataType.CARGO);
+    ChartData cargoTypeData = new ChartData(ChartDataType.CARGO_TYPE);
+
+    ChartData loadData = new ChartData(ChartDataType.LOADING);
+    ChartData unloadData = new ChartData(ChartDataType.UNLOADING);
+    ChartData placeData = new ChartData(ChartDataType.PLACE);
+
+    Set<Long> processedTrips = new HashSet<>();
+
+    for (Driver driver : driversData) {
+      driverData.add(driver.getItemName(), driver.getId());
+
+      if (!BeeUtils.isEmpty(driver.getGroups())) {
+        for (Long group : driver.getGroups()) {
+          groupData.add(getTransportGroupName(group), group);
+        }
+      }
+
+      if (!driverTripsData.containsKey(driver.getId())) {
+        continue;
+      }
+
+      for (DriverTrip driverTrip : driverTripsData.get(driver.getId())) {
+        Long tripId = driverTrip.tripId;
+        if (processedTrips.contains(tripId)) {
+          continue;
+        }
+        processedTrips.add(tripId);
+
+        Trip trip = tripsData.get(tripId);
+        if (trip == null) {
+          continue;
+        }
+
+        if (DataUtils.isId(trip.getTruckId())) {
+          truckData.add(trip.getTruckNumber(), trip.getTruckId());
+        }
+        if (DataUtils.isId(trip.getTrailerId())) {
+          trailerData.add(trip.getTrailerNumber(), trip.getTrailerId());
+        }
+
+        tripData.add(trip.getTripNo(), tripId);
+        tripStatusData.add(trip.getStatus());
+        departureData.add(trip.getTripDeparture());
+        arrivalData.add(trip.getTripArrival());
+
+        if (!freightsData.containsKey(tripId)) {
+          continue;
+        }
+
+        for (Freight freight : freightsData.get(trip.getTripId())) {
+          customerData.add(freight.getCustomerName(), freight.getCustomerId());
+          managerData.addUser(freight.getManager());
+
+          orderData.add(freight.getOrderName(), freight.getOrderId());
+          orderStatusData.add(freight.getOrderStatus());
+
+          cargoData.add(freight.getCargoDescription(), freight.getCargoId());
+          if (DataUtils.isId(freight.getCargoType())) {
+            cargoTypeData.add(getCargoTypeName(freight.getCargoType()), freight.getCargoType());
+          }
+
+          String loading = Places.getLoadingPlaceInfo(freight);
+          if (!BeeUtils.isEmpty(loading)) {
+            loadData.add(loading);
+            placeData.add(loading);
+          }
+
+          String unloading = Places.getUnloadingPlaceInfo(freight);
+          if (!BeeUtils.isEmpty(unloading)) {
+            unloadData.add(unloading);
+            placeData.add(unloading);
+          }
+
+          for (CargoHandling ch : getCargoHandling(cargoHandlingData, freight.getCargoId(),
+              freight.getCargoTripId())) {
+
+            loading = Places.getLoadingPlaceInfo(ch);
+            if (!BeeUtils.isEmpty(loading)) {
+              loadData.add(loading);
+              placeData.add(loading);
+            }
+
+            unloading = Places.getUnloadingPlaceInfo(ch);
+            if (!BeeUtils.isEmpty(unloading)) {
+              unloadData.add(unloading);
+              placeData.add(unloading);
+            }
+          }
+        }
+      }
+    }
+
+    data.add(driverData);
+    data.add(groupData);
+
+    data.add(truckData);
+    data.add(trailerData);
+
+    data.add(tripData);
+    data.add(tripStatusData);
+    data.add(departureData);
+    data.add(arrivalData);
+
+    data.add(customerData);
+    data.add(managerData);
+
+    data.add(orderData);
+    data.add(orderStatusData);
+
+    data.add(cargoData);
+    data.add(cargoTypeData);
+
+    data.add(loadData);
+    data.add(unloadData);
+    data.add(placeData);
+
+    return data;
   }
 
   private void setDriverWidth(int driverWidth) {

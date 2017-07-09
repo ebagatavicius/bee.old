@@ -23,21 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Implementation of a grid user interface component.
- */
-
 public class GridDescription implements BeeSerializable, HasExtendedInfo, HasViewName {
-
-  /**
-   * Contains a list of grid parameters.
-   */
 
   private enum Serial {
     NAME, PARENT, CAPTION, VIEW, ID_NAME, VERSION_NAME, FILTER, CURRENT_USER_FILTER, ORDER,
     HEADER_MODE, FOOTER_MODE, DATA_PROVIDER, INITIAL_ROW_SET_SIZE, PAGING, READONLY,
-    NEW_ROW_FORM, NEW_ROW_COLUMNS, NEW_ROW_DEFAULTS, NEW_ROW_CAPTION, NEW_ROW_POPUP,
-    EDIT_FORM, EDIT_MODE, EDIT_SAVE, EDIT_MESSAGE, EDIT_SHOW_ID, EDIT_POPUP, EDIT_IN_PLACE,
+    NEW_ROW_FORM, NEW_ROW_COLUMNS, NEW_ROW_DEFAULTS, NEW_ROW_CAPTION, NEW_ROW_WINDOW,
+    EDIT_FORM, EDIT_MODE, EDIT_SAVE, EDIT_MESSAGE, EDIT_SHOW_ID, EDIT_WINDOW, EDIT_IN_PLACE,
     ENABLED_ACTIONS, DISABLED_ACTIONS, STYLE_SHEETS, HEADER, BODY, FOOTER,
     ROW_STYLES, ROW_MESSAGE, ROW_EDITABLE, ROW_VALIDATION, MIN_COLUMN_WIDTH, MAX_COLUMN_WIDTH,
     COLUMNS, WIDGETS, AUTO_FIT, AUTO_FLEX, FLEXIBILITY,
@@ -99,14 +91,14 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
   private String newRowColumns;
   private String newRowDefaults;
   private String newRowCaption;
-  private Boolean newRowPopup;
+  private WindowType newRowWindow;
 
   private String editForm;
   private Boolean editMode;
   private Boolean editSave;
   private Calculation editMessage;
   private Boolean editShowId;
-  private Boolean editPopup;
+  private WindowType editWindow;
   private Boolean editInPlace;
 
   private Map<String, String> styleSheets;
@@ -363,11 +355,11 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
           }
           break;
 
-        case NEW_ROW_POPUP:
-          setNewRowPopup(BeeUtils.toBooleanOrNull(value));
+        case NEW_ROW_WINDOW:
+          setNewRowWindow(Codec.unpack(WindowType.class, value));
           break;
-        case EDIT_POPUP:
-          setEditPopup(BeeUtils.toBooleanOrNull(value));
+        case EDIT_WINDOW:
+          setEditWindow(Codec.unpack(WindowType.class, value));
           break;
         case PARENT:
           setParent(value);
@@ -496,8 +488,8 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
     return editMode;
   }
 
-  public Boolean getEditPopup() {
-    return editPopup;
+  public WindowType getEditWindow() {
+    return editWindow;
   }
 
   public Boolean getEditSave() {
@@ -542,12 +534,12 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
         "New Row Columns", getNewRowColumns(),
         "New Row Defaults", getNewRowDefaults(),
         "New Row Caption", getNewRowCaption(),
-        "New Row Popup", getNewRowPopup(),
+        "New Row Window", getNewRowWindow(),
         "Edit Form", getEditForm(),
         "Edit Mode", getEditMode(),
         "Edit Save", getEditSave(),
         "Edit Show Id", getEditShowId(),
-        "Edit Popup", getEditPopup(),
+        "Edit Window", getEditWindow(),
         "Edit In Place", getEditInPlace(),
         "Enabled Actions", getEnabledActions(),
         "Disabled Actions", getDisabledActions(),
@@ -726,8 +718,8 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
     return newRowForm;
   }
 
-  public Boolean getNewRowPopup() {
-    return newRowPopup;
+  public WindowType getNewRowWindow() {
+    return newRowWindow;
   }
 
   public String getOptions() {
@@ -955,11 +947,11 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
         case WIDGETS:
           arr[i++] = getWidgets();
           break;
-        case NEW_ROW_POPUP:
-          arr[i++] = getNewRowPopup();
+        case NEW_ROW_WINDOW:
+          arr[i++] = Codec.pack(getNewRowWindow());
           break;
-        case EDIT_POPUP:
-          arr[i++] = getEditPopup();
+        case EDIT_WINDOW:
+          arr[i++] = Codec.pack(getEditWindow());
           break;
         case PARENT:
           arr[i++] = getParent();
@@ -1065,16 +1057,16 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
     this.editMode = editMode;
   }
 
-  public void setEditPopup(Boolean editPopup) {
-    this.editPopup = editPopup;
-  }
-
   public void setEditSave(Boolean editSave) {
     this.editSave = editSave;
   }
 
   public void setEditShowId(Boolean editShowId) {
     this.editShowId = editShowId;
+  }
+
+  public void setEditWindow(WindowType editWindow) {
+    this.editWindow = editWindow;
   }
 
   public void setEnableCopy(String enableCopy) {
@@ -1149,8 +1141,8 @@ public class GridDescription implements BeeSerializable, HasExtendedInfo, HasVie
     this.newRowForm = newRowForm;
   }
 
-  public void setNewRowPopup(Boolean newRowPopup) {
-    this.newRowPopup = newRowPopup;
+  public void setNewRowWindow(WindowType newRowWindow) {
+    this.newRowWindow = newRowWindow;
   }
 
   public void setOptions(String options) {

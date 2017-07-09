@@ -22,6 +22,8 @@ import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.i18n.Format;
 import com.butent.bee.client.output.Exporter;
 import com.butent.bee.client.output.Report;
+import com.butent.bee.client.ui.FormFactory;
+import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.shared.report.ReportParameters;
 import com.butent.bee.client.ui.HasIndexedWidgets;
 import com.butent.bee.client.view.form.FormView;
@@ -69,6 +71,16 @@ import java.util.Map;
 import java.util.Objects;
 
 public class AssessmentTurnoverReport extends ReportInterceptor {
+
+  @Override
+  public void afterCreateWidget(String name, IdentifiableWidget widget,
+      FormFactory.WidgetDescriptionCallback callback) {
+    if (BeeUtils.same(name, NAME_MANAGERS) && widget instanceof MultiSelector) {
+      ((MultiSelector) widget).setAdditionalFilter(Filter.equals(COL_COMPANY,
+          BeeKeeper.getUser().getCompany()));
+    }
+    super.afterCreateWidget(name, widget, callback);
+  }
 
   private static final class RowValue {
     private int quantity;

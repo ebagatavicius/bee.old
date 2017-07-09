@@ -34,7 +34,7 @@
         <Label text="=currency" />
       </cell>
       <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
-        newRowEnabled="false" editPopup="true" style="width: 80px;" />
+        newRowEnabled="false" editWindow="modal" style="width: 80px;" />
     </HorizontalPanel>
 
     <Disclosure open="true">
@@ -45,14 +45,14 @@
         <row>
           <Label text="=clients" style="&c1;" />
           <MultiSelector name="Company" viewName="Companies"
-            newRowEnabled="false" editPopup="true" style="&multi;" summarize="true" 
+            newRowEnabled="false" editWindow="modal" style="&multi;" summarize="true"
             choiceColumns="Name TypeName" renderColumns="Name TypeName" />
         </row>
         <row>
           <Label text="=objects" />
           <MultiSelector name="Object" viewName="CompanyObjects" 
             renderColumns="ObjectName" choiceColumns="CompanyName ObjectName ObjectAddress"
-            newRowEnabled="false" editPopup="true" style="&multi;" summarize="true" />
+            newRowEnabled="false" editWindow="modal" style="&multi;" summarize="true" />
         </row>
     
         <row>
@@ -76,14 +76,14 @@
           <MultiSelector name="Manager" viewName="Users"
             renderColumns="FirstName LastName"
             choiceColumns="FirstName LastName CompanyName PositionName"
-            newRowEnabled="false" editPopup="true"
+            newRowEnabled="false" editWindow="modal"
             style="&multi;" summarize="true" />
         </row>
 
         <row>
           <Label text="=warehouses" />
           <MultiSelector name="Warehouse" viewName="Warehouses" renderColumns="Code"
-            choiceColumns="Code Name" newRowEnabled="false" editPopup="true"
+            choiceColumns="Code Name" newRowEnabled="false" editWindow="modal"
             style="&multi;" summarize="true" />
         </row>
 
@@ -96,7 +96,7 @@
         <row>
           <Label text="=goods" />
           <MultiSelector name="Item" viewName="Items" filter="!(IsService)"
-            renderColumns="Name Article" newRowEnabled="false" editPopup="true"
+            renderColumns="Name Article" newRowEnabled="false" editWindow="modal"
             style="&multi;" summarize="true" />
         </row>
       </Table>

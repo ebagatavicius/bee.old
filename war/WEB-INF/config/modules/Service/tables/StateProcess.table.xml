@@ -19,6 +19,7 @@
     <Boolean name="Warranty" label="=svcWarranty" />
     <Integer name="DaysActive" label="=svcDaysActive" />
     <Boolean name="ProhibitEdit" label="=svcProhibitEdit" />
+    <Boolean name="IsItemsRequired" label="=ecShoppingCart" />
   </Fields>
   <Constraints>
     <Unique fields="Role MaintenanceType MaintenanceState" />

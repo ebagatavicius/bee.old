@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
   name="DurationTypes" viewName="DurationTypes" caption="=crmTaskDurationTypes"
-  newRowPopup="true"
+  newRowWindow="modal"
   >
   
   <g:columns>

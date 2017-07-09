@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:columns xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid">
   <RelColumn name="Item" renderColumns="ItemName" choiceColumns="Name Article" 
-    editPopup="true" label="=name" visible="true">
+    editWindow="modal" label="=name" visible="true">
     <footer text="=totalOf" horizontalAlignment="right" />
   </RelColumn>
   <DataColumn name="Article" />

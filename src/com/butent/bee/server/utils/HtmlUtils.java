@@ -19,6 +19,7 @@ public final class HtmlUtils {
     if (dirtyHtml != null) {
       return Jsoup.clean(dirtyHtml, "http:", Whitelist.relaxed()
           .addTags("font")
+          .addAttributes("font", "face", "size")
           .addAttributes(":all", "style", "color")
           .preserveRelativeLinks(true), new Document.OutputSettings().prettyPrint(false));
     }

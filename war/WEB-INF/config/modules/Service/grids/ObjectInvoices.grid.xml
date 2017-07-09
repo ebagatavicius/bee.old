@@ -4,12 +4,12 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="ObjectInvoices" viewName="OrderChildInvoices"
-  editPopup="true" flexGrow="1"
+  editWindow="modal" flexGrow="1"
   >
   <xi:include href="../../Orders/grids/columns/Invoices.columns.xml" />
   <g:columns>
     <RelColumn name="ServiceMaintenance" viewName="ServiceMaintenance" renderColumns="ServiceMaintenance" filterSupplier="value"
-               editPopup="true" label="=svcRepair" />
+               editWindow="modal" label="=svcRepair" />
   </g:columns>
 
   <g:rowStyle>

@@ -15,7 +15,7 @@
 
     <DataColumn name="Article" flexGrow="1" />
 
-    <DataColumn name="WarehouseCode" label="=warehouse" editPopup="true">
+    <DataColumn name="WarehouseCode" label="=warehouse" editWindow="modal">
       <footer text="=totalOf" horizontalAlignment="right" />
     </DataColumn>
 

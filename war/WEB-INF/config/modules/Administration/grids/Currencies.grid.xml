@@ -3,7 +3,7 @@
 
   name="Currencies" viewName="Currencies" caption="=currencies"
   newRowForm="Currency" newRowCaption="=newCurrency" editForm="Currency"
-  newRowPopup="true" editPopup="true"
+  newRowWindow="modal" editWindow="modal"
   >
   <g:columns>
     <DataColumn name="Name" visible="true">

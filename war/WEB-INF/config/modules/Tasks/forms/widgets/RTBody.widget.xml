@@ -43,10 +43,10 @@
 
     <row>
       <Label for="Company" />
-      <DataSelector source="Company" editPopup="true" newRowEnabled="false"
+      <DataSelector source="Company" editWindow="modal" newRowEnabled="false"
                     choiceColumns="Name TypeName" renderColumns="CompanyName CompanyTypeName" />
       <Label for="Contact" />
-      <DataSelector source="Contact" editPopup="true" newRowEnabled="false"
+      <DataSelector source="Contact" editWindow="modal" newRowEnabled="false"
                     renderColumns="ContactFirstName ContactLastName"
                     choiceColumns="FirstName LastName CompanyName" options="Company" />
     </row>
@@ -65,7 +65,7 @@
       <Label text="=crmTaskExecutors" />
       <ChildSelector childTable="RTExecutors" viewName="Users" property="Executors"
                      targetRelColumn="RecurringTask" sourceRelColumn="User"
-                     renderColumns="FirstName LastName" editPopup="true" newRowEnabled="false"
+                     renderColumns="FirstName LastName" editWindow="modal" newRowEnabled="false"
                      style="&inp2x;" label="=crmTaskExecutors" />
     </row>
 
@@ -73,7 +73,7 @@
       <Label text="=crmTaskExecutorGroups" />
       <ChildSelector childTable="RTExecutorGroups" viewName="UserGroupSettings"
                      targetRelColumn="RecurringTask" sourceRelColumn="Group"
-                     property="ExecutorGroups" renderColumns="Name" editPopup="true"
+                     property="ExecutorGroups" renderColumns="Name" editWindow="modal"
                      newRowEnabled="false" style="&inp2y;" label="=crmTaskExecutorGroups"
                      filter="Owner {u} or Visibility 1" />
     </row>
@@ -82,7 +82,7 @@
       <Label text="=crmTaskObservers" />
       <ChildSelector childTable="RTObservers" viewName="Users" property="Observers"
                      targetRelColumn="RecurringTask" sourceRelColumn="User"
-                     renderColumns="FirstName LastName" editPopup="true" newRowEnabled="false"
+                     renderColumns="FirstName LastName" editWindow="modal" newRowEnabled="false"
                      style="&inp2x;" label="=crmTaskObservers" />
     </row>
 
@@ -90,7 +90,7 @@
       <Label text="=crmTaskObserverGroups" />
       <ChildSelector childTable="RTObserverGroups" viewName="UserGroupSettings"
                      targetRelColumn="RecurringTask" sourceRelColumn="Group"
-                     property="ObserverGroups" renderColumns="Name" editPopup="true"
+                     property="ObserverGroups" renderColumns="Name" editWindow="modal"
                      newRowEnabled="false" style="&inp2y;" label="=crmTaskObserverGroups"
                      filter="Owner {u} or Visibility 1" />
     </row>

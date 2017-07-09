@@ -60,6 +60,7 @@ import java.util.TreeSet;
 
 public final class Queries {
 
+  @FunctionalInterface
   public interface DataCallback extends RpcCallback<Collection<BeeRowSet>> {
     @Override
     default void onFailure(String... reason) {
@@ -67,6 +68,7 @@ public final class Queries {
     }
   }
 
+  @FunctionalInterface
   public interface IdListCallback extends RpcCallback<String> {
     @Override
     default void onFailure(String... reason) {
@@ -74,6 +76,7 @@ public final class Queries {
     }
   }
 
+  @FunctionalInterface
   public interface IntCallback extends RpcCallback<Integer> {
     @Override
     default void onFailure(String... reason) {
@@ -81,6 +84,7 @@ public final class Queries {
     }
   }
 
+  @FunctionalInterface
   public interface RowSetCallback extends RpcCallback<BeeRowSet> {
     @Override
     default void onFailure(String... reason) {
@@ -128,7 +132,7 @@ public final class Queries {
   }
 
   public static boolean checkResponse(String service, int rpcId, String viewName,
-      ResponseObject response, Class<?> clazz, RpcCallback<?> callback) {
+      ResponseObject response, Class<?> clazz, Callback<?> callback) {
 
     if (callback instanceof HasRpcId) {
       ((HasRpcId) callback).setRpcId(rpcId);
@@ -168,7 +172,7 @@ public final class Queries {
     ParameterList parameters = new ParameterList(DELETE, RpcParameter.Section.DATA, lst);
     parameters.setSummary(viewName, filter);
 
-    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallbackWithId() {
+    BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(DELETE, getRpcId(), viewName, response, Integer.class, callback)) {
@@ -231,7 +235,7 @@ public final class Queries {
     }
     params.setSummary(viewName, rowIds);
 
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(DELETE_ROWS, getRpcId(), viewName, response, Integer.class, callback)) {
@@ -318,7 +322,7 @@ public final class Queries {
 
     parameters.setSummary(viewNames.toString());
 
-    return BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallbackWithId() {
+    return BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(service, getRpcId(), viewList.toString(), response, null, callback)) {
@@ -453,7 +457,7 @@ public final class Queries {
     ParameterList params = new ParameterList(QUERY, RpcParameter.Section.DATA, lst);
     params.setSummary(viewName, filter);
 
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(QUERY, getRpcId(), viewName, response, BeeRowSet.class, callback)) {
@@ -488,13 +492,11 @@ public final class Queries {
     ParameterList params = new ParameterList(COUNT_ROWS, RpcParameter.Section.DATA, lst);
     params.setSummary(viewName, filter);
 
-    BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(COUNT_ROWS, getRpcId(), viewName, response, Integer.class, callback)) {
-          int rowCount = BeeUtils.toInt((String) response.getResponse());
-          logger.info(viewName, filter, "row count:", rowCount);
-
+          int rowCount = BeeUtils.toInt(response.getResponseAsString());
           callback.onSuccess(rowCount);
         }
       }
@@ -588,7 +590,7 @@ public final class Queries {
     ParameterList params = new ParameterList(QUERY, RpcParameter.Section.DATA, lst);
     params.setSummary(viewName, filter, portion, BeeUtils.emptyToNull(options));
 
-    return BeeKeeper.getRpc().makePostRequest(params, new ResponseCallbackWithId() {
+    return BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(QUERY, getRpcId(), viewName, response, BeeRowSet.class, callback)) {
@@ -655,6 +657,30 @@ public final class Queries {
       public void onResponse(ResponseObject response) {
         if (checkResponse(GET_VALUE, getRpcId(), viewName, response, String.class, callback)) {
           callback.onSuccess(response.getResponseAsString());
+        }
+      }
+    });
+  }
+
+  public static void hasAnyRows(String viewName, Filter filter, Callback<Boolean> callback) {
+    Assert.notEmpty(viewName);
+    Assert.notNull(callback);
+
+    List<Property> lst = PropertyUtils.createProperties(VAR_VIEW_NAME, viewName);
+    if (filter != null) {
+      PropertyUtils.addProperties(lst, VAR_VIEW_WHERE, filter.serialize());
+    }
+
+    ParameterList params = new ParameterList(HAS_ANY_ROWS, RpcParameter.Section.DATA, lst);
+    params.setSummary(viewName, filter);
+
+    BeeKeeper.getRpc().makeRequest(params, new ResponseCallbackWithId() {
+      @Override
+      public void onResponse(ResponseObject response) {
+        if (checkResponse(HAS_ANY_ROWS, getRpcId(), viewName, response, null, callback)) {
+          callback.onSuccess(Codec.unpack(response.getResponseAsString()));
+        } else {
+          callback.onSuccess(false);
         }
       }
     });
@@ -895,7 +921,7 @@ public final class Queries {
     ParameterList parameters = new ParameterList(UPDATE, RpcParameter.Section.DATA, lst);
     parameters.setSummary(viewName, filter, columns, values);
 
-    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallbackWithId() {
+    BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(UPDATE, getRpcId(), viewName, response, Integer.class, callback)
@@ -1000,7 +1026,7 @@ public final class Queries {
         RpcParameter.Section.DATA, lst);
     parameters.setSummary(viewName, rowId);
 
-    BeeKeeper.getRpc().makePostRequest(parameters, new ResponseCallbackWithId() {
+    BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallbackWithId() {
       @Override
       public void onResponse(ResponseObject response) {
         if (checkResponse(UPDATE_RELATED_VALUES, getRpcId(), viewName, response,
@@ -1100,9 +1126,7 @@ public final class Queries {
     });
   }
 
-  private static void error(RpcCallback<?> callback, String service, int rpcId,
-      String... messages) {
-
+  private static void error(Callback<?> callback, String service, int rpcId, String... messages) {
     String rpcMsg = (rpcId > 0) ? BeeUtils.toString(rpcId) : null;
     logger.severe(service, rpcMsg, ArrayUtils.joinWords(messages));
 

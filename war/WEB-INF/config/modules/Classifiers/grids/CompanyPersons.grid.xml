@@ -24,6 +24,6 @@
     <DataColumn name="TabNumber" label="=personTabNoShort" module="Payroll"
       editSource="CompanyPersonID" editTarget="CompanyPerson" editViewName="Employees" />
     <DataColumn name="Login" label="=user" module="Administration" editViewName="Users"
-      editSource="CompanyPersonID" editTarget="CompanyPerson" editPopup="true" />
+      editSource="CompanyPersonID" editTarget="CompanyPerson" editWindow="modal" />
   </g:columns>
 </g:Grid>

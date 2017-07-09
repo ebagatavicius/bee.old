@@ -3,7 +3,7 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
 
   name="ObjectDefects" viewName="ServiceDefects"
-  editPopup="true" flexGrow="1"
+  editWindow="modal" flexGrow="1"
   >
 
   <xi:include href="columns/ServiceDefect.columns.xml" />

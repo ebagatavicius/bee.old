@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.modules.transport.TransportHandler;
 import com.butent.bee.client.view.ViewCallback;
 import com.butent.bee.shared.communication.ResponseObject;
@@ -19,24 +18,26 @@ final class TrailerTimeBoard extends VehicleTimeBoard {
 
   static final String SUPPLIER_KEY = "trailer_time_board";
   private static final String DATA_SERVICE = SVC_GET_TRAILER_TB_DATA;
+  private static final String FILTER_DATA_SERVICE = SVC_GET_TRAILER_TB_FILTER_DATA;
+
 
   private static final Set<String> SETTINGS_COLUMNS_TRIGGERING_REFRESH =
       Sets.newHashSet(COL_TRAILER_MIN_DATE, COL_TRAILER_MAX_DATE,
-          COL_TRAILER_TRANSPORT_GROUPS, COL_TRAILER_COMPLETED_TRIPS);
+          COL_TRAILER_TRANSPORT_GROUPS, COL_TRAILER_COMPLETED_TRIPS, COL_FILTER_DEPENDS_ON_DATA);
 
   static void open(final ViewCallback callback) {
-    BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(DATA_SERVICE),
-        new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            TrailerTimeBoard ttb = new TrailerTimeBoard();
-            ttb.onCreate(response, callback);
+    BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(SVC_GET_SETTINGS),
+        settingsResponse -> {
+          if (!settingsResponse.hasErrors()) {
+            TrailerTimeBoard ttb = new TrailerTimeBoard(settingsResponse);
+
+            ttb.requestData(response -> ttb.onCreate(response, callback));
           }
         });
   }
 
-  private TrailerTimeBoard() {
-    super();
+  private TrailerTimeBoard(ResponseObject settingsResponse) {
+    super(settingsResponse);
   }
 
   @Override
@@ -83,6 +84,11 @@ final class TrailerTimeBoard extends VehicleTimeBoard {
   @Override
   protected String getFiltersColumnName() {
     return COL_TRUCK_FILTERS;
+  }
+
+  @Override
+  protected String getFilterService() {
+    return FILTER_DATA_SERVICE;
   }
 
   @Override
@@ -138,6 +144,16 @@ final class TrailerTimeBoard extends VehicleTimeBoard {
   @Override
   protected String getSettingsFormName() {
     return FORM_TRAILER_SETTINGS;
+  }
+
+  @Override
+  protected String getSettingsMaxDate() {
+    return COL_TRAILER_MAX_DATE;
+  }
+
+  @Override
+  protected String getSettingsMinDate() {
+    return COL_TRAILER_MIN_DATE;
   }
 
   @Override

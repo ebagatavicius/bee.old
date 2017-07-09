@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  
-  name="NewsletterContacts" viewName="NewsletterContacts" caption="=contacts"
-  >
+
+        name="NewsletterContacts" viewName="NewsletterContacts" caption="=contacts"
+>
   <g:columns>
     <RelColumn name="Email" />
     <DataColumn name="Date" />

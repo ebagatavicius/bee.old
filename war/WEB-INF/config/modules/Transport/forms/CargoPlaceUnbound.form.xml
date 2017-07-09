@@ -9,7 +9,12 @@
     <col index="2" kind="label" />
     <row>
       <Label for="Date" class="bee-required" />
-      <InputDateTime source="Date" required="true" title="=trRequestDateTitle"/>
+      <FlowPanel>
+        <InputDateTime source="Date" required="true" />
+        <FaLabel name="DateQst" char="question_circle" disablable="false"
+                 style="display: inline-block; margin-left: 5px;"
+                 title="=trRequestDateTitle" />
+      </FlowPanel>
     </row>
     <row>
       <Label for="Company" />

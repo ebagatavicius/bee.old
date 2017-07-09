@@ -1,10 +1,10 @@
 package com.butent.bee.client.modules.transport.charts;
 
+import com.butent.bee.client.data.Data;
 import com.butent.bee.client.images.Flags;
 import com.butent.bee.shared.BeeConst;
-import com.butent.bee.shared.data.BeeRow;
-import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
+import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.time.JustDate;
@@ -100,23 +100,20 @@ final class Places {
     }
   }
 
-  static int setCountries(BeeRowSet rowSet) {
+  static int setCountries(SimpleRowSet rowSet) {
     if (!DataUtils.isEmpty(rowSet)) {
       countryCodes.clear();
       countryNames.clear();
 
-      int codeIndex = rowSet.getColumnIndex(ClassifierConstants.COL_COUNTRY_CODE);
-      int nameIndex = rowSet.getColumnIndex(ClassifierConstants.COL_COUNTRY_NAME);
+      for (SimpleRow row : rowSet) {
+        String key = row.getValue(Data.getIdColumn(ClassifierConstants.VIEW_COUNTRIES));
 
-      for (BeeRow row : rowSet) {
-        String key = BeeUtils.toString(row.getId());
-
-        String code = row.getString(codeIndex);
+        String code = row.getValue(ClassifierConstants.COL_COUNTRY_CODE);
         if (!BeeUtils.isEmpty(code)) {
           countryCodes.put(key, code.trim());
         }
 
-        String name = row.getString(nameIndex);
+        String name = row.getValue(ClassifierConstants.COL_COUNTRY_NAME);
         if (!BeeUtils.isEmpty(name)) {
           countryNames.put(key, name.trim());
         }

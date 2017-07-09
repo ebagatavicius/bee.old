@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
+import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.Modality;
@@ -36,8 +37,10 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Size;
+import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.BeeRowSet;
+import com.butent.bee.shared.data.CustomProperties;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
@@ -53,12 +56,15 @@ import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 abstract class VehicleTimeBoard extends ChartBase {
 
@@ -103,6 +109,22 @@ abstract class VehicleTimeBoard extends ChartBase {
   private static final String STYLE_INACTIVE = STYLE_PREFIX + "Inactive";
   private static final String STYLE_OVERLAP = STYLE_PREFIX + "Overlap";
 
+  private static final List<ChartDataType> TRIP_DATA_FILTERS = Arrays.asList(ChartDataType.TRIP,
+      ChartDataType.TRIP_STATUS, ChartDataType.TRIP_DEPARTURE, ChartDataType.TRIP_ARRIVAL,
+      ChartDataType.TRUCK, ChartDataType.TRAILER, ChartDataType.DRIVER);
+
+  private static final List<ChartDataType> FREIGHT_DATA_FILTERS = Arrays.asList(
+      ChartDataType.CUSTOMER, ChartDataType.MANAGER, ChartDataType.ORDER,
+      ChartDataType.ORDER_STATUS, ChartDataType.CARGO, ChartDataType.CARGO_TYPE,
+      ChartDataType.LOADING, ChartDataType.UNLOADING, ChartDataType.PLACE);
+
+  private static final List<ChartDataType> HANDLING_DATA_FILTERS = Arrays.asList(
+      ChartDataType.LOADING, ChartDataType.UNLOADING, ChartDataType.PLACE);
+
+  private static final Set<ChartDataType> AVAILABLE_TYPES = EnumSet.allOf(ChartDataType.class)
+      .stream().filter(type -> !type.equals(ChartDataType.DRIVER_GROUP))
+      .collect(Collectors.toSet());
+
   private final List<Vehicle> vehicles = new ArrayList<>();
 
   private final Multimap<Long, Trip> trips = ArrayListMultimap.create();
@@ -124,8 +146,8 @@ abstract class VehicleTimeBoard extends ChartBase {
   private final VehicleType vehicleType;
   private final VehicleType otherVehicleType;
 
-  protected VehicleTimeBoard() {
-    super();
+  protected VehicleTimeBoard(ResponseObject settingsResponse) {
+    super(settingsResponse);
 
     addStyleName(STYLE_PREFIX + "View");
 
@@ -147,6 +169,16 @@ abstract class VehicleTimeBoard extends ChartBase {
     } else {
       super.handleAction(action);
     }
+  }
+
+  @Override
+  protected void addFilterSettingParams(ParameterList params) {
+    params.addDataItem(PROP_TRIPS, BeeUtils.intersects(getEnabledFilterDataTypes(),
+        TRIP_DATA_FILTERS));
+    params.addDataItem(PROP_FREIGHTS, BeeUtils.intersects(getEnabledFilterDataTypes(),
+        FREIGHT_DATA_FILTERS));
+    params.addDataItem(PROP_CARGO_HANDLING, BeeUtils.intersects(getEnabledFilterDataTypes(),
+        HANDLING_DATA_FILTERS));
   }
 
   protected void addInfoWidget(HasWidgets panel, IdentifiableWidget widget,
@@ -188,46 +220,33 @@ abstract class VehicleTimeBoard extends ChartBase {
 
   @Override
   protected boolean filter(FilterType filterType) {
-    boolean filtered = false;
-
     List<ChartData> selectedData = FilterHelper.getSelectedData(getFilterData());
     if (selectedData.isEmpty()) {
       resetFilter(filterType);
-      return filtered;
+      return false;
     }
 
-    ChartData vehicleData = FilterHelper.getDataByType(selectedData,
-        isTrailerPark() ? ChartData.Type.TRAILER : ChartData.Type.TRUCK);
-    ChartData otherVehicleData = FilterHelper.getDataByType(selectedData,
-        isTrailerPark() ? ChartData.Type.TRUCK : ChartData.Type.TRAILER);
-
-    ChartData groupData = FilterHelper.getDataByType(selectedData, ChartData.Type.VEHICLE_GROUP);
-
-    ChartData typeData = FilterHelper.getDataByType(selectedData, ChartData.Type.VEHICLE_TYPE);
-    ChartData modelData = FilterHelper.getDataByType(selectedData, ChartData.Type.VEHICLE_MODEL);
+    ChartData groupData = FilterHelper.getDataByType(selectedData, ChartDataType.VEHICLE_GROUP);
 
     CargoMatcher cargoMatcher = CargoMatcher.maybeCreate(selectedData);
 
-    ChartData tripData = FilterHelper.getDataByType(selectedData, ChartData.Type.TRIP);
-    ChartData tripStatusData = FilterHelper.getDataByType(selectedData, ChartData.Type.TRIP_STATUS);
+    ChartData tripData = FilterHelper.getDataByType(selectedData, ChartDataType.TRIP);
+    ChartData tripStatusData = FilterHelper.getDataByType(selectedData, ChartDataType.TRIP_STATUS);
     ChartData departureData = FilterHelper.getDataByType(selectedData,
-        ChartData.Type.TRIP_DEPARTURE);
-    ChartData arrivalData = FilterHelper.getDataByType(selectedData, ChartData.Type.TRIP_ARRIVAL);
+        ChartDataType.TRIP_DEPARTURE);
+    ChartData arrivalData = FilterHelper.getDataByType(selectedData, ChartDataType.TRIP_ARRIVAL);
 
-    ChartData driverData = FilterHelper.getDataByType(selectedData, ChartData.Type.DRIVER);
+    ChartData driverData = FilterHelper.getDataByType(selectedData, ChartDataType.DRIVER);
 
     PlaceMatcher placeMatcher = PlaceMatcher.maybeCreate(selectedData);
 
     boolean freightRequired = cargoMatcher != null || placeMatcher != null;
-    boolean tripRequired = freightRequired || otherVehicleData != null
+    boolean tripRequired = freightRequired
         || tripData != null || tripStatusData != null
         || departureData != null || arrivalData != null || driverData != null;
 
     for (Vehicle vehicle : vehicles) {
-      boolean vehicleMatch = FilterHelper.matches(vehicleData, vehicle.getId())
-          && FilterHelper.matchesAny(groupData, vehicle.getGroups())
-          && FilterHelper.matches(typeData, vehicle.getType())
-          && FilterHelper.matches(modelData, vehicle.getModel());
+      boolean vehicleMatch = FilterHelper.matchesAny(groupData, vehicle.getGroups());
 
       boolean hasTrips = vehicleMatch && trips.containsKey(vehicle.getId());
       if (vehicleMatch && !hasTrips && tripRequired) {
@@ -242,7 +261,6 @@ abstract class VehicleTimeBoard extends ChartBase {
               && FilterHelper.matches(tripStatusData, trip.getStatus())
               && FilterHelper.matches(departureData, trip.getTripDeparture())
               && FilterHelper.matches(arrivalData, trip.getTripArrival())
-              && FilterHelper.matches(otherVehicleData, trip.getVehicleId(otherVehicleType))
               && trip.matchesDrivers(driverData);
 
           boolean hasFreights = tripMatch && freights.containsKey(trip.getTripId());
@@ -258,8 +276,9 @@ abstract class VehicleTimeBoard extends ChartBase {
 
               if (freightMatch && placeMatcher != null) {
                 boolean ok = placeMatcher.matches(freight);
-                if (!ok && hasCargoHandling(freight.getCargoId())) {
-                  ok = placeMatcher.matchesAnyOf(getCargoHandling(freight.getCargoId()));
+                if (!ok) {
+                  ok = placeMatcher.matchesAnyOf(getCargoHandling(null, freight.getCargoId(),
+                      freight.getCargoTripId()));
                 }
 
                 if (!ok) {
@@ -290,13 +309,9 @@ abstract class VehicleTimeBoard extends ChartBase {
       }
 
       vehicle.setMatch(filterType, vehicleMatch);
-
-      if (vehicleMatch) {
-        filtered = true;
-      }
     }
 
-    return filtered;
+    return true;
   }
 
   protected Trip findTripById(Long tripId) {
@@ -311,6 +326,11 @@ abstract class VehicleTimeBoard extends ChartBase {
   }
 
   protected abstract String getAdditionalInfo(Trip trip);
+
+  @Override
+  protected Set<ChartDataType> getAllFilterTypes() {
+    return AVAILABLE_TYPES;
+  }
 
   @Override
   protected Collection<? extends HasDateRange> getChartItems() {
@@ -393,110 +413,10 @@ abstract class VehicleTimeBoard extends ChartBase {
       return;
     }
 
-    long millis = System.currentTimeMillis();
-    BeeRowSet brs = BeeRowSet.getIfPresent(properties, PROP_VEHICLES);
-
-    if (!DataUtils.isEmpty(brs)) {
-      for (BeeRow row : brs) {
-        vehicles.add(new Vehicle(row));
-      }
-      logger.debug(PROP_VEHICLES, vehicles.size(), TimeUtils.elapsedMillis(millis));
-    }
-
-    Multimap<Long, Driver> drivers = HashMultimap.create();
-
-    millis = System.currentTimeMillis();
-    SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_TRIP_DRIVERS);
-
-    if (!DataUtils.isEmpty(srs)) {
-      for (SimpleRow row : srs) {
-        drivers.put(row.getLong(COL_TRIP), new Driver(row.getLong(COL_DRIVER),
-            row.getValue(ClassifierConstants.COL_FIRST_NAME),
-            row.getValue(ClassifierConstants.COL_LAST_NAME),
-            row.getDateTime(COL_TRIP_DRIVER_FROM), row.getDateTime(COL_TRIP_DRIVER_TO),
-            row.getValue(COL_TRIP_DRIVER_NOTE)));
-      }
-      logger.debug(PROP_TRIP_DRIVERS, drivers.size(), TimeUtils.elapsedMillis(millis));
-    }
-
-    millis = System.currentTimeMillis();
-    srs = SimpleRowSet.getIfPresent(properties, PROP_FREIGHTS);
-
-    if (!DataUtils.isEmpty(srs)) {
-      for (SimpleRow row : srs) {
-        Pair<JustDate, JustDate> handlingSpan = getCargoHandlingSpan(row.getLong(COL_CARGO));
-        freights.put(row.getLong(COL_TRIP_ID),
-            Freight.create(row, handlingSpan.getA(), handlingSpan.getB()));
-      }
-      logger.debug(PROP_FREIGHTS, freights.size(), TimeUtils.elapsedMillis(millis));
-    }
-
-    millis = System.currentTimeMillis();
-    srs = SimpleRowSet.getIfPresent(properties, PROP_TRIPS);
-
-    if (!DataUtils.isEmpty(srs)) {
-      int index = srs.getColumnIndex(vehicleType.getTripVehicleIdColumnName());
-
-      for (SimpleRow row : srs) {
-        Long tripId = row.getLong(COL_TRIP_ID);
-
-        Collection<Driver> tripDrivers = BeeUtils.getIfContains(drivers, tripId);
-
-        if (freights.containsKey(tripId)) {
-          JustDate minDate = null;
-          JustDate maxDate = null;
-
-          int cargoCount = 0;
-
-          Collection<String> tripCustomers = new ArrayList<>();
-          Collection<String> tripManagers = new ArrayList<>();
-
-          for (Freight freight : freights.get(tripId)) {
-            minDate = BeeUtils.min(minDate, freight.getMinDate());
-            maxDate = BeeUtils.max(maxDate, freight.getMaxDate());
-
-            cargoCount++;
-
-            String customerName = freight.getCustomerName();
-            if (!BeeUtils.isEmpty(customerName) && !tripCustomers.contains(customerName)) {
-              tripCustomers.add(customerName);
-            }
-
-            String managerName = freight.getManagerName();
-            if (!BeeUtils.isEmpty(managerName) && !tripManagers.contains(managerName)) {
-              tripManagers.add(managerName);
-            }
-          }
-
-          Trip trip = new Trip(row, tripDrivers, minDate, maxDate, cargoCount,
-              tripCustomers, tripManagers);
-          trips.put(row.getLong(index), trip);
-
-          for (Freight freight : freights.get(tripId)) {
-            freight.adjustRange(trip.getRange());
-
-            freight.setTripTitle(trip.getTitle());
-            freight.setEditable(trip.isEditable());
-          }
-
-        } else {
-          trips.put(row.getLong(index), new Trip(row, tripDrivers));
-        }
-      }
-
-      logger.debug(PROP_TRIPS, trips.size(), TimeUtils.elapsedMillis(millis));
-    }
-
-    millis = System.currentTimeMillis();
-    srs = SimpleRowSet.getIfPresent(properties, PROP_VEHICLE_SERVICES);
-
-    if (!DataUtils.isEmpty(srs)) {
-      for (SimpleRow row : srs) {
-        VehicleService service = new VehicleService(row);
-        services.put(service.getVehicleId(), service);
-      }
-      logger.debug(PROP_VEHICLE_SERVICES, services.size(), TimeUtils.elapsedMillis(millis));
-    }
+    vehicles.addAll(deserializeVehicles(properties));
+    freights.putAll(deserializeFreight(properties, getCargoHandling()));
+    trips.putAll(deserializeTrips(properties, freights));
+    services.putAll(deserializeServices(properties));
 
     setSeparateCargo(TimeBoardHelper.getBoolean(getSettings(), getSeparateCargoColumnName()));
   }
@@ -552,158 +472,35 @@ abstract class VehicleTimeBoard extends ChartBase {
   }
 
   @Override
-  protected List<ChartData> prepareFilterData() {
-    List<ChartData> data = new ArrayList<>();
-    if (vehicles.isEmpty()) {
-      return data;
+  protected List<ChartData> prepareFilterData(ResponseObject response) {
+    if (response != null && response.getResponse() != null) {
+      BeeRowSet rowSet = BeeRowSet.restore((String) response.getResponse());
+      CustomProperties properties = rowSet.getTableProperties();
+
+      if (properties == null) {
+        return new ArrayList<>();
+      }
+
+      deserializeCountriesAndCities(properties.get(PROP_COUNTRIES), properties.get(PROP_CITIES));
+      Multimap<Long, CargoHandling> cargoHandlingData = deserializeCargoHandling(properties
+          .get(PROP_CARGO_HANDLING));
+
+      Multimap<Long, Freight> freightData = deserializeFreight(properties, cargoHandlingData);
+      return prepareFilterData(deserializeVehicles(properties),
+          deserializeTrips(properties, freightData), freightData, cargoHandlingData);
+
+    } else {
+      boolean handlingRequired = BeeUtils.intersects(getEnabledFilterDataTypes(),
+          HANDLING_DATA_FILTERS);
+      boolean freightsRequired = BeeUtils.intersects(getEnabledFilterDataTypes(),
+          FREIGHT_DATA_FILTERS) || handlingRequired;
+      boolean tripRequired = BeeUtils.intersects(getEnabledFilterDataTypes(),
+          TRIP_DATA_FILTERS) || freightsRequired;
+
+      return prepareFilterData(vehicles, tripRequired ? trips : ArrayListMultimap.create(),
+          freightsRequired ? freights : ArrayListMultimap.create(),
+          handlingRequired ? getCargoHandling() : ArrayListMultimap.create());
     }
-
-    ChartData truckData = new ChartData(ChartData.Type.TRUCK);
-    ChartData trailerData = new ChartData(ChartData.Type.TRAILER);
-
-    ChartData groupData = new ChartData(ChartData.Type.VEHICLE_GROUP);
-
-    ChartData modelData = new ChartData(ChartData.Type.VEHICLE_MODEL);
-    ChartData typeData = new ChartData(ChartData.Type.VEHICLE_TYPE);
-
-    ChartData customerData = new ChartData(ChartData.Type.CUSTOMER);
-    ChartData managerData = new ChartData(ChartData.Type.MANAGER);
-
-    ChartData orderData = new ChartData(ChartData.Type.ORDER);
-    ChartData orderStatusData = new ChartData(ChartData.Type.ORDER_STATUS);
-
-    ChartData cargoData = new ChartData(ChartData.Type.CARGO);
-    ChartData cargoTypeData = new ChartData(ChartData.Type.CARGO_TYPE);
-
-    ChartData tripData = new ChartData(ChartData.Type.TRIP);
-    ChartData tripStatusData = new ChartData(ChartData.Type.TRIP_STATUS);
-    ChartData departureData = new ChartData(ChartData.Type.TRIP_DEPARTURE);
-    ChartData arrivalData = new ChartData(ChartData.Type.TRIP_ARRIVAL);
-
-    ChartData loadData = new ChartData(ChartData.Type.LOADING);
-    ChartData unloadData = new ChartData(ChartData.Type.UNLOADING);
-    ChartData placeData = new ChartData(ChartData.Type.PLACE);
-
-    ChartData driverData = new ChartData(ChartData.Type.DRIVER);
-
-    for (Vehicle vehicle : vehicles) {
-      String vehicleName = vehicle.getItemName();
-      if (isTrailerPark()) {
-        trailerData.add(vehicleName, vehicle.getId());
-      } else {
-        truckData.add(vehicleName, vehicle.getId());
-      }
-
-      if (!BeeUtils.isEmpty(vehicle.getGroups())) {
-        for (Long group : vehicle.getGroups()) {
-          groupData.add(getTransportGroupName(group), group);
-        }
-      }
-
-      modelData.add(vehicle.getModel());
-      typeData.add(vehicle.getType());
-
-      if (!trips.containsKey(vehicle.getId())) {
-        continue;
-      }
-
-      for (Trip trip : trips.get(vehicle.getId())) {
-        tripData.add(trip.getTripNo(), trip.getTripId());
-        tripStatusData.add(trip.getStatus());
-        departureData.add(trip.getTripDeparture());
-        arrivalData.add(trip.getTripArrival());
-
-        String otherVehicleNumber = trip.getVehicleNumber(otherVehicleType);
-        if (!BeeUtils.isEmpty(otherVehicleNumber)) {
-          if (isTrailerPark()) {
-            truckData.add(otherVehicleNumber, trip.getVehicleId(otherVehicleType));
-          } else {
-            trailerData.add(otherVehicleNumber, trip.getVehicleId(otherVehicleType));
-          }
-        }
-
-        if (trip.hasDrivers()) {
-          for (Driver driver : trip.getDrivers()) {
-            driverData.add(driver.getItemName());
-          }
-        }
-
-        if (!freights.containsKey(trip.getTripId())) {
-          continue;
-        }
-
-        for (Freight freight : freights.get(trip.getTripId())) {
-          customerData.add(freight.getCustomerName(), freight.getCustomerId());
-          managerData.addUser(freight.getManager());
-
-          orderData.add(freight.getOrderName(), freight.getOrderId());
-          orderStatusData.add(freight.getOrderStatus());
-
-          cargoData.add(freight.getCargoDescription(), freight.getCargoId());
-          if (DataUtils.isId(freight.getCargoType())) {
-            cargoTypeData.add(getCargoTypeName(freight.getCargoType()), freight.getCargoType());
-          }
-
-          String loading = Places.getLoadingPlaceInfo(freight);
-          if (!BeeUtils.isEmpty(loading)) {
-            loadData.add(loading);
-            placeData.add(loading);
-          }
-
-          String unloading = Places.getUnloadingPlaceInfo(freight);
-          if (!BeeUtils.isEmpty(unloading)) {
-            unloadData.add(unloading);
-            placeData.add(unloading);
-          }
-
-          if (hasCargoHandling(freight.getCargoId())) {
-            for (CargoHandling ch : getCargoHandling(freight.getCargoId())) {
-              loading = Places.getLoadingPlaceInfo(ch);
-              if (!BeeUtils.isEmpty(loading)) {
-                loadData.add(loading);
-                placeData.add(loading);
-              }
-
-              unloading = Places.getUnloadingPlaceInfo(ch);
-              if (!BeeUtils.isEmpty(unloading)) {
-                unloadData.add(unloading);
-                placeData.add(unloading);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    data.add(isTrailerPark() ? trailerData : truckData);
-    data.add(groupData);
-
-    data.add(modelData);
-    data.add(typeData);
-
-    data.add(customerData);
-    data.add(managerData);
-
-    data.add(orderData);
-    data.add(orderStatusData);
-
-    data.add(cargoData);
-    data.add(cargoTypeData);
-
-    data.add(tripData);
-    data.add(tripStatusData);
-    data.add(departureData);
-    data.add(arrivalData);
-
-    data.add(loadData);
-    data.add(unloadData);
-    data.add(placeData);
-
-    data.add(driverData);
-
-    data.add(isTrailerPark() ? truckData : trailerData);
-
-    return data;
   }
 
   @Override
@@ -902,10 +699,6 @@ abstract class VehicleTimeBoard extends ChartBase {
       freight.makeTarget(panel, STYLE_FREIGHT_DRAG_OVER);
     }
 
-    if (hasCargoHandling(freight.getCargoId())) {
-      styleItemHasHandling(panel);
-    }
-
     renderCargoShipment(panel, freight, freight.getTripTitle(), STYLE_TRIP_INFO);
 
     return panel;
@@ -978,6 +771,137 @@ abstract class VehicleTimeBoard extends ChartBase {
         STYLE_TRIP_VOID, STYLE_TRIP_INFO);
 
     return panel;
+  }
+
+  private Multimap<Long, Driver> deserializeDrivers(Map<String, String> properties) {
+    Multimap<Long, Driver> drivers = HashMultimap.create();
+
+    long millis = System.currentTimeMillis();
+    SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_TRIP_DRIVERS);
+
+    if (!DataUtils.isEmpty(srs)) {
+      for (SimpleRow row : srs) {
+        drivers.put(row.getLong(COL_TRIP), new Driver(row.getLong(COL_DRIVER),
+            row.getValue(ClassifierConstants.COL_FIRST_NAME),
+            row.getValue(ClassifierConstants.COL_LAST_NAME),
+            row.getDateTime(COL_TRIP_DRIVER_FROM), row.getDateTime(COL_TRIP_DRIVER_TO),
+            row.getValue(COL_TRIP_DRIVER_NOTE)));
+      }
+      logger.debug(PROP_TRIP_DRIVERS, drivers.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return drivers;
+  }
+
+  private Multimap<Long, Freight> deserializeFreight(Map<String, String> properties,
+      Multimap<Long, CargoHandling> cargoHandling) {
+    Multimap<Long, Freight> freightsData = ArrayListMultimap.create();
+    long millis = System.currentTimeMillis();
+    SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_FREIGHTS);
+
+    if (!DataUtils.isEmpty(srs)) {
+      for (SimpleRow row : srs) {
+        Pair<JustDate, JustDate> handlingSpan = getCargoHandlingSpan(cargoHandling,
+            row.getLong(COL_CARGO), row.getLong(COL_CARGO_TRIP_ID));
+
+        freightsData.put(row.getLong(COL_TRIP_ID),
+            Freight.create(row, handlingSpan.getA(), handlingSpan.getB()));
+      }
+      logger.debug(PROP_FREIGHTS, freightsData.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return freightsData;
+  }
+
+  private  Multimap<Long, VehicleService> deserializeServices(Map<String, String> properties) {
+    Multimap<Long, VehicleService> servicesData = ArrayListMultimap.create();
+    long millis = System.currentTimeMillis();
+    SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_VEHICLE_SERVICES);
+
+    if (!DataUtils.isEmpty(srs)) {
+      for (SimpleRow row : srs) {
+        VehicleService service = new VehicleService(row);
+        servicesData.put(service.getVehicleId(), service);
+      }
+      logger.debug(PROP_VEHICLE_SERVICES, servicesData.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return servicesData;
+  }
+
+  private Multimap<Long, Trip> deserializeTrips(Map<String, String> properties,
+      Multimap<Long, Freight> freightsData) {
+    Multimap<Long, Driver> driversData = deserializeDrivers(properties);
+
+    long millis = System.currentTimeMillis();
+    Multimap<Long, Trip> tripsData = ArrayListMultimap.create();
+
+    SimpleRowSet srs = SimpleRowSet.getIfPresent(properties, PROP_TRIPS);
+
+    if (!DataUtils.isEmpty(srs)) {
+      int index = srs.getColumnIndex(vehicleType.getTripVehicleIdColumnName());
+
+      for (SimpleRow row : srs) {
+        Long tripId = row.getLong(COL_TRIP_ID);
+
+        Collection<Driver> tripDrivers = BeeUtils.getIfContains(driversData, tripId);
+
+        if (freightsData.containsKey(tripId)) {
+          JustDate minDate = null;
+          JustDate maxDate = null;
+
+          int cargoCount = 0;
+
+          Collection<String> tripCustomers = new ArrayList<>();
+          Collection<String> tripManagers = new ArrayList<>();
+
+          for (Freight freight : freightsData.get(tripId)) {
+            minDate = BeeUtils.min(minDate, freight.getMinDate());
+            maxDate = BeeUtils.max(maxDate, freight.getMaxDate());
+
+            cargoCount++;
+
+            String customerName = freight.getCustomerName();
+            if (!BeeUtils.isEmpty(customerName) && !tripCustomers.contains(customerName)) {
+              tripCustomers.add(customerName);
+            }
+
+            String managerName = freight.getManagerName();
+            if (!BeeUtils.isEmpty(managerName) && !tripManagers.contains(managerName)) {
+              tripManagers.add(managerName);
+            }
+          }
+
+          Trip trip = new Trip(row, tripDrivers, minDate, maxDate, cargoCount,
+              tripCustomers, tripManagers);
+          tripsData.put(row.getLong(index), trip);
+
+          for (Freight freight : freightsData.get(tripId)) {
+            freight.adjustRange(trip.getRange());
+
+            freight.setTripTitle(trip.getTitle());
+            freight.setEditable(trip.isEditable());
+          }
+
+        } else {
+          tripsData.put(row.getLong(index), new Trip(row, tripDrivers));
+        }
+      }
+
+      logger.debug(PROP_TRIPS, tripsData.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return tripsData;
+  }
+
+  private static List<Vehicle> deserializeVehicles(Map<String, String> properties) {
+    List<Vehicle> vehiclesData = new ArrayList<>();
+    long millis = System.currentTimeMillis();
+    BeeRowSet brs = BeeRowSet.getIfPresent(properties, PROP_VEHICLES);
+
+    if (!DataUtils.isEmpty(brs)) {
+      for (BeeRow row : brs) {
+        vehiclesData.add(new Vehicle(row));
+      }
+      logger.debug(PROP_VEHICLES, vehiclesData.size(), TimeUtils.elapsedMillis(millis));
+    }
+    return vehiclesData;
   }
 
   private List<TimeBoardRowLayout> doLayout() {
@@ -1145,6 +1069,164 @@ abstract class VehicleTimeBoard extends ChartBase {
         }
       }
     }
+  }
+
+  private List<ChartData> prepareFilterData(List<Vehicle> vehiclesData,
+      Multimap<Long, Trip> tripsData, Multimap<Long, Freight> freightsData,
+      Multimap<Long, CargoHandling> cargoHandlingData) {
+    List<ChartData> data = new ArrayList<>();
+    if (vehiclesData.isEmpty()) {
+      return data;
+    }
+
+    ChartData truckData = new ChartData(ChartDataType.TRUCK);
+    ChartData trailerData = new ChartData(ChartDataType.TRAILER);
+
+    ChartData groupData = new ChartData(ChartDataType.VEHICLE_GROUP);
+
+    ChartData modelData = new ChartData(ChartDataType.VEHICLE_MODEL);
+    ChartData typeData = new ChartData(ChartDataType.VEHICLE_TYPE);
+
+    ChartData customerData = new ChartData(ChartDataType.CUSTOMER);
+    ChartData managerData = new ChartData(ChartDataType.MANAGER);
+
+    ChartData orderData = new ChartData(ChartDataType.ORDER);
+    ChartData orderStatusData = new ChartData(ChartDataType.ORDER_STATUS);
+
+    ChartData cargoData = new ChartData(ChartDataType.CARGO);
+    ChartData cargoTypeData = new ChartData(ChartDataType.CARGO_TYPE);
+
+    ChartData tripData = new ChartData(ChartDataType.TRIP);
+    ChartData tripStatusData = new ChartData(ChartDataType.TRIP_STATUS);
+    ChartData departureData = new ChartData(ChartDataType.TRIP_DEPARTURE);
+    ChartData arrivalData = new ChartData(ChartDataType.TRIP_ARRIVAL);
+
+    ChartData loadData = new ChartData(ChartDataType.LOADING);
+    ChartData unloadData = new ChartData(ChartDataType.UNLOADING);
+    ChartData placeData = new ChartData(ChartDataType.PLACE);
+
+    ChartData driverData = new ChartData(ChartDataType.DRIVER);
+
+    for (Vehicle vehicle : vehiclesData) {
+      String vehicleName = vehicle.getItemName();
+      if (isTrailerPark()) {
+        trailerData.add(vehicleName, vehicle.getId());
+      } else {
+        truckData.add(vehicleName, vehicle.getId());
+      }
+
+      if (!BeeUtils.isEmpty(vehicle.getGroups())) {
+        for (Long group : vehicle.getGroups()) {
+          groupData.add(getTransportGroupName(group), group);
+        }
+      }
+
+      modelData.add(vehicle.getModel(), vehicle.getModelId());
+      typeData.add(vehicle.getType(), vehicle.getTypeId());
+
+      if (!tripsData.containsKey(vehicle.getId())) {
+        continue;
+      }
+
+      for (Trip trip : tripsData.get(vehicle.getId())) {
+        tripData.add(trip.getTripNo(), trip.getTripId());
+        tripStatusData.add(trip.getStatus());
+        departureData.add(trip.getTripDeparture());
+        arrivalData.add(trip.getTripArrival());
+
+        String otherVehicleNumber = trip.getVehicleNumber(otherVehicleType);
+        if (!BeeUtils.isEmpty(otherVehicleNumber)) {
+          if (isTrailerPark()) {
+            truckData.add(otherVehicleNumber, trip.getVehicleId(otherVehicleType));
+          } else {
+            trailerData.add(otherVehicleNumber, trip.getVehicleId(otherVehicleType));
+          }
+        }
+
+        if (trip.hasDrivers()) {
+          for (Driver driver : trip.getDrivers()) {
+            driverData.add(driver.getItemName(), driver.getId());
+          }
+        }
+        if (!freightsData.containsKey(trip.getTripId())) {
+          continue;
+        }
+
+        for (Freight freight : freightsData.get(trip.getTripId())) {
+          customerData.add(freight.getCustomerName(), freight.getCustomerId());
+          managerData.addUser(freight.getManager());
+
+          orderData.add(freight.getOrderName(), freight.getOrderId());
+          orderStatusData.add(freight.getOrderStatus());
+
+          cargoData.add(freight.getCargoDescription(), freight.getCargoId());
+          if (DataUtils.isId(freight.getCargoType())) {
+            cargoTypeData.add(getCargoTypeName(freight.getCargoType()), freight.getCargoType());
+          }
+
+          String loading = Places.getLoadingPlaceInfo(freight);
+          if (!BeeUtils.isEmpty(loading)) {
+            loadData.add(loading);
+            placeData.add(loading);
+          }
+
+          String unloading = Places.getUnloadingPlaceInfo(freight);
+          if (!BeeUtils.isEmpty(unloading)) {
+            unloadData.add(unloading);
+            placeData.add(unloading);
+          }
+
+          Collection<CargoHandling> cargoHandling =
+              getCargoHandling(cargoHandlingData, freight.getCargoId(), freight.getCargoTripId());
+
+          if (!BeeUtils.isEmpty(cargoHandling)) {
+            for (CargoHandling ch : cargoHandling) {
+              loading = Places.getLoadingPlaceInfo(ch);
+              if (!BeeUtils.isEmpty(loading)) {
+                loadData.add(loading);
+                placeData.add(loading);
+              }
+
+              unloading = Places.getUnloadingPlaceInfo(ch);
+              if (!BeeUtils.isEmpty(unloading)) {
+                unloadData.add(unloading);
+                placeData.add(unloading);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    data.add(isTrailerPark() ? trailerData : truckData);
+    data.add(groupData);
+
+    data.add(modelData);
+    data.add(typeData);
+
+    data.add(customerData);
+    data.add(managerData);
+
+    data.add(orderData);
+    data.add(orderStatusData);
+
+    data.add(cargoData);
+    data.add(cargoTypeData);
+
+    data.add(tripData);
+    data.add(tripStatusData);
+    data.add(departureData);
+    data.add(arrivalData);
+
+    data.add(loadData);
+    data.add(unloadData);
+    data.add(placeData);
+
+    data.add(driverData);
+
+    data.add(isTrailerPark() ? truckData : trailerData);
+
+    return data;
   }
 
   private boolean separateCargo() {

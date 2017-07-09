@@ -112,6 +112,29 @@ public class CachedProvider extends Provider {
   }
 
   @Override
+  public void hasAnyRows(Filter filter, Consumer<Boolean> callback) {
+    if (DataUtils.isEmpty(getTable())) {
+      callback.accept(false);
+
+    } else if (filter == null) {
+      callback.accept(true);
+
+    } else {
+      boolean ok = false;
+      List<BeeColumn> columns = getTable().getColumns();
+
+      for (BeeRow row : getTable()) {
+        if (filter.isMatch(columns, row)) {
+          ok = true;
+          break;
+        }
+      }
+
+      callback.accept(ok);
+    }
+  }
+
+  @Override
   public void onCellUpdate(CellUpdateEvent event) {
     if (BeeUtils.same(event.getViewName(), getViewName())) {
       long id = event.getRowId();
@@ -349,30 +372,27 @@ public class CachedProvider extends Provider {
 
     Queries.getRowSet(getViewName(), null, getQueryFilter(null), getOrder(),
         BeeConst.UNDEF, BeeConst.UNDEF, CachingPolicy.NONE, getQueryOptions(),
-        new RowSetCallback() {
-          @Override
-          public void onSuccess(BeeRowSet rowSet) {
-            Assert.notNull(rowSet);
-            setTable(rowSet);
-            setComplete(true);
+        (RowSetCallback) rowSet -> {
+          Assert.notNull(rowSet);
+          setTable(rowSet);
+          setComplete(true);
 
-            applyFilter(getUserFilter());
+          applyFilter(getUserFilter());
 
-            int newTableSize = rowSet.getNumberOfRows();
+          int newTableSize = rowSet.getNumberOfRows();
 
-            int oldRc = getDisplay().getRowCount();
-            int newRc = getRowCount();
+          int oldRc = getDisplay().getRowCount();
+          int newRc = getRowCount();
 
-            if (newTableSize != oldTableSize && oldPageSize >= oldTableSize) {
-              getDisplay().setPageSize(newTableSize, oldRc == newRc);
-            }
-            getDisplay().setRowCount(newRc, true);
+          if (newTableSize != oldTableSize && oldPageSize >= oldTableSize) {
+            getDisplay().setPageSize(newTableSize, oldRc == newRc);
+          }
+          getDisplay().setRowCount(newRc, true);
 
-            updateDisplay(preserveActiveRow);
+          updateDisplay(preserveActiveRow);
 
-            if (callback != null) {
-              callback.execute();
-            }
+          if (callback != null) {
+            callback.execute();
           }
         });
   }

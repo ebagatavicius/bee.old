@@ -104,7 +104,7 @@
 	</variable>
 	<variable name="totalizer" class="com.butent.bee.shared.modules.trade.TradeDocumentSums">
 		<variableExpression><![CDATA[$V{totalizer}]]></variableExpression>
-		<initialValueExpression><![CDATA[new TradeDocumentSums(BeeUtils.isEmpty($P{VatPlus}) ? TradeVatMode.INCLUSIVE : TradeVatMode.PLUS, TradeDiscountMode.FROM_AMOUNT).add(0, 1d, BeeUtils.toDoubleOrNull($P{Amount}), BeeUtils.toDoubleOrNull($P{Discount}), true, BeeUtils.toDoubleOrNull($P{Vat}), BeeUtils.toBooleanOrNull($P{VatPercent}))]]></initialValueExpression>
+		<initialValueExpression><![CDATA[new TradeDocumentSums(BeeUtils.isEmpty($P{VatPlus}) ? TradeVatMode.INCLUSIVE : TradeVatMode.PLUS, TradeDiscountMode.FROM_AMOUNT, null).add(0, 1d, BeeUtils.toDoubleOrNull($P{Amount}), BeeUtils.toDoubleOrNull($P{Discount}), true, BeeUtils.toDoubleOrNull($P{Vat}), BeeUtils.toBooleanOrNull($P{VatPercent}))]]></initialValueExpression>
 	</variable>
 	<group name="Group1">
 		<groupHeader>

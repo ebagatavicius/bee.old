@@ -20,5 +20,6 @@
     <DataColumn name="Warranty" visible="true" />
     <DataColumn name="DaysActive" visible="true" />
     <DataColumn name="ProhibitEdit" visible="true" />
+    <DataColumn name="IsItemsRequired" visible="true" />
   </g:columns>
 </g:Grid>

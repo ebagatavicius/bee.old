@@ -1,8 +1,8 @@
 package com.butent.bee.client.modules.transport.charts;
 
-import com.butent.bee.client.modules.transport.charts.ChartData.Type;
 import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeSerializable;
+import com.butent.bee.shared.modules.transport.TransportConstants.ChartDataType;
 import com.butent.bee.shared.utils.ArrayUtils;
 import com.butent.bee.shared.utils.BeeUtils;
 import com.butent.bee.shared.utils.Codec;
@@ -29,14 +29,14 @@ class ChartFilter implements BeeSerializable {
       return null;
     }
 
-    private Type type;
+    private ChartDataType type;
     private String name;
     private Long id;
 
     private FilterValue() {
     }
 
-    FilterValue(Type type, String name, Long id) {
+    FilterValue(ChartDataType type, String name, Long id) {
       this.type = type;
       this.name = name;
       this.id = id;
@@ -63,7 +63,7 @@ class ChartFilter implements BeeSerializable {
 
       int i = 0;
 
-      this.type = EnumUtils.getEnumByName(Type.class, arr[i++]);
+      this.type = EnumUtils.getEnumByName(ChartDataType.class, arr[i++]);
       this.name = arr[i++];
       this.id = BeeUtils.toLongOrNull(arr[i++]);
     }
@@ -86,6 +86,18 @@ class ChartFilter implements BeeSerializable {
       list.add((id == null) ? null : id.toString());
 
       return Codec.beeSerialize(list);
+    }
+
+    public Long getId() {
+      return id;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public ChartDataType getType() {
+      return type;
     }
 
     boolean isValid() {

@@ -8,7 +8,7 @@
   >
 
   <g:columns>
-    <RelColumn name="TradeAct" renderColumns="TradeAct" editPopup="true"
+    <RelColumn name="TradeAct" renderColumns="TradeAct" editWindow="modal"
       horizontalAlignment="right" />
     <DataColumn name="Parent" visible="false" />
 
@@ -43,7 +43,7 @@
     <DataColumn name="ItemTypeName" label="=type" visible="false" />
     <DataColumn name="ItemGroupName" label="=group" visible="false" />
 
-    <RelColumn name="Item" renderColumns="ItemName" editPopup="true" />
+    <RelColumn name="Item" renderColumns="ItemName" editWindow="modal" />
     <DataColumn name="Article" />
 
     <DataColumn name="Quantity" />

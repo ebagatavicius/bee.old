@@ -110,13 +110,6 @@
           editEnabled="false" newRowEnabled="false" caching="local"
           style="&inline; width:400px;" label="=crmTaskObservers" />
       </FlowPanel>
-      <FlowPanel style="&section;">
-        <Label text="=crmTaskObserverGroups" style="&labelLeft;" />
-        <ChildSelector childTable="AssessmentOGroups" viewName="UserGroupSettings"
-          targetRelColumn="Assessment" sourceRelColumn="Group" renderColumns="Name"
-          editPopup="true" newRowEnabled="false" style="&inline; width:400px;"
-          label="=crmTaskObserverGroups" filter="Owner {u} or Visibility" />
-      </FlowPanel>
       &separator;
     </FlowPanel>
 

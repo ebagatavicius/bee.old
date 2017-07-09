@@ -7,4 +7,6 @@ name="ContactReports" label="=contactReports" parent="Contacts" order="20" data=
     parameters="CompanyTypes" />
   <Item name="CompanyUsageReport" label="=contactReportCompanyUsage" service="report"
     parameters="CompanyUsage" />
+  <Item name="CompanySource" label="=contactReportCompanySource" service="report"
+        parameters="CompanySourceReport" />
 </Entry>

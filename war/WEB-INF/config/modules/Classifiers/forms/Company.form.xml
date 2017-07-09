@@ -300,6 +300,11 @@
           <InputArea source="Notes" class="occupy-1" summarize="true" />
         </SimplePanel>
       </page>
+
+      <page module="Service" data="ServiceMaintenance">
+        <text>=svcMaintenance</text>
+        <ChildGrid name="ServiceMaintenance" relColumn="Company" />
+      </page>
     </TabbedPages>
   </FlowPanel>
 </f:Form>

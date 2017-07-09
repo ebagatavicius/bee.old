@@ -55,7 +55,7 @@
         <row>
           <Label text="=warehouses" style="&c1;" />
           <MultiSelector name="Warehouses" viewName="Warehouses" renderColumns="Code"
-                         choiceColumns="Code Name" newRowEnabled="false" editPopup="true"
+                         choiceColumns="Code Name" newRowEnabled="false" editWindow="modal"
                          style="&flt;" summarize="true" />
 
           <Label text="=itemTypes" />
@@ -67,7 +67,7 @@
         <row>
           <Label text="=suppliers" style="&c1;" />
           <MultiSelector name="Suppliers" viewName="Companies" renderColumns="Name"
-                         choiceColumns="Name TypeName" newRowEnabled="false" editPopup="true"
+                         choiceColumns="Name TypeName" newRowEnabled="false" editWindow="modal"
                          style="&flt;" summarize="true" />
 
           <Label text="=itemGroups" />
@@ -79,7 +79,7 @@
         <row>
           <Label text="=manufacturers" style="&c1;" />
           <MultiSelector name="Manufacturers" viewName="Companies" renderColumns="Name"
-                         choiceColumns="Name TypeName" newRowEnabled="false" editPopup="true"
+                         choiceColumns="Name TypeName" newRowEnabled="false" editWindow="modal"
                          style="&flt;" summarize="true" />
 
           <Label text="=itemCategories" />
@@ -100,7 +100,7 @@
 
           <Label text="=goods" />
           <MultiSelector name="Items" viewName="Items" filter="!(IsService)"
-                         renderColumns="Name Article" newRowEnabled="false" editPopup="true"
+                         renderColumns="Name Article" newRowEnabled="false" editWindow="modal"
                          style="&flt;" summarize="true" />
         </row>
 

@@ -428,11 +428,12 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
 
   public ResponseObject createInvoiceItems(RequestInfo reqInfo) {
     return createInvoiceItems(reqInfo, TBL_ORDERS, COL_DATES_START_DATE, Collections.singletonList(
-            Pair.of(TBL_ORDERS, sys.joinTables(TBL_ORDERS, TBL_ORDER_ITEMS, COL_ORDER))));
+            Pair.of(TBL_ORDERS, sys.joinTables(TBL_ORDERS, TBL_ORDER_ITEMS, COL_ORDER))), false);
   }
 
   public ResponseObject createInvoiceItems(RequestInfo reqInfo, String parentTable,
-      String startDateColumn, List<Pair<String, IsCondition>> additionalJoins) {
+      String startDateColumn, List<Pair<String, IsCondition>> additionalJoins,
+      boolean formatItemByServiceLogic) {
     Long saleId = BeeUtils.toLongOrNull(reqInfo.getParameter(COL_SALE));
     Long currency = BeeUtils.toLongOrNull(reqInfo.getParameter(COL_CURRENCY));
     Map<String, String> map =
@@ -485,6 +486,10 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
         .addExpr(vatExch, vatAlias)
         .addOrder(TBL_ORDER_ITEMS, sys.getIdName(TBL_ORDER_ITEMS));
 
+    if (formatItemByServiceLogic) {
+      srv.formatInvoiceItemsQuery(query);
+    }
+
     SimpleRowSet data = qs.getData(query);
     if (DataUtils.isEmpty(data)) {
       return ResponseObject.error(TBL_ORDER_ITEMS, idsQty, "not found");
@@ -494,12 +499,22 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
 
     for (SimpleRow row : data) {
       Long item = row.getLong(COL_INCOME_ITEM);
-      String article = row.getValue(COL_ITEM_ARTICLE);
+
+      String article;
+      if (formatItemByServiceLogic) {
+        article = srv.formatInvoiceItemArticleField(row);
+      } else {
+        article = row.getValue(COL_ITEM_ARTICLE);
+      }
 
       SqlInsert insert = new SqlInsert(TBL_SALE_ITEMS)
           .addConstant(COL_SALE, saleId)
           .addConstant(COL_ITEM_ARTICLE, article)
           .addConstant(COL_ITEM, item);
+
+      if (formatItemByServiceLogic) {
+        srv.formatInvoiceItemNoteField(insert, row);
+      }
 
       Boolean vatPerc = row.getBoolean(COL_TRADE_VAT_PERC);
       Double vat;
@@ -596,6 +611,7 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
         new SqlSelect()
             .addFields(ALS_RESERVATIONS, COL_ITEM_EXTERNAL_CODE, COL_WAREHOUSE_CODE)
             .addSum(ALS_RESERVATIONS, COL_RESERVED_REMAINDER, ALS_TOTAL_AMOUNT)
+            .setWhere(SqlUtils.notNull(ALS_RESERVATIONS, COL_RESERVED_REMAINDER))
             .addGroup(ALS_RESERVATIONS, COL_ITEM_EXTERNAL_CODE)
             .addGroup(ALS_RESERVATIONS, COL_WAREHOUSE_CODE)
             .addFrom(new SqlSelect()
@@ -610,8 +626,9 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
                         sys.joinTables(TBL_ORDERS, TBL_ORDER_ITEMS, COL_ORDER))
                     .addFromLeft(TBL_WAREHOUSES,
                         sys.joinTables(TBL_WAREHOUSES, TBL_ORDERS, COL_WAREHOUSE))
-                    .setWhere(SqlUtils.equals(TBL_ORDERS, COL_ORDERS_STATUS,
-                        OrdersStatus.APPROVED.ordinal())).addUnion(
+                    .setWhere(SqlUtils.and(SqlUtils.equals(TBL_ORDERS, COL_ORDERS_STATUS,
+                        OrdersStatus.APPROVED.ordinal()),
+                        SqlUtils.notNull(TBL_ORDER_ITEMS, COL_ORDER))).addUnion(
                     new SqlSelect()
                         .addFields(TBL_ITEMS, COL_ITEM_EXTERNAL_CODE)
                         .addFields(TBL_WAREHOUSES, COL_WAREHOUSE_CODE)
@@ -628,7 +645,9 @@ public class OrdersModuleBean implements BeeModule, HasTimerService {
                             VIEW_ORDER_CHILD_INVOICES, COL_SALE_ITEM))
                         .addFromLeft(TBL_SALES, sys.joinTables(TBL_SALES, TBL_SALE_ITEMS, COL_SALE))
                         .addFromLeft(TBL_ITEMS, sys.joinTables(TBL_ITEMS, TBL_SALE_ITEMS, COL_ITEM))
-                        .setWhere(SqlUtils.isNull(TBL_SALES, COL_TRADE_EXPORTED))),
+                        .setWhere(SqlUtils.and(SqlUtils.isNull(TBL_SALES, COL_TRADE_EXPORTED),
+                            SqlUtils.notNull(TBL_ORDER_ITEMS, COL_ORDER))))
+                    .addUnion(srv.formatExportReservationsQuery()),
                 ALS_RESERVATIONS);
 
     SimpleRowSet rs = qs.getData(select);

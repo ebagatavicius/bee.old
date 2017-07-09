@@ -8,7 +8,6 @@ import com.google.gwt.json.client.JSONNull;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.utils.JsonUtils;
 import com.butent.bee.shared.BeeConst;
@@ -104,12 +103,7 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
   public void ensureData() {
     if (getData() == null || getEffectiveFilter() != null) {
       setEffectiveFilter(null);
-      getHistogram(new RpcCallback<SimpleRowSet>() {
-        @Override
-        public void onSuccess(SimpleRowSet result) {
-          setData(result);
-        }
-      });
+      getHistogram(this::setData);
     }
   }
 
@@ -147,22 +141,19 @@ public class ListFilterSupplier extends AbstractFilterSupplier {
 
   @Override
   public void onRequest(final Element target, final Scheduler.ScheduledCommand onChange) {
-    getHistogram(new RpcCallback<SimpleRowSet>() {
-      @Override
-      public void onSuccess(SimpleRowSet result) {
-        setData(result);
+    getHistogram(result -> {
+      setData(result);
 
-        if (result.getNumberOfRows() <= 0) {
-          notifyInfo(messageAllEmpty(null));
+      if (result.getNumberOfRows() <= 0) {
+        notifyInfo(messageAllEmpty(null));
 
-        } else if (result.getNumberOfRows() == 1) {
-          SimpleRow row = result.getRow(0);
-          notifyInfo(messageOneValue(getCaption(row), row.getValue(countIndex)));
+      } else if (result.getNumberOfRows() == 1) {
+        SimpleRow row = result.getRow(0);
+        notifyInfo(messageOneValue(getCaption(row), row.getValue(countIndex)));
 
-        } else {
-          clearSelection();
-          openDialog(target, createWidget(), null, onChange);
-        }
+      } else {
+        clearSelection();
+        openDialog(target, createWidget(), null, onChange);
       }
     });
   }

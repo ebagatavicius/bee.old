@@ -19,7 +19,7 @@ public final class TransportUtils {
     Range<Value> period;
 
     if (from == null && to == null) {
-      JustDate min = TimeUtils.startOfMonth(TimeUtils.today(), -3);
+      JustDate min = TimeUtils.startOfMonth(TimeUtils.today(), -1);
       period = Range.atLeast(new DateValue(min));
 
     } else if (from == null) {

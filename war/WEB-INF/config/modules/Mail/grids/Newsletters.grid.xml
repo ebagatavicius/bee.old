@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<g:Grid 
-  xmlns="http://www.butent.com/column" 
-  xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui" 
-  
-  name="Newsletters" viewName="Newsletters"
-  caption="=mailNewsletters"
-  >
+<g:Grid
+    xmlns="http://www.butent.com/column"
+    xmlns:g="http://www.butent.com/grid"
+    xmlns:ui="http://www.butent.com/ui"
+
+    name="Newsletters" viewName="Newsletters" caption="=mailNewsletters"
+>
   <g:columns>
     <IdColumn name="Id" />
     <DataColumn name="Subject" visible="true" />
-    <CalcColumn name="FinishedDate" type="datetime" label="=date">
+    <CalcColumn name="SentCount" type="string" label="=mailMessageSentCount">
+      <dynStyle>
+        <ui:inline>color:red</ui:inline>
+        <ui:expression>row.CountSent &lt; row.CountContacts</ui:expression>
+      </dynStyle>
       <render>
-        <ui:expression>(row.CountEmptyDate &gt; 0) ? null : row.MaxDate</ui:expression>
+        <ui:expression>(+row.CountSent||0) + '/' + (+row.CountContacts||0)</ui:expression>
       </render>
     </CalcColumn>
+    <DataColumn name="MaxDate" label="=date" />
     <DataColumn name="Active" editInPlace="true" />
   </g:columns>
 </g:Grid>

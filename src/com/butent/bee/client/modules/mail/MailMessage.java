@@ -59,8 +59,10 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeRow;
+import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.RowChildren;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.SimpleRowSet.SimpleRow;
 import com.butent.bee.shared.data.filter.Filter;
@@ -71,8 +73,10 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.io.FileInfo;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
 import com.butent.bee.shared.modules.documents.DocumentConstants;
+import com.butent.bee.shared.modules.tasks.TaskUtils;
 import com.butent.bee.shared.modules.transport.TransportConstants;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.Orientation;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -80,6 +84,9 @@ import com.butent.bee.shared.utils.Codec;
 import com.butent.bee.shared.utils.EnumUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -266,6 +273,7 @@ public class MailMessage extends AbstractFormInterceptor {
   private final Map<String, Widget> widgets = new HashMap<>();
 
   private Relations relations;
+  private List<Long> taskIds = new ArrayList<>();
 
   public MailMessage() {
     this(null);
@@ -447,6 +455,51 @@ public class MailMessage extends AbstractFormInterceptor {
     if (widget instanceof Relations) {
       this.relations = (Relations) widget;
       relations.setSelectorHandler(new RelationsHandler());
+      relations.setInputRelationsInterceptor(new Relations.InputRelationsInterceptor() {
+        @Override
+        public void onClose() {
+          taskIds.clear();
+        }
+
+        @Override
+        public void onOpen() {
+          Queries.getRowSet(AdministrationConstants.VIEW_RELATIONS,
+              Collections.singletonList(COL_TASK), Filter.equals(COL_MESSAGE, messageId),
+              result -> taskIds.addAll(result.getDistinctLongs(result.getColumnIndex(COL_TASK))));
+        }
+
+        @Override
+        public void onSave() {
+          Collection<RowChildren> relList = relations.getRowChildren(false);
+
+          for (RowChildren rowChildren : relList) {
+            if (BeeUtils.same(COL_TASK, rowChildren.getChildColumn())) {
+              BeeRowSet rowSet = new BeeRowSet(TBL_TASK_EVENTS, Data.getColumns(TBL_TASK_EVENTS,
+                  Arrays.asList(COL_TASK, COL_PUBLISHER, COL_PUBLISH_TIME, COL_COMMENT,
+                      COL_EVENT)));
+
+              for (Long taskId : DataUtils.parseIdList(rowChildren.getChildrenIds())) {
+                if (!taskIds.contains(taskId)) {
+                  BeeRow row = rowSet.addEmptyRow();
+                  row.setValue(rowSet.getColumnIndex(COL_TASK), taskId);
+                  row.setValue(rowSet.getColumnIndex(COL_PUBLISHER),
+                      BeeKeeper.getUser().getUserId());
+                  row.setValue(rowSet.getColumnIndex(COL_PUBLISH_TIME), TimeUtils.nowMillis());
+                  row.setValue(rowSet.getColumnIndex(COL_COMMENT),
+                      TaskUtils.getInsertNote(Localized.dictionary().mailMessage(),
+                          BeeUtils.joinWords(getDate(), getSubject())));
+                  row.setValue(rowSet.getColumnIndex(COL_EVENT), TaskEvent.EDIT);
+                }
+              }
+              if (!DataUtils.isEmpty(rowSet)) {
+                Queries.insertRows(rowSet);
+              }
+              break;
+            }
+          }
+          taskIds.clear();
+        }
+      });
     }
   }
 

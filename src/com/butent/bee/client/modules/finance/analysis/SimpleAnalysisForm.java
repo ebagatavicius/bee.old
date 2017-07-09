@@ -6,9 +6,8 @@ import static com.butent.bee.shared.modules.finance.FinanceConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
+import com.butent.bee.client.animation.HasAnimatableActivity;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
-import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.layout.TabbedPages;
 import com.butent.bee.client.modules.finance.FinanceKeeper;
 import com.butent.bee.client.presenter.Presenter;
@@ -23,9 +22,7 @@ import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Service;
 import com.butent.bee.shared.communication.ResponseMessage;
-import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.BeeColumn;
-import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.html.builder.elements.Div;
@@ -33,6 +30,7 @@ import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.finance.Dimensions;
 import com.butent.bee.shared.modules.finance.FinanceUtils;
 import com.butent.bee.shared.modules.finance.analysis.AnalysisResults;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.UiConstants;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -101,52 +99,54 @@ public class SimpleAnalysisForm extends AbstractFormInterceptor {
       Button verify = new Button(Localized.dictionary().finAnalysisVerify());
       verify.addStyleName(STYLE_VERIFY);
 
-      verify.addClickHandler(event -> request(SVC_VERIFY_ANALYSIS_FORM));
-      header.addCommandItem(verify);
+      verify.addClickHandler(event -> request(verify, SVC_VERIFY_ANALYSIS_FORM));
+      header.addCommandItem(verify, TimeUtils.MILLIS_PER_SECOND * 10);
 
       Button calculate = new Button(Localized.dictionary().finAnalysisCalculate());
       calculate.addStyleName(STYLE_CALCULATE);
 
-      calculate.addClickHandler(event -> request(SVC_CALCULATE_ANALYSIS_FORM));
-      header.addCommandItem(calculate);
+      calculate.addClickHandler(event -> request(calculate, SVC_CALCULATE_ANALYSIS_FORM));
+      header.addCommandItem(calculate, TimeUtils.MILLIS_PER_MINUTE * 10);
     }
 
     super.afterCreatePresenter(presenter);
   }
 
-  private void request(final String service) {
+  private void request(HasAnimatableActivity command, String service) {
     if (DataUtils.hasId(getActiveRow())) {
-      getFormView().saveChanges(new RowCallback() {
-        @Override
-        public void onSuccess(BeeRow result) {
-          if (DataUtils.hasId(result)) {
-            ParameterList params = FinanceKeeper.createArgs(service);
-            params.addQueryItem(Service.VAR_ID, result.getId());
+      getFormView().saveChanges(command.getRowCallback(result -> {
+        if (DataUtils.hasId(result)) {
+          ParameterList params = FinanceKeeper.createArgs(service);
+          params.addQueryItem(Service.VAR_ID, result.getId());
 
-            BeeKeeper.getRpc().makeRequest(params, new ResponseCallback() {
-              @Override
-              public void onResponse(ResponseObject response) {
-                if (response.hasMessages()) {
-                  List<String> messages = response.getMessages().stream()
-                      .map(ResponseMessage::getMessage).collect(Collectors.toList());
+          BeeKeeper.getRpc().makeRequest(params, response -> {
+            if (response.hasMessages()) {
+              List<String> messages = response.getMessages().stream()
+                  .map(ResponseMessage::getMessage).collect(Collectors.toList());
 
-                  Global.showError(getStringValue(COL_ANALYSIS_NAME), messages);
+              Global.showError(getStringValue(COL_ANALYSIS_NAME), messages);
 
-                } else if (SVC_VERIFY_ANALYSIS_FORM.equals(service)) {
-                  Global.showInfo(getStringValue(COL_ANALYSIS_NAME),
-                      Collections.singletonList(Localized.dictionary().finAnalysisVerified()));
+            } else if (SVC_VERIFY_ANALYSIS_FORM.equals(service)) {
+              Global.showInfo(getStringValue(COL_ANALYSIS_NAME),
+                  Collections.singletonList(Localized.dictionary().finAnalysisVerified()));
 
-                } else if (response.hasResponse(AnalysisResults.class)) {
-                  showResults(AnalysisResults.restore(response.getResponseAsString()));
+            } else if (response.hasResponse(AnalysisResults.class)) {
+              showResults(AnalysisResults.restore(response.getResponseAsString()));
 
-                } else {
-                  Global.showError(Localized.dictionary().noData());
-                }
-              }
-            });
-          }
+            } else {
+              Global.showError(Localized.dictionary().noData());
+            }
+
+            command.stop();
+          });
+
+        } else {
+          command.stop();
         }
-      });
+      }));
+
+    } else {
+      command.stop();
     }
   }
 

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
-  xmlns:ui="http://www.butent.com/ui" xmlns:xi="http://www.w3.org/2001/XInclude"
+        xmlns:ui="http://www.butent.com/ui" xmlns:xi="http://www.w3.org/2001/XInclude"
 
-  name="AssessmentRequests" viewName="Assessments" caption="=trAssessmentRequests"
-  flexGrow="1" order="AssessmentID desc"
-  enableCopy="- Assessment OrderNo Cargo *Status *Date Number Manager ExpensesRegistered, Log"
-  filter="Status"
-  >
+        name="AssessmentRequests" viewName="Assessments" caption="=trAssessmentRequests"
+        flexGrow="1" order="AssessmentID desc"
+        enableCopy="- Assessment OrderNo Cargo *Status *Date Number Manager ExpensesRegistered, Log"
+        filter="Status"
+>
   <g:columns>
     <IdColumn name="ID" width="40" />
     <RelColumn name="Assessment" width="40" filterSupplier="value" editEnabled="true"
-      editViewName="Assessments" editSource="Assessment" module="Transport.Logistics"/>
+               editViewName="Assessments" editSource="Assessment" module="Transport.Logistics" />
     <DataColumn name="Date" width="110" />
     <DataColumn name="OrderNo" />
     <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
@@ -29,45 +29,32 @@
     <DataColumn name="Outsized" caption="=outsizedShort" width="15" sortable="false" />
     <DataColumn name="Dangerous" caption="=dangerousShort" width="15" sortable="false" />
 
-    <CalcColumn type="string" name="Vehicle" label="=trCarrierVehicle" searchBy="ForwarderVehicle">
-      <render>
-        <ui:function>
-          if (!row.MinVehicle) {
-            return row.MaxVehicle;
-
-          } else if(!row.MaxVehicle || row.MinVehicle == row.MaxVehicle) {
-            return row.MinVehicle;
-
-          } else {
-            return row.MinVehicle + ", " + row.MaxVehicle + (row.CntVehicle > 2 ? ", ...": "");
-          }
-        </ui:function>
-      </render>
-    </CalcColumn>
+    <PropColumn type="string" name="ForwarderVehicle" label="=trCarrierVehicle"
+                filterSupplier="custom" filterOptions="Assessments" />
 
     <CalcColumn name="Income" type="decimal" caption="=income" format="0.00">
       <render>
-        <ui:expression>Number(row.CargoIncomesTotal ? row.CargoIncomesTotal : 0)
-          + Number(row.ChildAssessmentsCargoIncomesTotal ? Number(row.ChildAssessmentsCargoIncomesTotal) : 0)</ui:expression>
+        <ui:expression>(+row.CargoIncomesTotal||0) + (+row.ChildAssessmentsCargoIncomesTotal||0)
+        </ui:expression>
       </render>
     </CalcColumn>
     <CalcColumn name="Expense" type="decimal" caption="=trExpenses" format="0.00">
       <render>
-        <ui:expression>Number(row.CargoExpensesTotal ? row.CargoExpensesTotal : 0)
-          + Number(row.ChildAssessmentsCargoExpensesTotal ? row.ChildAssessmentsCargoExpensesTotal : 0)</ui:expression>
+        <ui:expression>(+row.CargoExpensesTotal||0) + (+row.ChildAssessmentsCargoExpensesTotal||0)
+        </ui:expression>
       </render>
     </CalcColumn>
     <CalcColumn name="Profit" type="decimal" caption="=profit" format="0.00">
       <render>
-        <ui:expression>Number(row.CargoIncomesTotal ? row.CargoIncomesTotal : 0)
-          + Number(row.ChildAssessmentsCargoIncomesTotal ? row.ChildAssessmentsCargoIncomesTotal : 0)
-          - Number(row.CargoExpensesTotal ? row.CargoExpensesTotal : 0)
-          - Number(row.ChildAssessmentsCargoExpensesTotal ? row.ChildAssessmentsCargoExpensesTotal : 0)</ui:expression>
+        <ui:expression>(+row.CargoIncomesTotal||0) + (+row.ChildAssessmentsCargoIncomesTotal||0)
+          - (+row.CargoExpensesTotal||0) - (+row.ChildAssessmentsCargoExpensesTotal||0)
+        </ui:expression>
       </render>
     </CalcColumn>
   </g:columns>
 
-  <g:predefinedFilter name="new_answered" label="Nauji ir atsakyti" initial="true">
+  <g:predefinedFilter name="new_answered"
+                      label="=trAssessmentStatusNew+, +=trAssessmentStatusAnswered" initial="true">
     <g:column name="Status" value="0,1" />
   </g:predefinedFilter>
 </g:Grid>

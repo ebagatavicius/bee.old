@@ -10,6 +10,7 @@ import com.butent.bee.client.event.logical.CloseEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.style.StyleUtils;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.widget.CustomDiv;
 import com.butent.bee.client.widget.FaLabel;
 import com.butent.bee.client.widget.Image;
@@ -84,11 +85,7 @@ public class DialogBox extends Popup implements Printable {
   public void addAction(Action action, Widget widget) {
     if (widget != null) {
       if (action != null) {
-        if (BeeUtils.isEmpty(widget.getTitle())) {
-          widget.setTitle(action.getCaption());
-        }
-
-        StyleUtils.enableAnimation(action, widget);
+        UiHelper.initActionWidget(action, widget);
       }
 
       insertAction(BeeConst.UNDEF, widget);

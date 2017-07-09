@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid" xmlns:ui="http://www.butent.com/ui"
   
   name="Cities" viewName="Cities" caption="=cities"
-  maxColumnWidth="300" newRowPopup="true" editPopup="true"
+  maxColumnWidth="300" newRowWindow="modal" editWindow="modal"
   >
   <g:columns>
     <DataColumn name="Name" minWidth="200" visible="true" />

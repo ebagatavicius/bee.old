@@ -32,6 +32,8 @@
     <row>
       <Label for="Item" />
       <DataSelector source="Item" newRowEnabled="false" />
+      <text />
+      <CheckBox source="Blocked" />
     </row>
     <row>
       <Label for="PhotoFile" />
@@ -47,6 +49,12 @@
           <item>MAIN</item>
         </ListBox>
       </FlowPanel>
+    </row>
+    <row>
+      <Label for="OptionName2" />
+      <cell colSpan="3">
+        <InputText source="OptionName2" style="width:100%;" />
+      </cell>
     </row>
     <row>
       <Label text="=packet" data="ConfPacketOptions" />

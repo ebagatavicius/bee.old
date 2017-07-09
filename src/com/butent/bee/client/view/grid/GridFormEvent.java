@@ -4,6 +4,7 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 import com.butent.bee.shared.State;
+import com.butent.bee.shared.ui.WindowType;
 
 public class GridFormEvent extends GwtEvent<GridFormEvent.Handler> {
 
@@ -20,19 +21,23 @@ public class GridFormEvent extends GwtEvent<GridFormEvent.Handler> {
 
   private GridFormKind kind;
   private final State state;
-  private final boolean popup;
+  private final WindowType windowType;
 
-  public GridFormEvent(GridFormKind kind, State state, boolean popup) {
+  public GridFormEvent(GridFormKind kind, State state, WindowType windowType) {
     super();
 
     this.kind = kind;
     this.state = state;
-    this.popup = popup;
+    this.windowType = windowType;
   }
 
   @Override
   public Type<Handler> getAssociatedType() {
     return TYPE;
+  }
+
+  public WindowType getWindowType() {
+    return windowType;
   }
 
   public boolean isEdit() {
@@ -50,10 +55,6 @@ public class GridFormEvent extends GwtEvent<GridFormEvent.Handler> {
   public boolean isOpening() {
     return state == State.PENDING || state == State.OPEN || state == State.LOADING
         || state == State.LOADED;
-  }
-
-  public boolean isPopup() {
-    return popup;
   }
 
   @Override

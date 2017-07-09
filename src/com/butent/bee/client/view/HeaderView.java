@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.user.client.ui.IndexedPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.butent.bee.client.animation.HasAnimatableActivity;
 import com.butent.bee.client.output.Printable;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiOption;
@@ -30,9 +31,15 @@ public interface HeaderView extends View, IndexedPanel, Printable, HasClickHandl
 
   void addCommandItem(IdentifiableWidget widget);
 
+  void addCommandItem(HasAnimatableActivity widget, int duration);
+
   void clearCommandPanel();
 
   boolean enableCommandByStyleName(String styleName, boolean enable);
+
+  Widget getActionWidget(Action action);
+
+  Widget getCommandByStyleName(String styleName);
 
   int getHeight();
 
@@ -69,4 +76,14 @@ public interface HeaderView extends View, IndexedPanel, Printable, HasClickHandl
   void showRowId(IsRow row);
 
   void showRowMessage(Evaluator evaluator, IsRow row);
+
+  boolean startCommandByStyleName(String styleName, int duration);
+
+  boolean stopAction(Action action);
+
+  default boolean stopCommandByStyleName(String styleName) {
+    return stopCommandByStyleName(styleName, false);
+  }
+
+  boolean stopCommandByStyleName(String styleName, boolean disableAnimation);
 }

@@ -585,6 +585,15 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
     }
   }
 
+  @Override
+  public void hasAnyRows(Filter filter, Consumer<Boolean> callback) {
+    if (Objects.equals(getDataProvider().getUserFilter(), filter)) {
+      callback.accept(!getGridView().isEmpty());
+    } else {
+      getDataProvider().hasAnyRows(filter, callback);
+    }
+  }
+
   public boolean hasFilter() {
     return getDataProvider().hasFilter();
   }
@@ -988,12 +997,8 @@ public class GridPresenter extends AbstractPresenter implements ReadyForInsertEv
                     long from = rows.get(1 - index).getId();
                     long into = rows.get(index).getId();
 
-                    Queries.mergeRows(getViewName(), from, into, new Queries.IntCallback() {
-                      @Override
-                      public void onSuccess(Integer result) {
-                        getGridView().getGrid().clearSelection();
-                      }
-                    });
+                    Queries.mergeRows(getViewName(), from, into,
+                        result -> getGridView().getGrid().clearSelection());
                   }
                 }, BeeConst.UNDEF, null, null, null, null,
                 (widget, name) -> {

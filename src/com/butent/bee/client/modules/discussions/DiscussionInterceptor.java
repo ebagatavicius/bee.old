@@ -29,6 +29,7 @@ import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.shared.data.event.DataChangeEvent;
 import com.butent.bee.client.dialog.DialogBox;
 import com.butent.bee.client.dom.DomUtils;
@@ -115,8 +116,7 @@ class DiscussionInterceptor extends AbstractFormInterceptor {
       int row = table.getRowCount();
       int col = 0;
 
-      faSave.setTitle(Action.SAVE.getCaption());
-      StyleUtils.enableAnimation(Action.SAVE, faSave);
+      UiHelper.initActionWidget(Action.SAVE, faSave);
 
       insertAction(BeeConst.INT_TRUE, faSave);
 

@@ -14,7 +14,6 @@ import static com.butent.bee.shared.modules.cars.CarsConstants.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.dialog.ConfirmationCallback;
 import com.butent.bee.client.dialog.Icon;
@@ -37,9 +36,7 @@ import com.butent.bee.client.widget.InputText;
 import com.butent.bee.client.widget.Label;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.Holder;
-import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.CssUnit;
-import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.exceptions.BeeException;
 import com.butent.bee.shared.font.FontAwesome;
@@ -157,20 +154,17 @@ public class SpecificationBuilder implements InputCallback {
     this.template = template;
     this.callback = callback;
 
-    Queries.getRowSet(TBL_CONF_PRICELIST, null, new Queries.RowSetCallback() {
-      @Override
-      public void onSuccess(BeeRowSet result) {
-        Branch tree = new Branch(null, null, null, null);
-        Multimap<Long, Branch> hierarchy = LinkedHashMultimap.create();
+    Queries.getRowSet(TBL_CONF_PRICELIST, null, result -> {
+      Branch tree = new Branch(null, null, null, null);
+      Multimap<Long, Branch> hierarchy = LinkedHashMultimap.create();
 
-        for (int i = 0; i < result.getNumberOfRows(); i++) {
-          hierarchy.put(result.getLong(i, COL_BRANCH), new Branch(result.getRow(i).getId(),
-              result.getString(i, COL_BRANCH_NAME), result.getString(i, COL_FILE_HASH),
-              result.getBoolean(i, COL_BLOCKED)));
-        }
-        fillTree(tree, hierarchy);
-        setBranch(tree);
+      for (int i = 0; i < result.getNumberOfRows(); i++) {
+        hierarchy.put(result.getLong(i, COL_BRANCH), new Branch(result.getRow(i).getId(),
+            result.getString(i, COL_BRANCH_NAME), result.getString(i, COL_FILE_HASH),
+            result.getBoolean(i, COL_BLOCKED)));
       }
+      fillTree(tree, hierarchy);
+      setBranch(tree);
     });
     Popup dialog;
 
@@ -233,27 +227,25 @@ public class SpecificationBuilder implements InputCallback {
           selectedOptions.add(BeeUtils.notEmpty(BeeUtils
                   .notEmpty(configuration.getRelationDescription(option, specification.getBundle()),
                       configuration.getOptionDescription(option), option.getDescription()),
-              option.getName()));
+              BeeUtils.joinWords(option.getCode(), option.getName())));
         }
       }
-      specification.setDescription(BeeUtils.join("<br><br><b>"
-              + Localized.dictionary().additionalEquipment() + "</b><br>",
-          specification.getDescription(), BeeUtils.join("<br>", selectedOptions)));
-
+      if (!BeeUtils.isEmpty(selectedOptions)) {
+        specification.setDescription(BeeUtils.join("<br><br><b>"
+                + Localized.dictionary().additionalEquipment() + "</b><br>",
+            specification.getDescription(), BeeUtils.join("<br>", selectedOptions)));
+      }
       specification.setCriteria(collectCriteria(configuration));
 
       ParameterList args = CarsKeeper.createSvcArgs(SVC_SAVE_OBJECT);
       args.addDataItem(COL_OBJECT, Codec.beeSerialize(specification));
 
-      BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
-        @Override
-        public void onResponse(ResponseObject response) {
-          response.notify(BeeKeeper.getScreen());
+      BeeKeeper.getRpc().makePostRequest(args, response -> {
+        response.notify(BeeKeeper.getScreen());
 
-          if (!response.hasErrors()) {
-            specification.setId(response.getResponseAsLong());
-            callback.accept(specification);
-          }
+        if (!response.hasErrors()) {
+          specification.setId(response.getResponseAsLong());
+          callback.accept(specification);
         }
       });
     } else {
@@ -470,6 +462,7 @@ public class SpecificationBuilder implements InputCallback {
   }
 
   private void refresh() {
+    renderDescription();
     Configuration configuration = currentBranch.getConfiguration();
     int scroll = 0;
 
@@ -721,7 +714,10 @@ public class SpecificationBuilder implements InputCallback {
         defaults.add(description);
       } else {
         for (Option option : getAvailableOptions().values()) {
-          if (!option.getDimension().isRequired() && configuration.isDefault(option, bundle)) {
+          if (!option.getDimension().isRequired() && configuration.isDefault(option, bundle)
+              && Collections.disjoint(configuration.getDeniedOptions(option),
+              specification.getOptions())) {
+
             if (!Objects.equals(option.getDimension(), dimension)) {
               dimension = option.getDimension();
               defaults.add("<i>" + dimension + ":</i>");
@@ -729,7 +725,7 @@ public class SpecificationBuilder implements InputCallback {
             defaults.add(BeeUtils.notEmpty(BeeUtils
                     .notEmpty(configuration.getRelationDescription(option, bundle),
                         configuration.getOptionDescription(option), option.getDescription()),
-                option.getName()));
+                BeeUtils.joinWords(option.getCode(), option.getName())));
           }
         }
         if (!defaults.isEmpty()) {
@@ -765,15 +761,12 @@ public class SpecificationBuilder implements InputCallback {
         ParameterList args = CarsKeeper.createSvcArgs(SVC_GET_CONFIGURATION);
         args.addDataItem(COL_BRANCH, currentBranch.getId());
 
-        BeeKeeper.getRpc().makePostRequest(args, new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            response.notify(BeeKeeper.getScreen());
+        BeeKeeper.getRpc().makePostRequest(args, response -> {
+          response.notify(BeeKeeper.getScreen());
 
-            if (!response.hasErrors()) {
-              currentBranch.setConfiguration(Configuration.restore(response.getResponseAsString()));
-              setBundle(null);
-            }
+          if (!response.hasErrors()) {
+            currentBranch.setConfiguration(Configuration.restore(response.getResponseAsString()));
+            setBundle(null);
           }
         });
         return;
@@ -808,7 +801,6 @@ public class SpecificationBuilder implements InputCallback {
     } else {
       specification.setBundle(bundle, BeeUtils.toIntOrNull(configuration.getBundlePrice(bundle)));
     }
-    renderDescription();
     refresh();
   }
 
@@ -850,7 +842,7 @@ public class SpecificationBuilder implements InputCallback {
         if (!opt.getDimension().isRequired()
             && currentBranch.getConfiguration().isDefault(opt, specification.getBundle())) {
           defaults.add(opt);
-          toggle.put(opt, true);
+          toggle.put(opt, null);
         }
       }
       collectRestrictions(allOptions, option, on, toggle);
@@ -867,7 +859,11 @@ public class SpecificationBuilder implements InputCallback {
               && (!dimension.isRequired() || !Objects.equals(dimension, opt.getDimension()))
               && !Objects.equals(specification.getOptions().contains(opt), action)) {
 
-            msgs.add(BeeUtils.joinWords(action ? "+" : "-", opt));
+            msgs.add(BeeUtils.joinWords(action
+                ? "<span style=\"font-family:" + FontAwesome.class.getSimpleName()
+                + "; color:green;\">" + FontAwesome.PLUS_CIRCLE.getCode() + "</span>"
+                : "<span style=\"font-family:" + FontAwesome.class.getSimpleName()
+                + "; color:red;\">" + FontAwesome.BAN.getCode() + "</span>", opt));
           }
         }
       }

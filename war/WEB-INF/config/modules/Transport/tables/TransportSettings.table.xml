@@ -177,5 +177,7 @@
 
     <Boolean name="SsOrderCustomer" />
     <Boolean name="SsOrderNo" />
+
+    <Boolean name="FilterDependsOnData" />
   </Fields>
 </Table>

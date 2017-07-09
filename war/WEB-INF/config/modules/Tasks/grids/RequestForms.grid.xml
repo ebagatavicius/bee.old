@@ -3,7 +3,7 @@
   
   name="RequestForms" viewName="RequestForms" caption="=crmRequestForms"
   minColumnWidth="120"
-  newRowPopup="true"
+  newRowWindow="modal"
   >
   <g:columns>
     <DataColumn name="Name" visible="true" />

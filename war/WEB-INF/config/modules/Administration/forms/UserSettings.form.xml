@@ -1,57 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Form [
+    <!ENTITY formFlow "min-width: 470px; padding: 5px;">
 
-  <!ENTITY formFlow "min-width: 470px; padding: 5px; ">
+    <!ENTITY inline "display: inline-block;">
+    <!ENTITY inputStyle "width: 225px; margin: 4px;">
+    <!ENTITY labelStyle "width: 125px; &wStyleRight;">
+    <!ENTITY notifySuffixLabelStyle "text-align: left; &wStylePadding;">
+    <!ENTITY notifyMailLabelStyle "width: 275px;  &wStyleRight;">
 
-  <!ENTITY inline "display: inline-block;">
-  <!ENTITY inputStyle "width: 225px; margin: 4px;">
-  <!ENTITY labelStyle "width: 125px; &wStyleRight;">
-  <!ENTITY notifySuffixLabelStyle
-          "text-align: left; &wStylePadding;">
-  <!ENTITY notifyMailLabelStyle "width: 275px;  &wStyleRight;">
+    <!ENTITY rolesStyle "padding: 1px 10px;">
+    <!ENTITY tabbedPages "min-height: 400px;">
+    <!ENTITY tabbedFlowCheckStyle "text-align: left; &wStylePadding;">
+    <!ENTITY tabbedFlowInputStyle "width: 100px; margin: 4px;">
+    <!ENTITY uiSettingsLabelStyle "width: 225px; &wStyleRight;">
 
-  <!ENTITY rolesStyle "padding: 1px 10px;">
-  <!ENTITY tabbetPages "min-height: 400px; ">
-  <!ENTITY tabbedFlowCheckStyle "text-align: left; &wStylePadding;">
-  <!ENTITY tabbedFlowInputStyle "width: 100px; margin: 4px;">
-  <!ENTITY uiSettingsLabelStyle "width: 225px;  &wStyleRight;">
+    <!ENTITY wStylePadding "padding: 4px; line-height: 25px;">
+    <!ENTITY wStyleRight "text-align: right; &wStylePadding;">
 
-  <!ENTITY wStylePadding "padding: 4px; line-height: 25px;">
-  <!ENTITY wStyleRight "text-align: right; &wStylePadding;">
-]>
-<f:Form xmlns="http://www.butent.com/widget"
-  xmlns:f="http://www.butent.com/form"
-  xmlns:ui="http://www.butent.com/ui"
-  name="UserSettings"
-  viewName="UserSettings"
-  caption="=userProfile"
-  width="760" widthUnit="px"
-  height="580" heightUnit="px"
-  >
+    <!ENTITY inputSpinner "width: 100px;">
+    ]>
+<f:Form xmlns="http://www.butent.com/widget" xmlns:f="http://www.butent.com/form"
+        xmlns:ui="http://www.butent.com/ui"
+
+        name="UserSettings" viewName="UserSettings" caption="=userProfile"
+        width="760" widthUnit="px" height="580" heightUnit="px"
+>
   <FlowPanel style="&formFlow;">
 
     <FlowPanel style="&inline;">
       <FlowPanel for="Login" class="flexBox-horizontal">
-          <Label for="Login" style="&labelStyle;"/>
-          <InputText source="Login" class="bee-output" readOnly="true" style="&inputStyle;"/>
+        <Label for="Login" style="&labelStyle;" />
+        <InputText source="Login" class="bee-output" readOnly="true" style="&inputStyle;" />
       </FlowPanel>
 
       <FlowPanel for="CompanyPerson" class="flexBox-horizontal">
-        <Label text="=personFullName" for="CompanyPerson" style="&labelStyle;"/>
-        <DataSelector source="CompanyPerson" editSource="Person" editPopup="true"
-                      renderColumns="FirstName LastName"  style="&inputStyle;" />
+        <Label text="=personFullName" for="CompanyPerson" style="&labelStyle;" />
+        <DataSelector source="CompanyPerson" editSource="Person" editWindow="modal"
+                      renderColumns="FirstName LastName" style="&inputStyle;" />
       </FlowPanel>
     </FlowPanel>
 
     <FlowPanel style="&inline;">
       <FlowPanel for="CompanyName" class="flexBox-horizontal">
         <Label text="=company" for="CompanyName" style="&labelStyle;" />
-        <InputText source="CompanyName" class="bee-output" readOnly="true" style="&inputStyle;"/>
+        <InputText source="CompanyName" class="bee-output" readOnly="true" style="&inputStyle;" />
       </FlowPanel>
 
-      <FlowPanel for="PositionName"  class="flexBox-horizontal">
-        <Label text="=personPosition" for="PositionName" style="&labelStyle;"/>
-        <InputText source="PositionName" class="bee-output"  style="&inputStyle;" />
+      <FlowPanel for="PositionName" class="flexBox-horizontal">
+        <Label text="=personPosition" for="PositionName" style="&labelStyle;" />
+        <InputText source="PositionName" class="bee-output" style="&inputStyle;" />
       </FlowPanel>
     </FlowPanel>
 
@@ -59,11 +56,11 @@
       <FlowPanel data="UserRoles" class="flexBox-horizontal">
         <Label text="=roles" style="&labelStyle;" />
         <Label name="UserRoles" class="bee-TextBox bee-output"
-               style="&inputStyle; &rolesStyle;"/>
+               style="&inputStyle; &rolesStyle;" />
       </FlowPanel>
     </FlowPanel>
 
-    <TabbedPages class="flexible" style="&tabbetPages;">
+    <TabbedPages class="flexible" style="&tabbedPages;">
       <page>
         <text>=feeds</text>
         <ChildGrid class="flexible" name="UserFeeds" source="User" relColumn="User" />
@@ -71,17 +68,17 @@
 
       <page module="Mail">
         <text>=mailNotify</text>
-        <FlowPanel class="flexBox-vertical" >
+        <FlowPanel class="flexBox-vertical">
           <CheckBox source="MailAssignedTasks" module="Tasks" summarize="true"
-                    style="&tabbedFlowCheckStyle;"/>
+                    style="&tabbedFlowCheckStyle;" />
           <CheckBox source="MailNewAnnouncements" module="Discussions" summarize="true"
                     style="&tabbedFlowCheckStyle;" />
           <CheckBox source="MailNewDiscussions" module="Discussions" summarize="true"
-                    style="&tabbedFlowCheckStyle;"/>
+                    style="&tabbedFlowCheckStyle;" />
           <hr />
           <FlowPanel for="CompanyActionRemindBefore" class="flexBox-horizontal">
-            <Label for="CompanyActionRemindBefore" style="&notifyMailLabelStyle;"/>
-            <InputInteger source="CompanyActionRemindBefore"  style="&tabbedFlowInputStyle;"
+            <Label for="CompanyActionRemindBefore" style="&notifyMailLabelStyle;" />
+            <InputInteger source="CompanyActionRemindBefore" style="&tabbedFlowInputStyle;"
                           placeholder="2" summarize="true">
               <validation>
                 <ui:function>
@@ -94,61 +91,86 @@
               </validation>
             </InputInteger>
             <Label for="CompanyActionRemindBefore" text="=unitHourShort"
-                   style="&notifySuffixLabelStyle;"/>
+                   style="&notifySuffixLabelStyle;" />
           </FlowPanel>
 
           <FlowPanel for="TasksMailingTime" class="flexBox-horizontal">
-            <Label for="TasksMailingTime" style="&notifyMailLabelStyle;"/>
+            <Label for="TasksMailingTime" style="&notifyMailLabelStyle;" />
             <InputTimeOfDay source="TasksMailingTime" step="30"
                             style="&tabbedFlowInputStyle;" placeholder="8:00" summarize="true" />
             <Label for="TasksMailingTime" text="=unitHourShort"
-                   style="&notifySuffixLabelStyle;"/>
+                   style="&notifySuffixLabelStyle;" />
           </FlowPanel>
         </FlowPanel>
       </page>
 
       <page>
         <text>=userInterface</text>
-        <FlowPanel class="flexBox-vertical" >
-
+        <FlowPanel>
           <FlowPanel class="flexBox-horizontal">
-            <Label for="UiTheme" style="&labelStyle;"/>
+            <Label for="UiTheme" style="&labelStyle;" />
             <DataSelector source="UiTheme" style="&inputStyle;" summarize="true" />
 
             <Label for="DateFormat" style="&labelStyle;" />
             <ListBox source="DateFormat" summarize="true" />
           </FlowPanel>
 
-          <CheckBox source="OpenInNewTab" summarize="true" style="&tabbedFlowCheckStyle;" />
-          <CheckBox source="WorkspaceContinue" summarize="true" style="&tabbedFlowCheckStyle;"/>
-          <CheckBox name="ShowNewMessagesNotifier" source="ShowNewMessagesNotifier" summarize="true" style="&tabbedFlowCheckStyle;"/>
-          <CheckBox name="Assistant" source="Assistant" summarize="true" style="&tabbedFlowCheckStyle;"/>
+          <Table kind="custom" style="margin: 2vh 0 0 2em;" cellStyle="padding-top: 4px;">
+            <col index="0" cellStyle="padding-right: 3em;" />
+            <col index="1" kind="label" />
 
-          <hr />
+            <row>
+              <CheckBox source="OpenInNewTab" summarize="true" />
 
-          <FlowPanel for="ClickSensitivityMillis" class="flexBox-horizontal">
-            <Label for="ClickSensitivityMillis" style="&uiSettingsLabelStyle;" />
-            <InputSpinner source="ClickSensitivityMillis" minValue="0" maxValue="1000" step="50"
-                          style="&tabbedFlowInputStyle;" summarize="true"/>
-          </FlowPanel>
+              <Label for="ClickSensitivityMillis" />
+              <InputSpinner source="ClickSensitivityMillis" minValue="0" maxValue="1000" step="50"
+                            style="&inputSpinner;" summarize="true" />
+            </row>
 
-          <FlowPanel for="ClickSensitivityDistance" class="flexBox-horizontal">
-            <Label for="ClickSensitivityDistance" style="&uiSettingsLabelStyle;" />
-            <InputSpinner source="ClickSensitivityDistance" minValue="0" maxValue="99"
-                          style="&tabbedFlowInputStyle;" summarize="true"/>
-          </FlowPanel>
+            <row>
+              <CheckBox source="WorkspaceContinue" summarize="true" />
 
-          <FlowPanel for="NewsRefreshIntervalSeconds"  class="flexBox-horizontal">
-            <Label for="NewsRefreshIntervalSeconds" style="&uiSettingsLabelStyle;"/>
-            <InputSpinner source="NewsRefreshIntervalSeconds" minValue="0" maxValue="1000"
-                          step="10" style="&tabbedFlowInputStyle;" summarize="true" />
-          </FlowPanel>
+              <Label for="ClickSensitivityDistance" />
+              <InputSpinner source="ClickSensitivityDistance" minValue="0" maxValue="99"
+                            style="&inputSpinner;" summarize="true" />
+            </row>
 
-          <FlowPanel for="LoadingStateDelayMillis" class="flexBox-horizontal">
-            <Label for="LoadingStateDelayMillis" style="&uiSettingsLabelStyle;" />
-            <InputSpinner source="LoadingStateDelayMillis" minValue="0" maxValue="3000" step="50"
-                          style="&tabbedFlowInputStyle;" summarize="true"/>
-          </FlowPanel>
+            <row>
+              <CheckBox name="ShowNewMessagesNotifier" source="ShowNewMessagesNotifier"
+                        summarize="true" />
+
+              <Label for="ActionSensitivityMillis" />
+              <InputSpinner source="ActionSensitivityMillis" minValue="0" maxValue="2000" step="100"
+                            style="&inputSpinner;" summarize="true" />
+            </row>
+
+            <row>
+              <CheckBox name="Assistant" source="Assistant" summarize="true" />
+
+              <Label for="NewsRefreshIntervalSeconds" />
+              <InputSpinner source="NewsRefreshIntervalSeconds" minValue="0" maxValue="1000"
+                            step="10" style="&inputSpinner;" summarize="true" />
+            </row>
+
+            <row>
+              <text />
+
+              <Label for="LoadingStateDelayMillis" />
+              <InputSpinner source="LoadingStateDelayMillis" minValue="0" maxValue="3000" step="50"
+                            style="&inputSpinner;" summarize="true" />
+
+            </row>
+
+            <row>
+              <text />
+
+              <Label for="ShowGridFilterCommand" />
+              <ListBox source="ShowGridFilterCommand" summarize="true">
+                <item>=no</item>
+                <item>=yes</item>
+              </ListBox>
+            </row>
+          </Table>
         </FlowPanel>
       </page>
 
@@ -156,7 +178,7 @@
         <text>CSS</text>
         <SimplePanel>
           <InputArea source="Style" class="occupy-1" style="font-family: monospace;"
-            summarize="true" />
+                     summarize="true" />
         </SimplePanel>
       </page>
     </TabbedPages>

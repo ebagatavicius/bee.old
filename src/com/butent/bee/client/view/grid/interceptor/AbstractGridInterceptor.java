@@ -18,6 +18,7 @@ import com.butent.bee.client.style.StyleProvider;
 import com.butent.bee.client.ui.FormFactory.WidgetDescriptionCallback;
 import com.butent.bee.client.ui.IdentifiableWidget;
 import com.butent.bee.client.ui.UiOption;
+import com.butent.bee.client.view.HeaderView;
 import com.butent.bee.client.view.add.ReadyForInsertEvent;
 import com.butent.bee.client.view.edit.EditEndEvent;
 import com.butent.bee.client.view.edit.EditStartEvent;
@@ -304,6 +305,11 @@ public abstract class AbstractGridInterceptor implements GridInterceptor {
   @Override
   public ColumnHeader getHeader(String columnName, String caption) {
     return null;
+  }
+
+  @Override
+  public HeaderView getHeaderView() {
+    return (getGridPresenter() == null) ? null : getGridPresenter().getHeader();
   }
 
   @Override

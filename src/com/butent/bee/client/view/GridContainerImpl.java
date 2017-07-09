@@ -48,6 +48,7 @@ import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.ui.NavigationOrigin;
 import com.butent.bee.shared.ui.UiConstants;
+import com.butent.bee.shared.ui.WindowType;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -215,8 +216,7 @@ public class GridContainerImpl extends Split implements GridContainerView,
         FaLabel autoFit = new FaLabel(Action.AUTO_FIT.getIcon(), BeeConst.CSS_CLASS_PREFIX
             + Action.AUTO_FIT.getStyleSuffix());
 
-        StyleUtils.enableAnimation(Action.AUTO_FIT, autoFit);
-        autoFit.setTitle(Action.AUTO_FIT.getCaption());
+        UiHelper.initActionWidget(Action.AUTO_FIT, autoFit);
 
         autoFit.addClickHandler(event -> getGridView().getGrid().autoFit(
             !EventUtils.hasModifierKey(event.getNativeEvent())));
@@ -513,7 +513,7 @@ public class GridContainerImpl extends Split implements GridContainerView,
     if (event.isOpening() || event.isClosing()) {
       setEditing(event.isOpening());
 
-      if (!event.isPopup()) {
+      if (event.getWindowType() != WindowType.MODAL) {
         showChildren(event.isClosing());
 
         if (!getGridView().hasChildUi()) {

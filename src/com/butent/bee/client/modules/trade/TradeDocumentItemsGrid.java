@@ -11,11 +11,8 @@ import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
-import com.butent.bee.client.communication.RpcCallback;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
-import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dialog.ModalGrid;
 import com.butent.bee.client.event.EventUtils;
@@ -39,7 +36,6 @@ import com.butent.bee.shared.Holder;
 import com.butent.bee.shared.Latch;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.Service;
-import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.css.CssUnit;
 import com.butent.bee.shared.data.BeeColumn;
 import com.butent.bee.shared.data.BeeRow;
@@ -60,13 +56,13 @@ import com.butent.bee.shared.data.value.DecimalValue;
 import com.butent.bee.shared.data.value.Value;
 import com.butent.bee.shared.data.view.Order;
 import com.butent.bee.shared.data.view.RowInfo;
-import com.butent.bee.shared.data.view.RowInfoList;
 import com.butent.bee.shared.i18n.Localized;
 import com.butent.bee.shared.modules.trade.OperationType;
 import com.butent.bee.shared.modules.trade.TradeDiscountMode;
 import com.butent.bee.shared.modules.trade.TradeDocumentPhase;
 import com.butent.bee.shared.modules.trade.TradeDocumentSums;
 import com.butent.bee.shared.time.DateTime;
+import com.butent.bee.shared.time.TimeUtils;
 import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.ui.GridDescription;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -245,14 +241,15 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
       stockCommand.addStyleName(STYLE_SHOW_ITEM_STOCK_COMMAND);
       stockCommand.setEnabled(false);
 
-      presenter.getHeader().addCommandItem(stockCommand);
+      presenter.getHeader().addCommandItem(stockCommand, TimeUtils.MILLIS_PER_SECOND * 10);
 
       Button relatedDocumentsCommand = new Button(Localized.dictionary().trdRelatedDocuments(),
           event -> getRelatedDocuments());
       relatedDocumentsCommand.addStyleName(STYLE_SHOW_RELATED_DOCUMENTS_COMMAND);
       relatedDocumentsCommand.setEnabled(false);
 
-      presenter.getHeader().addCommandItem(relatedDocumentsCommand);
+      presenter.getHeader().addCommandItem(relatedDocumentsCommand,
+          TimeUtils.MILLIS_PER_SECOND * 10);
 
       if (BeeKeeper.getUser().canEditData(getViewName())) {
         Button priceCommand = new Button(Localized.dictionary().recalculateTradeItemPriceCaption(),
@@ -521,21 +518,18 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
 
     Order order = Order.ascending(ALS_STOCK_PRIMARY_DATE, COL_TRADE_DATE);
 
-    Queries.getRowSet(VIEW_TRADE_STOCK, null, filter, order, new Queries.RowSetCallback() {
-      @Override
-      public void onSuccess(BeeRowSet rowSet) {
-        Multimap<Long, IsRow> stock = ArrayListMultimap.create();
+    Queries.getRowSet(VIEW_TRADE_STOCK, null, filter, order, rowSet -> {
+      Multimap<Long, IsRow> stock = ArrayListMultimap.create();
 
-        if (!DataUtils.isEmpty(rowSet)) {
-          int itemIndex = rowSet.getColumnIndex(COL_ITEM);
+      if (!DataUtils.isEmpty(rowSet)) {
+        int itemIndex = rowSet.getColumnIndex(COL_ITEM);
 
-          for (IsRow row : rowSet) {
-            stock.put(row.getLong(itemIndex), row);
-          }
+        for (IsRow row : rowSet) {
+          stock.put(row.getLong(itemIndex), row);
         }
-
-        consumer.accept(stock);
       }
+
+      consumer.accept(stock);
     });
   }
 
@@ -614,6 +608,8 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
     final Holder<Integer> counter = Holder.of(0);
 
     if (TradeUtils.documentPriceIsParentCost(parentRow)) {
+      startCommand(STYLE_PRICE_CALCULATION_COMMAND, TimeUtils.MILLIS_PER_MINUTE);
+
       for (IsRow row : rows) {
         setPriceToParentCost(row, date, currency,
             changed -> afterRecalculatePrice(changed, latch, counter));
@@ -642,6 +638,8 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
     Long documentWarehouse = TradeUtils.getWarehouseForPriceCalculation(parentRow, operationType);
 
     TradeDiscountMode discountMode = TradeUtils.getDocumentDiscountMode(parentRow);
+
+    startCommand(STYLE_PRICE_CALCULATION_COMMAND, TimeUtils.MILLIS_PER_MINUTE);
 
     for (IsRow row : rows) {
       Double quantity = row.getDouble(getDataIndex(COL_TRADE_ITEM_QUANTITY));
@@ -726,15 +724,12 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
         }
 
         Queries.update(getViewName(), row.getId(), row.getVersion(), columns, oldValues, newValues,
-            null, new RowCallback() {
-              @Override
-              public void onSuccess(BeeRow result) {
-                RowUpdateEvent.fire(BeeKeeper.getBus(), getViewName(), result);
-                getGridView().getGrid().addUpdatedSources(row.getId(),
-                    DataUtils.getColumnNames(columns));
+            null, result -> {
+              RowUpdateEvent.fire(BeeKeeper.getBus(), getViewName(), result);
+              getGridView().getGrid().addUpdatedSources(row.getId(),
+                  DataUtils.getColumnNames(columns));
 
-                callback.accept(true);
-              }
+              callback.accept(true);
             });
 
       } else {
@@ -787,6 +782,8 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
     if (latch.isOpen()) {
       getGridView().notifyInfo(
           Localized.dictionary().recalculateTradeItemPriceNotification(counter.get()));
+
+      endCommand(STYLE_PRICE_CALCULATION_COMMAND, true);
     }
   }
 
@@ -907,24 +904,21 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
       }
     }
 
-    Queries.insertRows(rowSet, new RpcCallback<RowInfoList>() {
-      @Override
-      public void onSuccess(RowInfoList result) {
-        if (result != null && result.size() == rowSet.getNumberOfRows()) {
-          for (int i = 0; i < result.size(); i++) {
-            BeeRow row = rowSet.getRow(i);
-            RowInfo rowInfo = result.get(i);
+    Queries.insertRows(rowSet, result -> {
+      if (result != null && result.size() == rowSet.getNumberOfRows()) {
+        for (int i = 0; i < result.size(); i++) {
+          BeeRow row = rowSet.getRow(i);
+          RowInfo rowInfo = result.get(i);
 
-            row.setId(rowInfo.getId());
-            row.setVersion(rowInfo.getVersion());
-          }
-
-          tdsSupplier.get().addItems(rowSet);
-          fireTdsChange(true);
+          row.setId(rowInfo.getId());
+          row.setVersion(rowInfo.getVersion());
         }
 
-        DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getViewName(), parentRow.getId());
+        tdsSupplier.get().addItems(rowSet);
+        fireTdsChange(true);
       }
+
+      DataChangeEvent.fireRefresh(BeeKeeper.getBus(), getViewName(), parentRow.getId());
     });
   }
 
@@ -951,7 +945,12 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
             Global.showModalWidget(caption, widget, target);
           }
         }
+
+        endCommand(STYLE_SHOW_ITEM_STOCK_COMMAND);
       });
+
+    } else {
+      endCommand(STYLE_SHOW_ITEM_STOCK_COMMAND);
     }
   }
 
@@ -967,20 +966,22 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
         parameters.addQueryItem(COL_TRADE_ITEM_PARENT, parent);
       }
 
-      BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallback() {
-        @Override
-        public void onResponse(ResponseObject response) {
-          if (Objects.equals(id, getActiveRowId())) {
-            if (response.hasResponse()) {
-              BeeRowSet rowSet = BeeRowSet.restore(response.getResponseAsString());
-              showRelatedDocuments(rowSet);
+      BeeKeeper.getRpc().makeRequest(parameters, response -> {
+        if (Objects.equals(id, getActiveRowId())) {
+          if (response.hasResponse()) {
+            BeeRowSet rowSet = BeeRowSet.restore(response.getResponseAsString());
+            showRelatedDocuments(rowSet);
 
-            } else {
-              getGridView().notifyInfo(Localized.dictionary().noData());
-            }
+          } else {
+            getGridView().notifyInfo(Localized.dictionary().noData());
           }
         }
+
+        endCommand(STYLE_SHOW_RELATED_DOCUMENTS_COMMAND);
       });
+
+    } else {
+      endCommand(STYLE_SHOW_RELATED_DOCUMENTS_COMMAND);
     }
   }
 
@@ -994,11 +995,6 @@ public class TradeDocumentItemsGrid extends AbstractGridInterceptor {
       @Override
       public BeeRowSet getInitialRowSet(GridDescription gridDescription) {
         return rowSet;
-      }
-
-      @Override
-      public GridInterceptor getInstance() {
-        return null;
       }
     };
 

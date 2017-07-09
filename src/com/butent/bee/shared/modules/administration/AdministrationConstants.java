@@ -384,9 +384,12 @@ public final class AdministrationConstants {
 
   public static final String COL_CLICK_SENSITIVITY_MILLIS = "ClickSensitivityMillis";
   public static final String COL_CLICK_SENSITIVITY_DISTANCE = "ClickSensitivityDistance";
+  public static final String COL_ACTION_SENSITIVITY_MILLIS = "ActionSensitivityMillis";
 
   public static final String COL_NEWS_REFRESH_INTERVAL_SECONDS = "NewsRefreshIntervalSeconds";
   public static final String COL_LOADING_STATE_DELAY_MILLIS = "LoadingStateDelayMillis";
+
+  public static final String COL_SHOW_GRID_FILTER_COMMAND = "showGridFilterCommand";
 
   public static final String COL_UI_THEME = "UiTheme";
   public static final String COL_USER_STYLE = "Style";

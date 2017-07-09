@@ -391,6 +391,10 @@
 .bee-rep-report {
   border-collapse: collapse;
 }
+.bee-rep-report-param {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
 .bee-rep-report .bee-rep-report-normal:hover {
   color: dodgerblue;
   cursor: pointer;
@@ -651,6 +655,7 @@
   justify-content: space-around;
   flex-direction: column;
   text-align: center;
+  overflow: hidden;
 }
 .bee-spec-thumbnail-active:hover {
   cursor: pointer;
@@ -672,7 +677,7 @@
   border-collapse: collapse;
   margin-top: 10px;
 }
-.bee-spec-selectable tr td:nth-child(2) {
+.bee-spec-selectable tr td:nth-child(2), .bee-spec-selectable tr td:nth-child(4) {
   text-align: right;
 }
 .bee-spec-selectable td {

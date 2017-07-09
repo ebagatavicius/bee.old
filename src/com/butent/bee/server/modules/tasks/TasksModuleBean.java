@@ -2453,11 +2453,18 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
       Set<Long> observers = getRecurringTaskObservers(rtId);
 
       Collection<RowChildren> relations = getRelations(COL_RECURRING_TASK, rtId);
+      Collection<RowChildren> taskRel = new ArrayList<>();
+
+      relations.forEach(rel ->
+        taskRel.add(RowChildren.create(rel.getRepository(), COL_TASK, null, rel.getChildColumn(),
+          rel.getChildrenIds()))
+      );
+
       SimpleRowSet fileData = getRecurringTaskFileData(rtId);
 
       for (JustDate date : cronDates) {
         Set<Long> tasks = spawnTasks(rtData.getColumns(), rtRow, date,
-            executors, observers, relations, fileData, taskColumns);
+            executors, observers, taskRel, fileData, taskColumns);
 
         if (BeeUtils.isEmpty(tasks)) {
           logger.severe(label, rtId, date, "no tasks created");
@@ -2813,12 +2820,18 @@ public class TasksModuleBean extends TimerBuilder implements BeeModule {
     Set<Long> observers = getRecurringTaskObservers(rtId);
 
     Collection<RowChildren> relations = getRelations(COL_RECURRING_TASK, rtId);
+    Collection<RowChildren> taskRel = new ArrayList<>();
+    relations.forEach(rel ->
+      taskRel.add(RowChildren.create(rel.getRepository(), COL_TASK, null, rel.getChildColumn(),
+        rel.getChildrenIds()))
+    );
+
     SimpleRowSet fileData = getRecurringTaskFileData(rtId);
 
     List<BeeColumn> taskColumns = sys.getView(VIEW_TASKS).getRowSetColumns();
 
     Set<Long> tasks = spawnTasks(rtData.getColumns(), rtData.getRow(0), new JustDate(dayNumber),
-        executors, observers, relations, fileData, taskColumns);
+        executors, observers, taskRel, fileData, taskColumns);
     if (tasks.isEmpty()) {
       return ResponseObject.emptyResponse();
     }

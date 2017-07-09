@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<View 
-  xmlns="http://www.butent.com/view" 
-  name="Newsletters" source="Newsletters" 
-  newRowForm="Newsletter" editForm="Newsletter"
-  newRowCaption="=mailNewNewsletter"
-  >
+<View
+    xmlns="http://www.butent.com/view"
+    name="Newsletters" source="Newsletters"
+    newRowForm="Newsletter" editForm="Newsletter"
+    newRowCaption="=mailNewNewsletter"
+>
   <Columns>
-    <IdColumn name="Id" />
     <SimpleColumn name="Subject" />
     <SimpleColumn name="Content" />
     <SimpleColumn name="Active" />
-
-    <ExternalJoin source="NewsletterContacts" joinType="LEFT" name="Newsletter" filter="!(Date)" >
-      <HiddenColumn name="Date" />
-      <AggregateColumn name="Email" alias="CountEmptyDate" aggregate="COUNT" />
-    </ExternalJoin>
-    
-    <ExternalJoin source="NewsletterContacts" joinType="LEFT" name="Newsletter" >
-      <AggregateColumn name="Date" alias="MaxDate" aggregate="MAX" />   
-    </ExternalJoin>
-
     <SimpleColumn name="VisibleCopies" />
+
+    <ExternalJoin source="NewsletterContacts" joinType="LEFT" name="Newsletter">
+      <AggregateColumn name="Date" alias="MaxDate" aggregate="MAX" />
+      <AggregateColumn name="Newsletter" alias="CountContacts" aggregate="COUNT" />
+      <AggregateColumn name="Date" alias="CountSent" aggregate="COUNT" />
+    </ExternalJoin>
   </Columns>
   <Order>
     <OrderBy column="Subject" />
   </Order>
 </View>
- 

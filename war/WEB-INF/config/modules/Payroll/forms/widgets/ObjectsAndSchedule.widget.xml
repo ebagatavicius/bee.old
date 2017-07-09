@@ -6,7 +6,7 @@
   <HorizontalPanel style="margin: 2ex 1em;">
     <Label text="=objectLocation" style="padding-right: 1em;" />
     <UnboundSelector viewName="Locations" renderColumns="LocationName CompanyName"
-      newRowEnabled="false" editPopup="true" style="width: 400px;" />
+      newRowEnabled="false" editWindow="modal" style="width: 400px;" />
   </HorizontalPanel>
     
   <FlowPanel name="Schedule" class="flexible" style="overflow: auto;" />

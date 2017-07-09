@@ -7,5 +7,6 @@
     <DataColumn name="Name" minWidth="200" visible="true" />
     <DataColumn name="SelfService" module="Transport.SelfService" />
     <DataColumn name="Logistics" module="Transport.Logistics" />
+    <RelColumn name="Manager" module="Transport.SelfService" newRowEnabled="false" />
   </g:columns>
 </g:Grid>

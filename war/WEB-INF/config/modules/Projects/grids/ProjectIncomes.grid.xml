@@ -10,7 +10,7 @@
     <SelectionColumn name="Select" width="20" />
     <DataColumn name="Date" />
     <RelColumn name="Item" renderColumns="ItemName"
-      choiceColumns="Name Article" editPopup="true" visible="true"
+      choiceColumns="Name Article" editWindow="modal" visible="true"
       readOnly="true">
       <footer text="=totalOf" horizontalAlignment="right" />
     </RelColumn>

@@ -205,10 +205,15 @@ public final class DocumentsHandler {
             public void onSuccess(Integer result) {
               if (result == 0) {
                 Queries.insert(AdministrationConstants.VIEW_RELATIONS, Data.getColumns(
-                    AdministrationConstants.VIEW_RELATIONS,
-                    Lists.newArrayList(COL_DOCUMENT_COMPANY,
-                        COL_DOCUMENT)), Lists.newArrayList(company, BeeUtils
-                    .toString(rowId)));
+                  AdministrationConstants.VIEW_RELATIONS,
+                  Lists.newArrayList(COL_DOCUMENT_COMPANY, COL_DOCUMENT)),
+                  Lists.newArrayList(company, BeeUtils.toString(rowId)),
+                  null, new RowCallback() {
+                    @Override
+                    public void onSuccess(BeeRow result) {
+                      DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_RELATED_DOCUMENTS);
+                    }
+                  });
               }
             }
           });

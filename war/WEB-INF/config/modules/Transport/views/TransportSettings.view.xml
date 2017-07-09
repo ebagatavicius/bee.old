@@ -191,5 +191,7 @@
 
     <SimpleColumn name="SsOrderCustomer" />
     <SimpleColumn name="SsOrderNo" />
+
+    <SimpleColumn name="FilterDependsOnData" />
   </Columns>
 </View>

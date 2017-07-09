@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
-import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.Modality;
 import com.butent.bee.client.layout.Flow;
@@ -38,6 +37,7 @@ final class ShippingSchedule extends VehicleTimeBoard {
 
   static final String SUPPLIER_KEY = "shipping_schedule";
   private static final String DATA_SERVICE = SVC_GET_SS_DATA;
+  private static final String FILTER_DATA_SERVICE = SVC_GET_SS_FILTER_DATA;
 
   private static final String STYLE_PREFIX = BeeConst.CSS_CLASS_PREFIX + "tr-ss-";
 
@@ -51,15 +51,15 @@ final class ShippingSchedule extends VehicleTimeBoard {
 
   private static final Set<String> SETTINGS_COLUMNS_TRIGGERING_REFRESH =
       Sets.newHashSet(COL_SS_MIN_DATE, COL_SS_MAX_DATE,
-          COL_SS_TRANSPORT_GROUPS, COL_SS_COMPLETED_TRIPS);
+          COL_SS_TRANSPORT_GROUPS, COL_SS_COMPLETED_TRIPS, COL_FILTER_DEPENDS_ON_DATA);
 
   static void open(final ViewCallback callback) {
-    BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(DATA_SERVICE),
-        new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            ShippingSchedule ss = new ShippingSchedule();
-            ss.onCreate(response, callback);
+    BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(SVC_GET_SETTINGS),
+        settingsResponse -> {
+          if (!settingsResponse.hasErrors()) {
+            ShippingSchedule ss = new ShippingSchedule(settingsResponse);
+
+            ss.requestData(response -> ss.onCreate(response, callback));
           }
         });
   }
@@ -68,8 +68,8 @@ final class ShippingSchedule extends VehicleTimeBoard {
 
   private final Map<Integer, Long> tripsByRow = new HashMap<>();
 
-  private ShippingSchedule() {
-    super();
+  private ShippingSchedule(ResponseObject settingsResponse) {
+    super(settingsResponse);
     addStyleName(STYLE_PREFIX + "View");
   }
 
@@ -145,6 +145,11 @@ final class ShippingSchedule extends VehicleTimeBoard {
   }
 
   @Override
+  protected String getFilterService() {
+    return FILTER_DATA_SERVICE;
+  }
+
+  @Override
   protected String getFooterHeightColumnName() {
     return COL_SS_FOOTER_HEIGHT;
   }
@@ -207,6 +212,16 @@ final class ShippingSchedule extends VehicleTimeBoard {
   @Override
   protected String getSettingsFormName() {
     return FORM_SS_SETTINGS;
+  }
+
+  @Override
+  protected String getSettingsMaxDate() {
+    return COL_SS_MAX_DATE;
+  }
+
+  @Override
+  protected String getSettingsMinDate() {
+    return COL_SS_MIN_DATE;
   }
 
   @Override

@@ -3,14 +3,13 @@ package com.butent.bee.client.modules.trade;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.xml.client.Element;
 
-import static com.butent.bee.shared.modules.administration.AdministrationConstants.*;
+import static com.butent.bee.shared.modules.administration.AdministrationConstants.ALS_CURRENCY_NAME;
 import static com.butent.bee.shared.modules.finance.FinanceConstants.*;
 import static com.butent.bee.shared.modules.trade.TradeConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.communication.ParameterList;
-import com.butent.bee.client.communication.ResponseCallback;
 import com.butent.bee.client.composite.DataSelector;
 import com.butent.bee.client.dialog.Icon;
 import com.butent.bee.client.dom.DomUtils;
@@ -36,7 +35,6 @@ import com.butent.bee.shared.HasHtml;
 import com.butent.bee.shared.Pair;
 import com.butent.bee.shared.State;
 import com.butent.bee.shared.Triplet;
-import com.butent.bee.shared.communication.ResponseObject;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RowPredicate;
@@ -472,27 +470,24 @@ class PaymentForm extends AbstractFormInterceptor {
 
     setUpdating(true);
 
-    BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        setUpdating(false);
+    BeeKeeper.getRpc().makeRequest(parameters, response -> {
+      setUpdating(false);
 
-        if (response.hasMessages()) {
-          response.notify(getFormView());
+      if (response.hasMessages()) {
+        response.notify(getFormView());
+      }
+
+      if (!response.hasErrors()) {
+        clearValue(NAME_AMOUNT);
+
+        resetGrid(debtKind.tradeDebtsMainGrid());
+
+        if (financeEnabled && BeeUtils.isPositive(prepayment)) {
+          ViewHelper.refresh(getGrid(debtKind.getPrepaymentKind().tradePaymentsGrid()));
         }
 
-        if (!response.hasErrors()) {
-          clearValue(NAME_AMOUNT);
-
-          resetGrid(debtKind.tradeDebtsMainGrid());
-
-          if (financeEnabled && BeeUtils.isPositive(prepayment)) {
-            ViewHelper.refresh(getGrid(debtKind.getPrepaymentKind().tradePaymentsGrid()));
-          }
-
-          if (financeEnabled && !payments.isEmpty()) {
-            FinanceKeeper.postTradeDocuments(payments.keySet(), null);
-          }
+        if (financeEnabled && !payments.isEmpty()) {
+          FinanceKeeper.postTradeDocuments(payments.keySet(), null);
         }
       }
     });
@@ -653,29 +648,26 @@ class PaymentForm extends AbstractFormInterceptor {
 
     setUpdating(true);
 
-    BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        setUpdating(false);
+    BeeKeeper.getRpc().makeRequest(parameters, response -> {
+      setUpdating(false);
 
-        if (response.hasMessages()) {
-          response.notify(getFormView());
-        }
+      if (response.hasMessages()) {
+        response.notify(getFormView());
+      }
 
-        if (!response.hasErrors()) {
-          clearValue(NAME_AMOUNT);
+      if (!response.hasErrors()) {
+        clearValue(NAME_AMOUNT);
 
-          resetGrid(debtKind.tradeDebtsMainGrid());
-          resetGrid(debtKind.tradeDebtsOtherGrid());
+        resetGrid(debtKind.tradeDebtsMainGrid());
+        resetGrid(debtKind.tradeDebtsOtherGrid());
 
-          Set<Long> docIds = new HashSet<>();
-          discharges.forEach(triplet -> {
-            docIds.add(triplet.getA());
-            docIds.add(triplet.getB());
-          });
+        Set<Long> docIds = new HashSet<>();
+        discharges.forEach(triplet -> {
+          docIds.add(triplet.getA());
+          docIds.add(triplet.getB());
+        });
 
-          FinanceKeeper.postTradeDocuments(docIds, null);
-        }
+        FinanceKeeper.postTradeDocuments(docIds, null);
       }
     });
   }
@@ -837,27 +829,24 @@ class PaymentForm extends AbstractFormInterceptor {
 
     setUpdating(true);
 
-    BeeKeeper.getRpc().makeRequest(parameters, new ResponseCallback() {
-      @Override
-      public void onResponse(ResponseObject response) {
-        setUpdating(false);
+    BeeKeeper.getRpc().makeRequest(parameters, response -> {
+      setUpdating(false);
 
-        if (response.hasMessages()) {
-          response.notify(getFormView());
-        }
+      if (response.hasMessages()) {
+        response.notify(getFormView());
+      }
 
-        if (!response.hasErrors()) {
-          clearValue(NAME_AMOUNT);
+      if (!response.hasErrors()) {
+        clearValue(NAME_AMOUNT);
 
-          prepaymentGrid.getGrid().clearSelection();
-          ViewHelper.refresh(prepaymentGrid);
+        prepaymentGrid.getGrid().clearSelection();
+        ViewHelper.refresh(prepaymentGrid);
 
-          debtGrid.getGrid().clearSelection();
-          ViewHelper.refresh(debtGrid);
+        debtGrid.getGrid().clearSelection();
+        ViewHelper.refresh(debtGrid);
 
-          Set<Long> docIds = discharges.stream().map(Triplet::getB).collect(Collectors.toSet());
-          FinanceKeeper.postTradeDocuments(docIds, null);
-        }
+        Set<Long> docIds = discharges.stream().map(Triplet::getB).collect(Collectors.toSet());
+        FinanceKeeper.postTradeDocuments(docIds, null);
       }
     });
   }

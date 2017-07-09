@@ -221,6 +221,10 @@ class OrderCargo extends Filterable implements HasDateRange, HasColorSource, Has
     return cargoId;
   }
 
+  Long getCargoTripId() {
+    return null;
+  }
+
   Long getCustomerId() {
     return customerId;
   }

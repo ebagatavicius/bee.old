@@ -19,6 +19,8 @@ import com.butent.bee.client.ui.Opener;
 import com.butent.bee.client.view.grid.GridView.SelectedRows;
 import com.butent.bee.client.view.grid.interceptor.AbstractGridInterceptor;
 import com.butent.bee.client.view.grid.interceptor.GridInterceptor;
+import com.butent.bee.client.view.search.AbstractFilterSupplier;
+import com.butent.bee.client.view.search.BooleanFilterSupplier;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.shared.Latch;
 import com.butent.bee.shared.Pair;
@@ -27,8 +29,11 @@ import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.SimpleRowSet;
 import com.butent.bee.shared.data.filter.Filter;
+import com.butent.bee.shared.data.filter.FilterValue;
+import com.butent.bee.shared.data.value.BooleanValue;
 import com.butent.bee.shared.data.view.RowInfo;
 import com.butent.bee.shared.i18n.Localized;
+import com.butent.bee.shared.ui.ColumnDescription;
 import com.butent.bee.shared.utils.BeeUtils;
 
 import java.util.ArrayList;
@@ -47,6 +52,27 @@ public class AssessmentOrdersGrid extends AbstractGridInterceptor implements Cli
   public void afterCreatePresenter(GridPresenter presenter) {
     presenter.getHeader().addCommandItem(action);
     super.afterCreatePresenter(presenter);
+  }
+
+  @Override
+  public AbstractFilterSupplier getFilterSupplier(String columnName,
+      ColumnDescription columnDescription) {
+
+    if (BeeUtils.inList(columnName, PROP_INCOMES_COMMITED, PROP_EXPENSES_COMMITED)) {
+      return new BooleanFilterSupplier(null, null, null, columnDescription.getFilterOptions()) {
+        @Override
+        public Filter parse(FilterValue input) {
+          Boolean b = getBoolean(input);
+
+          if (b == null) {
+            return null;
+          } else {
+            return Filter.custom(getOptions(), columnName, BooleanValue.pack(b));
+          }
+        }
+      };
+    }
+    return super.getFilterSupplier(columnName, columnDescription);
   }
 
   @Override

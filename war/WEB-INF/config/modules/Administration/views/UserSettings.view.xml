@@ -43,6 +43,8 @@
     <SimpleColumn name="ClickSensitivityMillis" />
     <SimpleColumn name="ClickSensitivityDistance" />
 
+    <SimpleColumn name="ActionSensitivityMillis" />
+
     <SimpleColumn name="CompanyActionRemindBefore" />
     <SimpleColumn name="NewsRefreshIntervalSeconds" />
     <SimpleColumn name="LoadingStateDelayMillis" />
@@ -58,6 +60,8 @@
     <SimpleColumn name="MenuHide" />
     <SimpleColumn name="ShowNewMessagesNotifier" />
     <SimpleColumn name="Assistant" />
+
+    <SimpleColumn name="ShowGridFilterCommand" />
   </Columns>
   
   <Order>

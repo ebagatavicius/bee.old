@@ -1,6 +1,7 @@
 package com.butent.bee.client.modules.transport.charts;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
@@ -11,9 +12,8 @@ import static com.butent.bee.shared.modules.transport.TransportConstants.*;
 
 import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
-import com.butent.bee.client.communication.ResponseCallback;
+import com.butent.bee.client.communication.ParameterList;
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.data.Queries;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.Modality;
 import com.butent.bee.client.dom.DomUtils;
@@ -90,13 +90,18 @@ final class FreightExchange extends ChartBase {
 
   private static final Set<String> acceptsDropTypes = Collections.singleton(DATA_TYPE_FREIGHT);
 
+  private static final Set<ChartDataType> AVAILABLE_FILTERS = Sets.newHashSet(
+      ChartDataType.CUSTOMER, ChartDataType.MANAGER, ChartDataType.ORDER,
+      ChartDataType.ORDER_STATUS, ChartDataType.CARGO, ChartDataType.CARGO_TYPE,
+      ChartDataType.LOADING, ChartDataType.UNLOADING, ChartDataType.PLACE);
+
   static void open(final ViewCallback callback) {
-    BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(DATA_SERVICE),
-        new ResponseCallback() {
-          @Override
-          public void onResponse(ResponseObject response) {
-            FreightExchange fx = new FreightExchange();
-            fx.onCreate(response, callback);
+    BeeKeeper.getRpc().makePostRequest(TransportHandler.createArgs(SVC_GET_SETTINGS),
+        settingsResponse -> {
+          if (!settingsResponse.hasErrors()) {
+            FreightExchange fx = new FreightExchange(settingsResponse);
+
+            fx.requestData(response -> fx.onCreate(response, callback));
           }
         });
   }
@@ -111,8 +116,8 @@ final class FreightExchange extends ChartBase {
 
   private final Map<Integer, Long> customersByRow = new HashMap<>();
 
-  private FreightExchange() {
-    super();
+  private FreightExchange(ResponseObject settingsResponse) {
+    super(settingsResponse);
     addStyleName(STYLE_PREFIX + "View");
 
     addRelevantDataViews(VIEW_ORDERS);
@@ -122,12 +127,9 @@ final class FreightExchange extends ChartBase {
           removeStyleName(STYLE_DRAG_OVER);
 
           if (DndHelper.isDataType(DATA_TYPE_FREIGHT) && u instanceof Freight) {
-            ((Freight) u).maybeRemoveFromTrip(new Queries.IntCallback() {
-              @Override
-              public void onSuccess(Integer result) {
-                if (BeeUtils.isPositive(result)) {
-                  DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_CARGO_TRIPS);
-                }
+            ((Freight) u).maybeRemoveFromTrip(result -> {
+              if (BeeUtils.isPositive(result)) {
+                DataChangeEvent.fireRefresh(BeeKeeper.getBus(), VIEW_CARGO_TRIPS);
               }
             });
           }
@@ -155,20 +157,20 @@ final class FreightExchange extends ChartBase {
       Global.choiceWithCancel(Localized.dictionary().newTransportationOrder(), null,
           Lists.newArrayList(Localized.dictionary().inputFull(),
               Localized.dictionary().inputSimple()), value -> {
-                switch (value) {
-                  case 0:
-                    RowFactory.createRow(VIEW_ORDERS, Modality.DISABLED);
-                    break;
+            switch (value) {
+              case 0:
+                RowFactory.createRow(VIEW_ORDERS, Modality.DISABLED);
+                break;
 
-                  case 1:
-                    DataInfo dataInfo = Data.getDataInfo(VIEW_ORDER_CARGO);
-                    BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
-                    RowFactory.createRow(FORM_NEW_SIMPLE_ORDER,
-                        Localized.dictionary().newTransportationOrder(), dataInfo, row,
-                        Modality.DISABLED, null);
-                    break;
-                }
-              });
+              case 1:
+                DataInfo dataInfo = Data.getDataInfo(VIEW_ORDER_CARGO);
+                BeeRow row = RowFactory.createEmptyRow(dataInfo, true);
+                RowFactory.createRow(FORM_NEW_SIMPLE_ORDER,
+                    Localized.dictionary().newTransportationOrder(), dataInfo, row,
+                    Modality.DISABLED, null);
+                break;
+            }
+          });
 
     } else {
       super.handleAction(action);
@@ -176,13 +178,15 @@ final class FreightExchange extends ChartBase {
   }
 
   @Override
-  protected boolean filter(FilterType filterType) {
-    boolean filtered = false;
+  protected void addFilterSettingParams(ParameterList params) {
+  }
 
+  @Override
+  protected boolean filter(FilterType filterType) {
     List<ChartData> selectedData = FilterHelper.getSelectedData(getFilterData());
     if (selectedData.isEmpty()) {
       resetFilter(filterType);
-      return filtered;
+      return false;
     }
 
     CargoMatcher cargoMatcher = CargoMatcher.maybeCreate(selectedData);
@@ -193,8 +197,9 @@ final class FreightExchange extends ChartBase {
 
       if (match && placeMatcher != null) {
         boolean ok = placeMatcher.matches(item);
-        if (!ok && hasCargoHandling(item.getCargoId())) {
-          ok = placeMatcher.matchesAnyOf(getCargoHandling(item.getCargoId()));
+        if (!ok) {
+          ok = placeMatcher.matchesAnyOf(getCargoHandling(item.getCargoId(),
+              item.getCargoTripId()));
         }
 
         if (!ok) {
@@ -203,13 +208,14 @@ final class FreightExchange extends ChartBase {
       }
 
       item.setMatch(filterType, match);
-
-      if (match) {
-        filtered = true;
-      }
     }
 
-    return filtered;
+    return true;
+  }
+
+  @Override
+  protected Set<ChartDataType> getAllFilterTypes() {
+    return AVAILABLE_FILTERS;
   }
 
   @Override
@@ -234,6 +240,11 @@ final class FreightExchange extends ChartBase {
   @Override
   protected String getFiltersColumnName() {
     return COL_FX_FILTERS;
+  }
+
+  @Override
+  protected String getFilterService() {
+    return null;
   }
 
   @Override
@@ -269,6 +280,16 @@ final class FreightExchange extends ChartBase {
   @Override
   protected String getSettingsFormName() {
     return FORM_FX_SETTINGS;
+  }
+
+  @Override
+  protected String getSettingsMaxDate() {
+    return null;
+  }
+
+  @Override
+  protected String getSettingsMinDate() {
+    return null;
   }
 
   @Override
@@ -317,6 +338,12 @@ final class FreightExchange extends ChartBase {
   }
 
   @Override
+  protected boolean isFilterDependsOnData() {
+    return true;
+  }
+
+
+  @Override
   protected void initData(Map<String, String> properties) {
     items.clear();
 
@@ -325,7 +352,8 @@ final class FreightExchange extends ChartBase {
 
     if (!DataUtils.isEmpty(srs)) {
       for (SimpleRow row : srs) {
-        Pair<JustDate, JustDate> handlingSpan = getCargoHandlingSpan(row.getLong(COL_CARGO_ID));
+        Pair<JustDate, JustDate> handlingSpan = getCargoHandlingSpan(getCargoHandling(),
+            row.getLong(COL_CARGO_ID), null);
         items.add(OrderCargo.create(row, handlingSpan.getA(), handlingSpan.getB()));
       }
 
@@ -372,24 +400,24 @@ final class FreightExchange extends ChartBase {
   }
 
   @Override
-  protected List<ChartData> prepareFilterData() {
+  protected List<ChartData> prepareFilterData(ResponseObject response) {
     List<ChartData> data = new ArrayList<>();
     if (items.isEmpty()) {
       return data;
     }
 
-    ChartData customerData = new ChartData(ChartData.Type.CUSTOMER);
-    ChartData managerData = new ChartData(ChartData.Type.MANAGER);
+    ChartData customerData = new ChartData(ChartDataType.CUSTOMER);
+    ChartData managerData = new ChartData(ChartDataType.MANAGER);
 
-    ChartData orderData = new ChartData(ChartData.Type.ORDER);
-    ChartData statusData = new ChartData(ChartData.Type.ORDER_STATUS);
+    ChartData orderData = new ChartData(ChartDataType.ORDER);
+    ChartData statusData = new ChartData(ChartDataType.ORDER_STATUS);
 
-    ChartData cargoData = new ChartData(ChartData.Type.CARGO);
-    ChartData cargoTypeData = new ChartData(ChartData.Type.CARGO_TYPE);
+    ChartData cargoData = new ChartData(ChartDataType.CARGO);
+    ChartData cargoTypeData = new ChartData(ChartDataType.CARGO_TYPE);
 
-    ChartData loadData = new ChartData(ChartData.Type.LOADING);
-    ChartData unloadData = new ChartData(ChartData.Type.UNLOADING);
-    ChartData placeData = new ChartData(ChartData.Type.PLACE);
+    ChartData loadData = new ChartData(ChartDataType.LOADING);
+    ChartData unloadData = new ChartData(ChartDataType.UNLOADING);
+    ChartData placeData = new ChartData(ChartDataType.PLACE);
 
     for (OrderCargo item : items) {
       customerData.add(item.getCustomerName(), item.getCustomerId());
@@ -415,19 +443,17 @@ final class FreightExchange extends ChartBase {
         placeData.add(unloading);
       }
 
-      if (hasCargoHandling(item.getCargoId())) {
-        for (CargoHandling ch : getCargoHandling(item.getCargoId())) {
-          loading = Places.getLoadingPlaceInfo(ch);
-          if (!BeeUtils.isEmpty(loading)) {
-            loadData.add(loading);
-            placeData.add(loading);
-          }
+      for (CargoHandling ch : getCargoHandling(item.getCargoId(), item.getCargoTripId())) {
+        loading = Places.getLoadingPlaceInfo(ch);
+        if (!BeeUtils.isEmpty(loading)) {
+          loadData.add(loading);
+          placeData.add(loading);
+        }
 
-          unloading = Places.getUnloadingPlaceInfo(ch);
-          if (!BeeUtils.isEmpty(unloading)) {
-            unloadData.add(unloading);
-            placeData.add(unloading);
-          }
+        unloading = Places.getUnloadingPlaceInfo(ch);
+        if (!BeeUtils.isEmpty(unloading)) {
+          unloadData.add(unloading);
+          placeData.add(unloading);
         }
       }
     }
@@ -741,7 +767,7 @@ final class FreightExchange extends ChartBase {
 
       if (event.isFinished()
           && updateSettings(COL_FX_PIXELS_PER_CUSTOMER, customerPx, COL_FX_PIXELS_PER_ORDER,
-              orderPx)) {
+          orderPx)) {
         setCustomerWidth(customerPx);
         setOrderWidth(orderPx);
       }

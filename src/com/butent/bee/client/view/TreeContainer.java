@@ -16,7 +16,6 @@ import com.butent.bee.client.event.logical.ReadyEvent;
 import com.butent.bee.client.layout.Flow;
 import com.butent.bee.client.presenter.Presenter;
 import com.butent.bee.client.presenter.TreePresenter;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.tree.HasTreeItems;
 import com.butent.bee.client.tree.Tree;
 import com.butent.bee.client.tree.TreeItem;
@@ -416,9 +415,7 @@ public class TreeContainer extends Flow implements TreeView, SelectionHandler<Tr
 
     widget.addStyleName(STYLE_NAME + "-action");
     widget.addStyleName(action.getStyleName());
-    StyleUtils.enableAnimation(action, widget);
-
-    widget.setTitle(action.getCaption());
+    UiHelper.initActionWidget(action, widget);
 
     widget.addClickHandler(new ActionListener(action));
 

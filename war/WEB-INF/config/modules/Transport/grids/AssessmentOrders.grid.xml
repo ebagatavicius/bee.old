@@ -2,15 +2,15 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
         xmlns:ui="http://www.butent.com/ui" xmlns:xi="http://www.w3.org/2001/XInclude"
 
-  name="AssessmentOrders" viewName="Assessments" caption="=trAssessmentOrders"
-  flexGrow="1" order="AssessmentID desc" disabledActions="add"
-  filter="OrderStatus!=0"
-  >
+        name="AssessmentOrders" viewName="Assessments" caption="=trAssessmentOrders"
+        flexGrow="1" order="AssessmentID desc" disabledActions="add"
+        filter="OrderStatus!=0"
+>
   <g:columns>
     <SelectionColumn name="Select" width="20" />
     <IdColumn name="ID" width="40" />
     <RelColumn name="Assessment" width="40" filterSupplier="value" editEnabled="true"
-      editViewName="Assessments" editSource="Assessment" module="Transport.Logistics"/>
+               editViewName="Assessments" editSource="Assessment" module="Transport.Logistics" />
     <DataColumn name="Date" width="110" readOnly="true" />
     <DataColumn name="OrderNo" />
     <RelColumn name="Manager" renderColumns="ManagerFirstName ManagerLastName" />
@@ -22,60 +22,50 @@
   <xi:include href="columns/Places.columns.xml" />
 
   <g:columns>
-    <DataColumn name="MinUnloadingDate" width="70" format="DATE_SHORT" />
-    <DataColumn name="OrderNotes"  />
+    <PropColumn name="MinUnloadingDate" type="datetime" width="70" format="DATE_SHORT"
+                label="=taMinTermShort+=trUnloadingDateShort"
+                filterSupplier="customDateTime" filterOptions="Assessments" />
+
+    <DataColumn name="OrderNotes" />
     <DataColumn name="Description" />
 
     <DataColumn name="Partial" caption="=partialShort" width="15" sortable="false" />
     <DataColumn name="Outsized" caption="=outsizedShort" width="15" sortable="false" />
     <DataColumn name="Dangerous" caption="=dangerousShort" width="15" sortable="false" />
     <DataColumn name="ExpensesRegistered" caption="&#xf0f6;" width="15" sortable="false">
-      <style><headerStyle><ui:font>FontAwesome</ui:font></headerStyle></style>
+      <style>
+        <headerStyle>
+          <ui:font>FontAwesome</ui:font>
+        </headerStyle>
+      </style>
     </DataColumn>
 
-    <CalcColumn name="IncomesCommited" type="boolean" sortable="false" visible="false"
-      label="=trdInvoiceId" searchBy="Incomes" filterOptions="empty">
-      <render><ui:expression>row.IncomesCommited ? true : false</ui:expression></render>
-    </CalcColumn>
-    <CalcColumn name="ExpensesCommited" type="boolean" sortable="false" visible="false"
-      label="=trdPurchaseId" searchBy="Expenses" filterOptions="empty">
-      <render><ui:expression>row.ExpensesCommited ? true : false</ui:expression></render>
-    </CalcColumn>
+    <PropColumn name="IncomesCommited" type="boolean" visible="false" label="=trdInvoiceId"
+                filterOptions="Assessments" />
 
-    <CalcColumn type="string" name="Vehicle" label="=trCarrierVehicle" searchBy="ForwarderVehicle">
-      <render>
-        <ui:function>
-          if (!row.MinVehicle) {
-            return row.MaxVehicle;
+    <PropColumn name="ExpensesCommited" type="boolean" visible="false" label="=trdPurchaseId"
+                filterOptions="Assessments" />
 
-          } else if(!row.MaxVehicle || row.MinVehicle == row.MaxVehicle) {
-            return row.MinVehicle;
-
-          } else {
-            return row.MinVehicle + ", " + row.MaxVehicle + (row.CntVehicle > 2 ? ", ...": "");
-          }
-        </ui:function>
-      </render>
-    </CalcColumn>
+    <PropColumn type="string" name="ForwarderVehicle" label="=trCarrierVehicle"
+                filterSupplier="custom" filterOptions="Assessments" />
 
     <CalcColumn name="Income" type="decimal" caption="=income" format="0.00">
       <render>
-        <ui:expression>Number(row.CargoIncomesTotal ? row.CargoIncomesTotal : 0)
-          + Number(row.ChildAssessmentsCargoIncomesTotal ? Number(row.ChildAssessmentsCargoIncomesTotal) : 0)</ui:expression>
+        <ui:expression>(+row.CargoIncomesTotal||0) + (+row.ChildAssessmentsCargoIncomesTotal||0)
+        </ui:expression>
       </render>
     </CalcColumn>
     <CalcColumn name="Expense" type="decimal" caption="=trExpenses" format="0.00">
       <render>
-        <ui:expression>Number(row.CargoExpensesTotal ? row.CargoExpensesTotal : 0)
-          + Number(row.ChildAssessmentsCargoExpensesTotal ? row.ChildAssessmentsCargoExpensesTotal : 0)</ui:expression>
+        <ui:expression>(+row.CargoExpensesTotal||0) + (+row.ChildAssessmentsCargoExpensesTotal||0)
+        </ui:expression>
       </render>
     </CalcColumn>
     <CalcColumn name="Profit" type="decimal" caption="=profit" format="0.00">
       <render>
-        <ui:expression>Number(row.CargoIncomesTotal ? row.CargoIncomesTotal : 0)
-          + Number(row.ChildAssessmentsCargoIncomesTotal ? row.ChildAssessmentsCargoIncomesTotal : 0)
-          - Number(row.CargoExpensesTotal ? row.CargoExpensesTotal : 0)
-          - Number(row.ChildAssessmentsCargoExpensesTotal ? row.ChildAssessmentsCargoExpensesTotal : 0)</ui:expression>
+        <ui:expression>(+row.CargoIncomesTotal||0) + (+row.ChildAssessmentsCargoIncomesTotal||0)
+          - (+row.CargoExpensesTotal||0) - (+row.ChildAssessmentsCargoExpensesTotal||0)
+        </ui:expression>
       </render>
     </CalcColumn>
 
@@ -85,27 +75,30 @@
   <g:rowStyle>
     <ui:inline>="color:red"</ui:inline>
     <ui:expression>row.OrderStatus == 1 &amp;&amp; !row.IncomesCommited
-      &amp;&amp; new Date(row.MinUnloadingDate).setHours(0,0,0,0) &lt; new Date().setHours(0,0,0,0)</ui:expression>
+      &amp;&amp; new Date(+row.MinUnloadingDate||0).setHours(0,0,0,0)
+      &lt; new Date().setHours(0,0,0,0)
+    </ui:expression>
   </g:rowStyle>
   <g:rowStyle>
     <ui:inline>="color:blue"</ui:inline>
     <ui:expression>row.OrderStatus == 1
-      &amp;&amp; new Date(row.MinUnloadingDate).setHours(0,0,0,0) == new Date().setHours(0,0,0,0)</ui:expression>
+      &amp;&amp; new Date(+row.MinUnloadingDate||0).setHours(0,0,0,0)==new Date().setHours(0,0,0,0)
+    </ui:expression>
   </g:rowStyle>
   <g:rowStyle>
-    <ui:inline>="color:gold"</ui:inline>
-    <ui:expression>row.OrderStatus == 3 &amp;&amp; row.ExpensesCount &amp;&amp; !row.ExpensesCommited</ui:expression>
+    <ui:inline>="color:purple"</ui:inline>
+    <ui:expression>row.OrderStatus==3 &amp;&amp; !row.ExpensesCommited</ui:expression>
   </g:rowStyle>
   <g:rowStyle>
     <ui:inline>="color:green"</ui:inline>
     <ui:expression>row.OrderStatus == 3</ui:expression>
   </g:rowStyle>
 
-  <g:predefinedFilter name="active" label="Vykdomi" initial="true">
+  <g:predefinedFilter name="active" label="=trOrderStatusActive" initial="true">
     <g:column name="OrderStatus" value="1" />
   </g:predefinedFilter>
 
-  <g:predefinedFilter name="delayed" label="Vėluojančios S/F">
+  <g:predefinedFilter name="delayed" label="Delayed invoices">
     <g:column name="OrderStatus" value="1" />
     <g:column name="IncomesCommited" emptyValues="true" />
     <g:column name="MinUnloadingDate" value=",d" />

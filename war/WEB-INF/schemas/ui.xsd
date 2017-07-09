@@ -479,7 +479,7 @@
     <xs:attribute name="newRowCaption" type="xs:string" />
     <xs:attribute name="newRowEnabled" type="xs:boolean" />
     <xs:attribute name="editForm" type="tp:nameType" />
-    <xs:attribute name="editPopup" type="xs:boolean" />
+    <xs:attribute name="editWindow" type="windowType" />
     <xs:attribute name="editEnabled" type="xs:boolean" />
     <xs:attribute name="editKey" type="xs:int" />
     <xs:attribute name="editSource" type="tp:fieldNameType" />
@@ -611,5 +611,14 @@
     <xs:attribute name="autocompleteContact" type="autofillContact" />
     <xs:attribute name="autocompleteField" type="autofillField" />
   </xs:attributeGroup>
+
+  <xs:simpleType name="windowType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="new-tab" />
+      <xs:enumeration value="on-top" />
+      <xs:enumeration value="detached" />
+      <xs:enumeration value="modal" />
+    </xs:restriction>
+  </xs:simpleType>
 
 </xs:schema>

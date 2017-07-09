@@ -4,10 +4,9 @@ import com.google.common.collect.Lists;
 
 import static com.butent.bee.shared.modules.documents.DocumentConstants.*;
 
+import com.butent.bee.client.composite.Relations;
 import com.butent.bee.client.data.Data;
-import com.butent.bee.client.data.IdCallback;
 import com.butent.bee.client.data.Queries;
-import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.data.RowEditor;
 import com.butent.bee.client.data.RowFactory;
 import com.butent.bee.client.dialog.Modality;
@@ -23,8 +22,10 @@ import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.data.BeeRow;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
+import com.butent.bee.shared.data.RelationUtils;
 import com.butent.bee.shared.data.view.DataInfo;
 import com.butent.bee.shared.modules.administration.AdministrationConstants;
+import com.butent.bee.shared.modules.classifiers.ClassifierConstants;
 import com.butent.bee.shared.modules.projects.ProjectConstants;
 import com.butent.bee.shared.ui.Action;
 import com.butent.bee.shared.utils.BeeUtils;
@@ -44,59 +45,79 @@ public class RelatedDocumentsHandler extends AbstractGridInterceptor {
 
   @Override
   public boolean beforeAddRow(final GridPresenter presenter, boolean copy) {
-    DataInfo info = Data.getDataInfo(VIEW_DOCUMENTS);
-    BeeRow docRow = RowFactory.createEmptyRow(info, true);
+    FormView parentForm = null;
+    IsRow parentRow = null;
+    String parentViewName = null;
+    boolean relationEnsured = false;
+    String parentColumn = BeeConst.STRING_EMPTY;
 
+    DataInfo info = Data.getDataInfo(VIEW_DOCUMENTS);
+    DataInfo relInfo = Data.getDataInfo(VIEW_RELATED_DOCUMENTS);
+    BeeRow docRow = RowFactory.createEmptyRow(info, true);
     GridView gridView = presenter.getGridView();
 
-    FormView parentForm = null;
     if (gridView != null) {
       parentForm = ViewHelper.getForm(gridView.asWidget());
     }
-
-    IsRow parentRow = null;
     if (parentForm != null) {
       parentRow = parentForm.getActiveRow();
     }
+    if (parentForm != null) {
+      parentViewName = parentForm.getViewName();
+    }
+    if (parentRow != null && !BeeUtils.isEmpty(parentViewName)) {
 
-    if (parentRow != null
-        && BeeUtils.same(parentForm.getFormName(), ProjectConstants.FORM_PROJECT)) {
+      switch (parentViewName) {
+        case ProjectConstants.VIEW_PROJECTS:
+          parentColumn = ProjectConstants.COL_COMAPNY;
+          break;
+        case ClassifierConstants.VIEW_COMPANIES:
+          RelationUtils.updateRow(info, COL_DOCUMENT_COMPANY, docRow,
+            Data.getDataInfo(parentViewName), parentRow, true);
+          relationEnsured = true;
+          break;
+        default:
+          if (relInfo == null) {
+            break;
+          }
 
-      int idxCmp = info.getColumnIndex(COL_DOCUMENT_COMPANY);
-      int idxCmpName = info.getColumnIndex(ALS_DOCUMENT_COMPANY_NAME);
-      int idxParCmp = parentForm.getDataIndex(ProjectConstants.COL_COMAPNY);
-      int idxParCmpName = parentForm.getDataIndex(ProjectConstants.ALS_PROJECT_COMPANY_NAME);
+          for (String col : info.getColumnNames(false)) {
+            if (BeeUtils.same(parentViewName, relInfo.getRelation(col))) {
+              relationEnsured = true;
+              break;
+            }
+          }
 
-      if (!BeeConst.isUndef(idxCmp) && !BeeConst.isUndef(idxCmpName)
-          && !BeeConst.isUndef(idxParCmp) && !BeeConst.isUndef(idxParCmpName)) {
-
-        docRow.setValue(idxCmp, parentRow.getLong(idxParCmp));
-        docRow.setValue(idxCmpName, parentRow.getString(idxParCmpName));
+          if (relationEnsured) {
+            docRow.setProperty(Relations.PFX_RELATED + parentViewName,
+              DataUtils.buildIdList(parentRow.getId()));
+          }
+      }
+      if (!BeeUtils.isEmpty(parentColumn)) {
+        RelationUtils.copyWithDescendants(Data.getDataInfo(parentViewName), parentColumn,
+          parentRow, info, COL_DOCUMENT_COMPANY, docRow);
       }
     }
 
-    RowFactory.createRow(info, docRow, Modality.ENABLED, new RowCallback() {
-      @Override
-      public void onSuccess(final BeeRow result) {
+    if (!relationEnsured) {
+      RowFactory.createRow(info, docRow, Modality.ENABLED, result -> {
         final long docId = result.getId();
 
-        presenter.getGridView().ensureRelId(new IdCallback() {
-          @Override
-          public void onSuccess(Long relId) {
-            Queries.insert(AdministrationConstants.VIEW_RELATIONS,
-                Data.getColumns(AdministrationConstants.VIEW_RELATIONS,
-                    Lists.newArrayList(COL_DOCUMENT, presenter.getGridView().getRelColumn())),
-                Queries.asList(docId, relId), null, new RowCallback() {
-                  @Override
-                  public void onSuccess(BeeRow row) {
-                    presenter.handleAction(Action.REFRESH);
-                    ViewHelper.getForm(presenter.getGridView().asWidget()).refresh();
-                  }
-                });
-          }
-        });
-      }
-    });
+        presenter.getGridView().ensureRelId(relId
+          -> Queries.insert(AdministrationConstants.VIEW_RELATIONS,
+          Data.getColumns(AdministrationConstants.VIEW_RELATIONS,
+            Lists.newArrayList(COL_DOCUMENT, presenter.getGridView().getRelColumn())),
+          Queries.asList(docId, relId), null, row -> {
+            presenter.handleAction(Action.REFRESH);
+            ViewHelper.getForm(presenter.getGridView().asWidget()).refresh();
+          }));
+      });
+    } else {
+      RowFactory.createRow(info, docRow, Modality.ENABLED, result -> {
+        presenter.handleAction(Action.REFRESH);
+        ViewHelper.getForm(presenter.getGridView().asWidget()).refresh();
+      });
+    }
 
     return false;
   }
@@ -114,12 +135,8 @@ public class RelatedDocumentsHandler extends AbstractGridInterceptor {
       Long docId = event.getRowValue().getLong(documentIndex);
 
       if (DataUtils.isId(docId)) {
-        RowEditor.open(VIEW_DOCUMENTS, docId, Opener.MODAL, new RowCallback() {
-          @Override
-          public void onSuccess(BeeRow result) {
-            getGridPresenter().handleAction(Action.REFRESH);
-          }
-        });
+        RowEditor.open(VIEW_DOCUMENTS, docId, Opener.MODAL,
+          result -> getGridPresenter().handleAction(Action.REFRESH));
       }
     }
   }

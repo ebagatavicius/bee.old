@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="Newsletters"
-  idName="NewsletterID"
-  >
+       name="Newsletters"
+       idName="NewsletterID"
+>
   <Fields>
     <String name="Subject" precision="255" notNull="true" label="=mailSubject" />
     <Text name="Content" notNull="true" label="=content" />

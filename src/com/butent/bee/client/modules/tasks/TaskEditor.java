@@ -152,6 +152,7 @@ class TaskEditor extends ProductSupportInterceptor {
   private static final String STYLE_PHOTO = "Photo";
   private static final String STYLE_TASK = CRM_STYLE_PREFIX + "task-";
   private static final String STYLE_TASK_LATE_KIND = STYLE_TASK + "lateKind-";
+  private static final String STYLE_TASK_BREAK = STYLE_TASK + "break";
   private static final String STYLE_EXTENSION = CRM_STYLE_PREFIX + "taskExtension";
   private static final String NAME_OBSERVERS = "Observers";
 
@@ -631,6 +632,14 @@ class TaskEditor extends ProductSupportInterceptor {
     if (BeeUtils.same(name,
         AdministrationConstants.TBL_RELATIONS) && widget instanceof Relations) {
       relations = (Relations) widget;
+      relations.setSelectorHandler(new TaskHelper.TaskRelationsHandler() {
+
+        @Override
+        public void onDataSelector(SelectorEvent event) {
+          setTaskRow(getActiveRow());
+          super.onDataSelector(event);
+        }
+      });
     }
 
     super.afterCreateWidget(name, widget, callback);
@@ -1664,10 +1673,6 @@ class TaskEditor extends ProductSupportInterceptor {
       exclusions.add(oldUser);
     }
 
-    if (!BeeUtils.isEmpty(getProjectUsers())) {
-      filter.addAll(getProjectUsers());
-    }
-
     final TaskDialog dialog = new TaskDialog(Localized.dictionary().crmTaskForwarding());
 
     final String sid =
@@ -1894,6 +1899,27 @@ class TaskEditor extends ProductSupportInterceptor {
     return Objects.equals(userId, getOwner());
   }
 
+  private void maybeHideProjectInformation(boolean visibility) {
+    FormView form = getFormView();
+
+    if (form == null) {
+      return;
+    }
+
+    for (String name : new String[]{ProjectConstants.COL_PROJECT,
+        ProjectConstants.COL_PROJECT_STAGE, COL_PRODUCT, COL_COMPANY, COL_CONTACT}) {
+      Widget widget = getFormView().getWidgetBySource(name);
+
+      if (widget != null) {
+        Widget drill = ((DataSelector) widget).getDrill();
+
+        if (drill != null) {
+          drill.setVisible(visibility);
+        }
+      }
+    }
+  }
+
   private void onResponse(BeeRow data) {
     RowUpdateEvent.fire(BeeKeeper.getBus(), VIEW_TASKS, data);
 
@@ -2096,6 +2122,9 @@ class TaskEditor extends ProductSupportInterceptor {
     if (kind != null) {
       lateIndicator.addStyleName(STYLE_TASK_LATE_KIND + kind.toString().toLowerCase());
     }
+
+    lateIndicator.setStyleName(STYLE_TASK_BREAK, TaskStatus.in(getStatus(), TaskStatus.SUSPENDED,
+      TaskStatus.COMPLETED, TaskStatus.APPROVED, TaskStatus.CANCELED));
   }
 
   private FaLabel createMenuLabel() {
@@ -2282,6 +2311,7 @@ class TaskEditor extends ProductSupportInterceptor {
     if (!DataUtils.isId(projectId)) {
       TaskHelper.setSelectorFilter(ownerSelector, null);
       TaskHelper.setSelectorFilter(observersSelector, null);
+      maybeHideProjectInformation(true);
       return;
     }
     TaskHelper.setWidgetEnabled(observersSelector, isOwner()
@@ -2291,32 +2321,30 @@ class TaskEditor extends ProductSupportInterceptor {
 
     Queries.getRowSet(ProjectConstants.VIEW_PROJECT_USERS, Lists
         .newArrayList(COL_USER), Filter.isEqual(
-        ProjectConstants.COL_PROJECT, Value.getValue(projectId)), new RowSetCallback() {
+        ProjectConstants.COL_PROJECT, Value.getValue(projectId)), result -> {
+          List<Long> userIds = Lists.newArrayList(projectOwner);
+          int idxUser = result.getColumnIndex(COL_USER);
 
-      @Override
-      public void onSuccess(BeeRowSet result) {
-        List<Long> userIds = Lists.newArrayList(projectOwner);
-        int idxUser = result.getColumnIndex(COL_USER);
-
-        if (BeeConst.isUndef(idxUser)) {
-          Assert.untouchable();
-          return;
-        }
-
-        for (IsRow userRow : result) {
-          long projectUser = BeeUtils.unbox(userRow.getLong(idxUser));
-
-          if (DataUtils.isId(projectUser)) {
-            userIds.add(projectUser);
+          if (BeeConst.isUndef(idxUser)) {
+            Assert.untouchable();
+            return;
           }
-        }
-        Filter projectTeamFilter = Filter.idIn(userIds);
 
-        TaskHelper.setSelectorFilter(observersSelector, projectTeamFilter);
-        TaskHelper.setSelectorFilter(ownerSelector, projectTeamFilter);
-        setProjectUsers(userIds);
-      }
-    });
+          for (IsRow userRow : result) {
+            long projectUser = BeeUtils.unbox(userRow.getLong(idxUser));
+
+            if (DataUtils.isId(projectUser)) {
+              userIds.add(projectUser);
+            }
+          }
+          Filter projectTeamFilter = Filter.idIn(userIds);
+
+          TaskHelper.setSelectorFilter(observersSelector, projectTeamFilter);
+          TaskHelper.setSelectorFilter(ownerSelector, projectTeamFilter);
+          setProjectUsers(userIds);
+
+          maybeHideProjectInformation(getProjectUsers().contains(getExecutor()));
+        });
   }
 
   private void updateProjectInfo(String projectId, String stageId) {

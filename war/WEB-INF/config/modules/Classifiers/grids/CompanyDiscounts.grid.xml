@@ -7,7 +7,7 @@
   >
   <g:columns>
     <RelColumn name="Category" choiceColumns="ParentName Name" />
-    <RelColumn name="Item" editPopup="true" />
+    <RelColumn name="Item" editWindow="modal" />
   </g:columns>
 
   <xi:include href="columns/Discount.columns.xml" />

@@ -1,6 +1,6 @@
 var BeeSettings = {
   "appName": "B-NOVO",
-  "version": "1.50",
+  "version": "1.7",
   "licence": "",
   "build": "",
   "releaseDate": "",
@@ -22,6 +22,7 @@ var BeeSettings = {
   "onStartup": {"content": "form_AnnouncementsBoard", "force": "*"},
   "clickSensitivityMillis": 100,
   "clickSensitivityDistance": 10,
+  "actionSensitivityMillis": 500,
   "newsRefreshIntervalSeconds": 60,
   "dialogResizerWidth": 10,
   "reducedInteractionStatusMinutes": 15,
@@ -33,6 +34,7 @@ var BeeSettings = {
   "dataSelectorInputDelayMillis": "500, 500, 400, 300, 200",
   "dataSelectorInstantSearchMaxRows": 1000,
   "dataSelectorCachingMaxRows": 1000,
+  "showGridFilterCommand": false,
   "theme" : {
     "WorkspaceMarginRight": 25,
     "ViewHeaderHeight": "600, 30, 1200, 52",

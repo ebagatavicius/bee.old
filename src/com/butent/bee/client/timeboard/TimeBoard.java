@@ -458,8 +458,7 @@ public abstract class TimeBoard extends Flow implements Presenter, View, Printab
 
         JustDate start = TimeUtils.clamp(TimeBoardHelper.getDate(min, startPos, dayWidth),
             min, max);
-        JustDate end = TimeUtils.clamp(TimeUtils.previousDay(TimeBoardHelper.getDate(min, endPos,
-            dayWidth)), start, max);
+        JustDate end = TimeUtils.clamp(TimeBoardHelper.getDate(min, endPos, dayWidth), start, max);
 
         if (!setVisibleRange(start, end)) {
           JustDate firstVisible = getVisibleRange().lowerEndpoint();

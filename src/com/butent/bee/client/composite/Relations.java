@@ -21,8 +21,6 @@ import com.butent.bee.client.BeeKeeper;
 import com.butent.bee.client.Global;
 import com.butent.bee.client.data.Data;
 import com.butent.bee.client.data.Queries;
-import com.butent.bee.client.data.Queries.RowSetCallback;
-import com.butent.bee.client.data.RowCallback;
 import com.butent.bee.client.dialog.DecisionCallback;
 import com.butent.bee.client.dialog.DialogConstants;
 import com.butent.bee.client.dialog.InputCallback;
@@ -50,7 +48,6 @@ import com.butent.bee.shared.Assert;
 import com.butent.bee.shared.BeeConst;
 import com.butent.bee.shared.css.values.TextAlign;
 import com.butent.bee.shared.data.BeeRow;
-import com.butent.bee.shared.data.BeeRowSet;
 import com.butent.bee.shared.data.DataUtils;
 import com.butent.bee.shared.data.IsRow;
 import com.butent.bee.shared.data.RowChildren;
@@ -86,6 +83,14 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
     ParentRowEvent.Handler, HasFosterParent, HasRowChildren, HandlesValueChange,
     SummaryChangeEvent.Handler, RowInsertEvent.Handler {
 
+  public interface InputRelationsInterceptor {
+    void onClose();
+
+    void onOpen();
+
+    void onSave();
+  }
+
   public static final String PFX_RELATED = "Rel";
 
   private static final String STORAGE = TBL_RELATIONS;
@@ -117,6 +122,7 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
 
   private Long id;
   private SelectorEvent.Handler handler;
+  private InputRelationsInterceptor inputRelationsInterceptor;
 
   public Relations(String column, boolean inline, Collection<Relation> relations,
       List<String> defaultRelations, List<String> blockedRelations) {
@@ -382,6 +388,9 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
     }
     refresh();
 
+    if (Objects.nonNull(inputRelationsInterceptor)) {
+      inputRelationsInterceptor.onOpen();
+    }
     Global.inputWidget(Localized.dictionary().relations(), table, new InputCallback() {
       @Override
       public void onAdd() {
@@ -389,7 +398,7 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
       }
 
       @Override
-      public void onClose(final CloseCallback closeCallback) {
+      public void onClose(CloseCallback closeCallback) {
         if (isValueChanged()) {
           Global.decide(Localized.dictionary().relations(),
               Lists.newArrayList(Localized.dictionary().changedValues() + BeeConst.CHAR_SPACE
@@ -402,10 +411,16 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
 
                 @Override
                 public void onDeny() {
+                  if (Objects.nonNull(inputRelationsInterceptor)) {
+                    inputRelationsInterceptor.onClose();
+                  }
                   closeCallback.onClose();
                 }
               }, DialogConstants.DECISION_YES);
         } else {
+          if (Objects.nonNull(inputRelationsInterceptor)) {
+            inputRelationsInterceptor.onClose();
+          }
           InputCallback.super.onClose(closeCallback);
         }
       }
@@ -415,12 +430,10 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
         Collection<RowChildren> relations = getRowChildren(false);
 
         if (!BeeUtils.isEmpty(relations)) {
-          Queries.updateChildren(view, id, relations, new RowCallback() {
-            @Override
-            public void onSuccess(BeeRow result) {
-              requery(result, id);
-            }
-          });
+          Queries.updateChildren(view, id, relations, result -> requery(result, id));
+        }
+        if (Objects.nonNull(inputRelationsInterceptor)) {
+          inputRelationsInterceptor.onSave();
         }
       }
     }, null, null, EnumSet.of(Action.ADD));
@@ -484,48 +497,42 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
     reset();
 
     if (DataUtils.isId(parent)) {
-      Queries.getRowSet(STORAGE, null, Filter.equals(column, parent), new RowSetCallback() {
-        @Override
-        public void onSuccess(BeeRowSet result) {
-          for (int i = 0; i < result.getNumberOfColumns(); i++) {
-            String col = result.getColumnId(i);
+      Queries.getRowSet(STORAGE, null, Filter.equals(column, parent), result -> {
+        for (int i = 0; i < result.getNumberOfColumns(); i++) {
+          String col = result.getColumnId(i);
 
-            if (BeeUtils.same(col, column)) {
-              continue;
-            }
-            for (BeeRow beeRow : result) {
-              Long relId = beeRow.getLong(i);
+          if (BeeUtils.same(col, column)) {
+            continue;
+          }
+          for (BeeRow beeRow : result) {
+            Long relId = beeRow.getLong(i);
 
-              if (DataUtils.isId(relId)) {
-                ids.put(col, relId);
-              }
+            if (DataUtils.isId(relId)) {
+              ids.put(col, relId);
             }
           }
-          Runnable exec = () -> {
-            id = parent;
+        }
+        Runnable exec = () -> {
+          id = parent;
 
-            if (inline) {
-              refresh();
-            }
-          };
-          if (ids.containsKey(COL_RELATION)) {
-            Queries.getRowSet(STORAGE, Collections.singletonList(column),
-                Filter.idIn(ids.get(COL_RELATION)), new RowSetCallback() {
-                  @Override
-                  public void onSuccess(BeeRowSet res) {
-                    for (BeeRow beeRow : res) {
-                      Long relId = beeRow.getLong(0);
+          if (inline) {
+            refresh();
+          }
+        };
+        if (ids.containsKey(COL_RELATION)) {
+          Queries.getRowSet(STORAGE, Collections.singletonList(column),
+              Filter.idIn(ids.get(COL_RELATION)), res -> {
+                for (BeeRow beeRow : res) {
+                  Long relId = beeRow.getLong(0);
 
-                      if (DataUtils.isId(relId)) {
-                        ids.put(column, relId);
-                      }
-                    }
-                    exec.run();
+                  if (DataUtils.isId(relId)) {
+                    ids.put(column, relId);
                   }
-                });
-          } else {
-            exec.run();
-          }
+                }
+                exec.run();
+              });
+        } else {
+          exec.run();
         }
       });
     } else if (!rowProperties.isEmpty() && DataUtils.isNewRow(row)) {
@@ -585,6 +592,10 @@ public class Relations extends Flow implements Editor, ClickHandler, SelectorEve
   @Override
   public void setHandlesTabulation(boolean handlesTabulation) {
     this.handlesTabulation = handlesTabulation;
+  }
+
+  public void setInputRelationsInterceptor(InputRelationsInterceptor interceptor) {
+    this.inputRelationsInterceptor = interceptor;
   }
 
   @Override

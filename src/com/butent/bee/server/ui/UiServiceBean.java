@@ -173,6 +173,9 @@ public class UiServiceBean {
       case COUNT_ROWS:
         response = getViewSize(reqInfo);
         break;
+      case HAS_ANY_ROWS:
+        response = hasAnyRows(reqInfo);
+        break;
 
       case DELETE_ROWS:
         response = deleteRows(reqInfo);
@@ -890,7 +893,7 @@ public class UiServiceBean {
 
     BeeTable table = sys.getTable(tableName);
 
-    Set<RightsState> states = table.getStates();
+    Set<RightsState> states = BeeTable.getStates();
     if (!BeeUtils.isEmpty(queryStates) && !Wildcards.isDefaultAny(queryStates)) {
       states.retainAll(EnumUtils.parseIndexSet(RightsState.class, queryStates));
     }
@@ -958,6 +961,19 @@ public class UiServiceBean {
       filter = Filter.restore(where);
     }
     return ResponseObject.response(qs.getViewSize(viewName, filter));
+  }
+
+  private ResponseObject hasAnyRows(RequestInfo reqInfo) {
+    String viewName = reqInfo.getParameter(VAR_VIEW_NAME);
+    String where = reqInfo.getParameter(VAR_VIEW_WHERE);
+
+    Filter filter = null;
+    if (!BeeUtils.isEmpty(where)) {
+      filter = Filter.restore(where);
+    }
+
+    boolean has = qs.hasAnyRows(viewName, filter);
+    return ResponseObject.response(Codec.pack(has));
   }
 
   private ResponseObject insertRow(RequestInfo reqInfo) {

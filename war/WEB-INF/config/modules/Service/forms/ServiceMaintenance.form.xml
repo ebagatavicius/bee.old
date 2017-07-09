@@ -82,8 +82,8 @@
               <FlowPanel for="ServiceObject">
                 <FaLabel name="ServiceObjectAdd" char="plus_circle" class="bee-MultiSelector-plus bee-svc-add-button"/>
               </FlowPanel>
-              <FlowPanel style="&mfld; margin-top: 5ex;" for="ServiceObject">
-                <CheckBox name="SearchingAllDevices" summarize="true" text="=svcSearchingAllDevices"/>
+              <FlowPanel style="&mfld; margin-top: 5ex;" for="ServiceObject" >
+                <CheckBox name="SearchingAllDevices" summarize="true" text="=svcSearchingAllDevices" style="white-space: pre-wrap;"/>
               </FlowPanel>
             </FlowPanel>
           </FlowPanel>
@@ -153,7 +153,7 @@
                 <col index="0" cellClass="bee-svc-maintenance-info-label" />
                 <col index="1" cellClass="bee-svc-maintenance-info-field" />
                 <row>
-                  <Label text="=phone" class="bee-required" />
+                  <Label text="=phone" />
                   <TextLabel name="Phone" source="ContactPhone"/>
                 </row>
                 <row>

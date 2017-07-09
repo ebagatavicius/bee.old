@@ -3,7 +3,7 @@
         xmlns:g="http://www.butent.com/grid"
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
-  name="NewsletterFiles" viewName="NewsletterFiles" autoFit="true" caption="=files"
-  >
+        name="NewsletterFiles" viewName="NewsletterFiles" autoFit="true" caption="=files"
+>
   <xi:include href="../../Administration/grids/columns/Files.columns.xml" />
 </g:Grid>

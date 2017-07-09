@@ -3,7 +3,7 @@
         xmlns:xi="http://www.w3.org/2001/XInclude"
 
         name="AssessmentForwarders" viewName="AssessmentForwarders"
-        newRowForm="AssessmentForwarder" newRowCaption="=trNewCarrier" newRowPopup="true"
+        newRowForm="AssessmentForwarder" newRowCaption="=trNewCarrier" newRowWindow="modal"
         editForm="AssessmentForwarder"
         flexGrow="1"
     >

@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
   
   name="CalendarTodo" viewName="TodoList" caption="=crmTodoList"
-  newRowPopup="true" editPopup="true" headerMode="grid"
+  newRowWindow="modal" editWindow="modal" headerMode="grid"
   disabledActions="delete filter export auto_fit" 
   filter="Creator={u} or Visibility = 0"
   >

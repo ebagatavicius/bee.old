@@ -2,7 +2,7 @@
 <g:Grid xmlns="http://www.butent.com/column" xmlns:g="http://www.butent.com/grid"
 
   name="ExpeditionTrips" viewName="ExpeditionTrips" caption="=trExpeditionTrips"
-  newRowPopup="true" order="TripID desc" flexGrow="1"
+  newRowWindow="modal" order="TripID desc" flexGrow="1"
   >
 
   <g:columns>

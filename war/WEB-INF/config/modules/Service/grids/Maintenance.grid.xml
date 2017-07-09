@@ -46,9 +46,9 @@
       choiceColumns="FirstName LastName CompanyName" />
 
     <RelColumn name="Invoice" readOnly="true" editEnabled="true" editViewName="ServiceInvoices"
-      editPopup="true" />
+      editWindow="modal" />
     <RelColumn name="Defect" readOnly="true" editEnabled="true" editViewName="ServiceDefects"
-      editPopup="true" />
+      editWindow="modal" />
 
     <DataColumn name="Description" />
     <DataColumn name="Notes" visible="false" />

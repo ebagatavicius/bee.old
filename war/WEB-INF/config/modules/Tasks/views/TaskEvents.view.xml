@@ -10,6 +10,7 @@
       <SimpleColumn name="Project" />
       <SimpleColumn name="ProjectStage" />
     </SimpleJoin>
+    <SimpleColumn name="Publisher" />
     <SimpleJoin name="Publisher" joinType="LEFT">
       <SimpleJoin name="CompanyPerson" joinType="LEFT">
         <SimpleJoin name="Person" joinType="LEFT">

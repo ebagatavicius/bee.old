@@ -7,7 +7,7 @@
   <xi:include href="../../Orders/grids/columns/Invoices.columns.xml" />
   <g:columns>
     <RelColumn name="ServiceMaintenance" viewName="ServiceMaintenance" renderColumns="ServiceMaintenance" filterSupplier="value"
-               editPopup="true" label="=svcRepair"/>
+               editWindow="modal" label="=svcRepair"/>
   </g:columns>
 
   <g:rowStyle>

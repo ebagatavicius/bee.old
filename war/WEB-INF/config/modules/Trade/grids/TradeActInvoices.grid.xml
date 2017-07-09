@@ -15,7 +15,7 @@
     <DataColumn name="TimeUnit" />
 
     <RelColumn name="Sale" renderColumns="Sale" label="=trdInvoiceId"
-      editEnabled="true" editPopup="true" editViewName="Sales" editSource="Sale" readOnly="true" />
+      editEnabled="true" editWindow="modal" editViewName="Sales" editSource="Sale" readOnly="true" />
     <DataColumn name="Date" />
 
     <RelColumn name="SaleSeries" />

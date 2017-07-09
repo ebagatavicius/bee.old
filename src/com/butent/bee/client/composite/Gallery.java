@@ -24,8 +24,8 @@ import com.butent.bee.client.event.logical.SummaryChangeEvent.Handler;
 import com.butent.bee.client.images.Images;
 import com.butent.bee.client.layout.Direction;
 import com.butent.bee.client.layout.Flow;
-import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.HasFosterParent;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.utils.FileUtils;
 import com.butent.bee.client.utils.NewFileInfo;
 import com.butent.bee.client.view.ViewHelper;
@@ -579,8 +579,7 @@ public class Gallery extends Flow implements HasViewName, HasFosterParent, Paren
 
   private void initCommand(final Action action, FaLabel widget) {
     widget.addStyleName(action.getStyleName());
-    widget.setTitle(action.getCaption());
-    StyleUtils.enableAnimation(action, widget);
+    UiHelper.initActionWidget(action, widget);
 
     widget.addClickHandler(new ClickHandler() {
       @Override

@@ -2624,7 +2624,7 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
                 TBL_TRADE_DOCUMENT_ITEMS, sys.getIdName(TBL_TRADE_DOCUMENT_ITEMS)))
         .setWhere(itemCondition);
 
-    return qs.sqlCount(query) > 0;
+    return qs.sqlExists(query);
   }
 
   private ResponseObject commitRow(String viewName, List<BeeColumn> columns, BeeRow oldRow,
@@ -3069,7 +3069,7 @@ public class TradeModuleBean implements BeeModule, ConcurrencyBean.HasTimerServi
               TBL_TRADE_STOCK, COL_TRADE_DOCUMENT_ITEM))
           .setWhere(SqlUtils.inList(TBL_TRADE_DOCUMENT_ITEMS, COL_TRADE_DOCUMENT, docIds));
 
-      refresh = qs.sqlCount(query) > 0;
+      refresh = qs.sqlExists(query);
     }
 
     return refresh ? ResponseObject.response(Action.REFRESH) : ResponseObject.emptyResponse();

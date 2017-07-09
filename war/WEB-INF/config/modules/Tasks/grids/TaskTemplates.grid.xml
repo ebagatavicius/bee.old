@@ -3,7 +3,7 @@
         xmlns:xi="http://www.w3.org/2001/XInclude"
   
   name="TaskTemplates" viewName="TaskTemplates" caption="=crmTaskTemplates"
-  flexGrow="1" newRowPopup="true"
+  flexGrow="1" newRowWindow="modal"
   >
   <xi:include href="columns/TaskTemplate.columns.xml" />
 </g:Grid>

@@ -160,6 +160,7 @@ public class AnalysisBean {
     Map<Long, Pattern> indicatorVariables = new HashMap<>();
 
     Set<Long> indicatorRatios = new HashSet<>();
+    Set<String> indicatorRatioAbbreviations = new HashSet<>();
 
     BeeRowSet indicatorData = qs.getViewData(VIEW_FINANCIAL_INDICATORS);
     if (!DataUtils.isEmpty(indicatorData)) {
@@ -185,6 +186,8 @@ public class AnalysisBean {
         if (AnalysisUtils.isValidAbbreviation(abbreviation)) {
           indicatorAbbreviations.put(indicator, abbreviation);
           indicatorVariables.put(indicator, AnalysisScripting.getDetectionPattern(abbreviation));
+        } else {
+          abbreviation = null;
         }
 
         TurnoverOrBalance tob = indicatorRow.getEnum(tobIndex, TurnoverOrBalance.class);
@@ -214,6 +217,10 @@ public class AnalysisBean {
 
           if (indicatorRow.isTrue(ratioIndex)) {
             indicatorRatios.add(indicator);
+
+            if (!BeeUtils.isEmpty(abbreviation)) {
+              indicatorRatioAbbreviations.add(abbreviation);
+            }
           }
         }
       }
@@ -469,7 +476,8 @@ public class AnalysisBean {
                           List<AnalysisValue> secondaryValues =
                               AnalysisScripting.calculateSecondaryIndicator(engine,
                                   indicatorScripts.get(secondary), column.getId(), row.getId(),
-                                  indicatorAbbreviations.values(), values,
+                                  indicatorAbbreviations.values(), indicatorRatioAbbreviations,
+                                  values,
                                   columnSplitTypes, columnSplitValues,
                                   rowSplitTypes, rowSplitValues,
                                   needsActual, calculateBudget, response);
@@ -485,11 +493,13 @@ public class AnalysisBean {
                             TurnoverOrBalance tob = BeeUtils.nvl(turnoverOrBalance,
                                 indicatorTurnoverOrBalance.get(secondary));
 
+                            boolean ratio = indicatorRatios.contains(secondary);
+
                             Long exchangeTo = getBudgetExchangeTo(cursor, condition, null,
                                 currency);
 
                             AnalysisUtils.updateBudget(secondaryValues, computeBudgetValues(
-                                column.getId(), row.getId(), cursor, condition, range, tob, false,
+                                column.getId(), row.getId(), cursor, condition, range, tob, ratio,
                                 columnSplitTypes, columnSplitValues, rowSplitTypes, rowSplitValues,
                                 exchangeTo));
                           }
@@ -720,7 +730,7 @@ public class AnalysisBean {
                     calculatedValues.addAll(
                         AnalysisScripting.calculateValues(engine, script,
                             column.getId(), columnAbbreviation, row.getId(), rowAbbreviation,
-                            variables.values(), input,
+                            variables.values(), BeeConst.EMPTY_IMMUTABLE_STRING_SET, input,
                             columnSplitTypes, columnSplitValues, rowSplitTypes, rowSplitValues,
                             needsActual, needsBudget, response));
                   }
@@ -817,7 +827,7 @@ public class AnalysisBean {
                     calculatedValues.addAll(
                         AnalysisScripting.calculateValues(engine, script,
                             column.getId(), columnAbbreviation, row.getId(), rowAbbreviation,
-                            variables.values(), input,
+                            variables.values(), BeeConst.EMPTY_IMMUTABLE_STRING_SET, input,
                             columnSplitTypes, columnSplitValues, rowSplitTypes, rowSplitValues,
                             needsActual, needsBudget, response));
                   }

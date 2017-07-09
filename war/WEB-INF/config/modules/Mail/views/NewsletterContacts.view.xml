@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<View 
-  xmlns="http://www.butent.com/view" 
-  name="NewsletterContacts" source="NewsletterContacts"
-  >
+<View
+    xmlns="http://www.butent.com/view"
+    name="NewsletterContacts" source="NewsletterContacts"
+>
   <Columns>
     <SimpleColumn name="Newsletter" />
 

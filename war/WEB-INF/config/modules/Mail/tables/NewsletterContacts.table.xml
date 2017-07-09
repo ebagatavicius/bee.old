@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Table xmlns="http://www.butent.com/table"
 
-  name="NewsletterContacts"
-  idName="NewsletterContactID"
-  >
+       name="NewsletterContacts"
+       idName="NewsletterContactID"
+>
   <Fields>
-    <Relation name="Newsletter" notNull="true" relation="Newsletters" cascade="DELETE" label="=mailNewsletter" />
-    <Relation name="Email" relation="Emails" label="=email" />
+    <Relation name="Newsletter" notNull="true" relation="Newsletters" cascade="DELETE"
+              label="=mailNewsletter" />
+    <Relation name="Email" relation="Emails" notNull="true" label="=email" />
     <DateTime name="Date" label="=date" />
   </Fields>
+
+  <Constraints>
+    <Unique fields="Newsletter Email" />
+  </Constraints>
+
+  <Indexes>
+    <Index fields="Date" />
+  </Indexes>
 </Table>

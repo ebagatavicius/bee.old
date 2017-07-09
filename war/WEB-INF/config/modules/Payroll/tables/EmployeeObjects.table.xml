@@ -17,7 +17,7 @@
 
     <Numeric name="Fund" precision="12" scale="2" label="=salaryFund" />
     <Numeric name="Wage" precision="12" scale="2" label="=wage" />
-    <Relation name="Currency" relation="Currencies" label="=currency" />
+    <Relation name="Currency" relation="Currencies" label="=currency" defExpr="MAIN_CURRENCY" />
 
     <String name="Note" precision="100" label="=note" />
   </Fields>

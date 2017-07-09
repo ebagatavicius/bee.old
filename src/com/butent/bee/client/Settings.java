@@ -34,6 +34,10 @@ public final class Settings {
     return getString("appName");
   }
 
+  public static int getActionSensitivityMillis() {
+    return getInt("actionSensitivityMillis");
+  }
+
   public static boolean getBoolean(String key) {
     JSONValue value = getValue(key);
     if (value != null) {
@@ -245,6 +249,10 @@ public final class Settings {
     return BeeUtils.containsSame(getList("showCommands"), command);
   }
 
+  public static boolean showGridFilterCommand() {
+    return getBoolean("showGridFilterCommand");
+  }
+
   public static boolean showLogout() {
     return JsonUtils.getBoolean(getUserPanel(), "showLogout");
   }
@@ -304,7 +312,7 @@ public final class Settings {
     }
   }
 
-//@formatter:off
+  //@formatter:off
   private static native JavaScriptObject read() /*-{
     return $wnd['BeeSettings'];
   }-*/;

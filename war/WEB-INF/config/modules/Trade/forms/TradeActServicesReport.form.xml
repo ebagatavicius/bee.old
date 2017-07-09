@@ -32,7 +32,7 @@
         <Label text="=currency" />
       </cell>
       <UnboundSelector name="Currency" viewName="Currencies" renderColumns="Name"
-        newRowEnabled="false" editPopup="true" style="width: 80px;" />
+        newRowEnabled="false" editWindow="modal" style="width: 80px;" />
     </HorizontalPanel>
 
     <Disclosure open="true">
@@ -43,7 +43,7 @@
         <row>
           <Label text="=clients" style="&c1;" />
           <MultiSelector name="Company" viewName="Companies"
-            newRowEnabled="false" editPopup="true" style="&multi;" summarize="true"
+            newRowEnabled="false" editWindow="modal" style="&multi;" summarize="true"
             choiceColumns="Name TypeName" renderColumns="Name TypeName" />
         </row>
     
@@ -52,7 +52,7 @@
           <MultiSelector name="Manager" viewName="Users"
             renderColumns="FirstName LastName"
             choiceColumns="FirstName LastName CompanyName PositionName"
-            newRowEnabled="false" editPopup="true"
+            newRowEnabled="false" editWindow="modal"
             style="&multi;" summarize="true" />
         </row>
 
@@ -65,7 +65,7 @@
         <row>
           <Label text="=services" />
           <MultiSelector name="Item" viewName="Items" filter="IsService" 
-            renderColumns="Name Article" newRowEnabled="false" editPopup="true"
+            renderColumns="Name Article" newRowEnabled="false" editWindow="modal"
             style="&multi;" summarize="true" />
         </row>
       </Table>

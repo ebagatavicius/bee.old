@@ -15,6 +15,7 @@ import com.butent.bee.client.event.DndTarget;
 import com.butent.bee.client.grid.HtmlTable;
 import com.butent.bee.client.style.StyleUtils;
 import com.butent.bee.client.ui.IdentifiableWidget;
+import com.butent.bee.client.ui.UiHelper;
 import com.butent.bee.client.view.edit.SimpleEditorHandler;
 import com.butent.bee.client.widget.Button;
 import com.butent.bee.client.widget.CheckBox;
@@ -70,8 +71,7 @@ class TaskDialog extends DialogBox {
     int row = table.getRowCount();
     int col = 0;
 
-    faSave.setTitle(Action.SAVE.getCaption());
-    StyleUtils.enableAnimation(Action.SAVE, faSave);
+    UiHelper.initActionWidget(Action.SAVE, faSave);
 
     insertAction(BeeConst.INT_TRUE, faSave);
 

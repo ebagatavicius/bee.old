@@ -12,7 +12,7 @@
     </DataColumn>
 
     <RelColumn name="User" minWidth="200" renderColumns="FirstName LastName"
-      sortBy="LastName FirstName" editSource="CompanyPerson" editPopup="true" visible="true" />
+      sortBy="LastName FirstName" editSource="CompanyPerson" editWindow="modal" visible="true" />
 
     <DataColumn name="Registered" format="DATE_TIME_SHORT" />
     <DataColumn name="LastAccess" format="DATE_TIME_SHORT" />
