@@ -658,7 +658,7 @@ public class TradeActBean implements HasTimerService {
     return response;
   }
 
-  private ResponseObject createContinuousAct(BeeRowSet parentActs, long fifoId, DateTime actDate) {
+  private ResponseObject createContinuousAct(BeeRowSet parentActs, long fifoId, Collection<Long> fifoActs, DateTime actDate) {
     if (parentActs.isEmpty()) {
       return ResponseObject.emptyResponse();
     }
@@ -734,7 +734,7 @@ public class TradeActBean implements HasTimerService {
       return response;
     }
 
-    Set<Long> lockActData = getRelatedLockActs(parentIds, continuousActId);
+    Set<Long> lockActData = getRelatedLockActs(fifoActs, continuousActId);
 
     BeeRowSet services = qs.getViewData(VIEW_TRADE_ACT_SERVICES,
         Filter.and(
@@ -2182,7 +2182,7 @@ public class TradeActBean implements HasTimerService {
     }
 
 
-    return createContinuousAct(parentActs, fifoAct.getId(), date);
+    return createContinuousAct(parentActs, fifoAct.getId(), fifoActs ,date);
   }
 
   private ResponseObject getItemsForSelection(RequestInfo reqInfo) {
