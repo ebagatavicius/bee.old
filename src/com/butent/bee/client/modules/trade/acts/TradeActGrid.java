@@ -336,11 +336,7 @@ public class TradeActGrid extends AbstractGridInterceptor implements SelectionCo
 
   @Override
   public void onSelectionCountChange(SelectionCountChangeEvent event) {
-    int rowCount = getGridView().getRowData() != null ? getGridView().getRowData().size() : 0;
-
-    // if all selected rows disable all actions
-    refreshCommands(rowCount > 2 && rowCount == event.getCount()
-            ? null : getActiveRow(), event.getCount() > 0);
+    refreshCommands(getActiveRow(), event.getCount() > 0);
   }
 
   @Override
@@ -835,6 +831,9 @@ public class TradeActGrid extends AbstractGridInterceptor implements SelectionCo
               newRow.setValue(i, parentActs.getLong(0, i));
               RelationUtils.updateRow(viewTradeActs, colId, newRow, viewTradeActs,
                       parentActs.getRow(0), false);
+            } else if (parent != null) {
+              RelationUtils.updateRow(viewTradeActs, colId, newRow, viewTradeActs,
+                      parent, false);
             }
           break;
         case COL_TA_UNTIL:
@@ -1133,7 +1132,7 @@ public class TradeActGrid extends AbstractGridInterceptor implements SelectionCo
     TradeActKeeper.setCommandEnabled(supplementCommand, row != null && k != null
             && k.enableSupplement() && !multipleSelection);
     TradeActKeeper.setCommandEnabled(returnCommand, row != null && k != null && k.enableReturn()
-        && !DataUtils.isId(getContinuousAct(row)));
+        && !DataUtils.isId(getContinuousAct(row)) || multipleSelection);
     TradeActKeeper.setCommandEnabled(toRentProjectCommand, row != null && k != null && k.enableReturn()
         && !(isRentProjectAct(row) || DataUtils.isId(getRentProject(row))));
     TradeActKeeper.setCommandEnabled(alterCommand, row != null && k != null && k.enableAlter() && !multipleSelection);
